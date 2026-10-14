@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ca02c4d4341e13ffd9765cc774b6bfee8988390a85b5a51119e9b3fb9c5a40c2",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "야자 그루터기",
+ "label": "desert-east/de-palm-stump",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "palm tree stump",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the tree stump is clearly shown from rows 4 to 8 (approx 5 rows tall) as a foreshortened circular/elliptical surface, above the front bark face running from rows 9 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5880
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cut surface and trunk of palm stump",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut cross-section of the palm tree stump is clearly rendered from rows 3 to 8 (approx. 6 pixel rows deep), with the south-facing trunk bark extending below from row 9 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5431
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "palm tree stump",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the palm tree stump is prominently visible from rows 4 to 8 (5 pixel rows tall) above the front bark surface (rows 9 to 13), correctly showing the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6019
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cut surface and trunk of palm tree stump",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the palm stump is clearly visible across rows 3-7 (approx 5 rows tall) above the south-facing bark trunk (rows 8-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5544
+  }
+ ],
+ "decidedAt": "2026-10-14T00:27:26.540Z",
+ "cells": {
+  "16": [
+   "49f7f54353942a56"
+  ],
+  "24": [
+   "0a1fd2d466301883",
+   "11c641dc84cf14be",
+   "14fe5e9036319cc2",
+   "571e6798e9f42a03",
+   "8e0c4b3aed21fec5",
+   "e0bf160762e48667"
+  ],
+  "32": [
+   "0206ca6dd503b91b",
+   "0d894c5ae528e956",
+   "11bfaa46d2efa2f9",
+   "2e84d295d4595acd",
+   "6cf57bcce068f63d",
+   "9aa5ac0db0b2f5ad"
+  ],
+  "48": [
+   "36d881bcaf07fcd3",
+   "5241235f5156bb52",
+   "5a5759ce2a70bb87",
+   "8a99e86194d1150d",
+   "8ce10a4a97be8cfc",
+   "ebf7ebc72b607f6d"
+  ]
+ }
+}

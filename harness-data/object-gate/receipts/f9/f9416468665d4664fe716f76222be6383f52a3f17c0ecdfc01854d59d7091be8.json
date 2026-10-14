@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f9416468665d4664fe716f76222be6383f52a3f17c0ecdfc01854d59d7091be8",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "야자 그루터기",
+ "label": "desert-east/de-palm-stump",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cut trunk of a palm stump",
+    "kind_matches": false,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cut cross-section of the stump is visible at rows 4-7 (4 rows tall) and the front trunk face is visible at rows 8-12 (5 rows tall), correctly rendered in 3/4 perspective. However, kind_matches is false because a rooted tree stump does not match 'debris — scattered debris lying on the floor'.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 10008
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "palm tree stump",
+    "kind_matches": false,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is a standing palm tree stump, which does not plausibly match the debris kind (scattered floor debris like bones, rubble, or papers). However, the standing body is correctly drawn in 3/4 view: the cut top surface spans rows 4–7 (4 source pixel rows tall), above a 5-row south-facing trunk (rows 8–12) and roots at the base. It is not a pure front elevation and shows no isometric receding side faces.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 62476
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "standing palm tree stump",
+    "kind_matches": false,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is an upright palm tree stump, not scattered floor debris. While its perspective correctly shows a 3-row foreshortened top cut surface (rows 5–7) in 3/4 view, it fails because the object kind does not match.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 7278
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "palm tree stump",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stump clearly shows a 4-row cut top surface (rows 4–7) with inner wood and core ring detail, above a 5-row south-facing trunk (rows 8–12), correctly adhering to 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13158
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.228Z",
+ "cells": {
+  "16": [
+   "631e9bd143163758"
+  ],
+  "24": [
+   "377c0425e092fc3a",
+   "5732832c86de07b0",
+   "74029eff50c28c5b",
+   "8e92cee52c05ef3d",
+   "9bbf93aa1ae447a5",
+   "f628cf7e22164231"
+  ],
+  "32": [
+   "053824ce571a0676",
+   "1e6ad9b4a6fa8708",
+   "2ee1d6971377b746",
+   "2eee84a205eb4ec9",
+   "c66c3a8b45cfd799",
+   "ff49aab0cafc7985"
+  ],
+  "48": [
+   "38dcf7b125e935a3",
+   "b5268bf7036d4362",
+   "ccb898db801209fd",
+   "d0c5bea68609764b",
+   "f32a53e4a0787eb0",
+   "ff9c2dc660240ea7"
+  ]
+ }
+}

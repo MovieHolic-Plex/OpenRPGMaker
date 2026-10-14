@@ -91,6 +91,8 @@ function applyCustomChipsetMinimalHarness(tileset: TilesetDef): boolean {
       || tileset.image.id === "tex_modern_campus"
       // 선사 시대 원시 세계: 칸마다 통행·레이어를 굽기(bake_ph.py)에서 정해 둔 정의다
       || tileset.image.id === "tex_prehistoric"
+      // 사막·동양풍: 칸마다 통행·레이어를 굽기(bake_de.py)에서 정해 둔 정의다
+      || tileset.image.id === "tex_desert_east"
       // 북방 설원: 칸마다 통행·레이어를 굽기(bake_sn.py)에서 정해 둔 정의다
       || tileset.image.id === "tex_snow_north"
       // 생성 칩셋 공용 실내(손 도트 v5)·배·던전: 칸마다 통행·레이어를 구워 둔 정의라 RM2k3 표를 들이대지 않는다

@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "db6a6a36edbed270d1587cd41e96dad03ebfcf89c66dc630b7df6708d676c845",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "쓰러진 돌덩이",
+ "label": "desert-east/de-block-fallen",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone block",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone block is drawn completely flat from the front. It has light-to-dark vertical shading across its front face rather than any distinct horizontal top plane seen from above (0 top rows), and the base is also drawn in flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 8133
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone block on a base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone block and its base are drawn entirely from the front with a 1px top outline and vertical gradient/cracks, lacking any foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5809
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone block",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone block is drawn in pure front elevation with vertical gradient shading and cracks on a single vertical surface; there is no distinct top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5073
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone block / monument slab",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main block is drawn as a flat front elevation with vertical gradient shading from row 4 to 11 and a 1px top border at row 3. There is no distinct horizontal top plane visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5343
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.227Z",
+ "cells": {
+  "16": [
+   "308f5bdc5b94d4b5"
+  ],
+  "24": [
+   "0b7c63e14c7b8286",
+   "1c36e43ae7ab3b59",
+   "7a5fc9f20311d3bb",
+   "95bd7df2742db479",
+   "c615ab51fa27627c",
+   "fae41d6591584f52"
+  ],
+  "32": [
+   "2292cbc09d164d80",
+   "2554f88a17e94238",
+   "61c524e311e8e782",
+   "ce06c764cb3195e0",
+   "ce190866325cb265",
+   "d9bdb3067e2a2846"
+  ],
+  "48": [
+   "7973379fe6d6ba31",
+   "aa2091a38550dbcd",
+   "c15e98d31d07f996",
+   "d8ebbf857490fce4",
+   "d9a19f0600e7ed2c",
+   "f9510d5cd0983626"
+  ]
+ }
+}

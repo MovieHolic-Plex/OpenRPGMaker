@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "312716267e9f8cdeffbbba7b380c20153216fdaf81384d86e88a0dcb7fca99c5",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "여관 널마루(변주)",
+ "label": "desert-east/de-floor-wood-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden floorboards",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless horizontal wooden floor tile filling the entire 16x16 area, representing a top-down ground floor surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12043
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden floorboards",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat wooden plank floor tile viewed from above spanning all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11307
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden floorboards",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat wooden plank flooring filling the 16x16 tile, representing horizontal terrain viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12490
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden floorboards",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat wooden plank flooring tile viewed from above, seamlessly filling the entire 16x16 tile as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12548
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.210Z",
+ "cells": {
+  "16": [
+   "8557ed73419fe3b9"
+  ],
+  "24": [
+   "1daac86066db6dd9",
+   "4de5ae161dfb0419",
+   "829499625fd00c2b",
+   "91253d11e5af027a",
+   "ac337f5fd796d36c",
+   "d40be1e929f0ed8a"
+  ],
+  "32": [
+   "0ab8d4dd35968636",
+   "311c2650845482df",
+   "8121b32dfab914ad",
+   "fdc53771b90c9495",
+   "fe0129e5471588e8",
+   "ff3d7e4c00a98db8"
+  ],
+  "48": [
+   "02a91d55baf3b147",
+   "329308048c0603c8",
+   "42418cffe61e735b",
+   "716bb650e1ef73c3",
+   "c4e714207490232f",
+   "e4ccdda38551c4cd"
+  ]
+ }
+}

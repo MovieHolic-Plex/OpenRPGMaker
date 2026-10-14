@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c12c53db06a09609031bd066559b1e2854a1f73c76758051424733d552df253b",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "대추야자(큰)",
+ "label": "desert-east/de-palm-date",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "palm tree (date palm)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The palm tree is drawn entirely in a flat side/front elevation typical of a 2D side-scroller. The fronds arch strictly left and right in a single 2D plane with no foreshortened fronds projecting toward the camera, and the base of the trunk at row 45 is cut off with a flat horizontal line rather than showing a rounded or foreshortened base.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5713
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "date palm tree (trunk and fronds)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The palm tree is drawn purely in side elevation: the fronds arch exclusively left and right in a single 2D plane with no foreshortened top-down circular crown or forward/backward fronds, and the trunk base terminates in a flat 1px horizontal line at row 45.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4065
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "trunk and palm fronds",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The palm tree is drawn entirely in front elevation (side-scroller style), with fronds arching only left and right in a 2D plane and no fronds projecting forward toward the camera or revealing the top of the crown. The trunk segments and base are also flat horizontal lines without top-down curvature.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5495
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "date palm tree (trunk and canopy)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The palm tree is drawn entirely in 2D side-scroller / front elevation: the trunk is a flat vertical cylinder with a completely straight horizontal base (rows 45-46), and the fronds spread only left-to-right as a flat arch without any radial projection toward the camera or visible top of the crown.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4262
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.220Z",
+ "cells": {
+  "16": [
+   "06a4da83d17069c2",
+   "77b116e8eb87fbf3",
+   "7efe92944ab22134",
+   "af04b20ab2e82cb9",
+   "b1b92dfb56bcba2c",
+   "b97acb8c9592c6d0"
+  ],
+  "24": [
+   "00905e5340ec8549",
+   "0d9f7f722871821a",
+   "0e902de29af1c5ea",
+   "77e5fd324c89cb57",
+   "9216149881c61b6b",
+   "98ff9b9636c6cf76",
+   "a323c4a6eff74d02",
+   "e5bc0ae01579cbd0",
+   "e7384f82ea54fe47",
+   "eebca28f00bdd4fa",
+   "ef332ee6377bf2cd",
+   "f9d671ebedaa9cd6"
+  ],
+  "32": [
+   "1c0f607d882b1dab",
+   "281f18582db5d17a",
+   "85dd105a0e3fb7a3",
+   "aa4ee5227fa708d7"
+  ],
+  "48": [
+   "52b3d5c3e2d9bb44",
+   "af82038454bd0dbb",
+   "afe29f0b508db374"
+  ]
+ }
+}

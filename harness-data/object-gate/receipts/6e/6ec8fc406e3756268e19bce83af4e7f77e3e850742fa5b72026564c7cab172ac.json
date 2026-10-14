@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6ec8fc406e3756268e19bce83af4e7f77e3e850742fa5b72026564c7cab172ac",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "비석(무늬 띠, 글자 없음)",
+ "label": "desert-east/de-stele",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stele / stone monument",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stele is drawn in a pure front elevation with a 2D arched silhouette at the top (rows 2-4) and no visible top surface or thickness foreshortened in 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8194
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stele shaft",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stele is drawn in flat front elevation with an arched top silhouette (rows 1-3) and flat horizontal bands. Neither the stele body nor the base plinth shows any 3/4 perspective top surface depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8828
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stele (standing stone tablet)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stele is drawn entirely in flat front elevation with a rounded/arched top contour (rows 2-4) and no visible depth or top surface showing the thickness of the stone slab. The plinth at the base also lacks a top surface (only a 1px highlight line on row 26).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7196
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone stele",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stele is drawn in a flat front elevation. The arched top consists only of an outline and a 1-2px edge highlight (rows 3-4) rather than a foreshortened top surface, and the plinth at the bottom also shows only a 1px highlight line without depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 28339
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.227Z",
+ "cells": {
+  "16": [
+   "21163d24d8fdb9d8",
+   "c543cc1ab3a64298"
+  ],
+  "24": [
+   "02fee7891acd791d",
+   "1d669cafd1d4a29d",
+   "253ac2d0ff9eaa6b",
+   "4c92665dac503795",
+   "529e5e2c0f384152",
+   "6953f352f2263228",
+   "8a4cf63fe59d3baf",
+   "8d0aa30bc1c94d2e",
+   "94cbc19a1ae70af1",
+   "bd08a069e4133f1f",
+   "c9d7e8489270f933",
+   "e0058ffdcbb6386b"
+  ],
+  "32": [
+   "95eac4f0342511e3",
+   "c7a4bf457dfbedf1",
+   "d365c54ae9c28e1b"
+  ],
+  "48": [
+   "3ded8816f7abe061",
+   "63854cd26648d8d1",
+   "c17bc3dbcd0aead6",
+   "c1ddc2d16baa644c",
+   "c8294c4da8abae23",
+   "e0babd907b230e66"
+  ]
+ }
+}

@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "95247a84a48e7c7f114c15d3e49080a00c60d9fafa58241a7e05c8b7fa9cf2bb",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "무너진 아치 문",
+ "label": "desert-east/de-ruin-arch",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ruined stone archway",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The arch pillars and capitals are drawn in flat front elevation with a 1px flat cap line at row 9 and no visible top depth surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6263
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ruined stone arch gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillars, capitals, and broken arch are drawn entirely as a flat 2D architectural front elevation. The horizontal capitals have only a 1px outline along their top edge (row 9) with no foreshortened top surface, and the arch ring shows zero top depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5956
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ruined stone arch pillars and arch remnant",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ruined arch and stone pillars are drawn in pure front elevation with flat horizontal brick lines and no visible top surface or north-south wall depth anywhere (the capitals at rows 9-13 have only a 1px top outline).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4545
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "broken stone arch gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The broken stone arch and its two side pillars are drawn entirely in flat front elevation with no visible top surfaces or depth on the capitals, arch stones, or pillar tops (only a 1px outline along the top).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3820
+  }
+ ],
+ "decidedAt": "2026-10-14T00:12:08.966Z",
+ "cells": {
+  "16": [
+   "3018e2b58fc3c6fb",
+   "4e290ce62dae1b5f",
+   "a5d83f5ea0bc75a4",
+   "a6a9f1fa488a9339",
+   "c664facb356b75c0",
+   "dfc4a87974893dc7",
+   "e05ce95d22d2805f",
+   "f0cccb27f37483ac",
+   "fa3a0c6b95725c49"
+  ],
+  "24": [
+   "16265587491ebabd",
+   "6d0472a594ec9553",
+   "c6e1fcd13552b8ea",
+   "d120fec148abee2f"
+  ],
+  "32": [
+   "087b5fb12583f806",
+   "12240f6ed6a77dc4",
+   "135170a972f13767",
+   "136cb685d73cb295",
+   "1f5dddc5ef775c8c",
+   "2610db2fe6486833",
+   "28780dec36dd0e43",
+   "31671ff25b96c01b",
+   "47469209dc5f6491",
+   "4f290f84e82139fe",
+   "79d3808673613597",
+   "82a2b893694f479d",
+   "82b3c79a36c24200",
+   "867cf0f4288cecb4",
+   "913c03bc63e0bba1",
+   "c56bc9bfcfa766c7",
+   "d6bab7d1d4add0f0",
+   "d9fef94fca795b7a",
+   "db1a01accdc28bd7",
+   "dbe25597669b2f6a",
+   "deca8e739abf6620",
+   "df3cec1f02e3c3d3",
+   "f642103536211b81",
+   "fa96473ab4052749"
+  ],
+  "48": [
+   "c2ec0ccc054baf56"
+  ]
+ }
+}

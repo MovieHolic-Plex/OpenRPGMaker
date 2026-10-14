@@ -20,6 +20,7 @@ import { steampunkPromptLines } from "../steampunkCityPolicy";
 import { campusPromptLines } from "../campusPolicy";
 import { sfStationPromptLines } from "../sfStationPolicy";
 import { prehistoricPromptLines } from "../prehistoricPolicy";
+import { desertEastPromptLines } from "../desertEastPolicy";
 import { snowNorthPromptLines } from "../snowNorthPolicy";
 import { JOSEON_POINTER_LINE } from "../joseonPolicy";
 
@@ -87,6 +88,8 @@ export function buildPiAgentSystemPrompt(
     ...(spatial ? sfStationPromptLines(project, mapIds) : []),
     // 선사 원시 세계(prehistoric) — 칩셋이 프로젝트에 있을 때만 줄이 붙는다.
     ...(spatial ? prehistoricPromptLines(project, mapIds) : []),
+    // 사막·동양풍(desert_east) — 칩셋이 프로젝트에 있을 때만 줄이 붙는다.
+    ...(spatial ? desertEastPromptLines(project, mapIds) : []),
     // 북방 설원(snow_north) — 칩셋이 프로젝트에 있을 때만 줄이 붙는다.
     ...(spatial ? snowNorthPromptLines(project, mapIds) : []),
     ...(spatial ? [JOSEON_POINTER_LINE] : []),

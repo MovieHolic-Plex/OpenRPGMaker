@@ -218,7 +218,8 @@ const THEME_TOWN_TILESETS: Readonly<Record<string, readonly string[]>> = {
   "modern-town": ["jp_city", "modern_city"],
   "modern-sf": ["modern_city"],
   "snow-north": ["snow_north"],
-  "desert-east": ["forest_harmony_desert"],
+  // 사막·동양풍 번들(desert_east, 2026-10-14) — 오아시스·바자르·궁전·피라미드·대상 숙소를 구성 도구가 짓는다(옛 forest_harmony_desert 는 폐기 계열).
+  "desert-east": ["desert_east"],
   prehistoric: ["prehistoric"],
 };
 
@@ -231,6 +232,8 @@ function townArtHint(theme: string): string {
   if (theme === "prehistoric") return "야외 마을은 이 테마와 같은 문화권 번들 칩셋 prehistoric 으로 깔아라(버들항 등 다른 계열 도구로 깔지 말 것). compose_prehistoric_map({style:\"village\"|\"swamp\"|\"volcano\"|\"fossil\", newMap:{name}}) 한 번이 칩셋·크기를 맞춘 새 맵에 마을·땅·집·소품 배치까지 짓는다. 동굴·움집 안은 같은 도구의 실내 style(cave-dwelling·chieftain-hut·shaman-hut·cave-gallery)로 짓고 link_prehistoric_interior 로 잇는다. 세계 지도 장소와는 places 의 「입구 x,y」에 create_transfer_pair 로 잇는다.";
   // 북방 설원(snow-north): 눈 마을·얼어붙은 호수·얼음 동굴 입구·겨울 장터와 실내는 구성기 도구 한 번으로 짓는다(옛 숲마을 눈 칩셋 대신).
   if (theme === "snow-north") return "야외 마을은 이 테마와 같은 문화권 번들 칩셋 snow_north 로 깔아라(버들항 눈 기후 등 다른 계열 도구로 깔지 말 것). compose_snow_north_map({style:\"village\"|\"lake\"|\"cave\"|\"market\", newMap:{name}}) 한 번이 칩셋·크기를 맞춘 새 맵에 마을·땅·집·소품 배치까지 짓는다. 집 안은 같은 도구의 실내 style(cabin·longhall·tavern·sauna·ice-cave)로 짓고 link_snow_north_interior 로 잇는다. 세계 지도 장소와는 places 의 「입구 x,y」에 create_transfer_pair 로 잇는다.";
+  if (tilesets[0] === "desert_east") return "야외 마을은 이 테마와 같은 문화권 칩셋 desert_east(사막·동양풍)로 깔아라(버들항 등 다른 계열 도구로 깔지 말 것): create_map(tilesetId:\"desert_east\") → compose_desert_east_map({kind:\"oasis\"|\"bazaar\"|\"palace\"|\"pyramid\"|\"caravanserai\", seed}) 한 번. "
+    + "실내(찻집·가게·알현실·묘실·목욕탕·여관)는 desert_east 맵을 더 만들어 compose_desert_east_room 으로 짓고 link_desert_east_interior 로 문과 잇는다. 세계 지도 장소와는 places 의 「입구 x,y」에 create_transfer_pair 로 잇는다.";
   if (!tilesets.length) return `테마 ${theme} 전용 마을 칩셋은 없다 — 마을은 기본 마을 도구로 깔고 이름·NPC·대사로 문화권을 살려라. ${interior}`;
   return `야외 마을은 이 테마와 같은 문화권 칩셋 ${tilesets.join("·")} 으로 깔아라(버들항 등 다른 계열 도구로 깔지 말 것). `
     + (places.length ? `완성 마을: ${places.map(p => `${p.id}「${p.name}」`).join(", ")} — import_region_reference({id}) 한 번으로 가져와 이름만 바꿔도 된다. ` : "")

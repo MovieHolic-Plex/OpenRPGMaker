@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7db53103059a264cfa31ec5b5e6b177b82cc1971eef9195c48c15684d9c76ed6",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "놋 띠 궤짝",
+ "label": "desert-east/de-chest-brass",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brass-banded chest (궤짝)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chest is drawn as a flat rectangular front elevation with no visible top surface. The brass bands and corner brackets run vertically from top to bottom on the south-facing front surface without any foreshortened lid/top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 7152
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brass-banded wooden chest",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chest clearly shows both its illuminated horizontal top lid (rows 2–6, 5 source pixels tall) and its shaded vertical front face (rows 7–13) with the lock plate.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9344
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brass-banded chest (gwe)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chest is drawn as a flat square front elevation with vertical brass bands running straight down and corner brackets on the front plane. No foreshortened top surface or lid seen from above is depicted.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 9345
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brass-banded wooden chest",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chest is drawn straight-on in pure front elevation with a top lid section (rows 2-6) and lower body (rows 7-14) facing directly forward. There is no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4553
+  }
+ ],
+ "decidedAt": "2026-10-14T00:23:19.734Z",
+ "cells": {
+  "16": [
+   "972504a58b41be7b"
+  ],
+  "24": [
+   "183959f5bf068d45",
+   "57294c501a186ca6",
+   "6df76286acc26dde",
+   "78bee160b6eecbb3",
+   "83bf7612519658a5",
+   "ea6aae27eb9d6029"
+  ],
+  "32": [
+   "086798ea32daf651",
+   "223d18e4a272d0b1",
+   "5760cd2d9a2c6dac",
+   "8d5f717b7866df59",
+   "cab567ed1739ef9c",
+   "efa1866e9af5fbc9"
+  ],
+  "48": [
+   "01043e64f4980db9",
+   "36a99f9db36db98c",
+   "55587f9efa03fc38",
+   "694b71fce8e1f789",
+   "ed6a5676d7515f9f",
+   "fcdc1c8ec8627df5"
+  ]
+ }
+}

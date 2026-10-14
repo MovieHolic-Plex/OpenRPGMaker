@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7ed36e7f39f288e1c8a40d4b6ca9615ddc702fdbd842e2c13f2765c84f1a85ea",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "돌 화톳대",
+ "label": "desert-east/de-torch-stand",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone brazier bowl and pillar pedestal",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brazier bowl clearly shows an elliptical opening from above (rows 5 to 10, approx 6 rows deep) filled with burning coals and flame, with visible back and front rims.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7113
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone brazier bowl and pedestal",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brazier basin at the top displays a clear elliptical opening from row 5 to row 10 (approx. 6 rows of interior containing coals/fire), viewed from a proper 3/4 top-down angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4489
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone brazier bowl and pedestal",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brazier bowl shows a clear elliptical opening from rows 4 to 10 (~7 rows deep) revealing the glowing coals and flame inside from a 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4192
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone brazier bowl on pedestal",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brazier bowl clearly shows an elliptical opening from row 4 to row 10 containing coals and fire, viewed from above at approximately a 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3721
+  }
+ ],
+ "decidedAt": "2026-10-14T00:25:45.001Z",
+ "cells": {
+  "16": [
+   "0effe4f93278dd49",
+   "1cf963b482d273d8"
+  ],
+  "24": [
+   "066f006e59d50e8d",
+   "3601530998db135b",
+   "460a0dbbfc34b878",
+   "5d105edf720295a6",
+   "60358157d0bd8583",
+   "6070f6eab78f96de",
+   "71cf2976647dc9df",
+   "7c7e9f470eff33a3",
+   "805cfaeeeef5cd09",
+   "8a7d09fc7560d120",
+   "d2b738619baabdda",
+   "ddcb85b24817b939"
+  ],
+  "32": [
+   "3efdcaf9f2562595",
+   "55bb7e6952b49b0d",
+   "bb85e7528caac7f1"
+  ],
+  "48": [
+   "103b9a74fa6ecd12",
+   "39a17003a0dec221",
+   "7f7254ba49a77b13",
+   "86e2c4ffd6b9eafa",
+   "a4b9eff9bcf52a02",
+   "f2499e35656eb035"
+  ]
+ }
+}

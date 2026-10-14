@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d222bc1c92e685d59341c5d5214ee974a259b5988626863213d20930948b121f",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "무너진 아치 문",
+ "label": "desert-east/de-ruin-arch",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ruined stone archway with two pillars",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both pillars and the top of the arch clearly show prominent top horizontal surfaces (rows 6-15, ~10px tall) in light tan, viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4552
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ruined stone archway",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surfaces of both stone pillars and the curved broken arch are clearly visible (approx. 10 pixel rows tall on the pillars, rows 6-15), showing the 3/4 top-down perspective properly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4017
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ruined stone arch pillars",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surfaces of both pillars and the ruined arch are clearly rendered from an overhead 3/4 angle, showing approximately 10 pixel rows of the upper horizontal surface (rows 6-15) above the vertical south-facing walls.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3840
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ruined archway and pillars",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both pillars show clear top horizontal surfaces (rows 6-16, ~11 rows tall), and the arch also shows its top surface viewed from above in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3951
+  }
+ ],
+ "decidedAt": "2026-10-14T00:34:24.555Z",
+ "cells": {
+  "16": [
+   "0c195e28349d315d",
+   "1c760eb26f10897c",
+   "74b1f76b90098fea",
+   "764d7543d7ec886f",
+   "96dd957c4b10476e",
+   "d0586cd158bc92fd",
+   "e07a2bc55a33fe15",
+   "e9bdd1b19a7fc65c",
+   "fa04f7dec2f981ef"
+  ],
+  "24": [
+   "367b92d80ede41bf",
+   "73bf901402368e6c",
+   "889086ee35739a0e",
+   "96f42d46a68fda1c"
+  ],
+  "32": [
+   "015add70731fed37",
+   "12462a4722da19be",
+   "19b7b3058ce5f530",
+   "20076705b87fc6f3",
+   "30176a60d4c356e2",
+   "3611533fac3bacb9",
+   "4de077da12557ba4",
+   "4e7cf86fc226493d",
+   "5d6cf415a7386a16",
+   "61e04e3fc49b93ac",
+   "6d5d79b178b8b126",
+   "7112684a3dee698a",
+   "75118ba23c9063cb",
+   "7e41bd431a4bc258",
+   "86b649c37e36d085",
+   "9590735c08fc14d9",
+   "d204303aaa264c7a",
+   "df11e0b385b8a5af",
+   "e3396699f7f7d267",
+   "e701f82177c2dd24",
+   "ea55c07efe4c60c9",
+   "ec026f0517551f12",
+   "ed8ccb714d300cd6",
+   "f55867316b057054"
+  ],
+  "48": [
+   "d489ceb0edd8995f"
+  ]
+ }
+}

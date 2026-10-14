@@ -1,0 +1,153 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "06f1f05f556c893d2a1bbb730bbb7c5f929199838e95bcb8cf2cc3493c4a8ca3",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "작은 피라미드",
+ "label": "desert-east/de-pyramid-small",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "옆면(아이소)"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pyramid",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": false,
+    "evidence": "The pyramid is drawn with isometric/axonometric perspective showing receding side faces on both the left (highlighted) and right (shaded dark), rather than conforming to the standard top-down 3/4 JRPG projection.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "옆면(아이소)",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7211
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pyramid",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": false,
+    "evidence": "The pyramid is drawn with visible receding side faces (a lit left facet and a heavily shaded right side facet) rather than standard top-down 3/4 perspective where the camera looks from the south onto the southern slope.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "옆면(아이소)",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12319
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pyramid",
+    "kind_matches": true,
+    "top_rows": 43,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": false,
+    "evidence": "The pyramid is drawn with visible receding side faces on both the left and right sides of the central face, violating the top-down 3/4 perspective rule against isometric receding side faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "옆면(아이소)"
+   ],
+   "ms": 9354
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pyramid",
+    "kind_matches": true,
+    "top_rows": 43,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pyramid is drawn from a 3/4 top-down perspective with the apex and upward-sloping faces visible across roughly 43 pixel rows (from row 3 apex down to row 46 base). The visible side slopes are hip-roof-style upward slopes, not vertical isometric receding walls.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 17770
+  }
+ ],
+ "decidedAt": "2026-10-14T00:12:08.964Z",
+ "cells": {
+  "16": [
+   "226b744aa9a403e2",
+   "30242f83278d0d8a",
+   "4465396fedcc14a6",
+   "5c6716bd8bb5d639",
+   "6460f6fb4cac18f4",
+   "678eb6615521a9c2",
+   "8312fbc07730be08",
+   "87d5ccef3ff1a999",
+   "997198cd81999343",
+   "9b23c4e63cbf7877",
+   "f109d9783421a7fd"
+  ],
+  "24": [
+   "018cb95b62922313",
+   "11de15104706a2fd",
+   "24d480ab0f4ef5ba",
+   "31afa3e2f31dbefb",
+   "46f31ffeec73dff2",
+   "70c9d2fdd537a74d",
+   "7511dbef243f3e47",
+   "7835c615d9825d9a",
+   "7ec340afcc7fad9a",
+   "7fb7521d30e3d314",
+   "b594cf99ddd13ef9",
+   "d2657d48722b0189",
+   "de2c92292d69512a",
+   "e8763cfbe75e124a",
+   "ed59babdca9627ee",
+   "f1dafd64de6d74d9",
+   "fd43c56df3d03f41"
+  ],
+  "32": [
+   "1608a16d8f0816b2",
+   "21ab50971b8729a2",
+   "290c7a638a63a15a",
+   "36a5cc220253fe5f",
+   "6db3256c9f335bd4",
+   "82d714bc5df7b0c4",
+   "86ade4ee1df5080c",
+   "c6c6db9b881ce043"
+  ],
+  "48": [
+   "2eaf91d8c4463ae5",
+   "35045f6d140e7c5a",
+   "6fdc198fea1fa46f",
+   "98d142c34316e591",
+   "9cb0b61c3ddf11ab",
+   "d504b3f8287ecbb4"
+  ]
+ }
+}

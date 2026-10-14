@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4a2fa39694dd37c1e5f16d06cd12a6db3884e7b032374bb3fc091d85c7595b92",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "오벨리스크",
+ "label": "desert-east/de-obelisk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "obelisk shaft and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire obelisk—from the golden pyramidion cap to the shaft and the multi-tiered pedestal—is drawn as a flat 2D architectural front elevation with perfectly horizontal step lines and no foreshortened top surfaces visible anywhere.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6841
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "obelisk shaft and cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The obelisk and its cap are drawn entirely in a flat front elevation with straight horizontal bands and no top surfaces visible anywhere.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10261
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "obelisk shaft and cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body of the obelisk (rows 0–36) is drawn in pure front elevation with completely flat horizontal section bands (rows 5, 11, 17, 20, 23, 29, 36) and no visible top surface or downward perspective angle. Only the bottom plinth shows a top surface, which cannot substitute for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5940
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "obelisk shaft and plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The obelisk shaft, gold cap, and stepped plinth are drawn as a flat architectural front elevation with straight horizontal bands and no visible top surface or 3/4-view foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7148
+  }
+ ],
+ "decidedAt": "2026-10-14T00:24:39.343Z",
+ "cells": {
+  "16": [
+   "5c41692b2d4a6401",
+   "615532f180ac5aef",
+   "7245b8300e2ee8c1"
+  ],
+  "24": [
+   "0131f14ee5d02923",
+   "8df4742e773d13c1",
+   "ab999295cd864f75",
+   "aede8dc8b67f63fc",
+   "c302434c3edccc8d",
+   "d4856434d6452428"
+  ],
+  "32": [
+   "55fa68bef0721d52",
+   "6c1ed4fcb6d270c3",
+   "7667323de6c921fe",
+   "79c4d84da4fc7ad4",
+   "8aac74d7d549aa20",
+   "a1519e8aea3e74bf",
+   "cd0f751fbc27cb3f",
+   "ce79c024078b1d94",
+   "d85def9228573e97",
+   "dcd9b4e7c23d5e24",
+   "e998d6c91e7724e1",
+   "ef8aa98bb1097de1"
+  ],
+  "48": [
+   "afaf9eaa34e6ab81",
+   "cbf9e076b4153542",
+   "f053bca198bfae06"
+  ]
+ }
+}

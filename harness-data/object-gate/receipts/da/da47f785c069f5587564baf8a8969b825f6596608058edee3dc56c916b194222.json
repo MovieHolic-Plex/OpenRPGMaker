@@ -1,0 +1,128 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "da47f785c069f5587564baf8a8969b825f6596608058edee3dc56c916b194222",
+ "width": 32,
+ "height": 32,
+ "kind": "other",
+ "name": "앉아 쉬는 낙타",
+ "label": "desert-east/de-camel-rest",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sitting camel with saddle blanket",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The camel faces west, showing its south flank. The back and saddle blanket feature a clear 6-row foreshortened top surface (rows 13-18) seen from above, with the side skirt and fringe hanging down along the south face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4409
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sitting camel with saddle blanket",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The camel faces west, showing its south flank, while the top of its back/saddle is rendered as a distinct foreshortened oval surface (rows 13-19, ~6-7 rows tall) above the hanging drape (rows 20-23).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4022
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "resting camel with saddle carpet",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The camel faces west with its back draped in a decorative saddle blanket. The top of the saddle is rendered as a foreshortened oval surface visible from above across rows 13 to 19 (7 pixel rows), with the draped side hanging down below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3750
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sitting camel with ornate saddle",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The camel faces west, showing a foreshortened top surface on its back/saddle (rows 13-18, 6 rows tall) displaying an elliptical patterned rug, followed by a south-hanging drape and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5335
+  }
+ ],
+ "decidedAt": "2026-10-14T00:27:26.539Z",
+ "cells": {
+  "16": [
+   "05405c229162f562",
+   "29b6cf0a825aaa49",
+   "37a22fd27bb7e7c3",
+   "4647ce06c9aaa231"
+  ],
+  "24": [
+   "0ab856f3ea6eb885",
+   "26cdf1adb41adeca",
+   "431cde9c106cd8a1",
+   "562a466e61f5f262",
+   "672ea33105c62d4b",
+   "68c0af9a6a1ab622",
+   "693945227adcdecf",
+   "6e7e98fc0aa00689",
+   "70e2361504555060",
+   "79bf883ec06c3bb4",
+   "90bf29ae0468c793",
+   "91a81460ec044e61",
+   "aa173ea7dad71cee",
+   "ac0ae470db3040bf",
+   "ad5231adeccaf916",
+   "b85b2a57d1a08735",
+   "bae38f563f5b4c1f",
+   "cd5b79c9bda1f6f0",
+   "cf6399441a115fd6",
+   "dabc3d1205bc588d"
+  ],
+  "32": [
+   "502c57d37d28f425"
+  ],
+  "48": [
+   "0ac796328e837024",
+   "2fdec10997f0c380",
+   "4d8da235f7b8c68a",
+   "5fa43c8944a4d626",
+   "632627b2e5b509c2",
+   "f7512afc5c75d1a9"
+  ]
+ }
+}

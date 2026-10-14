@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1ccfc3085b268b3a116cf581bc53ff29b60db655320526cdab1c9db48f354ed6",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "흙 가마(그릇 굽는)",
+ "label": "desert-east/de-kiln",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "아가리 3행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "clay pottery kiln",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the kiln features a clear 3/4 view elliptical opening (rows 5-8, interior 3 rows tall) with foreshortened rims, looking down into the interior, while the front wall extends downward with the firebox door.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 6878
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "earthen pottery kiln",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the kiln shows a clear elliptical opening with an orange rim (rows 4-9) and a 3-row high interior cavity (rows 5-7) viewed from above, along with the south-facing firebox door below.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 4772
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "earthen kiln with top chimney/opening and front firebox",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The kiln has an elliptical opening at the top visible from above spanning rows 4 to 9 with a 3-row visible interior, along with a front-facing firebox opening below, correctly rendering 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 9318
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "clay pottery kiln",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the kiln features a clearly foreshortened elliptical chimney/top opening (rows 5-7, 3 rows high interior) viewed from above, with both the top surface/rim and front firebox face depicted in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 6975
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.227Z",
+ "cells": {
+  "16": [
+   "39f5e17db0be3ef1",
+   "452a3788a7d9e8bd",
+   "67af182f23ad8286",
+   "da3558d8750eb1f9"
+  ],
+  "24": [
+   "10f15a13733e9d72",
+   "115ea87dc1e83579",
+   "187d5025229da33a",
+   "18fde64e9b96351b",
+   "280f7d22e67b959b",
+   "54086db382a2b9bc",
+   "61948b33aaf9b97d",
+   "651df6c50812ffd0",
+   "7881c431dd14a169",
+   "7971852eda7c6286",
+   "9656f0922d6974a3",
+   "9c531d689407dd28",
+   "9cdbb01d482901e6",
+   "9f304b551e2c1184",
+   "ac6090fecd0279e4",
+   "b5da6d53f3fd8980",
+   "bb4ccf1bde7c51d4",
+   "be9b984b460beafb",
+   "e7fe9c4af31b832c",
+   "e8145fcaadb0dd6e",
+   "e83c9449240bc71e",
+   "f54657b50c8b6c88",
+   "f809498f4b254328",
+   "fb046fb227e1888e"
+  ],
+  "32": [
+   "7beeed33298cd7a2"
+  ],
+  "48": [
+   "672ebdc6d9f1f9f2",
+   "87eb885fd464b7ce",
+   "8c6c5c237a0d069e",
+   "9f8d681d503a5058",
+   "adf255a34f8acce5",
+   "c17ced0f3fdedf2d"
+  ]
+ }
+}

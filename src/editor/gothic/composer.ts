@@ -360,6 +360,10 @@ export function composeGothicPlace(input: GothicPlaceInput, tileset: TilesetDef)
     if (folly) { const x = 3, y = gy - 2 - folly.h; const k = building("gm-bld-folly", x, y, false, "dirt"); if (k) connect(k.access.map((a) => ({ x: x + a.dx, y: y + a.dy })), "dirt"); }
   }
 
+  // 정문 칸 길 재료는 그 위 진입로와 같게 — 자갈 진입로 끝에 흙 한 칸이 붙으면 문 사이에 갈색 판자처럼 떠 보였다(gemini-4-argon 검수, 2026-10-14).
+  const aboveGate = b.path[(gy - 1) * W + gateMid]!;
+  if (aboveGate > 0) for (let y = gy; y < H; y++) b.path[y * W + gateMid] = aboveGate;
+
   // ── 시작 칸에서 닿는가(골조)
   const reach = (): { seen: Uint8Array; count: number } => {
     const seen = new Uint8Array(W * H);
@@ -505,6 +509,8 @@ export function composeGothicPlace(input: GothicPlaceInput, tileset: TilesetDef)
     scatter(["gm-bench"], 3, (x, y, k) => besidePath(x, y, k) && y >= top, { margin: 1 });
     scatter(["gm-hearse"], 1, (x, y, k) => y > H * 0.55 && x > cx + 2 && besidePath(x, y, k), { margin: 1 });
     scatter(["gm-urn", "gm-sundial"], 2, (x, y, k) => besidePath(x, y, k), { margin: 1 });
+    // 본관 양옆 윗마당은 넓은 빈 잔디로 남았다(gemini-4-argon 검수) — 고사목 숲 덩이를 먼저 둔다.
+    scatter(trees, 4, (x, y, k) => y + k.h <= mainAccessY + 1 && (x + k.w < cx - 6 || x > cx + 5) && offPath(x, y, k), { margin: 1 });
     scatter(trees, 6, (x, y, k) => byFence(x, y, k) && offPath(x, y, k), { margin: 1 });
     scatter(["gm-roses-dead", "gm-bramble"], 3, (x, y, k) => near(x, y, (u) => u === FENCE, 1) && offPath(x, y, k));
     scatter(brush, 8, (x, y, k) => offPath(x, y, k) && below(top)(x, y));

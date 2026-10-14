@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6f506573676e1e9ade9287e316c5e85d93643ad05dbc421fda90115759faf5a7",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "잔잔한 모래(변주 2)",
+ "label": "desert-east/de-sand-c",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sand ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat sand ground tile representing a horizontal terrain surface across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4053
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sand ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing a sandy surface across the entire 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3876
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sand ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile depicting sand texture across the entire 16x16 tile area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3850
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sand ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Tile is a flat ground terrain texture representing sand, covering the full 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3497
+  }
+ ],
+ "decidedAt": "2026-10-14T00:10:56.784Z",
+ "cells": {
+  "16": [
+   "90490407abbed45a"
+  ],
+  "24": [
+   "00b5701da6f0e75f",
+   "8533d1884adbf59b",
+   "918c500882170ec1",
+   "c226245cd9b8e432",
+   "e04456af3bb57bf4",
+   "f1bd45884202aad2"
+  ],
+  "32": [
+   "0da5ad71d03c36a7",
+   "73b644ec23ee932b",
+   "ad4f3f7f9ddfb1a3",
+   "b540a8719429a23e",
+   "d0b02d7add05b8f1",
+   "ed7964d27bdd5552"
+  ],
+  "48": [
+   "0abdbf69a8b60f98",
+   "25c9da1fcaf796b3",
+   "5fa7fbcc75d4a203",
+   "7ef4dd93770f7128",
+   "84e1889711858fbc",
+   "ae6cee949f6c5a88"
+  ]
+ }
+}

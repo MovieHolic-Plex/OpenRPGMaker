@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "50975dc41351d25bc51445c0242ac247c14490dc1597c53c197c02ef3efe06e1",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "노점(도자기·붉은 차양)",
+ "label": "desert-east/de-stall-pottery",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "market stall with striped awning and counter",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The awning slope is visible from above (rows 1-9) and the horizontal counter tabletop surface is clearly foreshortened and visible (rows 18-24) displaying pottery items, above the front wooden face (rows 25-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4419
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "market stall with awning and counter",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall counter shows a foreshortened top surface across rows 19-24 (about 6 source pixels deep) where the ceramics sit, with the south vertical face of the counter extending below from row 25 to 31. The sloped awning is also drawn in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4544
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "market stall counter and awning",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter display surface is shown from above across rows 17-24 (approx 8 rows deep) with ceramics resting on it, above a front-facing counter base on rows 25-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3593
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "market stall (awning and counter with pottery)",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The striped awning clearly shows its sloping top surface (rows 1-10) above the scalloped valance (rows 11-13), and the counter shows a distinct foreshortened horizontal tabletop surface (rows 18-24) above its front vertical panel (rows 25-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5036
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.223Z",
+ "cells": {
+  "16": [
+   "01f6a22ae755a47e",
+   "45e9b7c91e49ef07",
+   "c5fdef7d62b46876",
+   "d83922e5975ce858"
+  ],
+  "24": [
+   "0c0ce20d38931283",
+   "2614bf8300ac8d81",
+   "3651b840eb920913",
+   "4f5ccfed372a037a",
+   "61d30f37c0e7db06",
+   "7e27714f1431bb71",
+   "800f8dac78b865cd",
+   "834e3a52d543d495",
+   "87e444ebc2a298ee",
+   "8abcbad1b0233d90",
+   "9b923bcdd61f679c",
+   "9e9177c923119bef",
+   "9fe33da1144c7664",
+   "a8a3a302f462c80e",
+   "ad362219f9b4133c",
+   "b13a7401372813a2",
+   "bc5f8d729f408fd0",
+   "bcc4f7b8f74018bf",
+   "d830e0de05e41c34",
+   "d960cc91bc75a829",
+   "de07b93eeebd6275",
+   "e207e9d000a3cb7a",
+   "ec52812b67ab5f53",
+   "edba8dc1d883e141"
+  ],
+  "32": [
+   "1cf7358694111c02"
+  ],
+  "48": [
+   "14d721017475023d",
+   "29a07bb63c45ff84",
+   "3b11b05bed99678d",
+   "9ed3d35a38b9fa3b",
+   "a6176a9954ad9309",
+   "f5180864f920279a"
+  ]
+ }
+}

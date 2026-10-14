@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4e65b22744a62bb9a113dd2553c8f3a22ce839adc2b76bc087072c83b216e903",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "그릇 선반",
+ "label": "desert-east/de-shelf-pottery",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pottery shelf (tall shelving unit with ceramics)",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the shelf unit consists only of a 1-2px cap line/highlight (rows 1-2) with no visible receding top surface. Furthermore, the interior shelves and all placed pottery/plates are drawn in a flat architectural front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 7131
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden dish shelf",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shelf is drawn in a pure front architectural elevation. The top beam (rows 0-3) is only a front-facing molding/cornice with no receding top surface, and the interior shelf boards and plates are also viewed entirely straight-on.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7907
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dish shelf / pottery cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the shelf unit has only a 1-2px decorative cornice/highlight bar (rows 1-2) with no foreshortened top surface visible. The frame and shelf planks are rendered in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5841
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pottery shelf unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire shelf unit is drawn in pure front elevation with only a 2px horizontal cornice strip at rows 0-2. There is no visible top surface foreshortened from above, the shelf boards are drawn as flat horizontal lines, and the displayed pottery and upright round plates are seen directly from the front.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6616
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.214Z",
+ "cells": {
+  "16": [
+   "91a650906e16a549",
+   "a668846a23115f99",
+   "c1d77afd6c5c8219",
+   "e4b3cda204618415"
+  ],
+  "24": [
+   "38aef211a1ae0056",
+   "3b0b03119ff15ee9",
+   "401825d1c53e1a91",
+   "531f423195c4b35b",
+   "60a3fa94eeac7bec",
+   "6237763c9453e973",
+   "6328ed17dcbf3353",
+   "69f203b6eb3ed63c",
+   "6c380f4402193b99",
+   "9287f74818259c52",
+   "962da88cc6d4c923",
+   "a04cbb991027d922",
+   "a07e076c5e770172",
+   "a4d25b30becae02f",
+   "a98732b23704da4e",
+   "c25545113aa97e08",
+   "cd79c43163049004",
+   "d3159e44c9083f26",
+   "df69c8eb08127937",
+   "ee92a57887174148",
+   "f6bbc945b8118ce6",
+   "fc35f24bd2634dc1",
+   "fcca64045c8e93c1",
+   "fe3f664ad8239ce2"
+  ],
+  "32": [
+   "f8cd438e2f8c3bad"
+  ],
+  "48": [
+   "3406ef42843b2e34",
+   "38f57ad2367b3ecb",
+   "5663e3341b2b0bed",
+   "64faf45ba1e764a4",
+   "8fafbf4c4aa8f0b1",
+   "e4a57366b0e55246"
+  ]
+ }
+}

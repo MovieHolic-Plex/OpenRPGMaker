@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2f795b480b0a11d6eaf4bbe60cac39a0175ba05fadb341bbfef1fb432cd4a168",
+ "width": 16,
+ "height": 32,
+ "kind": "terrain",
+ "name": "궁전 대리석 벽(금테 뾰족 아치 판)",
+ "label": "desert-east/de-wall-palace",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "palace marble wall section with decorative pointed arch panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Classified as a terrain wall tile depicting a vertical wall face with mouldings and a pointed arch inset, properly drawn flat for front-facing JRPG wall terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5342
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "palace marble wall segment with decorative pointed arch panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a 16x32 vertical wall face terrain tile with top cornice, patterned marble wall face with an inlaid pointed arch niche/panel, and bottom baseboard trim. As a terrain wall surface, it correctly depicts the vertical wall plane in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6035
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "palace marble wall face with arched niche panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Classified as terrain (wall face). Standard RPG Maker 3/4 view wall tile with horizontal decorative moldings and a vertical arch panel facing south.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3622
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "palace marble wall face with pointed arch panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall face terrain tile with decorative moldings and a gold-framed pointed arch niche; as a standard JRPG wall surface, no top surface is expected.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4483
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.211Z",
+ "cells": {
+  "16": [
+   "5d97b1fa0444c947",
+   "bde7214f9545f705"
+  ],
+  "24": [
+   "304c6187f671ef42",
+   "34470986c17f4de7",
+   "79b703ec557ab7e0",
+   "8aadfceb3f035992",
+   "92b4c69d091bae02",
+   "b66d0a9d7920108a",
+   "c0426cc8fe2edf31",
+   "c7aa514542a82239",
+   "cc87eadf2002658d",
+   "da21a38eeb28e426",
+   "eafae7e818b65600",
+   "f2375d35f669b2e7"
+  ],
+  "32": [
+   "07df8fe133d21e66",
+   "539380482ffc5454",
+   "7d36d5df30b104c8"
+  ],
+  "48": [
+   "167406d7308c7f78",
+   "2ca30b4eac3b9bce",
+   "6f7ff12ab7506a1f",
+   "7766bd0badb7aa45",
+   "7df1bea6f2f9c41a",
+   "d4a168bf95444d97"
+  ]
+ }
+}

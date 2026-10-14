@@ -88,7 +88,6 @@ const ri = (rng: () => number, a: number, b: number): number => a + Math.floor(r
 
 type Use = "sky" | "grass" | "edge" | "under" | "path" | "plaza" | "field" | "cloud" | "water" | "bridge" | "bld" | "prop" | "deck" | "floor" | "wall" | "void";
 interface Rect { x: number; y: number; w: number; h: number }
-const WALKWAY: readonly Use[] = ["path", "plaza", "bridge", "deck"];
 
 class Board {
   readonly lower: number[];

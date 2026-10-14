@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "30c7f3de1c580700b22374f6f489fef2230d046643bb8c6bb057cd01be0a263f",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "오벨리스크",
+ "label": "desert-east/de-obelisk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pillar shaft / obelisk body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the obelisk ends in a completely flat 1px edge at row 1 with no foreshortened top surface visible. The upper light-colored block with the yellow gem is rendered as a front vertical face, making the main shaft a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8060
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "obelisk / column shaft",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The obelisk is drawn in pure front elevation with only a 1px outline at row 1 where its top surface or pyramidion should be visible from above. The gem-inlaid upper section and banded shaft face forward with no foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11150
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "shaft/head of the obelisk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The column shaft and its top headpiece are drawn entirely in front elevation with identical left-to-right cylindrical/faceted shading. The top of the object terminates at row 1 in a flat 1px horizontal outline with no top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10709
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "shaft and capital/head of the obelisk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main shaft and decorative head (rows 1-8, with column shading and a front-facing yellow gem) are drawn in a flat front elevation. The top edge is a single 1px outline (row 0) with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7764
+  }
+ ],
+ "decidedAt": "2026-10-14T00:52:31.175Z",
+ "cells": {
+  "16": [
+   "43e135e08bcf6f9a",
+   "5335a7bfab39ab92",
+   "d354bf8d7d3469ff"
+  ],
+  "24": [
+   "137f9250488c6cdc",
+   "50d45d212bba1f83",
+   "514b29a8f1dd05ba",
+   "6dab6883f18fcb98",
+   "e2531403990b862a",
+   "f4c6822ab9684096"
+  ],
+  "32": [
+   "061f3c90136e0e1b",
+   "0f98f796bac0ec0c",
+   "1fdecbe3eb714aa5",
+   "296adfef169d377e",
+   "385691e239f68d5b",
+   "5546ea5c25e35db4",
+   "af9a64c377e0e8e3",
+   "c66d021d68d0723c",
+   "d5671b045e0baa2a",
+   "eeeeccc38b06bbbc",
+   "eefea2447369fea3",
+   "f052429e9d66410e"
+  ],
+  "48": [
+   "20cb9de9e0926320",
+   "ad3d8b693ba62779",
+   "fe153dbd6dbbdbb0"
+  ]
+ }
+}

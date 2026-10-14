@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bd1159f2dc3ec3c835a3c0593d916468693afec464e05eeb4c68a1ae5dcc170a",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "알로에(가시 풀)",
+ "label": "desert-east/de-aloe",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "spiky plant / aloe clump",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The plant is drawn as a flat 2D silhouette/side elevation with vertical blades rising from a flat horizontal base bar (row 14), with no top surfaces, foreshortening, or top-down depth visible.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6868
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "aloe plant cluster",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The plant is drawn as a flat 2D side/front elevation with vertical stalks rising from a flat horizontal base line (row 14), with no ground footprint depth or foreshortened top surfaces visible from above.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5465
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "aloe plant / thorny bush",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The plant is drawn in pure 2D side/front elevation rising vertically from a flat baseline at row 14, with no top-down perspective showing the radiating rosette structure or depth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4519
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "aloe plant / thorny grass clump",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The plant is drawn entirely as a flat 2D side silhouette with all leaves spreading in the vertical 2D plane and a flat base line at row 14, lacking any 3/4 downward-facing leaves or foreshortened depth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5121
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.222Z",
+ "cells": {
+  "16": [
+   "2e89a68a58aae58a"
+  ],
+  "24": [
+   "15d8e728783cb27a",
+   "19cd2dc36e83837c",
+   "2847d912c0c91560",
+   "53e29268e30bbebb",
+   "6b85294a20f40ad1",
+   "9a2143323c806ede"
+  ],
+  "32": [
+   "6342c8ca8f8704c9",
+   "ae5faf0fe7db61e0",
+   "b6c853e6f7a1c7b6",
+   "c6ab3feb5a2630a9",
+   "ce5a179b59fb749b",
+   "d23257b0a57262d1"
+  ],
+  "48": [
+   "1e8a4cd452b75d2b",
+   "7bade4faf14a4aa1",
+   "7be66e394a224b79",
+   "860e88de5c10eb79",
+   "a612b2d77aa23571",
+   "b0b7a96c091f194b"
+  ]
+ }
+}

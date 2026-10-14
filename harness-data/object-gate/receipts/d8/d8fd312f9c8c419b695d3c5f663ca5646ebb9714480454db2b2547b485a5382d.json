@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d8fd312f9c8c419b695d3c5f663ca5646ebb9714480454db2b2547b485a5382d",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "사암 기둥(머리돌)",
+ "label": "desert-east/de-column",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sandstone column",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The column capital, shaft, and stepped base are all drawn in pure front elevation with no visible horizontal top surfaces (0 top rows) shown in 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7036
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sandstone column",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The column is drawn in pure architectural front elevation: the capital (rows 1-11) shows its front face and collar directly facing the camera with no foreshortened top surface visible, and the base (rows 40-47) is composed of flat front-facing rectangular blocks with no horizontal planes exposed to the 3/4 camera view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6238
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sandstone column",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The column is drawn in pure front elevation: both the capital, shaft, and base show only front faces with no foreshortened top surfaces or cut faces visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6603
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sandstone column with capital and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The column is drawn in pure front elevation. The capital at the top curves upward and shows no top surface or cut face visible from the 3/4 overhead perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7485
+  }
+ ],
+ "decidedAt": "2026-10-14T00:27:26.539Z",
+ "cells": {
+  "16": [
+   "0c6882fa84191387",
+   "4026f140ae7531e3",
+   "be24fd5e9a5bf4be"
+  ],
+  "24": [
+   "3cc7f640a5fbbcd2",
+   "8141702b15205e62",
+   "aba75075d8653645",
+   "d25181b60477e4c5",
+   "f302adceb9cbd8b5",
+   "ffefc8494d0b76d8"
+  ],
+  "32": [
+   "021ae4c9222d4316",
+   "0d94fb970a92f962",
+   "18c09fbd751e77c4",
+   "2f95427ed6fc50c1",
+   "355ffed97b72209c",
+   "45ca6573ac65896f",
+   "5d7876f4f546aa42",
+   "609a921eabb5c03e",
+   "9d418a22b538ec7e",
+   "a06d961da427d2fd",
+   "b188a918dc1498f8",
+   "c95b40e07bbbee6c"
+  ],
+  "48": [
+   "0496d6e53f20b15b",
+   "6479456598bee842",
+   "eea12cc236520eea"
+  ]
+ }
+}

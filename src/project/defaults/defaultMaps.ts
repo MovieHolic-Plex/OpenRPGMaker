@@ -42,6 +42,8 @@ const BUNDLED_PLAIN_GROUND_TILES: Record<string, number> = {
   scarloxy_chipset_grassland: 0,
   scarloxy_chipset_wilds: 0,
   atlas_biome_interior: 258,
+  // 사막·동양풍: 순수 모래(de-sand) — 반복 이음선이 없는 바닥 칸.
+  desert_east: 1,
 };
 
 type BlankFillTileset = Pick<TilesetDef, "tileMeta">;

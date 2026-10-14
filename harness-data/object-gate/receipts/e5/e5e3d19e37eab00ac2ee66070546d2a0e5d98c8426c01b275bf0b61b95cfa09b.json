@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e5e3d19e37eab00ac2ee66070546d2a0e5d98c8426c01b275bf0b61b95cfa09b",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "사암 기둥(머리돌)",
+ "label": "desert-east/de-column",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sandstone column with capital and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The column and capital are drawn in flat front elevation with no visible top surface (0 rows of top visible above row 2's single-pixel outline). The top abacus and base plinth show only their front faces with flat horizontal outlines.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8836
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sandstone column with capital and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire column (capital abacus, fluted shaft, and base plinth) is rendered as a flat 2D architectural front elevation with no visible top surface at the capital or base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8045
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sandstone column",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The column is drawn entirely in architectural front elevation. The capital (rows 2-9) shows the flat vertical front of the abacus and echinus with no foreshortened top surface visible (only a 1px outline along row 2).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8171
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sandstone column",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The column is drawn entirely as a 2D architectural front elevation. The capital block at rows 2-5 is drawn completely flat from the front with a 1px brown top outline (0px top surface visible), showing no foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6578
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.227Z",
+ "cells": {
+  "16": [
+   "2fd2d9f00b164a9f",
+   "4b3dab09adb49812",
+   "be24fd5e9a5bf4be"
+  ],
+  "24": [
+   "7bf1ee8b7afd271b",
+   "7f9b5653d1120924",
+   "8602637cfd7259f7",
+   "90b1b7bed6e0e21e",
+   "96eaffdc723ac90e",
+   "a495da3f4b808325"
+  ],
+  "32": [
+   "18713af9a8c053c6",
+   "3d5f5633d66e0a06",
+   "6ad90dddfe856549",
+   "75f962f52720e568",
+   "929c9d8f1e2f810b",
+   "9f3a637e85afe4d0",
+   "c64acea891291c01",
+   "d2c9141b2af50bb9",
+   "d453330dae60608f",
+   "d8940456d855b2dc",
+   "f3ff5429b9f4b8ed",
+   "f7509e3ad8c7036f"
+  ],
+  "48": [
+   "3fee8e4d9913d7bb",
+   "9319a162b1acd17b",
+   "bffdd59eece85927"
+  ]
+ }
+}

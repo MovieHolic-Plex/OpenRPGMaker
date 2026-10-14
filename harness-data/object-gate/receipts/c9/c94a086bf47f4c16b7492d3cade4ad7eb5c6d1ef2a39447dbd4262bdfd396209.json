@@ -1,0 +1,129 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c94a086bf47f4c16b7492d3cade4ad7eb5c6d1ef2a39447dbd4262bdfd396209",
+ "width": 32,
+ "height": 16,
+ "kind": "container",
+ "name": "돌 물통(구유)",
+ "label": "desert-east/de-trough",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "아가리 2행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water trough",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening of the trough with blue water inside is visible across rows 5-6, bordered by the rim from rows 3-7, while rows 9-13 form the vertical front face with post details.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 2행 < 4"
+   ],
+   "ms": 7137
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rectangular water trough",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The trough top is clearly visible from rows 2 to 8, showing the surrounding rim and an interior basin with water on rows 5-6 (2 rows tall), while the front face extends from row 9 to 13.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 2행 < 4"
+   ],
+   "ms": 6419
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water trough",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface and opening of the trough are clearly rendered from row 3 to 7, with water and the interior visible across rows 4–6, above the south front face.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 6171
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water trough",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The trough clearly shows a top-down opening at rows 5-6 filled with water, enclosed by rims, sitting above the south-facing front wall (rows 9-13).",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 2행 < 4"
+   ],
+   "ms": 5124
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.223Z",
+ "cells": {
+  "16": [
+   "7687494a2da7e9f9",
+   "77ea33500c54934f"
+  ],
+  "24": [
+   "1976c2905e3bcb99",
+   "1b33efc85dafbd5b",
+   "21c0d44f1566e1d4",
+   "33d58a0ac88a757f",
+   "4b9c2a0b4ce6d8f6",
+   "724715f27743fe3e",
+   "881b4cb4c0b535ac",
+   "b004c81fa3b84552",
+   "b556c91e41449c97",
+   "c4a7fa7d8d809a31",
+   "da55de670be69359",
+   "df68da0828925601"
+  ],
+  "32": [
+   "a66c6cf349e2c20d",
+   "f27153a65f9bce66"
+  ],
+  "48": [
+   "2c3352086304e619",
+   "43a790903877f9bc",
+   "6df33cd53c7f3f1e",
+   "b505577a6b6ffb9e",
+   "c17612edea7b67a0",
+   "e765727494831d43"
+  ]
+ }
+}

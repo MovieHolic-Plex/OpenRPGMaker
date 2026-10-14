@@ -1,0 +1,138 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "09d36f0b9f9ee429ebd3722cd1b59c3601f6e9001e87374fa6722c0828289ddb",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "작은 피라미드",
+ "label": "desert-east/de-pyramid-small",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "step pyramid",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each tier of the step pyramid clearly displays both its horizontal top surface/tread (6–7 pixel rows deep in light tan) and its south-facing vertical riser (5 pixel rows tall in darker brick texture), demonstrating correct 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9661
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stepped pyramid tiers",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each tier of the stepped pyramid clearly displays a 12-row horizontal top surface (rows 6-17 for the top tier, rows 18-29 for the middle tier, rows 30-41 for the base tier) above a 5-row south-facing front wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9587
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stepped pyramid tiers",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each tier clearly displays both its vertical front face (dark brown brick risers) and a deep top horizontal surface (light tan treads, with the top platform measuring 12 pixel rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7137
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "step pyramid with three tiers and a golden capstone",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each tier correctly displays both its horizontal top tread (top platform is 12 rows tall, lower step treads are 6 rows tall) and its vertical south riser face (6 rows tall with brick texturing) in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8950
+  }
+ ],
+ "decidedAt": "2026-10-14T00:36:52.141Z",
+ "cells": {
+  "16": [
+   "12d9efe38185a2c8",
+   "14a119837eeebc3d",
+   "31dd9b0ffabde2dd",
+   "571c2589a3cacbf9",
+   "67a8ecddaee5ef02",
+   "9b1d7479956415f1",
+   "b72808e0e06f3e95",
+   "dcef664c9c4f7930",
+   "de547aa082615863",
+   "fb7a8a835702784e"
+  ],
+  "24": [
+   "165d8241d57345d6",
+   "49b0a0e4d496836d",
+   "594297f5b2b42965",
+   "5ff72cbb20b517f7",
+   "6610e0d247460c2c",
+   "684494e2377c985b",
+   "8a4a55e5c9100b39",
+   "a73078aaac1065d5",
+   "ade0a4c207e00a44",
+   "b8c4c71b737676f0",
+   "ba517306ef49076b",
+   "e0ec70ad8b2cb5e7",
+   "eb9d9e47651e1b4d",
+   "ec3debb8098de2c0",
+   "ecb01505ec814fbf",
+   "efee53e5d26db831",
+   "f1aa400f9018fdd8"
+  ],
+  "32": [
+   "3678c55ce0c2d9ad",
+   "38a2b5c4cf8609fb",
+   "5110b3f3b699586d",
+   "63060b679edd93b2",
+   "956de3792eddb5d7",
+   "bd04bfa71a2c4d63",
+   "d81c7281c9d1f973",
+   "e98a698e16c625e5"
+  ],
+  "48": [
+   "2c85c31a0bde75de",
+   "52a65aa15f261d5d",
+   "9ed16e6eaf840561",
+   "ac6f9ff323b7e974",
+   "dca4318a0aa4e6d3",
+   "e9017e49d7a4af3d"
+  ]
+ }
+}

@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "08f6b9b4d33cd84712ded2c9006d77c33cf77d05e6477977ed837655cfb457e2",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "놋쟁반 찻상",
+ "label": "desert-east/de-tea-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brass tray on tea table",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brass tray forms a clear foreshortened ellipse spanning rows 1 to 9, visibly showing its horizontal surface upon which the teapot and teacups rest from a 3/4 top-down angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7101
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tea table with brass tray top",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brass tray tabletop spans rows 1 to 9 (approx 8 rows of foreshortened horizontal surface) holding a teapot and cups, sitting atop the front-facing wooden legs and apron (rows 10-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5538
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tea table with brass tray",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brass tray table shows a clearly foreshortened top surface spanning rows 1-2 down to row 9 (about 7-8 pixel rows deep), holding a teapot and cups, with the table apron and legs extending downwards below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5592
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tea table with brass tray and tea set",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brass tray table surface is seen from above spanning rows 1-9 (approx 8 rows deep) displaying a teapot and cups, while the wooden apron and legs form the south front face below at rows 10-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6070
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.213Z",
+ "cells": {
+  "16": [
+   "033a45f5530b3aee",
+   "c67bbdd61369e6ef"
+  ],
+  "24": [
+   "10110a88801e1ae8",
+   "148b45b07fea916c",
+   "369ca7b7d5239262",
+   "454acb0b84aa4548",
+   "76dfba40d73b638e",
+   "7857fd9647bad881",
+   "8e392cd7382e1ca3",
+   "8e415da95571564c",
+   "9a222ac2c818a0c2",
+   "a75debdd718df560",
+   "d4b3ff588025934c",
+   "f76eff72823a5d2f"
+  ],
+  "32": [
+   "5259f29745f134d1",
+   "ea1b0e938b2ec4ca"
+  ],
+  "48": [
+   "413fc7fe3945cfb8",
+   "563f60d3b05f9b91",
+   "5b9a88dc05aa1373",
+   "90071a7e1ea87897",
+   "a314dafaa04c0198",
+   "ae832ec49cb7da37"
+  ]
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b326756d07636d8c34dbf0ba02550ad5dcf620bff4a583cb8e58a859380caba2",
+ "width": 16,
+ "height": 32,
+ "kind": "terrain",
+ "name": "사암 마름돌 벽",
+ "label": "desert-east/de-wall-stone",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sandstone ashlar wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile designed for vertical wall segments in standard top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7115
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sandstone ashlar wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall face terrain tile with sandstone masonry pattern, correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5745
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sandstone ashlar wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Sandstone ashlar wall face tile. As a 2D wall face terrain texture rather than an isolated standing object, it correctly depicts the vertical front surface of a wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6037
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sandstone ashlar wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain wall-face tile consisting of ashlar sandstone blocks stacked vertically, designed to tile as a wall surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6924
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.211Z",
+ "cells": {
+  "16": [
+   "311250b80c66cd5f",
+   "554b397190e81dd7"
+  ],
+  "24": [
+   "0c6099ed0a5918e9",
+   "7ac3789c9d32817b",
+   "7d0b82502fb950e7",
+   "84372e335d32a9c6",
+   "9d769b0eed6221c0",
+   "aa419e2887dd5198",
+   "bae736741c494d08",
+   "bebe3ff630cf3185",
+   "bec715d5fd33e19c",
+   "bf82fe7cb23e3288",
+   "ddee5d79ed62d80b",
+   "de59abc9510de68d"
+  ],
+  "32": [
+   "03b08f26a4fd1552",
+   "5ab487274af0f958",
+   "69e302caa83b6cc2"
+  ],
+  "48": [
+   "4963c1de3d1a0fdf",
+   "5bb47cf68e1fb806",
+   "71f86f23ab6532b0",
+   "854d07461e106ac2",
+   "e4f16c5e43a7379f",
+   "f6f5d0e2077fdc1b"
+  ]
+ }
+}

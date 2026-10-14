@@ -1,0 +1,210 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2060251478c97d5ddc8ddfd60a4b454165581af221b5c4c4b93cbbdb5d42c9f0",
+ "width": 64,
+ "height": 64,
+ "kind": "structure",
+ "name": "성문(아치 통로)",
+ "label": "desert-east/de-wall-gate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "castle gate archway structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire gate structure is drawn as a flat architectural front elevation with no visible top surface, rampart floor, or lintel depth seen from above (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6100
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "castle gate arch wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate wall, battlements/cornice, decorative tile frieze, and archway are drawn entirely in flat 2D architectural front elevation. The archway has no visible inner soffit or receding barrel vault, and the top of the wall shows no horizontal walkway surface (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7069
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "city gate with archway",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate is drawn entirely as a 2D flat architectural elevation. The upper tier and lower brick wall are completely vertical front faces with no visible top surface, roof slope, wall-walk, or cornice top (row 0 terminates in a 1px outline). The archway also lacks any foreshortened interior soffit/ceiling depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12840
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone arch gate and wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate wall and upper parapet are drawn entirely in flat front elevation with horizontal decorative bands and vertical brick patterns. There is no visible top surface or thickness to the wall/lintel.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5614
+  }
+ ],
+ "decidedAt": "2026-10-14T00:12:08.964Z",
+ "cells": {
+  "16": [
+   "10a39f2181adc7b4",
+   "13ba6dd486e5a136",
+   "30106329628a85a1",
+   "3a8e90fe60817155",
+   "534431080a71bcd7",
+   "5c5afa00cce6bdef",
+   "61b48a7dbaacffe6",
+   "6415462e53a54dd6",
+   "a2a5ad4e43ee3821",
+   "b344711d4ef20fea",
+   "d1e5639fe1cefc08",
+   "d5062451905c2ba6",
+   "dfa3b1b7941becb0",
+   "f213fb5c0589472e"
+  ],
+  "24": [
+   "00a8fbdbb03a06f3",
+   "02cbef5f54c79ebd",
+   "07f605c03c0de42f",
+   "16d4a41ecbe068a5",
+   "1924968cc04c4b9d",
+   "21ac6aed903c491d",
+   "28ceba470e3f0aea",
+   "2967a2210e91726b",
+   "2c902b756d620a51",
+   "2cd007edab43f276",
+   "32112b773a85bbad",
+   "325207fdadf9a6ae",
+   "34841000e73641d7",
+   "3602d6d063177edc",
+   "384626766f59a4f5",
+   "4106bdfed74b8283",
+   "50a1f1fee65adf3a",
+   "546875942957c0b4",
+   "550f56af00f3bd34",
+   "5666a5fa6b838eb1",
+   "57eaa7fa5290e265",
+   "679ae5310a397b13",
+   "6be9fcea404ae1af",
+   "71f62adda1658c4b",
+   "743b94a67cae8f87",
+   "7580fd33a7d7b9a4",
+   "76411bb1fa83e5a5",
+   "78e76f399598844e",
+   "836e690f0a340330",
+   "85a981f72e722d3b",
+   "8ab97d036d6bce58",
+   "8e090493aee83d34",
+   "945cf9fcf8affdbc",
+   "9d47cced3cd184e7",
+   "9ecb1f3ae8a7232c",
+   "a8f6de21bdff0aa6",
+   "aa4dc8b579055fdc",
+   "aa581c1c1d13297e",
+   "aa8b6871cb6d3080",
+   "c8b8f2cbd9e829a7",
+   "c903647f5dcf0bc4",
+   "cc557fcf1eba279b",
+   "d1672a6c12162187",
+   "d1f8f56666c61249",
+   "d2af655c0fed8784",
+   "e1246a0cc8e1e160",
+   "e83ee7d84a405436",
+   "f24edcd29d50db34",
+   "fc25ff219a8130c8",
+   "fcc08211c88975f7",
+   "fe3de2797f1fd477"
+  ],
+  "32": [
+   "5f34bd27b071757a",
+   "68f0edd83276d0ed",
+   "ccb75e9dc97ff17d",
+   "cebb6a0d7af5f866"
+  ],
+  "48": [
+   "05e79170e3d48819",
+   "28cf6dd97b6478f8",
+   "28d3c00c2dd0f50e",
+   "2d24ea6c6efa80a4",
+   "34a0fe96585fba38",
+   "389abeb6b92ef854",
+   "3e49e74c28dbcbb8",
+   "4068835b3f7e79f6",
+   "46b8773df118551d",
+   "52bca7411b336ac5",
+   "612b3515fc873c05",
+   "69298e2d400f994c",
+   "84282172f53de5ca",
+   "9e7a3b9a7d7d00e9",
+   "a626cf23f91faca5",
+   "a8c40289fec6efe2",
+   "cb2e8f0a765ec1de",
+   "cd5f87278464b29e",
+   "d18dee3dddbe2708",
+   "d3c01198c55a1694",
+   "dd981c5d1bfb52b3",
+   "e1d654afdd0cb5c2",
+   "e5c2d89ec98122ee",
+   "f6e8d7d8079e0266"
+  ]
+ }
+}

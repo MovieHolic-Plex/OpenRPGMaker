@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3950e93bb119e834f72bff43b83e2934dbd54b5bcef6d0c1d49da81fdfe9b4f1",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "부러진 기둥",
+ "label": "desert-east/de-column-broken",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "broken column shaft",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The column shaft and base are drawn entirely in front elevation. The vertical shading and fluting continue straight to the top contour without rendering a foreshortened top cut face or cross-section visible from above, and the base also lacks any visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6487
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "broken pillar shaft and base plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The broken pillar's top is drawn as a rounded dome/front-facing break with vertical cylindrical shading rather than a foreshortened cross-section or top surface seen from above (0 top rows). Additionally, the base plinth is drawn as a flat front-facing rectangle with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7249
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "broken pillar shaft",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The broken top surface/cross-section of the pillar is clearly visible from rows 7 to 11 (approx. 5 pixel rows) with exposed rebar/debris protruding from row 4 to 6 above it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6022
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "shaft and broken top of column",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The broken cut surface at the top of the pillar is foreshortened and clearly visible across rows 7 to 11 (approximately 5 pixel rows) with interior surface detail and crack shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6606
+  }
+ ],
+ "decidedAt": "2026-10-14T00:27:26.539Z",
+ "cells": {
+  "16": [
+   "6be5754716f908e4",
+   "c42c934740dadaf0"
+  ],
+  "24": [
+   "1dea050c15c62025",
+   "4c2c668ac988e38f",
+   "52114077fae0749a",
+   "5ccd517a7afa94c9",
+   "5d07437c613fef43",
+   "66620e0771bbde86",
+   "6c14f0878f85ad26",
+   "7271bdb47240b83a",
+   "9fac14cfd7293612",
+   "bd1ad75020bf5006",
+   "c3317c88190fad81",
+   "e19b3affdb2720be"
+  ],
+  "32": [
+   "64e84b6cd2108c99",
+   "98dd2435d6491ea2",
+   "a8c267066872bd9d"
+  ],
+  "48": [
+   "31191ff559f54937",
+   "80d65457a654e658",
+   "eca8a912ec4bc858",
+   "eec772016dacb8a6",
+   "f68dce271f8abe4f",
+   "fcf3e6410fa6f55a"
+  ]
+ }
+}

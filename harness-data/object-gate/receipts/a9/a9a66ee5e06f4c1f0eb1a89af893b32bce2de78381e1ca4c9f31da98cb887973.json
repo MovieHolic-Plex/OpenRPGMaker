@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a9a66ee5e06f4c1f0eb1a89af893b32bce2de78381e1ca4c9f31da98cb887973",
+ "width": 48,
+ "height": 32,
+ "kind": "box",
+ "name": "대상 짐수레",
+ "label": "desert-east/de-cart-camel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden wagon/cart body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire wagon is drawn as a flat side elevation: circular wheels face the camera directly, and the cargo area shows no foreshortened top surface or interior depth from above (top rim is only 1-2px thick).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4513
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cargo cart / wagon bed",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cart is drawn in pure 2D side elevation (side-scroller view). There is no visible top surface anywhere on the wagon rim (only a 1-2px outline), and none of the cargo inside (crate/shelves, sacks, red package) has a foreshortened top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 11382
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "covered merchant cart / wagon",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cart is drawn as a flat side-scroller/architectural elevation. The top roof beam has no visible horizontal top surface (0px beyond a 1px outline at row 2), and the interior goods (shelving, sacks, package) and circular wheels are all depicted straight from the side without 3/4 top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 13008
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cargo cart body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cart is drawn in pure side elevation: the wheels are completely round (13x13 px circle), the side panel and cargo interior are viewed straight-on, and the top rail is only a 2px outline with zero visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5617
+  }
+ ],
+ "decidedAt": "2026-10-14T00:33:14.417Z",
+ "cells": {
+  "16": [
+   "4db5726eed233480",
+   "82c520a4ad322ac1",
+   "89b6b84d5ca18b66",
+   "a581a313e032e352",
+   "a9025aa0cb28630e",
+   "ac7631a9e871d100"
+  ],
+  "24": [
+   "0e89267fb78f8c33",
+   "72baadd9996568ad",
+   "c36511881e156db6",
+   "d20298eedd5692ad",
+   "d30270fe367e936c",
+   "d8899f36aaddb1e2",
+   "dc0c7bc66a56b538"
+  ],
+  "32": [
+   "265fb9dc361f0830",
+   "58306df8f2cd3968",
+   "8c1e28dec1db5a59",
+   "94ad22c3159c05e8",
+   "a41b8e2d55a40d46",
+   "b720e40278d236b7"
+  ],
+  "48": [
+   "628a96ca068c9bef",
+   "b5b4544f50d93e9d"
+  ]
+ }
+}

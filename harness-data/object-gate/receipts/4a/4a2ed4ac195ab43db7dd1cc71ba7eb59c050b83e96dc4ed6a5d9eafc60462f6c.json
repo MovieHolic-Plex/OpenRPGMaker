@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4a2ed4ac195ab43db7dd1cc71ba7eb59c050b83e96dc4ed6a5d9eafc60462f6c",
+ "width": 16,
+ "height": 32,
+ "kind": "frame",
+ "name": "이정표(무늬 없는 판)",
+ "label": "desert-east/de-signpost",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "signpost with directional boards and base",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both directional sign arms clearly show light-toned horizontal top surfaces (2-3 rows each) above their darker south faces, and the base block shows a 4-5 row top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6646
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "signpost with directional boards and top sign",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top sign (rows 1–6) is drawn as a flat front-facing square with a 1px border and no visible top surface. The post and horizontal signboards are rendered in pure front elevation without standard 3/4 top-down foreshortened top planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8986
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "signpost with directional boards and base",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The directional boards and base show clear foreshortened top surfaces (3 rows of light-colored top surface on the left board, 4 rows on the base) combined with vertical front faces, rendered correctly in 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5566
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "signpost with directional boards and base",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The directional sign boards show clear horizontal top surfaces (2-3 rows each) above their front faces, and the base plinth also shows a 4-row deep top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6208
+  }
+ ],
+ "decidedAt": "2026-10-14T00:27:26.539Z",
+ "cells": {
+  "16": [
+   "441fe8e01b21b1e4",
+   "f57676cc43bc7bf1"
+  ],
+  "24": [
+   "0feb07573e71f6a0",
+   "10888d96ebb38f6e",
+   "204d59d70d211fff",
+   "272248f6f2c7c44f",
+   "4eff3a57b6175904",
+   "5fc955949c68f105",
+   "73a57a1187c396bb",
+   "8b30029f4eed4c99",
+   "929452919e61efac",
+   "a9a6a1ad9da02ab6",
+   "ac4a8912786ccf87",
+   "ba8bbe2b5c44641b"
+  ],
+  "32": [
+   "0af530ebc12a28c3",
+   "3af1347cb43affee",
+   "4daf407519427373"
+  ],
+  "48": [
+   "31e92286789908ef",
+   "42de2a8c9638341a",
+   "50aa40b35c75bf81",
+   "731bbe6b16bc37c0",
+   "9a46b48662a1f9db",
+   "d20789e782d45570"
+  ]
+ }
+}

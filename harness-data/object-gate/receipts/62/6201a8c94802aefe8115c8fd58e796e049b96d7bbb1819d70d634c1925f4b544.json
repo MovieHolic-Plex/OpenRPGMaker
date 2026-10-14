@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6201a8c94802aefe8115c8fd58e796e049b96d7bbb1819d70d634c1925f4b544",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "수놓은 바닥 방석",
+ "label": "desert-east/de-cushion",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floor cushion",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The embroidered top surface of the cushion is clearly visible from rows 2 to 11 (10 rows), with the south front edge/thickness visible at rows 12-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5354
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "floor cushion",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cushion's embroidered top surface is clearly visible from rows 2 through 11 (approx. 10 source pixel rows), with the south-facing front thickness visible at rows 12-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4253
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "floor cushion",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the embroidered cushion occupies rows 3 to 11 (9 rows), clearly shown from above, with a 3-row front thickness visible at rows 12 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4040
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "floor cushion",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The embroidered top surface of the cushion is seen foreshortened from above across rows 3-11 (9 rows), delineated by corner ornaments, with rows 12-14 depicting the front thickness edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5369
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.213Z",
+ "cells": {
+  "16": [
+   "f7a52d196bab0cdb"
+  ],
+  "24": [
+   "34d853481f588a7b",
+   "566bff2c1e2f0ae7",
+   "85ed6c10f051681f",
+   "afc2970b42cad157",
+   "d2259e5a79f4beb4",
+   "f831e56a7b23c0f9"
+  ],
+  "32": [
+   "04b2f62246cd36d5",
+   "216bd846511a5121",
+   "5d978adb6f640155",
+   "695481e12cc8024b",
+   "70e738e6fd28b558",
+   "f75f07999381cac3"
+  ],
+  "48": [
+   "309d2257b87aedf7",
+   "7205d24b17f32365",
+   "7b71e03b39e016ee",
+   "8a4364c801fb1345",
+   "9004bf4949f2c2b1",
+   "d0f9a6a3d9e05d6a"
+  ]
+ }
+}

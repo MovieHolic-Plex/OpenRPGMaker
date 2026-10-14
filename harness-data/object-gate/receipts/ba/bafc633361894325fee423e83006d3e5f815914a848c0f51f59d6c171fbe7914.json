@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bafc633361894325fee423e83006d3e5f815914a848c0f51f59d6c171fbe7914",
+ "width": 16,
+ "height": 32,
+ "kind": "terrain",
+ "name": "회칠 벽(나무 격자 창)",
+ "label": "desert-east/de-wall-window-plaster",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "plaster wall with arched wooden lattice window and tiled wainscot",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile depicting a south-facing interior or exterior plaster wall with a wooden lattice window and tiled wainscoting.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5283
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "plaster wall face with lattice window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall face terrain tile depicting a plastered wall with wooden lattice window and lower decorative tile pattern.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6249
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall face with window and tiled lower section",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting a vertical wall face with a wooden lattice arched window and tiled wainscoting.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5733
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "plaster wall face with wooden lattice window and tiled wainscot",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile showing a plaster wall with an arched wooden lattice window, top wooden beam, and decorative lower tile paneling.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5247
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.211Z",
+ "cells": {
+  "16": [
+   "2389e462ac1d601d",
+   "8af03aad78ce71ee"
+  ],
+  "24": [
+   "09ca6950cbb061b3",
+   "254a9f1f39ef66a2",
+   "2c74df12ab86a099",
+   "37627fa845c79db8",
+   "3c6d73c4055c7ca3",
+   "3d74333b9cae7368",
+   "67f975a4cadf03e8",
+   "844e07d9d81e7e8e",
+   "a417c00c4ca0d25a",
+   "cf57528aefb842ae",
+   "e250ea62e1c864f0",
+   "eaa2aaa8ec1cbbb4"
+  ],
+  "32": [
+   "244c12d77f4a22e0",
+   "a4963ad1b4a7ade3",
+   "f26fd54f82600b95"
+  ],
+  "48": [
+   "315f9750c7b6d484",
+   "9ca2517a9cc7a50b",
+   "d6401356b987f36f",
+   "dc583ec2197be1a8",
+   "e5b0e91b320c8dbd",
+   "f80d6badf58487a1"
+  ]
+ }
+}

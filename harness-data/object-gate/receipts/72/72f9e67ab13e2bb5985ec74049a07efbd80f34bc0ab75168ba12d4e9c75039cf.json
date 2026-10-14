@@ -1,0 +1,145 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "72f9e67ab13e2bb5985ec74049a07efbd80f34bc0ab75168ba12d4e9c75039cf",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "무너진 아치 문",
+ "label": "desert-east/de-ruin-arch",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ruined stone arch and pillars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ruined arch and supporting pillars are drawn entirely in flat 2D front elevation with 0px of visible top surface or soffit depth. The top edges of both pillars and the arch end in single-pixel outlines with no top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14674
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ruined stone archway",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The ruined arch displays a clearly visible top surface along its upper rim (rows 3–7, up to 5px tall) as well as horizontal wall-top planes on the pillar segments (rows 6–15, 10px tall), confirming the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14654
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ruined stone arch gate with two pillars",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both pillars feature horizontal top wall surfaces spanning rows 5-15 (11 pixels tall), and the surviving broken arch stones also display their top surface at rows 3-7 (4-5 pixels tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9628
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ruined stone archway and pillars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The structure is drawn as a flat 2D architectural front elevation. The continuous vertical edge highlight along column x=32 confirms rows 5–15 are part of the south-facing front facade (a decorative frieze), not a top surface. Neither the pillar tops at row 5 nor the arch show any depth or horizontal surface visible from above (0px top surface).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 24235
+  }
+ ],
+ "decidedAt": "2026-10-14T00:30:49.531Z",
+ "cells": {
+  "16": [
+   "047c2eaaa358d069",
+   "311f4d768627ac57",
+   "7fed653dfa14a121",
+   "910de5cc2d0982cc",
+   "986c197ae2f87bed",
+   "9e8ff6890218c594",
+   "a45f3c5797798d7c",
+   "e5fd2d07c0f47077",
+   "f06ee3351e5e83ce"
+  ],
+  "24": [
+   "1358c99389650680",
+   "297c8580d5ff5468",
+   "bd31d978766f2e77",
+   "fe1524f6e8e640d3"
+  ],
+  "32": [
+   "04fc5a158e120a32",
+   "07e3366f8dd8adb0",
+   "0935a9255d053278",
+   "0954b03faddd339b",
+   "16ceb882844d9fea",
+   "17c09edb53cd47ab",
+   "232e810f2a6b5215",
+   "44127ea9bd4f1f0b",
+   "5873e24cb94634a3",
+   "6f1ace290983adc2",
+   "7b5508c301192fc7",
+   "80adf6594cdae87b",
+   "81ad56a1d231d4bd",
+   "844537c44afbcb52",
+   "a404989a7b0e3065",
+   "a96cc468dec3ef1d",
+   "b544728e0663f4dc",
+   "bfe4de6910680cee",
+   "c30af73fcb4713df",
+   "ce7e15e01e832258",
+   "d277240c5df1abc6",
+   "e3690e51dc6887b0",
+   "f013a8c1a47cfb7e",
+   "fa094b4ac9ee93f0"
+  ],
+  "48": [
+   "11e621514e3ae595"
+  ]
+ }
+}

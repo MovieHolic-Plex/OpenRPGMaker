@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4e58409ccae796542e43645cf93edc52da8057153b9917deff80bbeffb15fc72",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "오벨리스크",
+ "label": "desert-east/de-obelisk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lantern head and column shaft",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top lantern head (rows 2-12) shows only a flat front face with an embedded light/gem; its top surface is reduced to a 1px outline border at row 2 with no foreshortened horizontal plane visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5870
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "obelisk / column with square headpiece and tiered base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top capital/headpiece (rows 2-11) is drawn in pure front elevation with only a 1px outline along the top edge (row 2) and no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6797
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "obelisk / pillar with capital and plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The upper block/capital (rows 2-11) is drawn in pure front elevation with only a 1px border at row 2 and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5273
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "obelisk / column with a square head block and shaft",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top block of the pillar/obelisk (rows 2-11) is drawn in pure front elevation with a 1px outline at row 2 and no visible horizontal top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4043
+  }
+ ],
+ "decidedAt": "2026-10-14T00:50:43.635Z",
+ "cells": {
+  "16": [
+   "25babe3c6006bd3e",
+   "8533c15551cc172b",
+   "f7cb085f2bab5a16"
+  ],
+  "24": [
+   "38f13faaff208235",
+   "7511d47685f04379",
+   "d3d3a5aba90e20ae",
+   "d99895616019aeca",
+   "e936ce8177014186",
+   "ff0e198c5a34fe85"
+  ],
+  "32": [
+   "065a87b9b4d62956",
+   "3f6f22da3c707b5a",
+   "5c535f4750c170ce",
+   "6614cb551d9c813c",
+   "6d6c774012867887",
+   "6e316da1d19e7d9b",
+   "77696afaa37847bc",
+   "9aaf3fec1f98c9f9",
+   "c47fd7b4dc6300be",
+   "e628d1df8b4eabf6",
+   "e8fdf92fbecb78bb",
+   "ef89a81060943c2f"
+  ],
+  "48": [
+   "c36fb421ec7f7262",
+   "dd6160487ed6620a",
+   "e972fcafb875155f"
+  ]
+ }
+}

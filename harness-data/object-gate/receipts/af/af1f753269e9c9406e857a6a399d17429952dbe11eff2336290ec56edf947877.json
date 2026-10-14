@@ -1,0 +1,129 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "af1f753269e9c9406e857a6a399d17429952dbe11eff2336290ec56edf947877",
+ "width": 16,
+ "height": 48,
+ "kind": "structure",
+ "name": "사암 성벽(가로, 활 구멍)",
+ "label": "desert-east/de-wall-h-slit",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sandstone castle wall with arrow slit and parapet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire wall structure (including the corbelled parapet at rows 0-15 and the vertical brick wall with arrow slit at rows 16-47) is depicted in flat architectural front elevation with no visible top walkway or foreshortened horizontal surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8448
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sandstone castle wall with arrow slit",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-14 show the foreshortened top rampart/battlement surface of the wall (about 15 rows tall) above the vertical brick face containing the arrow slit (rows 15-47).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4946
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sandstone castle wall with arrow slit",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the wall (rows 0-14, 15px tall) depicts the horizontal walkway/rampart seen from above, transitioning via a dark shadow line at row 15 into the vertical south-facing wall face containing the arrow slit.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10270
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sandstone castle wall with arrow slit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire wall and upper parapet/cornice (rows 0-15) are drawn strictly in front elevation. There is no visible top surface of the wall walkway, merlons, or crenellations; all surfaces are vertical front-facing planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10617
+  }
+ ],
+ "decidedAt": "2026-10-14T00:12:08.964Z",
+ "cells": {
+  "16": [
+   "71bbe4711e377e7f",
+   "a2dec7373450c5eb",
+   "d57bd290753d8ab5"
+  ],
+  "24": [
+   "197c6215aa856d43",
+   "1fb15ff132ef36f0",
+   "2938fcdb7982fc10",
+   "4f1ce60a49e76e3b",
+   "638d082a6ab68d7c",
+   "c8a2781e83b06623"
+  ],
+  "32": [
+   "329fba6553040fc2",
+   "3533d9fce1a46c54",
+   "48f2487fcff4ff09",
+   "7151b3ec59252899",
+   "740da9ed7f112abe",
+   "8596e8e51babc82c",
+   "b8b55da0df83d280",
+   "bebcc9eb2b449682",
+   "d35bd9d9bb84b006",
+   "e9b96106ff9453db",
+   "f358fa0b600adb96",
+   "f99db6411f219842"
+  ],
+  "48": [
+   "77569504d1334d47",
+   "8352f56670481a5f",
+   "eb102f61b259d13d"
+  ]
+ }
+}
