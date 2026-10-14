@@ -118,7 +118,7 @@ export function refusalMessage(adapter: AdapterCaps, type: DungeonType): string 
   const why = adapter.reasons[type] ?? `「${label}」 에 ${type} 그림이 없다`;
   const near = closestSupported(adapter, type);
   const list = supportedTypes(adapter).map((t) => (monsterVariantsText(adapter, t))).join(" · ");
-  return `이 칩셋은 ${type} 을 못 짓는다 — ${why}. ${near ? `가장 가까운 지원 종류: ${near.replace(":", " + variant ")}. ` : ""}이 칩셋이 짓는 종류: ${list}. 다른 칩셋으로 바꿔 칠하지 않는다(그림체가 달라진다).`;
+  return `이 칩셋은 ${type} 을 못 짓는다 — ${why}. ${near ? `가장 가까운 지원 종류: ${near.replace(":", " + variant ")}. ` : ""}이 칩셋이 짓는 종류: ${list}. 다른 칩셋으로 바꿔 칠하지 않는다(그림체가 달라진다). 다른 칩셋으로 짓는 것은 사용자 승인(ask_tileset_change)이 필요하다.`;
 }
 
 function monsterVariantsText(adapter: AdapterCaps, type: DungeonType): string {
