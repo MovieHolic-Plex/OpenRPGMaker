@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b720b3096654b3dff0c5e141ed09cd242bd10035eb71dcc995347fde45a1df8e",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "흙 운동장",
+ "label": "modern-campus/mc-dirt",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dirt ground terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sprite is a flat ground terrain tile depicting a dirt schoolyard/field with scattered pebbles, covering the entire 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4684
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dirt ground surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile represents dirt ground with scattered pebbles, functioning properly as a top-down ground terrain texture.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3954
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dirt playground ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat dirt ground terrain texture spanning the entire 16x16 tile with small pebbles, appropriate for top-down terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5549
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dirt ground terrain tile with small scattered pebbles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a flat dirt sports field ground texture viewed from above with scattered small pebbles, fully matching the terrain kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3947
+  }
+ ],
+ "decidedAt": "2026-10-14T08:06:14.286Z",
+ "cells": {
+  "16": [
+   "4ed01a89438049c5"
+  ],
+  "24": [
+   "5fe46d1178216247",
+   "9a48c04b0d78f65e",
+   "9f5467bfabd9a4fd",
+   "a44efc16faa3c0eb",
+   "d474b46372684bff",
+   "f5261f50e0c80451"
+  ],
+  "32": [
+   "119ae93c25bd2482",
+   "4798aee5199dcc80",
+   "516d699481e657af",
+   "6592ae9768861a34",
+   "bda4fc171e5c1975",
+   "f28bcb6cac6e3755"
+  ],
+  "48": [
+   "1fb9cc194a1ff518",
+   "2d724d46abde14c2",
+   "5c833162769e6490",
+   "9a8efaf7d111f08b",
+   "ea3c18db159ca878",
+   "f875b9911fc47ec5"
+  ]
+ }
+}

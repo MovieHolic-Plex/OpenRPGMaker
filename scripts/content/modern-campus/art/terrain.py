@@ -38,23 +38,31 @@ def vnoise(x, y, s, cell=4, per=16):
     return a * (1 - fy) + b * fy
 
 
-def grass(x, y, s=5, base=4, flowers=0.0):
+def grass(x, y, s=5, base=2, flowers=0.0, mat='shiba'):
+    """잔디(quality-b): 밝은 연두 바탕(shiba 2) + 넓은 짙은 덩이(1) · 밝은 볕 자리(3) + 풀 포기 V 결(밝은 왼 잎 · 짙은 밑동).
+    빛은 왼쪽 위. 16 주기로 감긴다."""
+    top = 4
     x, y = W(x, y)
-    n = vnoise(x, y, s) * 0.65 + vnoise(x, y, s + 3, cell=8) * 0.35
-    t = base - 1 if n < 0.30 else base + 1 if n > 0.74 else base
-    # 풀 포기: 밝은 끝 + 그 밑 어두운 밑동
-    if rnd(x, y, s + 11) < 0.075: t = min(base + 1, t + 1)
-    xb, yb = W(x, y - 1)
-    if rnd(xb, yb, s + 11) < 0.075: t = base - 1
+    n = vnoise(x, y, s, cell=4) * 0.6 + vnoise(x, y, s + 3, cell=8) * 0.4
+    t = base - 1 if n < 0.24 else base + 1 if n > 0.93 else base
+    for oy in (0, -1, -2):
+        for ox in (-1, 0, 1):
+            ax, ay = W(x - ox, y - oy)
+            cx, cy = ax // 4, ay // 4
+            if (ax % 4, ay % 4) != (int(rnd(cx, cy, s + 13) * 4), int(rnd(cx, cy, s + 17) * 4)): continue
+            if rnd(cx, cy, s + 19) > 0.42: continue
+            if oy == 0 and ox == 0: return (mat, max(0, t - 1))
+            if oy == -1 and ox == -1: return (mat, min(top, t + 1))
+            if oy == -1 and ox == 1: return (mat, max(0, t - 1))
     if flowers and rnd(x, y, s + 29) < flowers:
         return ('shiro', 4) if rnd(x, y, s + 31) < 0.6 else ('kii', 4)
-    return ('ki', t)
+    return (mat, t)
 
 
 T('lawn', '캠퍼스 잔디', ['잔디', '교정'], '넓은 잔디. lawn-b 와 섞어 깔면 무늬 반복이 안 보인다.')(wrap(lambda x, y: grass(x, y, 5)))
 T('lawn-b', '캠퍼스 잔디(변주)', ['잔디', '교정'], 'lawn 과 칸마다 섞는다.')(wrap(lambda x, y: grass(x, y, 17)))
 T('lawn-flower', '토끼풀 꽃 잔디', ['잔디', '꽃'], '잔디 가장자리·나무 밑에 드문드문.')(wrap(lambda x, y: grass(x, y, 23, flowers=0.035)))
-T('lawn-shade', '그늘진 잔디(나무 밑)', ['잔디', '그늘'], '큰 나무 발밑 칸과 그 남동쪽 칸에.')(wrap(lambda x, y: grass(x, y, 41, base=3)))
+T('lawn-shade', '그늘진 잔디(나무 밑)', ['잔디', '그늘'], '큰 나무 발밑 칸과 그 남동쪽 칸에.')(wrap(lambda x, y: grass(x, y, 41, base=1)))
 
 
 # ── 포석 ──
@@ -92,13 +100,17 @@ T('pave-granite', '화강암 판석', ['포석', '광장'], '중앙 광장·분�
 
 
 def path_conc(x, y):
+    """콘크리트 산책길(quality-b): 8px 판 엇갈림(판마다 단 흔들기) + 판 윗변 빛 · 이음 그늘 + 잔금·얼룩."""
     x, y = W(x, y)
-    if y == 15 or x == 15: return ('conc', 3)
-    if y == 0 or x == 0: return ('conc', 5)
-    r = rnd(x, y // 2, 13)
-    t = 4 if r < 0.75 else 5 if r < 0.92 else 3
-    if (x + y * 3) % 11 == 0 and rnd(x, y, 2) < 0.4: t = 3
-    return ('conc', t)
+    row = y // 8; xs = (x + (4 if row % 2 else 0)) % 16; col = xs // 8; lx, ly = xs % 8, y % 8
+    if ly == 7 or lx == 7: return ('hodo', 3)
+    base = 5 + (1 if h32(col, row, 14) % 4 == 0 else 0) - (1 if h32(col, row, 15) % 5 == 0 else 0)
+    if ly == 0 or lx == 0: return ('conc', min(6, base + 1))
+    r = rnd(x, y, 13)
+    t = base - 1 if r < 0.10 else base
+    if r > 0.97: return ('kinari', 2)
+    if (lx - ly) == 2 and h32(col, row, 16) % 3 == 0: t = base - 2           # 잔금
+    return ('conc', max(2, t))
 
 
 T('pave-path', '콘크리트 산책길', ['길', '보행로'], '건물 사이 보행로. 잔디 가장자리 curb 조각과 잇는다.')(wrap(path_conc))
@@ -180,13 +192,19 @@ T('turf-line-c', '구장 흰 선 교차', ['운동장', '축구장'], '하프라
 
 
 def dirt(x, y):
+    """흙 운동장(quality-b): 밝은 모래흙(soil 3~4) + 짙은 다짐 얼룩 + 잔돌(밝은 윗점 · 밑 그늘) + 발자국 긁힘."""
     x, y = W(x, y)
     n = vnoise(x, y, 71) * 0.6 + vnoise(x, y, 74, cell=8) * 0.4; q = rnd(x, y, 72)
-    t = 2 if n < 0.3 else 4 if n > 0.72 else 3
-    if rnd(x, y, 75) < 0.06: t = 4
-    if rnd(x, y - 1, 75) < 0.06: t = 2
-    if q < 0.02: return ('hodo', 5)
-    if q > 0.98: return ('soil', 1)
+    t = 2 if n < 0.22 else 4 if n > 0.62 else 3
+    # 잔돌: 밝은 윗점 + 그 밑 그늘
+    if q < 0.012: return ('hodo', 6) if rnd(x, y, 76) < 0.5 else ('kinari', 3)
+    xb, yb = W(x, y - 1)
+    if rnd(xb, yb, 72) < 0.012: return ('soil', 1)
+    # 긁힌 자국(사선 2~3px)
+    k = (x + y * 2) % 16
+    if rnd((x + y * 2) // 16, y // 5, 77) < 0.18 and k < 3 and y % 5 == 0: return ('soil', 2)
+    if rnd(x, y, 75) < 0.05: t = min(4, t + 1)
+    if q > 0.985: return ('soil', 1)
     return ('soil', t)
 
 
@@ -220,7 +238,7 @@ def curb_cell(x, y, n=False, s=False, w=False, e=False, inner=None):
         if (x <= 2 if cx == 'w' else x >= 13) and (y <= 2 if cy == 'n' else y >= 13):
             return ('hodo', 5)
     # 경계석 안쪽 1px 접촉 그늘
-    if (s and y == 12) or (n and y == 3) or (w and x == 3) or (e and x == 12): return ('ki', 2)
+    if (s and y == 12) or (n and y == 3) or (w and x == 3) or (e and x == 12): return ('shiba', 1)
     return g
 
 

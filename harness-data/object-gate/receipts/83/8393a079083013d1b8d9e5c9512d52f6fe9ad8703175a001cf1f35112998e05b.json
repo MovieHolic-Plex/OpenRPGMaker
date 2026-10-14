@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8393a079083013d1b8d9e5c9512d52f6fe9ad8703175a001cf1f35112998e05b",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "캠퍼스 잔디(변주)",
+ "label": "modern-campus/mc-lawn-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing a top-down grass surface across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5570
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ground terrain tile depicting a grass surface with small blade/tuft texture variations across the entire 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8841
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing grass surface across all 16 rows with tuft texture details.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3749
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ground terrain tile showing textured grass across the full 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5314
+  }
+ ],
+ "decidedAt": "2026-10-14T08:06:14.285Z",
+ "cells": {
+  "16": [
+   "1bd5a902a211aef0"
+  ],
+  "24": [
+   "2bef3f5fe76343a8",
+   "5d45c4eb4275f3ca",
+   "8af4d5cced5db5db",
+   "b0e21258b0cf4adf",
+   "b7cfc0bb463df732",
+   "bd31b31684dfec1e"
+  ],
+  "32": [
+   "33631b9fa7c8365d",
+   "4c9cd65ec8b24e69",
+   "500947e913df4def",
+   "682a3faec11ec0a3",
+   "ae7d95fb2638a23f",
+   "cec7eafe4f32cf7f"
+  ],
+  "48": [
+   "1976587dabf6905c",
+   "34b87aefed99c3b8",
+   "adfc895722f4fe62",
+   "d38a54b395733467",
+   "f4b0170749149bd9",
+   "f576967d83d3b4bd"
+  ]
+ }
+}
