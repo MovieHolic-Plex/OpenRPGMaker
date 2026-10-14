@@ -90,7 +90,7 @@ export const PROFILES: Record<DungeonType, TypeProfile> = {
     id: "temple", label: "폐허 신전", words: ["신전", "사원", "유적", "폐허", "temple", "ruin", "성소"],
     grammar: "rooms", roomKinds: ["entrance", "nave", "shrine", "crypt", "boss", "vault", "storage", "hall"],
     face: { h3: T("face-temple-3h"), h2: T("face-temple-2h") },
-    floor: { base: T("floor-ruin"), patches: [{ kit: T("floor-trav"), at: 0.66 }, { kit: T("floor-dirt"), at: 0.86, scale: 3 }], scatter: [{ kit: T("floor-grass"), p: 0.015 }], byKind: { boss: T("floor-trav"), vault: T("floor-trav") } },
+    floor: { base: T("floor-ruin"), patches: [{ kit: T("floor-trav"), at: 0.66 }], byKind: { boss: T("floor-trav"), vault: T("floor-trav") } },
     blurb: "좌우 대칭 신전(현관 → 열주 늘어선 신랑 → 제단 안쪽 성소, 곁방), 군데군데 무너진 구역·덩굴·이끼.",
   },
   mine: {

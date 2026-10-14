@@ -288,7 +288,7 @@ function dressMine(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null,
     case "depot": {
       // 창고: 상자·통·선반·게시판 모둠
       const e = c.edgeCells(r, rs);
-      for (let k = 0; k < 3; k += 1) { const p = e[k * 4]; if (p) c.cluster(rs, p[0], p[1], 3, [[MV("crates"), 2], [MV("barrel"), 3], [MV("bin"), 1], [MV("rack"), 1]]); }
+      for (let k = 0; k < 3; k += 1) { const p = e[k * 4]; if (p) c.cluster(rs, p[0], p[1], 3, [[MV("crates"), 2], [MV("barrel"), 3], [MV("rack"), 1]]); }
       const f = c.shuffle(rs, c.floorCells(r, 2));
       if (f[0]) stand(c, MV("bench"), f[0][0], f[0][1]);
       if (f[1]) lampAt(f[1][0], f[1][1]);
