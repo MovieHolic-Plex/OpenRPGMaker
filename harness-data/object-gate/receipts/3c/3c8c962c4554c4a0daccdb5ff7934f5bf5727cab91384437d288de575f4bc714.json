@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3c8c962c4554c4a0daccdb5ff7934f5bf5727cab91384437d288de575f4bc714",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "airlock module v2",
+ "label": "sf-station/sf-air-v2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "airlock module with sloped roof and sealed door",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features an extensive top roof slope spanning rows 2 to 19 (18 rows tall) above the vertical south-facing wall containing the airlock door.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5760
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "airlock module structure with door and roof deck",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof/deck section clearly slopes or extends horizontally from row 2 to row 19 (18 source pixel rows tall) above the south-facing door wall (rows 20-46), providing correct 3/4 perspective foreshortening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5237
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sci-fi airlock building with sloped panel roof and sliding door",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features an extensive top roof/slope spanning rows 2 through 19 (18 pixels tall) above a vertical front wall with hazard stripes and an airlock door.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4506
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "airlock module structure",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features a large sloped upper surface/roof spanning rows 2 to 19 (18 source pixels tall) above the vertical south-facing wall (rows 20-45).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5658
+  }
+ ],
+ "decidedAt": "2026-10-13T15:19:47.093Z",
+ "cells": {
+  "16": [
+   "0ebfac3f5eb84431",
+   "2762bbdcedcd1b5a",
+   "311716981722ec6b",
+   "33f6f37080513282",
+   "68aebe2164b81330",
+   "7babbac0777aad05",
+   "cf00d3e2434b108e",
+   "d0fb52ae5f76eae8",
+   "e1fc9f936358a8ea"
+  ],
+  "24": [
+   "1acdabcbce1bef41",
+   "3239faafca281182",
+   "3f61c108009fa072",
+   "6789ecaaec3810c1"
+  ],
+  "32": [
+   "1a9bc93b44b0af36",
+   "31cc40c329b1ac7e",
+   "32261d17453212a8",
+   "33af74f205592e1d",
+   "35f81adc0b347780",
+   "3e1caaccc4c43e9a",
+   "458c31187192687e",
+   "60806c46630da9f7",
+   "7034d100c43b1fae",
+   "785ad4efc173bcfb",
+   "84204ceb1b12fa6c",
+   "99e6d64f31c72a84",
+   "99e9af7c339365d2",
+   "9f7baa5660464082",
+   "a293c71f5829284d",
+   "a4088aabff12c109",
+   "a75afe4d75edde2c",
+   "b00c9f3a0dae0d45",
+   "b56d625d29d7eced",
+   "bbb38ac818b0d7cf",
+   "e1e892ed857db879",
+   "ea7afddafa7d6478",
+   "ed7f951411461816",
+   "fd154b54f2e8e101"
+  ],
+  "48": [
+   "6ee60e559d766de3"
+  ]
+ }
+}

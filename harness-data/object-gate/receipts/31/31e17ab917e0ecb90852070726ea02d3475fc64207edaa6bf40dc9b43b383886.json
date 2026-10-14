@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "31e17ab917e0ecb90852070726ea02d3475fc64207edaa6bf40dc9b43b383886",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "tall iron candle stand seen from above at 3/4: a wide round drip tray on top holding three fat lit candles, round base dish",
+ "label": "pirate-isles/pi-candelabra",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall iron candle stand with top drip tray and round base",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round base dish clearly displays an elliptical top surface (rows 26-28, ~3 rows tall), and the top drip tray is shown from above at 3/4 view revealing its interior basin holding the candles (rows 8-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6422
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron candle stand with drip tray and candles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (drip tray, candles, and upper stem) is drawn in pure front elevation with no visible top surface or elliptical tray opening. The tray is rendered as a flat side-profile cup with wax dripping down its front, and the candles are flat vertical rectangles. Although the base plinth at rows 26-28 shows an ellipse, plinths cannot substitute for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9701
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "candle stand drip tray and stem",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wide drip tray bowl shows a clearly foreshortened circular opening (rows 8-13, ~5-6 rows tall) containing the candles and wax, and the round base dish also displays a 3-row foreshortened top surface (rows 27-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6934
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall iron candle stand with drip tray and round base",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is clearly drawn in 3/4 perspective: the wide drip tray at rows 8-14 reveals its interior holding the candles (approx 5 rows deep), and the base dish at rows 26-29 clearly shows its elliptical top surface (3 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5336
+  }
+ ],
+ "decidedAt": "2026-10-13T19:37:15.865Z",
+ "cells": {
+  "16": [
+   "3871c123fc23d826",
+   "e89a753cce768651"
+  ],
+  "24": [
+   "01d7529250a44b29",
+   "1830743c29dfcb36",
+   "2557df422561cf99",
+   "4862a0ae4177d847",
+   "73386eeff7a8c90f",
+   "857bc8cea8d8e199",
+   "97178f47a94d2740",
+   "ac004cd28180e506",
+   "dfea60f25b2e25ac",
+   "e9f0004615982031",
+   "ea7f2b4561bab08c",
+   "f70dad366e6a9a6b"
+  ],
+  "32": [
+   "177c982561433034",
+   "37217c16415eae0a",
+   "851771a7c7bc4199"
+  ],
+  "48": [
+   "3d68fd6b526348ad",
+   "7271aa5479b83c14",
+   "c1f2af5a82ee161b",
+   "c2f5e144256274c6",
+   "ee897e1eef48f1c6",
+   "fe5219ec6113a4ac"
+  ]
+ }
+}

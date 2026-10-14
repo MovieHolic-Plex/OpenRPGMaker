@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7259f90c1b8ad1f75be945e21bb7961a9f4c2c85fc6d968026f24f4a18befce1",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "등불 돌기둥(쇠 등롱)",
+ "label": "gothic_manor/gm-lantern-pillar",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone lantern pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire lantern and stone pillar are drawn in pure front elevation: the lantern roof, light chamber, stone capital, and shaft all have perfectly flat horizontal edges with no foreshortened top surfaces visible (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7633
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone lantern and pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object (roof cap, lantern body, middle stone block, and column shaft) is drawn as a flat, straight-on front elevation with horizontal lines and no foreshortened top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6821
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone pillar with lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire lantern and stone pillar are drawn in pure flat front elevation. All horizontal edges (roof base at row 4, lantern base at row 11, pillar capital at rows 11-20, and shaft below) are completely flat horizontal lines with no visible foreshortened top surfaces (0 top_rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5243
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone lantern column",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire lantern and stone pillar are drawn in pure front elevation with flat horizontal dividing lines. The lantern cap at rows 0-4 is a flat 2D silhouette with no top surface, and the stone sections show only front-facing vertical bands with no foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8478
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:15.453Z",
+ "cells": {
+  "16": [
+   "1228d6ef19b3b269",
+   "5a4165723fa1d0c5"
+  ],
+  "24": [
+   "06ef8ca6356451df",
+   "2538b8050d98d28a",
+   "42397725f5286a6b",
+   "5f4c1854a210f2d6",
+   "6e4fdbfe4834a6b8",
+   "7044065341d0c9bb",
+   "75e65c90de1035ef",
+   "97d6280225ff7cc9",
+   "a783f01590139c16",
+   "ac68fd3d40b64e61",
+   "c1cd2ddcea950b35",
+   "c3575dd1ba124c4a"
+  ],
+  "32": [
+   "085baf22c8302f8d",
+   "339cb10bbe17853d",
+   "71dc5273e7b26c12"
+  ],
+  "48": [
+   "00c33a12efacf902",
+   "853a14160f2c13fc",
+   "b34b8de8e058c155",
+   "dc574e8a2f2c4728",
+   "de42c10e198a82e0",
+   "e980f73aa56beb5f"
+  ]
+ }
+}

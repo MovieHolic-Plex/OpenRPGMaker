@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "05778ebabdaea7d99a916771accbd8604ad3ea162f14cc93552fa9a22264e0d1",
+ "width": 32,
+ "height": 16,
+ "kind": "container",
+ "name": "항아리 무리(물독·장독)",
+ "label": "sengoku-edo/se-pots",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water jars / pottery jars cluster",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both jars show open circular/elliptical rims viewed from above with blue water visible inside (left jar opening is 4px tall, right jar opening is 3-4px tall) atop cylindrical front bodies.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4367
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "two water jars (earthenware pots)",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both jars clearly display elliptical top openings filled with blue water, showing 3-4 pixel rows of interior surface viewed from a 3/4 top-down angle, along with cylindrical front faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3813
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two water jars (onggi)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both jars clearly show open circular rims viewed from above at a 3/4 perspective, revealing the elliptical blue water surface inside (about 3-4 pixel rows tall in each jar).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2822
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cluster of water jars",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both jars clearly display elliptical top openings filled with blue water (4 rows tall on the left jar, 3-4 rows tall on the right jar) seen from a 3/4 top-down perspective over their front vertical bodies.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6273
+  }
+ ],
+ "decidedAt": "2026-10-13T19:37:02.184Z",
+ "cells": {
+  "16": [
+   "377264ff7a5e2704",
+   "63dbc402ec476577"
+  ],
+  "24": [
+   "226a8b0383cd5b7f",
+   "34ba8499edfa5622",
+   "3872d474b872bd32",
+   "483428b4ad8dc615",
+   "51c3c510475f410c",
+   "586e226fae7ae60b",
+   "7807645ab3a2daef",
+   "a02c6c6a0b16fa98",
+   "c5107afd372f8fc2",
+   "d122f5fddefce087",
+   "e95c5607d948b7c5",
+   "f31becbc5e6199e4"
+  ],
+  "32": [
+   "9a2f29bd4ece8ac2",
+   "b894df94cf5ec1a5"
+  ],
+  "48": [
+   "53a61467ee533b88",
+   "55a603c9e36aa987",
+   "62b53db4a6fd16eb",
+   "a595ed6eadfe2067",
+   "b0d35f181683579a",
+   "be754f72d898237b"
+  ]
+ }
+}

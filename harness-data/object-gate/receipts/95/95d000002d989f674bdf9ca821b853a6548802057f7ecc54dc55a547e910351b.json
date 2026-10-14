@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "95d000002d989f674bdf9ca821b853a6548802057f7ecc54dc55a547e910351b",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "flowing stream channel on grass (terrain)",
+ "label": "sky-island/si-stream",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stream channel terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a vertical water stream flanked by stone channel edges and grass; viewed correctly from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3509
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stream channel",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing a vertical water stream flanked by banks and grass; as flat ground/water terrain, the entire 16-row surface is viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11741
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stream channel with water and grass banks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a vertical water channel with grass edges and stone borders, viewed from top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3716
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water channel with banks and grass",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a vertical water stream flanked by stone banks and grass, correctly shown as a ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5053
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.980Z",
+ "cells": {
+  "16": [
+   "16a857ed7440e2f4"
+  ],
+  "24": [
+   "0bbb793397543cbe",
+   "b3f7faccd8707350",
+   "b724250a31e307f6",
+   "bcc1f8b43c52552c",
+   "d465a038bec43dd6",
+   "fed43280a787496f"
+  ],
+  "32": [
+   "2c7e61829047ecd0",
+   "6e0410f0d887db75",
+   "7b21e17551a9bea8",
+   "90d9c8a734397461",
+   "937f680ef4be974a",
+   "d18cc8e6f8865bb2"
+  ],
+  "48": [
+   "1fcea9bf7817ef9e",
+   "32763a1584d7ea81",
+   "5080991379877108",
+   "5742f6577c45d0ad",
+   "98b869fd9890a6d3",
+   "e0097cf566070f8c"
+  ]
+ }
+}

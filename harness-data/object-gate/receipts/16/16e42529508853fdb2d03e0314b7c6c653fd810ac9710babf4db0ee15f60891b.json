@@ -1,0 +1,145 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "16e42529508853fdb2d03e0314b7c6c653fd810ac9710babf4db0ee15f60891b",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "굵은 가로등 기둥(받침 상자 + 굵은 몸통 + 등 머리 윗면)",
+ "label": "sf-station/sf-street-lamp-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lamp head and post",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The kind is specified as tall_furniture (bookshelf, cabinet, etc.), but the object is a street lamp. Furthermore, the lamp head at the top is drawn in pure front elevation with only a 1px border at row 1 and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6845
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lamp head and post",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The kind is mismatched (streetlamp classified as tall furniture against a wall). Furthermore, the lamp head is rendered in pure front elevation with a 1px top outline (0 top surface rows) rather than showing a foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4718
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "street lamp head and pillar",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The street lamp is misclassified as tall_furniture. Its main upper body (the lamp fixture) has no visible top surface, only a 1-pixel black outline at rows 0-1 above the front-facing light/panel. While the base plinth at rows 24-27 shows a top plane, plinths cannot substitute for the main body's top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6365
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lamp head and post",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (lamp head and pole) is drawn in pure front elevation with only a 1px black outline at row 1 rather than a visible top surface. Although the base plinth at rows 25-28 shows a top plane, plinths do not count for the main body. Furthermore, a lamppost does not match the tall_furniture category.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6746
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:06.343Z",
+ "cells": {
+  "16": [
+   "3074286f8d115b19",
+   "698e68b93fd44e55"
+  ],
+  "24": [
+   "02c7ee1add5f0027",
+   "05ed05ac73698cd4",
+   "3b3e838372a656d2",
+   "6435ae36c3b4d675",
+   "68b325520146ce7a",
+   "707bd4d632f6f7b1",
+   "875af4f60049c281",
+   "87ddd9e2e8c1673c",
+   "cecf945872dcfbda",
+   "d91ba59b3c022498",
+   "e2dc85cfe2dd2816",
+   "ec2170a9e3c6eb7a"
+  ],
+  "32": [
+   "5c6a029351f28035",
+   "dc4f0708b2dae697",
+   "eb6000297a1a7a19"
+  ],
+  "48": [
+   "1dec8eb12a33e46d",
+   "6c56fc64f41dcc12",
+   "951108a846776251",
+   "b86bfa01f43da63b",
+   "c91b6918c26d22ff",
+   "f2c1c9a524442e90"
+  ]
+ }
+}

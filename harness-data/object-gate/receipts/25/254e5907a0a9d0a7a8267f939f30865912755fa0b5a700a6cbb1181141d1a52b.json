@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "254e5907a0a9d0a7a8267f939f30865912755fa0b5a700a6cbb1181141d1a52b",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "carved wooden tiki totem pole with painted face",
+ "label": "pirate-isles/pi-totem",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "totem pole with base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The totem pole is drawn in pure front elevation with straight horizontal features (headbands, mouths, crossbar, and base). The top of the pole does not show a foreshortened top surface, and the plinth at the base has no visible top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4815
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stacked carved tiki totem pole on a square base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The totem pole is drawn in pure front elevation with straight horizontal bands, flat features, and a rounded arch top with no top surface visible (0 top rows). The base block at the bottom also shows only a flat front face with 0 top rows.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8899
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "totem pole figure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The totem pole is drawn in pure 2D front elevation with perfectly horizontal feature lines (headbands, mouths, wings). The top of the head is drawn as a flat rounded arch with no visible top cylinder cap, and the base plinth consists of straight horizontal bands with zero foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5245
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical totem pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The totem pole is drawn in pure front elevation with straight horizontal bands for the headbands, mouths, cross-piece, and plinth. Neither the top of the pole nor the top surface of the base plinth is shown from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9328
+  }
+ ],
+ "decidedAt": "2026-10-13T19:19:03.413Z",
+ "cells": {
+  "16": [
+   "d5aef25d39da9cea",
+   "d757658ce8a4f470"
+  ],
+  "24": [
+   "037f50befc3ac417",
+   "0bc80928bb91f45e",
+   "37f9495609cdc4ae",
+   "aa8a51fbbe0719d2",
+   "aaa5155e57e07e8d",
+   "b104758bd5c03ab8",
+   "b6e17f2a2266f7a7",
+   "cc5aeb3086ebd033",
+   "dd5b0ff04f9d769e",
+   "e44933fba0d06b3c",
+   "ebb67c11b8190f4a",
+   "fd32dfe251e3a2ed"
+  ],
+  "32": [
+   "35b534572d4abff1",
+   "a126b4a8750a62a0",
+   "f0a658f34b0c521b"
+  ],
+  "48": [
+   "08b2541cd2dbcfc2",
+   "5f75518f6081f0c1",
+   "b14d61d6a568e309",
+   "c22c2d7a48f2c952",
+   "d1ab4993c992bcec",
+   "e1ed3d004ab55dc3"
+  ]
+ }
+}

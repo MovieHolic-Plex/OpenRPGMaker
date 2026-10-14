@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "93119a371575e33b96a682fd73ac853e616c05a2cfbb7bbd05afcd52dad029de",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "prehistoric stone-age hide frame",
+ "label": "prehistoric/ph-hide-frame",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hide frame on legs",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tanning rack is built on four legs and tilted backward into the scene in clear 3/4 perspective, foreshortened from 14px wide at the top to 22px at the base. The visible upward-facing hide surface spans rows 4 to 21 (17 rows tall), and the rear legs ground higher up than the front legs, demonstrating full depth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11639
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hide stretching/tanning frame on legs",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The frame is rendered in 3/4 top-down perspective, with the lower crossbeam clearly displaying a 3-row foreshortened top surface (rows 20-22) above a south-facing edge (rows 23-24). Depth is also indicated by rear legs set back between the front legs and the receding angle of the frame.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8165
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hide tanning frame / stretching rack",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tanning rack is tilted/reclined backward in 3/4 view; the foreshortened hide and frame surface spans rows 4 to 20, the front crossbeam shows a visible top face, and the back legs rest higher on the ground plane (row 26) than the front legs (row 29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7950
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hide stretching frame / rack",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hide frame is angled/horizontal on four legs: the rear legs are grounded higher at row 26 while the front legs reach row 28, exposing the full top surface of the stretched hide and frame across rows 4–20.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9249
+  }
+ ],
+ "decidedAt": "2026-10-14T00:47:54.424Z",
+ "cells": {
+  "16": [
+   "2b016722dd392abc",
+   "4e1bff6c74100c8f",
+   "983adb62e54d24b3",
+   "b3abbd2183454e45"
+  ],
+  "24": [
+   "02e8712b6baf8c48",
+   "1e87c1dd5812efbb",
+   "1f64486b53ed10e0",
+   "2688e2661fbac133",
+   "296b1fe49a22e74f",
+   "31582c269c61b1e9",
+   "3ea707fa0c8ad9a3",
+   "41a589b392a49f14",
+   "4517ecdca132d38d",
+   "59cbad46e116ae98",
+   "63a2f4de71d012d9",
+   "6771e402d0bf2428",
+   "6b455073b591fe13",
+   "7694f51a96992533",
+   "7fd59fc123475092",
+   "88b3cb06503195a8",
+   "89d722c56bc0ba88",
+   "b9e0dc18e5139221",
+   "c4285c930e2feccd",
+   "ca094d89e765916e",
+   "cdac94d6de4d5a4d",
+   "eb0efe4994c2688e",
+   "fa641660d73edf1d",
+   "fc4ecf2a1aedd990"
+  ],
+  "32": [
+   "9c5a6bff3c42e23a"
+  ],
+  "48": [
+   "241ebd7280978b95",
+   "63ee3d43c9222555",
+   "6ae987b8e01e93a3",
+   "962a2a392696e885",
+   "b7185a9c9e06bf8b",
+   "fcf344e96cbc083f"
+  ]
+ }
+}

@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c3a30c644440d107c37074a6cfb140f1fa0f3db4ee4041e92b962c769d1c7805",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "전차 정류장 지붕(무쇠 기둥 + 녹청 철판 지붕 + 벤치)",
+ "label": "steampunk-city/sp-tram-shelter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tram stop shelter roof and bench",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The green patina sheet roof slopes downward towards the viewer spanning rows 2-11 (10 rows), with an edge fascia at rows 12-14. Additionally, the bench below clearly shows its horizontal seat surface across rows 20-22 (3 rows) above its front face (rows 23-24).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5265
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tram stop shelter roof",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The verdigris metal roof shows an 11-row south-facing top slope (rows 2-12) terminating in eaves/fascia at rows 13-14, and the bench below shows a clear 4-row seat surface (rows 20-23) over a 2-row front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8495
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tram stop shelter roof and bench",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The patinated iron plate roof shows 10 rows of top slope/surface (rows 2-11) descending to the front eave at row 12-14, and the bench below also shows a 3-row top seating surface (rows 20-22) with a 2-row front face (rows 23-24).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7091
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tram stop shelter roof and bench",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The verdigris metal roof slope is clearly visible across rows 1–11 (11 source pixel rows) above the eave line, supported by iron brackets and posts, and the bench underneath also correctly shows a 4-row top seat surface (rows 19–22).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6234
+  }
+ ],
+ "decidedAt": "2026-10-13T18:49:04.020Z",
+ "cells": {
+  "16": [
+   "0aeb1b2a327b12f9",
+   "36923583baa80d67",
+   "39f3251680fd56d7",
+   "8f4fff12e4b0a64b",
+   "e5ad89a44aab35af",
+   "f59644ef7d12e479"
+  ],
+  "24": [
+   "640520c9bfaa6d49",
+   "6836a2f82a08aa2c",
+   "83db915300aec1e9",
+   "8e94072bd5af8001",
+   "8f102116a8acccb5",
+   "a95a99c6c0bcff51",
+   "d8b8bb84b801afa6",
+   "e8e5c4984670a834"
+  ],
+  "32": [
+   "4ac371c88cb82814",
+   "4c8a10c85493801c",
+   "4caa81a9cfd4858c",
+   "c867642b0d8c8619",
+   "ee42abf2a1b0d6d8",
+   "f727b1f611b77044"
+  ],
+  "48": [
+   "7f31aaf33c75a33b",
+   "edbf9ee7b273055d"
+  ]
+ }
+}

@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4763c15a3e9bf2cf2928da3793f40cdbce9f70602df0ac1a7dc9ed3e7567a756",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "태양광 패널 열(경사 패널 + 프레임)",
+ "label": "sf-station/sf-solar-array",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "solar panel array and mounting frame",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sloped solar panel collector surface is shown facing up towards the camera across rows 1-15 (15 rows), with a thick south-facing front rim across rows 16-20 mounted on a central support base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6678
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "solar panel array tilted toward camera with support post",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tilted solar panel surface is shown facing upward/south spanning rows 2 to 15 (14 rows tall), with the front edge/lip visible below it at rows 16-20. The support pillar also displays proper top/front shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6092
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "solar panel array",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tilted solar panel surface is viewed from above across rows 2-15 (14 rows tall), with its south front edge visible below across rows 16-20 on top of a mounting base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7176
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "solar panel array (inclined photovoltaic face and frame)",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main inclined surface of the solar panel is clearly visible across rows 2-15 (14 rows), foreshortened with rows of cells, above a distinct 4-row front frame edge (rows 16-19). This correctly represents an inclined roof-like structure in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12603
+  }
+ ],
+ "decidedAt": "2026-10-13T15:15:22.114Z",
+ "cells": {
+  "16": [
+   "23774b8a888f0a70",
+   "67935545eb949407",
+   "8e8728eb5b6b9d99",
+   "90b20d88a2330110",
+   "a8d48dff5f049549",
+   "fee9ad33c044ce01"
+  ],
+  "24": [
+   "1529200fe6f4b491",
+   "2e219c729b8b2750",
+   "6822730574bb74a6",
+   "86e0ead756549d20",
+   "8ad0a9497f2f92c7",
+   "8d60ab3d55e00c17",
+   "a4723907d191a866",
+   "e8a29681c699634d"
+  ],
+  "32": [
+   "05a524020e47a064",
+   "2bc975abba935215",
+   "5f4e48180120aa77",
+   "7996b7cf3cc2b7d2",
+   "dc6fe0cbf54c16e1",
+   "f38ebecaa3ca4d97"
+  ],
+  "48": [
+   "7c5a9a2bb05fb413",
+   "ba48af4a21032adf"
+  ]
+ }
+}

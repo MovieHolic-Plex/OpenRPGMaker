@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bd178a4ef8cea989da3213dd1d52828453053c5e1361a6ffebdb89a7578ba93a",
+ "width": 32,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden fence section of round log posts with sawn tops seen from above, two rails",
+ "label": "pirate-isles/pi-fence",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden log posts with sawn circular tops and connecting rails",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each vertical log post has a clearly depicted 3-row foreshortened sawn top face showing the cut wood surface and central core seen from above, with the south bark faces extending downward.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8020
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round log posts of wooden fence",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round log posts clearly show foreshortened sawn top faces seen from above (3 rows tall from back rim to front edge, including inner wood grain and darker center ring).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 21791
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "log fence posts and rails",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each round log post shows a 3-row foreshortened sawn top end-grain surface (rows 1-3 on taller posts, rows 2-4 on recessed posts) complete with central pith detail.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5497
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden fence posts and rails",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each vertical log post clearly features a 3-row sawn wood cross-section top surface (showing heartwood and sapwood) viewed foreshortened from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5492
+  }
+ ],
+ "decidedAt": "2026-10-13T19:33:03.044Z",
+ "cells": {
+  "16": [
+   "374fedcc69c4bce9",
+   "a2a1cebf5ea1803e"
+  ],
+  "24": [
+   "31d333f7af3e4c0e",
+   "415a68f552b67f7e",
+   "46cd3633c23337d8",
+   "7de82441fd23f9b8",
+   "7e5ed3c95ccf4034",
+   "8aa8c6844cd8c5bd",
+   "aec6a05d887fb5d9",
+   "b03992bb4b90a501",
+   "c20564ca13892ab0",
+   "c9479109c03530e1",
+   "f9df2e9acb58f68a",
+   "fa2c44d53d62052a"
+  ],
+  "32": [
+   "ba041faf9f770dad",
+   "f009b844258ad56d"
+  ],
+  "48": [
+   "1d9cfbfe065371a7",
+   "7760dcd64b871905",
+   "9c054774aa12bac1",
+   "9f73dc8d9f8be5cf",
+   "b66fde595da05180",
+   "e393fed2a85d7576"
+  ]
+ }
+}

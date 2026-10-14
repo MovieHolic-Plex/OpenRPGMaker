@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a8ab791288a1fb95fbcf11bb2946e64a0c80a828ef53768e92a365294499ccae",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "배관 도랑 — 가로 + 남 갈래",
+ "label": "steampunk-city/sp-pipe-sew",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pipe ditch terrain tile with T-junction",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting an embedded trench and pipe junction running horizontally with a south branch in a 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4349
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pipe trench T-junction",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting a recessed drainage or pipe trench with horizontal and south-running pipes seen from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4589
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pipe trench tile with horizontal pipe and south branch",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a terrain/floor trench tile containing recessed pipes viewed from above, matching the terrain category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3751
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pipe trench terrain tile with south branch",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Floor-level terrain tile depicting a horizontal pipe trench with a south branch junction viewed top-down. As a flat terrain tile, standing object projection rules do not apply.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3846
+  }
+ ],
+ "decidedAt": "2026-10-13T18:45:09.736Z",
+ "cells": {
+  "16": [
+   "68ab69f9f4490b15"
+  ],
+  "24": [
+   "135e91b1b9d463a3",
+   "1dbe5e7e8c7098b0",
+   "9187af04238bfae9",
+   "965e056bf6ceb674",
+   "b00506935be56500",
+   "b02f55da20244ef4"
+  ],
+  "32": [
+   "8133b45ca61b780f",
+   "82fbb1c338b77666",
+   "8855c88d021dad63",
+   "9c43acec2db26934",
+   "c859942c6fa49e13",
+   "e887a92b71156c5d"
+  ],
+  "48": [
+   "0f501558376be736",
+   "4375450c90b8e201",
+   "4878343a3ebeb030",
+   "54ebfe6dd6157da8",
+   "eca70c33d62822ba",
+   "edde827cd2c81cd8"
+  ]
+ }
+}

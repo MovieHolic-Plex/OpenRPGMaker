@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8f95b12059d81156d91f5f7d58cb4b27b578cf92717cb382f0c1d05926d29654",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass to cloud floor transition tile (terrain)",
+ "label": "sky-island/si-gc-se",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floating grass terrain edge",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile showing top-down grass surface (rows 0-10) with cutaway dirt cliff edge along the bottom transition to clouds.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4151
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "floating grass island edge",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Grass top surface spans rows 0-11 with a vertical dirt cliff edge at rows 11-15 overlooking cloud/sky floor.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2827
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "floating grass island edge / terrain tile",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting the grass surface and dirt cliff edge of a floating island overlooking clouds.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5117
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "floating grass island edge",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing the top surface of a floating grassy landmass overlooking clouds, with south/east dirt rim edges.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3099
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.978Z",
+ "cells": {
+  "16": [
+   "6406b379fca3ba90"
+  ],
+  "24": [
+   "046513d49bf911ba",
+   "18049cb36689676b",
+   "23ccb60a507f6355",
+   "39b66392184aa905",
+   "3ac4ac09242890db",
+   "9651e5ab6f02c6b9"
+  ],
+  "32": [
+   "34aabe46ab8503d4",
+   "68fe993787790959",
+   "aaeb0c45eb9e7157",
+   "ab1347f2b6584dfb",
+   "b7ff5649aaf2be1b",
+   "fd416b92f8aeb2ef"
+  ],
+  "48": [
+   "03baee7fb5c955cf",
+   "18443ca4a5fcb3ac",
+   "247693636a03c885",
+   "3034be034cfbd77e",
+   "45097ee29f71d883",
+   "e04d590943450d9f"
+  ]
+ }
+}

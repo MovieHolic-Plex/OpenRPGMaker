@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "097f9241daf5ff612de5397ccc0f032faa3c93ee2ff35eb4fa10191690072160",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "화장실·보건실 타일 벽(흰 사각 타일)",
+ "label": "modern-campus-int/mc-wall-tile",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tiled wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a white square tiled wall surface with grout lines, appropriately categorized as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3848
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tiled wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The asset is a terrain wall tile representing white square tiles for an infirmary or restroom wall, properly classified under terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3724
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tiled wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid wall terrain tile displaying a repeating white grid tile pattern with base and border trim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4008
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tiled wall surface",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile representing a tiled wall face with top trim; as vertical wall terrain, standard 3/4 top-down top surface rules for standing objects do not apply.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4101
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.306Z",
+ "cells": {
+  "16": [
+   "39320c373de85a88",
+   "c14847704d353f44"
+  ],
+  "24": [
+   "003ecb14b54f88d2",
+   "04d761579b4cd529",
+   "10241af409252b00",
+   "248bf3a8729fa52e",
+   "25e8b00b0954b71b",
+   "3917647202bd54e2",
+   "3bcb8e1c90e3ea11",
+   "4ebc99b095f97cb6",
+   "50c6e921fcc2a144",
+   "51f1229972692982",
+   "5d291376ce31a068",
+   "662a33d1f192668f",
+   "6d349daa1c79a6a9",
+   "98cd48189f74baec",
+   "9af2e08e6094a1d2",
+   "d1949a0245855a94",
+   "dc880c4cc296278a",
+   "edd54919f85ba296",
+   "f1de7ee4b9cec899",
+   "fe8ebdc6e8dedb24"
+  ],
+  "32": [
+   "4550238ea014cae1"
+  ],
+  "48": [
+   "021a11dc2fc1e258",
+   "42144bcd73935706",
+   "4761d43a86b9b505",
+   "6c4ebaa78f1a1077",
+   "892338d0ba46a693",
+   "e80d6226de36a8da"
+  ]
+ }
+}

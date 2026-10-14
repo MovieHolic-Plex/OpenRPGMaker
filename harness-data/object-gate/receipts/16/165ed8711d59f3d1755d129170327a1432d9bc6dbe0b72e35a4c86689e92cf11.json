@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "165ed8711d59f3d1755d129170327a1432d9bc6dbe0b72e35a4c86689e92cf11",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "무쇠 창살 담(낮은 돌 받침 위, 한 칸 잇는 조각)",
+ "label": "steampunk-city/sp-fence",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron bar fence on stone base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence and stone base are drawn in pure front elevation as flat horizontal bands and vertical bars. The stone base has no foreshortened top surface (only a 2px dark dividing band at rows 8-9), and the railing shows no top depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7728
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron railing on a stone base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The railing and the stone base are drawn in flat front elevation with horizontal rails and vertical bars viewed straight-on; the stone base shows only a front face (rows 10-14) with no foreshortened top surface (rows 8-9 are merely a 2px dark dividing border).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7310
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron railing fence on stone base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence and lower stone base are drawn in flat front elevation with horizontal 1-2px bands and no foreshortened top surface visible for either the rails or the stone plinth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7595
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron fence with stone base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence and stone base are drawn in flat front elevation with no visible horizontal top surface (the top rail is only 1-2px lines and the stone plinth shows only a front face and dark outline).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6538
+  }
+ ],
+ "decidedAt": "2026-10-13T18:44:04.996Z",
+ "cells": {
+  "16": [
+   "76b6be6f6885f97b"
+  ],
+  "24": [
+   "00431101fd51283e",
+   "07f661c2f0084b47",
+   "23d4ed9c7376d210",
+   "7a3823e86f0e0479",
+   "7b8b67f10686c535",
+   "8b8fce717fd1cb90"
+  ],
+  "32": [
+   "12ee7ded4be40173",
+   "23c831f4897e2ee1",
+   "4576d04c57995ccb",
+   "5a86067d0c5e521f",
+   "6e213d83800044d0",
+   "7e1dd4b6ecb40b10"
+  ],
+  "48": [
+   "3bf73d32f65a6d48",
+   "40c679659c526a97",
+   "6e07672a5d3ceeea",
+   "9b2e643e6a063f5c",
+   "ac5dc7e42e472544",
+   "e1fb9e720072d2f2"
+  ]
+ }
+}

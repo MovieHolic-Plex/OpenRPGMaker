@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d10b723110b030f64c80121ec218874125374cdc553d87e136d36d775401dbff",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "stack of wooden cargo crates",
+ "label": "sky-island/si-crates",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stack of wooden cargo crates",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crates are drawn in pure front elevation (typical 2D platformer style) with standard wooden perimeter framing (top rail, side rails, diagonal cross-brace). No foreshortened top surfaces are shown on any of the crates or the small red box.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 7563
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden cargo crates",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each crate clearly shows a 4-pixel-tall lighter horizontal top surface seen from above (e.g. rows 3–6 on the top crate, rows 15–18 and 17–20 on the lower crates) above the south-facing front walls with diagonal bracing.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 28067
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stack of wooden crates",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each crate clearly shows its horizontal top face as a lighter 4-5px band (e.g., rows 2-6 on the top crate, rows 16-20 on the right crate) distinct from the front face with diagonal bracing.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8999
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stack of wooden cargo crates",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each crate in the stack clearly displays a foreshortened top surface (lighter horizontal plane without cross-bracing) measuring 4-5 pixel rows tall (e.g. rows 2-6 on the top crate), positioned above a front face featuring diagonal cross-bracing.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12153
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.430Z",
+ "cells": {
+  "16": [
+   "02caca5be9443b94",
+   "08169207776ecb77",
+   "8134dd9f748d82ed",
+   "c3caef05f74e7beb"
+  ],
+  "24": [
+   "04a8079ab4fb5982",
+   "0dfd4a05024bc2b7",
+   "160931967b1dfa89",
+   "2ba7e07f3ce4ae2f",
+   "3acbc117ed99dd56",
+   "497de88c4593576e",
+   "5bdb153b2db36f03",
+   "5fe7164c57291465",
+   "632b57ef50b8e058",
+   "689f5f95c316e3b4",
+   "6a4e17288c745286",
+   "6cfb7984ffa1b3ec",
+   "aa632583b5efb7ac",
+   "b0a21a2be1ae6195",
+   "ba421415a2d48613",
+   "c89e5b87c5823fe0",
+   "ce4e067f1513bbc8",
+   "d1987393733bba9f",
+   "db8e3782148968ed",
+   "dff93bd9c7e37fea",
+   "ef18b677833ba8bb",
+   "efd0719950acd782",
+   "fe1c9c98dbcd3b8d"
+  ],
+  "32": [
+   "84687ddb530cd4bf"
+  ],
+  "48": [
+   "0ee1d37dc0f90263",
+   "3a7a6770279bcd9b",
+   "657d1cdae5ebd6c6",
+   "c0e74ae601b4498a",
+   "c5004f0831da4b11",
+   "f3f6ee04a8f23983"
+  ]
+ }
+}

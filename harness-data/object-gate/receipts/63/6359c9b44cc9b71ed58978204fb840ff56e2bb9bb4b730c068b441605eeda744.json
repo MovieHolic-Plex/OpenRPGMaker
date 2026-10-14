@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6359c9b44cc9b71ed58978204fb840ff56e2bb9bb4b730c068b441605eeda744",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "드릴 프레스(세운 기둥 + 둥근 작업대)",
+ "label": "steampunk-city/sp-drill-press",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "drill press (head assembly, column, table, and base)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire machine is drawn in pure 2D front elevation. The top head unit has no visible top plane (only a rounded 2D cap silhouette), the base has a flat vertical front face with no top surface, and the work table lacks an elliptical top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7390
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "drill press head and column assembly",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main head casing (rows 1-14) and base (rows 24-30) are drawn in pure front elevation with no visible horizontal top surface (only a 1px outline curve at the top). The round work table in the middle shows a top surface, but the main body volume lacks one.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8226
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "drill press (motor head, column, work table, and base)",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top motor housing and the base are drawn in flat front elevation. The top surface of the head is at most 2px of rounded cap line (rows 2-3) before the vertical face with the yellow meter/visor begins at row 4, and the rectangular base (rows 24-30) has no visible top surface at all.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 10395
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "drill press machine (head and base)",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The head of the drill press and its bottom base are both drawn in pure front elevation without any visible top horizontal surfaces. The top head is drawn as a flat rounded dome/cylinder face, and the base is a flat front-facing rectangle with no receding top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8304
+  }
+ ],
+ "decidedAt": "2026-10-13T18:44:00.637Z",
+ "cells": {
+  "16": [
+   "3565ee25b2db1829",
+   "c3e324e21598725d"
+  ],
+  "24": [
+   "1e89f7a80aaa2dcb",
+   "232819800c8a47fd",
+   "484c139ba25f05a4",
+   "4b82614d11053f5a",
+   "4faa56bc07e20f8e",
+   "661cbab82d0c753b",
+   "6e1c5e5ae9a70592",
+   "8e69ae70e9160865",
+   "a2cdcb999b887161",
+   "ba268cd24b3a9d21",
+   "d4bff90e269f9e14",
+   "df6d475bfe421b3a"
+  ],
+  "32": [
+   "02087f63a7f4d08a",
+   "038b5a40c3c6c060",
+   "0480f12e94bbf9d4"
+  ],
+  "48": [
+   "081c73f8233afe03",
+   "496dca6792ca9433",
+   "94847bacc6fc38dc",
+   "c1aa4e9d24adcc0d",
+   "c40fdf572a406116",
+   "d9a5491fb1df7839"
+  ]
+ }
+}

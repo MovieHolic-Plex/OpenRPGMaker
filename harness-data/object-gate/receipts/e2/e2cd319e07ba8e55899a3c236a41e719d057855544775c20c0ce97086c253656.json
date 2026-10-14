@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e2cd319e07ba8e55899a3c236a41e719d057855544775c20c0ce97086c253656",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "small pile of three skulls and crossed bones",
+ "label": "pirate-isles/pi-skull-pile",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pile of skulls",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All three skulls are drawn in pure front elevation with eye sockets and nasal cavities facing directly forward toward the viewer. There is no foreshortened top surface showing the cranium from above (only 1-2px of forehead above the eyes).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4557
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pile of three skulls",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All three skulls are drawn facing dead-ahead in pure front elevation with eyes looking straight at the camera. The craniums show no foreshortened top surface, and the pile is stacked flatly in 2D like a side-scroller sprite rather than receding in 3/4 top-down depth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4726
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pile of three skulls",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The skulls are stacked in a 2D pyramid and drawn straight-on in flat front elevation with square front-facing eye sockets and no top-down foreshortening of the craniums.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6047
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pile of three skulls and bones",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All three skulls are drawn facing dead-ahead at eye level as in a 2D side-scroller, with large centered eye sockets and vertical stacking rather than receding across the floor plane in 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6239
+  }
+ ],
+ "decidedAt": "2026-10-13T19:28:41.190Z",
+ "cells": {
+  "16": [
+   "8faf43ed72e2f721"
+  ],
+  "24": [
+   "1180c29ba6bf1be8",
+   "2495a955d76abb49",
+   "4a519fedd809744f",
+   "54169d24cd452a66",
+   "69dda115556b7376",
+   "6ba9f617f5c814c4"
+  ],
+  "32": [
+   "082dd18084170857",
+   "1aa5e889eeac2497",
+   "58c9aff6ab1bcb49",
+   "709ac285f4db93bd",
+   "7873e4673c7b5e16",
+   "ea70b2e91037f84a"
+  ],
+  "48": [
+   "0c9e4f718e5d7d99",
+   "1de2b485b35df539",
+   "6afe31c182cf70f9",
+   "836ae0ec68893f5d",
+   "8c807ecbf6c937e7",
+   "b5ad2530f34653cd"
+  ]
+ }
+}

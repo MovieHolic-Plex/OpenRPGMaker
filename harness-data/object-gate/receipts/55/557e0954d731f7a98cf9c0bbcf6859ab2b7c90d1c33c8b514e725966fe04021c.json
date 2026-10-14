@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "557e0954d731f7a98cf9c0bbcf6859ab2b7c90d1c33c8b514e725966fe04021c",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "쓰레기통(철망 원통 + 덮개)",
+ "label": "modern-campus/mc-trash-bin",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical trash can with lid",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in flat front elevation with horizontal bands. The lid (rows 1-3) is drawn as a flat trapezoid/rectangle with a 1px horizontal black line at the top, showing zero elliptical foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5435
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "trash can with lid",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylinder and lid are drawn entirely in front elevation with perfectly horizontal top and bottom boundaries, showing no foreshortened elliptical top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5350
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "trash can with lid",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylindrical body and lid are drawn with flat horizontal straight lines at top and bottom (rows 1, 4, 12, 14) with no foreshortened elliptical top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5914
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "trash can with cylindrical body and lid",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylindrical body and lid are drawn as flat rectangles/trapezoids in pure front elevation with straight horizontal edges at rows 1, 4, and 12, showing no foreshortened top ellipse.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5520
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.869Z",
+ "cells": {
+  "16": [
+   "f273ec2fb93d5c2e"
+  ],
+  "24": [
+   "0a5b623f51bc2e46",
+   "21d89eeda69259d6",
+   "2527202292bbc0b1",
+   "3022e20bcaa19c4b",
+   "967c89ce6ba7a0bc",
+   "9db9e5b1b27e7663"
+  ],
+  "32": [
+   "34d3be050e42c0ef",
+   "4c6c364b8f9d9972",
+   "630a955639097077",
+   "9c53d309cdd06e48",
+   "a52aa586bc45b3be",
+   "ff54029acaebbe79"
+  ],
+  "48": [
+   "15eb4ba24fd74da8",
+   "89f9846c589cbafe",
+   "904acbb716c359c8",
+   "ab6731e43bf3f71f",
+   "ddb4e68110f6ea0c",
+   "ee308af7849eb69b"
+  ]
+ }
+}

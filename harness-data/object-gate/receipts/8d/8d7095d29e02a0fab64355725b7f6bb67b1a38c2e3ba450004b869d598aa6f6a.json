@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8d7095d29e02a0fab64355725b7f6bb67b1a38c2e3ba450004b869d598aa6f6a",
+ "width": 48,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "벽난로(돌 벽난로 + 넓은 선반 + 화덕 바닥 + 불) (프레임 3)",
+ "label": "steampunk-city/sp-fireplace-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone fireplace with mantel shelf and hearth",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 13,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mantel shelf shows a clear top surface spanning rows 1-5 (5 source pixel rows) upon which candles and decorations sit, supported by a 2px lip (rows 6-7). The hearth base also shows a 4-row top surface (rows 26-29), and the firebox opening shows interior depth on the right wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6027
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone fireplace with mantel shelf and hearth",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mantel shelf clearly displays a 5-row top horizontal surface (rows 1-5) upon which objects rest, complemented by a projecting 4-row hearth surface at the base (rows 26-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8833
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone fireplace with mantel shelf and hearth",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mantel shelf provides a clear 5-row top horizontal surface (rows 1-5) holding decorative objects, and a 4-row hearth surface is visible at the bottom (rows 26-29), matching 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6147
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone fireplace with mantel shelf and hearth",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mantel shelf shows a clearly visible horizontal top surface across rows 1-5 (5 rows tall) on which candles and ornaments rest, followed by the shelf front edge on rows 6-8. Additionally, the hearth slab at the bottom shows a 4-row horizontal surface (rows 26-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6435
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:44.595Z",
+ "cells": {
+  "16": [
+   "0df990585c4791ca",
+   "626f0114cecc25b4",
+   "771cb8d8443ca38b",
+   "7e506ad39478a630",
+   "a3752c5cd2fc6bf1",
+   "db2f3dee8a26cd39"
+  ],
+  "24": [
+   "0beda3679b7ee7bc",
+   "0fb2c018c9f133df",
+   "3fad78d0187cbf7d",
+   "4a96416e35ce5d18",
+   "b10b10374434c87c",
+   "cc8dee6470e4f390",
+   "e3a1782ed75d2741",
+   "ea2fd37a097116e8"
+  ],
+  "32": [
+   "2b8899b189ab4040",
+   "58b71f4c3c497cf0",
+   "862e19cbe950b795",
+   "8de5068396a36631",
+   "a1e18bb9f98f0ee9",
+   "d89d43cf587325ae"
+  ],
+  "48": [
+   "0e541036da09eb39",
+   "f44709d0d448773f"
+  ]
+ }
+}

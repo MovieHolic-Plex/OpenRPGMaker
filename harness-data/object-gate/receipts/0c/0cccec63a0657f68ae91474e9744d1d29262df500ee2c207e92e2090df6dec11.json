@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0cccec63a0657f68ae91474e9744d1d29262df500ee2c207e92e2090df6dec11",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "mounted swordfish trophy on a carved wooden wall plaque",
+ "label": "pirate-isles/pi-fish-trophy",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mounted swordfish trophy on wooden wall plaque",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted trophy plaque viewed flat against a vertical wall surface, correctly categorized as wall_mounted.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4562
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden wall plaque with mounted swordfish trophy",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted plaque and swordfish trophy are mounted flat against a vertical north wall, which is standard for wall-hanging decor in top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4688
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden plaque with mounted swordfish",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted plaque with swordfish trophy viewed flat against the wall as appropriate for wall decorations.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10418
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "shield-shaped wooden wall plaque with mounted swordfish",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted trophy plaque drawn flat against the wall plane as appropriate for the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4023
+  }
+ ],
+ "decidedAt": "2026-10-13T19:28:41.189Z",
+ "cells": {
+  "16": [
+   "b7811ca2a90bfeb8"
+  ],
+  "24": [
+   "046c3aa88e1916e4",
+   "31ea401a12fb73b9",
+   "4ba9bc005d5efbe1",
+   "8f0c90c458a5bac2",
+   "901a21032a451a90",
+   "daacc8d84ed4fdd9"
+  ],
+  "32": [
+   "5d73e1ae608bdd27",
+   "b095ff434f760348",
+   "c20f92d452047df1",
+   "dd9e797350401a9b",
+   "eb3f41e60a526c5c",
+   "f7a9bb42b54654ac"
+  ],
+  "48": [
+   "0ba141f5e905344a",
+   "17415ddf5046a52b",
+   "575b167b6331a429",
+   "644bd13341ddafd1",
+   "6f78e7a20306c734",
+   "8a1868cdd2b6ab89"
+  ]
+ }
+}

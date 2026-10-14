@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5beb4fb40b7fa173333a4b50fdef0cec85cdf82fb2d628d91cf8eea48db0e048",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "화물 상자(윗면 + 앞면 띠)",
+ "label": "sf-station/sf-cargo-crate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cargo crate",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the crate clearly occupies rows 2 to 9 (8 rows tall), with the south front face taking up rows 10 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8279
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden cargo box",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid surface is prominently shown from rows 2 to 9 (8 rows tall), brightly lit from above, while rows 10 to 15 show the darker front face with banding.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6834
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cargo crate",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the crate is clearly depicted with lighter wood tones spanning rows 2 to 9 (8 pixels tall), while the front face occupies rows 10 to 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5514
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cargo box / crate",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the crate occupies rows 2-9 (8 rows tall), while the front face with bands and latch details occupies rows 10-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5870
+  }
+ ],
+ "decidedAt": "2026-10-13T15:15:22.114Z",
+ "cells": {
+  "16": [
+   "88b720e94a5df918"
+  ],
+  "24": [
+   "09fe3296b1ebe2a2",
+   "3886f2de953c8fce",
+   "5a9c66f1ab95b05c",
+   "874f3cb68888cf42",
+   "db405a82fc5e2464",
+   "e74ef5e2ff226b97"
+  ],
+  "32": [
+   "2e7d08222332aa32",
+   "46871db3fc772bc1",
+   "a2e09b24457ec0fb",
+   "c787b23619c10c89",
+   "ca0ffd3ebbd28663",
+   "d9aa3eff605424c7"
+  ],
+  "48": [
+   "2d2e37d33fa2691e",
+   "6cb536161386d103",
+   "832aac12291d3bce",
+   "c57ade6a3c0b300f",
+   "c857c06bafaa63f7",
+   "fe47bd55b6e6c53b"
+  ]
+ }
+}

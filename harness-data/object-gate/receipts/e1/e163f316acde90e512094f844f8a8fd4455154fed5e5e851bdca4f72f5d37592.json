@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e163f316acde90e512094f844f8a8fd4455154fed5e5e851bdca4f72f5d37592",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "stone bridge deck with parapets seen from above (flat walkway)",
+ "label": "sky-island/si-sbridge",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone bridge walkway surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat stone pavement/walkway viewed from above spanning the full 16x16 tile with no vertical elevation or receding isometric faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4857
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone bridge deck / walkway surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile depicts flat stone pavers/deck seen from above with a dark stain or crack pattern across the center.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3314
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone bridge walkway / paved ground surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile depicts flat stone pavers viewed from above with a dark stain/puddle; it functions properly as a flat floor/deck surface in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3146
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone bridge deck walkway",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a flat stone bridge surface/walkway viewed from above spanning the full 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3166
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.983Z",
+ "cells": {
+  "16": [
+   "331931a7ae195fa6"
+  ],
+  "24": [
+   "0d42499172626f6a",
+   "0e160247cfdb653d",
+   "1fba328a4d72fbab",
+   "994ddf7e684c841f",
+   "a5b5be75dbf09b65",
+   "a87e293b33f27555"
+  ],
+  "32": [
+   "487c09764c7ccbc8",
+   "5d47b15ee36e302b",
+   "d08c84fd467e38c5",
+   "df70678bf9fca928",
+   "e4035918abb167bb",
+   "fffe13cf922c49b3"
+  ],
+  "48": [
+   "7deb9ac51ade0108",
+   "90246f8d568928b8",
+   "98eb1d4947599389",
+   "9cfee0dfc39760b4",
+   "b705bc37e61aefc1",
+   "bad63b191e9cc55c"
+  ]
+ }
+}

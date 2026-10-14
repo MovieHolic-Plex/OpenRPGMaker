@@ -1,0 +1,127 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4e2b9c3a564d525fd89952345ef525dabe0b11298aee5f29ae4ea4a231a4946c",
+ "width": 16,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "걸린 초롱(붉은)",
+ "label": "sengoku-edo/se-lantern-hang",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hanging paper lantern",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern body, caps, and rib lines are drawn completely flat horizontally with 0 rows of visible top surface on either the body or the top cap, showing a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 4749
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hanging paper lantern",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern hangs from a cord rather than being mounted flat to a wall. Its top cap and ribbed bands are drawn as perfectly straight horizontal pixel lines with no elliptical curvature or visible top surface, resulting in a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 5728
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hanging paper lantern",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern body and caps are drawn with perfectly straight horizontal lines and rectangular caps with 0 rows of visible top surface or elliptical curvature, making it a pure front elevation. It is also a hanging object rather than mounted flat on a wall.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 3259
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hanging paper lantern",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern hangs from a cord from above rather than being mounted flat on a wall. The 3D cylindrical lantern body is drawn in pure front elevation with completely flat horizontal ribs and caps, showing no top surface or curved elliptical rings expected in 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 5444
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.079Z",
+ "cells": {
+  "16": [
+   "390452cead79dcda",
+   "9e45a0860fdf1f7c"
+  ],
+  "24": [
+   "009df0d6dfc5fecf",
+   "1a20c81f4664277b",
+   "57f4d5cfd9cc0fba",
+   "89c83bbb74e67454",
+   "9af76d41f4340909",
+   "a7f88b26527cac9f",
+   "be329905dfb5eb86",
+   "c15760e3153c8d83",
+   "df16e1b2cf79a75c"
+  ],
+  "32": [
+   "3be8e85cc530cd40",
+   "af12feedae59a28d",
+   "c41f22722e664c19"
+  ],
+  "48": [
+   "029a46ff967b3dbc",
+   "0e1b59cf4b13e64c",
+   "3ac1d41b290d231d",
+   "4961747a7fe990ee",
+   "50a7f498353ed0df",
+   "988fac85109484f2"
+  ]
+ }
+}

@@ -1,0 +1,47 @@
+{"png": "si-tree-round.png", "kind": "organic", "name": "round leafy tree", "label": "sky-island/si-tree-round"}
+{"png": "si-tree-blossom.png", "kind": "organic", "name": "round blossom tree with pink flowers", "label": "sky-island/si-tree-blossom"}
+{"png": "si-tree-pine.png", "kind": "organic", "name": "conifer pine tree", "label": "sky-island/si-tree-pine"}
+{"png": "si-tree-young.png", "kind": "organic", "name": "small young tree", "label": "sky-island/si-tree-young"}
+{"png": "si-bush.png", "kind": "organic", "name": "round green bush", "label": "sky-island/si-bush"}
+{"png": "si-bush-flower.png", "kind": "organic", "name": "round bush with small flowers", "label": "sky-island/si-bush-flower"}
+{"png": "si-flowers-a.png", "kind": "organic", "name": "small flower patch on the ground (flat decal)", "label": "sky-island/si-flowers-a"}
+{"png": "si-flowers-b.png", "kind": "organic", "name": "small flower patch on the ground (flat decal)", "label": "sky-island/si-flowers-b"}
+{"png": "si-tallgrass.png", "kind": "organic", "name": "tall grass tufts on the ground (flat decal)", "label": "sky-island/si-tallgrass"}
+{"png": "si-rock-small.png", "kind": "organic", "name": "small mossy boulder", "label": "sky-island/si-rock-small"}
+{"png": "si-rock-big.png", "kind": "organic", "name": "large mossy boulder", "label": "sky-island/si-rock-big"}
+{"png": "si-crystal-small.png", "kind": "organic", "name": "small blue crystal cluster growing from the ground", "label": "sky-island/si-crystal-small"}
+{"png": "si-crystal-cluster.png", "kind": "organic", "name": "tall amethyst crystal cluster on a rock", "label": "sky-island/si-crystal-cluster"}
+{"png": "si-crystal-pylon.png", "kind": "figure", "name": "glowing crystal shard hovering above a carved stone pedestal", "label": "sky-island/si-crystal-pylon"}
+{"png": "si-well.png", "kind": "container", "name": "round stone well with small wooden roof", "label": "sky-island/si-well"}
+{"png": "si-fence-h.png", "kind": "frame", "name": "wooden rail fence segment (east-west)", "label": "sky-island/si-fence-h"}
+{"png": "si-fence-v.png", "kind": "frame", "name": "wooden rail fence segment (north-south)", "label": "sky-island/si-fence-v"}
+{"png": "si-fence-w.png", "kind": "frame", "name": "wooden fence end post", "label": "sky-island/si-fence-w"}
+{"png": "si-fence-e.png", "kind": "frame", "name": "wooden fence end post", "label": "sky-island/si-fence-e"}
+{"png": "si-lamppost.png", "kind": "column", "name": "street lamp post seen from above-front: wide flat square lid on top of the lantern (top surface clearly visible), glowing glass, round stone foot", "label": "sky-island/si-lamppost"}
+{"png": "si-banner.png", "kind": "column", "name": "banner pole seen from above-front: flat square brass cap on top (top surface visible), square stone base with flat top, hanging cloth", "label": "sky-island/si-banner"}
+{"png": "si-signpost.png", "kind": "column", "name": "wooden signpost seen from above-front: square post with visible cut top, arrow boards with visible top edges, stone base", "label": "sky-island/si-signpost"}
+{"png": "si-bench.png", "kind": "seat", "name": "wooden park bench seen from above-front", "label": "sky-island/si-bench"}
+{"png": "si-barrel.png", "kind": "round_body", "name": "wooden barrel seen from above-front: large oval lid with planks clearly visible on top, iron hoops", "label": "sky-island/si-barrel"}
+{"png": "si-crate.png", "kind": "box", "name": "wooden crate seen from above-front", "label": "sky-island/si-crate"}
+{"png": "si-crates.png", "kind": "box", "name": "stack of wooden cargo crates", "label": "sky-island/si-crates"}
+{"png": "si-haybale.png", "kind": "round_body", "name": "upright round hay bale seen from above-front: oval top with spiral straw clearly visible", "label": "sky-island/si-haybale"}
+{"png": "si-crop-sprout.png", "kind": "organic", "name": "rows of young seedlings on farm soil (organic)", "label": "sky-island/si-crop-sprout"}
+{"png": "si-crop-cabbage.png", "kind": "organic", "name": "rows of cabbages (organic)", "label": "sky-island/si-crop-cabbage"}
+{"png": "si-crop-wheat.png", "kind": "organic", "name": "rows of ripe wheat (organic)", "label": "sky-island/si-crop-wheat"}
+{"png": "si-cart.png", "kind": "other", "name": "wooden hand cart seen from above-front: open cargo bed with floor boards and crates visible from above, big wheels", "label": "sky-island/si-cart"}
+{"png": "si-bollard.png", "kind": "round_body", "name": "iron mooring bollard seen from above-front: big flat oval cap top, rope wound around", "label": "sky-island/si-bollard"}
+{"png": "si-ropecoil.png", "kind": "flat", "name": "coiled rope lying on the deck (flat decal)", "label": "sky-island/si-ropecoil"}
+{"png": "si-windsock.png", "kind": "column", "name": "windsock pole seen from above-front: flat square iron cap on top (top surface visible), square stone base block with a deep flat top, striped sock", "label": "sky-island/si-windsock"}
+{"png": "si-airship.png", "kind": "structure", "name": "docked airship seen from above-front: large wooden deck seen from above with hatch and crates, hull side band below, gas balloon floating above the back of the deck", "label": "sky-island/si-airship"}
+{"png": "si-roots-hang.png", "kind": "organic", "name": "tangle of roots hanging down from a floating island (organic)", "label": "sky-island/si-roots-hang"}
+{"png": "si-chain-hang.png", "kind": "other", "name": "iron chain hanging from an island: iron ring plate at the top and a square stone anchor weight with a visible flat top at the bottom", "label": "sky-island/si-chain-hang"}
+{"png": "si-cloud-puff-s.png", "kind": "organic", "name": "small fluffy cloud floating in the sky (organic)", "label": "sky-island/si-cloud-puff-s"}
+{"png": "si-cloud-puff-m.png", "kind": "organic", "name": "fluffy cumulus cloud floating in the sky (organic)", "label": "sky-island/si-cloud-puff-m"}
+{"png": "si-cloud-puff-l.png", "kind": "organic", "name": "large fluffy cumulus cloud floating in the sky (organic)", "label": "sky-island/si-cloud-puff-l"}
+{"png": "si-statue.png", "kind": "figure", "name": "stone statue of a winged bird standing on a wide square plinth whose flat top is clearly visible", "label": "sky-island/si-statue"}
+{"png": "si-stele.png", "kind": "column", "name": "carved stone stele with star emblem", "label": "sky-island/si-stele"}
+{"png": "si-birdbath.png", "kind": "container", "name": "stone birdbath seen from above: wide round bowl with water clearly visible inside, short pedestal", "label": "sky-island/si-birdbath"}
+{"png": "si-beehive.png", "kind": "box", "name": "wooden beehive box seen from above-front: large flat roof lid on top clearly visible, entrance slot", "label": "sky-island/si-beehive"}
+{"png": "si-flowerpot.png", "kind": "container", "name": "terracotta pot seen from above: wide round rim with dark soil visible inside and a few flowers", "label": "sky-island/si-flowerpot"}
+{"png": "si-pond.png", "kind": "terrain", "name": "small pond with stone rim and lily pads (terrain)", "label": "sky-island/si-pond"}
+{"png": "si-stall.png", "kind": "structure", "name": "market stall with striped awning and goods on counter", "label": "sky-island/si-stall"}

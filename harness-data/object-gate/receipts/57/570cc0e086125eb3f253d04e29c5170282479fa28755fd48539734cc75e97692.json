@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "570cc0e086125eb3f253d04e29c5170282479fa28755fd48539734cc75e97692",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "금박 후스마 벽(성 알현실, 금 바탕 소나무)",
+ "label": "sengoku-edo/se-wall-fusuma-gold",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fusuma wall panels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a wall face terrain tile (sliding screen wall with pine tree motif) framed by top and bottom rails. As standard vertical wall terrain, it correctly depicts the vertical wall surface in 3/4 view without isometric projection.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7692
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fusuma sliding screen wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face tile correctly categorized as terrain. In 3/4 perspective JRPG tilesets, wall faces are flat vertical surfaces bounded by top and bottom beams.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4850
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fusuma wall screens",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Fusuma sliding screen wall face correctly classified as terrain (wall face). Vertical wall tiles in RPG Maker style naturally display the vertical front face between horizontal ceiling/floor beams.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4416
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fusuma wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile depicting gold-leaf fusuma sliding screen panels with a pine branch motif, bounded by wooden rails at the top and bottom. As standard wall face terrain, it properly represents a vertical surface in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8974
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.075Z",
+ "cells": {
+  "16": [
+   "2c7181e5b2504d0b",
+   "78266e3f43aaf2a8",
+   "ced9d2c7c3e18bb1",
+   "dafb99a92b178b52"
+  ],
+  "24": [
+   "0345e0f0d9c99e32",
+   "055f2615dfe187c4",
+   "149e34489b6d87e4",
+   "151daea9e0e9c06b",
+   "1b25f4c218fcdb72",
+   "3b6637ba29c5995a",
+   "4316bf04f79048e7",
+   "48cdf20dff3a46c2",
+   "69e7975f7e6048b2",
+   "7f9351db3df730f0",
+   "91274adbee4d5cab",
+   "92f62611a0d3bbf2",
+   "9a88ede8f77eda94",
+   "9c863552dd38d927",
+   "a3abb6745f7f6803",
+   "af9c242779cd9e5f",
+   "bd525bdc886ee1b2",
+   "be1ed02128a4d0d1",
+   "c33dcde0e387b31b",
+   "c5edaed974836cc7",
+   "ccc16fb3c7c5edd9",
+   "d79142bded09aa8b",
+   "dd304355dbb5e06f",
+   "df31592d85df4e7e"
+  ],
+  "32": [
+   "73a494f1169d1c6e"
+  ],
+  "48": [
+   "3baf2301875f6b3f",
+   "57b3b6e2aece96ed",
+   "a20243843ceabab7",
+   "c1f37fb5a47cde96",
+   "dd96e597a849d1cf",
+   "ebe247876eabd07f"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e34a1107f9c5427568911daebe9821340d0efcdbfc63402740063b6084861886",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "rows of cabbages (organic)",
+ "label": "sky-island/si-crop-cabbage",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cabbage row",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabbages are rendered as flat 2D patterns with no foreshortened top surface or depth, lacking the top-and-front 3/4 view volume required for standing organic objects.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9054
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cabbage rows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabbage rows lack 3/4 perspective; they are rendered either as a flat front view or flat top-down tiles with no distinct foreshortened top surface versus front face (top_rows is 0).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6033
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rows of cabbage heads growing in garden furrows",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabbages are viewed from above in 3/4 top-down perspective, clearly displaying their upper leafy rosettes across 4 rows of height (rows 2-5 and 10-13) above ground/furrow shading. Not a front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10590
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cabbages in garden rows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabbages are rendered as flat 2D icons with no 3/4 perspective; they lack any distinct top surface foreshortened against a south-facing front face, appearing either as a flat front elevation or pure top-down view.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9294
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.431Z",
+ "cells": {
+  "16": [
+   "c16f8010a638a27a"
+  ],
+  "24": [
+   "06dceb5f3ef2450e",
+   "27bceba55d5b6290",
+   "44c165c263b69037",
+   "70d24d28e794fe60",
+   "958cb40fdfcf4592",
+   "f62976f08284e3c2"
+  ],
+  "32": [
+   "4c45f5e52d840bcf",
+   "53318b99ecb0f88f",
+   "80a109645267f2f0",
+   "aaeccbe252b8c516",
+   "b8331952de72859d",
+   "c71f53732b7e1724"
+  ],
+  "48": [
+   "04a35b7e768737cf",
+   "0689e52b21495b72",
+   "ca20762e304cd47f",
+   "cc93afa2fbf5ed45",
+   "f89dfdcdcf459f39",
+   "fe8a08164679abcd"
+  ]
+ }
+}

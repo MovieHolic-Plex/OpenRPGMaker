@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6be11f804863959349b082e828807c894a3b1b93c0efff54bf154c5c57e4abfb",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "신호 비콘(받침 상자 위에 램프 상자를 올린 착륙장 신호등)",
+ "label": "sf-station/sf-beacon",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lower base box and upper lamp box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the upper lamp box and the lower base box are drawn as flat front-facing rectangles. Neither shows a foreshortened top surface (the top of the orange box is just a 1px border at row 1, and the base box shows only a vertical front panel spanning rows 6-14).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 7760
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "base box and lamp box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the base box (rows 6-14) and the upper lamp box (rows 1-7) are drawn in pure front elevation with no visible horizontal top surfaces seen from above (0-1px edge lines only).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6873
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stacked beacon boxes (base box and lamp box)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the upper lamp box and the lower base box are drawn in pure front elevation. The upper box has only a 1px border at row 1 without any visible top surface, and the lower grey box has no distinction between a top plane and front face, rendering both volumes completely flat.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 8236
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "base box with lamp box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the base box and the upper lamp box are drawn in pure front elevation without any visible top surface (row 1 is merely a 1px outline, and the base box shows only a flat front panel from rows 6 to 14).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 11403
+  }
+ ],
+ "decidedAt": "2026-10-13T15:32:20.332Z",
+ "cells": {
+  "16": [
+   "3606c5c605dfff1f"
+  ],
+  "24": [
+   "2a84f23b80ecaddb",
+   "32709abe8490a312",
+   "38115ce21f7c2546",
+   "3e50e1ef6e5adec2",
+   "d123f34b3e3d4b07",
+   "fffcba1793ba5fa7"
+  ],
+  "32": [
+   "0696d25012376c82",
+   "401d441c0e632541",
+   "7760a04fc45a16a0",
+   "947ee93fdc712add",
+   "a5a8e095a3c61bac",
+   "c0b302708f70e6df"
+  ],
+  "48": [
+   "329de8a120001dbd",
+   "417082613f5cf11c",
+   "4757dab3119cd929",
+   "4b688564d9e13001",
+   "55edc92c735fcf09",
+   "6ee7dac98ce67b97"
+  ]
+ }
+}

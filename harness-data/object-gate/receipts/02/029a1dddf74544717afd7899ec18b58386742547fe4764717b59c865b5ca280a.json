@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "029a1dddf74544717afd7899ec18b58386742547fe4764717b59c865b5ca280a",
+ "width": 32,
+ "height": 16,
+ "kind": "seat",
+ "name": "긴 벤치(쿠션 윗면 + 받침 상자)",
+ "label": "sf-station/sf-bench",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cushioned bench",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cushion top surface is clearly visible from above, spanning rows 2 through 8 (7 rows tall), above the south front face of the cushion (row 9) and the front face of the base box (rows 11-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8272
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cushioned bench with base",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cushion seat surface is clearly rendered from row 1 to row 8 (8 rows tall), followed by a front cushion rim and the base box below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7288
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cushion bench with base box",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The turquoise cushion surface seen from above occupies rows 2 to 8 (7 pixel rows), followed by the front edge of the cushion at row 9 and the front face of the supporting base box on rows 10-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7431
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cushioned bench seat on base box",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cushion seat surface is clearly visible from row 2 to row 8 (7 rows tall) with interior panel shading, resting above its south-facing cushion edge (row 9) and supporting base box (rows 10-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7281
+  }
+ ],
+ "decidedAt": "2026-10-13T15:25:00.448Z",
+ "cells": {
+  "16": [
+   "16eaba91d85fc417",
+   "80e1b48294b3ac4f"
+  ],
+  "24": [
+   "1cd8b219e41d65b8",
+   "2cfe714a17356aa2",
+   "3f933c39ad31dd98",
+   "64b5c68389d6b221",
+   "66d144d580185113",
+   "94f8be9c3587a9a4",
+   "a0097571bc577d74",
+   "a73d309c9058b4cb",
+   "c6107ac487ed9675",
+   "ea53577212ad7bd1",
+   "eeec636aedc3caaa",
+   "feaf30d315cd7530"
+  ],
+  "32": [
+   "168cb58cfe0b26cd",
+   "208cc1aa49def044"
+  ],
+  "48": [
+   "219bb88d465ac001",
+   "84b8c321d49af55f",
+   "87dde55e4153ec55",
+   "9c735d65c746e5c5",
+   "d201b6be995460e3",
+   "fdb3502bff1b5fe7"
+  ]
+ }
+}

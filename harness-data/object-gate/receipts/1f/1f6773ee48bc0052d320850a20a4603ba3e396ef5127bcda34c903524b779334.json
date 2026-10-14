@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1f6773ee48bc0052d320850a20a4603ba3e396ef5127bcda34c903524b779334",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "수경 재배 선반(윗면 + 잎 + 보라 재배등 + 물 트레이)",
+ "label": "sf-station/sf-hydroponic-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hydroponic cultivation shelf unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet/shelf unit has no visible top surface at rows 0-1 (only a 1px outer border and black outline). The entire unit and its compartments are drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6106
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hydroponic shelf unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet/shelf unit has no visible top surface (row 0 is only a 1px outline). Both the overall frame and the internal shelves/trays are drawn in pure flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5191
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hydroponic shelf unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet/shelf unit has no top surface; rows 0-1 are merely a 2px outline before immediately opening into the interior shelves, presenting a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5492
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hydroponic shelf unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet/shelf unit lacks any visible top surface (rows 0-1 are merely a 1px outline/edge). Both the upper and lower compartments and the control panel are depicted in pure flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6111
+  }
+ ],
+ "decidedAt": "2026-10-13T15:32:45.208Z",
+ "cells": {
+  "16": [
+   "24498ba0c0e02b98",
+   "70624b9de290fe0b",
+   "c7eeb89fc10526b4",
+   "f04951f8532328a2"
+  ],
+  "24": [
+   "0cf6b5431cad0222",
+   "30cd53e2f3c69452",
+   "40fe1ba785dac8bf",
+   "48df3406323d0bcc",
+   "4ac436b73bcc6bef",
+   "507acf869e1ca47b",
+   "52188a35f23e6669",
+   "5a8243da125d007f",
+   "5b95910670990cbd",
+   "5bb57c026e012bce",
+   "6fbcc52a9c618082",
+   "7e87fdd162d2632f",
+   "81867125f02f20ed",
+   "8a09f60b76012cc6",
+   "918eb1ba67db542a",
+   "971c58d83e4fdbde",
+   "a2338c6c9878105a",
+   "babf1f50832a4139",
+   "c9d8faa7b2a6e705",
+   "ce29942793332ea1",
+   "d4a85f779df87c0b",
+   "d6f35a3a88847ecc",
+   "ee01c4a0d4c3093e",
+   "fa2a076940104498"
+  ],
+  "32": [
+   "eeb344325ce3658a"
+  ],
+  "48": [
+   "13a2476a845cee11",
+   "23ef898c2bf017b7",
+   "3063079c8e60b6fe",
+   "57397a1c1370e2af",
+   "915f080687b25472",
+   "d8dd354ca7b3458d"
+  ]
+ }
+}

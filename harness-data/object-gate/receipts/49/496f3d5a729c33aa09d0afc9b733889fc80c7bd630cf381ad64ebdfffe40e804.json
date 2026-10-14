@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "496f3d5a729c33aa09d0afc9b733889fc80c7bd630cf381ad64ebdfffe40e804",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "조종 콘솔(윗면 계기 + 앞면 패널)",
+ "label": "sf-station/sf-console-desk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "control console desk",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The console clearly shows a foreshortened top surface across rows 2-8 containing screens and gauges, with a horizontal highlight edge at row 9, followed by a south-facing front panel from row 10-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4305
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "control console",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The console top surface with instrument screens occupies rows 2–8 (7 rows), separated by a highlighted front edge at row 9 from the vertical front face on rows 10–14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4347
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "control console desk",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The console has a clearly foreshortened top surface across rows 2–8 (7 rows) housing monitor/graph displays and an edge highlight at row 9, above a distinct vertical south face across rows 10–14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5179
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "control console with an instrument-covered top surface and a vertical front panel",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The console top spans rows 2 to 8 (7 pixels tall) displaying screens and instruments, bounded by an edge highlight on row 9, with the vertical front face extending below from row 10 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4416
+  }
+ ],
+ "decidedAt": "2026-10-13T15:13:19.239Z",
+ "cells": {
+  "16": [
+   "21ef5f77632f6a45",
+   "31e28e648ebb0852"
+  ],
+  "24": [
+   "1c552484ddb661ba",
+   "25120707b45f9381",
+   "3ac5dd93d4ca9b72",
+   "503d8ba6627053cb",
+   "77b7a1acc708ae59",
+   "7ef32cebdc609168",
+   "8ca636320f157dcc",
+   "8de9a48385a94ecf",
+   "aa6cd8d266c433be",
+   "ccf4c76c053162b6",
+   "cd5d6c0a99f975a9",
+   "e4fc55a64e2ab733"
+  ],
+  "32": [
+   "4cbdd5555c9c166e",
+   "4ff4ba486c94256d"
+  ],
+  "48": [
+   "19377ad3b7376c70",
+   "68da4d8341f86588",
+   "c12592e988ad7365",
+   "cfb018b902638271",
+   "da25842fd1c27910",
+   "edbbc498198b1f3b"
+  ]
+ }
+}

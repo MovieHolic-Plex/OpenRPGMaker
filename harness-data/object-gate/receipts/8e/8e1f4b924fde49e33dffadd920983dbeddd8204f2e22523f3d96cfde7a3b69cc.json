@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8e1f4b924fde49e33dffadd920983dbeddd8204f2e22523f3d96cfde7a3b69cc",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "시안 자판기(깊은 윗면 + 빛나는 진열창 + 색 캔 + 버튼)",
+ "label": "sf-station/sf-street-vending-cyan",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cyan vending machine",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the cabinet is clearly rendered across rows 2–6 (~5 source pixel rows deep) in a lighter top-lit cyan tone above the south-facing front panel (rows 8–31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10444
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn in straight architectural front elevation: rows 2-6 depict the front-facing illuminated header panel/canopy, rows 8-21 show the front beverage showcase and buttons, and row 25-27 is the dispensing slot. There is no visible top surface receding away from the viewer (only a 1px contour/outline at row 2).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8389
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1–6 show a 5–6 pixel deep illuminated/lighter horizontal top surface of the machine above the dark front edge at row 7. The front face extends from row 7 to 31 with drink shelves, buttons, and dispensing slot.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11121
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The vending machine is drawn as a flat front elevation. Rows 3-6 represent the machine's illuminated front header/marquee panel rather than a horizontal top surface, and the actual cabinet top is just a 1px cap line at row 2. The side outlines run completely straight and vertical from row 3 to 31 with no foreshortened top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11050
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:31.923Z",
+ "cells": {
+  "16": [
+   "5fc20a3a26d4a572",
+   "fba7c5e51445af8a"
+  ],
+  "24": [
+   "14bbf33d50ccff59",
+   "16df9491007b2f73",
+   "2de1cbd4f0e516ef",
+   "3f1fabf731826499",
+   "52e203dc319c888d",
+   "5816c11adf74cec5",
+   "6184c5f13a535d6f",
+   "7864767fceaf88a8",
+   "a4f7fde296f21e5b",
+   "d5773f8565f83816",
+   "ee67652236df666e",
+   "f82f28443b3f6d0a"
+  ],
+  "32": [
+   "217fae3172cf2329",
+   "61df32afe3991c4c",
+   "c9f1ed55152292fd"
+  ],
+  "48": [
+   "1ba04a6203a96b73",
+   "1bd7b8a5cbc819a8",
+   "299d9693d71f37e8",
+   "4942e3e7a5af19b5",
+   "7387ab83659acb11",
+   "b93bd2426c0fe440"
+  ]
+ }
+}

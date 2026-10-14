@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "842fbd50a98eca69192bce8c6398fdd08b6ee4107e210d83f269298206a630c8",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "rock cliff face tile under a floating island (terrain)",
+ "label": "sky-island/si-face-top",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rock cliff face tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a cliff/wall face terrain segment with dirt along the top edge and vertical rock face below. As terrain, it correctly represents a vertical surface in 3/4 view without isometric projection.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6160
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone cliff wall face with dirt overhang",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a vertical cliff or stone block wall face beneath an earthen layer, standard for JRPG wall/cliff autotile sets.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5409
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cliff face terrain tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting a vertical stone cliff face under dirt. As vertical cliff/wall terrain, standing object top-down projection rules do not apply.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3480
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cliff face / stone wall terrain under dirt edge",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile representing a vertical cliff/wall face beneath an overhang of dirt. As terrain, it is not a standing object subject to 3/4 top-down foreshortening rules.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4817
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.974Z",
+ "cells": {
+  "16": [
+   "35fb7d692ca64f9d"
+  ],
+  "24": [
+   "2ed143527763cd44",
+   "789346a2c422396e",
+   "c742c87c304c6a2a",
+   "c99277696d603182",
+   "f940a419b367179b",
+   "fc14b91750608232"
+  ],
+  "32": [
+   "06941b2d84c0fe76",
+   "1efd4779bbadbd55",
+   "4bb710ffcc17d4c5",
+   "50e0f5dd625a9a60",
+   "b4f2c3cef51a512e",
+   "fea556db8ee3f438"
+  ],
+  "48": [
+   "1cd44cc152a33996",
+   "446b0ce24391d9cb",
+   "4b4353014dd5cc9d",
+   "52db39c393f3aa52",
+   "5b44c7e9dcf714bb",
+   "c3989dcb7f157650"
+  ]
+ }
+}

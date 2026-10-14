@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a0c8dee0002e463652c6597f78dc73aab20357487552377d14c44bc7708e08b4",
+ "width": 32,
+ "height": 48,
+ "kind": "other",
+ "name": "large brass telescope on a tripod pointing up",
+ "label": "sky-island/si-telescope",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "telescope tube and tripod",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire telescope and tripod are drawn as a flat 2D side profile/elevation with no top surfaces visible (top_rows=0). The tripod legs spread entirely in the vertical 2D plane without foreshortened depth toward the viewer.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5333
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "telescope barrel and tripod",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The telescope and tripod are drawn in flat side elevation/profile view. There is no visible top surface or 3/4 perspective foreshortening on the barrel, mount, or tripod footprint.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6950
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "telescope tube and tripod mount",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The telescope and tripod are rendered purely in side elevation view with flat diagonal segments and flat tripod legs; no elliptical lens opening, mount surface, or top-down horizontal projection is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4508
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "telescope barrel and tripod",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The telescope and tripod are drawn in a flat side/front elevation profile with no visible horizontal top surfaces (e.g. on the mount or tripod) and no 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4419
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.565Z",
+ "cells": {
+  "16": [
+   "4cc8e5a00d27c8ec",
+   "5491735e093d853d",
+   "945e237bb3e2c29b",
+   "a548fa72e7aa14a3",
+   "ef715d331b2bf019"
+  ],
+  "24": [
+   "02b8e08e40222725",
+   "1a335dc8651e54f7",
+   "1f4f8f34351eab7e",
+   "309fb6833fe6d1a7",
+   "45914271195b5073",
+   "ad726626b9aa7002",
+   "b70aa8284b8a6875",
+   "c75378ca407adb15",
+   "d5535cfa7901f88f",
+   "e1bd3660e8c40a04",
+   "fe0482b7320c735c"
+  ],
+  "32": [
+   "565df35a7ee6c0e8",
+   "d3849801f3be9d34",
+   "dc24befcf6bb2998",
+   "e28f93f911b6f3be"
+  ],
+  "48": [
+   "06e72df7e32b38ba",
+   "9aa4a64254384386",
+   "ca4b1ad3b1adc991"
+  ]
+ }
+}

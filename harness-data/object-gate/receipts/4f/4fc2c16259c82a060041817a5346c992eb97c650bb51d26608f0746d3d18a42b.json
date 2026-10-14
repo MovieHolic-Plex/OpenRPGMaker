@@ -1,0 +1,134 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4fc2c16259c82a060041817a5346c992eb97c650bb51d26608f0746d3d18a42b",
+ "width": 32,
+ "height": 32,
+ "kind": "flat",
+ "name": "prehistoric stone-age raft",
+ "label": "prehistoric/ph-raft",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "log raft tied with ropes and diagonal pole",
+    "kind_matches": true,
+    "top_rows": 26,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The raft is a flat platform seen from above, consisting of horizontal logs bound by vertical ropes with a diagonal steering pole resting across them. Shading shows the cylindrical top surfaces foreshortened correctly from the 3/4 overhead perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10855
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden log raft with cross-ropes and a diagonal pole",
+    "kind_matches": true,
+    "top_rows": 26,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The raft is laid out across the horizontal ground/water plane from row 3 to row 28, displaying the full tops of the logs bound together with no side isometric perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5504
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "log raft with binding ropes and diagonal oar",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "A raft constructed of thick logs is a 3D structure, not a flat floor decal or mat. Each horizontal log is drawn with symmetric end-caps and uniform horizontal shading as either a pure front elevation or a direct 90-degree bird's-eye view, completely lacking 3/4 perspective foreshortening and a south face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 15026
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "raft of lashed logs",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The raft lies flat on the water plane with multiple parallel logs visible from above, lashed together with cross-bindings and a pole resting across the top.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5387
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.807Z",
+ "cells": {
+  "16": [
+   "81d29b5d7cdc0af7",
+   "85b47fbf319a428d",
+   "9769c00f0f21e694",
+   "e20c21f5b560685b"
+  ],
+  "24": [
+   "072d793b658f9220",
+   "08ee4b208233d45d",
+   "0f904ea66e866297",
+   "12c5260596f862f0",
+   "1f66d6c5cc99f7ce",
+   "2ed4625f93a247ac",
+   "44bd2aacb3920a68",
+   "522b3763877545b7",
+   "56cfe91814b68a35",
+   "84b2c751ce26a539",
+   "9c9b198de6cd3d30",
+   "aaa36234ba29e69d",
+   "b48a084e798eb805",
+   "b59c3575c843dec4",
+   "bc337aae139cb8c3",
+   "c10fd1c4018c01c8",
+   "c3d30778617b9367",
+   "c4c4e078fa159611",
+   "c51a5e83bc1a6a5c",
+   "cf2436a421915c69",
+   "d6a40c84a2147d40",
+   "d8014ac2d72a3b77",
+   "e3acade8a1e3a1fc",
+   "fbde0b8e666c3d1f"
+  ],
+  "32": [
+   "f3417d664ba47075"
+  ],
+  "48": [
+   "06c62ac674ca5df3",
+   "0c43212fc851a31a",
+   "4f8b1f32ceaef9ef",
+   "5e02e5fa48b65d5a",
+   "d48c76c152ecb9f2",
+   "ff27d0ab19a5d875"
+  ]
+ }
+}

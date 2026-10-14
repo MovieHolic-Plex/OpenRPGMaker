@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b6fef0ace50af5f90e1f71c4b84794a020b35608d1f402da02d699c078064c0f",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "차 가마(풍로 위 무쇠 솥)",
+ "label": "sengoku-edo/se-tea-kettle",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "아가리 안쪽이 안 보임",
+  "아가리 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron pot on stove",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brazier base is drawn as a flat square front elevation with no visible top surface, and the pot resting on it is depicted from a straight-on side/front view with no visible opening or foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 5696
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron pot on a portable stove (brazier)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the stove base and the iron pot are drawn in pure front elevation: the stove is a flat rectangle facing directly forward with no visible top surface around the pot, and the pot shows no top surface or visible opening from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 4985
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cast iron pot on stove",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the pot and the stove base are drawn in flat front elevation. There is no visible interior opening or horizontal top surface shown from the top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 5202
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron cauldron on portable stove",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cauldron and stove are drawn in pure front elevation with no visible top surface or opening into the pot from above. The lid/top of the cauldron is a 2D profile and the stove below is a flat square front view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 5387
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.077Z",
+ "cells": {
+  "16": [
+   "4c52c3bef5f6c16a",
+   "6f0e6819f5c66099"
+  ],
+  "24": [
+   "21c6fa1574cc5ef9",
+   "3acd2afeeefd0b51",
+   "4109a34b7f6db598",
+   "7b99db383606a86a",
+   "7bef819781f19d4a",
+   "96d7947bb84f768b",
+   "bf9155e183853bc2",
+   "c68ac118de08db57",
+   "ee0cc01ff2a5291f"
+  ],
+  "32": [
+   "48e72d7792c7ef64",
+   "c30bdc5b633a744e",
+   "f1bc43f732778ee6"
+  ],
+  "48": [
+   "4cd98c1eb8e16451",
+   "87fb6569834be4af",
+   "8f7bbb5b57e2bdac",
+   "98035457c8190370",
+   "a22cde61b66e6c83",
+   "f6a53fa040f6e7f6"
+  ]
+ }
+}

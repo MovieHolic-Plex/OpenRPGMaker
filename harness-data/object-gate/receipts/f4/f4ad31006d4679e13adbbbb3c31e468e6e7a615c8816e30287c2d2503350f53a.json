@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f4ad31006d4679e13adbbbb3c31e468e6e7a615c8816e30287c2d2503350f53a",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "지하실 덧문(땅에 비스듬한 쌍문)",
+ "label": "gothic_manor/gm-cellar-door",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "slanted cellar door with stone frame and south foundation face",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The slanted cellar door surface is viewed from above across rows 6-21 (16 rows tall), with a distinct vertical south foundation face below it at rows 22-27 (6 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4931
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "slanted cellar hatch with front stone base",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The slanted wooden hatch doors form the top surface seen from above (rows 6-21, 16 rows tall), while rows 22-28 form the vertical south face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5034
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cellar storm doors",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The slanted wooden door face forms the foreshortened top/angled surface from rows 6 to 21 (approx 16 rows tall), with a vertical south-facing base/retaining wall below it from rows 22 to 28.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3765
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cellar storm doors with stone surround and front foundation wall",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The slanted/top surface of the cellar doors and frame occupies rows 6-21 (~15 rows), clearly showing the doors from above, with a vertical south front face visible from row 22 to 28.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4083
+  }
+ ],
+ "decidedAt": "2026-10-13T16:24:27.174Z",
+ "cells": {
+  "16": [
+   "1ef9593b9d461de7",
+   "229ea3d086c0b4ee",
+   "58dcded15c3dbe2d",
+   "6aee53745eb1809c"
+  ],
+  "24": [
+   "10079f7bc012bd3f",
+   "15da4ab2d07f84b8",
+   "1a6a909381b81241",
+   "24de432397191715",
+   "43c1a2c4781f9605",
+   "561a3a78521a57c8",
+   "58a87e0f07f5a85e",
+   "66d74caf3fcb362d",
+   "726fc4aa31ebbc06",
+   "7ed884be735dd832",
+   "9b299d50ec5c1022",
+   "a923f017a2c6551f",
+   "aaa6d1f64ef03b36",
+   "ad4728d250437983",
+   "b119e0ae5cced952",
+   "ce6b68243f1071d6",
+   "cf82633233bd0a85",
+   "da119b30b00f0cd6",
+   "e0f9734a1f97aac7",
+   "ee3502b1c1c02f07",
+   "f1a1bd3548602744",
+   "f51d59250615e7ac",
+   "fdccf533b2db2ca7",
+   "fe6e82b5b01613ea"
+  ],
+  "32": [
+   "deb14548852acfb6"
+  ],
+  "48": [
+   "510978a5b8365893",
+   "609014813dc6aaf6",
+   "7abc303a2fe6d83c",
+   "8fc35d660fd1eb33",
+   "9728ade8100b0868",
+   "e5a6458d1c07c7a6"
+  ]
+ }
+}

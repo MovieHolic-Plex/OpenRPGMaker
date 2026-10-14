@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "db5ee691a367306d87fc1f3428830008dcdb059ff40785c76adca762c6839f8c",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "흙 운동장",
+ "label": "modern-campus/mc-dirt",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dirt ground tile with pebbles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a flat dirt ground surface with scattered pebbles across the entire 16x16 area, typical of top-down JRPG terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5014
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dirt ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a dirt sports field/ground with small pebbles across the entire 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3805
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dirt playground ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile representing dirt ground with pebbles/texture, viewed entirely from above spanning all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3602
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dirt ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a dirt ground surface across the full 16x16 grid.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4104
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.865Z",
+ "cells": {
+  "16": [
+   "7c8441f0eebc1e2b"
+  ],
+  "24": [
+   "03d297271c3f322d",
+   "44bb052fd13ee77a",
+   "728f4b94f63a484a",
+   "919ff8a5cd848c66",
+   "9276612302b1b819",
+   "d93ea8d75651cb48"
+  ],
+  "32": [
+   "4afdbc580d5e168c",
+   "4f3c2057ad669102",
+   "87ad7541c83a8f64",
+   "baa1381be02f6efa",
+   "c49418b14f3eb776",
+   "c52ee45218e3d34a"
+  ],
+  "48": [
+   "25ea1f8502a6f7f5",
+   "44b84ac5dcd5bb18",
+   "4fbe3b0c33ed6b27",
+   "67a3f4a944331ea4",
+   "e24b6951cba7351a",
+   "f87d83c0f439ecab"
+  ]
+ }
+}

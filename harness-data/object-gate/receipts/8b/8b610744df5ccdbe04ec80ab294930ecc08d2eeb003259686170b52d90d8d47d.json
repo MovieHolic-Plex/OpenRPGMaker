@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8b610744df5ccdbe04ec80ab294930ecc08d2eeb003259686170b52d90d8d47d",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "thick square wooden lantern post with a flat square top cap seen from above, glowing lamp hanging from a side arm, stone foot",
+ "label": "pirate-isles/pi-lantern-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "square wooden lantern post with cap and arm",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden post, its top cap, and the projecting side arm are drawn entirely in front elevation with no foreshortened top surface visible; the cap at rows 2-6 shows a frontal decorative profile rather than a top plane seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5711
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "square wooden post with top cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top cap of the wooden post (rows 2-6) is rendered in pure front elevation with horizontal banding and an arched/stepped silhouette rather than showing a foreshortened top surface viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5054
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden post with top cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top cap of the post (rows 2-6) is drawn in pure front elevation with vertical sides stepping out, showing no horizontal top surface seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5803
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden post with cap and side arm",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cap at rows 2-6 and the post are drawn entirely in front elevation with no visible top surface foreshortened from above. The horizontal arm and hanging lantern are also drawn in pure side/front profile.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5188
+  }
+ ],
+ "decidedAt": "2026-10-13T19:33:03.044Z",
+ "cells": {
+  "16": [
+   "78ab85b777ed83d4",
+   "9852839d16455a99"
+  ],
+  "24": [
+   "0809e226fd7dfbb6",
+   "274322e874af53c2",
+   "5f5bad68910d1076",
+   "64ebf3fc6d666a62",
+   "6ad7d3f113c5cb06",
+   "8d896ca6fdfa1e4d",
+   "9b69b99b08bbb947",
+   "af09af06ed67ef96",
+   "b59871013401c87f",
+   "bbf3d02c32e9fc57",
+   "cf687a836325588a",
+   "dabf6a4331816bf6"
+  ],
+  "32": [
+   "3b9d5045b3df9556",
+   "44fad8c302d7e78f",
+   "4d8068654b3d3dc1"
+  ],
+  "48": [
+   "370a0805c9c8daab",
+   "7f03c7d68d42f375",
+   "b29a45f6d1ef8500",
+   "ba7786ec7b90a43d",
+   "d81b8b9bb6cc5ecc",
+   "ea3b34f76c187bd7"
+  ]
+ }
+}

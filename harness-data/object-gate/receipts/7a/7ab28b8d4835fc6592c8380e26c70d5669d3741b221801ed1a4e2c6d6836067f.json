@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7ab28b8d4835fc6592c8380e26c70d5669d3741b221801ed1a4e2c6d6836067f",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "small wooden offering box with slotted top",
+ "label": "sky-island/si-offering",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden offering box",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The slotted top grate is viewed from above across rows 3-7 (5px tall), with the front face and decorative bands visible below across rows 8-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4938
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "offering box with slotted grate lid",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the offering box shows a 5-pixel-tall slotted grate (rows 3-7) seen from above, resting atop the front face of the box (rows 8-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4422
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden offering box (saisenbako)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 3-7 form a 5-pixel-tall top surface showing the slotted wooden grate viewed from above, with the south face occupying rows 8-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4865
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden offering box (saisenbako)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 3-7 depict the slotted wooden grate on the top surface of the offering box (5 rows tall), while rows 8-14 show the south/front face with brass reinforcement bands.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4408
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.564Z",
+ "cells": {
+  "16": [
+   "1e868304d78ef093"
+  ],
+  "24": [
+   "52d9cf9fe8ecda33",
+   "5f2872979f336c82",
+   "75380aced90cce3b",
+   "7c914a8e025304b8",
+   "994c6ef86baf4e2f",
+   "a44ad2133455d638"
+  ],
+  "32": [
+   "26ca8f6da56aaca0",
+   "6c7d31b20815ccd6",
+   "86b55100eaee5924",
+   "ba0076aa705ca20b",
+   "c7e3cd94c4acb040",
+   "d0ce46155953fc16"
+  ],
+  "48": [
+   "00871d4376e64394",
+   "80506ddd743bf094",
+   "81dc453bc4f1af2e",
+   "c13b12990e8bf9c7",
+   "d8c1c47c1e1a179a",
+   "f2ec32543ad6a414"
+  ]
+ }
+}

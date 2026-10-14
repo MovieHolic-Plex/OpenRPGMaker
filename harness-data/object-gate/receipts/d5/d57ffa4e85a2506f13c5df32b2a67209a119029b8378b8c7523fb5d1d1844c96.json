@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d57ffa4e85a2506f13c5df32b2a67209a119029b8378b8c7523fb5d1d1844c96",
+ "width": 16,
+ "height": 32,
+ "kind": "round_body",
+ "name": "나무 들통 더미(목욕·물)",
+ "label": "sengoku-edo/se-buckets",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stack of wooden buckets",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each bucket is drawn as a flat rectangular box with straight horizontal stripes and a flat horizontal bottom outline (no elliptical top or bottom curvature for a round bucket, completely flat 2D front elevation).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7694
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pile of wooden buckets",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each bucket is drawn in flat front elevation with straight horizontal bands (brown base, green hoop, blue contents) and a completely flat horizontal bottom rim. There is no elliptical top surface or opening visible in 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6059
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stack of wooden buckets",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each bucket is drawn as a flat rectangular block composed of horizontal color stripes and flat horizontal outlines (e.g. bottom-right bucket rows 11-16 has completely flat horizontal rims and bottom outline). There is no elliptical top surface or opening visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4792
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden buckets pile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The buckets are drawn in pure front elevation with flat horizontal bottoms (row 15), straight vertical side edges, and horizontal color stripes with no elliptical top rim or foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5389
+  }
+ ],
+ "decidedAt": "2026-10-13T19:37:02.185Z",
+ "cells": {
+  "16": [
+   "68aabd83b50c62a2",
+   "c12d7aeac6bfd7d5"
+  ],
+  "24": [
+   "035d466e4f69e581",
+   "202762a88c1f07a2",
+   "2301b5290fff4e1c",
+   "31ca9e1f00e42e71",
+   "5eb3975926f6a51d",
+   "78235178dc25226c",
+   "7d0d429daec001d8",
+   "bebe0ebfcff3263e",
+   "f4dea4ef23f50ef0"
+  ],
+  "32": [
+   "493823186b211388",
+   "728c782d257d281d",
+   "95e37fab2aa9b738"
+  ],
+  "48": [
+   "5d670438b9bcdce2",
+   "6e829df6bb6285d3",
+   "78176e84ff53c28f",
+   "86896b7cff0c61ab",
+   "df58f64ed3af1b93",
+   "f92d442cd419cdc9"
+  ]
+ }
+}

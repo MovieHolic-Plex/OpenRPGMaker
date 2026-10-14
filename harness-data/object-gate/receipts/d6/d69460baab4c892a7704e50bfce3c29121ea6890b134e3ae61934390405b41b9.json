@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d69460baab4c892a7704e50bfce3c29121ea6890b134e3ae61934390405b41b9",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "작은 나무 상자",
+ "label": "steampunk-city/sp-crate-in",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden crate",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid of the crate spans rows 1-6 with vertical wood strip details and a highlighted front rim, above the front face which spans rows 8-14 with a diagonal brace.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5125
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden crate",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid/surface is clearly visible across rows 1-6 with vertical plank detailing and a front highlight line, above the front face which spans rows 7-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5394
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "small wooden crate/box",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the crate is clearly depicted across rows 1-6 with vertical wood planks and a front edge highlight on row 6, followed by the south-facing front wall on rows 7-14 showing a diagonal brace.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5192
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden crate",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid/surface is clearly visible across rows 1-6 (about 6 pixels tall), showing planks and edge highlight above the front face (rows 7-14) with diagonal bracing.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4755
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.470Z",
+ "cells": {
+  "16": [
+   "877a5e0e99769232"
+  ],
+  "24": [
+   "311c9fe18b8796f1",
+   "44c74d3a45a7c4c4",
+   "83b13bd3cd90eedd",
+   "b58eecea70f98d55",
+   "cf7506610a5b685a",
+   "cf9c463f1c8488f4"
+  ],
+  "32": [
+   "0665710e150773fe",
+   "215989b19cc805b8",
+   "281e16f8d4dbde7d",
+   "3716c0765f019941",
+   "3bb5e8fb464673e2",
+   "baafad18dd9ec29e"
+  ],
+  "48": [
+   "1022c9f5ce7392c8",
+   "2c320df7f178ccc7",
+   "47b30faf6b7df08b",
+   "5122952cd70ad35e",
+   "5e48a7e18f161545",
+   "dedefdd9afbaecfd"
+  ]
+ }
+}

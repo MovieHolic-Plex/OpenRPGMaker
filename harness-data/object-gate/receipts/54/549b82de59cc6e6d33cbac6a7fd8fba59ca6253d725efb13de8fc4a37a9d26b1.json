@@ -1,0 +1,127 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "549b82de59cc6e6d33cbac6a7fd8fba59ca6253d725efb13de8fc4a37a9d26b1",
+ "width": 32,
+ "height": 16,
+ "kind": "frame",
+ "name": "woven rope hammock strung between two posts, deep hollow cloth bed seen from above",
+ "label": "pirate-isles/pi-hammock",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hammock bed suspended between two side posts",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": true,
+    "opening_rows": 11,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hammock is viewed from above at an angle, displaying the wide elliptical hollow interior (rows 2-13) with shaded upper wall and patterned bed surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5205
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hammock bed",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 11,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hammock is drawn in a pure 90-degree bird's-eye (overhead) perspective rather than 3/4 view: the ellipse fills the vertical space without showing any front (south) hanging exterior face. Furthermore, a fabric hammock is not a 'frame'.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6897
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "woven rope hammock",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a suspended cloth hammock/bed, not an open frame or rack (kind mismatch). Furthermore, as a frame it has no horizontal beams or base showing top surfaces, and the vertical posts extend off-screen without top faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "윗면 0행 < 3"
+   ],
+   "ms": 22940
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "woven rope hammock",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": true,
+    "opening_rows": 11,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hammock is viewed from above in 3/4 perspective, showing the deep interior hollow and weave spanning rows 2 to 12 (11 pixel rows) with shaded back slope and illuminated floor, rather than a flat front silhouette.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14952
+  }
+ ],
+ "decidedAt": "2026-10-13T19:33:03.044Z",
+ "cells": {
+  "16": [
+   "3eb44d421eed51d1",
+   "f76669c380da0b80"
+  ],
+  "24": [
+   "1a016bab5963acb1",
+   "1b0ff0100b655ee2",
+   "46d703f7745bb5a8",
+   "5ecabb4067c8baf6",
+   "97e28e9f00fbd211",
+   "9cabdb73b901a436",
+   "afcbf70ab91456b8",
+   "c847c10db2b15eb6",
+   "caa2530871943adf",
+   "e12b1b1684dd7d46",
+   "e1493592b2d267cd",
+   "eab7c12c73a2694b"
+  ],
+  "32": [
+   "517f3d1fb6aceaab",
+   "82232ded60c790ad"
+  ],
+  "48": [
+   "0fc99713e9a4cb1d",
+   "113cf08c75f72b36",
+   "13cabb3752ea23e9",
+   "70e5b3a1c6801b41",
+   "cf27613184c1d186",
+   "db59439f8dc70c26"
+  ]
+ }
+}

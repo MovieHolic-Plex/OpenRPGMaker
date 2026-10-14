@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1d72d99583b5f23aab6717b7642509b77db70dc65e2d283776693d543799fed8",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "jp-lot-board",
+ "label": "jp_city/street_hand/jp-lot-board",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "signboard mounted on a post with a base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signboard, pole, and base are drawn entirely as a flat architectural elevation with 1px border lines and no visible foreshortened top surfaces anywhere on the sign or base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7890
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "signboard on pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The board and pole are drawn in a completely flat front elevation with a 1px top outline (row 1) and no visible foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9910
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "signboard on a pole with base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign board at rows 1-25 is drawn in flat front elevation with a 1px top outline border (row 1) and no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7888
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "signboard mounted on a pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signboard is drawn as a flat front elevation with only a 1px border at row 1 and no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7618
+  }
+ ],
+ "decidedAt": "2026-10-13T17:30:03.089Z",
+ "cells": {
+  "16": [
+   "47ace055aeb23e26",
+   "d723db937ec3008e",
+   "f1b43b57e81d6a29"
+  ],
+  "24": [
+   "162a99c9ce0e22f0",
+   "39c6d2c21c979fee",
+   "4e80446fdcb1819d",
+   "4ee6bcd6f02d77ae",
+   "d2187a32fb21f183",
+   "f61e023101a48d80"
+  ],
+  "32": [
+   "2d7c3ee3af9fb3be",
+   "5b77edc20dcaed9a",
+   "7aab5b3089a075a3",
+   "7b846e3e96180bb5",
+   "7ca4c661528e589f",
+   "875e9fdcb048465c",
+   "8bd215efa37ed5d8",
+   "9cb5cf89c95ecd7d",
+   "9f8ad45ab73d0be1",
+   "c1d3199dfb7ab612",
+   "cde9c623d3a90ee9",
+   "f4409a498954284d"
+  ],
+  "48": [
+   "6a324c19854569af",
+   "e3e637db08a839ad",
+   "e8bd3acf2563cc30"
+  ]
+ }
+}

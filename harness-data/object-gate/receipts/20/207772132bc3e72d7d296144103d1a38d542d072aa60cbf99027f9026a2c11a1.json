@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "207772132bc3e72d7d296144103d1a38d542d072aa60cbf99027f9026a2c11a1",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "볼라드(돌 말뚝)",
+ "label": "modern-campus/mc-bollard",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone bollard post",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylindrical bollard features a well-defined elliptical top surface spanning from row 1 to row 8 (8 rows tall), followed by the vertical south face with shading and a red reflective band.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5047
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone bollard / post",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the bollard is clearly rendered as a foreshortened ellipse spanning rows 1 to 7 (about 7 source pixel rows), atop the vertical cylindrical body spanning rows 8 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3843
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone bollard / post",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap/surface of the bollard is clearly rendered as a large foreshortened ellipse spanning rows 1 to 7, while the cylindrical south face extends below from row 8 to row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4135
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical bollard with red reflective stripe",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top circular face/dome of the bollard is clearly visible as an ellipse spanning rows 1 to 8 (about 8 rows tall), resting above the vertical front body and red band.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5231
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:11.493Z",
+ "cells": {
+  "16": [
+   "19d5a4a39b96262c"
+  ],
+  "24": [
+   "0d12bd16d18f5973",
+   "0e4fc0d8f7e43bec",
+   "3408ba690c0b4c59",
+   "730d6fdab2ff467c",
+   "b04184e86cd615a6",
+   "c43ccb373a29b6d1"
+  ],
+  "32": [
+   "2bee675d07ea55b6",
+   "2c644ca7a5874664",
+   "38678fc28da87a03",
+   "3a4ee2991c8c9768",
+   "e5a3b0aa19040adb",
+   "fd86e0004a91d35b"
+  ],
+  "48": [
+   "319b64f4705f3998",
+   "39aad6c23a88fe61",
+   "3ecae16d77b748c8",
+   "591d7cd9a41ad4bc",
+   "8084bbc530e86e16",
+   "d09b197222792114"
+  ]
+ }
+}

@@ -1,0 +1,144 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1dcadc76b1f3dce42476c1a049b2627987d2dcfe8375faf9d83dd0a22a3ccb27",
+ "width": 32,
+ "height": 16,
+ "kind": "container",
+ "name": "손수레(나무 짐칸 + 큰 바퀴 둘 + 손잡이)",
+ "label": "steampunk-city/sp-handcart",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "아가리 안쪽이 안 보임",
+  "아가리 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden cart cargo box with wheels and handle",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The handcart is drawn in a pure 2D side-profile elevation (side-scroller style), with circular wheels shown directly from the side, a flat handle, and no top opening or visible depth into the cart box.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 3532
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden cart body with wheels and handle",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The handcart is drawn as a flat side-scroller elevation with circular wheels facing the viewer and a 1px black line at row 2 across the top, showing zero depth or top-down view into the cargo bed.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 3910
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden cart cargo bed with wheels and handle",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The handcart is drawn in a flat side elevation (side-scroller view) rather than a 3/4 top-down view. There is no visible top surface or interior opening seen from above (0 rows); the wheels and cart body are shown completely flat from the side.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 5626
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden cart body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cart is drawn in a pure 2D side-scroller elevation with wheels, handle, and cargo box viewed directly from the side; there is no visible top surface or opening into the cart box (only a 1px top border line at row 2).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 4304
+  }
+ ],
+ "decidedAt": "2026-10-13T18:32:03.860Z",
+ "cells": {
+  "16": [
+   "43ca84617160fe18",
+   "b6db1285aabe47cc"
+  ],
+  "24": [
+   "021a8924352a7f36",
+   "111c36bf5808a36d",
+   "2a90ff7b15a68824",
+   "384c9cfe317cc67c",
+   "3a7f5758831ce6e9",
+   "50da34ac9e91ed46",
+   "50e26ca79913fbb1",
+   "77969d7625042dae",
+   "9f02e78e294727ba",
+   "bfab4ddcaf33184e",
+   "d0408f820ee8a253",
+   "efe4c392642777f8"
+  ],
+  "32": [
+   "1032398befebbe02",
+   "4bcd1350b72fd4d3"
+  ],
+  "48": [
+   "0d59879f9d905bf3",
+   "2a76ff18c6940804",
+   "648a13de2cf96e12",
+   "a5e1bf324027d696",
+   "c01dd80769134429",
+   "f400ab4c8b03c16a"
+  ]
+ }
+}

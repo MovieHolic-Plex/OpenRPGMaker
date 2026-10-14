@@ -1,0 +1,32 @@
+{"png": "buildings/_gate/se-torii.png", "kind": "structure", "name": "도리이(붉은 신사 문, 폭 4)", "label": "sengoku-edo/se-torii"}
+{"png": "props/_gate/se-lantern-stone.png", "kind": "column", "name": "석등(가스가 등롱)", "label": "sengoku-edo/se-lantern-stone"}
+{"png": "props/_gate/se-lantern-snow.png", "kind": "column", "name": "눈보기 석등(유키미, 넓은 갓)", "label": "sengoku-edo/se-lantern-snow"}
+{"png": "props/_gate/se-komainu.png", "kind": "figure", "name": "고마이누(돌 사자, 받침 위, 오른쪽 봄)", "label": "sengoku-edo/se-komainu"}
+{"png": "props/_gate/se-komainu-l.png", "kind": "figure", "name": "고마이누(돌 사자, 받침 위, 왼쪽 봄)", "label": "sengoku-edo/se-komainu-l"}
+{"png": "props/_gate/se-ema-rack.png", "kind": "frame", "name": "에마 걸이(작은 지붕 + 나무 판 여럿)", "label": "sengoku-edo/se-ema-rack"}
+{"png": "props/_gate/se-jizo.png", "kind": "figure", "name": "지장보살 석상(붉은 턱받이)", "label": "sengoku-edo/se-jizo"}
+{"png": "props/_gate/se-hokora.png", "kind": "structure", "name": "길가 작은 사당(호코라, 붉은 문)", "label": "sengoku-edo/se-hokora"}
+{"png": "props/_gate/se-torii-small.png", "kind": "structure", "name": "작은 도리이(붉은, 폭 3)", "label": "sengoku-edo/se-torii-small"}
+{"png": "props/_gate/se-water-wheel.png", "kind": "structure", "name": "물레방아(나무 바퀴 + 받침)", "label": "sengoku-edo/se-water-wheel"}
+{"png": "props/_gate/se-stall-fish.png", "kind": "low_furniture", "name": "생선 노점(나무 판 + 생선 줄)", "label": "sengoku-edo/se-stall-fish"}
+{"png": "props/_gate/se-street-lantern.png", "kind": "column", "name": "길가 등롱(나무 기둥 사각 등)", "label": "sengoku-edo/se-street-lantern"}
+{"png": "props/_gate/se-rice-bales.png", "kind": "round_body", "name": "쌀섬 더미(짚 섬 다섯)", "label": "sengoku-edo/se-rice-bales"}
+{"png": "props/_gate/se-bucket-stack.png", "kind": "round_body", "name": "방화 물통 더미(받침 위 통 여섯)", "label": "sengoku-edo/se-bucket-stack"}
+{"png": "props/_gate/se-cart.png", "kind": "other", "name": "짐수레(나무 바퀴 둘 + 짐)", "label": "sengoku-edo/se-cart"}
+{"png": "props/_gate/se-rice-rack.png", "kind": "frame", "name": "볏단 걸이(하사, 나무 틀 + 볏단)", "label": "sengoku-edo/se-rice-rack"}
+{"png": "props/_gate/se-pots.png", "kind": "container", "name": "항아리 무리(물독·장독)", "label": "sengoku-edo/se-pots"}
+{"png": "props/_gate/se-fence-bamboo.png", "kind": "structure", "name": "대 울타리(겐닌지 담, 1칸)", "label": "sengoku-edo/se-fence-bamboo"}
+{"png": "interior/_gate/se-futon-stack.png", "kind": "box", "name": "갠 이불 더미", "label": "sengoku-edo/se-futon-stack"}
+{"png": "interior/_gate/se-andon.png", "kind": "column", "name": "안돈(종이 등잔)", "label": "sengoku-edo/se-andon"}
+{"png": "interior/_gate/se-byobu.png", "kind": "tall_furniture", "name": "병풍(여섯 폭, 금 바탕 구름)", "label": "sengoku-edo/se-byobu"}
+{"png": "interior/_gate/se-tokonoma.png", "kind": "tall_furniture", "name": "도코노마(족자 + 꽃병 단)", "label": "sengoku-edo/se-tokonoma"}
+{"png": "interior/_gate/se-kamidana.png", "kind": "wall_mounted", "name": "가미다나(집 신단, 선반 + 작은 사당)", "label": "sengoku-edo/se-kamidana"}
+{"png": "interior/_gate/se-hibachi.png", "kind": "container", "name": "히바치(둥근 도자기 화로)", "label": "sengoku-edo/se-hibachi"}
+{"png": "interior/_gate/se-tea-kettle.png", "kind": "round_body", "name": "차 가마(풍로 위 무쇠 솥)", "label": "sengoku-edo/se-tea-kettle"}
+{"png": "interior/_gate/se-tea-set.png", "kind": "low_furniture", "name": "다도 도구(검은 쟁반 + 찻사발·물병)", "label": "sengoku-edo/se-tea-set"}
+{"png": "interior/_gate/se-sword-rack.png", "kind": "frame", "name": "칼걸이(긴칼·짧은칼 두 자루)", "label": "sengoku-edo/se-sword-rack"}
+{"png": "interior/_gate/se-goods-shelf.png", "kind": "tall_furniture", "name": "물건 선반(피륙·상자, 벽 앞)", "label": "sengoku-edo/se-goods-shelf"}
+{"png": "interior/_gate/se-kimono-rack.png", "kind": "frame", "name": "옷걸이 틀(이코, 걸린 기모노)", "label": "sengoku-edo/se-kimono-rack"}
+{"png": "interior/_gate/se-buckets.png", "kind": "round_body", "name": "나무 들통 더미(목욕·물)", "label": "sengoku-edo/se-buckets"}
+{"png": "interior/_gate/se-scroll-shelf.png", "kind": "tall_furniture", "name": "두루마리 서가(벽 앞)", "label": "sengoku-edo/se-scroll-shelf"}
+{"png": "interior/_gate/se-lantern-hang.png", "kind": "wall_mounted", "name": "걸린 초롱(붉은)", "label": "sengoku-edo/se-lantern-hang"}

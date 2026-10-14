@@ -1,0 +1,159 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "30fe6064858bc939c216f98eba626756951a916072f453ae97a455c54247af2b",
+ "width": 96,
+ "height": 64,
+ "kind": "structure",
+ "name": "환승 정거장(넓은 사다리꼴 지붕 + 승강장 벽 + 시안 띠)",
+ "label": "sf-station/sf-street-transit-station",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "transit station building with pitched roof",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof structure spans rows 1 to 15, showing a clearly foreshortened, downward-sloping top surface with skylight panels and vents above the main vertical south wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5785
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "transfer station building",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features a prominent forward-sloping trapezoidal roof spanning rows 1 to 15 (15 source pixel rows), correctly presenting the top/sloping surface of the building above the south-facing platform wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6604
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "transit station building with sloped roof and platform wall",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper portion of the structure (rows 0-15) features an extensive 16-pixel-tall forward-sloping trapezoidal roof with skylights and hipped ends, properly showing the top/sloped surface above the south wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6793
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "station building with sloped roof and platform wall",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a wide trapezoidal south roof slope spanning rows 1 to 15 (15 rows tall) with skylight panels and a cyan upper ridge, set above the south-facing platform wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6687
+  }
+ ],
+ "decidedAt": "2026-10-13T15:38:14.593Z",
+ "cells": {
+  "16": [
+   "007ae5c2aea9854d",
+   "04af682d38bae95d",
+   "0de71a7673a0c0a9",
+   "2c5daada0257620c",
+   "2d729b58464d9d39",
+   "42ad637d2f4f0a7b",
+   "42db21a958e28d61",
+   "4f5f7c67555595e5",
+   "6acfb11d01543a56",
+   "a23451408326fce3",
+   "ae15c75ad28e197f",
+   "bc619edc23942fcb",
+   "bdfa2a37ece1dcc5",
+   "c2b8c5e7c37c4433",
+   "c823e98d1b39fad7",
+   "c91544bd850b1d7d",
+   "ccc11eb714968796",
+   "d04d12843fadfabc",
+   "d0aa5cf034d46260",
+   "d9de646caea6f103",
+   "ec0f7e06fc2387a4",
+   "ed3187c89a7049ea",
+   "edbbcf0220590202",
+   "fc419061d917e23c"
+  ],
+  "24": [
+   "058b1647995a9bce",
+   "1580eac589fb8591",
+   "1db411d6618423e9",
+   "2217d46884f426e5",
+   "2bc14b13d285b2a1",
+   "369df62551fcb049",
+   "3c09e114f8f6822a",
+   "491fdc2bd4f09037",
+   "4e4aa24e908d31ef",
+   "59a7f5b1d2bfd199",
+   "673dbc114d3bda38",
+   "6d2bdd839df72d47",
+   "96d76b9b65f8ab1a",
+   "a60f09951f51dd6c",
+   "c03ca96046a7ea45",
+   "d0dc6b3ebc88ed74",
+   "d146a779e4a15794",
+   "d6f22817104e1b48",
+   "dfa9c48a9d0ce853",
+   "e480f19e837590a6",
+   "eb984180e802f97d",
+   "eddd18df33aa1f9f",
+   "f11308b3d5f7b852",
+   "fa9b372afb947c84"
+  ],
+  "32": [
+   "18c09953454d1a77",
+   "42c93759179f735f",
+   "77a7a0f182f3f7df",
+   "943402a7cd75ffc8",
+   "98899c30f8dc8a49",
+   "d8f1c39f4d4fb050"
+  ],
+  "48": [
+   "0d174b496b7fa5d7",
+   "3a71193a378276f4",
+   "4e5f06d518f528fc",
+   "53edc658fbf198d6",
+   "5aa2fbb044ca6f86",
+   "c77b4cacd60476f7",
+   "eb60c9e0bcc0a63b",
+   "f388a82c32a56f6f"
+  ]
+ }
+}

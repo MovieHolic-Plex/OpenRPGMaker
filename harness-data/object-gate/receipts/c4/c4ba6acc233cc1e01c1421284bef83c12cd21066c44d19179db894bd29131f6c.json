@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c4ba6acc233cc1e01c1421284bef83c12cd21066c44d19179db894bd29131f6c",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "켈트 고리 십자가",
+ "label": "gothic_manor/gm-tomb-celtic",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Celtic ring cross",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The Celtic cross is rendered entirely in a flat front elevation without any visible horizontal top surface along the cross arms, top of the shaft, or ring. The object shows no depth or 3/4 downward angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7217
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Celtic ring cross and pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire Celtic cross (arms, ring, and shaft) as well as its pedestal are drawn in pure front elevation with no visible horizontal top surfaces rendered from the 3/4 downward angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9238
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "Celtic high cross",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cross and ring are drawn in pure front elevation with no visible top surface foreshortened from above on the cross arms, ring, or plinth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 28981
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "Celtic high cross",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The Celtic cross and its arms/ring are drawn entirely as a flat front elevation without any visible top surface showing the thickness or horizontal planes of the cross seen from above (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5316
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:15.452Z",
+ "cells": {
+  "16": [
+   "7ffdf0196551dd0c",
+   "a00bb4670b1eeb8f"
+  ],
+  "24": [
+   "163200846f248e82",
+   "27314ad86c0e803e",
+   "2f4e759cacb1dac7",
+   "3814243145a5e65d",
+   "3927a8b821cbc412",
+   "3e3c5eb3f5afc34b",
+   "42596ade7b801440",
+   "5ab3ba02064ddab4",
+   "6154dfa6c9c33394",
+   "8dc5c69c40449846",
+   "b1cbba971949bda5",
+   "d0e67f779af4b711"
+  ],
+  "32": [
+   "1ccba2ef47ef2e47",
+   "6b33a03988b5759f",
+   "f57b02c79cebc5e1"
+  ],
+  "48": [
+   "108741f5ee8926ae",
+   "33c7b8019fce7bce",
+   "83e03392f0d0d4de",
+   "8b262bbcfbcb81e2",
+   "d85bfae37f8a2b3a",
+   "db4b1fa6b335b723"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cfff60ddfc36715d42ee86a9c0b4c5c10eb719b24007911b84afbfab0705ea30",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "prehistoric stone-age firepit",
+ "label": "prehistoric/ph-firepit-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone ring firepit",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone firepit is drawn in proper 3/4 top-down view as an elliptical ring enclosing logs and flames, with interior depth clearly visible from rows 5 through 11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4747
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone ring firepit with burning fire inside",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The firepit is drawn in 3/4 perspective with a clearly foreshortened elliptical opening spanning rows 5 to 11 inside the surrounding stone ring.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2994
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone ring firepit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone firepit is depicted from a 3/4 top-down angle, showing an elliptical opening roughly 7 rows tall containing fire and logs within the stone perimeter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3202
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone ring firepit with fire and wood",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The firepit is rendered as an elliptical ring of stones viewed from a 3/4 top-down perspective, clearly showing the circular opening with fire and embers inside across rows 6 to 11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6265
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.800Z",
+ "cells": {
+  "16": [
+   "585a3746d8dc9af2"
+  ],
+  "24": [
+   "14623205c4058eff",
+   "2e0fe2536c2b6286",
+   "39ac068869856607",
+   "3ae474f4a539bcfd",
+   "bd6670290181f5d3",
+   "f530044561c12828"
+  ],
+  "32": [
+   "181c71cc984c571d",
+   "401ddefc77e811c3",
+   "603e6d7ff3fc7e3e",
+   "95b0035de1356fe0",
+   "9d3bdc008193fd83",
+   "d94e6b27c7f2c234"
+  ],
+  "48": [
+   "7c44487f21cfe94a",
+   "8267ef31e514e8c3",
+   "aa37bdfe7e730a49",
+   "d05297ce9f10ecb1",
+   "d1877db155a20992",
+   "fe4fb5a6bcb1df98"
+  ]
+ }
+}

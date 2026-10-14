@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6a1dbf1f00a477f7973e6124b1cae9c97d1fdc1f52d1c02fabe8204c31acfc6f",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "낮은 자판기 겸 냉장 진열대(2칸, 글자 없음)",
+ "label": "modern-campus-int/mc-vending-low",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "refrigerated vending machine / display cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in pure front elevation: rows 9-17 depict a front marquee/header panel with a blank placard graphic, and rows 18-30 depict the front glass display showcasing shelves of drinks. There is only a 1px outline along the top edge (row 8) with no visible horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6829
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "low vending machine / refrigerated display case",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn as a flat front architectural elevation with a blank upper sign panel (rows 9-17) and lower drink display windows (rows 18-29). The top of the cabinet has only a 1px outline at row 8 with no visible horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8796
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "low vending machine / refrigerated display case",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in a flat front elevation. Rows 9-17 form the vertical upper header panel (with a blank rectangular sign), rows 18-30 form the lower front display windows with drink cans/bottles, and the top edge is just a 1px border outline with no visible horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6449
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "low refrigerated display case / vending unit",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the low unit is clearly rendered from rows 9 to 17 (9 pixel rows deep) with a flat rectangular mat/tray on top, leading down to the front-facing refrigerated display windows from row 18 to row 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13164
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:11.493Z",
+ "cells": {
+  "16": [
+   "2e8b89cd306a314b",
+   "59cc20e6973d6918",
+   "fe1766fb982a074b",
+   "ffba06dd768853db"
+  ],
+  "24": [
+   "0dcddea19a027184",
+   "14b7152705f3fb88",
+   "19e01c6c0a3c8593",
+   "2be027cef1f33bc7",
+   "2c96bc9663a044cc",
+   "436e10240696825a",
+   "50300ae639fbdc35",
+   "5e7a1ae072d9cae7",
+   "8760acc85a51b6f4",
+   "8c3880e898889f12",
+   "9d01c75b404e0978",
+   "aacb799ae4aedbbd",
+   "b0e4f26d959f3e98",
+   "b7e44ea0c1cfdb49",
+   "b7ebae7fff567d34",
+   "c274acbbba077284",
+   "ca1a68ab7b95b8ac",
+   "d6568916a8f047a0"
+  ],
+  "32": [
+   "5d0840483f83b7ee"
+  ],
+  "48": [
+   "1ae17641423acd94",
+   "8471a6abacc7d8fa",
+   "8d4b1ea4eeb8cfa5",
+   "8d76591b438904c6",
+   "c1925e4694ee3725",
+   "dc21cceaf85958e6"
+  ]
+ }
+}

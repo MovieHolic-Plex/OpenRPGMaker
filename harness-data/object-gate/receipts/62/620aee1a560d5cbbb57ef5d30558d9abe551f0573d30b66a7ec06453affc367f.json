@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "620aee1a560d5cbbb57ef5d30558d9abe551f0573d30b66a7ec06453affc367f",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "prehistoric stone-age flowers",
+ "label": "prehistoric/ph-flowers",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "scattered small flowers",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The flowers are drawn with vertical green stems beneath upright blossoms in pure front elevation, rather than lying flat or showing foreshortened tops in 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 4497
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "scattered small flowers",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The flowers are standing plants misclassified as flat; each is drawn as a pure front-elevation cross shape with a vertical stem below and petals above, showing no top perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 4800
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "scattered small flowers",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The flowers are upright plants drawn in pure front elevation with stems underneath and petal heads on top, completely lacking any top-down perspective or foreshortened horizontal surfaces; additionally, they do not match the 'flat' category.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 4900
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "scattered small flowers",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The flowers are drawn in pure front elevation with vertical stems underneath upward-pointing blossoms, rather than being flat rosettes seen from above or 3/4 standing plants with visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 3877
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.800Z",
+ "cells": {
+  "16": [
+   "7b797ca73676cac7"
+  ],
+  "24": [
+   "075c0512151e9a6f",
+   "949caacfa32feef5",
+   "b2b9bcc154df1db3",
+   "d62e0c56ff90d0ac",
+   "fd0e65a93e4c910b",
+   "fddc9c487a03d4fc"
+  ],
+  "32": [
+   "0583f054b07c57ea",
+   "0762f315659952fc",
+   "110ff024da2e23a7",
+   "57637e42ad6b2ffb",
+   "d830b0c621beb2fc",
+   "fe3881a57fca233d"
+  ],
+  "48": [
+   "36ec45316202d802",
+   "43a9379144b6f351",
+   "640bd20cbcbf8105",
+   "6caec498f7e53549",
+   "6f165ab82b6a2275",
+   "b01aa5828b55f33b"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6548162df75cb55f1079c00bb1ba90784bce9b4de05d9183fd9ebc1fb4353b65",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "들꽃 풀밭",
+ "label": "sengoku-edo/se-grass-flower",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wildflower grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile depicting a grass field with wildflowers seen from a top-down view across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7870
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wildflower grass terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile depicting a patch of grass with small scattered wildflowers across the entire 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2906
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wildflower meadow ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing grass surface dotted with small wildflowers, covering the full 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6411
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wildflower meadow ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ground terrain tile depicting grass with small wildflower specks, completely filling the 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2887
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.058Z",
+ "cells": {
+  "16": [
+   "e59279703bfe8ed0"
+  ],
+  "24": [
+   "16276f43dcc112c6",
+   "4b99317441560b4a",
+   "7201531dd75dcde4",
+   "db33cd9f0154ad2f",
+   "e8a64e21ab161f35",
+   "ebe7488feb3507c1"
+  ],
+  "32": [
+   "120f3faab0de9bf8",
+   "312b0060a658cbc4",
+   "863c8ab984f555db",
+   "8ec885fcdac9b472",
+   "b690575ce8bb6a9d",
+   "d85e17fc960a1558"
+  ],
+  "48": [
+   "0e2d11fc31aa8d85",
+   "1758fd31ea4116de",
+   "6dad3664a72be78e",
+   "7b951e9ca125fd7e",
+   "c6974ec0e37e2bc4",
+   "cff7c6254b06d227"
+  ]
+ }
+}

@@ -1,0 +1,125 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d513325d5f813062574a25ddb9794255c03a694d8cff77ee95e0d383083e5524",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "prehistoric stone-age menhir tall",
+ "label": "prehistoric/ph-menhir-tall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone menhir / standing stone",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The menhir is drawn in pure front elevation. The top is rounded into a dome/cap with vertical sides (rows 6-8) and a flat horizontal groove at row 9, showing no foreshortened top surface or cut face visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9831
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall stone menhir with carved red runes",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap/surface of the menhir is clearly visible across rows 4-8 (5 pixel rows) in a lighter stone tone, distinct from the shaded vertical south face below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4251
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tall prehistoric stone menhir / standing stone with carved symbols",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The menhir has a clearly delineated, light-toned top cap/surface spanning rows 4 through 8 (5 rows tall) above the vertical south-facing shaft extending down to row 45.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4649
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone menhir pillar",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the menhir has a clearly defined 5-row tall, lighter-shaded top surface (rows 4-8) resting atop the vertical south face (rows 9-45).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4843
+  }
+ ],
+ "decidedAt": "2026-10-14T00:39:52.942Z",
+ "cells": {
+  "16": [
+   "351f288ddeb58e21",
+   "ef477f7195e514ac",
+   "fba861c6660d7fa8"
+  ],
+  "24": [
+   "294cdebeaa80a557",
+   "420eae4fe0746fcf",
+   "7a6312081f5ba021",
+   "87b7d59a159a98a6",
+   "9a12dc0ece6e9a55",
+   "af448490b7752dcf"
+  ],
+  "32": [
+   "2feec21d708b8d04",
+   "34dfdd8961766b89",
+   "6b33da9f58ae5cb8",
+   "6dbaeb1b94c5478e",
+   "8470e3d92be38f14",
+   "903ee511f54845a2",
+   "a6326d988a664d9e",
+   "cc6363ec16f6319b",
+   "e25341ea215ce5df",
+   "e50ad0d4b79760ce",
+   "e9f856c14b97b30f",
+   "fa6ba0fb504cf009"
+  ],
+  "48": [
+   "0110219108b66216",
+   "8db9afe7cf26be70",
+   "9d1714434c1276cd"
+  ]
+ }
+}

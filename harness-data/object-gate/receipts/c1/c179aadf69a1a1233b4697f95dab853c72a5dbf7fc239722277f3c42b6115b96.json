@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c179aadf69a1a1233b4697f95dab853c72a5dbf7fc239722277f3c42b6115b96",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "interior wall corner top seen from above (flat)",
+ "label": "sky-island/si-void-se",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall top corner border",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain autotile depicting the top border and corner of an interior wall/partition seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3900
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "interior wall top corner",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts the top surface of an interior wall corner autotile border, showing a 6-pixel-thick horizontal wall top section extending across rows 0-5 alongside a vertical column.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4007
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall top corner border",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts the top-down surface of an interior wall corner/border (rows 0-5 horizontal run, columns 0-3 vertical run) correctly shown from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3661
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "interior wall top corner tile",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing the top surface and corner of an interior wall cap; valid top-down map terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5339
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.561Z",
+ "cells": {
+  "16": [
+   "a15b3d44a591abfd"
+  ],
+  "24": [
+   "381815a95d985e7c",
+   "41247e3e24b25d3d",
+   "55d76dc314690aa2",
+   "92a1346731e9b1cb",
+   "ad9f3029cd9ef6e3",
+   "ceeadd3b4f1dd541"
+  ],
+  "32": [
+   "216c1aed7bacf4e0",
+   "475ec57e39c5f8e6",
+   "4963f387563929ad",
+   "747359715c5a9d92",
+   "8562700ffc48055f",
+   "dac0c8257865dd88"
+  ],
+  "48": [
+   "1216437a1ab0e858",
+   "344426f7a8536be5",
+   "3c36297129805e23",
+   "3ffc5853245721e1",
+   "6b7b520ec5a2760c",
+   "98090dcfe256c8cf"
+  ]
+ }
+}

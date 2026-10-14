@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e7812eba3edecfb558d3b1ce3547e0e814b84ca6cf4c3d1a3201246f9688006d",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "수위실(작은 초소)",
+ "label": "modern-campus/mc-guard-booth",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "small guardhouse with flat roof and facade",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper half (rows 1-20) depicts the flat rooftop viewed from above, complete with a surrounding parapet wall with inner drop shadows and rooftop details, sitting atop the front facade (rows 25-43).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5916
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "small guard post / security booth",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building has a flat rooftop with parapet and rooftop deck visible from above across rows 1-20, above the blue roof trim and front wall facade (rows 25-43).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5041
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "single-story guard booth / security post with flat parapet roof",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure shows a standard 3/4 top-down flat roof with parapet (rows 1-20), displaying the horizontal roof surface/deck (rows 4-17) viewed from above, atop the blue fascia and south facade (rows 25-43) featuring a door and windows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7660
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "guard post building with flat parapet roof and south facade",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a top-down view of its flat roof (rows 1-20) complete with parapet walls, inner drop shadows, and roof details, resting above a blue fascia trim and the south-facing front wall (rows 25-43).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6957
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:11.494Z",
+ "cells": {
+  "16": [
+   "9392392d1bf4773f",
+   "9bdb242afc99c6da",
+   "9cde389ab14afb0b",
+   "9f93b2c686effc9e",
+   "a53bfeea75370488",
+   "be9e63a498f73e30"
+  ],
+  "24": [
+   "233a6c2c0e8db9e3",
+   "2df832a54368bc38",
+   "3e753fd57d3d1972",
+   "3ef8a15d330ecbce",
+   "633553e216386d45",
+   "63dcc096f5a80bc7",
+   "8622fa270b8adb4c",
+   "96a534b238065242",
+   "a422938717bd49bb",
+   "ed8a587ec474521a",
+   "ee86f38d1dfc7f88",
+   "fd8637ca99584873"
+  ],
+  "32": [
+   "5be47d9860b3d57b",
+   "6580bc58b08bc342",
+   "b0f3a485f1c7df58",
+   "d904640d14ece78f"
+  ],
+  "48": [
+   "84ace383a4cf29fc",
+   "af39bd3a8e085710",
+   "b5c4eab6343128f8"
+  ]
+ }
+}

@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8f94cacfd4446a2aefe91413c0ec367aceb2f8745fa5e7ccb925f227c0420ad5",
+ "width": 32,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "가미다나(집 신단, 선반 + 작은 사당)",
+ "label": "sengoku-edo/se-kamidana",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "kamidana (household Shinto altar shelf with small shrine and candles)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The projecting shelf, shrine, and flanking candles are drawn entirely in straight front elevation with 0 rows of visible top surface for the shelf or shrine roof.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5000
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "household Shinto shrine (kamidana) with shelf and miniature shrine",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The kamidana is a projecting shelf with 3D items (shrine and candles), but is drawn entirely in pure front elevation: the shelf shows only its front face with no top surface depth (items rest on a 1px boundary line), the candles are flat rectangles, and the shrine roof is a 1px line.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 9188
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "kamidana (household shrine shelf)",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The projecting shelf, shrine, and flanking candles are drawn in pure front elevation with no visible horizontal top surfaces (0 top rows) to show 3/4 downward perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 5107
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "kamidana (wall-mounted shrine shelf with mini-shrine and candles)",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The kamidana is a projecting shelf with a miniature shrine and candles, not a flat wall decoration. It is drawn entirely in pure front elevation: the shelf board shows only a 4px front face/underside with 0px top depth, and the shrine and candles are flat 2D silhouettes without any visible foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 7426
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.077Z",
+ "cells": {
+  "16": [
+   "3c50aea282c92dd8",
+   "7acc8587fbe64770",
+   "a4198bb9617e18d9",
+   "fdbfa8590c22b3f6"
+  ],
+  "24": [
+   "111365b669eb8746",
+   "366fa03bc573b73f",
+   "3997aaeac4f4728a",
+   "3f5be2b28e3c353b",
+   "4c16535cb423d999",
+   "6361e95bf26e93aa",
+   "67a34ff599916e06",
+   "6b75d025ccb14700",
+   "7943ce29120a8f7c",
+   "7f7c6ec20c2a5bc8",
+   "834009975ec5d794",
+   "8414e08574668b7d",
+   "8af51d45bec5d3a8",
+   "c3aa6aa0279cd498",
+   "c520febe2ea602bb",
+   "c58b9b2c6db2a786"
+  ],
+  "32": [
+   "3043660e5f3e7102"
+  ],
+  "48": [
+   "0e90e667a32c082f",
+   "13317d4237106ec3",
+   "53e14096eaa76e7b",
+   "550dcc12108c4e1e",
+   "6429480d9546ae07",
+   "ed1b4474e3be771a"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d84f8ae29509d3daa40925d0c9398c7c736ccee5c8ad2bd975b9e7b957540ff3",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "prehistoric stone-age path b",
+ "label": "prehistoric/ph-path-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dirt ground path tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing top-down dirt surface with small stone and soil color variations across the entire 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2810
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dirt ground / path tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile covering the full 16x16 ground plane with earth tones and small pebble details.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2859
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dirt path ground surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire tile depicts flat dirt terrain viewed from above with small stone and soil variations, filling the full 16x16 space as a ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2827
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dirt path ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing top-down dirt/path surface across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2731
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.789Z",
+ "cells": {
+  "16": [
+   "06742953a3755edf"
+  ],
+  "24": [
+   "61d4e65edc0cd8e9",
+   "63cfa68503dc5969",
+   "bfa3da121973d5cb",
+   "c3e53df6a8b14fc2",
+   "cefdc2552a9196dd",
+   "d6f4da406947a537"
+  ],
+  "32": [
+   "0e3fa71810940696",
+   "2d53ec2e638d7093",
+   "504e005b48253fc4",
+   "57d27877060b9b46",
+   "9c6c60b611183452",
+   "ae00293db4680f70"
+  ],
+  "48": [
+   "486baa08027554a2",
+   "76fbfb86abbb9c83",
+   "adee6bb49008d5b1",
+   "b9e39a9ae99e2573",
+   "baeeb80cd0589c3a",
+   "c3d728e6d494f5f3"
+  ]
+ }
+}

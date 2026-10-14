@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "94e21393ba2dc21e64720efa36ff3e80fce372254a8fb10ca4064db82be12d70",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "rock cliff face tile with hanging roots (terrain)",
+ "label": "sky-island/si-face-top-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rock cliff face with hanging roots",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a vertical cliff/wall face with brown dirt and roots at the top; as a terrain wall tile, standard 3/4 perspective applies and no individual standing object top is required.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5680
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rock cliff face with hanging roots",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting a vertical rock cliff face with roots hanging down from the top edge; as a cliff/wall terrain tile, it correctly shows the front vertical surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5914
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rock cliff wall face with hanging roots",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a vertical rock cliff face with hanging roots. As a cliff/wall terrain tile, it represents a vertical surface in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4960
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rock cliff face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a vertical rock cliff face with hanging roots; as a wall/cliff terrain tile rather than a standing object, top-down 3/4 perspective requirements for horizontal surfaces do not apply.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5325
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.975Z",
+ "cells": {
+  "16": [
+   "c57f5c8157174177"
+  ],
+  "24": [
+   "2a770d7a82fded73",
+   "308d69b3854ab4a8",
+   "58a88fa84afb0a30",
+   "76a69aaab5acc93c",
+   "811737cfce321802",
+   "a7aa49fa2244c604"
+  ],
+  "32": [
+   "374cd16775fdf009",
+   "6be331a6bd8046eb",
+   "6d4cd0af8af058cc",
+   "850565cad51bc931",
+   "acff47fb1cf3ca57",
+   "c4ee68f40161e849"
+  ],
+  "48": [
+   "7603fa3b82941951",
+   "79f2be9a8b5bf18c",
+   "7cb298f36887c50b",
+   "b40e3dba7a04795f",
+   "b4821b1c83336cbf",
+   "ece27b8255cefe1a"
+  ]
+ }
+}

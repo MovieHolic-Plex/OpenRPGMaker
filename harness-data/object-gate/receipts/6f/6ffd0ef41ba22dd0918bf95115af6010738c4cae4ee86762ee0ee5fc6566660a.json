@@ -1,0 +1,188 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6ffd0ef41ba22dd0918bf95115af6010738c4cae4ee86762ee0ee5fc6566660a",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "붉은 벨벳 융단 바닥 B",
+ "label": "gothic_manor/gm-fl-carpet-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "red velvet carpet floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat repeating floor terrain tile depicting red velvet carpet with patterned gold/accent motifs covering the entire 16x16 surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3363
+  },
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "carpet floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat red velvet carpet floor pattern viewed entirely from above as a terrain tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2849
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "red velvet carpet floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image is a 16x16 repeating terrain floor tile depicting red velvet carpet with patterned gold motifs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2688
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "carpet floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Patterned red velvet carpet floor tile; entire 16x16 surface represents horizontal floor plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2927
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "red velvet carpet floor tile with gold ornamental accents",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile showing the top surface across all 16 rows with repeating carpet patterns.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2566
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "red velvet carpet floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor/carpet terrain tile spanning all 16 rows seen from overhead.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2990
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "red velvet carpet floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile depicting red velvet carpet with gold patterns; correctly represents horizontal ground surface across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2645
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "carpet floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor tile showing red velvet carpet with gold decorative motifs covering the entire 16x16 surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3153
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.501Z",
+ "cells": {
+  "16": [
+   "a631ca9b041370a8"
+  ],
+  "24": [
+   "1a8d03c1186647a8",
+   "24952013e0acc6ce",
+   "4124e680abb934e8",
+   "85b89f767c0ebcab",
+   "b4463301f299f44c",
+   "f089c0ce42c5acf6"
+  ],
+  "32": [
+   "07c2341b75086b05",
+   "3080983d0a855dfe",
+   "325d14e233a7212c",
+   "873f240c827151d7",
+   "c52b554ca155e3af",
+   "cc3fe59400a30bbb"
+  ],
+  "48": [
+   "3a5dd6851b81d0c3",
+   "3bd808c9d35cbf32",
+   "845cceaed2ae82a2",
+   "abca7be641f47017",
+   "bfdf30bf9235a4b4",
+   "f68c322179dca288"
+  ]
+ }
+}

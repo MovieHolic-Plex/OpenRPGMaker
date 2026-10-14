@@ -1,0 +1,138 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2d9491fbcbee26cf60d37049aa4b9f756dc5505b23e97b2119ba8d1235a0407e",
+ "width": 48,
+ "height": 16,
+ "kind": "other",
+ "name": "무쇠 창살 담 세 칸(양 끝 돌 기둥)",
+ "label": "steampunk-city/sp-fence-h3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron fence with stone pillars on both ends",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillars and the fence base are drawn in pure front elevation with no visible top surfaces (pillars have only a 1px border at row 0, no top face visible from a 3/4 perspective).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5666
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron railing fence with stone pillars at both ends",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone pillars and the fence structure are drawn in pure front elevation. The pillars at rows 0-1 have only a 1px outline/rim with no visible top cap surface, and the horizontal rails and lower curb show only south vertical faces without horizontal depth visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6747
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cast iron fence on stone base flanked by stone pillars with lanterns",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillars and fence are drawn in pure front elevation; neither the tops of the stone pillars nor the top surface of the stone base/rail has any visible foreshortened top plane (0 rows of top surface).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5441
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cast iron fence with stone base and two stone pillars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the flanking stone pillars and the central fence/wall are rendered in pure front elevation with 0 rows of top surface visible. The pillars and railing show only their vertical south faces with no foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6010
+  }
+ ],
+ "decidedAt": "2026-10-13T18:44:04.996Z",
+ "cells": {
+  "16": [
+   "6b194bf48c29f23c",
+   "81dde91fb0fd06a4",
+   "a765a2f55d6c3961"
+  ],
+  "24": [
+   "2cbd7031c2333135",
+   "9b250b30770b2749",
+   "d82bb85ea2c1bdd9",
+   "daf546eb1daccd13"
+  ],
+  "32": [
+   "1d11e60f125e9a1d",
+   "289a75cd01a66299",
+   "2fe49cfa4c8d38b1",
+   "562526c9fbc679d3",
+   "64a6baa98676b503",
+   "6dc6209e167c66a9",
+   "76c2393ef93cd205",
+   "7af2f55a5e60eaf7",
+   "911221ee2f2b56fb",
+   "c4d3b0e644c22759",
+   "cb8a5c62ec53fd9b",
+   "fa666ce5e5a60cec"
+  ],
+  "48": [
+   "adcf29d44fae652e",
+   "e63fc4c3bf1785f7"
+  ]
+ }
+}

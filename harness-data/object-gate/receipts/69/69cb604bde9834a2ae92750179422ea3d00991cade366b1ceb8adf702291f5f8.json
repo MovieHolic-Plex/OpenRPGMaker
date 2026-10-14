@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "69cb604bde9834a2ae92750179422ea3d00991cade366b1ceb8adf702291f5f8",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "tall standing iron candelabra with three lit candles on curved arms",
+ "label": "pirate-isles/pi-candelabra",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall standing iron candelabra shaft and arms",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The candelabra is drawn in pure 2D front elevation: candle cups and candle tops are straight horizontal lines with no foreshortened ellipses or visible top surfaces, and the shaft knops and base are drawn straight-on.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5400
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron shaft and candle cups",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The candelabra shaft, knops, candle cups, and candles are all drawn in pure flat front elevation. Neither the candle cups nor the shaft knops show any elliptical top surface or top-down depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4454
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "standing iron candelabra shaft and candleholders",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The candelabra is drawn in pure front elevation: the candle cups/saucers are flat horizontal bars without visible elliptical tops, the candle tops have no visible tops, and the shaft knops are completely flat front-on.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3384
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron candelabra stand and candle dishes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The candelabra shaft, knops, and candle-holding dishes are rendered strictly in pure front elevation with flat horizontal lines and no foreshortened top surfaces visible on the dishes or column.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3530
+  }
+ ],
+ "decidedAt": "2026-10-13T19:28:41.190Z",
+ "cells": {
+  "16": [
+   "039f638c28601579",
+   "f3dc139a0c963b1c"
+  ],
+  "24": [
+   "3c939a345cdd096f",
+   "44d909e87215fcd9",
+   "4e46626f6d1ec06e",
+   "5d261f80ab851bad",
+   "7bfad38aa72b880e",
+   "868a0af2bb61376f",
+   "94bbd2bce16798b6",
+   "9cd527f0556b786a",
+   "aa0d93c6de7da2df",
+   "b222284266b2cb84",
+   "c22e3788bd8b55f2",
+   "f1bbc05fac5a7370"
+  ],
+  "32": [
+   "50871863b636a99d",
+   "5cbddcc40f9f6a43",
+   "8f5aabaea27f3b5c"
+  ],
+  "48": [
+   "1e8f79471b3efd82",
+   "2feca7ca2d987e6b",
+   "4df077f7d0bfe416",
+   "78312df6551a9698",
+   "d5a5f796d422caf0",
+   "fef599b635b65e00"
+  ]
+ }
+}

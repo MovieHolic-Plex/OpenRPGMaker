@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "983f2c428989b9cb21eabf1a3e344d88b950409aa363e1860f621aa1d7ca98a8",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "갠 이불 더미",
+ "label": "sengoku-edo/se-futon-stack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stack of folded blankets",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the topmost folded blanket is clearly visible from rows 1 to 6 (6 pixel rows tall with pattern details) above a horizontal fold line, with the stacked front folds shown below on rows 8-16.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6915
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "folded blanket stack",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the topmost folded blanket is clearly visible from rows 1 to 6 (6 pixel rows tall) with patterned fabric details, sitting atop the front-facing stacked layers (rows 8-17).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5527
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "folded futon pile",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the topmost folded quilt is clearly shown from rows 1 to 6 (approx 6 pixels deep) with decorative pattern accents, above the front-facing stacked layers of bedding.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4692
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "folded blanket stack",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the folded blanket stack is clearly visible from rows 1 to 6, showing a blue fabric plane with pink accents, while the front edges of stacked layers extend from row 8 downwards.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3488
+  }
+ ],
+ "decidedAt": "2026-10-13T19:37:02.184Z",
+ "cells": {
+  "16": [
+   "30993d3e9b27ebea",
+   "f95aac8283582bef"
+  ],
+  "24": [
+   "156f47734215d418",
+   "366688759abd6b34",
+   "7a06895b81a8601f",
+   "91529c8c47629709",
+   "b8c9bcd160f7821c",
+   "b8faa3a2dd050c74",
+   "bda7267768bafdec",
+   "cc2d8c6b2da93a73",
+   "f1db0b8304d5dfc7"
+  ],
+  "32": [
+   "9f921621f204e7f8",
+   "a31a6cb90058eb4a",
+   "da92eaeb329942b7"
+  ],
+  "48": [
+   "4dcb2c047d452731",
+   "9cf3ec7215cb0f4c",
+   "c8af5bf8cc4c9fa9",
+   "d7334c02433f93e0",
+   "db3a429a6fe45cc9",
+   "fb2d2d9dd297d4cb"
+  ]
+ }
+}

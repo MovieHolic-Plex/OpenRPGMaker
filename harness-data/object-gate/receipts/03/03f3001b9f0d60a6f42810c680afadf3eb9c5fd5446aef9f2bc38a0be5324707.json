@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "03f3001b9f0d60a6f42810c680afadf3eb9c5fd5446aef9f2bc38a0be5324707",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "steep wooden ship stairs with rope handrail going up toward the north",
+ "label": "pirate-isles/pi-stairs-up",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "steep wooden stairs / companionway ladder",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stairs are drawn as a flat front elevation / 2D platformer ladder. There is no distinction between horizontal tread surfaces and vertical risers, and the side stringers show no depth or top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8618
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden stairs with steps leading upward",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stairs show individual horizontal step treads viewed from above, each tread measuring approximately 3 pixel rows tall with clear dark risers/undersides beneath, properly rendered in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3750
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden ship staircase / companionway steps",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stairs going north display foreshortened horizontal step treads that are 3 to 4 pixels deep each, showing their top surfaces in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4964
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flight of wooden ship stairs",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each stair tread clearly displays a foreshortened top surface 3 to 4 pixels deep viewed from above, with dark risers/underside shadows separating them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4397
+  }
+ ],
+ "decidedAt": "2026-10-13T19:28:41.187Z",
+ "cells": {
+  "16": [
+   "386cfa11f66d6651",
+   "417ef6d34d3060b9"
+  ],
+  "24": [
+   "42823404d90da071",
+   "5b40617ae90b719a",
+   "5f2c3db4ef56b118",
+   "5f66b59db8e1e387",
+   "62fbcd89a6e704a1",
+   "66e92e8f56a1e5a9",
+   "94d3c48d470d7d75",
+   "b43876ff75f921fc",
+   "b545b5b8f0c8ab56",
+   "b675e4e8675a3368",
+   "bb71ddad8367dca8",
+   "cdb4ac4a84347a0c"
+  ],
+  "32": [
+   "574e60c50a4a6776",
+   "8bf3df44b646b1ae",
+   "e02ddd4940b38458"
+  ],
+  "48": [
+   "08efe53ca27ebba2",
+   "4b48607ddc547833",
+   "4c8fea079ee07d58",
+   "59aef478b749732c",
+   "94d6415b5522c029",
+   "c44e28ff68455e0f"
+  ]
+ }
+}

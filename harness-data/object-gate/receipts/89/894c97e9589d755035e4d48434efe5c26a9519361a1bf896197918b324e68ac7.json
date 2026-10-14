@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "894c97e9589d755035e4d48434efe5c26a9519361a1bf896197918b324e68ac7",
+ "width": 48,
+ "height": 32,
+ "kind": "organic",
+ "name": "prehistoric stone-age rock outcrop",
+ "label": "prehistoric/ph-rock-outcrop",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rock outcrop with grassy top",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock outcrop features a substantial green top surface (approx. rows 1 to 11) seen from above at a 3/4 angle, with the vertical stone face facing south below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3892
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone rock outcrop with grass-covered top",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top grassy surface spans rows 1 to 12 (approx. 11 rows), showing the plateau surface foreshortened from above, while rows 12 to 29 show the south-facing rock cliff face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5706
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone rock outcrop with grass top",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock outcrop has a clear grassy top plateau spanning rows 1 to 11 (approx 10-11 rows tall) above the vertical stone south face spanning rows 12 to 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4183
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone rock outcrop with grass top",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock outcrop features a substantial grassy top surface extending roughly from rows 1 to 12 (about 11 pixel rows) sitting atop the rocky front cliff face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5563
+  }
+ ],
+ "decidedAt": "2026-10-14T00:39:52.939Z",
+ "cells": {
+  "16": [
+   "313c671936f0d853",
+   "43d6189ef63ed089",
+   "8447fd6a95678ec6",
+   "b21aa1b6647a3054",
+   "baab88c2f87e9ade",
+   "f2543d10e5492efc"
+  ],
+  "24": [
+   "025208d08d828bff",
+   "1afcb91a2be5e3ff",
+   "31191466cefd0b29",
+   "36551d13e8a155b0",
+   "3d36d7a725e3d61d",
+   "773c9d258887442e",
+   "c68801f44b562644",
+   "c7536b40666a01ab"
+  ],
+  "32": [
+   "413887a73f8a1c66",
+   "71e0477673bd70d7",
+   "804237bf9e8f464c",
+   "97818f66c7dc5d44",
+   "afe9d0852657d0bc",
+   "bea49e27aa7f4c4b"
+  ],
+  "48": [
+   "5ded9f598e1d04ec",
+   "6c8db045e9a08b6a"
+  ]
+ }
+}

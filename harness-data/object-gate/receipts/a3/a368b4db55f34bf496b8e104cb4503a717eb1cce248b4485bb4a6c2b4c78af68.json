@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a368b4db55f34bf496b8e104cb4503a717eb1cce248b4485bb4a6c2b4c78af68",
+ "width": 64,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "선술집 바(놋쇠 난간 + 잔)",
+ "label": "steampunk-city/sp-bar-counter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tavern bar counter",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden bar counter has a clearly visible top surface spanning rows 4 through 12 (approx. 9 rows deep) displaying glasses and bottles, above a brass edge and paneled south face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5009
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tavern bar counter",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bar counter top is clearly visible across rows 5 to 13 (around 9 source pixel rows) with items placed on top of it, above a front-facing wood panelled south facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3523
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tavern bar counter",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bar counter top surface spans rows 4 through 13 (approx. 10 pixel rows) displaying mugs, bottles, and a cloth, above a south-facing paneled front wall (rows 15-28).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3536
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tavern bar counter",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter's top surface spans rows 4 through 12 (about 9 rows tall) with various bottles, mugs, and a coaster placed on it, clearly showing the top surface above the paneled front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3497
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.468Z",
+ "cells": {
+  "16": [
+   "16e633d011e4a5b0",
+   "4fc33ab712a6f963",
+   "7e0fd2b5d6c9b831",
+   "80ae73cc559813a8",
+   "d8e5ad14bbb7760d",
+   "e076f14534584541",
+   "e3b2b94c3dfef313",
+   "f300a4193d71c070"
+  ],
+  "24": [
+   "07df1359d0ea11e6",
+   "0b192870fbad0de9",
+   "0b7ac0236d215184",
+   "115b2584ac54d93c",
+   "2ac24d3afb792307",
+   "2edda94d188d6445",
+   "46599f601b47459b",
+   "4facf8defbf08622",
+   "4fee145084e7f5ce",
+   "576ff5b7423d3593",
+   "6301e739632c33c9",
+   "69372091e6a30b15",
+   "6bbe11fb408432b0",
+   "6c78291c4928e8b3",
+   "715d755b1f707928",
+   "78f158d1fbf1dc6f",
+   "7a2a9b5d6408aede",
+   "7a82883cfa0a7e73",
+   "83f6f3ca981a1af4",
+   "922ef630f15ffc76",
+   "9a2f258521c5fb88",
+   "9cc9d059fdbc4bc9",
+   "a178e5d2c7dc59fe",
+   "a5688c80793e89c9",
+   "b278bf5a6a920c43",
+   "c1b9eb6306374f1a",
+   "c47e972e794b3607",
+   "ca780b33b491c3ce",
+   "ce72aa33fddbfafa",
+   "d14c7beb463568d1",
+   "d375c8e4126a8761",
+   "d86254341be56831",
+   "ec241c9fc4a856a0",
+   "f443c08103da5949",
+   "f50dceff450879a4",
+   "f9111007f8b34119"
+  ],
+  "32": [
+   "37e494454c07c1d4",
+   "dbe30eb697499274"
+  ],
+  "48": [
+   "2c493c7b3fd3ec22",
+   "4aa99d6b9ed074f2",
+   "65635fbd1dfc5951",
+   "710f775cdb385f2c",
+   "7322d80673d4d60b",
+   "b051cfa499c4055d",
+   "b8311f20387f2cac",
+   "b8390e309b299da3",
+   "b868002222cef000",
+   "b90b39b520c5e25d",
+   "f1220abcd8b91ff8",
+   "f6c7515764b396e6"
+  ]
+ }
+}

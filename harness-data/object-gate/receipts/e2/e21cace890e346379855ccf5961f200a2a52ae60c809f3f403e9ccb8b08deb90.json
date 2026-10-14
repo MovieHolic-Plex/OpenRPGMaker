@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e21cace890e346379855ccf5961f200a2a52ae60c809f3f403e9ccb8b08deb90",
+ "width": 32,
+ "height": 16,
+ "kind": "frame",
+ "name": "자전거 거치대(자전거 2대)",
+ "label": "modern-campus/mc-bike-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bicycle rack with two bicycles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire bicycle rack and both bicycles are drawn in pure side-scroller/architectural elevation with flat circular wheels and 1px-thick horizontal bars. There is no visible top surface foreshortened from a 3/4 top-down angle (top_rows: 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5954
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bicycle rack with two bicycles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rack and bicycles are drawn in pure side-scroller 2D elevation. The rack's top horizontal bars (row 3) are only 1px thick lines, handlebars are 1px lines, and no horizontal surfaces (seat, rack beam top, or base rail) show a top face visible from a 3/4 overhead perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6310
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bicycle rack with two bicycles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bicycle rack and bicycles are drawn in flat 2D side-scroller profile (pure elevation) with 1px bar lines at row 3 and flat 1-2px lines for saddles, with no visible top surfaces foreshortened for a 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5766
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bicycle rack with bicycles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the bicycle rack frames and the parked bicycles are drawn in pure flat side elevation (platformer style). The wheels are flat circles, handlebars and frame beams are 1px lines with no foreshortened top surfaces visible from a 3/4 high angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 35923
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.873Z",
+ "cells": {
+  "16": [
+   "71c956e4bd292149",
+   "922ea1fc6603ea51"
+  ],
+  "24": [
+   "2c01020ba61d174c",
+   "3feb7363c7cdf755",
+   "54956422c96dd763",
+   "6393c9b5c9e63833",
+   "99abdd21975d711b",
+   "a7718d44476df308",
+   "b126b39b65d7c249",
+   "b40b33388d81aa2e",
+   "c96bcd365b49da03",
+   "e09e878d83a18fe8",
+   "e0e59bbf7ef40031",
+   "e948c3b7084d3c7a"
+  ],
+  "32": [
+   "78deb9a5e402d280",
+   "ab4cd95181540fc0"
+  ],
+  "48": [
+   "05d79b632dca0e3b",
+   "67c4d6840feb0963",
+   "9c79274d95431341",
+   "b1b739c588dac6c8",
+   "c7442bf31c3db021",
+   "dda386fbde1e4279"
+  ]
+ }
+}

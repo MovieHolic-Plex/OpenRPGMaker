@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e41963ac2be0823683071446f028057dc5dd412e17a795db83db3fabd7372135",
+ "width": 32,
+ "height": 16,
+ "kind": "frame",
+ "name": "short wooden picket fence section",
+ "label": "pirate-isles/pi-fence",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden picket fence posts and horizontal rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence is drawn in a pure 2D side-scroller / front elevation style. The picket tops have no foreshortened top surfaces, and the two horizontal rails consist of only a 1px lighter line over a 1px darker line without a visible top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8188
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden picket fence section",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence pickets and horizontal rails are drawn as a straight-on front elevation with no visible top surfaces (the rails have only a 1px highlight line).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4715
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden picket fence with vertical pickets and two horizontal crossbeams",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence is rendered in pure front elevation as flat vertical pickets and horizontal rails with no visible foreshortened top surfaces on either the post tops or the horizontal beams (only 1px highlight lines).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7921
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden picket fence with vertical pickets and horizontal rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence pickets and rails are drawn in pure front elevation; pickets have no top end faces (shaded only side-to-side with a flat top border), and the horizontal rails only show a 1px lighter line over a 1px darker line rather than a foreshortened top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7345
+  }
+ ],
+ "decidedAt": "2026-10-13T19:19:03.412Z",
+ "cells": {
+  "16": [
+   "98f50d02ef85fc0f",
+   "d1c27f12ba0825ad"
+  ],
+  "24": [
+   "0fa4cdeeb2a3388b",
+   "1c55e014bcc4cb80",
+   "52dc7a5f3b48851e",
+   "651b506d03fa5d9f",
+   "7913e91b267db7d3",
+   "8461685b3fd1c5b0",
+   "9afdd788a1dce199",
+   "b8dcb44653024952",
+   "c2612868c9df258b",
+   "c9dcfb4ac9d319ba",
+   "e715bf7c2d1a0e18",
+   "ff3695cc220afd3d"
+  ],
+  "32": [
+   "87a7c968aa207adb",
+   "c29d37c95b641a78"
+  ],
+  "48": [
+   "162b5892bdb99b0f",
+   "2a398bec6e7f5128",
+   "7cd45237d1c7a713",
+   "99a6379848bc4ecc",
+   "ce5535db0ff86352",
+   "fa8ff9990615411b"
+  ]
+ }
+}

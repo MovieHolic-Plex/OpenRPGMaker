@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "207384833e15d186789f0f4c55c8fc6facad1ef57b764e8605cd8057f27d754a",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "wooden sky dock plank deck seen from above (flat walkway)",
+ "label": "sky-island/si-pier-w",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden dock plank surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Planks and beam edge of a dock/walkway rendered flat on the floor plane as seen from above, filling all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3850
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden dock planks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile depicts horizontal floor planks and edge framing seen flat from above, matching the flat floor tile kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3354
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden dock planks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat deck floor surface viewed from above spanning the full 16 rows with horizontal planks and a left edge border.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3545
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden plank deck walkway",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat floor surface representing wooden dock planks viewed from above, matching the 'flat' floor tile kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3406
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.984Z",
+ "cells": {
+  "16": [
+   "f855442e0aae8e6d"
+  ],
+  "24": [
+   "56bf5d47db9e4847",
+   "6b2a9d6d22ebda49",
+   "6eb4890af5659d71",
+   "da688ab937099da7",
+   "de66d7f05285f80a",
+   "ea86275737809dcf"
+  ],
+  "32": [
+   "1348490255dd41e0",
+   "371aca8e739849c1",
+   "782b4e28a970694c",
+   "87afb011187a6403",
+   "8e5d09921701b9df",
+   "b060a822ca565698"
+  ],
+  "48": [
+   "0aff39cd2a18ec8d",
+   "4ea593a33a2a49ba",
+   "75a126e7cfd63e93",
+   "a6e1a7e3f0d90be4",
+   "b00401921fe83452",
+   "e087fcdd34c2c1dd"
+  ]
+ }
+}

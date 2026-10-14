@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a19cc7c8d1beb9343804486ba1c3b5a6cb5286c90f86453c62dfaaaf1b13d36a",
+ "width": 48,
+ "height": 48,
+ "kind": "low_furniture",
+ "name": "상단(영주 자리, 한 단 높인 다다미 단)",
+ "label": "sengoku-edo/se-dais",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "raised tatami platform dais",
+    "kind_matches": true,
+    "top_rows": 23,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The raised tatami dais shows an expansive top surface measuring 23 source pixel rows (rows 6-28) and a south-facing riser/front face measuring 6 rows (rows 30-35), correctly rendered in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4342
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "raised tatami platform with cushion and armrest",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The raised tatami dais shows an expansive top surface spanning rows 6 to 29 (24 rows) and a front step/riser face spanning rows 30 to 35 (6 rows), correctly adhering to top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7869
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "raised tatami platform (dais)",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The raised tatami dais shows its large top surface across rows 6 to 29 (24 pixels tall) with seating cushion and armrest, and its front riser face along rows 30 to 35 (6 pixels tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3193
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "raised tatami platform (dais)",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tatami surface spans rows 6 to 29 (24px tall) with a clearly visible front riser/step along rows 30 to 35 (6px tall), properly rendered in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3492
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.077Z",
+ "cells": {
+  "16": [
+   "00b861032eca390e",
+   "0e7cfed2a4f1a9e9",
+   "15f670cf568a3f15",
+   "16c7c62fa7c52790",
+   "2ea1f1991e642e4b",
+   "85c395a541fab9c5",
+   "adf49728273a7a7d",
+   "def9544a54b8eaa6",
+   "f0d744cb24624941"
+  ],
+  "24": [
+   "06290a18f7b2742c",
+   "15dae88b3b6ebcb3",
+   "bfc05f886c978c76",
+   "dcbd82f9e00cc3cd"
+  ],
+  "32": [
+   "1a84c8c4d8c424de",
+   "1b64673379a4884f",
+   "2f11a22c4f66a283",
+   "384220b06e299179",
+   "4bfdd9092fb4c69f",
+   "574e3867cbba9b1c",
+   "5e035348f997d550",
+   "5f5c64c0a1ca660f",
+   "656e4fe526f8ab57",
+   "8621b59e4e85dceb",
+   "8704354aa39ec8d5",
+   "93ef20df0fe4bc03",
+   "9b77f5631edec5f9",
+   "9e958332012c4654",
+   "b98c35918179e5d3",
+   "bea85c4fe2e869fd",
+   "c204fbdd0e5ddcdf",
+   "c4776233ffe20ae1",
+   "cfc1465dd85a7f20",
+   "dc08cd093af42a64",
+   "f33066a44e9c8ef8",
+   "f3dfcb41b91cff1b",
+   "fa6a3e49a672893b",
+   "fd3c25714aa540c1"
+  ],
+  "48": [
+   "55028445ea4574f5"
+  ]
+ }
+}

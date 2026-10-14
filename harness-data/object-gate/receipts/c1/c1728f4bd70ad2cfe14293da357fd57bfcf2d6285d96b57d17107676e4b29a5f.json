@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c1728f4bd70ad2cfe14293da357fd57bfcf2d6285d96b57d17107676e4b29a5f",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "땅 위 배관 — 세로 + 빨강 손바퀴 밸브",
+ "label": "steampunk-city/sp-pipe-valve-ns",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical pipe running along the ground with a horizontal handwheel valve",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The red handwheel valve is drawn foreshortened as an ellipse on the horizontal plane (rows 3-8) elevated above the ground pipe, casting a shadow southward onto the pipe body below (rows 8-12).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6112
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical pipe segment with valve",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a ground pipe running north-south; its top cylindrical crest is visible from above along its entire 16-row length with appropriate shading, and the red valve wheel is correctly foreshortened as an ellipse seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5870
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vertical pipe running along the ground with mounted valve",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a ground pipe running north-south with a valve mounted on top. The red valve wheel is correctly rendered in 3/4 view as a foreshortened horizontal ellipse (about 10px wide by 6px tall), and the cylindrical pipe shows its top crest along its full length.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7430
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ground pipe with valve handwheel",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pipe runs north-south along the ground, and the prominent red handwheel valve is drawn in correct 3/4 perspective as a foreshortened horizontal ellipse spanning rows 3-8 (6 rows tall, 10px wide) with visible hub and spokes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 22269
+  }
+ ],
+ "decidedAt": "2026-10-13T18:40:36.081Z",
+ "cells": {
+  "16": [
+   "38e93ef4c1eaba0b"
+  ],
+  "24": [
+   "30dc7b4414f5fb11",
+   "3c12bf278e421d50",
+   "733c0569d139f25a",
+   "9eb30cb9fff223fc",
+   "d93a587d92493164",
+   "e90b8d5cd28aba0b"
+  ],
+  "32": [
+   "09ad71dd89d67f10",
+   "15b97f064d13d0bf",
+   "a4a13e830dc5237b",
+   "a7cf448c85044b5e",
+   "c8032b393111730b",
+   "e315f68b7824d2ed"
+  ],
+  "48": [
+   "38b684be20217a77",
+   "5d82a05d3084b0f5",
+   "77892ab2250e6fc6",
+   "b520c7c6e8c97ccb",
+   "bccab6ade8cbbdb9",
+   "c7ca51eec8f5fc9f"
+  ]
+ }
+}

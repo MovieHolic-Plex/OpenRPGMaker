@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "536c9d1fc1030426d3a4ba6dfe31bd4d5204941310ca92b452ac2570429f5f41",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "물가 돌 축대(남서쪽 뭍)",
+ "label": "sengoku-edo/se-water-sw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water tile with stone embankment edge on south and west",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a pool or water edge bordered by stone pavement on the south and west sides, viewed top-down in standard JRPG map style.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3934
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water tile with stone embankment edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down terrain tile showing water bounded by stone edging on the south and west edges; correct top-down map terrain perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4765
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water and stone edge terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile showing water bordered by a stone ledge along the west and south edges, viewed from above as appropriate for 3/4 top-down terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3515
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water pool surface with stone border edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing water with stone edge, viewed from top-down perspective across the entire 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4601
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.063Z",
+ "cells": {
+  "16": [
+   "83687ef122b9105d"
+  ],
+  "24": [
+   "483ff5dbf5bff641",
+   "48fd58c43f8a1fbf",
+   "5fb498cfd4bfb74a",
+   "7af76d8406980c34",
+   "8b10a3a633d89946",
+   "d52af23e21dac4d7"
+  ],
+  "32": [
+   "3ae1cc25af5d11b6",
+   "8d8f22fe6879fe5c",
+   "8f40a09c9636528f",
+   "bd0bc907696d9774",
+   "ee32b61d41e19b21",
+   "ff62c3bf5a657492"
+  ],
+  "48": [
+   "044c6b00e7975c12",
+   "57308c2a3c55b086",
+   "964d75c2982dc496",
+   "aff48eed69bea346",
+   "c106d31a83cb3eaa",
+   "e0806614ec919389"
+  ]
+ }
+}

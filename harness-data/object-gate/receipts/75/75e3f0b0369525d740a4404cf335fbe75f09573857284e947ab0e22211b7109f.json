@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "75e3f0b0369525d740a4404cf335fbe75f09573857284e947ab0e22211b7109f",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "rocky islet sea stack standing in the water with surf foam ring",
+ "label": "pirate-isles/pi-sea-stack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rocky islet / sea stack with foam ring",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The islet sits within a foreshortened elliptical water and foam base spanning rows 20-30. The rounded rock shows top-down lighting across its upper crest from rows 3-10.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5248
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rocky islet / boulder",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The islet sits inside an elliptical water/foam ring that clearly establishes the 3/4 top-down ground plane. The rock dome shows a well-defined upper/top surface from row 3 to row 10 with top-facing highlights and downward-sloping shading rather than a flat front silhouette.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4687
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rocky islet / sea stack",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock has a highlighted top-facing dome surface from rows 3 to 8, and the base sits within an elliptical water and surf foam ring foreshortened for the 3/4 top-down camera view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5155
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rocky islet / sea stack",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock has a clearly defined top-lit surface spanning rows 4 to 9 before transitioning into the shadowed south-facing cliff face. The elliptical water and foam base around it is also foreshortened in standard 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6031
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.699Z",
+ "cells": {
+  "16": [
+   "065feda68860c3f1",
+   "11cb32f16da2b3f3",
+   "9605145095476898",
+   "f484710ab33ba2c2"
+  ],
+  "24": [
+   "00e57d707057c623",
+   "125c2a357a334b2b",
+   "1a6ecd9ab9df6064",
+   "2c7ff20168f72611",
+   "41b3175be7c06624",
+   "4f8baba8cc949438",
+   "50cfbda95598efd5",
+   "5a03ec9b27cb7dcd",
+   "68a991f07a2dabbc",
+   "6e0498964036a705",
+   "705ae4abde5a8fe9",
+   "771977791fdf9747",
+   "77df51752938e513",
+   "93e271527b011054",
+   "b404a95d613b4ee1",
+   "bba85b931a4fe6a0",
+   "becca961aaf0590d",
+   "cd8a7c8b715ed9b4",
+   "f06f07479482287f",
+   "f457026b014b6de4",
+   "fcb44a91197a0a96",
+   "fd6ed90d43a6a39c",
+   "fdf9debd1061a2e6"
+  ],
+  "32": [
+   "b4949f7e41919b72"
+  ],
+  "48": [
+   "04b7a7617458ff7d",
+   "2fdabec844287348",
+   "bc1fdb808528b318",
+   "be56342cf3bfabf9",
+   "c8b21b18a5a93707",
+   "e02354a95c0fbf5c"
+  ]
+ }
+}

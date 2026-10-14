@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "44826bbebb4b48fbfe7e6731593cf5bf98b70acf0f076de4468e43c800e727e4",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "wooden ship deck planking floor tiles, 2 variants",
+ "label": "pirate-isles/pi-deck",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden deck floor planking",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles depicting wooden planks seen from above with top surface texture spanning all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3611
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden deck floor planks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles representing ship deck planking seen from above across all 16 pixel rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4002
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden deck floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tiles depicting horizontal wooden planks seen from above, covering the full 16-row tile height.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3025
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden deck floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal floor planks viewed from above occupying all 16 rows of the tile pattern.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11295
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.694Z",
+ "cells": {
+  "16": [
+   "bf728e49aea04b4c",
+   "d2dbd55cc1a0e436"
+  ],
+  "24": [
+   "50699f0e6a1f6738",
+   "585f81f339253e18",
+   "594f2af8e90e57b5",
+   "819495e4c1666c47",
+   "96f62f7d5b099238",
+   "9b0ae9cb47937b5f",
+   "a48b3f920b4fa6af",
+   "d47ba01d53ca22ca",
+   "db7cc21f261aa981",
+   "e7b8fcbf3fada9c6",
+   "e9605f72cffb49e3",
+   "eeba3f93946e0107"
+  ],
+  "32": [
+   "3907136c1c091612",
+   "96e7df79e0c087d1"
+  ],
+  "48": [
+   "1693e5799a47ea95",
+   "37b9b834cc37d828",
+   "83c21ffe379fb593",
+   "9f134d28106a52f1",
+   "bafa74eada4b33ec",
+   "d920df54054dbad8"
+  ]
+ }
+}

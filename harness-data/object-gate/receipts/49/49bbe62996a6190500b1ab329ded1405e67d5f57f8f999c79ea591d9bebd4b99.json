@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "49bbe62996a6190500b1ab329ded1405e67d5f57f8f999c79ea591d9bebd4b99",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "거리 가판대(초록 칠 나무, 녹청 모임지붕, 불 켜진 창구)",
+ "label": "steampunk-city/sp-kiosk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "street stall structure with hipped roof",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper portion (rows 1-15) shows the foreshortened sloping faces of a hipped roof meeting at a central cap, providing a clear top surface view of the structure above the front wall and counter opening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5990
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "street stall with hipped roof and counter",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper portion of the kiosk (rows 1-14) is a hipped roof viewed from an overhead 3/4 perspective, showing the roof facets sloping inward toward a central point, followed by the front facade with lit windows and counter below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6544
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "street stall with verdigris hipped roof and service counter",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper half (rows 1-14) shows the angled hipped roof slopes viewed from above at a 3/4 perspective, with 14 rows of visible roof surface above the front eave (row 15) and south-facing stall facade (rows 16-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6324
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "street stall structure with verdigris hipped roof",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hipped roof of the kiosk is viewed from above at a 3/4 angle across rows 1-14 (apex foreshortened towards the back, showing visible roof planes), resting atop the front-facing stall facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5420
+  }
+ ],
+ "decidedAt": "2026-10-13T18:42:41.657Z",
+ "cells": {
+  "16": [
+   "233ed2dc11b491cf",
+   "62265bfb3734ddde",
+   "6b4e6c68d3d63d37",
+   "8e68ea5060bd177d"
+  ],
+  "24": [
+   "0625416e4a9ab9ce",
+   "13633b8367de6e43",
+   "16d5682898c33e30",
+   "1e2ddc723618f81d",
+   "339abf1351fa454f",
+   "34ec10bbe7121df2",
+   "37070ca517524b76",
+   "42b53cec9cfb3ddc",
+   "548aa206ca82f112",
+   "6dd0dbb720140bc4",
+   "7438d9663eadc763",
+   "824f060a15435f0c",
+   "8590a7ebededbae9",
+   "97d3ee0afdae88f3",
+   "98f7590bafe896fb",
+   "9d24ec1c7cf959df",
+   "a1629260e411dd34",
+   "a6dafd3a26bf6087",
+   "a787a6021557a2a5",
+   "b6c08482d8280016",
+   "b9870584a2890a29",
+   "d5999c2d081ae61a",
+   "e153a107f83b0df3",
+   "efb3fd7f780ab357"
+  ],
+  "32": [
+   "86f7dfbed09373e1"
+  ],
+  "48": [
+   "1c81438badfa624b",
+   "70066e1d80694c22",
+   "cf073096386e9f1c",
+   "d723d2c273dd5089",
+   "e7bf119dc208f93e",
+   "f04fbbb01fc8d546"
+  ]
+ }
+}

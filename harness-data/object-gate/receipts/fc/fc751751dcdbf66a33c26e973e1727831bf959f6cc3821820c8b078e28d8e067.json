@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fc751751dcdbf66a33c26e973e1727831bf959f6cc3821820c8b078e28d8e067",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "wooden barrel with iron hoops",
+ "label": "sky-island/si-barrel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrel is drawn in straight side/front elevation: the metal hoops are completely straight horizontal bands and there is no elliptical top cap visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4894
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrel is drawn in pure front elevation: the iron hoops at rows 6 and 12 are perfectly straight horizontal lines rather than elliptical curves, and there is no visible elliptical top lid, only a 1px outline at row 1 over vertical stave shading.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6746
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrel is drawn in pure front elevation: the iron hoops are completely flat horizontal 1-pixel bands across rows 6 and 12 rather than curved ellipses, the vertical plank shading runs continuously down the front, and there is no elliptical top cap surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5750
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrel is drawn in pure front elevation: the iron hoops are straight horizontal lines rather than downward-curved elliptical arcs, and there is no elliptical top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6884
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.430Z",
+ "cells": {
+  "16": [
+   "4720b20f1b223389"
+  ],
+  "24": [
+   "1eaf6217c2dc2635",
+   "54581a7dc143d39a",
+   "56f5b6836e428341",
+   "5f5ffff41e6e9ef0",
+   "8297df578fbd16cb",
+   "9290441c662ad413"
+  ],
+  "32": [
+   "1093ad024cba5ecf",
+   "71a09fbe35a9e2c9",
+   "839cadeaf19f32ce",
+   "8c68ccd3607513c3",
+   "e35acc778baa72d6",
+   "eb08ddb3e8ed0588"
+  ],
+  "48": [
+   "00333c6346034632",
+   "053cb3ac0bcde9aa",
+   "3ec5fdb9663a4fdd",
+   "462fd11d57c0838f",
+   "a926677a6bcec78d",
+   "aaa965ee176f402a"
+  ]
+ }
+}

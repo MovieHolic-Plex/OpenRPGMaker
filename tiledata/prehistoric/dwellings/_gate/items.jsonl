@@ -1,0 +1,13 @@
+{"png": "ph-hut-thatch-s.png", "kind": "structure", "name": "이엉 둥근 움집(작은)", "label": "prehistoric/ph-hut-thatch-s"}
+{"png": "ph-hut-thatch-l.png", "kind": "structure", "name": "이엉 둥근 움집(큰)", "label": "prehistoric/ph-hut-thatch-l"}
+{"png": "ph-hut-log.png", "kind": "structure", "name": "통나무 벽 둥근 움집", "label": "prehistoric/ph-hut-log"}
+{"png": "ph-tipi.png", "kind": "structure", "name": "가죽 원뿔 천막", "label": "prehistoric/ph-tipi"}
+{"png": "ph-shaman-tent.png", "kind": "structure", "name": "무당 천막(깃털·머리뼈·나선 무늬)", "label": "prehistoric/ph-shaman-tent"}
+{"png": "ph-bone-hut.png", "kind": "structure", "name": "매머드 뼈 집(엄니 아치 + 턱뼈 담)", "label": "prehistoric/ph-bone-hut"}
+{"png": "ph-cave-mouth.png", "kind": "structure", "name": "동굴 입구(풀 덮인 바위 언덕)", "label": "prehistoric/ph-cave-mouth"}
+{"png": "ph-cave-mouth-l.png", "kind": "structure", "name": "큰 동굴 입구(두 칸 아가리)", "label": "prehistoric/ph-cave-mouth-l"}
+{"png": "ph-cave-mouth-v.png", "kind": "structure", "name": "현무암 동굴 입구(화산 골짜기)", "label": "prehistoric/ph-cave-mouth-v"}
+{"png": "ph-chief-house.png", "kind": "structure", "name": "족장 긴 집(이엉 우진각 지붕 + 통나무 벽)", "label": "prehistoric/ph-chief-house"}
+{"png": "ph-earth-lodge.png", "kind": "structure", "name": "흙 움집(뗏장 둔덕 + 통나무 현관)", "label": "prehistoric/ph-earth-lodge"}
+{"png": "ph-lean-to.png", "kind": "structure", "name": "짚 차양(갈래 기둥 + 털 잠자리)", "label": "prehistoric/ph-lean-to"}
+{"png": "ph-granary.png", "kind": "structure", "name": "곡식 창고(기둥 위 이엉 오두막 + 사다리)", "label": "prehistoric/ph-granary"}

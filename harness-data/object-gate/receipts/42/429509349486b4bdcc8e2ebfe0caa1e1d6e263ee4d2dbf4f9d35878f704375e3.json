@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "429509349486b4bdcc8e2ebfe0caa1e1d6e263ee4d2dbf4f9d35878f704375e3",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "무쇠 창살 담 왼쪽 끝 기둥",
+ "label": "steampunk-city/sp-fence-post-l",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cast iron fence with left-end pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the pillar and attached fence are depicted in flat front elevation with no visible horizontal top surfaces on the pillar cap, beams, or base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5878
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cast iron fence post and wall section",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillar and connected fence/wall are drawn in pure front elevation with no visible top surfaces on the pillar cap, horizontal beams, or base plinth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5895
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pillar and fence wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillar and adjoining fence/wall are rendered in pure flat front elevation with no visible top surfaces on the pillar cap, fence rails, or wall base (0 top rows visible).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5991
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cast iron fence pillar and attached railing",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillar and fence are drawn in a completely flat front elevation with no visible top surface for the pillar cap, horizontal rails, or wall base (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5664
+  }
+ ],
+ "decidedAt": "2026-10-13T18:20:36.038Z",
+ "cells": {
+  "16": [
+   "90bcb0602c42dea3"
+  ],
+  "24": [
+   "565243574f047ccf",
+   "57283c543bc8b06f",
+   "8365a08bd3a63b00",
+   "a0fdb7f4fa4f450f",
+   "c759f348ae660b3f",
+   "d1e475c5f5e5458f"
+  ],
+  "32": [
+   "4a2a53738c9799df",
+   "4e8268f718730eb7",
+   "64b783d66363ed88",
+   "d7f72ee0c5af1cc7",
+   "e2943ad95e3c128b",
+   "ef377bbbc975e0ff"
+  ],
+  "48": [
+   "04d19992a0e597d4",
+   "0fb5912beb4ddb38",
+   "539a5e1c26bd5fb1",
+   "7ec9eeed082d2aa3",
+   "88dc697b93e79502",
+   "d732cc95163c7fe5"
+  ]
+ }
+}

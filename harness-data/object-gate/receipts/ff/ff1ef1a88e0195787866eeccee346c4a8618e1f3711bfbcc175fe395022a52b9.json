@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ff1ef1a88e0195787866eeccee346c4a8618e1f3711bfbcc175fe395022a52b9",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "수경 재배 선반(윗면 + 잎 + 보라 재배등 + 물 트레이)",
+ "label": "sf-station/sf-hydroponic-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hydroponic grow shelf",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet/shelf has no visible top surface; the roof of the unit is drawn as a flat 1-2px horizontal line (rows 2-3), and all shelves, plants, and trays are viewed straight-on in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7145
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hydroponic shelf unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet begins at row 3 with only a 1-2px frame outline and no visible top surface. The shelves, grow light, water tray, and control panel are all rendered from a flat, straight-on front elevation with no visible depth or horizontal surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6365
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hydroponic shelf unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the shelf unit has only a 1px black outline at row 3 with no visible top surface. The shelves, grow light, and base are drawn entirely in flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7639
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hydroponic shelf unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shelf unit has no visible top surface (rows 2-3 form only a 2px outline/cap border). The entire unit, including the internal shelves, grow light, and water tray, is drawn as a flat front elevation / cross-section with no top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5193
+  }
+ ],
+ "decidedAt": "2026-10-13T15:28:17.423Z",
+ "cells": {
+  "16": [
+   "1f59770fbf5e2a8a",
+   "54fe1218e962ff56",
+   "649b6c00914ab041",
+   "74fa0a0e1e1fca87"
+  ],
+  "24": [
+   "006568f8b720887f",
+   "06a53ff23210f8ae",
+   "071de9b3c43efa2d",
+   "12bfafc12cc6ad7a",
+   "3bbdaa024ad8838d",
+   "413798715069fdb2",
+   "41730106cca2732c",
+   "4598f2aa3aa194fc",
+   "584b287600ab0be8",
+   "64c03ff76b35891f",
+   "66f55ed798e6366b",
+   "6ca550aedfda9e2a",
+   "6d29d6c55db4c318",
+   "861e2d50f194cf43",
+   "8dcc890b82c9e54a",
+   "943c51db8d3188f0",
+   "a2800784320402ca",
+   "c0f112997bb4bb2f",
+   "d8c785931fe20751",
+   "e29ac41ed2d3b49c",
+   "e7b82ec5be2926e0",
+   "eb3a11f1656c1fd2",
+   "f024ad894f659e40",
+   "f3b3d84b839b02eb"
+  ],
+  "32": [
+   "af7d27b993101842"
+  ],
+  "48": [
+   "17ee40d69174dc6f",
+   "b4824de5b03627ae",
+   "e01ebc4e28d2331e",
+   "e970ae6ea790b8f5",
+   "f9c10c99a12f6852",
+   "fb8a21902d8dfae5"
+  ]
+ }
+}

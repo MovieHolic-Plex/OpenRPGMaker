@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "698c340b7907bb68a1afc8e85cd2e634b6d1d2541a9ec5ebd9ad710dd2cb3a88",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "운하 물",
+ "label": "steampunk-city/sp-water",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "canal water tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Dark teal flat water surface with gentle horizontal wave ripples covering the entire 16x16 terrain tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4302
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "canal water tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat canal water terrain tile filled with horizontal ripple highlights; the entire tile forms the horizontal surface seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3556
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "canal water tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Water terrain surface filling the 16x16 tile with horizontal ripple highlights viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3929
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "canal water tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless horizontal canal water surface terrain tile featuring subtle ripple highlights and shadow accents across the entire 16x16 surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3442
+  }
+ ],
+ "decidedAt": "2026-10-13T18:45:40.069Z",
+ "cells": {
+  "16": [
+   "ec1b1da951be1aad"
+  ],
+  "24": [
+   "2e62fe16101e8ef9",
+   "35dc79235f5e2de3",
+   "40d0c1ae8f529ac5",
+   "5af5636b7867066e",
+   "8951c449a3621346",
+   "d8db60b029f44595"
+  ],
+  "32": [
+   "1330b2511599f056",
+   "1e8c8d93ef6b1aed",
+   "3c3d4b71fd1287c8",
+   "448fd88ac5627c01",
+   "5251c9adb60f1d7b",
+   "8eb806fb4f6f7f68"
+  ],
+  "48": [
+   "0a99f948412c01c0",
+   "57775c469b174cb9",
+   "607f72d6a4ba7d53",
+   "dbbbd9ce4d353205",
+   "dffd3f6e374e83a5",
+   "ec69407d7304ac53"
+  ]
+ }
+}

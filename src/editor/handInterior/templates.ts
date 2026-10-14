@@ -3,6 +3,8 @@
 // 옮겨 심기: 붙은 가구는 덩이로 묶어 같이 옮긴다. 벽에 붙은 덩이는 그 벽에 붙인 채로, 떨어진 덩이는 방 안 비율 자리로.
 // 벽 가구·걸이는 늘 북쪽 벽 줄에 남는다. 심을 때 덩이마다 자리 후보를 차례로 검사한다(furnish.ts).
 import data from "@/assets/interiorRoomTemplates.json";
+// 전국·에도(sengoku_edo) 방 견본은 손으로 짠 따로 된 파일이다(공용 JSON 한 줄을 여러 PR 이 같이 고치지 않게) — 아래에서 합친다.
+import sengokuData from "@/assets/sengokuEdoRoomTemplates.json";
 import type { HandInteriorSpec } from "./builder";
 
 export interface InteriorTemplateItem {
@@ -25,7 +27,9 @@ interface TemplateData {
   /** 칩셋 → 건물 → 예제 맵별 방 종류 목록(방 구성표). */
   readonly programs: Readonly<Record<string, Readonly<Record<string, readonly { readonly map: string; readonly kinds: readonly string[] }[]>>>>;
 }
-const D = data as unknown as TemplateData;
+const D0 = data as unknown as TemplateData;
+const DS = sengokuData as unknown as TemplateData;
+const D: TemplateData = { templates: { ...D0.templates, ...DS.templates }, programs: { ...D0.programs, ...DS.programs } };
 
 export function roomTemplates(tilesetId: string): readonly InteriorRoomTemplate[] { return D.templates[tilesetId] ?? []; }
 export function roomPrograms(tilesetId: string) { return D.programs[tilesetId] ?? {}; }

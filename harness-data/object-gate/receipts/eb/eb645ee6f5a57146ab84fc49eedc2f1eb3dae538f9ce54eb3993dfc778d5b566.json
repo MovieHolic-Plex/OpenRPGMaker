@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "eb645ee6f5a57146ab84fc49eedc2f1eb3dae538f9ce54eb3993dfc778d5b566",
+ "width": 32,
+ "height": 32,
+ "kind": "flat",
+ "name": "바닥 의식 원(백묵·핏빛 문양·녹은 초)",
+ "label": "gothic_manor/gm-ov-ritual",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ritual circle on floor",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Floor decal depicting a chalk ritual circle with a red pentagram and small candles lying flat on the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4864
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ritual circle on floor",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The ritual circle and pentagram lie flat on the floor, correctly foreshortened as an ellipse in top-down 3/4 perspective with melted candles placed along the perimeter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3304
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ritual circle / pentagram decal with melted candles",
+    "kind_matches": true,
+    "top_rows": 23,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The ritual circle is drawn as a foreshortened ellipse spanning rows 4 to 26 lying flat on the floor, with a bloody pentagram inside and candle nodes along the perimeter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3737
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ritual circle on floor",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The ritual circle is correctly drawn as a foreshortened ellipse lying flat on the floor plane across rows 4 to 27, with candles placed around the perimeter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8774
+  }
+ ],
+ "decidedAt": "2026-10-13T17:01:50.505Z",
+ "cells": {
+  "16": [
+   "46c114112ec2cc76",
+   "5cbf8815682191fc",
+   "c062a64675e8c397",
+   "d94234c8a44ae5dd"
+  ],
+  "24": [
+   "0c5f78418d09d9d6",
+   "195cbacefa239a14",
+   "266ad259f57f66bf",
+   "38b8774afefbbbd9",
+   "42753e320bcdb0b8",
+   "465b6e533a0b72d7",
+   "46a19171ff9bbc7a",
+   "5b76f0e597459e55",
+   "5f4e1f59e21542f9",
+   "675f87ad464b649c",
+   "719a5de40fee9376",
+   "74bad3790e1a0fdf",
+   "8ea1c3772f1db8f9",
+   "abcda92fa5e3f70b",
+   "abfbc8b54786f552",
+   "ae399ebacae43ed3",
+   "aecc426566dd7946",
+   "b6f5e6590f97e560",
+   "b9f90464d1bcb30c",
+   "bae032f4bb57972d",
+   "c68f78515f79adfe",
+   "d6cdfbbdc73e6fdf",
+   "e32b8034171fc785",
+   "fac138f31efcb98a"
+  ],
+  "32": [
+   "f6b4d00e9566af9f"
+  ],
+  "48": [
+   "6b918eff22a8333e",
+   "7196126b2c7c09e4",
+   "81e0bc279dae9fd3",
+   "bc33f6a7b0122914",
+   "d650c61fde3191fa",
+   "d90a5efb9e7f8dae"
+  ]
+ }
+}

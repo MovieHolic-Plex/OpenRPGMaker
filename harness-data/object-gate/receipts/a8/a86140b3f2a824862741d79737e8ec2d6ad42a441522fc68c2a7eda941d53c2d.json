@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a86140b3f2a824862741d79737e8ec2d6ad42a441522fc68c2a7eda941d53c2d",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "cloud platform edge tile against sky (terrain)",
+ "label": "sky-island/si-cs-ne",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cloud platform surface",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Cloud floor / platform tile viewed top-down with scalloped northern and eastern edges against sky.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5421
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cloud platform surface",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Cloud platform terrain edge tile viewed from above against sky background; fills the ground plane correctly for a terrain tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5345
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cloud platform surface",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Cloud platform terrain edge tile viewed from above against a blue sky background, forming a walkable horizontal surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4477
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cloud platform edge",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a puffy cloud platform against sky, viewed from above as walkable ground/terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4245
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.976Z",
+ "cells": {
+  "16": [
+   "0fd5a94156abcb07"
+  ],
+  "24": [
+   "21497491f0731499",
+   "72e84f0c2eeb445e",
+   "a82b367dbfa4f3af",
+   "a996dc976e8620bc",
+   "ccf889f7cd177029",
+   "d93c29503d5c602b"
+  ],
+  "32": [
+   "3e870503c12eb081",
+   "5f04cd5b1db9f736",
+   "68d18f0b2ef92cd1",
+   "888e247be2695079",
+   "b2fc58cd487e4fc8",
+   "f3dcc2af577b3669"
+  ],
+  "48": [
+   "07004a8c48b4ffb1",
+   "21cd4ef459bd9744",
+   "29c41365200091a0",
+   "4402c766dec66658",
+   "801652a2d6741ca9",
+   "f37cc65fba3947db"
+  ]
+ }
+}

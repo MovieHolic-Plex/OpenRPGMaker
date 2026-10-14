@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3091eb0e4344d1a0451d2d2013191678b2a7fd8dc0b093b7e213e466ad771d25",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "경고 표지판(굵은 상자형 표지, 주황 면과 위험 띠)",
+ "label": "sf-station/sf-sign-chunky",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "warning signpost / pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signpost is drawn in pure front elevation with an arched top; all details (orange panel, hazard stripes, border lines) are viewed directly from the front with no horizontal top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 9248
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "box-shaped warning sign / pillar sign",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in a flat front elevation. The white upper section is a rounded/tapered arch forming the top of the front face (not a top surface seen from above), and no horizontal top surface or depth is depicted for the main body or base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 9509
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "warning sign post / pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object, including the arched top cap (rows 0-10) and main sign body (rows 11-28), is drawn in flat front elevation with no visible horizontal top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6012
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "warning sign post / pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in pure front elevation: the white dome/cap tapers symmetrically with flat horizontal boundaries, the body face and hazard stripes are completely flat with horizontal dividing lines, and no elliptical or foreshortened top surface is visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 11635
+  }
+ ],
+ "decidedAt": "2026-10-13T15:31:15.749Z",
+ "cells": {
+  "16": [
+   "81edbf61f713b056",
+   "9cedd1c2b3789635"
+  ],
+  "24": [
+   "2ea42e2d88aeffb9",
+   "4ede217a2b6512ae",
+   "53f15bea993a958d",
+   "8c182265a974398a",
+   "94239d8acdfd47ac",
+   "b9c890fcdc29f485",
+   "bf10eac61354cf56",
+   "c2f9d3d72ff1855b",
+   "c6e83c5432417eeb",
+   "ca19e1f1933082e6",
+   "d086e2f76f20e92a",
+   "e5241529112afaab"
+  ],
+  "32": [
+   "440a7f43c8c41c23",
+   "ca64d4e3a7df40e0",
+   "cfc2ae18130f19b8"
+  ],
+  "48": [
+   "0870616f74d5367e",
+   "14e61c73b0722fcf",
+   "a05bd753dff234da",
+   "d7bb07045a292a55",
+   "def8bc94684fc2c9",
+   "f10136519f852350"
+  ]
+ }
+}

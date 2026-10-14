@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a2e2a7c03f9ea6ff3ba52242023966dcf020a3da839d102dc3f6757851fd31e3",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "샤워 포드(윗면 + 반투명 유리문 + 배수 패널)",
+ "label": "sf-station/sf-shower-pod",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "shower pod",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the pod is clearly drawn across rows 2-9 (~8 source pixel rows) above the front door section (rows 10-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6179
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "shower pod",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shower pod is clearly depicted across rows 1-9 (approx. 9 pixel rows tall) above the front door and frame assembly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6697
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "shower pod",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the pod is clearly visible and foreshortened from rows 2 to 9 (approx. 8 rows tall), resting above the south front face which contains the door and base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5204
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "shower pod",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shower pod is clearly drawn as a large white horizontal plane spanning rows 2 to 9 (8 rows tall), positioned above the front face containing the glass door and frame.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5891
+  }
+ ],
+ "decidedAt": "2026-10-13T15:28:17.424Z",
+ "cells": {
+  "16": [
+   "73ef4e3940c219a4",
+   "8aa489fb64e02104"
+  ],
+  "24": [
+   "24cbe2716d58ee7c",
+   "2feac79a3502bbeb",
+   "399322e9af18a29c",
+   "4f0aebb1d6bd5cd1",
+   "70cb4de008937370",
+   "8ab7bf418c543425",
+   "a0e1806027d700ba",
+   "c7a1eda1960d141c",
+   "d35cafbf58c575ab",
+   "e254b4148fedecb5",
+   "e4b9d93a7049435b",
+   "ef80e34bcc2cb3e7"
+  ],
+  "32": [
+   "2a6537fd3c2e94a1",
+   "54598d74610ef515",
+   "a472ddd70e0caa1d"
+  ],
+  "48": [
+   "100c6d0c8a6b0a0d",
+   "5c8f7eb67b2746cd",
+   "768bd19f7c798834",
+   "cb839833ddd6b261",
+   "dd0a94bfb0661a17",
+   "f02ebed11063b5bc"
+  ]
+ }
+}

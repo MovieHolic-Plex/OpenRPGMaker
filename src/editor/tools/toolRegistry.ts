@@ -82,7 +82,15 @@ import { STRUCTURE_KIT_TOOLS } from "./structureKitTools";
 import { TILESET_OBJECT_TOOLS } from "./tilesetObjectTools";
 import { HAND_INTERIOR_TOOLS } from "./handInteriorTools";
 import { JP_CITY_TOOLS } from "./jpCityTools";
+import { CAMPUS_TOOLS } from "./campusTools";
 import { WIZARDING_SPACE_TOOLS } from "./wizardingSpaceTools";
+import { PIRATE_ISLES_TOOLS } from "./pirateIslesTools";
+import { SENGOKU_EDO_TOOLS } from "./sengokuEdoTools";
+import { SKY_ISLAND_TOOLS } from "./skyIslandTools";
+import { STEAMPUNK_CITY_TOOLS } from "./steampunkCityTools";
+import { SF_STATION_TOOLS } from "./sfStationTools";
+import { GOTHIC_PLACE_TOOLS } from "./gothicPlaceTools";
+import { PREHISTORIC_TOOLS } from "./prehistoricTools";
 import { TRANSIT_TOOLS } from "./transitTools";
 import { AI_DOC_TOOLS } from "./aiDocTools";
 import { RETRO_CHOREOGRAPHY_TOOLS } from "./retroChoreographyTools";
@@ -221,8 +229,23 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(HAND_INTERIOR_TOOLS, "tile"),
   // 일본 도시(jp_city) 건물 조립 — 부품 사전으로 가변 폭·층수 건물을 jp_city 맵에 짓는다(M3). oprn-jp 맵에서만 동작한다.
   ...withDomain(JP_CITY_TOOLS, "tile"),
+  // 현대 학교·캠퍼스(modern_campus) 야외 구성(학교 마당·교외 거리)과 건물 문 ↔ 실내 이음. modern_campus 맵에서만 동작한다.
+  ...withDomain(CAMPUS_TOOLS, "tile"),
   // 마법 학교(해리포터풍, wizarding_world) 공간 빌더 — 13공간 레시피로 방·야외 한 장을 한 번에 짓는다(통행 한 덩이 보장).
   ...withDomain(WIZARDING_SPACE_TOOLS, "tile"),
+  // 열대 군도·해적 항구(pirate_isles) 맵 구성기 — 항구·섬 마을·요새·난파선 섬·배/술집/오두막/동굴 안을 씨앗으로 한 장째 짠다. oprn-pirate 맵에서만 동작한다.
+  ...withDomain(PIRATE_ISLES_TOOLS, "tile"),
+  // 전국·에도 일본(sengoku_edo) 야외 구성(성하마을·여관 거리·무가 저택·성·신사/절·농촌)과 건물 문 ↔ 실내 이음. sengoku_edo 맵에서만 동작한다.
+  ...withDomain(SENGOKU_EDO_TOOLS, "tile"),
+  // 하늘섬(sky_island) 구성기 — 마을·신전 섬·비공정 부두·섬 사슬·실내 방 한 장(섬·건물·다리·소품, 도달 검사)과 건물 문 ↔ 실내 이음. sky_island 맵에서만 동작한다.
+  ...withDomain(SKY_ISLAND_TOOLS, "tile"),
+  // 스팀펑크 도시(steampunk_city) 구성기 — 거리·공장역·운하 부두·실내 여섯 가지를 한 번에 짓고(배치·통행은 구성기), 건물 문 ↔ 실내를 잇는다.
+  ...withDomain(STEAMPUNK_CITY_TOOLS, "tile"),
+  // SF 정거장·네온 거리(sf_station) 맵 구성기 — 정거장·연구 기지 실내·네온 거리·달 기지를 씨앗으로 한 장째 짠다. oprn-scifi 맵에서만 동작한다.
+  ...withDomain(SF_STATION_TOOLS, "tile"),
+  ...withDomain(GOTHIC_PLACE_TOOLS, "tile"),
+  // 선사 시대 원시 세계(prehistoric) 구성기 — 부족 마을·늪지·화산 골짜기·화석 계곡·실내 넷을 한 번에 짓고(배치·통행·바닥 가장자리는 구성기), 집·동굴 문 ↔ 실내를 잇는다.
+  ...withDomain(PREHISTORIC_TOOLS, "tile"),
   // 맵 위 탈것(차 흐름·버스·노면전차·전철·지하철) — 길 그림에서 자동으로 또는 칸 경로로 노선을 깐다. 런타임이 실제로 움직인다.
   ...withDomain(TRANSIT_TOOLS, "map"),
   ...withDomain(STRUCTURE_KIT_TOOLS, "tile"),

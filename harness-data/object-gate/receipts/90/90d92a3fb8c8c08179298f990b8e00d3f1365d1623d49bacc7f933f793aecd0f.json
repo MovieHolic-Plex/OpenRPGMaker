@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "90d92a3fb8c8c08179298f990b8e00d3f1365d1623d49bacc7f933f793aecd0f",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "그을린 풀(쌈지 공원)",
+ "label": "steampunk-city/sp-grass",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "scorched grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 ground surface texture depicting grass with scorched/dark patches, correctly categorized as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3132
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "scorched grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image is a full 16x16 pixel terrain tile depicting scorched grass/ground viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3994
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ground terrain tile (grass)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 pixel flat ground/terrain texture depicting grass with scorched/dark patches, correctly categorized as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3035
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ground terrain tile (grass/scorched grass)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ground terrain tile showing patchy green and darkened grass textures across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4067
+  }
+ ],
+ "decidedAt": "2026-10-13T18:27:58.051Z",
+ "cells": {
+  "16": [
+   "3682dee4b5879193"
+  ],
+  "24": [
+   "1ce45a1269d07da5",
+   "26d0e80b91a3a229",
+   "3be224c89ab94df8",
+   "775cfa582c29da0d",
+   "7c4f25aadb351a66",
+   "85550328f49adbd5"
+  ],
+  "32": [
+   "22e24afe1072e5e4",
+   "252c417c2905af65",
+   "41e314656baa286c",
+   "590665e88bccb1d7",
+   "6a6453d0aab0dc10",
+   "ceffc521097fa44b"
+  ],
+  "48": [
+   "6d1185c3de5c8b04",
+   "9f7851d7a36318b7",
+   "b2fa6a750556ba9e",
+   "bc9b812d98af1c8e",
+   "d5e384a44cc3f62d",
+   "f968673167ff8d02"
+  ]
+ }
+}

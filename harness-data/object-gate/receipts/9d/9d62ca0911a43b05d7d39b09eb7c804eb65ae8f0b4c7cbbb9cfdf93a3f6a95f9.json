@@ -1,0 +1,224 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9d62ca0911a43b05d7d39b09eb7c804eb65ae8f0b4c7cbbb9cfdf93a3f6a95f9",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "땅 위 배관 — 가로 + 북 갈래",
+ "label": "steampunk-city/sp-pipe-new",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden chest / box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a wooden chest with a central latch/lock drawn in pure front elevation; only a 1px outline is present at row 1 with zero top surface rows visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4752
+  },
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden chest / crate with central latch",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is drawn from row 2 to 12 as a direct front view with no visible top surface (0 rows); row 1 is just an outline.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4058
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "closed wooden chest",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chest is drawn in a pure front elevation with only a 1px black outline along the top edge (row 1); the lid and lock are shown entirely flat-on with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5811
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden chest / box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is drawn from a flat front view with no visible top surface (0px top) to show foreshortening from a 3/4 top-down angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4476
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden chest / box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chest/box is rendered in pure front elevation from rows 1 to 13, showing only the front face with lock and lid rim, with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5184
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "box/chest body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main rectangular body is rendered in pure front elevation from row 2 to 12 with only a 1px dark top outline at row 1 and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 25191
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden chest",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chest is drawn straight-on in pure front elevation. Both the lid (with front-facing lock clasp) and base are viewed from the side with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6009
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden chest",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chest is drawn straight-on in a flat front elevation. Rows 2-7 represent the front face of the lid (with the lock clasp on rows 3-6) and rows 8-12 represent the front face of the base, with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5935
+  }
+ ],
+ "decidedAt": "2026-10-13T18:40:36.080Z",
+ "cells": {
+  "16": [
+   "c97e802852eb1503"
+  ],
+  "24": [
+   "3f09dc672dac29d1",
+   "5887974e21d31bcc",
+   "a916da7df23337a6",
+   "acd49c174a917f52",
+   "d58184ceb6259699",
+   "eb8b59af57440da3"
+  ],
+  "32": [
+   "13a8de93a381342e",
+   "6326d9bc8af0b501",
+   "7c5eeb0c63f622d5",
+   "b8b2fe71a6927264",
+   "d855060dddebdd45",
+   "f59f3636b5e50ca0"
+  ],
+  "48": [
+   "1195ef057a2ea80e",
+   "7d269b087aa32bc5",
+   "d72589922df45bd5",
+   "f4ab2fd10b7f069b",
+   "fa9003c150140dc5",
+   "fc05fc40277d269e"
+  ]
+ }
+}

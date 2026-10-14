@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d166e5242d6449041a77b51b3a1ac587699675cb569b879a145ce011c3c202e2",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "호버 택시(노란 차체 + 지붕 표지 상자 + 캐노피 + 체크 띠)",
+ "label": "sf-station/sf-street-pod-taxi",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hover taxi body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The taxi is drawn in a pure side elevation view with no foreshortened top roof surface visible (only a 1-2px highlight strip at rows 7-8); both the vehicle body and roof sign lack any 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4630
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "yellow hover taxi body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hover taxi is drawn in pure 2D side/front elevation. The roof has only a 1px highlight line along row 7 without any foreshortened top surface, and the roof sign is also drawn completely flat.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5602
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hover taxi body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hover taxi is drawn in pure side-scroller elevation profile facing left/right. It shows no visible roof/top surface foreshortened from above (only a 1-pixel highlight rim along rows 7-8), making it a flat 2D elevation rather than a 3/4 top-down view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5767
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hover taxi body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hover taxi is drawn in pure 2D side elevation profile with no foreshortened top surface visible on either the main roof (only a 1px highlight line on row 8) or the taxi sign box.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5526
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:31.922Z",
+ "cells": {
+  "16": [
+   "1a783a2eb3722858",
+   "23c4799c794154d9",
+   "259ea100d63a0085",
+   "3b7969a42e7c9ed9",
+   "4498099f9bd62cd4",
+   "8204a91c7a4a6f29"
+  ],
+  "24": [
+   "03c758196ae1ad20",
+   "07a140ff80f7af96",
+   "0de9465cdbfa4336",
+   "2bec498a0a66731a",
+   "53390de103b97e2f",
+   "cc4ea579af3e7c86",
+   "f1d539e3b33ea794",
+   "fc97566877f35200"
+  ],
+  "32": [
+   "0ff4dae7b27f7def",
+   "137f3a310e238da6",
+   "16aa7d644a007f45",
+   "a1f5fd35abed0456",
+   "a944e57deea7cfae",
+   "ec0a5674c23bacaf"
+  ],
+  "48": [
+   "05f545d84741e584",
+   "d96f4cdf2cd1f378"
+  ]
+ }
+}

@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "caf85d2dbbe668fb1cbc45b4cd8788f2106be73494cffdb742fe9012a0a13184",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "thick wooden ship mast rising from a round wedged deck collar with iron bands and a coiled rope",
+ "label": "pirate-isles/pi-mast-base",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ship mast and collar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mast extends straight off the top edge of the sprite with no visible top surface or cut face (top_rows = 0), and the collar/base shows only a 1px front-facing step rather than a foreshortened top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6359
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden mast with base collar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mast extends off the top of the tile without showing any cut face or top surface (0 top rows), and the collar at the base is rendered in pure front elevation with no visible horizontal depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4364
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ship mast and deck collar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mast extends off the top edge with no top surface, and the deck collar/coiled base is drawn purely in front elevation with no visible horizontal top surface around the mast.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4689
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ship mast and deck collar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mast extends straight through the top edge of the tile without showing any cut face or top surface (0 top rows), and the surrounding deck collar also has no visible top horizontal surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5622
+  }
+ ],
+ "decidedAt": "2026-10-13T19:28:41.187Z",
+ "cells": {
+  "16": [
+   "e6487593689a9290"
+  ],
+  "24": [
+   "2540a1f1bd1fa056",
+   "2b6c07efb129b82d",
+   "4bc955a38c64d4de",
+   "7bc1c7aa7b03e3ed",
+   "c2afd6ac490ea7c9",
+   "f294bc255cdb6473"
+  ],
+  "32": [
+   "578ed2b6b4eb8a67",
+   "6965f1d0350d4ae4",
+   "9319a73c63cf8525",
+   "bd983079d40717f1",
+   "e24eafe4f8a03882",
+   "fdaa08acd8121036"
+  ],
+  "48": [
+   "5b8d5efea4ecdd19",
+   "6ced796903b5c6f9",
+   "7064ee64c792fc5c",
+   "8b0daeee28dd8eb1",
+   "8cbd265dc470deaa",
+   "fd6d2d0830a28cc1"
+  ]
+ }
+}

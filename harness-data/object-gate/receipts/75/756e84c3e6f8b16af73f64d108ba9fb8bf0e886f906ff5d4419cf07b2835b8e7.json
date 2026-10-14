@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "756e84c3e6f8b16af73f64d108ba9fb8bf0e886f906ff5d4419cf07b2835b8e7",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "병풍(여섯 폭, 금 바탕 구름)",
+ "label": "sengoku-edo/se-byobu",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "folding screen panels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The folding screen panels are drawn in flat front elevation, staggered vertically but without any visible top surface (the 2px brown bands at the top of each panel are front frame borders, not horizontal top planes).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4761
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "six-panel folding screen (병풍)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The folding screen panels are drawn as flat vertical rectangles staggered in depth, but each panel is viewed strictly from the front with a 1px black outline capping it. The brown blocks at rows 3-5 and 7-9 are front-facing top border frames, not foreshortened horizontal top surfaces. There is 0px of top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5502
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "folding screen (six panels)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each panel is drawn as a flat vertical rectangle facing directly forward. The brown bands at the tops of the panels are part of the front mounting frame, and no top edge or surface showing the thickness/zigzag of the folding screen from above is rendered (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7922
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "six-panel folding screen (병풍)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The folding screen consists of flat vertical rectangular panels drawn in pure front elevation. The brown sections at the tops of the panels are only 2px tall decorative caps/rims with a 1px shadow line beneath them (not foreshortened top surfaces), meaning no horizontal top surface showing panel depth is rendered.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10350
+  }
+ ],
+ "decidedAt": "2026-10-13T19:42:40.482Z",
+ "cells": {
+  "16": [
+   "7b2c45967a3968b0",
+   "9c8fda449e82b7f0",
+   "e2d897b899e0f7f8",
+   "fe4d6c31dc405531"
+  ],
+  "24": [
+   "1065c05808da4dea",
+   "11a2805f6d208a68",
+   "1d0ae563f27b403c",
+   "20ed775f12003d51",
+   "20f1f045ea56c514",
+   "236eb94278ca667f",
+   "239bdf5bc1dcbfe5",
+   "27298b4e0255d646",
+   "3157a0c8bf35fc31",
+   "5a4653fbda5d0798",
+   "68dec87847da6fda",
+   "7b1823b6d81fbe1e",
+   "83dea299ead3661e",
+   "ae397a628f705834",
+   "b536befdebf756f2",
+   "cab825a99cfafaf4",
+   "cb25717aaa299f61",
+   "cbe33bc4b98944bf",
+   "cfe0f61dfe53b3a2",
+   "d15ca8bd98a47ba9",
+   "da369eeda122e584",
+   "e03db743136cf101",
+   "e47cff532514cee7",
+   "f5a353beeb00de71"
+  ],
+  "32": [
+   "ab825111b32e636e"
+  ],
+  "48": [
+   "118a0fdd31b9ad0a",
+   "52532c95d054ca65",
+   "535e9e6db5cfae84",
+   "5472ebaaff51395a",
+   "788608ead1f596e4",
+   "c98da29e37dc953d"
+  ]
+ }
+}

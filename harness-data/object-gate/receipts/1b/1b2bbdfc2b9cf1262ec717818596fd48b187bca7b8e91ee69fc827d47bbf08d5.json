@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1b2bbdfc2b9cf1262ec717818596fd48b187bca7b8e91ee69fc827d47bbf08d5",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "진열장(유리문 — 톱니·약병)",
+ "label": "steampunk-city/sp-curio-cabinet",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "display cabinet",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the cabinet has a clearly defined 4-row visible top surface (rows 1-4) with a front edge highlight on row 4 and a cast shadow on row 5 above the south-facing front facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6243
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "display cabinet with shelves",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the cabinet shows a clearly defined foreshortened horizontal surface from rows 1 to 3 (3 pixels deep) before the front molding/cornice at rows 4-5.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5616
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "display cabinet with shelves and items",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet top shows a 3-4px foreshortened horizontal top surface across rows 1-4 with lighting and a front edge highlight before the recessed shelves below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5511
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "display cabinet",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet has a clearly visible foreshortened top surface spanning rows 1-4 (around 3-4 source pixels deep) with a highlighted front edge at row 4 before the shadow at row 5.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5884
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.468Z",
+ "cells": {
+  "16": [
+   "431e210fbf433ba7",
+   "472db1fdfedf562b",
+   "493a0fc60a9ba759",
+   "82de4fec3d8c91b5"
+  ],
+  "24": [
+   "00deb04fe11c8d8e",
+   "0f86de0b8c7a2d3e",
+   "1094f687b49d7af1",
+   "1a796a271538ac93",
+   "1c5c491b33cb9136",
+   "1f2cf1d1b25c8100",
+   "3d0c404cfef9d65a",
+   "3da693d29d4090c1",
+   "4976e6fecad4f08b",
+   "5dc0136f264abfe8",
+   "6a486140ea82f659",
+   "78ab1c73f0df8c01",
+   "7c6b036e0bff3c2e",
+   "7c7f979b2711c463",
+   "aa616afc178d46e5",
+   "b9ac52ef67f5ff55",
+   "ca422caf5b83292b",
+   "cebe56d97c5e12ed",
+   "d05ec890d8a762bd",
+   "db83a4614e099e5d",
+   "dbee0accec455092",
+   "e4009507b842c264",
+   "f288dab5e400e7ec",
+   "f5d52407921bff03"
+  ],
+  "32": [
+   "7da3ea940c8782f9"
+  ],
+  "48": [
+   "1e50b8ee7afafe39",
+   "252ce7c0f69aca96",
+   "301faf86f67dc886",
+   "35d8705bb000db9c",
+   "441ec8832755889a",
+   "f01b9037ec20f925"
+  ]
+ }
+}

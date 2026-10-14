@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "061f969837e0d17496ebf2aedf34fc21a67f131743bc7b0ae11639fd5e6428b9",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "대리석 흉상 받침",
+ "label": "gothic_manor/gm-bust-plinth",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden pedestal with marble bust",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden pedestal features a clearly foreshortened top surface (approx. rows 16-23, with cast shadow under the bust) leading down to the front edge at row 24 and the front vertical face with a plaque from row 25 downward.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5720
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "marble bust on wooden pedestal",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pedestal/plinth shows a clear foreshortened top surface around the bust from rows 16 to 24 (approx. 8 rows), complete with cast shadow beneath the bust, before meeting the south-facing front panel at row 25.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9487
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "marble bust on wooden pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the marble bust and the wooden pedestal are drawn in pure front elevation; neither the top of the bust's head nor the horizontal surfaces/steps of the pedestal show top-down foreshortened depth (0 top rows visible).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10131
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden pedestal with marble bust",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pedestal shows a clearly foreshortened top surface spanning from row 14 (back) to row 24 (front edge). The bust rests back on this surface around row 20, casting a shadow on the horizontal plane with several rows of the top surface visible in front of it before the vertical south face begins at row 25.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8945
+  }
+ ],
+ "decidedAt": "2026-10-13T16:57:24.059Z",
+ "cells": {
+  "16": [
+   "486311f27e3d5f20",
+   "e5af218858105429"
+  ],
+  "24": [
+   "15f306af4640823f",
+   "1c3c67455f9929cb",
+   "1f7df9865f45d1d6",
+   "27f2ed518f0fe962",
+   "35c5bebc40e19738",
+   "4535461ef9e9500d",
+   "4e732537c2a73151",
+   "5146bcc636879b24",
+   "63d3635c77440fe6",
+   "b69848a9329cb896",
+   "bc03e9211856be15",
+   "c6f1416e7618a7fb"
+  ],
+  "32": [
+   "2bf80fdd2db02da5",
+   "bb49ca9b884f69b3",
+   "cb5993f58254b031"
+  ],
+  "48": [
+   "31b41ed98b3cff3c",
+   "4995ff4651eb39e5",
+   "b43cb4cc17e8fcdf",
+   "b55af242f23267fb",
+   "bf8b2853ee4fe78e",
+   "e23cf52eb8bf68ac"
+  ]
+ }
+}

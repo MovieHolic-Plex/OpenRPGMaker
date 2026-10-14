@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b29f5ac14390e6e177fd7ef0b4546a12a42e371625f41c18343554d05dccd358",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "low wooden drying table seen from above at an angle, slatted top face covered by a spread fishing net, net hanging over the front edge",
+ "label": "pirate-isles/pi-net-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "drying table",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal tabletop surface covered in netting is clearly visible from rows 8 to 16 (9 source pixel rows), with the front edge, apron, hanging net, and front legs drawn below in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3937
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden drying table with slatted top and net",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop covered by a fishing net is prominently visible from above across rows 8 to 16 (9 source pixel rows), with the front edge, apron, hanging net, and legs extending downward.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3912
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden drying table with slatted top and hanging net",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from above across rows 8-16 (9 source pixels deep) covered by a fishing net, with front apron, hanging net, and legs visible below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3301
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "drying table top and frame",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden drying table clearly displays a large top surface spanning rows 8-17 (approx 10 rows) covered in netting, meeting the front apron and legs below in proper 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2921
+  }
+ ],
+ "decidedAt": "2026-10-13T19:33:03.044Z",
+ "cells": {
+  "16": [
+   "0e1b84e965b2bcd9",
+   "84cf6c3f4678734e",
+   "a041959f620a6b8c",
+   "bc7dc700b2877a97"
+  ],
+  "24": [
+   "0dbd2ca95d1547d2",
+   "0df276590cedc62a",
+   "14b1777074cb60a4",
+   "18bb97d38b6f3bbc",
+   "2ca79bc362a42f8e",
+   "4150f5af998d0c76",
+   "6534eb084ee3c63a",
+   "6db5b74afaaf1320",
+   "7c1a3e73c062ec5f",
+   "7e17f20796418df6",
+   "7f6b0e6708320572",
+   "a45374976eee75de",
+   "a47458a597f4f366",
+   "ab4303166824ead0",
+   "ab7a4d552785e51f",
+   "b5f87883c89452b7",
+   "b7f3558abf27cb28",
+   "cab6923832069528",
+   "d17627f2240de1a8",
+   "e4cac3752bb59cbc",
+   "ecbc16e8459d3ffc",
+   "f2a4f155dba8a9b0",
+   "f8c3c44ac675e699",
+   "fcd17e5c6e436435"
+  ],
+  "32": [
+   "12da0a1481acbcf3"
+  ],
+  "48": [
+   "3e7e98af189cd98e",
+   "52a0d6a62d6dcfe5",
+   "5c72c522c6d3a60f",
+   "764d131ebca41bf1",
+   "a4a83ea001615834",
+   "cede21766f36523f"
+  ]
+ }
+}

@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "55966f67b3c6fa613179553d5324f22c60bd52c889b03b1942309c2b99cf60f5",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "small stone birdbath basin",
+ "label": "sky-island/si-birdbath",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "아가리 2행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "birdbath basin bowl",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basin opening is viewed from above showing 2 rows of blue water (rows 3-4) enclosed by the back rim on row 2 and front face/rim on rows 5-6, creating an elliptical top-down opening.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 2행 < 4"
+   ],
+   "ms": 8691
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "birdbath basin bowl",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basin interior/water surface is visible from above across rows 3-4 (2 rows tall) surrounded by the back and side rims on rows 2-4, showing the interior pool in 3/4 perspective atop the south-facing bowl wall (rows 5-6).",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 2행 < 4"
+   ],
+   "ms": 7631
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "birdbath basin bowl",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basin bowl shows its interior water pool viewed from above spanning rows 3-4 (2 rows tall) plus the back rim at row 2, over a 2-row south-facing front edge (rows 5-6) and pedestal.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 2행 < 4"
+   ],
+   "ms": 8001
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "birdbath basin and pedestal",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basin bowl clearly reveals its interior water basin from a top-down 3/4 perspective, showing 2 rows of blue water (rows 3-4) framed by the back and side stone rim (rows 2-4), sitting above a 2-row front face (rows 5-6) and pedestal.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 2행 < 4"
+   ],
+   "ms": 9318
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.433Z",
+ "cells": {
+  "16": [
+   "86ab3337b287a537"
+  ],
+  "24": [
+   "16c964a4d6106e79",
+   "46641c5383f381ad",
+   "4b40dfd216fb5ec3",
+   "870444f023d805b2",
+   "c3e043533882f17c",
+   "f2c3126fe13736c3"
+  ],
+  "32": [
+   "172956c2bc526dbc",
+   "18770ff0c74edd63",
+   "5df498ed7b5537e7",
+   "da8388184e88fe7f",
+   "e61e9b7939c69881",
+   "fb7325517b3befc3"
+  ],
+  "48": [
+   "1f29fe59905166d1",
+   "641373fb9b37bd7e",
+   "6e0f233a9326b960",
+   "a2f39ea88cc98aaf",
+   "abcdbf6f6ae4d7bd",
+   "deee72867a4a2cb7"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c75b58a9d2ccb6225ee5c372825d2a1b5bd08053a172f4259064e68f3e8b5ade",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "다진 흙길",
+ "label": "sengoku-edo/se-road",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "compacted dirt path ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing a continuous dirt surface across all 16 rows, appropriate for top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2518
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "packed dirt path terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing a packed dirt surface across all 16 rows, matching the terrain category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2292
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "compacted dirt path ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a dirt path with small color variations and a tiny embedded pebble; correctly represents ground surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2974
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "packed dirt ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing a packed earth path viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9451
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.058Z",
+ "cells": {
+  "16": [
+   "80812fd94c7bcd48"
+  ],
+  "24": [
+   "13d3f7faafa8514d",
+   "14a6334585e12625",
+   "5d669e2981394cb8",
+   "7befe30da300be98",
+   "bdc02942cbed9f02",
+   "cd6fcdafe59ae787"
+  ],
+  "32": [
+   "010d0795d7effc39",
+   "19d31ed41dc3472f",
+   "1c0a24534c16561e",
+   "592c921050377b8f",
+   "7bcc48822d0d0027",
+   "7f9f28a7332e591d"
+  ],
+  "48": [
+   "1ae1784c67689010",
+   "63d48279c76b322c",
+   "6fbc53688bec9010",
+   "70b2b1143eedb8b2",
+   "820f0214058e8862",
+   "99b3463cfc6cf118"
+  ]
+ }
+}

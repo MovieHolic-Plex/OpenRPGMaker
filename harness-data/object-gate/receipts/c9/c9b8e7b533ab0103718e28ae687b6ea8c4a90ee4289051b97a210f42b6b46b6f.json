@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c9b8e7b533ab0103718e28ae687b6ea8c4a90ee4289051b97a210f42b6b46b6f",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "전력 도관 상자(윗면 + 굵은 케이블 + 번개 램프)",
+ "label": "sf-station/sf-power-conduit",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "power conduit box",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the conduit box clearly spans rows 3 to 9 (7 source pixels tall) featuring a yellow conduit band, while the south front face occupies rows 10 to 14 with a cyan display and indicator lights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5664
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "power conduit box",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the conduit box spans rows 3 to 9 (7 rows deep) featuring a horizontal yellow cable/conduit strip, above a darker south front face spanning rows 10 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5489
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "power conduit box",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the conduit box spans rows 3 to 9 (7 rows tall) showing a yellow segment bar, while the front south face spans rows 10 to 14 with lights and a panel display.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3267
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "power conduit box",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the conduit box spans rows 3 to 9 (7 rows tall) in light blue-gray with a yellow cable/terminal strip, transitioning cleanly to a 5-row tall dark south face (rows 10 to 14) with indicator lights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6399
+  }
+ ],
+ "decidedAt": "2026-10-13T15:28:17.425Z",
+ "cells": {
+  "16": [
+   "71491888e103cf65",
+   "ff22044fd7a63f7d"
+  ],
+  "24": [
+   "0634a49386043a68",
+   "2805c2a0fd95fa7a",
+   "3ca238180ebea05d",
+   "47b1e4bf281607a8",
+   "5672947aa809f9a4",
+   "60160bbd81342ae5",
+   "7c33ff5dde507f18",
+   "7e1d8be1837864b6",
+   "b9c751bbcf0f0c86",
+   "d2c9458a9439812a",
+   "f3a9aed364bc3c15",
+   "f733be6ad4045812"
+  ],
+  "32": [
+   "5c1533bc10791bc9",
+   "dca02377f7ed6a5a"
+  ],
+  "48": [
+   "1a15e858f4b532c1",
+   "3b989f5b04956563",
+   "4a49f32f8454aaa0",
+   "c22b94fe579ccd52",
+   "d0d211197bc25836",
+   "d3e90e3bd10d7cb6"
+  ]
+ }
+}

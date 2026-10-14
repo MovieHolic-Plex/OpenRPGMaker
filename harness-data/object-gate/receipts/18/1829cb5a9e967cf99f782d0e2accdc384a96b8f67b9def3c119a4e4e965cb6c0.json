@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1829cb5a9e967cf99f782d0e2accdc384a96b8f67b9def3c119a4e4e965cb6c0",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "prehistoric stone-age dolmen",
+ "label": "prehistoric/ph-dolmen",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "capstone slab and supporting stone pillars",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large horizontal capstone clearly shows its top surface viewed from above spanning rows 3 to 13 (~11 rows), with its south front thickness/rim visible along rows 14 to 17 resting on two vertical stone uprights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5515
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone capstone slab on vertical support stones",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large horizontal capstone clearly displays its top surface across rows 3-12 (~10 rows) complete with surface texture and lichen, transitioning to a south-facing thickness/rim along rows 13-16 resting atop two upright stones.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4415
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "capstone slab and supporting pillars",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The capstone slab clearly shows its foreshortened top surface from row 3 to row 13 (approx. 11 rows) textured with cracks and moss, resting above a distinct front vertical edge (rows 14-16) and vertical uprights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4732
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "capstone slab and supporting uprights",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large capstone slab clearly shows a broad, foreshortened top surface across rows 3-13 (~11 rows) above a shaded front vertical edge (rows 14-17) resting on two upright megaliths.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4348
+  }
+ ],
+ "decidedAt": "2026-10-14T00:39:52.942Z",
+ "cells": {
+  "16": [
+   "0e86d5104752fb1a",
+   "3e65d01ec187a590",
+   "42e4cf7e51c3b6f2",
+   "7561939e8d0f5de1",
+   "a886064242cfc200",
+   "d6b697406f56fd47"
+  ],
+  "24": [
+   "252751bd74ec25c7",
+   "2d6e779bec2f496e",
+   "2e07772a112734d0",
+   "62f0c2881d3248a8",
+   "685bcba0a283c13c",
+   "76659e6f12ed3d11",
+   "9313b784f0f47361",
+   "be85a66ff3b35d5e"
+  ],
+  "32": [
+   "1f095fe2302b2b1b",
+   "2fe708f1620e0266",
+   "8291b5266bbc8a92",
+   "8d16e5ee338b017f",
+   "b980fdc8fcc016ca",
+   "e375bc3ce354bc1d"
+  ],
+  "48": [
+   "21d9a4dd38cf1f2b",
+   "281407502b9d4bdd"
+  ]
+ }
+}

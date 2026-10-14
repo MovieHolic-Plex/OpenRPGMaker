@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e98448e9e7bf1bad517b16af7c8f644c9242cf2f80fef0228412d202c231eb4c",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "배수 철창(자갈 속)",
+ "label": "steampunk-city/sp-grate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "drainage grate embedded in gravel floor",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain feature (drainage grate set into cobblestone/gravel ground). As a terrain element flush with the ground, it does not have a standing 3D volume.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5247
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "drainage grate embedded in gravel ground",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The asset is a terrain floor tile depicting a metal drainage grate flush with gravel ground. As a flat ground/terrain element viewed from above, the grate face extends across rows 3-11 without standing vertical faces or isometric perspective distortion.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11418
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "drainage grate in stone/gravel ground",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing a drainage grate flush with the gravel/stone surface; as flat ground terrain, 3/4 perspective requirements for standing objects do not apply.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4537
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "drainage grate in stone ground",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Drainage grate embedded flat into stone ground/floor terrain tile; valid terrain surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3195
+  }
+ ],
+ "decidedAt": "2026-10-13T18:27:58.051Z",
+ "cells": {
+  "16": [
+   "503304736bf2eeb9"
+  ],
+  "24": [
+   "342d39084f3c5b76",
+   "38010463817da90e",
+   "3b1c02fc297e2ca0",
+   "82ce2579034b6622",
+   "a2126e384c591406",
+   "c6c6f7a967bf9b2b"
+  ],
+  "32": [
+   "38222db4dd51b29d",
+   "9476254e83097221",
+   "9b26548e6e644395",
+   "a4dc1f62c519abf4",
+   "d0fd36328e6e0a7f",
+   "dba2a7a89425cc6f"
+  ],
+  "48": [
+   "11d237b390ae6416",
+   "19ba86ea3a52721c",
+   "644b717756aaccd5",
+   "7ba6fa011e50e932",
+   "7e8a9f3222857253",
+   "b6530977be28ca6c"
+  ]
+ }
+}

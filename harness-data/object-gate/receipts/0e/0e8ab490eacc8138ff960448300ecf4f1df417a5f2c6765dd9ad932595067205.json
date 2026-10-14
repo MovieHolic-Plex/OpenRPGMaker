@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0e8ab490eacc8138ff960448300ecf4f1df417a5f2c6765dd9ad932595067205",
+ "width": 32,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "가미다나(집 신단, 선반 + 작은 사당)",
+ "label": "sengoku-edo/se-kamidana",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "kamidana shelf and miniature shrine",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The shelf surface is clearly foreshortened and visible across rows 16-20 (5 rows deep) with its front face beneath at rows 21-23. The miniature shrine and offerings sit correctly on this top surface in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4093
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "household shrine shelf (kamidana)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wall-mounted kamidana shelf shows a clear top surface spanning rows 16-20 (~5 rows) upon which the small shrine and offerings sit, with a front edge on row 21-22 and wall supports below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4011
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "miniature shrine on wall shelf (kamidana)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The shelf clearly displays a 5-row deep top surface (rows 16-20) supporting the small shrine and offerings, with a front edge rim in rows 21-23 and angled roof on the shrine, properly showing 3/4 perspective depth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4033
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "miniature shrine on wall-mounted shelf",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The shelf has a clearly foreshortened top surface spanning rows 17-21 (5 rows) with front edge at rows 22-23, and the shrine roof also shows top slope rows 3-7.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4463
+  }
+ ],
+ "decidedAt": "2026-10-13T19:42:40.482Z",
+ "cells": {
+  "16": [
+   "01434f0398d2a8ae",
+   "0288832e1a421718",
+   "50de567fc02078ed",
+   "bbdb068dae0fe6ed"
+  ],
+  "24": [
+   "0ea5d9150cc59d9d",
+   "108b2f2e318b010d",
+   "3793342196723c96",
+   "3b6df1fbe6876d03",
+   "3d8386e672026594",
+   "3e9a16fdc073d028",
+   "408dc3992398adc6",
+   "50221e76faf3a052",
+   "58a1c9b9ce0d484f",
+   "5c528ecb2199a892",
+   "654335400db30cd1",
+   "6c95523be4796721",
+   "7f64c5aeddddd38b",
+   "7f6e428406389ed1",
+   "84fdfc3997d4fef2",
+   "9c97929f0673499c",
+   "9fbca11578af04bc",
+   "a882eb68e7eba6f9",
+   "b0d126d41ac6b08a",
+   "c2d5c0ab6368763a",
+   "d362b1b6036bd3b6",
+   "ed7801420ed3a50d",
+   "f3c5b914ea888959",
+   "f7cffcab8baaf837"
+  ],
+  "32": [
+   "c6690ffa44d1dba6"
+  ],
+  "48": [
+   "6b133514e5c17cb4",
+   "70ba7c3ad72739c7",
+   "71cb33da496ec3e8",
+   "a3050fe65bf526b1",
+   "c84e8ef8b89eefb7",
+   "cf1d2e431454b600"
+  ]
+ }
+}

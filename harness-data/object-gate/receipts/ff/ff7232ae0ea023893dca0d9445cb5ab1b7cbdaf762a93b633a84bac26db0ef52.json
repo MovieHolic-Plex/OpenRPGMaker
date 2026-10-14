@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ff7232ae0ea023893dca0d9445cb5ab1b7cbdaf762a93b633a84bac26db0ef52",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "지하 돌 판석 A",
+ "label": "gothic_manor/gm-fl-flag-a",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone flagstone floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts underground stone flagstones/paving, matching the terrain category. As flat ground terrain viewed from above, it passes perspective requirements.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4784
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone flagstone floor",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat stone paving floor tile viewed from top-down; valid terrain tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5505
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone flagstone floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts underground stone paving/flagstone floor (terrain tile), viewed flat from above spanning the entire 16x16 grid.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6030
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone flagstone floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Underground stone flagstone paver ground tile covering the full 16x16 canvas with mortar seams and surface shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6396
+  }
+ ],
+ "decidedAt": "2026-10-13T16:47:35.279Z",
+ "cells": {
+  "16": [
+   "3e7963d9695af4d6"
+  ],
+  "24": [
+   "764beb18ff50f655",
+   "a27198079ae1744f",
+   "e4c14af2257e554b",
+   "ebd49e142c6e46ce",
+   "f0fb0b25ed8a0694",
+   "f452ac6f434f6dec"
+  ],
+  "32": [
+   "35f053959a55b1f0",
+   "48a20f2af4c0c55a",
+   "7aa122d4be2b36fc",
+   "c51664702e2c8959",
+   "ddfd886b52f90c0e",
+   "e88530a5883a1ff4"
+  ],
+  "48": [
+   "08ffa830e2029c3f",
+   "1b2b70b272cfd98e",
+   "36baf457b0cb1fdd",
+   "92f40b6c9470d516",
+   "ab97cbfb932ab293",
+   "ff75db7e5fca1754"
+  ]
+ }
+}

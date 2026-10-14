@@ -1,0 +1,128 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "04146c60adda353501acc53e9cef9c0a88472fbad278e22589c0529891858789",
+ "width": 32,
+ "height": 32,
+ "kind": "flat",
+ "name": "prehistoric stone-age rug fur",
+ "label": "prehistoric/ph-rug-fur",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "animal hide / fur rug spread flat on the floor",
+    "kind_matches": true,
+    "top_rows": 22,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire object represents a pelt lying flat on the ground seen from a top-down 3/4 perspective, covering rows 4 to 26.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3859
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "animal hide / fur rug laid flat",
+    "kind_matches": true,
+    "top_rows": 22,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pelt is viewed flat from above as a floor mat/rug across rows 4-26, consistent with the flat ground decal/rug category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2914
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "animal hide rug",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is an animal hide/fur rug lying flat on the floor, fully viewed from above as a ground decal.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3038
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "animal hide / fur rug spread flat",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire object is a flat pelt / rug lying on the floor seen from above, fully foreshortened and displayed across rows 3-27.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2471
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.808Z",
+ "cells": {
+  "16": [
+   "009307bf3b8c80ff",
+   "535db80cbeed4c03",
+   "a7f916c86f9914ca",
+   "bd735f036186c11b"
+  ],
+  "24": [
+   "01926efb81ce9cf5",
+   "1b9617322261ad0a",
+   "2e35269fee0ed395",
+   "39bfd71b7388b856",
+   "3ba3db879f728b31",
+   "3cdb1938d503700b",
+   "5861acbf8c741b8d",
+   "6faa33382b8f589f",
+   "7b9c0323535a1bca",
+   "8dc2242773890438",
+   "a296653421129336",
+   "a3357bd0aca489c0",
+   "a418b8b55dc3372d",
+   "a6b0dc39cc5e22d2",
+   "b108f7148d32615f",
+   "bcb39ecfd4f2bdb0",
+   "c5b5c3011ff299a7",
+   "c976b5561a56e971",
+   "dd68e3d55b365f43",
+   "f5c3951993e1f26b"
+  ],
+  "32": [
+   "b7eca87faa38b25f"
+  ],
+  "48": [
+   "54e8f88991d07470",
+   "880ebe0ef53bcd85",
+   "bc8f60d9b7fa9956",
+   "d5b5596cf9597c3d",
+   "d714de76a1327184",
+   "e15b619f403b7c2c"
+  ]
+ }
+}

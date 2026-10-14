@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f00698e5dda8e3c420458c554056fac0a1b4bade95e258ac9320afeb58e53b7d",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "wooden dock crane on a broad stone quay platform seen from above, pulley and hanging cargo net",
+ "label": "pirate-isles/pi-dock-crane",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden dock crane",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crane is drawn as a flat 2D side/front elevation. The horizontal boom and vertical post show only a 1px edge highlight along the top rather than a distinct top surface seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 7845
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden dock crane",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crane is drawn as a flat 2D side elevation (like a side-scrolling platformer asset). The horizontal arm and strut show no top surfaces from above, and the vertical post/base have no visible top planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4935
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden dock crane post and horizontal boom",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crane and its hanging cargo are drawn in pure 2D side profile/elevation (like a platformer asset). The horizontal arm, post cap, base block, and cargo crate lack foreshortened top surfaces visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4277
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden dock crane (post, jib arm, and brace)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crane is drawn in flat 2D side elevation. The horizontal beam (jib) shows no top surface seen from above, possessing only a 1px edge highlight/outline along row 7, and the base plinth similarly lacks a foreshortened top surface (only a 1px edge at row 34).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5232
+  }
+ ],
+ "decidedAt": "2026-10-13T19:25:15.330Z",
+ "cells": {
+  "16": [
+   "107780189b7ac7a8",
+   "686e559061ce8103",
+   "9097c267fcec5ed5",
+   "b45629b28d92991d",
+   "ce36e69e14d9a34b",
+   "d16ee4180dd4fda4"
+  ],
+  "24": [
+   "078cc60617033c65",
+   "23fdcb184e2bfcbf",
+   "31003784633a7415",
+   "63c9060bb0c39972",
+   "8b4e96c2ccf9c92a",
+   "8b74fd744e67faf9",
+   "8dd59a3c10f58b9f",
+   "ca1e9b4b7e6f0a04",
+   "d58ecfccdf2642b3",
+   "ecbc0ff60b10e5c5",
+   "f0cbdb8f90092640",
+   "f8d1fb0a6f4ff5ad"
+  ],
+  "32": [
+   "6d0e8d05a7f49868",
+   "9962af637315eb5b",
+   "9e5d14eea138b058",
+   "f9df2ba83e661af3"
+  ],
+  "48": [
+   "07afe746e9886a81",
+   "8d080a7137610047",
+   "ce1c777ba882ae5a"
+  ]
+ }
+}

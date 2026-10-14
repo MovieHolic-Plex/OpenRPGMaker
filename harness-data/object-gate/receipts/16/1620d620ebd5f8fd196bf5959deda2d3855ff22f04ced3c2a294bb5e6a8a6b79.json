@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1620d620ebd5f8fd196bf5959deda2d3855ff22f04ced3c2a294bb5e6a8a6b79",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "낮은 자판기 겸 냉장 진열대(2칸, 글자 없음)",
+ "label": "modern-campus-int/mc-vending-low",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "low vending machine / refrigerated display counter",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface spans rows 9 to 18 (10 rows tall) with display/service panels, positioned clearly above the vertical front display face (rows 19 to 30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4725
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "refrigerated display counter / low vending machine",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface spans rows 9 to 18 (10 pixel rows tall) and shows top-mounted panels/lids, with the south front display face extending from row 19 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4456
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "low vending display counter",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface extends from row 9 to row 18 (10 source pixel rows) showing panels/lids, with the south display face below from row 19 to row 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4683
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "refrigerated display counter / low vending unit",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the counter spans rows 9 through 18 (10 source pixel rows) with lids/panels, while the vertical front face displaying goods spans rows 19 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4285
+  }
+ ],
+ "decidedAt": "2026-10-13T16:35:07.541Z",
+ "cells": {
+  "16": [
+   "1b6247ac0860edb4",
+   "674972056c8d7d95",
+   "7a4000709df9201a",
+   "ef5049def6babcd1"
+  ],
+  "24": [
+   "18856d08b21eadde",
+   "1f37d3ad116d3bfa",
+   "297db6d3abe51e9f",
+   "359ae5c4e5cda9a5",
+   "3a5cd93c945deb65",
+   "570258446622598a",
+   "579cc43615a3fd7c",
+   "5ec1f983f73cbc6b",
+   "8ad28e04756c384e",
+   "aadd7f054477a45c",
+   "b479de89b0854355",
+   "b6d5653f8ba36e5d",
+   "c3011a05e49d1523",
+   "cd21f3540167c8c3",
+   "d5318eb101faf5a6",
+   "d867e7718e19ae32",
+   "dbbef60b15383804",
+   "ffb9046c9493cbae"
+  ],
+  "32": [
+   "e807de3469ca8b8a"
+  ],
+  "48": [
+   "4f76eaa6ae8b9f50",
+   "54d1e0d518279fd6",
+   "59483c4103b72794",
+   "66a2f53786a4af42",
+   "6ba7a00ce87bf0dd",
+   "8828e768c21b68f7"
+  ]
+ }
+}

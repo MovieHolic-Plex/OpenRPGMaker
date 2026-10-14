@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a82d1f02da8f57ff1bc2cec8781038f378440e9a49421a1dcb6aa835695ba4a1",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "stone bridge abutment (terrain overlay)",
+ "label": "sky-island/si-sbridge-arch-w",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone bridge abutment wall overlay",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a terrain wall/abutment overlay tile depicting stone masonry with a dithered shadow overlay. As terrain (wall face), it is not a standing object and correctly represents a vertical terrain surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6561
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone masonry wall face with overlay shadow",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a terrain wall face / abutment overlay with masonry texture and a dithered shadow pattern. As a terrain tile, it represents a vertical wall surface rather than an independent standing 3D object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3489
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone bridge abutment wall terrain overlay",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a vertical stone wall face with a shadow/depth overlay, functioning as terrain rather than a free-standing prop.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5319
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone bridge abutment terrain overlay",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Tile is a terrain/wall overlay showing stone masonry brickwork with shadow/cutout, correctly classified as terrain rather than a freestanding prop.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4914
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.983Z",
+ "cells": {
+  "16": [
+   "8ef4209b43ab84dd"
+  ],
+  "24": [
+   "19412e2cedce218d",
+   "61d5670f08c39dbb",
+   "647ffcbf364b983e",
+   "871550a0f70d9b8d",
+   "cf2874cfcafbad18",
+   "e7ebb07a31dee20b"
+  ],
+  "32": [
+   "4cd591fa55332f0c",
+   "9dd1ddcaa373bd0a",
+   "d1578372f6e06b97",
+   "d9e208f69db7af8d",
+   "fecdd1f69e41b15f",
+   "ff9177f7a5be397b"
+  ],
+  "48": [
+   "3ee099b26391d8ad",
+   "73245568135d6507",
+   "b16b84329f8cb397",
+   "b187b745ccd38107",
+   "dfc267485362991b",
+   "e6f86183b76e77ab"
+  ]
+ }
+}

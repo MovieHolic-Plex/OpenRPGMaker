@@ -1,0 +1,17 @@
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/yard3/gm-ground-moss-a.png", "kind": "terrain", "name": "안개 이끼 땅 A", "label": "gothic_manor/gm-ground-moss-a"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/yard3/gm-ground-moss-b.png", "kind": "terrain", "name": "안개 이끼 땅 B", "label": "gothic_manor/gm-ground-moss-b"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/yard3/gm-ground-mud.png", "kind": "terrain", "name": "젖은 진흙 땅", "label": "gothic_manor/gm-ground-mud"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/yard3/gm-ground-leaves.png", "kind": "terrain", "name": "낙엽 덮인 땅", "label": "gothic_manor/gm-ground-leaves"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/yard3/gm-ov-cracks.png", "kind": "flat", "name": "갈라진 땅·포석 금(덧그림)", "label": "gothic_manor/gm-ov-cracks"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/yard3/gm-ov-ritual.png", "kind": "flat", "name": "바닥 의식 원(백묵·핏빛 문양·녹은 초)", "label": "gothic_manor/gm-ov-ritual"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/yard3/gm-ov-blood.png", "kind": "flat", "name": "핏자국(끌린 자국·방울)", "label": "gothic_manor/gm-ov-blood"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/yard3/gm-dead-tree-crows.png", "kind": "organic", "name": "까마귀 앉은 고사목", "label": "gothic_manor/gm-dead-tree-crows"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/yard3/gm-dead-tree-swing.png", "kind": "organic", "name": "그네 매달린 고목", "label": "gothic_manor/gm-dead-tree-swing"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/yard3/gm-fallen-log.png", "kind": "organic", "name": "쓰러진 고목 통나무(버섯)", "label": "gothic_manor/gm-fallen-log"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/yard3/gm-thornbush.png", "kind": "organic", "name": "가시나무 덤불", "label": "gothic_manor/gm-thornbush"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/yard3/gm-rocks-small.png", "kind": "organic", "name": "돌무더기", "label": "gothic_manor/gm-rocks-small"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/yard3/gm-reeds-dead.png", "kind": "organic", "name": "마른 갈대", "label": "gothic_manor/gm-reeds-dead"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/yard3/gm-pumpkin-lantern.png", "kind": "organic", "name": "호박 등불(깜빡임 3프레임)", "label": "gothic_manor/gm-pumpkin-lantern"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/yard3/gm-wheelbarrow.png", "kind": "container", "name": "묘지기 손수레(흙·삽)", "label": "gothic_manor/gm-wheelbarrow"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/yard3/gm-shovel-mound.png", "kind": "debris", "name": "흙더미에 꽂힌 삽", "label": "gothic_manor/gm-shovel-mound"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/yard3/gm-fogmoss.png", "kind": "terrain", "name": "안개 이끼 덩이(풀밭 가장자리)", "label": "gothic_manor/gm-fogmoss"}

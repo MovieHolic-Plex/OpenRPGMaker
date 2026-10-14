@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "349cca0ce6f3cf1e70c0b57a743c6672275b858d27d4fa5ba4e1303e58483885",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "observatory wall with a night-sky window (wall_mounted)",
+ "label": "sky-island/si-wall-star-sky",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "observatory wall face with window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile showing a starry sky window with top moulding; as a wall terrain element it correctly renders as a vertical surface without 3D top perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4893
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "observatory wall face with window and trim",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile featuring upper moulding trim and a night-sky window frame; as a vertical wall surface it correctly shows a south-facing flat plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3791
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "observatory wall tile with window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Classified as terrain (wall face tile). Wall faces in standard 3/4 top-down JRPG perspective are correctly represented as vertical south-facing surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6075
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "observatory wall with window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile depicting an observatory window looking out into the night sky, framed by gold trim and pillars. Front-facing wall tiles are standard vertical surfaces in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4106
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.561Z",
+ "cells": {
+  "16": [
+   "e14e05166a548c28"
+  ],
+  "24": [
+   "005ba4a7b77387e8",
+   "08be18ae11b2aacd",
+   "1259f1d501255061",
+   "9f71b60707995ac0",
+   "b116ce7324f3e9f6",
+   "ba44556baad67be2"
+  ],
+  "32": [
+   "3cc5d91106916b5d",
+   "40376cc45566f0c9",
+   "45fe30f70677ef49",
+   "4eec57f05516cbc4",
+   "bbfda1b956e7dc5b",
+   "bc269905afd8a374"
+  ],
+  "48": [
+   "185c88e7d7e6b8ef",
+   "2c6569d7a6b284a6",
+   "c119c18a8d77a4a5",
+   "c599377b6da58869",
+   "dd058ead496582cd",
+   "edc0084ce87a3694"
+  ]
+ }
+}

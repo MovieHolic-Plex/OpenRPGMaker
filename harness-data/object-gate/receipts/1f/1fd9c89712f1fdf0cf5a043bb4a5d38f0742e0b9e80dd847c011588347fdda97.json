@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1fd9c89712f1fdf0cf5a043bb4a5d38f0742e0b9e80dd847c011588347fdda97",
+ "width": 32,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "가미다나(집 신단, 선반 + 작은 사당)",
+ "label": "sengoku-edo/se-kamidana",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "kamidana (household shrine shelf)",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire shrine shelf is drawn in pure front elevation as a flat 2D rectangle with 0 rows of visible top surface for either the outer cabinet or the projecting shelf board.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 7706
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "kamidana (household shrine shelf unit)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire shrine shelf is drawn as a flat 2D architectural front elevation. The outer casing has only a 1px border at row 2 with no top surface, and the protruding shelf and shrine roof show no foreshortened horizontal depth from the standard 3/4 top-down angle.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8641
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "kamidana (wall-mounted household Shinto altar shelf)",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire altar shelf is drawn in a pure flat front elevation. There is no visible horizontal top surface for the outer frame, the shrine roof, or the shelf plank on which the offerings stand (the offerings sit directly on the top border of the shelf's vertical front face).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 7111
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "kamidana shrine shelf unit",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The kamidana is a projecting shelf with a miniature shrine and offering bottles, but is drawn entirely as a flat 2D front elevation. Neither the outer shelf frame, the shelf surface, nor the miniature shrine/roof has a foreshortened top surface visible from the 3/4 overhead perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 7078
+  }
+ ],
+ "decidedAt": "2026-10-13T19:37:02.184Z",
+ "cells": {
+  "16": [
+   "12639bf2f531cd71",
+   "85cd486ddda14d32",
+   "8cc3e63707512d25",
+   "b3afe0302b09ff93"
+  ],
+  "24": [
+   "095a3842e2ea90b2",
+   "17f9475c4be05445",
+   "48afa78fbd4c5177",
+   "52826a7417feb986",
+   "6dfc8072128d5d90",
+   "6f1b680305aca9d9",
+   "7daf0842a184b713",
+   "955f52a42333877f",
+   "95e16d724c91f88d",
+   "9c7af5bd8a6b8949",
+   "a07352f56e92b220",
+   "bca104dcef0e21f4",
+   "c8d84a0734eb9cbe",
+   "ce9274bba0b8d410",
+   "cf1e28b9ee0aac6d",
+   "d49cba04d75e14e5",
+   "d524e98fcc07a17b",
+   "da9f6885591d4e59",
+   "eb3d21246414bfff",
+   "ed2d1cc0d9aa9a92",
+   "efaa03fc0e794299",
+   "f51748576c1804bb",
+   "fef4ff8cf246ccc8",
+   "ff25e0a9d18e3c8d"
+  ],
+  "32": [
+   "619d50d78d5de74c"
+  ],
+  "48": [
+   "11d7f3857bc3094b",
+   "2192a2f5c6c85e9b",
+   "29751943e0c9b8a8",
+   "33c6d3909803e9c7",
+   "662d8b4797279721",
+   "df59a78741f92589"
+  ]
+ }
+}

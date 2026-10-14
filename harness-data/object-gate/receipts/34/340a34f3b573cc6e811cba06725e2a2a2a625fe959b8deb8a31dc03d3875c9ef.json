@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "340a34f3b573cc6e811cba06725e2a2a2a625fe959b8deb8a31dc03d3875c9ef",
+ "width": 32,
+ "height": 32,
+ "kind": "round_body",
+ "name": "연료 탱크(세운 원통 + 주황 띠 + 윗면 밸브 + 계량 창)",
+ "label": "sf-station/sf-fuel-tank",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical fuel tank",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the cylinder is drawn as an ellipse spanning roughly rows 3 to 11 (9 rows tall) featuring a central valve detail, sitting atop a clearly defined south-facing curved body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5032
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "standing cylindrical fuel tank",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the vertical cylinder is prominently displayed as an elliptical surface spanning rows 3 through 11 with a valve detail in the center, above the front cylinder body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4510
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "upright cylindrical fuel tank",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the cylinder is clearly visible as an ellipse spanning rows 3 to 10 with a central valve, seen from a top-down 3/4 perspective above the south face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4129
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "standing cylindrical fuel tank",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the cylinder is clearly rendered as an ellipse from row 2 to row 10 with a central valve detail, sitting atop the vertical south-facing cylindrical body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3704
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:09.619Z",
+ "cells": {
+  "16": [
+   "515b0bc5885a5064",
+   "53d44be5809c3e84",
+   "93f771b2f1f82007",
+   "cf3118c97cee455f"
+  ],
+  "24": [
+   "04e3af4d3242b8a3",
+   "26699949dfa7bdcc",
+   "267fe6cebf1c72e3",
+   "272c608a53c2dd7e",
+   "3c54dc60b62adc2a",
+   "4cb765b7366e1cad",
+   "4cc0aaa9845eaf40",
+   "58d95cc8534d7c77",
+   "598bf2015b5a4c72",
+   "6347080ec2d734ca",
+   "6758a4181323829d",
+   "6fdd1a774e4c9733",
+   "77b0726c69cd84a3",
+   "9d08992548e52114",
+   "acfcfd508cf94113",
+   "bbb38d75723f0578",
+   "c0027e1f5caf0342",
+   "c3c916aff9aded88",
+   "ca42084542ec32aa",
+   "ce99cd1e353a92e3",
+   "cfb6e7767f909be7",
+   "d5517500a6cdb1e4",
+   "e1c93f947170f3e9",
+   "ef85f6a0a58f2e84"
+  ],
+  "32": [
+   "76aed42a16f087ad"
+  ],
+  "48": [
+   "0d7e0cf6d18cb759",
+   "17d668a47b3eef78",
+   "5f1613b2a300edcd",
+   "760cf1b562f7ce99",
+   "e5677624210cda4d",
+   "ed9bf6604af4f141"
+  ]
+ }
+}

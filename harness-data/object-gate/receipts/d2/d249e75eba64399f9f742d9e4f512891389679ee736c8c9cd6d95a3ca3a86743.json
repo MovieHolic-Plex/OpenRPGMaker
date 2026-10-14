@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d249e75eba64399f9f742d9e4f512891389679ee736c8c9cd6d95a3ca3a86743",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "prehistoric stone-age stone seat",
+ "label": "prehistoric/ph-stone-seat",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone seat",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone is drawn as a vertically symmetric rounded lump in front elevation without a distinct top seat surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13119
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone seat",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone is drawn as a rounded boulder in front elevation with generic top-left shading rather than a distinct 3/4 perspective showing a horizontal seat surface and a vertical south face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10126
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone seat",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone is drawn as a rounded boulder in front elevation with no visible top seat surface. The vertical crack and shading run straight down the south-facing silhouette without any horizontal plane seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5225
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone seat",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone seat is drawn as a front elevation of a boulder with vertical cracks and shading from top to bottom. There is no visible horizontal seat surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6729
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.803Z",
+ "cells": {
+  "16": [
+   "1758414c52d008c3"
+  ],
+  "24": [
+   "2c72660e4f341e31",
+   "33e66124053b32a4",
+   "45b76877419f7c02",
+   "b7c439cb09884533",
+   "e7a25c882baff55e",
+   "f0cae2baf10d56fe"
+  ],
+  "32": [
+   "2338443bfa3840ed",
+   "3dc0c497d15bb696",
+   "6970c3c137b5afc7",
+   "6b2c23c5964933e4",
+   "9e5517780cb512fc",
+   "e837927ca81fcbbc"
+  ],
+  "48": [
+   "1ca8e6c3986c39e8",
+   "46ed5d1243d61610",
+   "516732c903649e54",
+   "8f075fa322217a7e",
+   "d39a85187b3b8b85",
+   "ff3ca538210c0f41"
+  ]
+ }
+}

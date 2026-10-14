@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9068b91f4a3b4eb18e0d3b61f4cee8d43de66731374a6c2136c8cc3703347932",
+ "width": 48,
+ "height": 48,
+ "kind": "box",
+ "name": "컨테이너 더미(두 대를 위아래로 쌓음)",
+ "label": "sf-station/sf-container-stack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stacked shipping/cargo containers",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both stacked containers clearly display their top surfaces (upper container top spans rows 4-11, lower container top spans rows 23-30) foreshortened above their respective front corrugated faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6790
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stacked shipping containers",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both shipping containers clearly show their top roof surfaces (rows 4-11 for the top container, rows 23-30 for the bottom container) and their vertical front faces below them in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4102
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stacked shipping containers",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both shipping containers clearly show their top roofs in 3/4 view (rows 4-11 for the top container, rows 23-30 for the bottom container) and vertical south-facing walls below them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4786
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stacked shipping containers",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both shipping containers clearly show their horizontal top roofs (rows 4-11 for the top container, rows 23-30 for the bottom container) foreshortened in 3/4 perspective above their south-facing front walls.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4257
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:27.305Z",
+ "cells": {
+  "16": [
+   "0c28f4af76b5d814",
+   "1595a734bb3e018e",
+   "2028bf0f6354a2c6",
+   "299a4925199c68c6",
+   "5a00d3594c72023c",
+   "6ff87b7271675b7a",
+   "93095d6578148e81",
+   "b155663f3e6692df",
+   "d2cef4f9ffc5fb5d"
+  ],
+  "24": [
+   "09adb56ad948a7ed",
+   "58482522ae93f6b2",
+   "a22fc399f702ba65",
+   "b376eec782de3823"
+  ],
+  "32": [
+   "00420188987253f0",
+   "02dad12c1e99ef8a",
+   "03aea16f2666cf24",
+   "071537cdfed90ecd",
+   "0ab970f3d51e861a",
+   "1d9b4cd52391cbff",
+   "2d544aef20ab54f4",
+   "2e4f7fda7d64c41f",
+   "412372335f8c8fb3",
+   "4b951039291b79ea",
+   "546323fb4380810d",
+   "555db2ed4e160e31",
+   "713d7366067fa955",
+   "7a865350785a64de",
+   "7fc1fe2e358c6439",
+   "854f0bb7c0032ce9",
+   "8615d5e6235cd738",
+   "c415181526c5745c",
+   "c522ec6da30df97a",
+   "ce74f651cf3f00fe",
+   "d40b285d725eb521",
+   "da941f651b707281",
+   "dbb510e0002ad7d0",
+   "f838c7e56a453d23"
+  ],
+  "48": [
+   "9b9706c97e0bb4ef"
+  ]
+ }
+}

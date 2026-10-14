@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9a02b7e6b188f6edd9b741c1e38bbf6f62cfe1a3d7232b45f3b59bc435955104",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "prehistoric stone-age dead tree",
+ "label": "prehistoric/ph-dead-tree",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "trunk and bare branches of a dead tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The dead tree trunk and stepped base are drawn in flat side-scroller/front elevation view with a completely flat horizontal baseline at row 46 and no foreshortened top surfaces or rounded 3/4 base footprint.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4500
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "trunk and branches of dead tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The dead tree is drawn entirely in a flat 2D side/front elevation. The base rests on a flat horizontal line at row 46 with no top-down circular footprint or roots spreading forward/backward, and the trunk and branches have no top surfaces or 3/4 foreshortening visible (top_rows: 0).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3390
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "trunk of dead tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree trunk and branches are rendered in pure front elevation with no visible top surface or 3/4 footprint; the base terminates in a completely flat 1-pixel horizontal baseline at row 46.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4606
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "trunk and bare branches of dead tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree trunk and branches are rendered in pure flat 2D front elevation. The base terminates on a completely flat horizontal line at row 46 with no elliptical footprint or ground projection, and no top-down surfaces or foreshortening exist anywhere on the main body.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3688
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.798Z",
+ "cells": {
+  "16": [
+   "52488d97d0f12396",
+   "63ad732d16acb5d0",
+   "716c3b5a04dd7f16",
+   "90282f1f67fb6717",
+   "b789a88405df3824",
+   "d27a8e89f8f8bfdd"
+  ],
+  "24": [
+   "1e804a4597dd3c18",
+   "29be8fc9b673946b",
+   "4adb68afdb6cbe1f",
+   "5f89a9c05bbfebc5",
+   "6061b215ee38897a",
+   "70c89330ecf04ec3",
+   "9479efbba077ba22",
+   "a3a81f8b23ce1698",
+   "b57b0a3f45e5177f",
+   "fdf2b9c3c202ba19"
+  ],
+  "32": [
+   "2eb56bc88d2ccfa0",
+   "c63fd5048c6e09dd",
+   "d68228061d5f7833",
+   "d8545937c64acf86"
+  ],
+  "48": [
+   "b05d2cf5cc4be509",
+   "cb7204ae29a82ccd",
+   "ee872e50e86bbb54"
+  ]
+ }
+}

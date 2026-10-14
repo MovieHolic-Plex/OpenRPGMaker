@@ -1,0 +1,129 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2b030f800f1220308008e5be6b6193818052f972737fb6a385cd7f1236dfb385",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "우산꽂이(철제 격자, 열린 아가리)",
+ "label": "modern-campus-int/mc-umbrella-stand",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "아가리 3행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "umbrella stand",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening of the umbrella stand is visible as a foreshortened elliptical cavity from row 4 to row 6 (approx 3 rows deep) between the back rim at row 3 and the front rim at row 7, showing the umbrellas inserted into the dark interior.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 4581
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "umbrella stand cylinder with metal slats and umbrellas inside",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The container opening is clearly drawn foreshortened from rows 3-4 down to row 7, showing roughly 3 rows of dark interior cavity into which umbrellas are inserted.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 4702
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "철제 격자 우산꽂이",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is drawn in flat front elevation with horizontal straight bands and a flat base. The opening lacks elliptical foreshortening, offering at most a 2px flat gap behind the front rim rather than a clear top-down view into the container.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 26611
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "metal mesh umbrella stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening of the umbrella stand is visible foreshortened across rows 4–6 (~3 rows of dark interior cavity into which the umbrella shafts extend) before the front wall begins at rows 7–8.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 6163
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.308Z",
+ "cells": {
+  "16": [
+   "0eda52f5638cacc8"
+  ],
+  "24": [
+   "46c6168ff99583fd",
+   "5dd0ae5a1aa57c21",
+   "8e89d80106121fd6",
+   "b54575f301e66bc7",
+   "baaeb49bb4ac89cc",
+   "d9eab7de9c58671b"
+  ],
+  "32": [
+   "254b6b8295fbd212",
+   "278c528fafa0f7e5",
+   "5bf636e88aa74338",
+   "8532d43ec9740a6f",
+   "89ebee8e8a32e8d5",
+   "a795c5eb16e3b996"
+  ],
+  "48": [
+   "02becd124456baf8",
+   "71b069e5dc3d182f",
+   "7b79d73abbf675bf",
+   "b879c954366eb18b",
+   "cc2a40e997fa094a",
+   "ef9911e526719ff1"
+  ]
+ }
+}

@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "21483f56a1bed73bab2e95473e11d3bb64a037f65aa7315f4644680f05099861",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "큰 달 바위(높게 솟은 회색 바위 덩이)",
+ "label": "sf-station/sf-rock-regolith-l",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "large grey faceted boulder",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper surface of the boulder occupies rows 5 to 17 with light grey faceted planes angled upward, transitioning around row 18 into darker south/front-facing planes extending down to row 28.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6295
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "large rounded rock boulder",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The boulder has an upward-facing lit top hemisphere spanning rows 5 to 17 (~12 source pixels) before transitioning to the shadowed south-facing lower section (rows 18 to 29), consistent with 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9731
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "boulder",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper faceted planes of the boulder (rows 5 to 17) clearly form an upward-facing top surface of roughly 12 source pixel rows, transitioning down to the south-facing shadowed lower mass (rows 18 to 28).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7240
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "large boulder",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The boulder has a clearly articulated upper top surface spanning from row 5 down to the horizontal facet ledge around row 18 (approx. 13 rows), sloping into the darker south-facing lower section (rows 18-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6137
+  }
+ ],
+ "decidedAt": "2026-10-13T15:38:14.591Z",
+ "cells": {
+  "16": [
+   "0a0513413d6a9ab9",
+   "1236bb09ee634194",
+   "397fea815351a895",
+   "776adf8aba4400d3"
+  ],
+  "24": [
+   "0163b35ffb6fde1a",
+   "0a502de8b53e6e6a",
+   "193cbf92190e43fb",
+   "27df597175b078fb",
+   "301f8b7d48958c32",
+   "310fdb2a5a8ffd3d",
+   "38fe96dbace1c12c",
+   "41d7c6e08fe6287c",
+   "6c770f1d2d5911ac",
+   "70bb76a8d51bd971",
+   "a94b9d838a7ac32e",
+   "b37e43a89fac4347",
+   "c0853c0a76acc899",
+   "ce8017e18328ccb1",
+   "d00a73967480a681",
+   "d966b7d82f15bba8",
+   "df26caa1e02a2406",
+   "e6255d62257c1e27",
+   "f0c4eb1540692ffc",
+   "f2aa3adfb6e6e546",
+   "f2b45450dea7ff12",
+   "f45d2bbfdffdce51",
+   "fae49722fc6fa250"
+  ],
+  "32": [
+   "36c776c59a9ac7a1"
+  ],
+  "48": [
+   "03cc67db90e3d098",
+   "65f8cd68a7690b9f",
+   "773c7b48d3dff4c5",
+   "a19df80505c0300f",
+   "a52203f3c77eaa7c",
+   "e2da232e2a9c8ff2"
+  ]
+ }
+}

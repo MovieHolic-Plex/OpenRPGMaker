@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e034d704710e2a4ad7e45c36c68851973794ff6d4765d02b142a4a990e638d67",
+ "width": 16,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "톱니 벽시계(글자 없는 눈금)",
+ "label": "steampunk-city/sp-wall-clock-gear",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "gear-shaped wall clock with pendulum and auxiliary gears",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted clock hanging flat against the wall; as a wall-mounted decoration, a flat front-facing view without a top surface is fully appropriate for the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9681
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall clock face and pendulum mechanism",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall clock mounted flat to the wall; flat front-facing elevation is expected and permitted for wall_mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3945
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall clock with pendulum and gears",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall clock mounted flat against the wall, correctly classified under wall_mounted kind which allows flat front views.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3284
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall clock face and pendulum mechanism",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a gear wall clock designed to hang flat against a wall, correctly categorized as wall_mounted, where front elevation is normal.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2888
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.466Z",
+ "cells": {
+  "16": [
+   "aea83286919d4594",
+   "ebe1ae52b616faf7"
+  ],
+  "24": [
+   "0b0dbc2b3a12b52e",
+   "15bd0daedfd77b9b",
+   "4cad666209e35932",
+   "8b45cf2ed15d0797",
+   "96f711fbae8ab356",
+   "b342320d544a5459",
+   "d54e41b24642546c",
+   "d691801a18eb3c7c",
+   "e3497930fff5af1d",
+   "eac7c0f024bc9bf4",
+   "f6fb9258afae27ad",
+   "fdf0a3c613282f40"
+  ],
+  "32": [
+   "044abadd4b607fa8",
+   "b4f4fcc2b2fa3df8",
+   "fef97291ef544aa4"
+  ],
+  "48": [
+   "0e1c4657c8846782",
+   "19d8300a591a405a",
+   "205851f557141b50",
+   "2ad77f8b85444557",
+   "3d04304eb8799f23",
+   "77f95234c9cea076"
+  ]
+ }
+}

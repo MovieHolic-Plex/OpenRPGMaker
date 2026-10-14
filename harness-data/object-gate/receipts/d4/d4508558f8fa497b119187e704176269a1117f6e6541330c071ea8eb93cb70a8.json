@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d4508558f8fa497b119187e704176269a1117f6e6541330c071ea8eb93cb70a8",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "small bed of red and yellow tropical flowers",
+ "label": "pirate-isles/pi-flowerbed",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flower bed / ground foliage",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The flower bed is arranged as a flat patch of ground cover foliage with scattered blooms viewed from above across rows 2 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5193
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bed of tropical flowers and foliage",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The flower bed lies flat on the ground plane as a floor decal/patch spanning rows 2 to 14, with foliage and blossoms distributed across the surface rather than forming a standing vertical structure.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8777
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bed of tropical flowers",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object consists of standing organic plants, not a flat surface. Each flower bloom and leaf cluster is drawn in pure front elevation with no visible top surface or downward perspective into the flower heads.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 7465
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flower bed / tropical plant cluster",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn as a standing vertical bush/plant cluster from a pure front elevation rather than a flat ground decal. It has a base at rows 13-14 and stems/blossoms reaching vertically upward to row 2 with no top-down foreshortened perspective or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 7798
+  }
+ ],
+ "decidedAt": "2026-10-13T19:19:03.413Z",
+ "cells": {
+  "16": [
+   "f465988c0a6b26bd"
+  ],
+  "24": [
+   "1a74e1da1a2e4dce",
+   "2e513b422e8cc567",
+   "5c7f80ca77c662fb",
+   "8b411cd4b55026dc",
+   "c0ed17500feb31b6",
+   "dbfa1089a6f507d8"
+  ],
+  "32": [
+   "01452daab958814d",
+   "0b3706764dd3c845",
+   "670a460a9b29fe6b",
+   "678868db9eb01d6d",
+   "d5e88ee5ca21773e",
+   "fefd7713739d62bf"
+  ],
+  "48": [
+   "2a7e052ba115a174",
+   "47f54e869286f73a",
+   "983945e392a5f3a3",
+   "b9d023dc55ec7699",
+   "c4708b19b52c19ba",
+   "e81b0fd1f7fcbebb"
+  ]
+ }
+}

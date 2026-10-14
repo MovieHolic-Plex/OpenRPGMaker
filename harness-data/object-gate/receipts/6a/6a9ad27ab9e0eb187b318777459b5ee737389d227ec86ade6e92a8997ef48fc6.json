@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6a9ad27ab9e0eb187b318777459b5ee737389d227ec86ade6e92a8997ef48fc6",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "low jungle fern",
+ "label": "pirate-isles/pi-fern",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "foliage clump",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper foliage surface facing upward is rendered with top lighting spanning rows 7 to 11 (~4 rows) before transitioning into the darker vertical south-facing base shading in rows 12-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13526
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "foliage clump of fern leaves",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The low jungle fern shows top-down foreshortened leaf crowns with light highlights across rows 7-11 receding downward into shadow at rows 12-15, consistent with 3/4 top-down foliage.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4467
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fern/bush foliage clump",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The foliage clump displays an illuminated upper surface across rows 7–10 (~4 rows) foreshortened from above, before descending into mid-tones and shaded south-facing base foliage in rows 11–15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6125
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fern/bush foliage cluster",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The foliage cluster shows foreshortened top surfaces of the fronds across rows 7 to 11 with light green highlights before transitioning to shaded under-planes and base shadows on rows 12-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4741
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.698Z",
+ "cells": {
+  "16": [
+   "e64ff89067d7e38e"
+  ],
+  "24": [
+   "21fa3e36d4a4d720",
+   "41a4888c84b1a0f3",
+   "4d1fd36b658fac8d",
+   "7597ac8f54afdc0d",
+   "91954f33b08307e7",
+   "96127fddbb2f4c97"
+  ],
+  "32": [
+   "228c840b83188423",
+   "364e93276a214952",
+   "4c8ac58d99dbf2ba",
+   "58db3b76a7d0ef2f",
+   "7c784090241b81ab",
+   "9db7f6cc6dadd01c"
+  ],
+  "48": [
+   "05508bc24e37d882",
+   "23d7d0662ca390df",
+   "49fdc0c51a23d9db",
+   "a52625e944e3bb35",
+   "b538f669f24f59ea",
+   "c0640ab964b8b5c0"
+  ]
+ }
+}

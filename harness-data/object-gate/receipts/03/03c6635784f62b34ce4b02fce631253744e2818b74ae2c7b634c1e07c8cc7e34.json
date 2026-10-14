@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "03c6635784f62b34ce4b02fce631253744e2818b74ae2c7b634c1e07c8cc7e34",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "기숙사 벽(옅은 베이지 + 나무 몰딩)",
+ "label": "modern-campus-int/mc-wall-dorm",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall face tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a dormitory wall surface with vertical paneling and wood molding bands. As a standard wall face terrain tile, 3/4 perspective requirements for standing objects do not apply.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4236
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall face with horizontal wood molding bands",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The asset is a wall face terrain tile with vertical paneling and horizontal wood trim molding, correctly categorized under terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3651
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dormitory wall tile with horizontal wooden molding",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid wall face terrain tile with light beige vertical paneling and horizontal wooden molding stripes, intended as a vertical background wall surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4426
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dormitory wall face with wooden molding trims",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile with repeating vertical panels and horizontal wooden molding.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3317
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.307Z",
+ "cells": {
+  "16": [
+   "8f850e34bc083baf",
+   "a98f1948a051c054",
+   "df93f73dd9cc3078",
+   "eb1083d7b6519c5a"
+  ],
+  "24": [
+   "1031fa03d6954554",
+   "1a291d2727355a38",
+   "270b2fc6430c53ea",
+   "2a91cafb477d71c7",
+   "3bcd77f0a04d072d",
+   "43b3fe26a5aa66cc",
+   "4b77f30ebd105eb4",
+   "4cabb5d17e14b099",
+   "5286a134fa4d03e1",
+   "55d86cba7b7909a8",
+   "732f2889723758b7",
+   "93524079e7600419",
+   "95f19d770ec588a6",
+   "a6b9bc691b6b9245",
+   "b17afff2e09489aa",
+   "c1d8301d0bef1aba",
+   "c4671fb521a63ba2",
+   "c5805954ed76315c",
+   "ca47500d18b23410",
+   "d0f53c70a27b43a9",
+   "dbec41ca7c5a2aea",
+   "e5280daf6fa20dca",
+   "ee4555d91ba1c5ac",
+   "ff84428bc61376cd"
+  ],
+  "32": [
+   "b941f9317d3b81ec"
+  ],
+  "48": [
+   "1e756043b2e54206",
+   "62b16db34bcfe290",
+   "65584532029b91f9",
+   "7c4b67eec4779725",
+   "9015a4f0d540aed4",
+   "ed94eb717308a676"
+  ]
+ }
+}

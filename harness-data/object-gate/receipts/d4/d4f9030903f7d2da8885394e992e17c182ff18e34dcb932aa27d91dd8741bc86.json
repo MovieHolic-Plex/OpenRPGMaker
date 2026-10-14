@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d4f9030903f7d2da8885394e992e17c182ff18e34dcb932aa27d91dd8741bc86",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "prehistoric stone-age floor cave",
+ "label": "prehistoric/ph-floor-cave",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cave dirt floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile is a flat top-down ground/floor surface showing brown earth with scattered small rocks.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3320
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cave floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless dirt/cave floor terrain surface covering the full 16x16 tile with small scattered pebbles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3136
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cave floor terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Entire 16x16 tile represents a flat cave dirt floor viewed from above with small embedded pebbles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2740
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cave dirt floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing top-down cave dirt surface with embedded small rocks across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2778
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.807Z",
+ "cells": {
+  "16": [
+   "8b788ecf9c63922a"
+  ],
+  "24": [
+   "17634578be3a9d08",
+   "18845f269519bfd7",
+   "71e433f51163b401",
+   "9b07561fee8f3b17",
+   "c337915b9e6c3c66",
+   "c3e4298c77b37318"
+  ],
+  "32": [
+   "1315398d7b323352",
+   "361e713c9ed1729b",
+   "455b3304921e2d46",
+   "b885a0c2aa2826d4",
+   "bc833a0568bb5b78",
+   "c62f66c5cba23088"
+  ],
+  "48": [
+   "0a23d6651b838d01",
+   "0ccd9659a67b7f87",
+   "5a4930d08e238ee8",
+   "9f477c1529d8dfc4",
+   "ca0ab2df48b265c2",
+   "da768815d5ece5af"
+  ]
+ }
+}

@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cf06d4f1586a19a89c847b3a936ac55030e5fda7803322413ccc103f92d8afd3",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "stone tavern fireplace with burning logs, a hanging iron kettle, mantel shelf with candles and a hearth step",
+ "label": "pirate-isles/pi-fireplace",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone fireplace with wooden mantel shelf and hearth step",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mantel shelf top surface is clearly foreshortened and visible from above across rows 2-6 (holding candles, bottle, and mug), and the lower hearth step also shows a visible horizontal top surface (rows 27-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4821
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone fireplace with wooden mantel shelf",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden mantel shelf clearly displays a 5-pixel deep horizontal top surface (rows 2-6) holding candles and objects, and the hearth step at the bottom also shows top surface area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4343
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone fireplace with mantel shelf and hearth step",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mantel shelf top surface is clearly visible from rows 2 to 6 (5 rows tall) holding items, and the hearth step also displays a visible horizontal top surface (rows 26-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4781
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone fireplace with wooden mantel shelf and stone hearth step",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden mantel shelf top is clearly rendered from row 2/3 to 5 (approx 3-4 rows) holding candles and a bottle, and the hearth step in rows 26-29 also shows a foreshortened top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5346
+  }
+ ],
+ "decidedAt": "2026-10-13T19:28:41.189Z",
+ "cells": {
+  "16": [
+   "218f1e8e8b435d31",
+   "51ba26c131df8774",
+   "6f80a628abfb2722",
+   "fb924fa18a2d9c38"
+  ],
+  "24": [
+   "094d58805d7537e8",
+   "0f6d0897a056c3f5",
+   "209cf5c102db1534",
+   "21b1ca5077e9f65d",
+   "3b3aeb8f0ac3264e",
+   "492f86b2de7229a9",
+   "4e0f5a5fbbd80054",
+   "5202f210abcebdda",
+   "570ad1b1efffa80e",
+   "5944649af46c354a",
+   "5c1030717105e388",
+   "8520fa3e57cce2c1",
+   "a2295b2dd4b072a7",
+   "aca2d2520f0cb0ee",
+   "aefd8c57358c81f3",
+   "af61531e71ddfc11",
+   "afab6b9a7eaa97bd",
+   "b8c4740fef477aff",
+   "bb3ae59f9a11c5fa",
+   "c074ad1ce96bf2fd",
+   "ce8c5527e45c6a26",
+   "ec0a9cb84662e2e8",
+   "f3bb227969c9c8f3",
+   "ff18eaf7fc64af4f"
+  ],
+  "32": [
+   "8ffcf3318044d923"
+  ],
+  "48": [
+   "6e43138691087990",
+   "70926864969a4619",
+   "9738fac0371dcaec",
+   "a2fec9cb7e83d299",
+   "c67ac8833d9a8960",
+   "d24e296837c26b56"
+  ]
+ }
+}

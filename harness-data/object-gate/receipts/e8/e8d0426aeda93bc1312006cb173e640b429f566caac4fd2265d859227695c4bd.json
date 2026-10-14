@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e8d0426aeda93bc1312006cb173e640b429f566caac4fd2265d859227695c4bd",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "배관 도랑 — 서쪽 막힌 끝(동으로 이어짐)",
+ "label": "steampunk-city/sp-pipe-e",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pipe trench recessed into ground",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Recessed trench terrain tile viewed in 3/4 top-down perspective, showing the surrounding ground surface, the recessed inner drop, and a horizontal pipe running along the trench bed with appropriate cylindrical shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5787
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pipe trench",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Recessed floor trench shown from top-down 3/4 perspective with concrete border rim, inner drop shadow, and horizontal pipe rendered with top-lit cylindrical shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5779
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pipe trench in stone floor",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Recessed floor trench terrain tile seen from top-down perspective, showing trench rim and horizontal pipe lying inside.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4759
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pipe trench in floor",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting a recessed floor trench containing a pipe. The top-down 3/4 perspective correctly shows the inner north drop wall in shadow and horizontal floor/pipe layout.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3972
+  }
+ ],
+ "decidedAt": "2026-10-13T18:45:09.736Z",
+ "cells": {
+  "16": [
+   "c2499f98e20964b3"
+  ],
+  "24": [
+   "02d1df9a579e0883",
+   "23d9146900977cce",
+   "30a452b602d34b28",
+   "49111edfd4f10d3d",
+   "cb8b889a7bd054c1",
+   "e5155ef97b47eef3"
+  ],
+  "32": [
+   "043d1e7deb176f6b",
+   "07bd66f557a64a9b",
+   "4ad67e1afaad156c",
+   "afdf212e9551beb3",
+   "bb6abf526d304a7d",
+   "df97f71b20df6efc"
+  ],
+  "48": [
+   "26f8c322dc65e334",
+   "46aec3fb460e416f",
+   "7570275af430eef1",
+   "b108410488d3102f",
+   "f0c613e6087b792e",
+   "f9c03b26e011eb84"
+  ]
+ }
+}

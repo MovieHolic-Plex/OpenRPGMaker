@@ -1,0 +1,17 @@
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/terrain/gm-ground-grass-a.png", "kind": "terrain", "name": "마른 풀밭 A", "label": "gothic_manor/gm-ground-grass-a"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/terrain/gm-ground-grass-b.png", "kind": "terrain", "name": "마른 풀밭 B (낙엽)", "label": "gothic_manor/gm-ground-grass-b"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/terrain/gm-ground-grass-c.png", "kind": "terrain", "name": "마른 풀밭 C (돌멩이)", "label": "gothic_manor/gm-ground-grass-c"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/terrain/gm-ground-gravel.png", "kind": "terrain", "name": "묘지 자갈 바닥", "label": "gothic_manor/gm-ground-gravel"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/terrain/gm-ov-moss.png", "kind": "flat", "name": "이끼 덩이(덧그림)", "label": "gothic_manor/gm-ov-moss"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/terrain/gm-ov-leaves.png", "kind": "flat", "name": "낙엽 흩어짐(덧그림)", "label": "gothic_manor/gm-ov-leaves"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/terrain/gm-ov-puddle.png", "kind": "flat", "name": "물웅덩이(덧그림)", "label": "gothic_manor/gm-ov-puddle"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/terrain/gm-ov-fog.png", "kind": "flat", "name": "바닥 안개(흐르는 3프레임)", "label": "gothic_manor/gm-ov-fog"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/terrain/gm-ov-grave-plot.png", "kind": "flat", "name": "무덤 자리 흙(덧그림)", "label": "gothic_manor/gm-ov-grave-plot"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/terrain/gm-gate-iron-open.png", "kind": "structure", "name": "무쇠 쌍문(열림)", "label": "gothic_manor/gm-gate-iron-open"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/terrain/gm-path-dirt.png", "kind": "terrain", "name": "진흙 길(풀밭 가장자리)", "label": "gothic_manor/gm-path-dirt"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/terrain/gm-cobble.png", "kind": "terrain", "name": "젖은 자갈 포장(돌 연석)", "label": "gothic_manor/gm-cobble"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/terrain/gm-flagstone.png", "kind": "terrain", "name": "판석 광장(틈 이끼)", "label": "gothic_manor/gm-flagstone"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/terrain/gm-pond.png", "kind": "terrain", "name": "검은 연못(돌 테)", "label": "gothic_manor/gm-pond"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/terrain/gm-fence-iron.png", "kind": "frame", "name": "무쇠 창살 철책(돌 받침) (3칸 줄 + 모퉁이 견본)", "label": "gothic_manor/gm-fence-iron"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/terrain/gm-wall-stone.png", "kind": "box", "name": "이끼 낀 낮은 돌담 (3칸 줄 + 모퉁이 견본)", "label": "gothic_manor/gm-wall-stone"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/terrain/gm-hedge.png", "kind": "organic", "name": "마른 산울타리(가지 비치는 덤불 벽) (3칸 줄 + 모퉁이 견본)", "label": "gothic_manor/gm-hedge"}

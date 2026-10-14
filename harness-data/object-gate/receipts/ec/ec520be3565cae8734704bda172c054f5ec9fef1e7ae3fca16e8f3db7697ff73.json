@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ec520be3565cae8734704bda172c054f5ec9fef1e7ae3fca16e8f3db7697ff73",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "market stall with striped red awning and fruit baskets on the counter",
+ "label": "pirate-isles/pi-stall-fruit",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "market stall counter and striped awning",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The awning slope is clearly visible from above across rows 0-12, and the counter displays a deep horizontal top surface (rows 15-21, ~6-7px tall) where crates of produce rest above the south-facing wooden counter base (rows 22-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5440
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "market stall with awning and counter",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The striped awning clearly slopes down toward the camera (rows 0-13), and the counter shows a recessed top surface/shelf holding fruit crates (rows 15-21) above its vertical front wooden paneling (rows 23-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7912
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "market stall with awning and counter",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The striped awning forms the roof of the stall and clearly displays its top slope facing the viewer across rows 0-13 (14 rows tall). The counter display area sits recessed below it with fruit crates visible on the display shelf.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6775
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "market stall with awning and counter",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The striped awning clearly shows its sloping top surface across rows 0-13, and the counter display bed showing fruit crates occupies rows 16-21 above the south-facing counter front (rows 22-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8005
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.701Z",
+ "cells": {
+  "16": [
+   "0e624694bd72452f",
+   "226c44353cff29c8",
+   "3ea78f14ae009eba",
+   "bd13f1b6c5db5d71"
+  ],
+  "24": [
+   "027a5ed4da7cae1a",
+   "0680b921289be376",
+   "117fccf456ad2ced",
+   "1a168f81bc38a254",
+   "26297fcf0590c764",
+   "28ad4ffa991dd38f",
+   "41f98ba1e8a85c67",
+   "49b3bfa28b753cc5",
+   "4d0f3d782e9db14a",
+   "4dc1eca9a0125c3c",
+   "5940dc07742c693e",
+   "680385d443fdcabb",
+   "6a91ba9915dd1453",
+   "71abe780624af4f9",
+   "78f32aa961c3547b",
+   "835851df7946b47d",
+   "a30e2cbc5196a838",
+   "a3cebd2aa7626fe1",
+   "a754c8d7bc903e8f",
+   "a95e7f12c51e195d",
+   "baba90278fa9e66e",
+   "d889de97949e0cba",
+   "e437a76bedeb4d07",
+   "e79ff328a5ae129e"
+  ],
+  "32": [
+   "ee43dd638940a8fa"
+  ],
+  "48": [
+   "4096ed0cbeeb1bd7",
+   "5486f9c1aae4a458",
+   "587cd1d51fae855d",
+   "7f8ec4c983d2f046",
+   "9734c9bfd944b9e4",
+   "c1084a3b3a76aa45"
+  ]
+ }
+}

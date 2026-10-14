@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f4b012cb35dd46493a528c0bec6d1308203dc22f52025146b14891b11058a0c7",
+ "width": 64,
+ "height": 32,
+ "kind": "terrain",
+ "name": "dark ship cabin plank wall front face strip, 4 variants x 2 rows",
+ "label": "pirate-isles/pi-wall-face-ship",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ship cabin plank wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile strip showing the vertical south face of a wooden ship cabin wall with porthole and beam details; as wall face terrain rather than a standing object, it correctly tiles vertically without top perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7660
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ship cabin plank wall face strip",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall face terrain strip showing horizontal wooden planks, vertical beam, porthole, and ring; as a terrain wall face tile rather than a standing object, it correctly depicts the front surface of the wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7027
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ship cabin plank wall face strip",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall front face terrain tile strip showing vertical wooden planks, vertical beam, porthole, and ring fixture. As vertical wall terrain, it correctly depicts the front surface of the wall without top foreshortening (which belongs to wall-top tiles).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7941
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ship cabin wooden plank wall face strip",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain wall face strip designed for RPG vertical wall surfaces; correctly shows front-facing wooden planks with porthole and rope ring decorations without isometric side projection.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8265
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.697Z",
+ "cells": {
+  "16": [
+   "0d9e4b2ff62c012d",
+   "380f4b9ef2aa06fd",
+   "427c2f28b357e503",
+   "5dc51633b7a5dcb9",
+   "746d49c6de018819",
+   "7ecd2ef537ae6ae0",
+   "b3fc7a52ec6ee00d",
+   "ca29e8f5954c2173"
+  ],
+  "24": [
+   "08cf9c84e9906be1",
+   "0f9f6004b41c882f",
+   "15cae6b5801c7329",
+   "1aa47763788e2145",
+   "1c21e08919b6bd14",
+   "1c96c78037b7c3d5",
+   "1ce4a474d39a6e53",
+   "241b6194a6faf69d",
+   "3991efbb1b248a0d",
+   "42fbd5b3bf9f5f37",
+   "5588c7d0933ed760",
+   "5ab940eb826f44ae",
+   "5d4ce40f4bb342d6",
+   "607a7a0ec5a2d043",
+   "63071ed6dee2ea67",
+   "64d0eb72c4d597d6",
+   "71ee8ce164ca0e75",
+   "74e263ba1f0b314d",
+   "772c80ac23d1756e",
+   "8a4a15d22988ef14",
+   "8e1484e933ad3ad3",
+   "8f810b968aa81b99",
+   "9879aa2c8c0356b6",
+   "a71022218d036c52",
+   "a90e04f61dd17798",
+   "b4a831e95793da24",
+   "c0f282dbf6269888",
+   "d209883529a3a630",
+   "d71f8d206a25a445",
+   "e249d5eaa35a9b48",
+   "e4410bed62af3c6e",
+   "eafe059f7bbf5cfc",
+   "f8556710cf43e562",
+   "f96a9488cbf73177",
+   "f98cf9f1876139e7",
+   "feaf5554ed2d37bc"
+  ],
+  "32": [
+   "1a9ceceb5ac9794a",
+   "b184fac7eae4213e"
+  ],
+  "48": [
+   "04b16a722abd49cd",
+   "2808d8c31a6be75d",
+   "6580b8c0498e639f",
+   "80eaaf1260094738",
+   "84d3219883f510b8",
+   "89dfad25422e4117",
+   "8ea7137cdf785f6d",
+   "c5f05142191f2809",
+   "da9ca61c1e020a5f",
+   "e1dcf0621f70d32c",
+   "f00433acdc496b5b",
+   "ff88d0247cef7bfb"
+  ]
+ }
+}

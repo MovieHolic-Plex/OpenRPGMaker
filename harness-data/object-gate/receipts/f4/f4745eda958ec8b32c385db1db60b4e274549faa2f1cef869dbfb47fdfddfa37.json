@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f4745eda958ec8b32c385db1db60b4e274549faa2f1cef869dbfb47fdfddfa37",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "wooden barrel seen from above-front: large oval lid with planks clearly visible on top, iron hoops",
+ "label": "sky-island/si-barrel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The barrel shows a prominent elliptical top lid spanning rows 1-7 with vertical plank divisions, positioned above the south cylindrical face (rows 7-15) banded with iron hoops.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3330
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid is rendered as a prominent ellipse spanning rows 2 to 7 (6 source pixel rows) with visible plank detail, resting atop the front cylinder body (rows 8-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6481
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "barrel",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A large foreshortened elliptical lid with plank details is clearly visible across rows 2-6 (about 5-6 rows tall) atop a cylindrical south face with iron hoops.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3856
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid of the barrel is drawn as a large foreshortened ellipse spanning rows 2 to 7 (6 pixel rows tall) with visible plank detail, resting atop a front-facing cylinder body with metal hoops.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3488
+  }
+ ],
+ "decidedAt": "2026-10-13T18:46:20.918Z",
+ "cells": {
+  "16": [
+   "61bc42fab0cbbc38"
+  ],
+  "24": [
+   "3671ff4bd5f30129",
+   "4743dde7005fdd4a",
+   "aed5ab597b7cc884",
+   "afc687cbfd7e93af",
+   "fafaa325975edfdc",
+   "ff74d160c7a40c60"
+  ],
+  "32": [
+   "0edbbe1f8f9198db",
+   "1f8b9c8d47e8fc5f",
+   "250b9e8bb94522d0",
+   "2e815d0606b82337",
+   "667c2c9eeb2837fc",
+   "8fc592db4fa4eeb7"
+  ],
+  "48": [
+   "2e428daaed937f64",
+   "3076bb445027600e",
+   "47feec4141a7859d",
+   "6b995798c01af11d",
+   "baa9a5339bc6ba3a",
+   "d4df1968e93c416b"
+  ]
+ }
+}

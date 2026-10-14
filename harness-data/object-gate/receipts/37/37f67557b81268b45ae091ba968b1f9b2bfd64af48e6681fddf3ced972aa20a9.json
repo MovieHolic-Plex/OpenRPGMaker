@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "37f67557b81268b45ae091ba968b1f9b2bfd64af48e6681fddf3ced972aa20a9",
+ "width": 48,
+ "height": 32,
+ "kind": "frame",
+ "name": "철봉(높이 다른 셋)",
+ "label": "modern-campus/mc-pullup-bars",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pull-up bars (horizontal bars)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pull-up bars are drawn in pure front elevation: the horizontal bars are merely 1-2px thick horizontal lines without any foreshortened top surfaces, and the vertical posts have flat frontal bracket caps rather than circular/elliptical top faces seen from a 45-degree angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6945
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal bars (pull-up bars) in sandpit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal crossbars and posts are drawn in pure front elevation without any top surface foreshortening. The crossbars consist only of a 1px highlight and a 1px shadow/underside, with no visible top face (top_rows: 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8762
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "three pull-up bars of differing heights (posts and crossbars)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pull-up bar frames are drawn in flat front elevation with vertical posts and horizontal crossbars showing no foreshortened top surfaces (only 1-2px edge lines across the bars and flat bracket silhouettes at row 2-3, 5-6, and 8-9).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6739
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal exercise bars (철봉)",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pull-up bars are drawn in pure front elevation like a 2D side-scroller sprite. The crossbeams have only a 1px edge highlight on row 2, and the post tops and horizontal bars lack any foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 7754
+  }
+ ],
+ "decidedAt": "2026-10-13T16:35:07.542Z",
+ "cells": {
+  "16": [
+   "1a2ed078b17de6e7",
+   "375b2a7d3942958f",
+   "5e894a5bebca3bb7",
+   "7f6c143b14d8ed8e",
+   "96e40109aa01bae7",
+   "f375f0b296406076"
+  ],
+  "24": [
+   "04893089d9bcdf0c",
+   "0e8ebb253699e1bb",
+   "11c2e5fb4a026f2b",
+   "2cd3d7875b275777",
+   "67de17fdf0c70928",
+   "71d1d1f98114d59b",
+   "97bab8c3cf6ed229",
+   "d54082c51d028d4c"
+  ],
+  "32": [
+   "02b90f5232d8f410",
+   "60a4887347d865af",
+   "73d1e3d4c5443b06",
+   "9854b012f0a1255b",
+   "caed2e5955e9065b",
+   "eaaf06adb4aaaed7"
+  ],
+  "48": [
+   "7c1f7c5e655c0a09",
+   "98dedeb9679f5a87"
+  ]
+ }
+}

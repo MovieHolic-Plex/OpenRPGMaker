@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6b85577bc0ab64b963546293072bd4e724cf90ffc375e3d6c917f5f066c3b353",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "tilled farm soil edge on grass (terrain)",
+ "label": "sky-island/si-field-se",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tilled soil terrain tile",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain autotile showing tilled soil furrows seen from above, bordered by grass at the south and east edges.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4007
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tilled soil terrain tile with grass border",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile depicting the corner/edge of tilled soil ridges bordered by grass, correctly viewed from the top-down 3/4 angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4021
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tilled soil terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile showing tilled earth furrows bordering grass on the east and south sides, viewed top-down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3565
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tilled farm soil terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile depicting tilled soil furrows bordered by grass along the south and east edges, correctly rendered from a top-down ground perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3393
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.980Z",
+ "cells": {
+  "16": [
+   "06e99f15ebda8f9e"
+  ],
+  "24": [
+   "0b2cf2881edd955c",
+   "252890424481a368",
+   "4fcd3e6a4de76680",
+   "5ebba4b6c943db6a",
+   "7d9664b2c63ae0e9",
+   "c3876f767cf06fee"
+  ],
+  "32": [
+   "57351ac845518387",
+   "7cb4cdda734afb2f",
+   "95193b1651b4a653",
+   "b6de16edbc9dc3ac",
+   "c3a2b0c0892ad2c8",
+   "e20387712b5c4837"
+  ],
+  "48": [
+   "003e190d59346509",
+   "1693fa464c1a7cd9",
+   "1a8b7000b3f11e10",
+   "4d1249f1396d1a3a",
+   "4f06df03457e3745",
+   "dacb062e4d75603e"
+  ]
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3cb84d695aac7a97088aa1ac69634c799dae2fcb1fa78df908b06de73d46baa0",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "tall bamboo shelf seen from above at 3/4 with clay pots, gourds and a basket, a water gourd on the top surface",
+ "label": "pirate-isles/pi-shelf-hut",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall bamboo shelf",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bamboo shelf is visible from row 4 to row 7 (4 rows tall) beneath and around the gourd, with a clear horizontal top plane and front edge beam.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3576
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bamboo shelf",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shelf is visible across rows 4-7 around the base of the gourd, measuring about 4 rows deep before the front edge trim at rows 8-9.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9553
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tall bamboo shelf",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bamboo shelf is visible from row 4 to row 7 (about 4 rows deep) with a gourd resting on it, leading to the front rim at rows 8-9.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4022
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall bamboo shelf",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the bamboo shelf is visible from row 4 to row 7 (4 rows deep) supporting a gourd, with the front lip at rows 8-9 before dropping into the shelf compartments.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4406
+  }
+ ],
+ "decidedAt": "2026-10-13T19:41:01.300Z",
+ "cells": {
+  "16": [
+   "2367f4de041be8f1",
+   "4410622a13d0c00a"
+  ],
+  "24": [
+   "16a607cfc03c18ce",
+   "3c94ad7873d00552",
+   "3f78ffb3bdb5f89e",
+   "4c80f67dc946b224",
+   "7df83022829efb86",
+   "8105a21d1c63d115",
+   "848ce453e23dac0e",
+   "8750d6689c09c09d",
+   "8dc5e8b1f4ccb1e9",
+   "b7cc20de9de44d39",
+   "e528c1b26e9800cd",
+   "e98e0730adb47dd5"
+  ],
+  "32": [
+   "2d248d07ad0c7d60",
+   "467d8ddedd5a4324",
+   "926bac114201339a"
+  ],
+  "48": [
+   "11e8ea239578ffdb",
+   "5fbaf5291ee7aaa8",
+   "818290528e00c6a3",
+   "a3f58f78ab8ee9d0",
+   "d0e12bffeb25c6de",
+   "da1dc6743e4cb215"
+  ]
+ }
+}

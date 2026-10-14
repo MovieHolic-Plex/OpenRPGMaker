@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bc01c7c317757a0bbe947acef09f7aea628ed9eb51c76001800417418837e44f",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "큰 돌 화분(마른 덩굴)",
+ "label": "gothic_manor/gm-planter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "large stone flowerpot filled with soil",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The opening filled with soil is clearly visible from above across rows 3-6 (4 rows tall), enclosed by the pot rim, with the front face of the pot extending down rows 7-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5806
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone planter pot filled with soil",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rim and opening interior (filled with soil) are clearly visible from above, spanning rows 2 to 6 (interior opening is 4 rows tall from y=3 to y=6) above the south-facing stone body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4900
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone planter pot",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large stone planter clearly shows its top opening filled with soil from rows 3 to 6 (4 rows deep), foreshortened as an ellipse in top-down 3/4 view, with the cylindrical front face below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4884
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "large stone flowerpot",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pot has an elliptical opening filled with soil visible from above spanning rows 3-6 (4 rows of interior soil) with the back rim visible on row 2, demonstrating standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5193
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:15.456Z",
+ "cells": {
+  "16": [
+   "615bb7466bd8390d"
+  ],
+  "24": [
+   "05dd0a5dd320b81f",
+   "3bdbc2f7c9484886",
+   "62ab0f0b435abdf1",
+   "6cde20e0d3310e4a",
+   "771180fbffa07826",
+   "857b632e52caf777"
+  ],
+  "32": [
+   "2f98c41ca3f587fb",
+   "31a974d4a43e21c9",
+   "63b97878c6a2fffb",
+   "b25533df623adf95",
+   "bd417fef2b0a2d06",
+   "d2c9d03c202e5a59"
+  ],
+  "48": [
+   "04ab8841262a31e0",
+   "43337ad6c0da6062",
+   "62a83d2baec840d7",
+   "6921cd8c56bd316d",
+   "e1e8423fcb6d6094",
+   "e53bd89da2691b0a"
+  ]
+ }
+}

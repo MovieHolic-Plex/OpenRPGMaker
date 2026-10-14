@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "894f1bdaff4515bc474c365d03c7f5a87244b7aa3144abc475948e1864f8439a",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "화물 상자 더미(큰 상자 위에 작은 상자를 올림)",
+ "label": "sf-station/sf-crate-stack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stacked cargo containers and crates",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the large blue-grey base container and the stacked/adjacent wooden crates feature clearly visible foreshortened top surfaces (rows 6-11 on the top crate, rows 14-21 on the large container, rows 19-25 on the right crate) above their south-facing front panels.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5455
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "large metal cargo container with stacked wooden crate",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the main blue container and the smaller wooden crates clearly display horizontal top surfaces seen from above (rows 15-21 for the large crate, rows 6-11 for the top crate, rows 19-25 for the side crate) above their south-facing front panels.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4081
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "large grey crate with smaller wooden crate stacked on top",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the crates and the base container clearly show their top surfaces (e.g. large crate top rows 14-21, top crate top rows 6-11) as well as south-facing front panels in classic 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5670
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "large cargo crate with stacked wooden crates",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each crate clearly shows both a distinct, well-proportioned top face (lighter upper section, 5-7 rows tall) and a darker south/front face in proper 3/4 top-down perspective without isometric side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6703
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:27.305Z",
+ "cells": {
+  "16": [
+   "02c8ff1f71a74b16",
+   "16d78d8f7065dc0a",
+   "1c200d0effb9bbdb",
+   "47820030ee88a59a"
+  ],
+  "24": [
+   "04ed722aeebdcea5",
+   "1c639174ff12f2fd",
+   "1f0131885310c57c",
+   "215bf3163bf5e408",
+   "5fe8bb2bf2990125",
+   "6ae612ddc14b9f48",
+   "774af37bffe65df7",
+   "77c1ce2709c4282b",
+   "8506ecfe133e0fcc",
+   "8e1dce32220194a6",
+   "9bb57422034ce433",
+   "9d9f49908e561d1c",
+   "a53cdafa1c2a6222",
+   "a8f5301f2314912a",
+   "a94137829c42b111",
+   "ac16dad761e8f206",
+   "bf86a26223b3a3ae",
+   "cd40370c25fad668",
+   "cff0ee9f5ae3dc9e",
+   "e857bd2a85b06790",
+   "e998f614d0262d32",
+   "f90bb4d6917e311d"
+  ],
+  "32": [
+   "9eaed7c9b72e27ba"
+  ],
+  "48": [
+   "0ba713d929f5e2de",
+   "4afa0abbe1b1d2bb",
+   "54ef2d41b37acc65",
+   "5b6a3736515f297f",
+   "9472ca958ab430ef",
+   "d5248b76324fc640"
+  ]
+ }
+}

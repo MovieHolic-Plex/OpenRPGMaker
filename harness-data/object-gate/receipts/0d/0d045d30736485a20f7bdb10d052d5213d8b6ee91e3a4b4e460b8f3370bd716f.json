@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0d045d30736485a20f7bdb10d052d5213d8b6ee91e3a4b4e460b8f3370bd716f",
+ "width": 16,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "교실 벽시계(원형, 철망 없음)",
+ "label": "modern-campus-int/mc-wall-clock",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round wall clock",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted circular clock mounted flat against the north wall, which is standard and acceptable for the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5531
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "circular wall clock",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall clock mounted flat on the wall; wall_mounted objects are permitted to be flat front view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3565
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round classroom wall clock",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted circular clock viewed directly from the front, appropriate for flat wall-mounted decorations.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6321
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "circular wall clock",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a circular classroom clock mounted flat against the wall; as a wall-mounted decoration, a flat front-facing view is appropriate.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3918
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.307Z",
+ "cells": {
+  "16": [
+   "17b0d9e760ab4a8e"
+  ],
+  "24": [
+   "0142e6585aba3342",
+   "1ab9d042c6acf11c",
+   "1d54356ed88eef71",
+   "2f0b9e71d3a6449f",
+   "34a99bd7778f5598",
+   "772de05bec4611d9",
+   "cef4def8a1628745",
+   "e63741977a565727",
+   "f679fe305c6b49c6"
+  ],
+  "32": [
+   "0814e859babb4ee2",
+   "591aa2af186c8e3d",
+   "9d8334c8f9f90c54"
+  ],
+  "48": [
+   "03ccff7e8dbbaf04",
+   "255692bc8e9f4eba",
+   "27cba77ee8139e5d",
+   "cd53e7f886d6a60e",
+   "d1d1aa2fa7b4747b",
+   "fd92be5b9b305eb7"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dbb3390a64ba45b860ba3700eae7a0a2b3947dedabeb6d7ae8da77439ff2243c",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "보도블록",
+ "label": "modern-campus/mc-sidewalk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pavement bricks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat sidewalk paving tile pattern (terrain ground surface), not a standing object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4609
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "paving stone terrain texture",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat sidewalk brick/paving stone terrain tile shown from an overhead top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4642
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sidewalk pavement / stone brick terrain pattern",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting sidewalk paving blocks (보도블록) viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3654
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "paving blocks terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Sidewalk / brick paving ground texture, valid terrain tile viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4729
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.863Z",
+ "cells": {
+  "16": [
+   "757efd994ff238db"
+  ],
+  "24": [
+   "0df81c1bc2912204",
+   "1733e180bc17c465",
+   "3cfbd2f2bea56d2f",
+   "b0d5c082d0cee74b",
+   "d0d583a36be2fe19",
+   "d415ab5fb01ba0f6"
+  ],
+  "32": [
+   "0cbe5dc515c0d51b",
+   "36f011199c87e3bb",
+   "81537feadb9d7d20",
+   "90840247f479097d",
+   "9a4dc13c0024a06e",
+   "eff88c8a99378be2"
+  ],
+  "48": [
+   "0677681ad7ba4f16",
+   "672b5f64cff6c286",
+   "8c74de2853115fad",
+   "93c2cae6f9c96af8",
+   "d89bcb00212b787f",
+   "f5f2994e1ea3da29"
+  ]
+ }
+}

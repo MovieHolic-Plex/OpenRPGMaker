@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bf6608d31e2f7a3a7119e2c58299184ae70655e6f6c4c39fa9ad3eabe5f62775",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "논두렁(서쪽 둑)",
+ "label": "sengoku-edo/se-paddy-w",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rice paddy ridge and flooded field terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a grassy ridge path alongside a flooded rice field with seedlings viewed from above in standard top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3267
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rice paddy ridge and flooded field with seedlings",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing top-down view of a levee/ridge alongside flooded rice paddy water with seedlings.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6727
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "paddy field ridge and flooded water terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting a grass ridge border and flooded rice paddy with young plants, fully visible from the top-down perspective across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4857
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "paddy field western ridge and flooded field with rice shoots",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting a top-down rice paddy ridge (western dike) and flooded field with young plants.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2956
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.061Z",
+ "cells": {
+  "16": [
+   "18923a0491105e7c"
+  ],
+  "24": [
+   "02de574f46cc1642",
+   "0c82992a09805152",
+   "1d7a9497e5671db4",
+   "2455f8ca8ca8d85f",
+   "24dea84a0db3fb53",
+   "62f39a92b5d6e58f"
+  ],
+  "32": [
+   "250df8c285d4b6e4",
+   "450b7dce4aa56e87",
+   "6581784ca5d75dbc",
+   "94b2c7517c5a736b",
+   "a54795b3465ca5ce",
+   "b1ccf39c4656d764"
+  ],
+  "48": [
+   "38bc26480de8fd58",
+   "3b685cda220feed8",
+   "3ce6bf5706d016e2",
+   "50633d18fa92d30f",
+   "86245471dc4dd212",
+   "d7dbbdbd47eb228b"
+  ]
+ }
+}

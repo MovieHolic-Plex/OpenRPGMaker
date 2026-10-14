@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "99cd6ac56650645cce1faf055305ec9b5ce02c2398cdc8e0727928524b0b5f53",
+ "width": 32,
+ "height": 16,
+ "kind": "debris",
+ "name": "large iron ship anchor lying on the ground",
+ "label": "pirate-isles/pi-anchor",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "anchor (shank and stock)",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The anchor is drawn as a flat 2D silhouette/orthographic icon lying in a single plane (flukes and stock coplanar, which is physically impossible for a stocked anchor), with no 3/4 perspective, foreshortening, or distinct top surfaces showing depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 11402
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "shank and stock of anchor",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The anchor is drawn as a flat 2D elevation icon turned on its side. Its cylindrical shank has only a 1px edge highlight for a top surface (rows 7-9 total 3px), and the eye ring on the right is taller than it is wide (a vertical ellipse instead of a horizontally foreshortened ring lying on the ground).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10564
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "large iron anchor lying on its side",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The anchor is drawn as a flat 2D front elevation rotated 90 degrees. None of the horizontal or vertical components show a 3D top surface in 3/4 perspective; the 2px lighter strip along the shank is merely an edge highlight.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15182
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron anchor",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The anchor is drawn as a flat 2D elevation/icon with both the stock and flukes lying impossible in the same plane, with no foreshortened top surfaces or 3D depth for a 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10687
+  }
+ ],
+ "decidedAt": "2026-10-13T19:19:03.410Z",
+ "cells": {
+  "16": [
+   "4ddb5bad8f14d159",
+   "c547b1ba929e1f4d"
+  ],
+  "24": [
+   "0901a1e68c4abeb5",
+   "30764786d9d7eea8",
+   "5871fe64f6d390fa",
+   "6b199b9163468728",
+   "78c8a158f52f36ad",
+   "84c6f8667bf33694",
+   "854b58f7f530b344",
+   "994415d3b5043350",
+   "adb13d4715636d1c",
+   "b36d7f9f0fb065d4",
+   "cba29248a7ae70be",
+   "e03c68da74ef6f78"
+  ],
+  "32": [
+   "3a69fa9f50ea75f3",
+   "49a4f750f22de073"
+  ],
+  "48": [
+   "2d0c0f68e0e8db42",
+   "4f55338ea744b249",
+   "89ff469cc82087c1",
+   "9fad41222c044fc9",
+   "9feeb41c7d4a1e3c",
+   "dd68b8f74ef303e8"
+  ]
+ }
+}

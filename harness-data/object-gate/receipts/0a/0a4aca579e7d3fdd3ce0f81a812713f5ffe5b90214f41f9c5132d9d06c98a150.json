@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0a4aca579e7d3fdd3ce0f81a812713f5ffe5b90214f41f9c5132d9d06c98a150",
+ "width": 32,
+ "height": 48,
+ "kind": "column",
+ "name": "쌍 가스등(광장용, 등 둘)",
+ "label": "steampunk-city/sp-gas-lamp-double",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "double gas lamp with twin lanterns and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The twin lanterns, dome caps, crossbar, and central post are drawn in pure front elevation. The lantern caps are semicircular front silhouettes with no foreshortened top surfaces, the glass frames are flat rectangles, and the crossbar shows no top face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9907
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "twin street lamp / pole and lantern heads",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The twin lantern heads, crossbar, and central post are drawn in pure front elevation with horizontal glass frames and side-profile dome caps showing 0px of visible top surface. Although the base plinth shows top-down foreshortening, base plinths do not qualify the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7855
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "twin gas lantern heads and central post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern caps, glass panes, crossbar, and central post are drawn in pure front elevation with completely flat horizontal rims (rows 12-13, 22-24) and straight rectangular window faces with no visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8664
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "twin lanterns and pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lanterns, crossbar, and pole are drawn in pure front elevation with straight horizontal rim lines and flat vertical window panes. No top surface is visible on the lantern heads or post; only the bottom base plinth shows perspective foreshortening, which cannot be credited.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9149
+  }
+ ],
+ "decidedAt": "2026-10-13T18:31:07.467Z",
+ "cells": {
+  "16": [
+   "062c50352b4f9938",
+   "581371731e19368f",
+   "8e3c1de2bc10eeaf",
+   "9793e054e2bdfdf2",
+   "c9c7763376892c87",
+   "f5e038333409940c"
+  ],
+  "24": [
+   "1c76f5c04ee74d32",
+   "2b4fb5b740326fe9",
+   "38189bb4d06b1182",
+   "52fa932989be06d8",
+   "53a5ea237d5100d4",
+   "580bd581b8019fda",
+   "61d1af13f620e08f",
+   "80d4ba3278de492d",
+   "884510c16d9e2a6b",
+   "9df45c96c0e24154",
+   "a0696732a797c99d",
+   "e83616a265c7f7ef"
+  ],
+  "32": [
+   "76169f34be20910f",
+   "93748f4358cfa19e",
+   "99954abc5efee689",
+   "daa416be1102b657"
+  ],
+  "48": [
+   "27bfd810449902e6",
+   "2b47522bb0abac36",
+   "5351294f2cf728bb"
+  ]
+ }
+}

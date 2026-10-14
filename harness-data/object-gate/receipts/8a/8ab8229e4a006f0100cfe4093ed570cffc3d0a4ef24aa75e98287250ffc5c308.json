@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8ab8229e4a006f0100cfe4093ed570cffc3d0a4ef24aa75e98287250ffc5c308",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass to cloud floor transition tile (terrain)",
+ "label": "sky-island/si-gc-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass ground surface transitioning to cloud edge",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing a top-down grass surface (rows 0-11) transitioning at the south edge with a cliff rim/dirt lip down to clouds.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3010
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass ground surface transitioning to cloud base",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing top-down grass surface spanning rows 0-11 with a bottom edge/cliff boundary transitioning to clouds at rows 12-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6145
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass ground surface transitioning to cliff edge over cloud floor",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile showing the top surface of grass ground across rows 0-11 with a southern edge/cliff transition to clouds below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4922
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass ground surface transitioning to cliff edge and cloud floor",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid top-down terrain tile showing approximately 12 rows of horizontal grass ground surface meeting a short cliff rim and cloud floor at the south edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3245
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.978Z",
+ "cells": {
+  "16": [
+   "87c98f66ffdac8f7"
+  ],
+  "24": [
+   "312144e25b229eb3",
+   "35e550d42653910c",
+   "4463a8a1600a372e",
+   "475cfcd9faf58762",
+   "4e3c4e4680ee121c",
+   "5cb4cbacfb186344"
+  ],
+  "32": [
+   "20b6dcd8e0cd401e",
+   "656ff91d29f82f31",
+   "9852ba7bb76afb99",
+   "a1bd258c72f210b3",
+   "aa3cf5a1672caff5",
+   "b9651fa5b4958b7a"
+  ],
+  "48": [
+   "02518d9678852d95",
+   "07dd6d63210cbe80",
+   "4292f954b058b2ed",
+   "635bfbe24df59cac",
+   "e09cdc4bb531a5d9",
+   "e13887e11bd8218b"
+  ]
+ }
+}

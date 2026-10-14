@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3d970b81549bcbc902d6879596e39232688b226adf5d45a1c43e1ff4bb90584c",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "운하 물",
+ "label": "steampunk-city/sp-water",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "canal water tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain water tile showing canal surface texture with ripples; correctly represents a horizontal water surface spanning the tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3544
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "canal water surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain water tile depicting canal water with horizontal ripple highlights, occupying the full 16x16 surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3139
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "canal water tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting canal water with horizontal ripple highlights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2424
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "canal water tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain water tile covering the full 16x16 grid with water surface ripples.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2500
+  }
+ ],
+ "decidedAt": "2026-10-13T18:27:58.052Z",
+ "cells": {
+  "16": [
+   "ce4505bed95e4163"
+  ],
+  "24": [
+   "18bc9c7f0de203b1",
+   "40ef06e60a286a8c",
+   "63403da0cc7f7edc",
+   "88246c4e99bd223c",
+   "bf21cfdde7d6c23a",
+   "ea2dd54ae9fc954c"
+  ],
+  "32": [
+   "018dc2ac264886c6",
+   "68b2af4e366d9915",
+   "8c69090e9c69e8ea",
+   "8f77e35caddd66ba",
+   "a1a2674d4889eb02",
+   "a2f97ab8b5845321"
+  ],
+  "48": [
+   "20ae3080fda52cc2",
+   "3439083f3abbc4f2",
+   "9059591f8e7993c1",
+   "9a23dcff0de2356e",
+   "bb9d70d91b1a839d",
+   "e548681b2055e57e"
+  ]
+ }
+}

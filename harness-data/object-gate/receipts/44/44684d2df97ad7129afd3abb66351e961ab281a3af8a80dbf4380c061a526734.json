@@ -1,0 +1,153 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "44684d2df97ad7129afd3abb66351e961ab281a3af8a80dbf4380c061a526734",
+ "width": 64,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "초록 칠판(넓은 4칸, 알루미늄 틀)",
+ "label": "modern-campus-int/mc-board-green",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wide green chalkboard with aluminum frame and chalk tray",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Chalkboard mounted flat against the wall with front-facing frame, chalk writing, and chalk pieces in the bottom tray. Permitted flat orientation for wall_mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5643
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wide green chalkboard with aluminum frame and chalk ledge",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted blackboard mounted flat against a south-facing wall; correctly drawn flat for its wall-mounted classification.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5352
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall-mounted green chalkboard with aluminum frame and chalk tray",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Chalkboard mounted flat against the north wall, correctly categorized as wall_mounted which permits flat projection.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4874
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "green chalkboard in aluminum frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted chalkboard viewed directly from the front, hanging flat against a wall with chalk tray along bottom edge; allowed to be flat front elevation per wall_mounted rules.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3583
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.307Z",
+ "cells": {
+  "16": [
+   "372ad3cf2bd5b396",
+   "3b657cafb55161ff",
+   "5998fac299de7f0a",
+   "6bb316e00d51310a",
+   "6c5cab1573a45092",
+   "6ed008a86db4e795",
+   "8ef62e2f7a441f58",
+   "c9ba175735d85a80"
+  ],
+  "24": [
+   "00a71c72def369ed",
+   "1c0136244ee6a81d",
+   "1df59378c0decdbd",
+   "1e7c54fe1d26458b",
+   "1e95a3277b29ac9e",
+   "2bb7a30f33452f90",
+   "3248ef1bd564b5cd",
+   "420831b2d549f851",
+   "53f205a9254428a8",
+   "54c79648c4756e66",
+   "566c40bbb92813bb",
+   "58bd5f000a98770a",
+   "5e048795651780b3",
+   "617b1fa38657b98c",
+   "7834b5829108493b",
+   "7b72bad1ace0086e",
+   "7d1fd62e4f2cde2c",
+   "7e6fdffea0fdb16f",
+   "920cf2b5317b00b0",
+   "95acd6e1c3de473e",
+   "9637da983ea5f810",
+   "9d5d83591462a094",
+   "a21a5cc63faff5c5",
+   "a541d151c8b77a40",
+   "ac69c746c46897e1",
+   "ad17f3390bc3ff78",
+   "ad5bfa5377fa7953",
+   "b6ff6c49afd63e8f",
+   "bc82c30f6af81b95",
+   "c4e23adab8d014a4",
+   "c65001cd21b4d920",
+   "d169234d596ad225",
+   "db7f72718e1e4cb9",
+   "f14bfb20cce5e7fc"
+  ],
+  "32": [
+   "683aa640fc2929fc",
+   "f296322ef800dd80"
+  ],
+  "48": [
+   "19bb4e3bd1ea9625",
+   "3821971da85723c6",
+   "3faf95a791fc545e",
+   "4636ac4d90801922",
+   "66f2707eb275623f",
+   "69d88f4249096dd0",
+   "745a4f48894c025d",
+   "b817665a1e8c75e8",
+   "b8efba6f8ef77002",
+   "bd25bce784effddd",
+   "d15d89ed7deb14ad",
+   "e0edfcc77e500fa0"
+  ]
+ }
+}

@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "940c68b225c267a51ace2c5a0beaa41e0cee386fd3a445db2abad14bd43de987",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "prehistoric stone-age drying rack",
+ "label": "prehistoric/ph-drying-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden drying rack frame with draped skins",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire frame and its horizontal crossbeams (middle rail and bottom base beam) are drawn in pure front elevation with no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3756
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden drying rack frame with hanging hides",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rack consists of horizontal and vertical wooden beams forming a rectangular frame drawn entirely in front elevation with no visible top surfaces on the horizontal crossbeams or base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3319
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden drying frame with hanging hides",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The frame is drawn in pure front elevation: neither the horizontal crossbars, base beam, nor post tops display foreshortened top surfaces seen from a 3/4 top-down angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4899
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden drying frame with hanging hides",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden frame and its horizontal crossbeams are drawn in flat front elevation with no visible top surfaces showing depth or 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3988
+  }
+ ],
+ "decidedAt": "2026-10-14T00:39:52.940Z",
+ "cells": {
+  "16": [
+   "45638fdaa61a029c",
+   "78f67614628837db",
+   "d2c3bde860409506",
+   "f8700874cee5b596"
+  ],
+  "24": [
+   "1af6e5dd49abee7f",
+   "262787c7876e5ea0",
+   "3c93821893b60274",
+   "481da0fd9f29318d",
+   "487d6ff5f718679d",
+   "488071484d1a1e1d",
+   "48d734083993841c",
+   "51d6e3915ec66b71",
+   "5c957e2bd4176b5e",
+   "61448deebac47f16",
+   "6827e6536db7706a",
+   "69c5305e5fe725be",
+   "78dbc6d5c03853a7",
+   "7dbeaf001feb0cdd",
+   "83e13738ecc8508f",
+   "9030bb7a320dfe0d",
+   "92af032f45fff3bf",
+   "b4e4c66a35ed8915",
+   "bcd914fb3493b1b8",
+   "cef501ef4923489b",
+   "d79b666e76f76abf",
+   "e0c6edf7395350b2",
+   "e3ba3c5a14dad797",
+   "fe98770ff20c8762"
+  ],
+  "32": [
+   "2ec2a993cf02b595"
+  ],
+  "48": [
+   "263c12bc442ec937",
+   "49afac44ac093a3a",
+   "4ef0d66526fc0c58",
+   "5338db92da4025d6",
+   "644c06435ad86f3e",
+   "a84d28030f82d9e7"
+  ]
+ }
+}

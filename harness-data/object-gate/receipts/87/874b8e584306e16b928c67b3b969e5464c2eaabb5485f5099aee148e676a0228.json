@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "874b8e584306e16b928c67b3b969e5464c2eaabb5485f5099aee148e676a0228",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "cloud platform edge tile against sky (terrain)",
+ "label": "sky-island/si-cs-w",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cloud platform terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain edge tile representing the west edge of a cloud platform against sky/backdrop.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3113
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cloud platform terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain edge tile representing a cloud floor/platform meeting sky on the west edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3264
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cloud platform edge tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing a cloud ground/platform surface with an edge against a blue sky background.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2744
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cloud platform edge terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Cloud floor terrain tile with a left edge against a sky background, functioning as horizontal ground surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5372
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.976Z",
+ "cells": {
+  "16": [
+   "4402580cb330ee5f"
+  ],
+  "24": [
+   "051d17a014e1f991",
+   "65206e44778e9089",
+   "6e835698e19b2a8f",
+   "a259e8632d605ef7",
+   "c697db3a032d1536",
+   "daa1a4d734cdb6bb"
+  ],
+  "32": [
+   "18ab87498242e13c",
+   "33d622744307566e",
+   "65b5c0132f51cd5b",
+   "6a442fc8507e53b4",
+   "773ba5db210a3bc8",
+   "843873fcfaa311e0"
+  ],
+  "48": [
+   "491ee82be1f31f88",
+   "6923d887ab614195",
+   "930cd996fc5b7a6c",
+   "9631713f781bfd5d",
+   "99c826b8f043048b",
+   "c52a7ee9baa23262"
+  ]
+ }
+}

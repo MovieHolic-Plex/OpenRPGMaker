@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ac35913b9f679ee18b436deb2ae7268a2ff2036f3ce875d7f7ade2ca7fc03073",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "prehistoric stone-age grass",
+ "label": "prehistoric/ph-grass",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass ground surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 flat terrain ground tile depicting prehistoric grass, correctly shown top-down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3204
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 ground/grass terrain tile viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4672
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 ground terrain tile viewed from above, perfectly matching the terrain kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5956
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass ground surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image is a full 16x16 flat grass terrain tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3948
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.787Z",
+ "cells": {
+  "16": [
+   "87d36b065ddfb81a"
+  ],
+  "24": [
+   "54852a45b1458e1c",
+   "5d61922437071fa8",
+   "79c26f3f6661e1c7",
+   "93507fbea0642b02",
+   "a719e4003531e863",
+   "e5e9c4f7771b1aa6"
+  ],
+  "32": [
+   "1b03a6e8f388dbe2",
+   "2cd1fbd62917f1e8",
+   "3941fbcf8ff347a2",
+   "913a2da51f4dda61",
+   "918f4483c2fb7f0f",
+   "a1945ac995db9684"
+  ],
+  "48": [
+   "12d3416c04a2cfbf",
+   "46e67a58632b7e92",
+   "53fb6bc1bafe5df5",
+   "9d7c6b01db6d60bd",
+   "9f5149bf1cc0787f",
+   "b760397cd5c63205"
+  ]
+ }
+}

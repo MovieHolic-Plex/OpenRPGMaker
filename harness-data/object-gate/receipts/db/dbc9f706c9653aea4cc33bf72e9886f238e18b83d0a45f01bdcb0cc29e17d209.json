@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dbc9f706c9653aea4cc33bf72e9886f238e18b83d0a45f01bdcb0cc29e17d209",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "이층 침대(밝은 위 칸 매트 윗면·담요 + 두꺼운 틀 앞면 + 그늘진 아래 칸 + 사다리 + 기둥)",
+ "label": "sf-station/sf-bunk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bunk bed",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top bunk bed surface (pillow and blue blanket) is clearly foreshortened and visible from above across rows 2-9 (8 rows tall), resting above the front rail/support frame.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7632
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bunk bed",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top bunk's horizontal sleeping surface (pillow and blanket) is clearly visible from above across rows 2–9 (8 rows tall), resting above the front rail/face at rows 10–12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8639
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bunk bed (upper and lower berths with ladder)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bunk bed is drawn as a flat side-scroller front elevation. Both the top and bottom berths are viewed directly from the side/front with no foreshortened top surfaces visible on the frame, the mattresses, or the ladder rungs.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9786
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bunk bed",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top bunk mattress surface (pillow and blanket) is clearly drawn foreshortened from above across rows 3-9 (7 rows tall), above the front rail and lower bunk alcove.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9292
+  }
+ ],
+ "decidedAt": "2026-10-13T16:02:53.701Z",
+ "cells": {
+  "16": [
+   "03b1378f0185e7aa",
+   "6de050345953c193",
+   "f26225c1dd8e18b9",
+   "f597417c6955cea4"
+  ],
+  "24": [
+   "028fc7f33a0eda65",
+   "0b84db77451ab1aa",
+   "18723185fa8baaf5",
+   "1ae6df695b48c8f7",
+   "23dcfe432605b458",
+   "26c36d4fde024fb1",
+   "339a1275e85cbb6b",
+   "33e277606b065269",
+   "3971f67de91330a0",
+   "4e99ba9123fc95a0",
+   "5be0a82b20189d78",
+   "64c3293957ed5811",
+   "8113c1cf12faed34",
+   "93147a881c03d799",
+   "9e00d99d04054654",
+   "be053202cf49206d",
+   "bf8f062e35cf311c",
+   "d0d8a9b21f221fbc",
+   "d499ac58068bae55",
+   "e1aa0f2dee54019c",
+   "e4648cb222cdd60d",
+   "e473d41423479ac3",
+   "ea8c7f881ed2b619",
+   "f631802c2a2599f8"
+  ],
+  "32": [
+   "553c8b2f7399bf7a"
+  ],
+  "48": [
+   "02950a8d043b2264",
+   "a97edebdabfa2adc",
+   "b9b07af5266ddff2",
+   "d37f42d7c5263230",
+   "de1cf1da65eecdff",
+   "decb2bb8c3e35229"
+  ]
+ }
+}

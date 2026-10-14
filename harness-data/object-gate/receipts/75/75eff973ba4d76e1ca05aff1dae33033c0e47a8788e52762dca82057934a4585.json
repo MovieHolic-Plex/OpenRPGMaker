@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "75eff973ba4d76e1ca05aff1dae33033c0e47a8788e52762dca82057934a4585",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "구급 약장(흰 + 빨간 십자 띠)",
+ "label": "modern-campus-int/mc-aid-cabinet",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "first aid medicine cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn strictly in front elevation without any visible top surface; row 0 is the outline and row 1 immediately begins the vertical front face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4618
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "first aid medicine cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn entirely as a flat frontal architectural elevation with no visible top surface (0 rows) showing depth in 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3761
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "medicine cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn strictly from the front elevation with 0 visible top rows, showing only a 1px outline at the top border (row 0) and directly transitioning into the front face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3809
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "first aid medicine cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn straight-on as a flat 2D elevation with no visible top surface between the outline and the front face (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3108
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:11.492Z",
+ "cells": {
+  "16": [
+   "89656464081ee1aa",
+   "b51e70ecdadda5e1"
+  ],
+  "24": [
+   "01cafbf7f19a3efa",
+   "109fe945282edb48",
+   "15c1a1ab218590af",
+   "1cfbbe54ed0a77f8",
+   "246c35ba64070c96",
+   "7451cedf6f00bedb",
+   "9987d9693fa2a74e",
+   "9afa6e4c9a62ceaf",
+   "b38ebb454e1d890a",
+   "b874f2553162f9a7",
+   "cfafe2e3e09da2fe",
+   "ffcfc92e3dc392dd"
+  ],
+  "32": [
+   "57ecf258217ab2cc",
+   "e34f18fc9f82a092",
+   "f82d40744fba5e52"
+  ],
+  "48": [
+   "0bdb4f7b8f5db5ea",
+   "aa0ce42e9587da02",
+   "b38afba8230e4d74",
+   "cdcde7ea7c3df22a",
+   "fe26b86af2dcf88a",
+   "fe596937fe154230"
+  ]
+ }
+}

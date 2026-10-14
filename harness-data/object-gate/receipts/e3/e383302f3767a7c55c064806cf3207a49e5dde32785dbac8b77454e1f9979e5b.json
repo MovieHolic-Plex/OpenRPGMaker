@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e383302f3767a7c55c064806cf3207a49e5dde32785dbac8b77454e1f9979e5b",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "prehistoric stone-age skull pole",
+ "label": "prehistoric/ph-skull-pole",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden pole with mounted skull",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut cross-section of the wooden pole is clearly visible from rows 1 to 7 with tree-ring shading, showing a well-foreshortened top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3614
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden log pole with attached skull",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the wooden pole is prominently shown as an ellipse with tree-ring detailing occupying rows 1-8 (approx. 7 pixel rows of top surface).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3678
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden pole with mounted skull",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut end of the wooden pole is prominently visible as a foreshortened ellipse with tree rings spanning rows 2 through 7 (6 rows tall), viewed properly from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5191
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden pole",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut end of the wooden log pole is clearly visible from above as an elliptical wood-grain cross section spanning rows 2 to 7 (6 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9441
+  }
+ ],
+ "decidedAt": "2026-10-14T00:46:42.340Z",
+ "cells": {
+  "16": [
+   "146a0b42c94f2223",
+   "21c71d1ca6d8d0ad"
+  ],
+  "24": [
+   "03289e26d9d94e5c",
+   "1b9409e06bada685",
+   "36d17bbb1c5854c3",
+   "3feb4c086a15c20a",
+   "4492ff72972d2999",
+   "4dfc41f1e073f12b",
+   "55a7469450d7fbaf",
+   "5ecda8090d962a28",
+   "7c68f79d9b519036",
+   "9c23c91274e37bdf",
+   "a27ceb20f1b4336a",
+   "d7de51753694ff83"
+  ],
+  "32": [
+   "831de845a8b4ed0c",
+   "91bba62511b00264",
+   "f34568affaed442a"
+  ],
+  "48": [
+   "38c37620e25e7048",
+   "5ab480968709142e",
+   "77638a3b883c8290",
+   "8999f37653c95a65",
+   "b788f936b382b5ae",
+   "cb7238436a11c53b"
+  ]
+ }
+}

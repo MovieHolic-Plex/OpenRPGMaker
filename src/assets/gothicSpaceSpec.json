@@ -1,0 +1,1977 @@
+{
+ "version": 1,
+ "tilesetId": "gothic_manor",
+ "tileCount": 1604,
+ "note": "scripts/content/gothic-manor/space_recipes_gm.py 가 굽는다(손 편집 금지). 조립 규칙 src/editor/wizarding/builder.ts.",
+ "wallsets": {
+  "manor": {
+   "ko": "저택 붉은 다마스크 벽지",
+   "n": "gm-wm-n",
+   "nw": "gm-wm-nw",
+   "ne": "gm-wm-ne",
+   "w": "gm-wm-w",
+   "e": "gm-wm-e",
+   "s": "gm-wm-s",
+   "sw": "gm-wm-sw",
+   "se": "gm-wm-se",
+   "door1": "gm-wm-door1",
+   "door2": "gm-wm-door2",
+   "rhythm": [
+    "n",
+    "n",
+    "gm-wm-n-window",
+    "n",
+    "gm-wm-n-sconce",
+    "n",
+    "n",
+    "gm-wm-n-lightning",
+    "n",
+    "gm-wm-n-sconce"
+   ],
+   "sRhythm": [
+    "s"
+   ],
+   "northRows": 4,
+   "southRows": 1
+  },
+  "stone": {
+   "ko": "지하 마름돌 벽",
+   "n": "gm-ws-n",
+   "nw": "gm-ws-nw",
+   "ne": "gm-ws-ne",
+   "w": "gm-ws-w",
+   "e": "gm-ws-e",
+   "s": "gm-ws-s",
+   "sw": "gm-ws-sw",
+   "se": "gm-ws-se",
+   "door1": "gm-ws-door1",
+   "door2": "gm-ws-door2",
+   "rhythm": [
+    "n",
+    "n",
+    "gm-ws-n-sconce",
+    "n",
+    "n",
+    "n"
+   ],
+   "sRhythm": [
+    "s"
+   ],
+   "northRows": 4,
+   "southRows": 1
+  },
+  "chapel": {
+   "ko": "예배당 돌벽(첨두 창)",
+   "n": "gm-ws-n",
+   "nw": "gm-ws-nw",
+   "ne": "gm-ws-ne",
+   "w": "gm-ws-w",
+   "e": "gm-ws-e",
+   "s": "gm-ws-s",
+   "sw": "gm-ws-sw",
+   "se": "gm-ws-se",
+   "door1": "gm-ws-door1",
+   "door2": "gm-ws-door2",
+   "rhythm": [
+    "n",
+    "gm-ws-n-window",
+    "n",
+    "gm-ws-n-sconce",
+    "n",
+    "gm-ws-n-lightning"
+   ],
+   "sRhythm": [
+    "s"
+   ],
+   "northRows": 4,
+   "southRows": 1
+  },
+  "gallery": {
+   "ko": "미술관 회녹색 회벽",
+   "n": "gm-wg-n",
+   "nw": "gm-wg-nw",
+   "ne": "gm-wg-ne",
+   "w": "gm-wg-w",
+   "e": "gm-wg-e",
+   "s": "gm-wg-s",
+   "sw": "gm-wg-sw",
+   "se": "gm-wg-se",
+   "door1": "gm-wg-door1",
+   "door2": "gm-wg-door2",
+   "rhythm": [
+    "n",
+    "n",
+    "n",
+    "gm-wg-n-sconce",
+    "n",
+    "n",
+    "n",
+    "gm-wg-n-window"
+   ],
+   "sRhythm": [
+    "s"
+   ],
+   "northRows": 4,
+   "southRows": 1
+  }
+ },
+ "spaces": {
+  "hall": {
+   "ko": "저택 현관 홀",
+   "indoor": true,
+   "layout": "room",
+   "wall": "manor",
+   "size": {
+    "min": [
+     14,
+     11
+    ],
+    "default": [
+     16,
+     12
+    ],
+    "max": [
+     40,
+     30
+    ]
+   },
+   "defaultDoors": [
+    {
+     "side": "s",
+     "kind": "double"
+    },
+    {
+     "side": "n",
+     "kind": "double"
+    }
+   ],
+   "spaceKo": "저택 홀·복도",
+   "floor": {
+    "tile": "gm-fl-marble-a",
+    "mix": [
+     "gm-fl-marble-b"
+    ]
+   },
+   "runner": {
+    "ns": "gm-runner-ns",
+    "ew": "gm-runner-ew",
+    "nEnd": "gm-runner-n-end",
+    "sEnd": "gm-runner-s-end"
+   },
+   "furniture": [
+    {
+     "kit": "gm-clock",
+     "placement": "north-wall",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 0,
+     "wallTop": 2,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "gm-paint-portrait",
+     "placement": "north-wall",
+     "count": [
+      1,
+      3
+     ],
+     "clearance": 0,
+     "wallTop": 1,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "gm-paint-cursed",
+     "placement": "north-wall",
+     "count": [
+      0,
+      1
+     ],
+     "clearance": 0,
+     "wallTop": 1,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "gm-paint-landscape",
+     "placement": "north-wall",
+     "count": [
+      0,
+      2
+     ],
+     "clearance": 0,
+     "wallTop": 2,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "gm-armor",
+     "placement": "side-wall",
+     "count": [
+      2,
+      4
+     ],
+     "clearance": 1
+    },
+    {
+     "kit": "gm-sofa",
+     "placement": "edge",
+     "count": [
+      0,
+      1
+     ],
+     "clearance": 1
+    },
+    {
+     "kit": "gm-table-round",
+     "placement": "beside",
+     "count": [
+      0,
+      1
+     ],
+     "clearance": 0,
+     "near": [
+      "gm-sofa"
+     ]
+    },
+    {
+     "kit": "gm-candelabra",
+     "placement": "side-wall",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 1,
+     "access": false
+    },
+    {
+     "kit": "gm-vase-plinth",
+     "placement": "corner",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0,
+     "access": false
+    }
+   ],
+   "decals": [
+    {
+     "kit": "gm-ov-cobweb",
+     "count": [
+      1,
+      2
+     ]
+    },
+    {
+     "kit": "gm-ov-dust",
+     "count": [
+      1,
+      3
+     ]
+    },
+    {
+     "kit": "gm-ov-stain",
+     "count": [
+      0,
+      1
+     ]
+    }
+   ],
+   "npcs": [],
+   "variants": {
+    "corridor": {
+     "ko": "저택 복도",
+     "size": {
+      "min": [
+       8,
+       14
+      ],
+      "default": [
+       9,
+       22
+      ],
+      "max": [
+       14,
+       44
+      ]
+     },
+     "defaultDoors": [
+      {
+       "side": "s"
+      },
+      {
+       "side": "n"
+      }
+     ],
+     "floor": {
+      "tile": "gm-fl-parquet-a",
+      "mix": [
+       "gm-fl-parquet-b"
+      ]
+     },
+     "furniture": [
+      {
+       "kit": "gm-paint-portrait",
+       "placement": "north-wall",
+       "count": [
+        1,
+        3
+       ],
+       "clearance": 0,
+       "wallTop": 1,
+       "wallMatch": "plain"
+      },
+      {
+       "kit": "gm-paint-cursed",
+       "placement": "north-wall",
+       "count": [
+        0,
+        1
+       ],
+       "clearance": 0,
+       "wallTop": 1,
+       "wallMatch": "plain"
+      },
+      {
+       "kit": "gm-paint-landscape",
+       "placement": "north-wall",
+       "count": [
+        0,
+        2
+       ],
+       "clearance": 0,
+       "wallTop": 2,
+       "wallMatch": "plain"
+      },
+      {
+       "kit": "gm-armor",
+       "placement": "side-wall",
+       "count": [
+        1,
+        3
+       ],
+       "clearance": 1
+      },
+      {
+       "kit": "gm-candelabra",
+       "placement": "side-wall",
+       "count": [
+        1,
+        2
+       ],
+       "clearance": 1,
+       "access": false
+      },
+      {
+       "kit": "gm-clock",
+       "placement": "north-wall",
+       "count": [
+        0,
+        1
+       ],
+       "clearance": 0,
+       "wallTop": 2,
+       "wallMatch": "plain"
+      }
+     ]
+    },
+    "dining": {
+     "ko": "저택 식당",
+     "size": {
+      "min": [
+       14,
+       11
+      ],
+      "default": [
+       16,
+       12
+      ],
+      "max": [
+       32,
+       24
+      ]
+     },
+     "defaultDoors": [
+      {
+       "side": "s"
+      }
+     ],
+     "floor": {
+      "tile": "gm-fl-parquet-a",
+      "mix": [
+       "gm-fl-parquet-b"
+      ]
+     },
+     "runner": null,
+     "furniture": [
+      {
+       "kit": "gm-dining-table",
+       "placement": "center",
+       "count": [
+        1,
+        1
+       ],
+       "clearance": 1,
+       "with": [
+        {
+         "kit": "gm-chair",
+         "dx": 0,
+         "dy": -1
+        },
+        {
+         "kit": "gm-chair",
+         "dx": 1,
+         "dy": -1
+        },
+        {
+         "kit": "gm-chair",
+         "dx": 2,
+         "dy": -1
+        },
+        {
+         "kit": "gm-chair",
+         "dx": 3,
+         "dy": -1
+        },
+        {
+         "kit": "gm-chair",
+         "dx": 0,
+         "dy": 2
+        },
+        {
+         "kit": "gm-chair",
+         "dx": 1,
+         "dy": 2
+        },
+        {
+         "kit": "gm-chair",
+         "dx": 2,
+         "dy": 2
+        },
+        {
+         "kit": "gm-chair",
+         "dx": 3,
+         "dy": 2
+        }
+       ]
+      },
+      {
+       "kit": "gm-wm-n-fireplace",
+       "placement": "north-wall",
+       "count": [
+        1,
+        1
+       ],
+       "clearance": 1,
+       "wallTop": 0,
+       "wallMatch": "plain"
+      },
+      {
+       "kit": "gm-paint-portrait",
+       "placement": "north-wall",
+       "count": [
+        1,
+        3
+       ],
+       "clearance": 0,
+       "wallTop": 1,
+       "wallMatch": "plain"
+      },
+      {
+       "kit": "gm-paint-cursed",
+       "placement": "north-wall",
+       "count": [
+        0,
+        1
+       ],
+       "clearance": 0,
+       "wallTop": 1,
+       "wallMatch": "plain"
+      },
+      {
+       "kit": "gm-paint-landscape",
+       "placement": "north-wall",
+       "count": [
+        0,
+        2
+       ],
+       "clearance": 0,
+       "wallTop": 2,
+       "wallMatch": "plain"
+      },
+      {
+       "kit": "gm-clock",
+       "placement": "north-wall",
+       "count": [
+        0,
+        1
+       ],
+       "clearance": 0,
+       "wallTop": 2,
+       "wallMatch": "plain"
+      },
+      {
+       "kit": "gm-candelabra",
+       "placement": "corner",
+       "count": [
+        2,
+        3
+       ],
+       "clearance": 0,
+       "access": false
+      },
+      {
+       "kit": "gm-pot-shelf",
+       "placement": "side-wall",
+       "count": [
+        0,
+        1
+       ],
+       "clearance": 0
+      }
+     ]
+    }
+   }
+  },
+  "library": {
+   "ko": "저택 서재",
+   "indoor": true,
+   "layout": "room",
+   "wall": "manor",
+   "size": {
+    "min": [
+     14,
+     11
+    ],
+    "default": [
+     18,
+     13
+    ],
+    "max": [
+     36,
+     28
+    ]
+   },
+   "defaultDoors": [
+    {
+     "side": "s"
+    }
+   ],
+   "spaceKo": "서재·도서관",
+   "floor": {
+    "tile": "gm-fl-parquet-a",
+    "mix": [
+     "gm-fl-parquet-b"
+    ]
+   },
+   "furniture": [
+    {
+     "kit": "gm-wm-n-fireplace",
+     "placement": "north-wall",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 1,
+     "wallTop": 0,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "gm-bookshelf",
+     "placement": "north-wall",
+     "count": [
+      2,
+      5
+     ],
+     "clearance": 0,
+     "wallTop": 2,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "gm-bookshelf",
+     "placement": "grid",
+     "count": [
+      2,
+      6
+     ],
+     "clearance": 0,
+     "gapX": 0,
+     "gapY": 1
+    },
+    {
+     "kit": "gm-rug-persian",
+     "placement": "center",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 0,
+     "access": false,
+     "with": [
+      {
+       "kit": "gm-table-round",
+       "dx": 1,
+       "dy": 0
+      }
+     ]
+    },
+    {
+     "kit": "gm-armchair",
+     "placement": "beside",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0,
+     "near": [
+      "gm-wm-n-fireplace"
+     ]
+    },
+    {
+     "kit": "gm-desk",
+     "placement": "edge",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 1,
+     "with": [
+      {
+       "kit": "gm-chair",
+       "dx": 0,
+       "dy": 2
+      }
+     ]
+    },
+    {
+     "kit": "gm-candelabra",
+     "placement": "beside",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0,
+     "near": [
+      "gm-desk",
+      "gm-wm-n-fireplace"
+     ],
+     "access": false
+    },
+    {
+     "kit": "gm-paint-cursed",
+     "placement": "north-wall",
+     "count": [
+      0,
+      1
+     ],
+     "clearance": 0,
+     "wallTop": 1,
+     "wallMatch": "plain"
+    }
+   ],
+   "decals": [
+    {
+     "kit": "gm-ov-cobweb",
+     "count": [
+      1,
+      2
+     ]
+    },
+    {
+     "kit": "gm-ov-dust",
+     "count": [
+      1,
+      3
+     ]
+    },
+    {
+     "kit": "gm-ov-stain",
+     "count": [
+      0,
+      1
+     ]
+    }
+   ],
+   "npcs": []
+  },
+  "bedroom": {
+   "ko": "저택 침실",
+   "indoor": true,
+   "layout": "room",
+   "wall": "manor",
+   "size": {
+    "min": [
+     12,
+     10
+    ],
+    "default": [
+     16,
+     12
+    ],
+    "max": [
+     30,
+     24
+    ]
+   },
+   "defaultDoors": [
+    {
+     "side": "s"
+    }
+   ],
+   "spaceKo": "침실",
+   "floor": {
+    "tile": "gm-fl-parquet-a",
+    "mix": [
+     "gm-fl-parquet-b"
+    ]
+   },
+   "furniture": [
+    {
+     "kit": "gm-bed",
+     "placement": "north-wall",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 1,
+     "wallTop": 3,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "gm-vanity",
+     "placement": "north-wall",
+     "count": [
+      0,
+      1
+     ],
+     "clearance": 0,
+     "wallTop": 3,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "gm-wardrobe",
+     "placement": "side-wall",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 0
+    },
+    {
+     "kit": "gm-candelabra",
+     "placement": "beside",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 0,
+     "near": [
+      "gm-bed"
+     ],
+     "access": false
+    },
+    {
+     "kit": "gm-paint-portrait",
+     "placement": "north-wall",
+     "count": [
+      0,
+      2
+     ],
+     "clearance": 0,
+     "wallTop": 1,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "gm-armchair",
+     "placement": "edge",
+     "count": [
+      0,
+      1
+     ],
+     "clearance": 0
+    },
+    {
+     "kit": "gm-rug-persian",
+     "placement": "center",
+     "count": [
+      0,
+      1
+     ],
+     "clearance": 0,
+     "access": false
+    }
+   ],
+   "decals": [
+    {
+     "kit": "gm-ov-cobweb",
+     "count": [
+      1,
+      2
+     ]
+    },
+    {
+     "kit": "gm-ov-dust",
+     "count": [
+      1,
+      3
+     ]
+    },
+    {
+     "kit": "gm-ov-stain",
+     "count": [
+      0,
+      1
+     ]
+    }
+   ],
+   "npcs": []
+  },
+  "kitchen": {
+   "ko": "저택 부엌",
+   "indoor": true,
+   "layout": "room",
+   "wall": "stone",
+   "size": {
+    "min": [
+     12,
+     10
+    ],
+    "default": [
+     16,
+     12
+    ],
+    "max": [
+     30,
+     24
+    ]
+   },
+   "defaultDoors": [
+    {
+     "side": "s"
+    }
+   ],
+   "spaceKo": "부엌·식당",
+   "floor": {
+    "tile": "gm-fl-tile-a",
+    "mix": [
+     "gm-fl-tile-b"
+    ]
+   },
+   "furniture": [
+    {
+     "kit": "gm-stove",
+     "placement": "north-wall",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 1,
+     "wallTop": 3,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "gm-pot-shelf",
+     "placement": "north-wall",
+     "count": [
+      1,
+      3
+     ],
+     "clearance": 0,
+     "wallTop": 3,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "gm-kitchen-table",
+     "placement": "center",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 1,
+     "with": [
+      {
+       "kit": "gm-chair",
+       "dx": 0,
+       "dy": 2
+      }
+     ]
+    },
+    {
+     "kit": "gm-barrel",
+     "placement": "corner",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0
+    },
+    {
+     "kit": "gm-barrel",
+     "placement": "beside",
+     "count": [
+      1,
+      3
+     ],
+     "clearance": 0,
+     "near": [
+      "gm-barrel"
+     ]
+    }
+   ],
+   "decals": [
+    {
+     "kit": "gm-ov-stain",
+     "count": [
+      1,
+      2
+     ],
+     "near": [
+      "gm-kitchen-table"
+     ]
+    },
+    {
+     "kit": "gm-ov-dust",
+     "count": [
+      2,
+      3
+     ]
+    }
+   ],
+   "npcs": []
+  },
+  "cellar": {
+   "ko": "지하실·포도주 창고",
+   "indoor": true,
+   "layout": "room",
+   "wall": "stone",
+   "size": {
+    "min": [
+     12,
+     10
+    ],
+    "default": [
+     16,
+     12
+    ],
+    "max": [
+     36,
+     28
+    ]
+   },
+   "defaultDoors": [
+    {
+     "side": "n"
+    }
+   ],
+   "spaceKo": "지하실",
+   "floor": {
+    "tile": "gm-fl-flag-a",
+    "mix": [
+     "gm-fl-flag-b"
+    ]
+   },
+   "furniture": [
+    {
+     "kit": "gm-wine-rack",
+     "placement": "north-wall",
+     "count": [
+      2,
+      4
+     ],
+     "clearance": 0,
+     "wallTop": 3,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "gm-wine-rack",
+     "placement": "grid",
+     "count": [
+      2,
+      4
+     ],
+     "clearance": 0,
+     "gapX": 1,
+     "gapY": 1
+    },
+    {
+     "kit": "gm-barrel",
+     "placement": "corner",
+     "count": [
+      2,
+      3
+     ],
+     "clearance": 0
+    },
+    {
+     "kit": "gm-barrel",
+     "placement": "beside",
+     "count": [
+      1,
+      3
+     ],
+     "clearance": 0,
+     "near": [
+      "gm-barrel"
+     ]
+    },
+    {
+     "kit": "gm-candelabra",
+     "placement": "edge",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 0,
+     "access": false
+    }
+   ],
+   "decals": [
+    {
+     "kit": "gm-ov-stain",
+     "count": [
+      1,
+      2
+     ]
+    },
+    {
+     "kit": "gm-ov-cobweb",
+     "count": [
+      1,
+      2
+     ]
+    },
+    {
+     "kit": "gm-bones",
+     "count": [
+      0,
+      2
+     ]
+    },
+    {
+     "kit": "gm-ov-puddle",
+     "count": [
+      1,
+      2
+     ]
+    }
+   ],
+   "npcs": []
+  },
+  "chapel": {
+   "ko": "예배당 안",
+   "indoor": true,
+   "layout": "room",
+   "wall": "chapel",
+   "size": {
+    "min": [
+     13,
+     12
+    ],
+    "default": [
+     17,
+     16
+    ],
+    "max": [
+     30,
+     30
+    ]
+   },
+   "defaultDoors": [
+    {
+     "side": "s",
+     "kind": "double"
+    }
+   ],
+   "spaceKo": "예배당",
+   "floor": {
+    "tile": "gm-fl-flag-a",
+    "mix": [
+     "gm-fl-flag-b"
+    ]
+   },
+   "runner": {
+    "ns": "gm-runner-ns",
+    "ew": "gm-runner-ew",
+    "nEnd": "gm-runner-n-end",
+    "sEnd": "gm-runner-s-end"
+   },
+   "furniture": [
+    {
+     "kit": "gm-altar",
+     "placement": "north-wall",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 1,
+     "wallTop": 4,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "gm-candelabra",
+     "placement": "beside",
+     "count": [
+      2,
+      2
+     ],
+     "clearance": 0,
+     "near": [
+      "gm-altar"
+     ],
+     "access": false
+    },
+    {
+     "kit": "gm-pew",
+     "placement": "grid",
+     "count": [
+      4,
+      10
+     ],
+     "clearance": 0,
+     "gapX": 2,
+     "gapY": 1
+    },
+    {
+     "kit": "gm-statue-gargoyle",
+     "placement": "corner",
+     "count": [
+      0,
+      2
+     ],
+     "clearance": 0,
+     "access": false
+    }
+   ],
+   "decals": [
+    {
+     "kit": "gm-ov-dust",
+     "count": [
+      1,
+      3
+     ]
+    },
+    {
+     "kit": "gm-ov-cobweb",
+     "count": [
+      1,
+      2
+     ]
+    }
+   ],
+   "npcs": []
+  },
+  "crypt": {
+   "ko": "지하 납골당",
+   "indoor": true,
+   "layout": "room",
+   "wall": "stone",
+   "size": {
+    "min": [
+     12,
+     10
+    ],
+    "default": [
+     16,
+     13
+    ],
+    "max": [
+     32,
+     26
+    ]
+   },
+   "defaultDoors": [
+    {
+     "side": "n"
+    }
+   ],
+   "spaceKo": "지하 납골당",
+   "floor": {
+    "tile": "gm-fl-flag-a",
+    "mix": [
+     "gm-fl-flag-b"
+    ]
+   },
+   "furniture": [
+    {
+     "kit": "gm-sarcophagus",
+     "placement": "grid",
+     "count": [
+      2,
+      6
+     ],
+     "clearance": 0,
+     "gapX": 2,
+     "gapY": 1
+    },
+    {
+     "kit": "gm-coffin",
+     "placement": "edge",
+     "count": [
+      1,
+      3
+     ],
+     "clearance": 0
+    },
+    {
+     "kit": "gm-coffin-open",
+     "placement": "edge",
+     "count": [
+      0,
+      1
+     ],
+     "clearance": 0
+    },
+    {
+     "kit": "gm-urn",
+     "placement": "beside",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0,
+     "near": [
+      "gm-sarcophagus"
+     ]
+    },
+    {
+     "kit": "gm-statue-gargoyle",
+     "placement": "corner",
+     "count": [
+      0,
+      2
+     ],
+     "clearance": 0,
+     "access": false
+    },
+    {
+     "kit": "gm-candelabra",
+     "placement": "corner",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0,
+     "access": false
+    }
+   ],
+   "decals": [
+    {
+     "kit": "gm-bones",
+     "count": [
+      1,
+      3
+     ]
+    },
+    {
+     "kit": "gm-ov-cobweb",
+     "count": [
+      1,
+      2
+     ]
+    },
+    {
+     "kit": "gm-ov-puddle",
+     "count": [
+      0,
+      2
+     ]
+    }
+   ],
+   "npcs": []
+  },
+  "gallery": {
+   "ko": "미술관 전시실",
+   "indoor": true,
+   "layout": "room",
+   "wall": "gallery",
+   "size": {
+    "min": [
+     14,
+     11
+    ],
+    "default": [
+     20,
+     13
+    ],
+    "max": [
+     44,
+     30
+    ]
+   },
+   "defaultDoors": [
+    {
+     "side": "s",
+     "kind": "double"
+    },
+    {
+     "side": "e"
+    }
+   ],
+   "spaceKo": "미술관·박물관",
+   "floor": {
+    "tile": "gm-fl-marble-a",
+    "mix": [
+     "gm-fl-marble-b"
+    ]
+   },
+   "furniture": [
+    {
+     "kit": "gm-paint-portrait",
+     "placement": "north-wall",
+     "count": [
+      2,
+      5
+     ],
+     "clearance": 0,
+     "wallTop": 1,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "gm-paint-landscape",
+     "placement": "north-wall",
+     "count": [
+      1,
+      3
+     ],
+     "clearance": 0,
+     "wallTop": 2,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "gm-paint-cursed",
+     "placement": "north-wall",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 0,
+     "wallTop": 1,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "gm-display-case",
+     "placement": "grid",
+     "count": [
+      2,
+      4
+     ],
+     "clearance": 1,
+     "gapX": 3,
+     "gapY": 2
+    },
+    {
+     "kit": "gm-museum-bench",
+     "placement": "center",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 1
+    },
+    {
+     "kit": "gm-bust-plinth",
+     "placement": "side-wall",
+     "count": [
+      2,
+      4
+     ],
+     "clearance": 1
+    },
+    {
+     "kit": "gm-armor",
+     "placement": "side-wall",
+     "count": [
+      0,
+      2
+     ],
+     "clearance": 1
+    },
+    {
+     "kit": "gm-stanchion",
+     "placement": "edge",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0
+    },
+    {
+     "kit": "gm-vase-plinth",
+     "placement": "corner",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0,
+     "access": false
+    }
+   ],
+   "decals": [
+    {
+     "kit": "gm-ov-dust",
+     "count": [
+      1,
+      3
+     ]
+    },
+    {
+     "kit": "gm-ov-cracks",
+     "count": [
+      0,
+      1
+     ]
+    }
+   ],
+   "npcs": []
+  }
+ },
+ "pieces": {
+  "gm-altar": {
+   "name": "돌 제단(촛대·펼친 경전)",
+   "w": 3,
+   "h": 2,
+   "src": "kit"
+  },
+  "gm-armchair": {
+   "name": "날개 등받이 안락의자(붉은 벨벳)",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "gm-armor": {
+   "name": "갑옷 한 벌(받침대·미늘창)",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "gm-barrel": {
+   "name": "참나무 술통",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "gm-bed": {
+   "name": "사주식 침대(찢긴 휘장)",
+   "w": 2,
+   "h": 3,
+   "src": "kit"
+  },
+  "gm-bones": {
+   "name": "흩어진 뼈와 해골",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "gm-bookshelf": {
+   "name": "높은 오크 책장(먼지 쌓인 윗판)",
+   "w": 2,
+   "h": 3,
+   "src": "kit"
+  },
+  "gm-bust-plinth": {
+   "name": "대리석 흉상 받침",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "gm-candelabra": {
+   "name": "서 있는 촛대(깜빡임 3프레임)",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "gm-chair": {
+   "name": "높은 등받이 나무 의자",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "gm-clock": {
+   "name": "괘종시계(멈춘 바늘)",
+   "w": 1,
+   "h": 3,
+   "src": "kit"
+  },
+  "gm-coffin": {
+   "name": "나무 관(닫힘)",
+   "w": 2,
+   "h": 1,
+   "src": "kit"
+  },
+  "gm-coffin-open": {
+   "name": "열린 관(빈 안쪽·비스듬한 뚜껑)",
+   "w": 2,
+   "h": 2,
+   "src": "kit"
+  },
+  "gm-desk": {
+   "name": "서재 책상(촛대·펼친 책·깃펜)",
+   "w": 2,
+   "h": 2,
+   "src": "kit"
+  },
+  "gm-dining-table": {
+   "name": "긴 식탁(먼지 쌓인 만찬)",
+   "w": 4,
+   "h": 2,
+   "src": "kit"
+  },
+  "gm-display-case": {
+   "name": "유리 진열장(해골·보석 유물)",
+   "w": 2,
+   "h": 2,
+   "src": "kit"
+  },
+  "gm-fl-flag-a": {
+   "name": "지하 돌 판석 A",
+   "w": 1,
+   "h": 1,
+   "src": "tile"
+  },
+  "gm-fl-flag-b": {
+   "name": "지하 돌 판석 B",
+   "w": 1,
+   "h": 1,
+   "src": "tile"
+  },
+  "gm-fl-marble-a": {
+   "name": "체크 대리석 A",
+   "w": 1,
+   "h": 1,
+   "src": "tile"
+  },
+  "gm-fl-marble-b": {
+   "name": "체크 대리석 B",
+   "w": 1,
+   "h": 1,
+   "src": "tile"
+  },
+  "gm-fl-parquet-a": {
+   "name": "헤링본 오크 마루 A",
+   "w": 1,
+   "h": 1,
+   "src": "tile"
+  },
+  "gm-fl-parquet-b": {
+   "name": "헤링본 오크 마루 B",
+   "w": 1,
+   "h": 1,
+   "src": "tile"
+  },
+  "gm-fl-tile-a": {
+   "name": "부엌 테라코타 타일 A",
+   "w": 1,
+   "h": 1,
+   "src": "tile"
+  },
+  "gm-fl-tile-b": {
+   "name": "부엌 테라코타 타일 B",
+   "w": 1,
+   "h": 1,
+   "src": "tile"
+  },
+  "gm-kitchen-table": {
+   "name": "부엌 작업대(칼·빵·고기)",
+   "w": 2,
+   "h": 2,
+   "src": "kit"
+  },
+  "gm-museum-bench": {
+   "name": "관람 의자(가죽 등받이 없는 긴 의자)",
+   "w": 2,
+   "h": 1,
+   "src": "kit"
+  },
+  "gm-ov-cobweb": {
+   "name": "구석 거미줄",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "gm-ov-cracks": {
+   "name": "갈라진 땅·포석 금(덧그림)",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "gm-ov-dust": {
+   "name": "먼지·깨진 판자 조각",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "gm-ov-puddle": {
+   "name": "물웅덩이(덧그림)",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "gm-ov-stain": {
+   "name": "바닥 검붉은 얼룩",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "gm-paint-cursed": {
+   "name": "저주받은 초상(눈이 붉게 빛남, 3프레임)",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "gm-paint-landscape": {
+   "name": "풍경화(폭풍 치는 고성)",
+   "w": 2,
+   "h": 1,
+   "src": "kit"
+  },
+  "gm-paint-portrait": {
+   "name": "금 액자 초상화(귀부인)",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "gm-pew": {
+   "name": "예배당 긴 의자",
+   "w": 3,
+   "h": 1,
+   "src": "kit"
+  },
+  "gm-pot-shelf": {
+   "name": "냄비 선반(구리 냄비·단지)",
+   "w": 2,
+   "h": 2,
+   "src": "kit"
+  },
+  "gm-rug-persian": {
+   "name": "빛바랜 페르시아 깔개",
+   "w": 3,
+   "h": 2,
+   "src": "kit"
+  },
+  "gm-runner-ew": {
+   "name": "복도 러너(동서)",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "gm-runner-n-end": {
+   "name": "복도 러너 북쪽 끝(술 장식)",
+   "w": 2,
+   "h": 1,
+   "src": "kit"
+  },
+  "gm-runner-ns": {
+   "name": "복도 러너(남북)",
+   "w": 2,
+   "h": 1,
+   "src": "kit"
+  },
+  "gm-runner-s-end": {
+   "name": "복도 러너 남쪽 끝(술 장식)",
+   "w": 2,
+   "h": 1,
+   "src": "kit"
+  },
+  "gm-sarcophagus": {
+   "name": "석관(박공 뚜껑·조각)",
+   "w": 2,
+   "h": 2,
+   "src": "kit"
+  },
+  "gm-sofa": {
+   "name": "긴 소파(낡은 벨벳·쿠션 셋)",
+   "w": 3,
+   "h": 2,
+   "src": "kit"
+  },
+  "gm-stanchion": {
+   "name": "관람 차단 줄(놋쇠 기둥 둘·붉은 줄)",
+   "w": 2,
+   "h": 1,
+   "src": "kit"
+  },
+  "gm-statue-gargoyle": {
+   "name": "받침 위 가고일 석상",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "gm-stove": {
+   "name": "무쇠 화덕(냄비·주전자)",
+   "w": 2,
+   "h": 2,
+   "src": "kit"
+  },
+  "gm-table-round": {
+   "name": "작은 둥근 탁자(차 쟁반)",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "gm-urn": {
+   "name": "받침 위 돌 항아리(장례 항아리)",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "gm-vanity": {
+   "name": "거울 화장대(금 간 거울)",
+   "w": 2,
+   "h": 2,
+   "src": "kit"
+  },
+  "gm-vase-plinth": {
+   "name": "받침 위 큰 도자기 항아리",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "gm-wardrobe": {
+   "name": "큰 옷장(반쯤 열린 문)",
+   "w": 2,
+   "h": 3,
+   "src": "kit"
+  },
+  "gm-wg-door1": {
+   "name": "미술관 회녹색 회벽(금 그림 레일) 북벽 문(열림 1칸)",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "gm-wg-door2": {
+   "name": "미술관 회녹색 회벽(금 그림 레일) 북벽 큰 문(열림 2칸)",
+   "w": 2,
+   "h": 4,
+   "src": "kit"
+  },
+  "gm-wg-e": {
+   "name": "미술관 회녹색 회벽(금 그림 레일) 동벽 윗면 띠",
+   "w": 1,
+   "h": 1,
+   "src": "tile"
+  },
+  "gm-wg-n": {
+   "name": "미술관 회녹색 회벽(금 그림 레일) 북벽",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "gm-wg-n-sconce": {
+   "name": "미술관 회녹색 회벽(금 그림 레일) 북벽 촛대(깜빡임 3프레임)",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "gm-wg-n-window": {
+   "name": "미술관 회녹색 회벽(금 그림 레일) 북벽 첨두 창",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "gm-wg-ne": {
+   "name": "미술관 회녹색 회벽(금 그림 레일) 북동 모서리",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "gm-wg-nw": {
+   "name": "미술관 회녹색 회벽(금 그림 레일) 북서 모서리",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "gm-wg-s": {
+   "name": "미술관 회녹색 회벽(금 그림 레일) 남벽 갓",
+   "w": 1,
+   "h": 1,
+   "src": "tile"
+  },
+  "gm-wg-se": {
+   "name": "미술관 회녹색 회벽(금 그림 레일) 남동 모서리",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "gm-wg-sw": {
+   "name": "미술관 회녹색 회벽(금 그림 레일) 남서 모서리",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "gm-wg-w": {
+   "name": "미술관 회녹색 회벽(금 그림 레일) 서벽 윗면 띠",
+   "w": 1,
+   "h": 1,
+   "src": "tile"
+  },
+  "gm-wine-rack": {
+   "name": "포도주 시렁(먼지 낀 병)",
+   "w": 2,
+   "h": 2,
+   "src": "kit"
+  },
+  "gm-wm-door1": {
+   "name": "저택 붉은 다마스크 벽지(오크 징두리 판벽) 북벽 문(열림 1칸)",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "gm-wm-door2": {
+   "name": "저택 붉은 다마스크 벽지(오크 징두리 판벽) 북벽 큰 문(열림 2칸)",
+   "w": 2,
+   "h": 4,
+   "src": "kit"
+  },
+  "gm-wm-e": {
+   "name": "저택 붉은 다마스크 벽지(오크 징두리 판벽) 동벽 윗면 띠",
+   "w": 1,
+   "h": 1,
+   "src": "tile"
+  },
+  "gm-wm-n": {
+   "name": "저택 붉은 다마스크 벽지(오크 징두리 판벽) 북벽",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "gm-wm-n-fireplace": {
+   "name": "저택 붉은 다마스크 벽지(오크 징두리 판벽) 북벽 벽난로(불꽃 3프레임)",
+   "w": 3,
+   "h": 4,
+   "src": "kit"
+  },
+  "gm-wm-n-lightning": {
+   "name": "저택 붉은 다마스크 벽지(오크 징두리 판벽) 북벽 번개 치는 창(3프레임)",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "gm-wm-n-sconce": {
+   "name": "저택 붉은 다마스크 벽지(오크 징두리 판벽) 북벽 촛대(깜빡임 3프레임)",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "gm-wm-n-window": {
+   "name": "저택 붉은 다마스크 벽지(오크 징두리 판벽) 북벽 첨두 창",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "gm-wm-ne": {
+   "name": "저택 붉은 다마스크 벽지(오크 징두리 판벽) 북동 모서리",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "gm-wm-nw": {
+   "name": "저택 붉은 다마스크 벽지(오크 징두리 판벽) 북서 모서리",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "gm-wm-s": {
+   "name": "저택 붉은 다마스크 벽지(오크 징두리 판벽) 남벽 갓",
+   "w": 1,
+   "h": 1,
+   "src": "tile"
+  },
+  "gm-wm-se": {
+   "name": "저택 붉은 다마스크 벽지(오크 징두리 판벽) 남동 모서리",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "gm-wm-sw": {
+   "name": "저택 붉은 다마스크 벽지(오크 징두리 판벽) 남서 모서리",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "gm-wm-w": {
+   "name": "저택 붉은 다마스크 벽지(오크 징두리 판벽) 서벽 윗면 띠",
+   "w": 1,
+   "h": 1,
+   "src": "tile"
+  },
+  "gm-ws-door1": {
+   "name": "지하 축축한 마름돌 벽 북벽 문(열림 1칸)",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "gm-ws-door2": {
+   "name": "지하 축축한 마름돌 벽 북벽 큰 문(열림 2칸)",
+   "w": 2,
+   "h": 4,
+   "src": "kit"
+  },
+  "gm-ws-e": {
+   "name": "지하 축축한 마름돌 벽 동벽 윗면 띠",
+   "w": 1,
+   "h": 1,
+   "src": "tile"
+  },
+  "gm-ws-n": {
+   "name": "지하 축축한 마름돌 벽 북벽",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "gm-ws-n-lightning": {
+   "name": "지하 축축한 마름돌 벽 북벽 번개 치는 창(3프레임)",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "gm-ws-n-sconce": {
+   "name": "지하 축축한 마름돌 벽 북벽 촛대(깜빡임 3프레임)",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "gm-ws-n-window": {
+   "name": "지하 축축한 마름돌 벽 북벽 첨두 창",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "gm-ws-ne": {
+   "name": "지하 축축한 마름돌 벽 북동 모서리",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "gm-ws-nw": {
+   "name": "지하 축축한 마름돌 벽 북서 모서리",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "gm-ws-s": {
+   "name": "지하 축축한 마름돌 벽 남벽 갓",
+   "w": 1,
+   "h": 1,
+   "src": "tile"
+  },
+  "gm-ws-se": {
+   "name": "지하 축축한 마름돌 벽 남동 모서리",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "gm-ws-sw": {
+   "name": "지하 축축한 마름돌 벽 남서 모서리",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "gm-ws-w": {
+   "name": "지하 축축한 마름돌 벽 서벽 윗면 띠",
+   "w": 1,
+   "h": 1,
+   "src": "tile"
+  }
+ },
+ "skipped": []
+}

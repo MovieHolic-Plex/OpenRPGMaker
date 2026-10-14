@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a498f4eed84282c3ae82bdb5bff8ab26807897194fda4586511ae1eac816c692",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "테슬라 코일(둥근 받침 + 구리 감은 탑 + 놋쇠 고리 + 구 + 불꽃) (프레임 2)",
+ "label": "steampunk-city/sp-tesla-coil-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "copper coil column with brass terminal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The column structure is drawn in pure front elevation with no visible top surface or cut face on the main body or the top terminal (row 4 is a flat 1px edge outline).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8298
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "copper coil column with brass toroid and electrode",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top terminal of the column ends at row 4 with a flat 1px outline cap rather than a foreshortened top surface (top_rows: 0). The copper body and top cylinder are drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11131
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "copper-wound coil tower",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (the tall copper-wound shaft) is drawn as a flat front elevation with straight horizontal coil bands and no visible top surface. The upper terminal cylinder/sphere at row 4 also has a flat 1px edge with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12406
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "Tesla coil column",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure front elevation: the coil sections are divided by perfectly horizontal flat lines, the top cap has a flat horizontal outline on row 4 with no visible top surface, and the base has no foreshortened top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7044
+  }
+ ],
+ "decidedAt": "2026-10-13T18:44:00.638Z",
+ "cells": {
+  "16": [
+   "26d2ba69ed26b34a",
+   "44adefbcf8930177",
+   "fc7c8f4823782c81"
+  ],
+  "24": [
+   "0e414fc33c95dde4",
+   "16455c4b48c646f5",
+   "192a4a3ecfccd325",
+   "31401cd8393cf568",
+   "d4762959d141884d",
+   "e81b04f4dfd4f556"
+  ],
+  "32": [
+   "042271c7c0298dcb",
+   "0bd559e2bef02b04",
+   "11f841880f6e5491",
+   "36f647859861c374",
+   "396ad2c22604f3c0",
+   "5f46c26587c28b6c",
+   "6e8c9c0ee89eda7d",
+   "78b005c9df4f28e2",
+   "c9b2e52e4a05b7c1",
+   "caf9141743d4745a",
+   "d24a9f30d5187c63",
+   "f17a4f4422fb2b5a"
+  ],
+  "48": [
+   "610a19a54e8d9e83",
+   "8c5c17458e0e58fb",
+   "bc8d6117df5c157c"
+  ]
+ }
+}

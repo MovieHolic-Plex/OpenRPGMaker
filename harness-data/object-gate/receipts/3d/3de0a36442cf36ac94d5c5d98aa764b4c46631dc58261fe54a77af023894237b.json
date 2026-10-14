@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3de0a36442cf36ac94d5c5d98aa764b4c46631dc58261fe54a77af023894237b",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "흄 후드 실험장(회색 윗판 윗면 + 배기 덕트 + 유리 가림창 속 기구 + 아래 수납)",
+ "label": "sf-station/sf-fume-hood",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fume hood laboratory cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fume hood (upper canopy, duct, interior counter, and lower cabinet doors) is drawn in pure front elevation without any visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5984
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fume hood laboratory cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire main body is drawn as a flat front elevation. The upper hood canopy (rows 2–9), sash window area (rows 10–18), and lower storage cabinets (rows 21–30) are all rendered strictly from the front, with no visible top surface receding away from the viewer.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7546
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "laboratory fume hood with upper canopy and lower cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fume hood unit, including the upper canopy (rows 2-9), glass sash opening (rows 10-18), and lower storage cabinet (rows 20-30), is rendered completely flat in front elevation with no visible top surface or foreshortened horizontal depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4926
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fume hood laboratory station",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fume hood is drawn in pure front elevation: the upper housing (rows 2-9), glass sash opening (rows 10-18), and lower cabinet (rows 21-30) all face straight forward with no top horizontal plane visible anywhere on the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5487
+  }
+ ],
+ "decidedAt": "2026-10-13T16:02:53.702Z",
+ "cells": {
+  "16": [
+   "35e1388423222baa",
+   "45e1341c240aa365",
+   "c07ede4ec9ef749a",
+   "c19acb4e6e9f917f"
+  ],
+  "24": [
+   "233dc2ac11abdedb",
+   "2525a3658b3b01da",
+   "332f67d691a3ef7d",
+   "43d919bf5e4dfe3d",
+   "4582271fb39d6051",
+   "4a4a0553eac34b9d",
+   "4d23479e6b9d6675",
+   "5f1fc4d13c507970",
+   "783ee47aff33a130",
+   "7c1d852ce09c500a",
+   "7cb80c0661c350b8",
+   "a5a0f3a330e3b6a7",
+   "a7924f073e60d873",
+   "b1c241634325b2c9",
+   "b61c21e05531fcc0",
+   "c02c5adf1aac5fa6",
+   "c2cede93e7ad84ad",
+   "c8a5a94ce5ff9208",
+   "d300bd82b8fe6c04",
+   "ec1bb0629506a7ce",
+   "ecfaf328f5d4859d",
+   "f9745186de6006a4",
+   "fd8874dd825a3fe6",
+   "ff9a4e3029912c2f"
+  ],
+  "32": [
+   "556a1c95434ce646"
+  ],
+  "48": [
+   "08740f2d87804e20",
+   "26a409d2add7de35",
+   "28dc978e78f10351",
+   "298e968f0790dc18",
+   "3aebc2a4cc01ad45",
+   "fd7ba69a14793bb7"
+  ]
+ }
+}

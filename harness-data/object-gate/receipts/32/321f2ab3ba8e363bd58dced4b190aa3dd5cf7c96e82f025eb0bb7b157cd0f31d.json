@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "321f2ab3ba8e363bd58dced4b190aa3dd5cf7c96e82f025eb0bb7b157cd0f31d",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "승강장 판석",
+ "label": "steampunk-city/sp-platform",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone platform flagstone tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile depicting stone paving slabs seen from above across the full 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3354
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone paving terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Platform stone paving floor tile spanning the entire 16x16 area as a ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2911
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone paving slabs",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Platform flagstone terrain tile covering the full 16x16 area seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2329
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "paving stones / stone floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting stone paving blocks viewed from above; appropriate for platform ground/floor terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3174
+  }
+ ],
+ "decidedAt": "2026-10-13T18:27:58.053Z",
+ "cells": {
+  "16": [
+   "f1893e859aa4ccf1"
+  ],
+  "24": [
+   "1878076ec99d0422",
+   "7738209b4366bb37",
+   "95e6d13b6f3fd201",
+   "ad0ae323ee5f2eea",
+   "bb07985aecebb1e4",
+   "d7be93bfcce2ee90"
+  ],
+  "32": [
+   "46e7b305776b7481",
+   "4a61ddf3cdb749bf",
+   "620e93a21897c149",
+   "6da9183aaf95ab9e",
+   "7a27a0d1829e6569",
+   "fe53cef2157f1531"
+  ],
+  "48": [
+   "685c0dbbc558ca4c",
+   "8a4fb41559d83434",
+   "a3b01923552fada0",
+   "d60cdd30a4f5c2e9",
+   "e1d9e6ea76f2c291",
+   "e3847fa76626b960"
+  ]
+ }
+}

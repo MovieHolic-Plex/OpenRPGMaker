@@ -1,0 +1,129 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "01ea19ed8814db19d1a39d9f8005278a33afad7bb3c4a77e84604bf221a4042b",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "thick log palisade wall section, flat sawn log ends visible along the top",
+ "label": "pirate-isles/pi-palisade",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical log palisade wall with horizontal cross-ties",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tops of the logs clearly show foreshortened sawn ends (approx. 4 rows tall, e.g. rows 6-9 for the front tier and rows 2-5 for the rear tier) viewed from an overhead 3/4 angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4988
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical logs of palisade wall",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Sawn log cross-sections are clearly visible as elliptical top faces (rows 6-9, 4px tall for foreground logs and rows 2-5 for the staggered back row) showing proper 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4917
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "thick vertical logs",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The palisade is composed of vertical logs whose flat sawn ends are clearly depicted from above with visible top surfaces spanning 3 pixel rows (rows 6-8 for the front row and rows 2-4 for the back row).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8122
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical log palisade posts with horizontal crossbeams",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each log post clearly shows an elliptical sawn top surface spanning 4 pixel rows (rows 6-9 for front row, rows 2-5 for rear row) with core rings in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4375
+  }
+ ],
+ "decidedAt": "2026-10-13T19:25:15.329Z",
+ "cells": {
+  "16": [
+   "1891e74e462075fc",
+   "38b713af92857612",
+   "9f3e52798a4ac39d"
+  ],
+  "24": [
+   "0bab2e3ce41ee616",
+   "11e018e4cf34285a",
+   "696388fef61d0e10",
+   "6a7aa0394f244932",
+   "6fdc4451e53dbbd8",
+   "71d9bc2ac65bf978",
+   "7e74bf774913d929",
+   "8cab7ec9f3af98c9",
+   "8e8d99574764b3f3",
+   "90ac7bb59755a317",
+   "912b7394bbd45d7b",
+   "978b30d5a1be9f2d",
+   "98cbb5057f2febf3",
+   "9a2a699b9f747d3a",
+   "a32f3bb2afee7205",
+   "b8164fc9018c3eae",
+   "c044ed5fcdab4d9c",
+   "c2cfdf2cd6c70970",
+   "eacbc0740b82573f",
+   "ed3a39a968c81367",
+   "f82ce80994388b2e",
+   "fa3f39b1a909f035"
+  ],
+  "32": [
+   "ba1a129d9f9d9682"
+  ],
+  "48": [
+   "287bed4565840c88",
+   "324963012651da86",
+   "3d41e9ff5d06e65f",
+   "62c7dcbc2099c2ff",
+   "a0e500ea9b6a314e",
+   "fa2d4ed01f8c887d"
+  ]
+ }
+}

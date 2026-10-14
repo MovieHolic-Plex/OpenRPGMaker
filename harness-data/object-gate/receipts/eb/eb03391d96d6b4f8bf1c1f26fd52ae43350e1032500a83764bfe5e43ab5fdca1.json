@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "eb03391d96d6b4f8bf1c1f26fd52ae43350e1032500a83764bfe5e43ab5fdca1",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "소화전(빨강)",
+ "label": "modern-campus/mc-hydrant",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fire hydrant",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The red hydrant body and dome are drawn as a straight front elevation with completely flat horizontal section lines (including a flat bottom edge at row 10 and flat cap division at rows 3-4) showing no top-down foreshortened surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8066
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fire hydrant",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fire hydrant is drawn in flat front elevation with straight horizontal division lines at the cap and base, lacking any elliptical curvature or visible top surface. Only the pavement plinth below it shows top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9220
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fire hydrant",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The red fire hydrant is drawn in straight front elevation with horizontal seams, a flat bottom base line at row 10, and side nozzles extending horizontally, lacking any foreshortened circular/elliptical top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6105
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "red fire hydrant",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fire hydrant is drawn in pure front elevation: its base is a flat horizontal line (row 9), the body cylinder has vertical sides with side nozzles extending horizontally, and the top dome and nut are drawn as a 2D arch and flat rectangle with no foreshortened top surfaces visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12018
+  }
+ ],
+ "decidedAt": "2026-10-13T16:35:07.541Z",
+ "cells": {
+  "16": [
+   "46c60b30a2f2317d"
+  ],
+  "24": [
+   "056f445e029499fc",
+   "33e6941b54ae06c3",
+   "34ded2d111e1791d",
+   "6275cc457c8a1d88",
+   "96d371a9041a36d1",
+   "e687c8ecc4b0d8f5"
+  ],
+  "32": [
+   "0b91cc693647212b",
+   "1a913457134a227e",
+   "311614ff3c526cd9",
+   "a37ea7e3ed8a1470",
+   "a4fc52e802e2a250",
+   "c55cd75f377a0c87"
+  ],
+  "48": [
+   "0f5f7af64530b757",
+   "55b99ca77fa7cbf8",
+   "8f64ed94ece767ac",
+   "9010cb8e69bafd37",
+   "cc3639923a8aa777",
+   "fb3f459b1d3b22fd"
+  ]
+ }
+}

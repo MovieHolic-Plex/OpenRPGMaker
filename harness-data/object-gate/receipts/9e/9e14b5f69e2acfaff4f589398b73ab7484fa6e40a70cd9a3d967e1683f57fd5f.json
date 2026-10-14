@@ -1,0 +1,145 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9e14b5f69e2acfaff4f589398b73ab7484fa6e40a70cd9a3d967e1683f57fd5f",
+ "width": 64,
+ "height": 32,
+ "kind": "box",
+ "name": "이끼 낀 낮은 돌담 (3칸 줄 + 모퉁이 견본)",
+ "label": "gothic_manor/gm-wall-stone",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mossy low stone wall",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone wall shows a clearly visible horizontal top surface (rows 18-24, 7 rows tall) textured with stone and moss, above a front vertical face of brick masonry (rows 25-31), matching classic 3/4 top-down RPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6824
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "mossy low stone wall",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal low stone wall clearly shows a foreshortened top surface spanning rows 19-24 (6 pixels tall) textured with moss patches and highlights, above a vertical south-facing stone face from row 25-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6763
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "mossy low stone wall",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal wall section clearly shows a 6-pixel-tall top surface (rows 19-24) with stone paving and moss patches, above a 7-pixel-tall front face with stone brickwork (rows 25-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6080
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "mossy low stone wall",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal wall section clearly displays a 7-pixel-deep top surface (rows 18-24) above a 7-pixel-tall front stone face (rows 25-31), properly rendered in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5576
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.464Z",
+ "cells": {
+  "16": [
+   "1873c8bb7a9b043d",
+   "78a6e8ed7674a435",
+   "aa2afbe3f960fd41",
+   "d776506b31100470"
+  ],
+  "24": [
+   "07c0557051fdc0bb",
+   "0aae07d40ba1d666",
+   "0e7fa27609e788a4",
+   "0ef4d5c4be63c725",
+   "19d8f8d3cd4605d7",
+   "2a4360da450fa64a",
+   "2bb553af7e50c3af",
+   "3a76d7650a841856",
+   "3f610564427d45ed",
+   "504e70f8cc1efb80",
+   "50a2bada06c00fd3",
+   "559a0af557e1e2e9",
+   "587ccc135289a5f6",
+   "5ffbd8d8d1a5bad1",
+   "627442784031badd",
+   "638dd3b2c05cc261",
+   "7513a9f918ac9eeb",
+   "7de981658b276fcf",
+   "7e4a2bb9087f2346",
+   "9868722afbcb0838",
+   "9c5efdba531c24b8",
+   "a02189e2f6d3bbf1",
+   "a1e01e1bb03a134a",
+   "a3f40a95ba4d3efe",
+   "b8700b0d9b8e8bcf",
+   "c497ce9068b82fa2",
+   "c84b2b48fee08805",
+   "f44b68525e3f3971",
+   "f8f79b492bd6c946",
+   "f9df9ffd01ee6431"
+  ],
+  "32": [
+   "95cab977344961a7",
+   "d98fdc1150afaff0"
+  ],
+  "48": [
+   "1f32b19253a0224a",
+   "3afb04922dbe8a7a",
+   "5364869b7d01b67a",
+   "77358116c4d061ba",
+   "798cbbe64169e0d3",
+   "8d9535d74d613598",
+   "98f8c63ab73bd1a4",
+   "aa762be21f3a40a7",
+   "b0ba2d76db770ae8",
+   "ca3ce14bff5e1d82",
+   "f8f427e1a09c05f0",
+   "feddb3a254f4dad4"
+  ]
+ }
+}

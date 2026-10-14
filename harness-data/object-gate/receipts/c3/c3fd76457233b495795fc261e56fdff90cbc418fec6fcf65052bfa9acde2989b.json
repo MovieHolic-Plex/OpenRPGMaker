@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c3fd76457233b495795fc261e56fdff90cbc418fec6fcf65052bfa9acde2989b",
+ "width": 32,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "장지 창(벽면, 밝은 종이 + 대 살)",
+ "label": "sengoku-edo/se-window-shoji",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "traditional paper-screen wall window with wooden frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted window fixture intended for a north-facing interior wall. As specified for wall_mounted items, it is rendered flat against the wall surface without receding top faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6062
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Korean paper window frame (jangji chang)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted paper window frame drawn flat against the wall face; wall-mounted objects are permitted to be flat front elevations.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4781
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "window frame and paper panes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Traditional paper sliding window mounted flat on a south-facing wall. As a wall-mounted feature, flat front elevation is appropriate for the vertical wall surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6808
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "traditional paper window frame mounted on a wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted sliding paper window frame (장지 창) designed flat against the vertical wall surface. As a wall-mounted fixture, it correctly faces south on the wall plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5686
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.079Z",
+ "cells": {
+  "16": [
+   "3f1349c13fb4d0df",
+   "55a6eaae9b6a01ae",
+   "bfa883ae880c4f8c",
+   "d29c12208b927c3d"
+  ],
+  "24": [
+   "0800360f16ab0dd5",
+   "10f9af75b8439139",
+   "122dd446200fe45b",
+   "1299b7db1ec2d522",
+   "31d5c11295d7ed2b",
+   "35e1ce07f4b638a1",
+   "4a86db6663144808",
+   "4bf44b711ec1b7bc",
+   "5371453364e7e892",
+   "61d73736a40e32a0",
+   "647f77591012253f",
+   "820c325fb624ee7b",
+   "847367d200f467cb",
+   "95dfaa64a70993d9",
+   "99205310635fdcd6",
+   "a25cfdabe32c1391",
+   "aa1e82ca7bff8bb7",
+   "b673b2a1fe4e7cad",
+   "c313a2a3b537d6da",
+   "c921144e852b9aec",
+   "ca24e32191bcea80",
+   "f0c717f22457f326",
+   "f443475cea74a8cc",
+   "f543ec1ff1ff105d"
+  ],
+  "32": [
+   "ff9ab7e521aa6cf7"
+  ],
+  "48": [
+   "06024cb15ef991b9",
+   "8ead6c491244053d",
+   "96ef7888f5f03500",
+   "c3151ae2a1adef85",
+   "e5daf9e37b4c5aa9",
+   "f7e98cb0031511e1"
+  ]
+ }
+}

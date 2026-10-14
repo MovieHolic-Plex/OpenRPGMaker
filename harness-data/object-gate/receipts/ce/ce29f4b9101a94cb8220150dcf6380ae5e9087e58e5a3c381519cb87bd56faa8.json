@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ce29f4b9101a94cb8220150dcf6380ae5e9087e58e5a3c381519cb87bd56faa8",
+ "width": 32,
+ "height": 64,
+ "kind": "other",
+ "name": "통학 버스(노랑, 남쪽을 보고 주차)",
+ "label": "modern-campus/mc-school-bus",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "yellow school bus facing south",
+    "kind_matches": true,
+    "top_rows": 38,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bus displays an extensive roof surface (rows 1-38) from above, followed by a south-facing windshield, hood, and front bumper (rows 39-58) in appropriate 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4380
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "yellow school bus parked facing south",
+    "kind_matches": true,
+    "top_rows": 38,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bus correctly shows its large top surface (yellow roof from row 1 to 38) as well as its front face facing south (windshield, hood, headlights, and front bumper from row 39 to 58) in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4515
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "yellow school bus facing south",
+    "kind_matches": true,
+    "top_rows": 38,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bus roof is clearly visible from rows 1 to 38 (38 pixel rows of top surface), with the windshield, hood, grille, and bumper visible below it facing south.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4470
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "yellow school bus facing south",
+    "kind_matches": true,
+    "top_rows": 38,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bus is drawn in standard 3/4 top-down perspective facing south: the yellow roof is clearly visible from rows 1 to 38, followed by the windshield (rows 39-43) and the front hood/grille/bumper (rows 44-58).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4657
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.873Z",
+ "cells": {
+  "16": [
+   "387d325697d5307f",
+   "43d4475c3ee24d59",
+   "47896e09440636b3",
+   "5d97a002ac314aa6",
+   "64bc96ce7abf91ec",
+   "9430a2afe0a38fcd",
+   "a433465c598ee191",
+   "ae56bba7c4caebbb"
+  ],
+  "24": [
+   "04f2796455e98d84",
+   "06412f2f5f2906cd",
+   "0873899ef6672b43",
+   "09f04b938a68d186",
+   "0a231874fbd14531",
+   "2713f45df8f93a3b",
+   "34da9abe13078e3a",
+   "3dba037590f9c3b0",
+   "3ef5cd02ea958338",
+   "404e9ce0bbf5ca04",
+   "4d2d17696ad032e4",
+   "5aee07047ca58969",
+   "5c2521c3263a6754",
+   "5c618a438aa31870",
+   "5cd9e39e2c28c6b1",
+   "784bb2382f494643",
+   "855240a230137fca",
+   "8e55f276996452a6",
+   "938a9c33b5005ede",
+   "972141ab8364e6aa",
+   "b3294d558ddb3dd9",
+   "c5668e4ed82bda46",
+   "c62acad9d7dc4944",
+   "c6e1b1b0152d91cf",
+   "cae57b027ef9c1de",
+   "cdbe5e3aab2c6900",
+   "ced35aea76266200",
+   "cfa718ae16b50233",
+   "d26031f513ebfd5f",
+   "da27aa7af0f6737a",
+   "def5f56ec543bab1",
+   "e0b535a6338de131",
+   "f042c2cc70947f5f",
+   "f39732c3c7c395e9",
+   "f5b2eec26be4fa0a",
+   "faae2dfbc5550d43"
+  ],
+  "32": [
+   "a4fe085367a2e8e7",
+   "a6326776169a0456"
+  ],
+  "48": [
+   "1140be2f19a557f2",
+   "1e6008969693fbd0",
+   "201519cfb6f491cb",
+   "8983c0af866f228e",
+   "8cecef57d8876600",
+   "979bfc366d403c33",
+   "ae11e54ae3d2c986",
+   "b6e66bcdb1d00104",
+   "d093453cc959ac0d",
+   "e2e468b0a706f1a6",
+   "f6837f22bdbda702",
+   "fdeb47f883f027b3"
+  ]
+ }
+}

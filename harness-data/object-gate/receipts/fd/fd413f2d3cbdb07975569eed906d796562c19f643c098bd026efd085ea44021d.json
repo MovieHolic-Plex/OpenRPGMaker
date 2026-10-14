@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fd413f2d3cbdb07975569eed906d796562c19f643c098bd026efd085ea44021d",
+ "width": 48,
+ "height": 64,
+ "kind": "organic",
+ "name": "까마귀 앉은 고사목",
+ "label": "gothic_manor/gm-dead-tree-crows",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dead tree trunk and branches",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree and crows are drawn in a flat 2D side-scroller / front elevation. The base of the trunk flattens into a straight horizontal bar at rows 61-62 with no top-down circular or foreshortened root footprint, and the branches spread purely in the vertical plane.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4778
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dead tree trunk and branches",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The dead tree and branches are drawn entirely in a flat front elevation like a 2D side-scroller asset. The base at rows 60-62 forms a straight horizontal edge without any top-down ground footprint or root flare in perspective, and the branches lack any visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3252
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bare dead tree trunk and branches",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The dead tree and perched crows are drawn entirely in flat 2D side elevation; branches spread only in the vertical screen plane, and the base rests on a completely flat horizontal line (rows 61-62) with zero top-down depth or root foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3852
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dead tree trunk and branches",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The dead tree is drawn in a flat 2D side-scroller elevation: the base rests on a flat horizontal line (rows 61-62) with no elliptical ground footprint, and all branches spread strictly within the screen plane with 0px of top-down depth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4471
+  }
+ ],
+ "decidedAt": "2026-10-13T17:01:50.505Z",
+ "cells": {
+  "16": [
+   "118b1f01b7f906de",
+   "2ccddeee85288488",
+   "3c6587c7f0f215a0",
+   "500d5398928bcc37",
+   "5cc5f316af63a724",
+   "6cb7e09691548f28",
+   "7cb9399ef2a51d58",
+   "9066db6126aa9f76",
+   "a6cfac46dad30105",
+   "c2ecf85c93650f34",
+   "d701778521fafd91"
+  ],
+  "24": [
+   "014e8d2d6cd9e873",
+   "5aeadb1ee2740293",
+   "7be72e70e3c05b58",
+   "860e05df16c0b2f6",
+   "96993268cfea815a",
+   "c08babb727c65591",
+   "cd51f1ceaac4c3ce",
+   "d6b7805fbdb3989d",
+   "de62d48725ec959d",
+   "e7f105a3bced5faf",
+   "e8822f8595e29385",
+   "f86f8f14102ea969"
+  ],
+  "32": [
+   "15e9bfb99d3027cb",
+   "17a35c1c27284ed7",
+   "3e615238508176e2",
+   "430f93bc70cf982c",
+   "59cb06ae4fda7fef",
+   "657fbd6d6b5b6b6c",
+   "74c35a96ae9e2b16",
+   "8cdcf327fc8f2e37",
+   "c0a90bafe877d8d7",
+   "d4e2d5f950afa76e",
+   "daa40531a706c409",
+   "e5238503d574498c"
+  ],
+  "48": [
+   "3f83bf5f88654a16",
+   "4e481c0eda5d40f4",
+   "59a772104e63071b",
+   "68a3bc5d28052c3e"
+  ]
+ }
+}

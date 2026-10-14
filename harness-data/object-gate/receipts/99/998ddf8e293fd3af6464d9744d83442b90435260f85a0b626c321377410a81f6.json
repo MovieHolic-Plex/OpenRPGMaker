@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "998ddf8e293fd3af6464d9744d83442b90435260f85a0b626c321377410a81f6",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "wooden barrel with iron hoops, round lid seen from above",
+ "label": "pirate-isles/pi-barrel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrel is drawn in pure front elevation with vertical staves running from row 0 to row 14 and bulging at the equator (row 7). No elliptical top cap/lid is visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7086
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrel is drawn in pure front elevation: vertical staves run uninterrupted from row 0 down to the bottom. There is no horizontal elliptical top cap or lid surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8050
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrel is drawn from a front view with vertical staves running directly to the top edge. There is no elliptical top cap or lid surface visible from above (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6715
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrel is drawn in pure front elevation; vertical wooden staves run continuously all the way to the top edge (row 0) with no elliptical top cap or lid visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6387
+  }
+ ],
+ "decidedAt": "2026-10-13T19:33:03.043Z",
+ "cells": {
+  "16": [
+   "92893bea017afc79"
+  ],
+  "24": [
+   "0bb97df37c25f156",
+   "42dd390ec92a4c93",
+   "5dc855e06fe35c0d",
+   "66a9db1b0188eda0",
+   "9a93821efe371bc3",
+   "a7f4e19faed48f82"
+  ],
+  "32": [
+   "050cdb218d60d514",
+   "0c467a61193f586a",
+   "565acd6d56cbb1be",
+   "57966c2604e014df",
+   "e11fcfb5b58668cd",
+   "ec8b9d8fd56f4faa"
+  ],
+  "48": [
+   "4fcf1c75ec6f5084",
+   "cc41c2b4fbe68017",
+   "d33a308139869d14",
+   "d98fc760800964f0",
+   "ea076a3ebfec80b9",
+   "eb5cf9e93faab671"
+  ]
+ }
+}

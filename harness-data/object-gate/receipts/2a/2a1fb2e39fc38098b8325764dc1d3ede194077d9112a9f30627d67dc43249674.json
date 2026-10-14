@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2a1fb2e39fc38098b8325764dc1d3ede194077d9112a9f30627d67dc43249674",
+ "width": 48,
+ "height": 32,
+ "kind": "seat",
+ "name": "긴 소파(낡은 벨벳·쿠션 셋)",
+ "label": "gothic_manor/gm-sofa",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "long velvet sofa with three cushion sections",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sofa clearly shows the horizontal top surfaces of the seat cushions (rows 15-21, 7 rows deep) and armrests (rows 10-14, 5 rows deep) viewed from above, transitioning into the front drop and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6706
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "long velvet sofa with three cushions",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal seat surface is clearly depicted from above across rows 15-21 (7 rows tall) showing three distinct cushion sections and a tear detail, while armrest tops also show 5 rows of top surface (rows 10-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5367
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "long velvet sofa",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat cushion surface is clearly visible from above across rows 15 to 22 (about 8 rows of depth) before transitioning to the front skirt/face at row 23. Both armrests also show 4-row top surfaces (rows 11-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4758
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "long velvet sofa with three cushions",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat surface is seen from above across rows 15–21 (7 rows tall) before dropping down to the front skirt (rows 22–26). The armrests also clearly show horizontal top surfaces from rows 10–14 (5 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5764
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.502Z",
+ "cells": {
+  "16": [
+   "55aaf5d23a06e5be",
+   "83e786057e801a19",
+   "8633a06e70666e06",
+   "b718a3341077da58",
+   "c1f7a871c173e5a9",
+   "cf298493d6952a0d"
+  ],
+  "24": [
+   "1a93ea30ab91b81b",
+   "51e0f8b043ba0ee9",
+   "62427907827e0331",
+   "67fc301ad2b05c61",
+   "68e3d1305b902b45",
+   "dfc4ac96f8e7a9c6",
+   "e135cdd5059bfdd4",
+   "e4375d969964b2ec"
+  ],
+  "32": [
+   "54c15d0711e72b8f",
+   "93b28849ccea8768",
+   "c0ed6c1e1518b2d4",
+   "c3b38857f419a80e",
+   "cf2a48ff98be9f2b",
+   "f7c9ef5e81fecb6f"
+  ],
+  "48": [
+   "6ac9bcbe812848ef",
+   "d80e573a7de8d136"
+  ]
+ }
+}

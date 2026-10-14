@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "614610cb593855d9dba9239a591bcf8d88d91f8f3f31fb37d1f75f07b358c4d5",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "red painted X mark on the sand with a small dug mound, a buried treasure spot",
+ "label": "pirate-isles/pi-treasure-x",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "red painted X mark floor decal",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is a flat painted X mark decal lying on the ground plane, spanning rows 3-11 (9 rows tall) with a small accent mound of sand at the lower-right arm.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5597
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "red painted X mark",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is a painted X decal lying flat on the ground plane across rows 3-12, with a small foreshortened dug mound on the bottom right.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4927
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "red painted X floor mark with small sand mound",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The red X is a floor decal lying flat on the ground plane spanning rows 3-11 with an accompanying small sand mound at the bottom right.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4695
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "red painted X mark with dug sand mound",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The red 'X' floor decal is drawn flat on the ground plane spanning rows 3-12, with a small sand mound at the bottom right showing its top and south face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4929
+  }
+ ],
+ "decidedAt": "2026-10-13T19:47:51.255Z",
+ "cells": {
+  "16": [
+   "84f08bc34fdef1b9"
+  ],
+  "24": [
+   "011f01e1d66e47ea",
+   "22f31c50a79810e1",
+   "3fe5277a4625bb0b",
+   "445ddf11eba78a3d",
+   "50c762ddc23028fe",
+   "8d3baedccc6f3d63"
+  ],
+  "32": [
+   "4af7f2ca3b906272",
+   "65fce9ea6c6fa418",
+   "900b33ae7f204885",
+   "b1c6a9b8568c9b59",
+   "c493c4b83fd192eb",
+   "dcccaa00c6bd40af"
+  ],
+  "48": [
+   "02b3c78674d3e868",
+   "059c7c00b6d3b052",
+   "4991bc601d066142",
+   "6160770bec9baa79",
+   "b516e7cfa81b3c21",
+   "e8b93d237affad29"
+  ]
+ }
+}

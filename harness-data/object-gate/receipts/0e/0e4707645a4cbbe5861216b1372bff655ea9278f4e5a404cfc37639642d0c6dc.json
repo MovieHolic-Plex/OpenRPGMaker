@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0e4707645a4cbbe5861216b1372bff655ea9278f4e5a404cfc37639642d0c6dc",
+ "width": 32,
+ "height": 32,
+ "kind": "round_body",
+ "name": "쌀섬 더미(짚 섬 다섯)",
+ "label": "sengoku-edo/se-rice-bales",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stacked cylindrical straw rice sacks",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each sack shows a clear, foreshortened elliptical top cap (approx. 4 source pixel rows tall, e.g. rows 1-4 and 13-16) with central tied knots seen from above, resting atop cylindrical south faces with horizontal straw binding bands.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5256
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stacked straw rice bales (cylinders standing upright)",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each upright straw bale displays a foreshortened top cap (approx 4-5 source pixel rows tall, e.g. rows 1-4 and rows 13-17) with the center tied knot visible from above, correctly rendered in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5932
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stack of straw rice sacks (straw cylinders)",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surfaces of the straw sacks are clearly visible from above, showing 4-row tall foreshortened caps with central tie knots.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4882
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stacked straw rice sacks (cylindrical standing bales)",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The standing straw sacks show foreshortened elliptical top caps (approx. 4-5 source pixel rows tall, e.g. rows 1-4 on the upper sacks and 13-17 on the lower sacks) with visible central ties, correctly showing the top surface from a 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6384
+  }
+ ],
+ "decidedAt": "2026-10-13T19:37:02.183Z",
+ "cells": {
+  "16": [
+   "0868626cb16d29ab",
+   "54a54945bb086bb6",
+   "cf6ce940a7be0fad",
+   "f27b301b2b9e78b8"
+  ],
+  "24": [
+   "01b07077459b65ef",
+   "0661cf8b5f58fbb9",
+   "0700e01108a3f26a",
+   "10775b92d741990a",
+   "233a445e0b14a453",
+   "353fe86b11641a6c",
+   "3b583c3e6b73830d",
+   "458b4eb635cdcf44",
+   "4b79cd04141f77b3",
+   "583fb8483a254f8b",
+   "6ceed91c61ec0a47",
+   "8875494642fc006e",
+   "8ab07c9450318158",
+   "8e28094e84e141aa",
+   "a4ff2e52ab973057",
+   "aacae8c431836e88",
+   "abc6d49777f6385d",
+   "afc5c3426d01bac4",
+   "c32a787ab6669136",
+   "d2df8eb567b1f31e",
+   "dfe55941686653ca",
+   "e2eb82624b39c576",
+   "f056de2fd3d53cec",
+   "f52baf059e4fd4d5"
+  ],
+  "32": [
+   "e1c2ce312c552562"
+  ],
+  "48": [
+   "16d44123ee560615",
+   "20390351dd576354",
+   "4fe3ef81a237c73c",
+   "aabe60ceaf7f3fd1",
+   "cff1bc78f7eaef6a",
+   "d9e50d946bf87811"
+  ]
+ }
+}

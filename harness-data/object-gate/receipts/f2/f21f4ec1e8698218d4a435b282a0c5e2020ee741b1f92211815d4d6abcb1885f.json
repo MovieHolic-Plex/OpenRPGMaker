@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f21f4ec1e8698218d4a435b282a0c5e2020ee741b1f92211815d4d6abcb1885f",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "논두렁(남서쪽 둑)",
+ "label": "sengoku-edo/se-paddy-sw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rice paddy levee terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing the south-west levee of a flooded rice field, viewed top-down as ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3301
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rice paddy levee terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing a flooded rice field with planted crops and bordering grass/dirt ridges on the south and west edges; proper top-down ground terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4296
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rice paddy and levee terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Top-down terrain tile showing rice paddy water with seedlings bordered by grassy field ridges on the south and west edges.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4191
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rice paddy field ridge and water terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a rice paddy with planted seedlings in water bordered by grass and dirt ridges on the south and west edges viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3990
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.062Z",
+ "cells": {
+  "16": [
+   "9baac6aaa197df97"
+  ],
+  "24": [
+   "2c250f636cadf33b",
+   "4d62ed730b5d8119",
+   "bdb9903d6db23f59",
+   "ead03d8c786150eb",
+   "f656da67ee925cc9",
+   "f783665eb2025c75"
+  ],
+  "32": [
+   "2d68f1d954fbbbc0",
+   "65da488464c0f8d6",
+   "81721bc44b7fa852",
+   "a99077cf8303aa49",
+   "b20839ddc87bf633",
+   "e9a5534e50bc8cfa"
+  ],
+  "48": [
+   "02fdfb07cd226503",
+   "28f6bc459caade63",
+   "327644bc3330bccb",
+   "3f502ed6b5bed595",
+   "8575e3007c3d63a9",
+   "9a57f693ef4b4a3b"
+  ]
+ }
+}

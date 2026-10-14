@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6a587f9f4a904ab76360fe64d22627614538ae299925e0aabf9ed21bb6b5a84c",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "prehistoric stone-age lava",
+ "label": "prehistoric/ph-lava-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lava ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 molten lava terrain surface correctly textured as ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2583
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lava terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "16x16 flat terrain surface representing molten lava with orange, yellow, and dark red patterns seen from directly/top-down above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3567
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lava terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting molten lava texture across the full 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4242
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lava surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a glowing lava surface viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2807
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.791Z",
+ "cells": {
+  "16": [
+   "9c5a0bfd03aa742c"
+  ],
+  "24": [
+   "8b4d11c0e3fd1499",
+   "92c4f9403d2cdeca",
+   "9784d63802527474",
+   "980eafd846d36275",
+   "bc95153328299191",
+   "ebfdf9b7c645eed8"
+  ],
+  "32": [
+   "05ddc2188f041f30",
+   "251622389c86be01",
+   "3f15bcddb1a01a95",
+   "760dd87901363544",
+   "9166b3efd411142a",
+   "d8750924dee98ba7"
+  ],
+  "48": [
+   "21983a15edfbfd74",
+   "59be3be6b6311a86",
+   "632e5fbfdce2dca0",
+   "8b4f84097e10cb86",
+   "c5b7484ca40fd43a",
+   "cace386a4ad2ec0c"
+  ]
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8275095be04715863bf38f23474d286ee332aac2ded991660e7eca51da3e276e",
+ "width": 16,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "노렌 드리운 문 틈(가게 안쪽·부엌)",
+ "label": "sengoku-edo/se-door-noren",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "noren curtain hanging in a doorway",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted doorway and hanging fabric curtain (noren) mounted flush to a north wall plane; flat presentation is valid for wall-mounted elements.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5224
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "noren curtain over doorway opening",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "A fabric noren curtain hanging over a doorway opening on a vertical wall. As a wall-mounted/doorway feature, it correctly presents a flat vertical face without requiring a top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4434
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "doorway with noren curtain",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall opening/doorway with hanging blue noren curtain and dark threshold, properly drawn flat against the wall plane as a wall_mounted feature.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3651
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "noren curtain hanging in a doorway opening",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted/architectural doorway with a hanging noren curtain seen flat against the south wall plane; wall-mounted flat elements are permissible without a visible top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4335
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.079Z",
+ "cells": {
+  "16": [
+   "552a10b69e5a9e20",
+   "6e418fde7281c4e7"
+  ],
+  "24": [
+   "009c52980b370a8f",
+   "47062ebf647b2d7e",
+   "4df3e79f97559cb5",
+   "6d20546f37edc076",
+   "7276c442679f1135",
+   "7d0bb8eeab0875d7",
+   "b5e39459be2f8e2f",
+   "b661239c7e578ff6",
+   "c857c460975f6ae8",
+   "df38ff7b3b22b2d2",
+   "f5b06f4ce7dba4e7",
+   "f9a29b63ce2a3bca"
+  ],
+  "32": [
+   "012e129d25746611",
+   "0c16b5d87d63731a",
+   "242735332bf8894d"
+  ],
+  "48": [
+   "41718954a4452eca",
+   "6c085c0b4f773a5c",
+   "7d5d5deb47242be9",
+   "b35869d656d7e0a1",
+   "cf2e91a05a069338",
+   "da1d92120a8e3463"
+  ]
+ }
+}

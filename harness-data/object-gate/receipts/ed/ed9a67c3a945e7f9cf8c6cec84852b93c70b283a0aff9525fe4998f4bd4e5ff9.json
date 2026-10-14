@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ed9a67c3a945e7f9cf8c6cec84852b93c70b283a0aff9525fe4998f4bd4e5ff9",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "시장 노점(톱니·부품, 초록 차양)",
+ "label": "steampunk-city/sp-stall-parts",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "market stall with striped awning and display counter",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter surface displays items across rows 25-32 (approx 8 rows tall) seen from above, and the awning canopy spans rows 1-17 angled towards the viewer.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3925
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "market stall with striped awning and display counter",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The display counter has a clearly foreshortened top surface spanning rows 25-33 (9 rows) showing gears and parts displayed from above, above a vertical front panel (rows 34-42).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4984
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "market stall with canopy and display counter",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall counter shows a 7-pixel-tall top surface (rows 26-32) where goods are displayed from above, while the lower stall displays a south-facing wooden wall (rows 33-42).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4599
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "market stall counter and awning",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter table top surface displaying gears and parts is clearly visible from above across rows 26-33 (8 pixels deep) before dropping down to the front wooden paneling at row 34.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3866
+  }
+ ],
+ "decidedAt": "2026-10-13T18:16:30.909Z",
+ "cells": {
+  "16": [
+   "0251a720b1ce5981",
+   "09550fc07182f4a7",
+   "3f9cca6905c4fe69",
+   "4a4359496a242f8f",
+   "6a3b8c9897d010c2",
+   "a276d2da437845a9",
+   "c505c308d5e353c3",
+   "e069a8a11601596b",
+   "ed1df5101397bc5b"
+  ],
+  "24": [
+   "1ebab45721fdf0cb",
+   "98a4e827968183e9",
+   "aa9249b23108a50a",
+   "deaa495869f9d058"
+  ],
+  "32": [
+   "036c935e5e057bdc",
+   "073aea7c2d263696",
+   "27c29fc31849b732",
+   "589370c411a090c0",
+   "60ecb68a1b52b79b",
+   "651f94ee9a567f0d",
+   "6e97bf496460ce5e",
+   "76c4b766f9ded2fe",
+   "7eadb5dfd2f57552",
+   "946c5b9535e3b087",
+   "a3165ccbfad7e560",
+   "ab89bfafdf8b6ea2",
+   "b04c25e686a5d727",
+   "b6adea89a7ede79e",
+   "c64f5e348beb93a2",
+   "cbe6ae2206d311b4",
+   "d7fcd06694e6c727",
+   "e13ef72bb15e6c6d",
+   "e20eaab104cf6a6d",
+   "e8885d3af2df0039",
+   "ef73a43b9ac7a579",
+   "fa95f428c49c31f9",
+   "fcd305d303a209ca",
+   "ff1789d0d5077ba9"
+  ],
+  "48": [
+   "30b7b41c18d42972"
+  ]
+ }
+}

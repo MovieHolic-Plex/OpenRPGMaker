@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "508cf903f0a3a5dbba0906c28d54a5ef19ecb38932369027f74b1367d4b39558",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "무쇠 쌍문(열림)",
+ "label": "gothic_manor/gm-gate-iron-open",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone gate pillars and open iron gate doors",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone pillars are drawn in pure front elevation with flat vertical caps (rows 5-7) and vertical stone faces showing 0 rows of horizontal top surface. The open doors also lack any visible top thickness or horizontal top edge viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6473
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone gate pillars and iron doors",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone pillars, capital blocks, and gate panels are drawn in a flat front elevation (with mistaken linear perspective on the door angles) without any top horizontal surfaces visible for the pillar caps, lintels, or door frames.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11437
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone gate pillars and iron door leaves",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": true,
+    "evidence": "The stone pillars are drawn in pure front elevation without any visible horizontal top surface on their capitals or bodies (0 top rows). The open gate leaves are drawn with linear perspective convergence rather than the 3/4 top-down projection, lacking visible top surfaces on the door leaves.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "옆면(아이소)",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7852
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone gate pillars and swinging iron doors",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": true,
+    "evidence": "The stone pillars are drawn in pure front elevation with no visible top surface on the capitals (0 top rows). Additionally, the open gate doors are drawn in 1-point linear perspective with receding angled tops slanting downward toward a vanishing point, rather than showing their top edges from the required 45-degree top-down orthographic view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "옆면(아이소)",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7127
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.463Z",
+ "cells": {
+  "16": [
+   "1a40e728702d072f",
+   "353c68f4365021b3",
+   "5dd194ab17069b1b",
+   "77f3ad6d1fd0de53",
+   "c5ce4acad44d6161",
+   "dcc1fad23113ef02"
+  ],
+  "24": [
+   "0cf9dac7b94756b9",
+   "4e20ca579e9203b7",
+   "546803ded5033777",
+   "afce1ee5ba81b2eb",
+   "bc2c76f899672dc2",
+   "c5146f18e74c44cb",
+   "ee946ae0eab7beee",
+   "fc34bce3313a8799"
+  ],
+  "32": [
+   "1dcf667f1da6bb93",
+   "634162fcdcf114a0",
+   "74a429fd59c14f73",
+   "9d29ea348702649d",
+   "a0615b39c9b92184",
+   "abd9c4a3106ee363"
+  ],
+  "48": [
+   "02a92491a9716595",
+   "124f3480e2aa8fc9"
+  ]
+ }
+}

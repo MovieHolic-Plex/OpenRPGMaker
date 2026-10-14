@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f3858e8c10e0259e5263f081bfea3037aab11a0593559ca279746522b5b69954",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "low bamboo table with a bowl of rice, a coconut shell cup and a bunch of bananas on top",
+ "label": "pirate-isles/pi-low-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bamboo table",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bamboo tabletop occupies rows 1-9 (9 rows tall) providing ample foreshortened top surface with items placed upon it, while the front skirt and legs occupy rows 10-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3771
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tabletop surface and front apron",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bamboo tabletop spans rows 1 to 9 (9 pixel rows deep), displaying items resting on its top surface, followed by a lighter front edge at row 10 and a front apron/legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4178
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bamboo table",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop has a prominent top surface visible from rows 1 to 9 holding the food items, with a front edge highlight on row 10 and front apron and legs beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3856
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "table top and legs",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bamboo tabletop has a foreshortened top surface spanning rows 2 to 9 (~8 rows deep) displaying food items, followed by a front edge band at rows 10-12 and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2978
+  }
+ ],
+ "decidedAt": "2026-10-13T19:28:41.190Z",
+ "cells": {
+  "16": [
+   "1505779217b9068b",
+   "ca30b1a07b1d14d5"
+  ],
+  "24": [
+   "723a38a984536e02",
+   "7578d6e50cd05015",
+   "8b8dfae37c9b09e8",
+   "938bf0e76fc4f59c",
+   "b6c3b827fd7d161b",
+   "c052c2c41d6df096",
+   "c61477895e7b39ae",
+   "cebb2b9f2e58df62",
+   "dae6f41c494b234b",
+   "f4e0d6616ba50619",
+   "fc63b5f28fa4d848",
+   "feb8ed96880d0b8c"
+  ],
+  "32": [
+   "23c59e032f3050b5",
+   "b23bd18d306e1c8d"
+  ],
+  "48": [
+   "0898b9c618f0535a",
+   "0d1e206a493d07e0",
+   "170625bc01746a59",
+   "7bfc5f38b3474db0",
+   "b318902db44b08d5",
+   "fa467ca397286b31"
+  ]
+ }
+}

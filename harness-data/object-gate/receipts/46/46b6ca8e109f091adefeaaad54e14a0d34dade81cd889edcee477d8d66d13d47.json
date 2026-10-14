@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "46b6ca8e109f091adefeaaad54e14a0d34dade81cd889edcee477d8d66d13d47",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "수위실(작은 초소)",
+ "label": "modern-campus/mc-guard-booth",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "small guard post building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure, including the upper sign/parapet area, awning, and walls, is rendered as a completely flat architectural front elevation with no visible top surface or roof slope.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4265
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "small guard post building",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building facade, upper fascia/signboard area, window, and door are drawn in completely flat 2D architectural front elevation with no visible roof plane or top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3649
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "small guard post building",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building is drawn in a pure flat front elevation. The upper section/parapet, blue trim band, wall, window, and door are all shown straight-on without any foreshortened roof slope or horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4003
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "guard post building",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in a pure front elevation view. The fascia/signboard (rows 2-11), awning/trim (rows 12-14), and wall with window and door (rows 16-43) are completely flat facing the camera with 0 visible top roof surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4127
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.305Z",
+ "cells": {
+  "16": [
+   "18fc5868502a2f70",
+   "6f2242186e045199",
+   "804806b6f3b714e4",
+   "c353721af489458f",
+   "c62588024523f566",
+   "e6879953cc95a224"
+  ],
+  "24": [
+   "02e3e1a827b6b49a",
+   "29a47e2c518dc3cd",
+   "3422b81bfea22e4c",
+   "4de05ec500760d87",
+   "701019cfe9fea22d",
+   "74c854fb655e72f4",
+   "9cdad224f000416f",
+   "a0430cf882bdb196",
+   "d768cc9cd0f9c971",
+   "e0ecd5086f033673",
+   "f4e846b348fdb699",
+   "f61a2bbeb6c84705"
+  ],
+  "32": [
+   "2e3033a04e8a4fd9",
+   "330ebd7ae3161ce3",
+   "63471fed66cfd549",
+   "85cf321b5533a31d"
+  ],
+  "48": [
+   "1bd565e2da94117a",
+   "49677d69af75799f",
+   "5d350aded0ae6782"
+  ]
+ }
+}

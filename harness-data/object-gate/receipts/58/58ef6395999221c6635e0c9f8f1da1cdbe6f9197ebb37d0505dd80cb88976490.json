@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "58ef6395999221c6635e0c9f8f1da1cdbe6f9197ebb37d0505dd80cb88976490",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "tall wooden kitchen shelf with clay pots, bowls and an iron pan, a water jug on top",
+ "label": "pirate-isles/pi-pot-shelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall wooden shelving unit",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shelf unit is visible across rows 4-6 (3 pixel rows deep) upon which the water jug rests, before the front molding at row 7.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6959
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden shelving unit",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shelf is visible across rows 4-6 (3 source pixels tall), supporting the water jug before the front edge/cornice at rows 7-8.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7451
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tall wooden kitchen shelf",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The shelf shows a visible 3-pixel-tall top surface (rows 4-6) on which the water jug rests, above the front cornice moulding at rows 7-8. The side profiles are vertical without isometric receding faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 30075
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall wooden kitchen shelf",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shelf unit is visible across rows 4 to 7 where the water jug rests, bounded by the rear outline at row 3 and the front cornice/edge at rows 7-8, measuring approximately 4 source pixel rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4832
+  }
+ ],
+ "decidedAt": "2026-10-13T19:28:41.187Z",
+ "cells": {
+  "16": [
+   "8dac81014a276b09",
+   "9f244a0073a6cdae"
+  ],
+  "24": [
+   "08e6bc7f3914010b",
+   "2c15b0ab9d506a29",
+   "312c22fbfcf83566",
+   "3df653e5944b74b7",
+   "455a7527493cf8ff",
+   "4cb0f0891629a1bc",
+   "51e236a69c76df64",
+   "5c7d2ac96a3be2b4",
+   "673165ea108e6637",
+   "765bc3449e319bd7",
+   "7a62863769fb7938",
+   "bf2ffe18ab9f4a3d"
+  ],
+  "32": [
+   "477f2b7ec68fbd78",
+   "6ac1bc6581a5f6dd",
+   "f994a9ed79786bf5"
+  ],
+  "48": [
+   "2b8f9e306a2a5a34",
+   "5a7f35b43f0dc296",
+   "818f524e06e54402",
+   "aeba951710d8bc81",
+   "db8471d0cdd6fefa",
+   "ec00eacbdfd23d58"
+  ]
+ }
+}

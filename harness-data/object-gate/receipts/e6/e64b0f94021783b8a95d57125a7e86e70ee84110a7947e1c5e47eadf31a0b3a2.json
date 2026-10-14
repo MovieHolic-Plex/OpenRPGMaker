@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e64b0f94021783b8a95d57125a7e86e70ee84110a7947e1c5e47eadf31a0b3a2",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "rock cliff face end tile (terrain)",
+ "label": "sky-island/si-face-top-l",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rock cliff face edge tile",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing the left edge of a rock cliff face, with brown dirt ground visible at the top (rows 0-1) transitioning to the vertical rocky face below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5216
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cliff face edge tile",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile representing the side boundary of a rocky cliff wall, showing the brown top ground surface at rows 0-2 transition into a vertical rock face below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3775
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rock cliff face terrain tile",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing a vertical cliff face with top plateau ground (brown dirt) along rows 0-2 and the rock wall edge below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3666
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rock cliff edge / face tile",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing the side edge of a rock cliff face, featuring cliff-top ground in rows 0-1 and a vertical rocky cliff profile below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4333
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.975Z",
+ "cells": {
+  "16": [
+   "6598f39c77a037e3"
+  ],
+  "24": [
+   "0cf418137092eafd",
+   "2380f8ae59a53511",
+   "4b02e2260a204a70",
+   "56f34ac971c6ea05",
+   "7a4ed45312f439e0",
+   "849d73ad5c682432"
+  ],
+  "32": [
+   "31b3157204b06a18",
+   "5a94d5b5f51246fe",
+   "8329e4384606c61a",
+   "86566104c50a4631",
+   "b5314e5d9b333f09",
+   "bed8fa0ade98ce60"
+  ],
+  "48": [
+   "55ed43caa90e3a39",
+   "795cb6287c5b258f",
+   "98fb3cea516f566f",
+   "cf73c4fd93b24604",
+   "e3fe8c0697ee5d22",
+   "fc2e15ec00ef12cc"
+  ]
+ }
+}

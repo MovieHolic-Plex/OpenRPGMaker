@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5c350e11e6e5bf737aed8a8fa918c38edc52dff0e5a414f10a4bbda089262017",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "시안 호버 포드(둥근 차체 윗면 + 유리 캐노피 + 밑 추진 빛)",
+ "label": "sf-station/sf-street-pod-car-cyan",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cyan hover pod vehicle",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hover pod is drawn in pure front/side elevation as a flat rectangle with rounded corners; the top is only a 1-2px highlight strip (rows 4-5) without a foreshortened top surface or downward viewing angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4839
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hover pod body",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hover pod is drawn as a flat front/side 2D elevation. The top edge (rows 3-5) consists only of an outline and a 1-2px highlight band rather than a foreshortened top surface, and the central canopy is viewed straight-on.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6096
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hover pod vehicle body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hover pod is drawn as a flat 2D side elevation with a horizontal stripe, thrusters underneath, and a centrally placed window/canopy; there is no foreshortened top roof surface visible (only a 1-2px edge highlight at rows 3-4).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4849
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cyan hover pod body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hover pod is drawn as a flat front/side architectural elevation with zero visible top surface. The main body, central canopy, and lower skirt are all viewed straight-on perpendicular to the camera without foreshortened top planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4890
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:07.398Z",
+ "cells": {
+  "16": [
+   "26b024379f5f546d",
+   "3a04d6699f1afd4b",
+   "4c6380a32c6f6f39",
+   "cd9b7fd089bed7d6",
+   "eba1f3f73a29a8d9",
+   "ec9dba6deef91948"
+  ],
+  "24": [
+   "2776c7e4fa2f153c",
+   "4b9e55dfe2f06abc",
+   "559f945e1b17b6cf",
+   "696d3e60a39ce1bf",
+   "9263e03f70d548c7",
+   "dc60c528dbf6dbf1",
+   "f0464d9832502215",
+   "f5d140b8dcffa31b"
+  ],
+  "32": [
+   "01bf72983cde579f",
+   "299be75b324738ad",
+   "306b584c46773e43",
+   "7077d179c4896e37",
+   "e7a115b03956beb0",
+   "ed772804adf14832"
+  ],
+  "48": [
+   "63c3340596a774cf",
+   "7d7f611756fdf9ad"
+  ]
+ }
+}

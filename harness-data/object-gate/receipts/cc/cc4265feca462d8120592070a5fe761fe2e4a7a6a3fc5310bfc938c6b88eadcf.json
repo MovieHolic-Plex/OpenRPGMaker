@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cc4265feca462d8120592070a5fe761fe2e4a7a6a3fc5310bfc938c6b88eadcf",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "dark diamond-plate cargo bay floor, two variants (one with yellow safety line)",
+ "label": "sf-station/sf-cargo-floor",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "diamond-plate floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain floor tiles showing top-down diamond-plate pattern across the full 16x16 tile area, with yellow warning line on the right variant.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3882
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "diamond-plate floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles viewed top-down across the full 16-row tile height, showing industrial tread plate pattern and a yellow safety line.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3457
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "diamond-plate floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain floor tiles representing diamond-plate metal surface with painted yellow hazard/safety line; fully top-down horizontal surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3448
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cargo bay diamond-plate floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles viewed from above covering the full 16-row tile height, with diamond tread pattern and yellow hazard stripe on the right variant.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3104
+  }
+ ],
+ "decidedAt": "2026-10-13T16:10:30.408Z",
+ "cells": {
+  "16": [
+   "c02f67436d893868",
+   "e1544892ab415956"
+  ],
+  "24": [
+   "00788a47c1afd0ce",
+   "13015acc5ff20f5b",
+   "18af0a643a33aeef",
+   "2b49634ebf810edc",
+   "519c14896f6809a3",
+   "53630d2926b0eeab",
+   "7c43861158a3ed21",
+   "b8210e64f4665259",
+   "bb20c6f05bbb21f0",
+   "d6af68a9ce4a49c7",
+   "f355568a44db03fb",
+   "f468a8ea477b682a"
+  ],
+  "32": [
+   "468210a1aa48ecc1",
+   "c57e983abf4de149"
+  ],
+  "48": [
+   "1b056aaa8d1b15ef",
+   "2eede45d33d6b4c5",
+   "9974ca00971e9822",
+   "a1390cc6f4ee8485",
+   "aab989344831b905",
+   "fc27717d48a04a79"
+  ]
+ }
+}

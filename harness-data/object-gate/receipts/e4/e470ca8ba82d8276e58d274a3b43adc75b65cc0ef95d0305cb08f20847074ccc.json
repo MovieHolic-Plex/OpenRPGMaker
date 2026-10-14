@@ -1,0 +1,123 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e470ca8ba82d8276e58d274a3b43adc75b65cc0ef95d0305cb08f20847074ccc",
+ "width": 48,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "공방 작업대(바이스·공구·톱니)",
+ "label": "steampunk-city/sp-workbench",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "workbench with tool rack and drawers",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The workbench is drawn as a flat architectural front elevation: the drawer section (rows 15-24), tabletop edge (row 14, only 1px tall), and vertical backboard with hanging tools (rows 3-13) show no foreshortened top surfaces. Both the vise and gear are drawn in pure front view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 11557
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "workshop workbench with drawers and tabletop tools",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The workbench shows a foreshortened top surface from row 3 to 13 (approx. 11 rows) where tools such as a vise, hammer, file, and gear rest, sitting above the south-facing front face with drawers (rows 15-24) and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5747
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "workshop workbench",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the workbench is clearly visible and foreshortened from rows 3 to 13 (11 pixel rows) with tools (vise, hammer, chisel, gear, block) resting on it. Below it, the south-facing front with three drawers spans rows 15 to 25 above the legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11950
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "workshop workbench with tools on tabletop and drawers below",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is seen from above spanning rows 3 to 14 (11-12 rows) with tools laid out on it, while the front face with drawers extends from row 15 to 24 supported by legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5939
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.467Z",
+ "cells": {
+  "16": [
+   "6ba64fc847a926a8",
+   "772cf430ee1d70c3",
+   "9dde70d461847f45",
+   "a43b581cba42ba77",
+   "b053651e0a0ebe8a",
+   "cbaae1fc84eb2ea4"
+  ],
+  "24": [
+   "3b1e7a66397faf9e",
+   "75ec310d18476458",
+   "8ba3b67d816a6839",
+   "90e1a89b940a9319",
+   "9be6999b4929c908",
+   "9fd297c124993372",
+   "bd6c52c29c3bbc39",
+   "be483e0bbf08883d"
+  ],
+  "32": [
+   "176eaeddbb8dd3da",
+   "32075da338b89799",
+   "3f4e94e23cdbf9af",
+   "5f6fb34234da6c13",
+   "6d5e781d9c6a10e9",
+   "8c6cb8d1a603ecca"
+  ],
+  "48": [
+   "a0827f023e9baf94",
+   "d747c24720045395"
+  ]
+ }
+}

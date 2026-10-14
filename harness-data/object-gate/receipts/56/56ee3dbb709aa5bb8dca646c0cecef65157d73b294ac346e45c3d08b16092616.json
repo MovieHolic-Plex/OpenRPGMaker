@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "56ee3dbb709aa5bb8dca646c0cecef65157d73b294ac346e45c3d08b16092616",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "stone bridge deck end with pillar (flat walkway)",
+ "label": "sky-island/si-sbridge-w",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone bridge walkway surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a flat stone bridge walkway / deck surface viewed from above with horizontal paving stones and surface staining, occupying the full height of the tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6600
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone bridge walkway deck",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire tile depicts a flat stone bridge walkway/floor surface viewed from above with stone paving slabs and mortar joints.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4555
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone bridge structure with masonry wall/pillar",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tile depicts stacked horizontal ashlar masonry courses and a vertical pillar/border with no visible horizontal top surface foreshortened toward the viewer. Described as containing a pillar yet labelled 'flat', it is drawn as a flat front elevation with 0 top rows.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 9193
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone bridge deck with pillar/railing",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object includes an upright pillar/railing structure along the left edge, making it an architectural standing structure rather than a flat ground decal. Furthermore, no horizontal top surface of the pillar or structure is depicted.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 11698
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.983Z",
+ "cells": {
+  "16": [
+   "ab75d4de4ec66b65"
+  ],
+  "24": [
+   "40a4467554ac31d9",
+   "4aa7fb56fc0a846a",
+   "63320249afbf8a28",
+   "78c2dd117cdcacce",
+   "fa07f81979aa8abb",
+   "fb47bc6133c667f5"
+  ],
+  "32": [
+   "3942501bfe60e259",
+   "50abfe8f0d364472",
+   "605f6a02434ecbd5",
+   "787aef2fa92c282d",
+   "a47e0b7275dcac70",
+   "e0280f190dcce81b"
+  ],
+  "48": [
+   "0fca9b6d83f3bd10",
+   "3bb0a407e5ddbe01",
+   "48f536c7770928d5",
+   "51641420f5ea17bc",
+   "78483b68035ba673",
+   "a516a63b8edc9d49"
+  ]
+ }
+}

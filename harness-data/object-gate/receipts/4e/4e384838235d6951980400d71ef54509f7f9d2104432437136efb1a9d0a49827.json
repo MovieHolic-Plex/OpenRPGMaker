@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4e384838235d6951980400d71ef54509f7f9d2104432437136efb1a9d0a49827",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "low wooden tray holding a pyramid of iron cannonballs",
+ "label": "pirate-isles/pi-cannonballs",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden tray holding stacked cannonballs",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The low wooden tray shows a clearly visible horizontal top surface across rows 6–11 (6 px tall) and a south front face across rows 12–15 (4 px tall), satisfying 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15490
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pyramid of cannonballs on wooden tray",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden tray clearly shows its foreshortened horizontal top surface (rows 6 to 11, ~5 rows deep) and south-facing front face (rows 12 to 15), correctly rendered in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6836
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "low wooden tray holding a pyramid of iron cannonballs",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden tray clearly shows its top horizontal surface (rows 6-10, about 5 rows deep) upon which the iron cannonballs rest, and its south front face (rows 11-15). No isometric side faces are present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6810
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pyramid of iron cannonballs in tray",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cannonball pile is drawn as a flat 2D front elevation of 6 balls (1 on top, 2 in the middle, 3 on the bottom) arranged in a single vertical plane without the depth, top surfaces, or 3D base (e.g. 3x3 square pyramid or triangular tetrahedron) expected from a 3/4 overhead perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14066
+  }
+ ],
+ "decidedAt": "2026-10-13T19:25:15.328Z",
+ "cells": {
+  "16": [
+   "5e7dbb74c0885586"
+  ],
+  "24": [
+   "2e2443c7cd53fa26",
+   "507b50436d79dbfd",
+   "50d074301f887f51",
+   "7f5b4caaf0601d01",
+   "95d29b47f81ffd80",
+   "c61be6f575f5a246"
+  ],
+  "32": [
+   "23434326a69bfa0f",
+   "4ebd9416aa3dc82a",
+   "5139a73a103172b4",
+   "70f4b3da96bfd7b6",
+   "a4e90c42ab33ecc2",
+   "ca4d53a29ddccaf0"
+  ],
+  "48": [
+   "105b6947195fbafc",
+   "3cf2373184bcb15e",
+   "4aeffa7e2d7f289a",
+   "7125939f7ac38da7",
+   "877afb7eb9c4e581",
+   "e069233d74d1ebcb"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bad217ab4e3e9bfcd82d809c30c88deac8ec120302455e2670b10340151b24bc",
+ "width": 16,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "세면대 유닛(흰 상판 + 눌린 세면볼 + 수전 + 아래 문)",
+ "label": "sf-station/sf-sink-unit",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sink countertop unit with cabinet below",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The countertop top surface spans rows 2-9 (8 rows tall) with a visible recessed sink basin and faucet, while the cabinet doors beneath form the front south face on rows 10-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5819
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sink vanity unit",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The white countertop is clearly visible from above across rows 2-9 (~8 source pixel rows) with an inset basin and faucet, sitting atop front cabinet doors on rows 10-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5972
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sink vanity unit",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top counter surface spans rows 2 to 9 (8 rows tall) containing the sink basin, faucet, and water, with the lower cabinet doors clearly forming the south-facing front face on rows 10 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5032
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sink vanity counter with basin and lower cabinet",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top countertop surface spans rows 2-9 (8 rows tall) containing the sink basin and faucet, with the front cabinet face clearly visible on rows 10-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6094
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.954Z",
+ "cells": {
+  "16": [
+   "6ecf27471c40d526"
+  ],
+  "24": [
+   "02258e0659981468",
+   "35390e3e4a9217b0",
+   "7e9d83d8047fa711",
+   "c342a3a2479566dc",
+   "f04d7e704cc68763",
+   "fca3725c8c51faf6"
+  ],
+  "32": [
+   "3f25b6d57c3f3eb2",
+   "89d6402a9e7f4e11",
+   "a5b1c705005637bd",
+   "b422ef2759649119",
+   "bcc43e69b4c0e21a",
+   "d0c0bcf617d9dc63"
+  ],
+  "48": [
+   "26ac1d4203585cd3",
+   "31f575ac512c6feb",
+   "5fc247f0b53b1c41",
+   "60b39f31a22ae188",
+   "89cae17811e055ba",
+   "d1153b4acb4a8288"
+  ]
+ }
+}

@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "52a13744a5e9c9a8bd215e87be6b4a95bca040316b2e845956c91559ecfdeb2c",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "standing iron brazier seen from above at 3/4: wide round fire bowl full of glowing coals with flames, on a tall tripod stand",
+ "label": "pirate-isles/pi-torch-stand",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fire bowl and tripod stand of iron brazier",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round bowl rim curves down from rows 8-10 at the sides to row 12 at the front, opening up a clear 4-row view into the glowing coal bed inside the bowl from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10645
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron fire bowl on tripod stand",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fire bowl is viewed from 3/4 perspective, showing both the front exterior wall (rows 12-15) and an elliptical opening showing the bed of glowing coals inside (rows 8-11, ~4 rows deep).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4985
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron brazier bowl and tripod stand",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brazier bowl clearly shows its interior opening filled with glowing coals across rows 8-11 (approx 4 rows visible from above) before transitioning into the front exterior bowl wall on rows 12-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5787
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fire bowl of standing iron brazier",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fire bowl is drawn with an elliptical opening extending from the back rim at row 7 to the front rim at row 12 (approx 4-5 rows of interior depth filled with glowing coals), demonstrating clear 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 0행 < 3"
+   ],
+   "ms": 8904
+  }
+ ],
+ "decidedAt": "2026-10-13T19:41:01.301Z",
+ "cells": {
+  "16": [
+   "7339770c10c7df6d",
+   "96346febbc68d658"
+  ],
+  "24": [
+   "2142f161fa1ddfc8",
+   "26f78411e1ae6aaa",
+   "3edd0ce3b8911414",
+   "3f55e1c9a195436f",
+   "67cb725577072909",
+   "93d29b81277bfdee",
+   "9406395b3ccd1d8b",
+   "9d8d2f273b6e68cc",
+   "a5e42d78548eee1a",
+   "c269af6314e8433d",
+   "f642ecd54b617f68",
+   "f96db2b169ee2b05"
+  ],
+  "32": [
+   "5bfff964124dead0",
+   "7879a1207f2c2318",
+   "d0d990b34cedfd7a"
+  ],
+  "48": [
+   "46bc704598d28c1b",
+   "75e63a9c3a995729",
+   "8f121a06b2de198d",
+   "93cb7ead7a37b1be",
+   "9a72db1e76794299",
+   "c220fb18c06f32d7"
+  ]
+ }
+}

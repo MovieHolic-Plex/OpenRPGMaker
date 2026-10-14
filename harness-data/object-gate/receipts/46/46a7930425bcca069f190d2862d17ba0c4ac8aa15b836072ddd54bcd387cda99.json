@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "46a7930425bcca069f190d2862d17ba0c4ac8aa15b836072ddd54bcd387cda99",
+ "width": 32,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "두루마리 서가(벽 앞)",
+ "label": "sengoku-edo/se-scroll-shelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "scroll bookcase",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bookcase is drawn strictly from a front elevation. The top rim is only a 1px dark border with a 1px inner edge (rows 1-2), showing no foreshortened top surface, and the shelves are flat horizontal dividers with no top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4286
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "scroll bookcase",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bookcase is drawn completely flat from the front. The top frame at rows 2-3 is merely a 1-2px border outline with no top surface visible above the top compartment, and all shelves are rendered in straight elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4284
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "scroll bookcase",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tall scroll bookcase is drawn in pure front elevation with no visible top horizontal surface (0 source pixel rows) and perfectly flat front-facing shelves.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3671
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "scroll bookshelf",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bookshelf is drawn completely flat from the front. The top rim is only a 1-pixel dark outline/frame with no foreshortened top surface (top_rows: 0), and shelves are flat horizontal dividing lines.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 2955
+  }
+ ],
+ "decidedAt": "2026-10-13T19:37:02.185Z",
+ "cells": {
+  "16": [
+   "21c17f9b1fa6e43c",
+   "2e4762bc3e78cb72",
+   "8922c406cdec7c89",
+   "9f1a300578fe1ae2",
+   "f85a7a337a0a1b06",
+   "fe08a453a845e08f"
+  ],
+  "24": [
+   "19b808ce60358136",
+   "273445258f440411",
+   "352e84df69b661c9",
+   "56eff7e5b89cf948",
+   "7c6f2a1e3a193be8",
+   "948324a7dd5925cd",
+   "c4324dd733a35b6a",
+   "c6fbeee8faaf6ae3",
+   "e2f6c54533c81500",
+   "eb3be4d76b214f27",
+   "ed441e3e1642e533",
+   "f8197425b036660f"
+  ],
+  "32": [
+   "91e722bea56f4170",
+   "c5413979590872db",
+   "ccd8e8ff3b980dd3",
+   "dd9feb9edb2da7e3"
+  ],
+  "48": [
+   "18342eedfcecd5f5",
+   "1b4af7ce9b91fd69",
+   "df2d6f7944adbe3f"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b922c033e3f4c3b9545c4739335844e1545a84ad4dcb0ac4484976e438fadc2f",
+ "width": 16,
+ "height": 32,
+ "kind": "flat",
+ "name": "long ceremonial carpet runner (flat decal)",
+ "label": "sky-island/si-rug-long",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "carpet runner strip lying flat on the floor",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The runner is a flat ground decal viewed from above spanning all 32 rows with golden borders and diamond motifs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3480
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flat floor carpet runner with gold border and decorative diamond motifs",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 32-row sprite represents a flat carpet runner lying directly on the floor viewed from above, perfectly matching the flat decal kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3613
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "carpet runner",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat floor runner extending the full 32 rows, displayed entirely from above as a ground decal.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3069
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "carpet runner lying flat on the floor",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire object is a floor runner decal seen from above across all 32 rows with repeating diamond motifs and bordered edges.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4102
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.564Z",
+ "cells": {
+  "16": [
+   "39be936c6b98f239"
+  ],
+  "24": [
+   "05d02df947e791a2",
+   "2b7742f3bb9df60c",
+   "52be4296490bbc38",
+   "577212f80099915d",
+   "603615984616cb15",
+   "7241d2d6b0ec3488",
+   "8bdbbbe3e78dec8b",
+   "e2f7cc0eb3f4299a",
+   "e6816c5751132504"
+  ],
+  "32": [
+   "645b5129e6238db1",
+   "d74cd64dbbcdb423",
+   "dcbb003bb3ef9acc"
+  ],
+  "48": [
+   "2fc8668141c4738c",
+   "35385d4cec4b6deb",
+   "4e26f914e74a7501",
+   "b3ba3a36d502b61f",
+   "c1630f439388fc1f",
+   "caeb6698a4724de6"
+  ]
+ }
+}

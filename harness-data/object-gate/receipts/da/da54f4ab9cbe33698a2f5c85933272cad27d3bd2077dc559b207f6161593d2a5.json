@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "da54f4ab9cbe33698a2f5c85933272cad27d3bd2077dc559b207f6161593d2a5",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "flat coastal rock ground tiles, 2 variants",
+ "label": "pirate-isles/pi-rockfloor",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flat ground stone tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tiles representing paved or rocky floor spanning full 16x16 tile space.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4445
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ground tiles / stone pavers",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain pattern composed of stone paving blocks laid in running bond. Valid terrain surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5963
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tiled stone ground pattern",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image shows flat stone tile terrain textures in a running-bond pattern, correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3977
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flat stone pavement / rock ground tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain pattern composed of stone paving blocks separated by mortar lines, viewed from above as ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4345
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.694Z",
+ "cells": {
+  "16": [
+   "6bd77a4ee1ad039c",
+   "f5e83f71b4568b20"
+  ],
+  "24": [
+   "15c26ca2e96e1120",
+   "171d47033829a231",
+   "52dabba70af35010",
+   "5ec77450eee9d644",
+   "81cb302e807b2668",
+   "91fa9393b998c6f0",
+   "a7c56bd59cf22aec",
+   "aa170a082a2d8863",
+   "ce95f5998d39f02b",
+   "d233622b3eefaf31",
+   "d352830f5db8e320",
+   "db940f9f648749e2"
+  ],
+  "32": [
+   "d41a9053bf98c6e6",
+   "f4974c9d46a89f7b"
+  ],
+  "48": [
+   "408f3726c35ea2da",
+   "40a85d0d305f6740",
+   "4829da5365544382",
+   "630a730d61dcf8e6",
+   "89d042398c4f5163",
+   "bdb467f9b9361cf3"
+  ]
+ }
+}

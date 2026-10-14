@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7d974c172f5f375e2b496343364fe1d7cf87571f43eef7839a7c245099a62bf9",
+ "width": 48,
+ "height": 48,
+ "kind": "organic",
+ "name": "단풍나무(붉은 잎 수관)",
+ "label": "sengoku-edo/se-tree-maple",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn entirely in flat 2D side-view (platformer style). The canopy lobes are arranged in a flat vertical profile with no foreshortened top surface, and the trunk is a straight vertical cylinder ending in a completely flat horizontal base at row 46 with no 3/4 ground perspective or elliptical base.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7709
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tree canopy (foliage)",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The foliage consists of rounded organic clusters where the upper hemisphere is visible and lit from above (rows 2-16) with foreground clusters overlapping lower down, consistent with a top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7361
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "autumn tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn in pure 2D side/front elevation: the trunk is a straight vertical cylinder ending in a completely flat horizontal bottom line at row 46, and the foliage clusters are arranged in a flat side-profile silhouette without top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6284
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "foliage canopy",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is the organic foliage canopy. It displays a rounded dome structure with upper-facing highlight planes across rows 2-14 (approx. 12 rows) before reaching the widest contour, and overlapping frontal clumps that provide depth consistent with 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10360
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.069Z",
+ "cells": {
+  "16": [
+   "1afff9e37010eafe",
+   "2d0d190cfdcfeaf8",
+   "3e0ed60e31f00beb",
+   "5307e5d315d30f29",
+   "5bf3a101ef99a2a0",
+   "68dc6c17c905180c",
+   "95ac1b787ced21ce"
+  ],
+  "24": [
+   "1c103b9910f9214e",
+   "281da7c58e656d33",
+   "902264148b21b115",
+   "f93a02112164492a"
+  ],
+  "32": [
+   "01619bb05538546f",
+   "10a162f2823013e6",
+   "1c4d953f28b26e8c",
+   "30c23ba1d9f960ad",
+   "431b61a935000820",
+   "468c0f035b65e879",
+   "6a88cc6b58718bfb",
+   "6d82a8440108d31e",
+   "8108db54a9e7388e",
+   "8d364cf01a03e2b8",
+   "8f1543c4409d337c",
+   "9359a13c39bb3f5b",
+   "944197a552b4d82f",
+   "a32fe23337ad8917",
+   "a770f819c43a7065",
+   "a82ccadc14c9054e",
+   "b93389ce51d330a7",
+   "c151200a60841899",
+   "e380bfa03d4ed7ae",
+   "e9f48d8e243a7ed4",
+   "ed41171ef40b66f5",
+   "f3819fb7ab04143c"
+  ],
+  "48": [
+   "728a5e0a10aa566d"
+  ]
+ }
+}

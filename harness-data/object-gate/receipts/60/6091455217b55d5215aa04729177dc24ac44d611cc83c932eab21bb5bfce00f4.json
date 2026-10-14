@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6091455217b55d5215aa04729177dc24ac44d611cc83c932eab21bb5bfce00f4",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "운하 돌다리 서쪽 난간(남북으로 건넌다)",
+ "label": "steampunk-city/sp-bridge-w",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "west railing and road surface of a north-south stone canal bridge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile shows a north-south running stone bridge railing with its top surface clearly visible as a 4-5px wide vertical band spanning all 16 rows, bordering the stone-paved bridge deck to the east.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5467
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone bridge west railing and road surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a north-south stone bridge edge, showing the top surface of the western railing along columns 1-4 and the stone-paved bridge deck along columns 5-15, all correctly viewed from above in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6538
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "canal stone bridge west railing with stone walkway",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "North-south running bridge railing tile viewed from 3/4 perspective, showing the top surface of the west railing (approx. 3-4px wide, running full height) adjacent to the stone-paved bridge deck.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4608
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone bridge deck with west railing",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Continuous north-south stone bridge terrain tile showing the top surface of the west parapet/railing (cols 1-4) and the cobblestone bridge deck (cols 6-15) viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5090
+  }
+ ],
+ "decidedAt": "2026-10-13T18:45:40.070Z",
+ "cells": {
+  "16": [
+   "a6ae257f860a4498"
+  ],
+  "24": [
+   "0cb43b9164b4106d",
+   "504e043934da34f3",
+   "6604f4b4ae94671a",
+   "a0ef7c015f52ba54",
+   "b428655a8dc6518f",
+   "e7c358b8c14d1f20"
+  ],
+  "32": [
+   "61742200a6efb1b8",
+   "647d3d3f4d0792ee",
+   "9ea496a2e15ba9e5",
+   "a7705370964d7bf3",
+   "d4c2d80eb2d0321a",
+   "e53ee060e814d96b"
+  ],
+  "48": [
+   "2678fad7efa93b49",
+   "2e5dd74d807ce833",
+   "5de9df75262a40ea",
+   "ce70fd7709fde57f",
+   "d0b07fcc650e14df",
+   "e703f7f12b1f1f4c"
+  ]
+ }
+}

@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2bdaf47d33cd9c19ef21bd32a2a08fd250217df57c318e7191e00bd49e58bba4",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "small round wooden stool",
+ "label": "sky-island/si-stool",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 1.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stool seat and legs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stool is drawn in pure front elevation: the legs all share a single flat baseline, the seat rim is a flat horizontal rectangle, and the upper section forms a domed/trapezoidal profile rather than an elliptical top surface viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10339
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round wooden stool",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat top is visible from above as a foreshortened round surface spanning rows 3-5 (3 rows tall in lighter wood), with the front rim/apron of the seat visible below it on rows 6-7.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7143
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stool seat and legs",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round seat disk displays a 4-pixel-tall top surface (rows 2-5) foreshortened from above, with a 2-pixel-tall front edge (rows 6-7) before the legs extend down to row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4614
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round wooden stool",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stool is drawn in pure front elevation: all three legs terminate on the exact same horizontal baseline at row 15, and the seat is drawn as a flat-front vertical rim (rows 6-7) topped with an upward arching silhouette (rows 3-5) rather than an ellipse showing a horizontal top surface seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8951
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.562Z",
+ "cells": {
+  "16": [
+   "ee7789d0ec55f6c5"
+  ],
+  "24": [
+   "9cfc9ece38998ef6",
+   "aac47a95dd3a495c",
+   "addf300751a56da1",
+   "ae8a3b965b31b80b",
+   "f137643b7f483404",
+   "f934991eb057c922"
+  ],
+  "32": [
+   "2c69540fa15afc4b",
+   "2f9c9e63fa393f5d",
+   "6014324d14b7216f",
+   "8935da7485c615e3",
+   "912b159471f4bb1e",
+   "a67e0ef276d9d472"
+  ],
+  "48": [
+   "0ec93f7bcfe9b9f2",
+   "42e4cd9e6fde8b06",
+   "4373d15905f206ea",
+   "781abcd8d5c6eb08",
+   "ac7d0a1c8ab44d3d",
+   "ffd75ce0de992d3d"
+  ]
+ }
+}

@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c9d9e0672989138ff68bab1e16121c4fe1ff29f763773dd291906545b540fe75",
+ "width": 48,
+ "height": 32,
+ "kind": "box",
+ "name": "stone altar with glowing crystal on top",
+ "label": "sky-island/si-altar",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone altar block",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The altar top surface extends across rows 14-19 (6 pixel rows) where candles and the crystal base rest, clearly foreshortened from above over the front vertical face (rows 20-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4890
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone altar",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The altar's horizontal top surface is clearly visible from row 14 to row 19 (6 pixel rows tall), upon which the crystal dish and candles rest, followed by the south-facing front wall below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4215
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone altar",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The altar's top stone surface is clearly visible from row 14 to row 19 (6 pixel rows) supporting the candles and crystal, above the front vertical face spanning rows 20 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4168
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone altar",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the stone altar spans rows 14 to 19 (6 rows tall), displaying clear depth where the candles and crystal dish rest, above a distinct south-facing front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3684
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.564Z",
+ "cells": {
+  "16": [
+   "04dcd7e160b623cc",
+   "5685b24bc62bddb9",
+   "59f8681f8b505dc6",
+   "70883d0be2e6340e",
+   "956f723a5f9eb282",
+   "d2d14140b191fba4"
+  ],
+  "24": [
+   "2de981d3a8bc66e1",
+   "46f9ba2af36bf66a",
+   "636cf985ba43f613",
+   "bb21f167d294d22a",
+   "d4b14c192b1d35fc",
+   "e6868c0bc1b70d53",
+   "f02a86babf324a7f",
+   "f39705c33f98b8fb"
+  ],
+  "32": [
+   "45eed51e454ab31d",
+   "6b61396d43e98574",
+   "732ecb523530f349",
+   "a8161ff798e7d51d",
+   "b4bc8681439138dd",
+   "bdeb1848c42b1e6c"
+  ],
+  "48": [
+   "7643d26f0c990a0f",
+   "c1577b370722fb4f"
+  ]
+ }
+}

@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e3bd044f19da3b6024eb72cfa1f2f7d7b488280a8f90c7ec251d55e11f469d44",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "급식 냉장 보관대(낮은 은색, 전자레인지·상자 올림)",
+ "label": "modern-campus-int/mc-fridge-counter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "refrigerated counter / low prep table",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main counter shows a clear 3/4 perspective with a 12-row south front face (doors at rows 19-30) and an 11-row deep top counter surface (rows 8-18) upon which the microwave and box rest.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10282
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "refrigerated counter / low storage stand",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is a low refrigerated counter. Rows 19-30 form its vertical front face with cabinet doors and handles. Rows 9-18 form its deep horizontal countertop surface (10 rows tall) upon which a microwave and a box are placed.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11885
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "refrigerated counter with items on top",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main counter body displays both a 12-pixel-tall south front face (rows 19–30) and an expansive 10-pixel-deep horizontal top counter surface (rows 9–18) upon which the microwave and box rest at differing depths.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15725
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "refrigerated storage counter",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main counter features a distinct horizontal top surface spanning rows 8 to 18 (11 source pixel rows deep), upon which a microwave and box are placed, above the front-facing cabinet doors (rows 19-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6027
+  }
+ ],
+ "decidedAt": "2026-10-13T16:35:07.541Z",
+ "cells": {
+  "16": [
+   "49d95cdd6822e970",
+   "6bb4333454b56569",
+   "725c0f54253341d3",
+   "a106b6a0642fc437"
+  ],
+  "24": [
+   "15b5a62cd195be5a",
+   "15c5c939e0bcd89c",
+   "196e76e301948637",
+   "32900fb6b47e35f1",
+   "34ba495401c16322",
+   "38aa6057e51b3547",
+   "426fe46bc5d54af8",
+   "4668ff3322ecd0f7",
+   "56951d189f74853e",
+   "6c78cace72f32b5b",
+   "6e85691e2d68ab9f",
+   "7052042d11d37d0c",
+   "8e411c20df430983",
+   "93a5862dd2196377",
+   "a58bbb855acf0e08",
+   "beeb1e081da925ab",
+   "c0069b37c5eb4792",
+   "ccec0c6ad759daea"
+  ],
+  "32": [
+   "c2c2ab8aa87b9aec"
+  ],
+  "48": [
+   "08ea7558874cfedb",
+   "2126e24fa529ec0d",
+   "555278653e00e913",
+   "9564a358460bd95d",
+   "973d00153121e470",
+   "98d1ce29a4674ad6"
+  ]
+ }
+}

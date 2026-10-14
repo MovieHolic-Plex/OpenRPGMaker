@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fb8a3fdb279ee60a238ac26c6c531b00c79684be2f496250965e43f1883f88b2",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "dark blue starry wall, lower interior wall tile with baseboard (wall_mounted)",
+ "label": "sky-island/si-wall-star-low",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall face tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid vertical interior wall terrain tile with baseboard along rows 13-15 and starry pattern across the wall face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4746
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "interior wall face with baseboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a lower wall section with baseboard; as a vertical wall face tile, it correctly covers the south-facing vertical plane with no top surface required.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4771
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "interior wall face with starry pattern and baseboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a 16x16 terrain wall tile depicting a vertical wall face with starry dots and a baseboard along rows 13-15. As a wall surface tile, it correctly represents a flat vertical plane in RPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4122
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "interior wall face with baseboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a vertical interior wall surface with starry pattern and bottom baseboard trim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5293
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.560Z",
+ "cells": {
+  "16": [
+   "db9e328af4f4cd33"
+  ],
+  "24": [
+   "1a2a94ddc5b58760",
+   "6a526adef9a77c58",
+   "7434ce00438b97fb",
+   "ce84661f2382c5eb",
+   "e28c34f546188b6c",
+   "ff62a538ded00ac0"
+  ],
+  "32": [
+   "15493f86b8c1a070",
+   "16821094a84c34ea",
+   "17aa42e2ba08e918",
+   "a092d2604bbdc958",
+   "acfdc18ee3569b64",
+   "ca9262307d6a279b"
+  ],
+  "48": [
+   "09d1b5ca3fa4d80a",
+   "0ff79d17ad3237a2",
+   "530c0a0b1a9171db",
+   "832d317fde69b3c8",
+   "b68c0663d32d2370",
+   "dfe6240b800e15d1"
+  ]
+ }
+}

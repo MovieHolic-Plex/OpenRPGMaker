@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c99cb635e669d7fa5124a3c487d873f8cd66fa67006b3b9109b0b042072f018d",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "무쇠 화분(다듬은 관목)",
+ "label": "steampunk-city/sp-planter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "아가리 안쪽이 안 보임",
+  "아가리 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cast iron pot with trimmed shrub",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pot rim is drawn as a flat horizontal 1-pixel-tall bar at row 9 with no elliptical opening or visible top surface, resulting in a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 8532
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron planter pot with trimmed shrub",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rim of the planter at row 9 is drawn as a perfectly straight 1-pixel horizontal stripe with no elliptical curve or depth foreshortening, and the pot body (rows 10-15) is rendered in pure front elevation with straight horizontal bands.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 8209
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron pot / planter",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pot is drawn in a flat front elevation: the rim at row 9 is a straight 1px horizontal line with no elliptical curvature or depth, and the rivets and base are drawn completely flat without foreshortened top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 8585
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cast iron pot with trimmed shrub",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rim of the pot at row 9 is drawn as a completely flat 1px horizontal band without any elliptical curvature or visible top surface depth, rendering the container in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 7917
+  }
+ ],
+ "decidedAt": "2026-10-13T18:42:41.658Z",
+ "cells": {
+  "16": [
+   "11592e4c86bad11f"
+  ],
+  "24": [
+   "5501567144657fc4",
+   "6804f767a2600596",
+   "91d0fbb6595b9e95",
+   "9b92c7410c45fc4b",
+   "9e818c34163cf03e",
+   "fb772afcdb2b3dff"
+  ],
+  "32": [
+   "16f99f46fa396e2b",
+   "64cbc7682e3d807f",
+   "9079366f1c19ea92",
+   "c815b7bf893f2d52",
+   "e427dc93ea907a93",
+   "e50429f71d8e73c6"
+  ],
+  "48": [
+   "16ebd2b9e7093bd1",
+   "43217f8ca29c92d4",
+   "5ac2539e6db16bb6",
+   "8f7a229596af8dd9",
+   "9fb284f85cccd2f5",
+   "ea619bfc7f29a2c8"
+  ]
+ }
+}

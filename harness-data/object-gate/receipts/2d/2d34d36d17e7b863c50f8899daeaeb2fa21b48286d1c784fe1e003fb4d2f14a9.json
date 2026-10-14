@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2d34d36d17e7b863c50f8899daeaeb2fa21b48286d1c784fe1e003fb4d2f14a9",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "유개 화물칸(나무 판자, 미닫이 문, 둥근 지붕)",
+ "label": "steampunk-city/sp-wagon-box",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "boxcar / covered train freight car",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof of the freight car is seen from an elevated 3/4 angle, taking up rows 3 to 12 (10 pixel rows) above the south-facing side wall (rows 13 to 33).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6547
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "boxcar (freight train car)",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The East-West oriented boxcar shows its south wooden wall with sliding door (rows 13-33) and a foreshortened rounded roof surface sloping back across rows 3-11 (approx. 9 pixel rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9231
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "boxcar / freight car body and roof",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The southern slope/top of the rounded metal roof occupies rows 3 to 11 (approx. 9 pixel rows) above the south-facing wooden wall (rows 13 to 33), consistent with 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7469
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "covered freight car / boxcar",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rounded roof surface is drawn from a 3/4 overhead angle, showing 9 pixel rows of foreshortened roof panels (rows 3–11) above the south-facing wooden wall (rows 13–33).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6183
+  }
+ ],
+ "decidedAt": "2026-10-13T18:32:03.859Z",
+ "cells": {
+  "16": [
+   "375c24fd5449b41a",
+   "38e610e2f7b57995",
+   "5be19cbce9fff03e",
+   "66a15ff5d93492ce",
+   "8412b8ede9b23453",
+   "8529202607238273",
+   "b75589f3a558e654",
+   "cedbfef76a3e2d4d",
+   "e53dc77b8d384dd0"
+  ],
+  "24": [
+   "1916622a6eb93142",
+   "5aac537f064f7063",
+   "7c0160237bd94558",
+   "b1ce19f38547cd62"
+  ],
+  "32": [
+   "0fce2d8472eeba06",
+   "1d23f06316368f50",
+   "34a1e0da245eec04",
+   "34adf0b4ba38d6b9",
+   "36c0be0f9a7ef202",
+   "390505e596798954",
+   "3ff04feae9b91dff",
+   "6e8316f709fd3e8f",
+   "79944819e212fa9c",
+   "86bb660f331484cf",
+   "8a969ffd8193db5b",
+   "8c64f894f4863b04",
+   "93dfe6f156628e24",
+   "9b3afd2d94b5c1fa",
+   "a31d0648f2fc41f4",
+   "afdfd6dc1552c400",
+   "ba81b0af44bd5fe0",
+   "bf70c27ddfe741ef",
+   "bfbde80cc43b190f",
+   "c953435edb76432b",
+   "ceda03827872b049",
+   "efb01f96ea1c88bc",
+   "f99663730bd85d5a",
+   "fabfd067a9b0dcc3"
+  ],
+  "48": [
+   "6f9c9666279fa53e"
+  ]
+ }
+}

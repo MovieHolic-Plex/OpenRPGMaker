@@ -1,0 +1,16 @@
+{"png": "sp-pipe-ew.png", "kind": "terrain", "name": "배관 도랑 — 가로", "label": "steampunk-city/sp-pipe-ew"}
+{"png": "sp-pipe-ns.png", "kind": "terrain", "name": "배관 도랑 — 세로", "label": "steampunk-city/sp-pipe-ns"}
+{"png": "sp-pipe-ne.png", "kind": "terrain", "name": "배관 도랑 — 북·동 꺾임", "label": "steampunk-city/sp-pipe-ne"}
+{"png": "sp-pipe-nw.png", "kind": "terrain", "name": "배관 도랑 — 북·서 꺾임", "label": "steampunk-city/sp-pipe-nw"}
+{"png": "sp-pipe-se.png", "kind": "terrain", "name": "배관 도랑 — 남·동 꺾임", "label": "steampunk-city/sp-pipe-se"}
+{"png": "sp-pipe-sw.png", "kind": "terrain", "name": "배관 도랑 — 남·서 꺾임", "label": "steampunk-city/sp-pipe-sw"}
+{"png": "sp-pipe-new.png", "kind": "terrain", "name": "배관 도랑 — 가로 + 북 갈래", "label": "steampunk-city/sp-pipe-new"}
+{"png": "sp-pipe-sew.png", "kind": "terrain", "name": "배관 도랑 — 가로 + 남 갈래", "label": "steampunk-city/sp-pipe-sew"}
+{"png": "sp-pipe-nes.png", "kind": "terrain", "name": "배관 도랑 — 세로 + 동 갈래", "label": "steampunk-city/sp-pipe-nes"}
+{"png": "sp-pipe-nsw.png", "kind": "terrain", "name": "배관 도랑 — 세로 + 서 갈래", "label": "steampunk-city/sp-pipe-nsw"}
+{"png": "sp-pipe-e.png", "kind": "terrain", "name": "배관 도랑 — 서쪽 막힌 끝(동으로 이어짐)", "label": "steampunk-city/sp-pipe-e"}
+{"png": "sp-pipe-w.png", "kind": "terrain", "name": "배관 도랑 — 동쪽 막힌 끝(서로 이어짐)", "label": "steampunk-city/sp-pipe-w"}
+{"png": "sp-pipe-n.png", "kind": "terrain", "name": "배관 도랑 — 남쪽 막힌 끝(북으로 이어짐)", "label": "steampunk-city/sp-pipe-n"}
+{"png": "sp-pipe-s.png", "kind": "terrain", "name": "배관 도랑 — 북쪽 막힌 끝(남으로 이어짐)", "label": "steampunk-city/sp-pipe-s"}
+{"png": "sp-pipe-grate-ew.png", "kind": "terrain", "name": "배관 도랑 덮개(가로 — 사람이 건너는 무쇠 격자)", "label": "steampunk-city/sp-pipe-grate-ew"}
+{"png": "sp-pipe-grate-ns.png", "kind": "terrain", "name": "배관 도랑 덮개(세로 — 사람이 건너는 무쇠 격자)", "label": "steampunk-city/sp-pipe-grate-ns"}

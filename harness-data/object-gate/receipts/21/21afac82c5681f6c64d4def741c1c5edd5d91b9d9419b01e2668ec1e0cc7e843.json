@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "21afac82c5681f6c64d4def741c1c5edd5d91b9d9419b01e2668ec1e0cc7e843",
+ "width": 32,
+ "height": 32,
+ "kind": "other",
+ "name": "짐수레(나무 바퀴 둘 + 짐)",
+ "label": "sengoku-edo/se-cart",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden cart body with cargo and two wheels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cart is drawn in flat side elevation (side-scroller style). The cart bed has no visible interior or top surface (0 pixel rows), the cargo shapes show no top faces, and the wheels are drawn flat from the side.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4061
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wagon/cart with cargo and wheels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cart is drawn in pure 2D side elevation profile with 0 rows of visible top surface for the cart bed or the cargo; no horizontal surfaces are seen foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5724
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cart body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cart is drawn in pure side elevation (side profile view) with flat wheels and a rectangular cart wall, showing no foreshortened top surface or bed interior (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5091
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cart bed and wheels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cart is drawn in pure side elevation (profile view) with no visible top surface of the cart bed, cargo, or wheels.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4156
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.074Z",
+ "cells": {
+  "16": [
+   "24307820e9af231a",
+   "24bdde06eb289432",
+   "7ce333793f099267",
+   "d2e31b69c1cd2830"
+  ],
+  "24": [
+   "0e52e76b4a5f8876",
+   "0e80d93f547867eb",
+   "1b4f5fd211083188",
+   "25ad80a42e9b6303",
+   "33ddec201973d5b5",
+   "35bc601913086acb",
+   "4de493c45e0d7efb",
+   "4edb5200024dc15f",
+   "52f3e6bada2464c4",
+   "5906bafb67d94f10",
+   "67b1cc44b6a87759",
+   "67f1df0edddb11f5",
+   "7f51f0407242dc9d",
+   "819c1806173b2029",
+   "94dbe1630d95f254",
+   "94fadf24546f2b16",
+   "9a85069c1109ee8f",
+   "9b2f4e01a01a2a7e",
+   "9c63d6ba50d8b087",
+   "cb26807e0f4f5d96",
+   "e947ad9c38de7853",
+   "ed194c3284ad9a2c",
+   "f45485677a262409",
+   "fe24a588bf7b227b"
+  ],
+  "32": [
+   "ec974e5856be912f"
+  ],
+  "48": [
+   "1b1b5116832f135a",
+   "43d96ad1468a4e56",
+   "6e67d34e6ea3705d",
+   "bea4fad979e8867c",
+   "cd229df89dac8be0",
+   "e349d3ae464b4807"
+  ]
+ }
+}

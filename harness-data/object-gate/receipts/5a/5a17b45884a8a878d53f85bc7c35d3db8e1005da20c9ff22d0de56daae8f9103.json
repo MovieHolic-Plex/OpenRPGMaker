@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5a17b45884a8a878d53f85bc7c35d3db8e1005da20c9ff22d0de56daae8f9103",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "waterfall flowing over a rock cliff (terrain overlay)",
+ "label": "sky-island/si-falls-face-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical waterfall tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless vertical terrain tile depicting falling water down a cliff face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3472
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "waterfall flowing down a cliff face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical waterfall terrain tile flowing over a rock face; functions as a wall face/terrain overlay in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3404
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "waterfall strip flowing vertically",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a vertical waterfall overlay / cliff face; standard vertical terrain surface in JRPG mapping.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5588
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "waterfall strip on cliff face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical waterfall terrain tile designed for vertical cliff/wall faces; matches the terrain kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2843
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.981Z",
+ "cells": {
+  "16": [
+   "9b80a4ea5e428c2b"
+  ],
+  "24": [
+   "43180d523d6ba877",
+   "4c6e36c0d3d54da3",
+   "6ee9b54d4015b4ac",
+   "737e41e9a1394631",
+   "9769a36f9513d47a",
+   "9f6b6f72595f8ff1"
+  ],
+  "32": [
+   "18c7522c4f4755ae",
+   "45a54cfcf0126646",
+   "66f08f92db900fe7",
+   "9ba459db36457f18",
+   "db7e3c5bee4053cd",
+   "f94974252d12d30d"
+  ],
+  "48": [
+   "0db30818f9f00a39",
+   "39709288dd0e0f66",
+   "52189bb76b6ce192",
+   "86911cf259bfa2f1",
+   "f36b3eb34a424974",
+   "f4ad69131fbaae96"
+  ]
+ }
+}

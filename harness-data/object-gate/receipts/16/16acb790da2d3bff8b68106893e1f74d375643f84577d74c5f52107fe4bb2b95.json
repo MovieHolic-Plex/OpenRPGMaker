@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "16acb790da2d3bff8b68106893e1f74d375643f84577d74c5f52107fe4bb2b95",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "striped windsock on a pole",
+ "label": "sky-island/si-windsock",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "striped windsock and pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The windsock and pole are drawn in a flat side/front elevation without any foreshortened top surface or cylindrical top perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4716
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "striped windsock and pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The windsock and pole are drawn in pure side/front elevation. The windsock cylinder shows no foreshortened top surface, and the pole is a 1px vertical line with a flat 1px cap.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5479
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "windsock and pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The windsock and pole are drawn in a flat side elevation with no visible top surface or 3/4 downward perspective on the main volume.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4124
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "windsock and pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole and horizontal windsock are drawn in pure side/front elevation with no top-down tilt or visible top surface on the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3796
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.432Z",
+ "cells": {
+  "16": [
+   "0556d5ac711bf383",
+   "1cef062013d97936"
+  ],
+  "24": [
+   "07abede664e8d00e",
+   "0e1a4b9dc46c97be",
+   "5deca4e3ef3f20a6",
+   "62beb526d55ea5a5",
+   "75b1697308b0e7df",
+   "8caa27fd2f96f6cd",
+   "8e1ea8a8e65b3321",
+   "afe37eb842426cf2",
+   "bb3ff1a28973efa1",
+   "c5120fa8fbebc725",
+   "cf53eb7abb633204",
+   "df35ed715f196d7a"
+  ],
+  "32": [
+   "01124b14d655fa19",
+   "85225dc35171eaf7",
+   "eebf18ef6a381eca"
+  ],
+  "48": [
+   "0f588bd688520859",
+   "3d26957c3fc3662f",
+   "4996347b272c29e8",
+   "6d3be60f0272f5e7",
+   "dcd3de3f6490c507",
+   "f7f0ae5d863d5ca8"
+  ]
+ }
+}

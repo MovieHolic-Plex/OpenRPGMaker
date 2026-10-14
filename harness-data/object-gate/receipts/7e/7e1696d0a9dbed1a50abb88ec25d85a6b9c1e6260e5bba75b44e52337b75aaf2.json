@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7e1696d0a9dbed1a50abb88ec25d85a6b9c1e6260e5bba75b44e52337b75aaf2",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "windsock pole seen from above-front: flat square iron cap on top (top surface visible), square stone base block with a deep flat top, striped sock",
+ "label": "sky-island/si-windsock",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "windsock pole with top iron cap",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the pole clearly shows its flat square top surface across rows 1-4 (4 pixel rows tall) with the front edge/shadow at row 5. The base also displays a substantial top surface (rows 21-27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12123
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "windsock pole with base block and top cap",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base block features an extensive 7-row deep top surface (rows 21-27) showing the pole embedded into it, and the top cap presents a 4-row top surface (rows 1-4).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8445
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "windsock pole with cap and stone base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap shows a 4-row deep top surface (rows 1-4) with a dark south edge at row 5. The stone base also shows a distinct 7-row deep top surface (rows 21-27) above its front face (rows 28-31), clearly rendering the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9762
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "windsock pole with stone base block and iron cap",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pole has a 4-row flat square iron cap at the top (rows 1-4) and a substantial square stone base with a 7-row deep top surface (rows 21-27) and a 4-row south face (rows 28-31), clearly adhering to the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10371
+  }
+ ],
+ "decidedAt": "2026-10-13T18:57:36.495Z",
+ "cells": {
+  "16": [
+   "2ee5cb996a5255fd",
+   "c7cd477e55251128"
+  ],
+  "24": [
+   "05c5ffc878ae675e",
+   "0cffc12ec350ba11",
+   "400181eb81efa9a6",
+   "5362bf7af32fa75d",
+   "7f1282463a858ee2",
+   "7f9987537459b92f",
+   "81c1bc5c7340fa77",
+   "81e12b8ead780e9b",
+   "93155afa620201c8",
+   "bf74e97b3711f1c5",
+   "cbf222f4357167c8",
+   "f2ba9c5b7480161d"
+  ],
+  "32": [
+   "7d073996f977a1fb",
+   "91e9c5a105b97cb2",
+   "fe67ab3582692ecd"
+  ],
+  "48": [
+   "4c290700cc9e775f",
+   "83abb13abc37d052",
+   "a7ec00c4b4d0a429",
+   "aba2240afc406117",
+   "d4ee6cb4a0f45454",
+   "fa935f204c515329"
+  ]
+ }
+}

@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f54b134b4e1a73ffbce434f90b4b712b0c5780eb4696aeafecb260c1a1119875",
+ "width": 32,
+ "height": 32,
+ "kind": "seat",
+ "name": "prehistoric stone-age chief seat",
+ "label": "prehistoric/ph-chief-seat",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone seat block with pelt cushion and bone backrest",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main stone block shows a large top surface spanning rows 11 to 23 (13 rows tall) with a round pelt cushion on top, meeting a darker south front face spanning rows 24 to 29 (6 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8438
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone block seat with pelt cushion",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main stone seat clearly shows its foreshortened top surface (rows 11-23, 13 rows tall) bearing a fur pelt cushion, and its shaded south front face (rows 24-29, 6 rows tall) with the pelt draped slightly over the front edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9070
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone seat block with cushion",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone seat is drawn in 3/4 perspective with a light top surface (rows 11-23, ~12-13px tall) featuring a circular cushion/pelt, and a darker south-facing vertical front face (rows 24-30, 7px tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13227
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone bench/throne with fur pelt seat",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main stone block shows a large top surface from row 11 to 23 (13 rows) bearing a circular fur cushion, followed by a shaded south-facing front face from row 24 to 29 (6 rows). The lighting shift at row 24 across both the stone and the overlapping pelt clearly delineates the top and front surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7578
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.809Z",
+ "cells": {
+  "16": [
+   "598bbed5dd28d5ca",
+   "9e1d9b531d0fa7e6",
+   "b1056d39f2c0cbb5",
+   "ee09396dc02ecec9"
+  ],
+  "24": [
+   "02c26db4571d34a6",
+   "04db8ed21daa39c0",
+   "0b5d347d1388e179",
+   "1bb2d69900e45ac7",
+   "20297f1c67203188",
+   "288f9cfd08589e8f",
+   "364a9246ef798b7b",
+   "412d89e8b0d5896b",
+   "48710fed470ef2c2",
+   "714dea814fb3825c",
+   "77c56677d625de47",
+   "79a6c34e1ddb6758",
+   "83dd25455482f18d",
+   "859df78893e99c9b",
+   "a41ebb8d961e1793",
+   "a6f927f3247a93f6",
+   "b99c2b566e23aa1e",
+   "be8f911fc555de4c",
+   "dacfd2ded1158c99",
+   "dcd749a4b1ac9c00",
+   "e2c77abd3dff6dd5",
+   "e487a7f1223fc873",
+   "f1c453c4a889f1ce",
+   "f60ff2430aec7a59"
+  ],
+  "32": [
+   "d44212f8449221b8"
+  ],
+  "48": [
+   "0fb60c0a1cccd6e5",
+   "3397dff69690f649",
+   "606010b57269587d",
+   "911c62cad64d7390",
+   "a53199c781fee78d",
+   "d033e4194154c8c4"
+  ]
+ }
+}

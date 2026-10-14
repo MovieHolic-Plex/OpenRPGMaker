@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "609e287d152d06d955e89963195cf8924b72f02506f1d5079a449dbbbe4bb293",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "운하 돌다리 가운데(남북으로 건넌다)",
+ "label": "steampunk-city/sp-bridge-m",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone bridge pavement",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Tile is an entirely flat terrain texture of stone cobbles/pavers covering all 16 rows viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3214
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone bridge pavement terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 stone masonry surface representing flat bridge ground/walkway viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2665
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone bridge walkway surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 cobblestone bridge deck tile, representing horizontal ground terrain viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4020
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone bridge walkway surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile is a top-down cobblestone bridge floor surface (terrain).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2936
+  }
+ ],
+ "decidedAt": "2026-10-13T18:45:40.070Z",
+ "cells": {
+  "16": [
+   "76791945b8589f42"
+  ],
+  "24": [
+   "00f9a3d7548a7f7f",
+   "0e83386c1158b3ee",
+   "5936740c30acf8ad",
+   "5d7ecc8085542023",
+   "92f22dd4ade9c89b",
+   "c68c7d7e375b61f1"
+  ],
+  "32": [
+   "3a48c825b79c84b7",
+   "3eabcc0086a4fccb",
+   "503ce3fef574ec2f",
+   "77eda186b1eab56a",
+   "c99e48d419e80160",
+   "f0e99c7799633bbb"
+  ],
+  "48": [
+   "13490b6cc9cefc21",
+   "406dd56b73e2aadb",
+   "4d2e0d2b16e9b6a8",
+   "5a821f76e0aaccaf",
+   "8dc846f9ce05c4f2",
+   "ba06897805fa7128"
+  ]
+ }
+}

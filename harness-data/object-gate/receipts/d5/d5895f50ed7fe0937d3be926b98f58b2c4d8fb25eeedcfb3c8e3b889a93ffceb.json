@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d5895f50ed7fe0937d3be926b98f58b2c4d8fb25eeedcfb3c8e3b889a93ffceb",
+ "width": 32,
+ "height": 32,
+ "kind": "flat",
+ "name": "육각 바닥 깔개(남색 육각형 + 시안 테 + 가운데 무늬)",
+ "label": "sf-station/sf-rug-hex",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hexagonal floor mat",
+    "kind_matches": true,
+    "top_rows": 27,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat hexagonal rug/mat seen from above on the floor plane, occupying rows 2 to 29 across its full surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6599
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hexagonal floor rug / mat",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor rug/decal seen from above; the entire surface (rows 2-29, 28 rows) is the visible top face flat on the ground.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5315
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hexagonal floor mat",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire object lies flat on the floor plane as a decorative hexagonal mat, visible from above across rows 2 to 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5422
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hexagonal floor mat with cyan border and central gem motif",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Object is a flat floor mat viewed from above, occupying rows 2-29 as a foreshortened hexagonal plate.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3608
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.955Z",
+ "cells": {
+  "16": [
+   "3109d00a2fec48b7",
+   "404ab18ca81d3a4a",
+   "605477977ae9a399",
+   "6c1a6277d00bd1ed"
+  ],
+  "24": [
+   "0615b684ed18996a",
+   "21479f34f8ebf07e",
+   "258126ebd1fc0a2b",
+   "2c313cc3df7a1fdc",
+   "42013721c8a06544",
+   "59b12902eea55971",
+   "5b377aac561aff54",
+   "6020d5fe5dbec37b",
+   "6ec9da4b13a13d0f",
+   "8b9cbb6aaf2c1c4e",
+   "9183eece91e45d21",
+   "9253c1ed14b1ebb8",
+   "9b3657fd3a4644d5",
+   "ad2a90b338b22cf1",
+   "ad71cd1f32954d91",
+   "aede68cf3e0ff7c9",
+   "af6b6d7cb27c7d31",
+   "b3e5cf103cd10d65",
+   "b63b9d1f31c49063",
+   "c01ebf3cf8b15ac5",
+   "c2309a4638537e1c",
+   "d6349423c5eea6d4",
+   "ddd66caf05f23149",
+   "fa90ae4579983447"
+  ],
+  "32": [
+   "004bf6446ce3e7f4"
+  ],
+  "48": [
+   "045814b8e9f5f710",
+   "07e7fed6230fd189",
+   "70b543a9af3e17ce",
+   "728f183799e98c11",
+   "daa1a40f918cf3f7",
+   "ed0ce1600681756c"
+  ]
+ }
+}

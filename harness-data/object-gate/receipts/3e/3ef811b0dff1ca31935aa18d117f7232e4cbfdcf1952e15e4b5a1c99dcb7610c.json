@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3ef811b0dff1ca31935aa18d117f7232e4cbfdcf1952e15e4b5a1c99dcb7610c",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "wooden sky dock plank deck seen from above (flat walkway)",
+ "label": "sky-island/si-pier-c",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden plank deck",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire tile depicts horizontal wooden planks seen from above with nail/peg details and plank gaps, properly representing a flat deck walkway.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4197
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden plank walkway / deck",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile is a top-down view of horizontal wooden planks with nails and gap lines, correctly depicting a flat ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3269
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden planks deck",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 sprite depicts wooden decking planks lying flat on the floor plane viewed from above, with horizontal plank seams and nails.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4388
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden plank deck walkway",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile depicts wooden planks and fastener details viewed directly from above as a floor deck surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3446
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.984Z",
+ "cells": {
+  "16": [
+   "520e4565395b7887"
+  ],
+  "24": [
+   "5250eecd5601bcf7",
+   "607a213013c10693",
+   "890774789947ac71",
+   "9b6494c7043eb734",
+   "caaecd5a00810640",
+   "dfedab2e6fc4de0e"
+  ],
+  "32": [
+   "05c8d62598512b11",
+   "7c3e620d07d5e849",
+   "8c23831eb0c04f3c",
+   "972ac1f9dc7bcaee",
+   "b16d88105b1bd499",
+   "dc66898f7f9ec142"
+  ],
+  "48": [
+   "1e4edd95e5ed6b4d",
+   "1e6bf5091b56c8ac",
+   "379acbea53e0270f",
+   "67ed7a5440d0ad73",
+   "b067f1a60a8f02b7",
+   "d2f9c9b23d6017f5"
+  ]
+ }
+}

@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2e469a0c522203336ff965342fc6808be98bf473b9f4171f9a3de120a07372ce",
+ "width": 48,
+ "height": 32,
+ "kind": "round_body",
+ "name": "산소 탱크 줄(받침판 위에 늘어선 흰 원통 셋)",
+ "label": "sf-station/sf-oxygen-tank-row",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "three upright cylindrical tanks on a base",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each cylinder features a clear elliptical top cap spanning rows 9-15 (7 pixel rows tall) with blue central inserts, viewed from above, followed by a south-facing curved vertical body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8465
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "three standing cylindrical tanks on a base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each cylinder features a foreshortened elliptical top cap spanning rows 9-14 (6 pixel rows tall) above its cylindrical front body (rows 15-22), properly rendered in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7790
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "three cylinders on a base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each cylinder clearly shows an elliptical top cap spanning rows 9-14 (6 source pixel rows tall) and a front cylindrical body below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7533
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "three vertical cylindrical tanks on a base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each cylinder features a clear 6-row elliptical top surface (rows 9-14) displaying a blue circular detail viewed from above, attached to a vertical south face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11042
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:27.304Z",
+ "cells": {
+  "16": [
+   "2ac9a66234addde9",
+   "76bcf3fc762ddfe6",
+   "9c8c9ab96fd5bd6e",
+   "a29fa7f609366513",
+   "c2eeeb2ebcfd18fe",
+   "f71ae3d1cd667a36"
+  ],
+  "24": [
+   "2875bbbbef9ebe71",
+   "844a564748415bbd",
+   "998e5c8edfe7456b",
+   "b9bf27a174997537",
+   "c6c4af65fee31a97",
+   "dd5cf6cc65f65f84"
+  ],
+  "32": [
+   "0905666d1a322e6b",
+   "262c660335bbd06f",
+   "78907964e12f41fd",
+   "856a3764f15ff258",
+   "9fdaa11c7d03b6fa",
+   "f225e92f6b81cec5"
+  ],
+  "48": [
+   "0c401526b5e407c0",
+   "476e082ff136728e"
+  ]
+ }
+}

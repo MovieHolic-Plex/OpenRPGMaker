@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "90d4299b53d05e55e4f53adeabfe79fcb740a4aea335e359705559f46146801b",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "땅 위 배관 — 북·동 꺾임",
+ "label": "steampunk-city/sp-pipe-ne",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden chest / box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn in pure front elevation without any visible top surface. The latch/clasp and front panel occupy rows 2-12, bounded immediately at the top by a 1px outline at row 1.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6891
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pipe junction box / ground pipe block",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is drawn in standard 3/4 top-down perspective: rows 2–7 form the brightly lit top horizontal surface (6px tall with a central hatch/plate), and rows 8–12 form the south-facing front vertical surface in shadow (5px tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12367
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pipe bend block",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body has a clearly defined top horizontal surface spanning rows 2 to 7 (lighter tone with a central metallic fitting and highlight edge along row 7), and a south-facing front vertical face in shadow from rows 8 to 12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6082
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden chest / box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn as a flat front view of a chest with a lid (rows 2-7) containing a lock/hasp and base (rows 8-12), with no foreshortened top surface visible above row 2.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5350
+  }
+ ],
+ "decidedAt": "2026-10-13T18:40:36.079Z",
+ "cells": {
+  "16": [
+   "65af7021f059b95f"
+  ],
+  "24": [
+   "0f775c56d865b1f8",
+   "2eb957e0036c90fa",
+   "73f2fb920b66b089",
+   "74d3cf566959a88e",
+   "7896c2edfc56112c",
+   "ad4c914a50836a92"
+  ],
+  "32": [
+   "0d3dc27658553616",
+   "12b37be6ca59d272",
+   "1d992bbf8c998af0",
+   "4b5a68f62cbeb8e6",
+   "e9b5a0f3866a37c8",
+   "ee75ceb581b7763a"
+  ],
+  "48": [
+   "0d71c129b0929881",
+   "4765dcb8021d13e1",
+   "c682a2f538cf3cc7",
+   "db12a6aa7fa4001b",
+   "f3cf6a391dc41bae",
+   "fd145b858e0ed334"
+  ]
+ }
+}

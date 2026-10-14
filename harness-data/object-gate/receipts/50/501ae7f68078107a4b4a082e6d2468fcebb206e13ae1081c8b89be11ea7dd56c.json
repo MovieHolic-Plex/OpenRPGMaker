@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "501ae7f68078107a4b4a082e6d2468fcebb206e13ae1081c8b89be11ea7dd56c",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "captain's large wooden bed seen from above at 3/4: carved headboard against the north wall, two pillows, red blanket with gold trim, footboard",
+ "label": "pirate-isles/pi-captain-bed",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "large wooden bed with pillows and blanket",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed shows its top surface with pillows and red blanket clearly foreshortened from row 9 to row 26 (18 pixels tall), with a headboard to the north and footboard to the south.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3940
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bed mattress and bedding",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal mattress surface with pillows and blanket is seen foreshortened from above across rows 9-26 (approx 18 rows), ending at the wooden footboard.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3466
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bed mattress with pillows and blanket",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed's horizontal mattress surface (pillows, sheet, and red blanket) extends prominently from row 9 to row 26 (~18 pixels tall), with a headboard to the north and footboard to the south in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3711
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bed mattress and bedding",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed's horizontal top surface (pillows, sheet, and blanket) spans rows 9 to 26 (18 source pixels tall) in standard 3/4 top-down perspective, with the footboard showing both a top edge and front face below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3950
+  }
+ ],
+ "decidedAt": "2026-10-13T19:41:01.299Z",
+ "cells": {
+  "16": [
+   "1d6cc24814749884",
+   "20721108f36ce1e8",
+   "39b874dfaba1a766",
+   "ae356ba23078cf33"
+  ],
+  "24": [
+   "0178f7c45800623a",
+   "0ca6588346e8fca5",
+   "11713237e22fca27",
+   "1f3bd98b3f2d1638",
+   "21f44bc3f65f71dd",
+   "37a0c5ec8a9d0995",
+   "3c19eee2d46d5718",
+   "3db3fa08c8c8ca0f",
+   "541bd744e075981b",
+   "5bbe0083aa8b5f9d",
+   "5bff119f411bb59d",
+   "784bb5fdeabaeb2d",
+   "8e03af40a9361a82",
+   "8e9b2cb2bd66e763",
+   "9571657340cda108",
+   "989674feaf2c85dc",
+   "aa67dfbcbc9b619c",
+   "b54f405b729cf42e",
+   "be92581400e9e477",
+   "c2b2a20e9b0acd01",
+   "d3448381f497b137",
+   "d5389fc10eb54462",
+   "e6a6cb467a22426e",
+   "ed766d67052ec42d"
+  ],
+  "32": [
+   "2dbae903dc632a32"
+  ],
+  "48": [
+   "0677ba085900ac29",
+   "1e17092835c34e75",
+   "22dd3aca98814f1d",
+   "53b679222d21107e",
+   "ad56d008168baf3a",
+   "c44b303f9f8e65dc"
+  ]
+ }
+}

@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c8f2a6be59052219cbf4f7c49158cc3d70c7f1db075e2cfe76f1bb2973878738",
+ "width": 32,
+ "height": 16,
+ "kind": "frame",
+ "name": "sailor's canvas hammock seen from above at 3/4, slung between two posts with wooden spreader bars, a rolled blanket lying inside",
+ "label": "pirate-isles/pi-hold-hammock",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "canvas hammock sling with rolled blanket inside",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The interior surface of the hammock is broadly displayed from rows 3 to 10 (8 rows deep) viewed from above, with a rolled red blanket lying inside and the south-facing curved underside visible below (rows 11-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4679
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "canvas hammock trough with rolled blanket",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hammock is viewed from a 3/4 high angle showing its interior basin spanning rows 3 to 10 with a red blanket resting inside, and the southern underside/front face curving downward across rows 11 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7519
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "canvas hammock slung between posts",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The interior bed surface of the slung hammock is prominently viewed from above spanning rows 3-10 (approx. 7-8 rows deep) with a rolled red blanket resting inside, and the front/underside droop visible below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3563
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "canvas hammock slung between wooden posts",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hammock is viewed clearly from a 3/4 top-down angle, showing roughly 8 rows (rows 3-10) of the canvas interior bed where a red rolled blanket rests, with the downward-curving front/underside visible below across rows 11-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4890
+  }
+ ],
+ "decidedAt": "2026-10-13T19:35:50.750Z",
+ "cells": {
+  "16": [
+   "67be65aeb18b88b4",
+   "c5176bc70f5a5d91"
+  ],
+  "24": [
+   "06fd359036a45aa6",
+   "310870297734b256",
+   "3f8ce2ac86ad89f8",
+   "4c22d4de78fe614d",
+   "4fde02704ad179fc",
+   "7e531b0d18328efb",
+   "a3b6585a6ffbd4c8",
+   "c63f1871c9d4b5c6",
+   "cd8600a3b5e2636b",
+   "ce5de4237f9c625b",
+   "ed3d470d83cf892b",
+   "f59e2d649f217cf6"
+  ],
+  "32": [
+   "645cb3249c08f0c4",
+   "6ec3246bbd933b61"
+  ],
+  "48": [
+   "50ed0ecfd83adb15",
+   "5b2d0a20b92b3d80",
+   "7355399ad11557e8",
+   "bcbc900c0ce9b1a7",
+   "e137c0f7ed490fd1",
+   "ec0269d668432202"
+  ]
+ }
+}

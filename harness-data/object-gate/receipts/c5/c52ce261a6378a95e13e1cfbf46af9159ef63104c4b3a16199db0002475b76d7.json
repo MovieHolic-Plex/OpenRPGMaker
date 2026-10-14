@@ -1,0 +1,138 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c52ce261a6378a95e13e1cfbf46af9159ef63104c4b3a16199db0002475b76d7",
+ "width": 48,
+ "height": 32,
+ "kind": "frame",
+ "name": "철봉(높이 다른 셋)",
+ "label": "modern-campus/mc-pullup-bars",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pull-up bars and vertical posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pull-up bar frame is drawn in a pure 2D front elevation. The post caps and horizontal bars have no visible top surfaces (only 1-2px edge highlights/caps), and the base feet are flat 2px rectangles with no depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5697
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "three connected pull-up bars (horizontal metal bars and vertical posts with caps and base plates)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pull-up bar structure is drawn strictly in front elevation. The horizontal bars, post caps, and base plates show no top surfaces (only 1px edge highlights and 2px flat rectangular front profiles), despite standing over a 3/4 view oval dirt patch.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5279
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal bars and vertical posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pull-up bar frame is drawn as a flat 2D side-scroller elevation. The horizontal bars and post caps lack foreshortened top surfaces (only a 1-2px top edge/highlight is present), and the post bases terminate in flat horizontal lines without depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6470
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "three connected pull-up bars of varying heights on vertical posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pull-up bar structure is drawn as a flat front elevation. The horizontal bars only have 1px edge highlights with underside shading rather than foreshortened top surfaces, and the posts and bases are aligned straight along a single horizontal line without 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5937
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.872Z",
+ "cells": {
+  "16": [
+   "02a5c055ef782097",
+   "05230ce32fd91279",
+   "161a3a22153ec7f7",
+   "1c5e356b625decc5",
+   "7edf175a495e83ef",
+   "ab6d416c46d3dfab"
+  ],
+  "24": [
+   "0e18a53cbc035677",
+   "35d51f4b1613d0f8",
+   "5c4dfd13f498c79d",
+   "a20a31a80c53a8ec",
+   "e628acb9b72550a7",
+   "eb9157117eadd858",
+   "f04ff215f3445743"
+  ],
+  "32": [
+   "0fff9050b11631e3",
+   "1660b577cd0389aa",
+   "3237a21182c7cb3d",
+   "4d2aeb9e9dd90342",
+   "9cb1bf474f36d796",
+   "cd4cc1809c1ab54e"
+  ],
+  "48": [
+   "5ae314eea826117b",
+   "723aaa3d7079303a"
+  ]
+ }
+}

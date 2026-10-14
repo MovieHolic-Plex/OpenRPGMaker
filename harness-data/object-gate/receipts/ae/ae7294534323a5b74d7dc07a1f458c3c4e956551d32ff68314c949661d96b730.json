@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ae7294534323a5b74d7dc07a1f458c3c4e956551d32ff68314c949661d96b730",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "round stone fort bastion tower with crenellated top and cannon",
+ "label": "pirate-isles/pi-fort-bastion",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round stone fort bastion tower",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the bastion tower displays a crenellated platform floor viewed from above (rows 6-26) with a mounted cannon, sitting atop a cylindrical stone wall (rows 27-61).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6618
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round stone fort bastion tower",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top platform/deck inside the crenellated parapet is clearly visible from row 10 to row 24 (about 14-15 rows), showing the floor, cannon mount, and tops of the surrounding merlons in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7875
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bastion tower",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top parapet and open deck of the bastion are clearly rendered in 3/4 perspective spanning rows 8 to 24 (around 16 pixel rows), showing the floor, cannon mount, and crenellations surrounding it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3578
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round stone fort bastion tower with cannon",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top platform and crenellated battlement deck are clearly visible in 3/4 perspective from row 6 down to row 26, showing the cannon mounted on the floor deck.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3257
+  }
+ ],
+ "decidedAt": "2026-10-13T19:16:35.209Z",
+ "cells": {
+  "16": [
+   "1902d65981edad08",
+   "2629264f9ddab269",
+   "4cc4acf8824a870f",
+   "5baa9d1d7b192da3",
+   "6bdfc609fdf4a704",
+   "8b75801238e521cc",
+   "8c65898611580e81",
+   "a0e3d513ffb0587b",
+   "cb6b9d4430d54871",
+   "d84815c0bf2c39b3",
+   "fa3b4811bd460345",
+   "fa73c73aa8571a2e"
+  ],
+  "24": [
+   "0952625c7b41e597",
+   "0f1fa4ab7cb5599a",
+   "1880414e5c885ff5",
+   "6dd16b661ebe3def",
+   "7e029996d46fd348",
+   "8720869377417854",
+   "91abc67cd2953a6e",
+   "b5e0cbad8fbfaa70",
+   "cd4f5a9784425bad",
+   "d6218668850ad1c3",
+   "e1aeee293a3f56e9",
+   "e253040f40e9aba0"
+  ],
+  "32": [
+   "0e6222600c644ea8",
+   "418bc721063ed5ca",
+   "46c5e69b23459ce4",
+   "53e9c4332e1f1234",
+   "5c895177c9e450de",
+   "8358c52299d1333a",
+   "88af2ba5bb92ae3e",
+   "ada214e10a59c7bd",
+   "c39c27b8dd563cd7",
+   "ea762c9aae6cfc4e",
+   "ec3e37aa659d33fd",
+   "f4b13d337cac8dc6"
+  ],
+  "48": [
+   "4327385e4c0840d0",
+   "4d37f4ee64c876ba",
+   "535508ba00d16f0f",
+   "a4d96c41da17349a"
+  ]
+ }
+}

@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4f3f8017b79db3aab40ea709be5b786bde521a3b70a62c2543b3781b829c63df",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "prehistoric stone-age stone table",
+ "label": "prehistoric/ph-stone-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone table",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The table is drawn straight-on in pure front elevation: row 2 is a 1px top outline, rows 3-8 form the front vertical slab (decorated with a purple gem and bone), and rows 9-13 form the legs with empty space beneath. There is no visible horizontal tabletop surface (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6638
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone table with bone motif and two legs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The table is drawn in pure front elevation with vertical front legs extending down and the table slab/front facing the viewer directly, with 0 rows of visible horizontal tabletop surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4610
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone table slab and legs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The table is drawn entirely as a flat front elevation (side-scroller view), showing only the front vertical face and two legs with 0 pixel rows dedicated to the top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3378
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone table slab with legs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire table is drawn straight-on in pure front elevation; rows 2-8 represent the front vertical face of the table slab (with bone carving/handle) supported by legs in rows 9-13, with 0 rows dedicated to the top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3241
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.809Z",
+ "cells": {
+  "16": [
+   "703c85dd0512b5f6",
+   "f632a8bc02e200ad"
+  ],
+  "24": [
+   "22be8930aca6f6ac",
+   "24bef25063eb4986",
+   "40b43738a4d58aaa",
+   "61513f2bc3b8e462",
+   "6aaad25ed80e8fe6",
+   "7298b753a35bf358",
+   "830ba53840bd25d1",
+   "b1b47f02758c7790",
+   "b82a439d9ea6f08b",
+   "d03200f686f33052",
+   "ed9e3753c7b47f05",
+   "f11e31f1d9420034"
+  ],
+  "32": [
+   "42bcd3ca979350f0",
+   "82ab6c7a3dac42b1"
+  ],
+  "48": [
+   "0daccae7ea075c74",
+   "117d4a25c2661b14",
+   "53dd88e2607e457f",
+   "7c0e2cd29f05f392",
+   "a18182427247b2ad",
+   "a4f6c175a035425a"
+  ]
+ }
+}

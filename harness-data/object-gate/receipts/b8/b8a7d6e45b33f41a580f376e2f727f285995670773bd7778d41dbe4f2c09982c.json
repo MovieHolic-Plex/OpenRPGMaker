@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b8a7d6e45b33f41a580f376e2f727f285995670773bd7778d41dbe4f2c09982c",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "땅 위 배관 — 가로 + 빨강 손바퀴 밸브",
+ "label": "steampunk-city/sp-pipe-valve-ew",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal pipe with valve",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal pipe and its red handwheel valve are drawn in pure front elevation (architectural side view). The pipe uses a simple vertical shading gradient from row 4 to 10 with no top surface foreshortened from above, and the circular valve wheel faces directly south toward the camera rather than being tilted or drawn in 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6659
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal pipe with valve",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal pipe is drawn with flat horizontal gradient stripes from rows 4 to 10 with no top surface visible from above. The red valve handwheel is also drawn in pure front elevation facing straight at the camera rather than angled or foreshortened for a 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6721
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal pipe with valve",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pipe, valve wheel, flanges, and central valve body are drawn entirely as a flat 2D front elevation (side-scroller style). The pipe flanges are completely straight vertical lines without perspective curvature, the valve wheel is drawn as a flat front-facing circle, and there is 0px of top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9329
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal pipe with valve",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal pipe and red valve wheel are drawn in pure front elevation like a side-scroller sprite. The pipe has only front-facing vertical gradient shading with no visible top surface (0 rows), and the valve wheel is drawn as an upright circle facing the camera directly rather than an ellipse viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8119
+  }
+ ],
+ "decidedAt": "2026-10-13T18:40:36.081Z",
+ "cells": {
+  "16": [
+   "3f52f0c641d9695d"
+  ],
+  "24": [
+   "2601e4e8d4db3061",
+   "2c08e6c70ca47276",
+   "3cede54e7fb6996c",
+   "4c094e652c1efcd9",
+   "aaac0cf3c51c5d9e",
+   "f0479aa0ec132545"
+  ],
+  "32": [
+   "150bc9d577215829",
+   "390c1bd48209669d",
+   "7484112b1823536c",
+   "7513c115083b0d60",
+   "a35c206b487e5b43",
+   "f0604e7bfac6d63e"
+  ],
+  "48": [
+   "5f23f38afd87f922",
+   "9fbd867522655262",
+   "a1a057da1c6c5135",
+   "a7a1ae337141a90c",
+   "b00750efd441c014",
+   "d6f38ef9fe1579b8"
+  ]
+ }
+}

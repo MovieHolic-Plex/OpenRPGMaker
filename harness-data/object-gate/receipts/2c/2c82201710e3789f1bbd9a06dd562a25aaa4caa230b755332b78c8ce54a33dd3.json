@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2c82201710e3789f1bbd9a06dd562a25aaa4caa230b755332b78c8ce54a33dd3",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "dark maintenance grating with cyan light and pipes glowing below the bars, two variants",
+ "label": "sf-station/sf-deck-grate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "maintenance grating floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor/terrain tile showing top-down maintenance metal grating with cyan light/pipes beneath the slats; correctly treated as ground terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5168
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "maintenance grating floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image consists of two 16x16 terrain tiles showing a top-down metal maintenance grating floor with glowing cyan elements beneath the slats.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6506
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grating floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Floor grating terrain tile viewed from top-down perspective; the entire 16px height represents the ground plane with glowing elements visible beneath the bars.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5536
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grating floor terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The asset is a terrain floor grating tile viewed from above across all 16 rows, showing glowing pipes and light beneath the bars.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6151
+  }
+ ],
+ "decidedAt": "2026-10-13T16:10:30.407Z",
+ "cells": {
+  "16": [
+   "7fb399b641848532",
+   "f90fe51d8e312386"
+  ],
+  "24": [
+   "0620bcb760ac1de2",
+   "0fff195a8aa2ea79",
+   "423334af40984fdf",
+   "67c5079beb2732d5",
+   "714e93c9413b2862",
+   "b83cd8b0880d4d39",
+   "bcea3d85013311f2",
+   "da8ab0355c02d571",
+   "edfa2107b2fd9c4b",
+   "f39a4ac832667dcb",
+   "f3ac8fced0570712",
+   "f8a054fa92565781"
+  ],
+  "32": [
+   "0136513a04c4beff",
+   "e9ab794614136474"
+  ],
+  "48": [
+   "01323225dc0c280d",
+   "362ec0cc59577b55",
+   "67b8d388da5a9561",
+   "8c46a17727e318d5",
+   "b49ebac8d7ae47f3",
+   "e1b0b8ba8b689001"
+  ]
+ }
+}

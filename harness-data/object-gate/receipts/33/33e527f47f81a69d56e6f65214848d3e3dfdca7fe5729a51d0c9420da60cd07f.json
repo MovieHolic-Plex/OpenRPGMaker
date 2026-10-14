@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "33e527f47f81a69d56e6f65214848d3e3dfdca7fe5729a51d0c9420da60cd07f",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "pyramid stack of iron cannonballs",
+ "label": "pirate-isles/pi-cannonballs",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pyramid stack of cannonballs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cannonballs are arranged in a flat 2D triangle (1 over 2 over 3) with a straight flat base line at row 14, depicting a pure front elevation rather than a 3D pyramid seen from a 3/4 high-angle view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8754
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pyramid stack of cannonballs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cannonballs are arranged in a flat 2D vertical triangle (1 on 2 on 3) with a straight flat base line at row 14 and no top-down depth to the pyramid base, forming a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4839
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pyramid stack of cannonballs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cannonballs are arranged as a flat 2D triangle (1 atop 2 atop 3) with a straight flat base line at rows 14-15, drawn in pure front elevation without any top-down perspective or depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4649
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pyramid stack of cannonballs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cannonballs are drawn as a flat 2D triangular arrangement (1 on 2 on 3) in straight-on front elevation, lacking depth or perspective of a 3D pyramid viewed from a 3/4 top-down angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7128
+  }
+ ],
+ "decidedAt": "2026-10-13T19:19:03.410Z",
+ "cells": {
+  "16": [
+   "12110b82c4a71a94"
+  ],
+  "24": [
+   "07dab65ebce16bc0",
+   "1eddec3c61c25984",
+   "2538099fdf3c2838",
+   "283b152abdc88d0e",
+   "5db654eac8b0e51a",
+   "fa7a561ff15da6ff"
+  ],
+  "32": [
+   "33bd71b28199ce2c",
+   "4e78bd26b4a3f531",
+   "87a4475cc300fabf",
+   "9e479eb4924313a0",
+   "a7af97597fcf070e",
+   "dab1dc70ecafdf6a"
+  ],
+  "48": [
+   "06fa7e5dfab846b0",
+   "1dbe473f7847c4d3",
+   "2b52c7ef2c25e6e1",
+   "6c8997e3ffc41bdd",
+   "86f54c3961b4ddd4",
+   "ef24fef171acc5da"
+  ]
+ }
+}
