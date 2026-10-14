@@ -1,0 +1,129 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "450c49f1a779f0aaff2e696dc38f82e909ccc370356c2cc4f023b52200b65a15",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "철쭉 덤불(꽃)",
+ "label": "modern_city/street-green/mc-prop-azalea-a",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flowering azalea bush",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush is composed of tiered, rounded foliage clusters with clearly highlighted top surfaces visible across multiple rows (rows 6-12 on rear mounds, rows 16-21 on front mounds), showing appropriate 3/4 top-down depth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4723
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flowering azalea bush clump",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush is composed of tiered, rounded foliage clusters with back clusters visible above front ones, shaded across 5-6 rows of top surfaces consistent with a 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4909
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flowering azalea bush cluster",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush is composed of layered foliage mounds with visible upper surfaces foreshortened in 3/4 perspective; rear clumps rise behind front clumps and have top-lit dome surfaces measuring roughly 5 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5110
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flowering bush cluster",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The shrub is composed of rounded foliage clumps layered in depth, with clearly shaded top surfaces on both the upper and foreground lobes (visible top highlights spanning 5-6 rows on each major clump) and a floor shadow underneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4598
+  }
+ ],
+ "decidedAt": "2026-10-14T08:05:10.638Z",
+ "cells": {
+  "16": [
+   "9f25e35b4f711132",
+   "b1699d43d0f16707",
+   "b94375e1ec4db80d",
+   "e9bb37458f0af5e8"
+  ],
+  "24": [
+   "1578b5801a7e920a",
+   "2364b89bed6edd14",
+   "32751af5716ba7f3",
+   "426e64a047bc86f7",
+   "4b6c50c562e5f6c2",
+   "501c051566dfa0e3",
+   "57635b14268df0f7",
+   "6054715aab248764",
+   "6e15bd8627c4d38b",
+   "849a16573f446173",
+   "87c191abb3c63a54",
+   "962ab9993754ad09",
+   "b4c62c3e12b6067a",
+   "be7a9d843d9a5d09",
+   "cd55d6bff74b6934",
+   "e4c1be2d619731da",
+   "e8fb11ac3fb8cf6d",
+   "f46e618d8ad64a45",
+   "fcfab2df483fb13c",
+   "fddc2240fb95d82a",
+   "ffc184642664debe"
+  ],
+  "32": [
+   "e979743062b750ac"
+  ],
+  "48": [
+   "12affd78b210fce9",
+   "253b7dc4c0f289d4",
+   "29110411de77c593",
+   "3c706817883d125c",
+   "3f3aab226768d6e5",
+   "59a1c21d01376fca"
+  ]
+ }
+}
