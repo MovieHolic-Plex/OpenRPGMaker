@@ -140,6 +140,8 @@ function normalizeSteps(raw: unknown): TimedStep[] {
         const parts = v.split(",").map((part) => Number(part.trim()));
         const alpha = parts[3];
         if (parts.length >= 3 && (parts.some((n) => !Number.isFinite(n)) || parts.slice(0, 3).some((n) => n < 0 || n > 255))) throw new ToolError(`steps[${index}] tintColor '${v}' 는 'r,g,b,알파'(r·g·b 0~255) 형식이어야 합니다 — 예: '20,30,80,0.4'.`, { code: "invalid-args" });
+        const luma = parts.length >= 3 ? 0.2126 * parts[0]! + 0.7152 * parts[1]! + 0.0722 * parts[2]! : 255;
+        if (alpha !== undefined && alpha > 0 && luma < 110 && alpha < 0.34) throw new ToolError(`steps[${index}] tintColor '${v}' 는 어두운 색인데 알파가 ${String(alpha)}라 밤으로 안 보입니다(실측: 0.28 은 대낮처럼 보임). 이름 night(푸른 밤)·moonlit·storm 을 쓰거나 알파를 0.35 이상으로 주세요.`, { code: "invalid-args" });
         if (alpha !== undefined && (alpha < 0 || alpha > 0.75)) throw new ToolError(`steps[${index}] tintColor 알파 ${String(alpha)} 는 0~0.75 여야 합니다(0.75 를 넘으면 맵이 가려집니다; 푸른 밤은 0.3~0.45) — 예: '20,30,80,0.4'.`, { code: "invalid-args" });
       }
     }
@@ -286,11 +288,14 @@ const scriptCutsceneStaged: ToolDefinition = {
         if (!draft.assets.uploaded[id] && !bundledSizes.has(id)) throw new ToolError(`배우 '${name}' 포즈 '${String(p.name)}' 의 resourceId '${id}' 가 등록된 그림이 아닙니다.`, { code: "unknown-resource" });
         poses[String(p.name)] = id;
       }
-      const scale = typeof raw.scale === "number" && raw.scale > 0 && raw.scale !== 100 ? Math.max(10, Math.min(300, raw.scale)) : undefined;
-      const k = (scale ?? 100) / 100;
       // 이미 잘라 둔 캐릭터 프레임(cutscene_char_<시트>_<번호>_walk<방향><0~2>) 한 장을 resourceId 로 넘겨도 그 인물의 걷기 프레임 전체를 붙인다 —
       // 그러지 않으면 정지 그림이 미끄러져 가기만 한다(실측: 조수가 프레임 id 를 그대로 재사용).
       const frame = /^(cutscene_char_.+_\d+)_walk(?:Up|Down|Left|Right)[012]$/u.exec(resourceId);
+      // 도트 프레임은 정수배로만 — 115%·135% 는 도트가 뭉개진다(px4 실측: 직접 찍은 기계를 115~140% 로 써서 흐려짐).
+      const scale = typeof raw.scale === "number" && raw.scale > 0 && raw.scale !== 100
+        ? (frame ? (Math.max(1, Math.min(3, Math.round(raw.scale / 100))) !== 1 ? Math.max(1, Math.min(3, Math.round(raw.scale / 100))) * 100 : undefined) : Math.max(10, Math.min(300, raw.scale)))
+        : undefined;
+      const k = (scale ?? 100) / 100;
       const trio = (d: string): [string, string, string] | undefined => {
         const ids = [0, 1, 2].map((n) => `${frame![1]}_walk${d}${n}`);
         return ids.every((id) => draft.assets.uploaded[id]) ? (ids as [string, string, string]) : undefined;

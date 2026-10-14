@@ -33,7 +33,7 @@ export function probeCutscene(project: Project, commands: readonly Command[], vi
   const timeline = simulateCutscene(commands);
   const area = viewport.width * viewport.height;
   const sizeOf = (id: string): { width: number; height: number } => pictureSize(project, id, { width: 48, height: 48 });
-  const per = new Map<string, { resourceId: string; visible: number; maxH: number; first?: { x: number; y: number }; travel: number; cut: number; last?: { x: number; y: number } }>();
+  const per = new Map<string, { resourceId: string; visible: number; maxH: number; first?: { x: number; y: number }; travel: number; cut: number; born?: number; last?: { x: number; y: number } }>();
   let togetherSamples = 0, overlappedSamples = 0; let coverSamples = 0; let heroHitSamples = 0, heroSamples = 0;
   // 맵 위 주인공 자리(시작 위치) — 컷신이 주인공을 옮기지 않는다면 그 자리를 그림 배우가 가로지르면 안 된다.
   const heroBox = ((): Box | null => {
@@ -60,6 +60,7 @@ export function probeCutscene(project: Project, commands: readonly Command[], vi
       entry.maxH = Math.max(entry.maxH, (box.y1 - box.y0) / viewport.height);
       const w = Math.max(0, Math.min(box.x1, viewport.width) - Math.max(box.x0, 0)), h = Math.max(0, Math.min(box.y1, viewport.height) - Math.max(box.y0, 0));
       const inside = (w * h) / Math.max(1, (box.x1 - box.x0) * (box.y1 - box.y0));
+      if (entry.born === undefined && snap.opacity > 40) entry.born = inside; // 처음 나타난 순간 몸이 화면 안에 있었는가(화면 밖 진입이면 거의 0)
       if (inside >= 0.5 && snap.opacity > 40) {
         entry.visible += STEP_MS;
         if (inside < 0.9) entry.cut += STEP_MS; // 화면 가장자리에 걸려 몸이 잘려 보이는 시간
@@ -113,6 +114,8 @@ export function probeCutscene(project: Project, commands: readonly Command[], vi
     if (overlapShare >= 0.4) issues.push(`주체끼리 절반 넘게 겹친 채로 보이는 시간이 ${Math.round(overlapShare * 100)}%입니다 — 서로 다른 fx 로 간격을 벌리세요.`);
     const travelling = subjects.some((s) => s.travelPx >= 100);
     if (travelling && timeline.durationMs >= 8000 && cameraMoves === 0) issues.push("주체가 길게 이동하는데 카메라가 한 번도 안 움직입니다 — 고정 화면에서 가로지르면 밋밋합니다. camera 단계(pan 으로 목적지를 훑거나 follow)로 행군을 따라가고, 주체는 화면 안 같은 자리에서 걷게(트레드밀 연출) 하세요.");
+    const poppedIn = subjects.filter((s) => s.travelPx >= 100 && s.maxHeightRatio >= 0.2 && (per.get(s.pictureId)?.born ?? 0) >= 0.9);
+    if (poppedIn.length > 0) issues.push(`큰 유닛 ${poppedIn.map((s) => s.pictureId).join("·")} 이 화면 안에서 갑자기 나타납니다 — 행군은 화면 가장자리 밖에서 들어와야 합니다. show 대신 enter(from 가장자리)나 화면 밖(offscreen)에서 시작해 걸어 들어오게 하세요.`);
     const worldReactions = commands.filter((c) => c.kind === "changeTile").length;
     const bigTravellers = subjects.filter((s) => s.travelPx >= 100 && s.maxHeightRatio >= 0.2);
     if (bigTravellers.length > 0 && timeline.durationMs >= 8000 && worldReactions === 0) issues.push("큰 유닛이 마을을 가로지르는데 맵에서 부서지거나 바뀌는 것이 하나도 없습니다 — 무게감이 없습니다. 유닛이 담장·깃발·지붕 곁을 지나는 순간 smash 단계(그 칸 장식 제거+흔들림+먼지+효과음)를 한 번 이상 넣으세요.");

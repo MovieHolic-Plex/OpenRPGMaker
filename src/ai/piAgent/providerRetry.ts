@@ -21,6 +21,9 @@ const TRANSIENT_PATTERNS: readonly RegExp[] = [
   /\b(?:502|503|504)\b|bad gateway|service unavailable|gateway timeout/i,
   /\boverloaded\b|\bUNAVAILABLE\b/i,
   /returned an empty response/i,
+  // 2026-10-14 Argon 오프닝 px4: 20분 실행 중 「OAuth token expired before request — please retry; AuthStorage will refresh on the next attempt」
+  // 로 28턴째에 끝났다. 다음 시도에서 토큰이 갱신된다고 스스로 말하는 오류라 이어 가면 풀린다.
+  /OAuth token expired[\s\S]*(?:retry|refresh)/i,
   // 2026-09-24 갤러리 호러 r3: 생각만 흘리고 답을 안 준 응답 — 한 번 더 요청하면 대개 풀린다.
   /thought-only response|without final output/i,
   // 2026-09-28 REFMAP 조수 시험: Cloud Code Assist 가 도구 호출을 만드는 도중(functionCallingConfig VALIDATED)
