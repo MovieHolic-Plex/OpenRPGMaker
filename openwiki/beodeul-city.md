@@ -633,3 +633,21 @@ revision 16 기와 변경은 사용자 지적을 오해한 것이며 철회했�
 공용 배선은 bundled.ts/geometry/defaultAssets/createBeodeulCityTileset/ensureBundledTilesets와 `beodeulForms.ts`다. source 본체6/그림자6/기초6 도장을 city에 translateTiles로 이식하며 새·기존 프로젝트 양쪽에서 참고문서 `beodeul-forms`를 갖는다. 그림자2층→본체3층→기초4층을 같은 원점에 놓고 각각의 벽 접점을 따른다. 기초/그림자의 통행 ★가 벽 X를 덮지 않는다. 길1층은 별도로 연결한다. 조수는 같은 실루엣3개를 나란히 놓지 않고 폭/높이/용마루/별채가 다른 몸체를 조합한다.
 
 새 지도 `map_beodeul_forms_village`는 50×50/16동/아치 다리2개다. 이전 다섯 지도와 기존 사용 칸의 통행을 보존한다. 전체16개 문앞과 다리 둑까지 실제 canMove 도로 경로를 확인한다. 여관 입구(35,13)를 anvil로 막은 실제 변조는 true→false로 검출한다. 50×50 재현 `scripts/content/lib/beodeul-forms-village.mts`, 자료 준비 `prepare-beodeul-forms-references.mts`, 정본 API 저장·별도 프로세스 재로드·전용 player.html 화면 `verify-shots/beodeul-forms/`. 외장 저작이며 실내/거래/문 전이 이벤트를 추가한 것은 아니다.
+
+## 던전 층: 받침 규칙 + `author_beodeul_dungeon` (2026-10-14, 사용자 스크린샷 · field-enemy fe1)
+
+**증상:** 「필드에 몬스터가 돌아다니는 던전 층을 만들어 줘」(Argon medium, 48×38)가 25분 시간 초과로 끝났을 때 맵에 횃불·화로·통·상자·기둥이 검은 허공에 뜨고, 벽·바닥 조각이 잘려 서 있고, 상자 이벤트가 천장 칸에 놓였다. trace: `stamp_object` 112번(호출당 ≈4초) + `paint_tiles` 67번(≈3초) ≈ 도구 시간 11분, `run_lint` 0건.
+
+**원인(모델 탓이 아니다):**
+1. 참고문서 `bd-pick-doc-dungeon-guide` 의 공식 절차가 「키트를 `stamp_object` 로 한 개씩 절대 좌표로」였다. 던전 시공기가 없었다 — 좌표 계산 전부가 모델 몫.
+2. `checkKitPlacement` 는 겹침·경계만 봤고 「이 칸 밑이 바닥인가」를 보지 않았다. 찍기가 항상 성공하니 같은 일을 계속 시킬 이유가 생겼고, 거절 → 재시도 루프가 아니라 **성공한 호출이 200번**이었다(장식이 목표라 끝이 없다).
+3. 허공을 `paint_tiles` 로 다시 칠하면 이미 찍은 물체가 허공에 남는다. 시작 위치 무결성 때문에 작은 허공 사각형도 많이 칠했다.
+4. `projectLint`·`check_reachability` 는 「바닥 위 물체」·「천장 칸 이벤트」를 안 봐서 0건으로 통과.
+
+**수리:**
+- `src/project/groundSupport.ts` — 던전 테마 키트(`ai.themes` 에 dungeon)만 대상. 규칙: 천장(허공) 위 금지 · 서는 물체의 맨 아랫줄이 벽이면 금지 · 벽걸이(`torch-wall|banner|niche|chains|sconce`)는 벽 칸에만 · 문·아치 바로 남쪽은 바닥 · 벽 앞면 바로 남쪽이 천장/빈 칸이면 거절. 훅 둘: `kitPlacementRules.checkKitPlacement`(stamp_object 가 어기면 칸·이유·가까운 올바른 자리 3곳을 돌려주고 거절), `projectLint.checkGroundSupport`(코드 `ground-support`, 칸 단위 error + 허공 향한 벽 warning, 천장 칸 이벤트 error — 커밋 게이트가 기준선 대비 새 오류만 막으므로 paint_tiles 가 물체 밑을 지우는 길도 막힌다).
+- `src/editor/beodeulDungeon/compose.ts` + `src/editor/tools/beodeulDungeonTools.ts` — 도구 `author_beodeul_dungeon({rooms:[{kind,w,h,from,dir}]})`. 방 목록 → 배치(통로 4칸·바닥 3줄 폭) → 바닥 마스크 → 천장 → 벽 앞면(바닥 북쪽 변 위 3줄만) → 마스크에서 장식 유도(방 종류별). 끝나면 위 받침 규칙으로 자기 결과를 검사하고, 입구에서 모든 방이 걸어 닿는지 BFS 로 본 뒤에만 맵을 만든다(어기면 맵 안 만들고 거부). 결과 `data.rooms[].spots` 가 이벤트·적·상자를 둘 수 있는 빈 바닥 칸이고 `stairsUp.front`/`stairsDown` 이 이동 지점이다. 빈 시작 맵이면 방 배치 크기로 넓혀 그 자리에 짓고 시작 위치를 입구로 옮긴다.
+- 안내: 참고문서 던전 절(md + `src/assets/beodeulCityReferences.json` 베이크본), `intentDeclaration`·`sessionToolExposure`·`toolCapabilityIndex`·도구 설명이 던전 층은 이 도구 하나로 가라고 한다.
+- 시험 케이스: `harness-data/space-craft/seed.json` 의 `dungeon-fe1`(원 요청 그대로)·`dungeon-stone`·`dungeon-crypt`.
+
+**한계:** 구조는 일렬 방+통로 그래프다(ㄱ자·갈림길 방·물 구역 없음). 방 안 장식은 종류별 규칙형이라 같은 종류 방은 비슷하다. 이벤트(적·상자·이동)는 조수가 spots 에 직접 둔다. 필드 적 시스템 쪽 도구는 건드리지 않았다.
