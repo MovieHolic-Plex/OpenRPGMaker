@@ -105,7 +105,7 @@ export function probeCutscene(project: Project, commands: readonly Command[], vi
       const cutShare = s.visibleMs > 0 ? (per.get(s.pictureId)?.cut ?? 0) / s.visibleMs : 0;
       if (cutShare >= 0.4) issues.push(`그림 ${s.pictureId}(${s.resourceId})가 보이는 시간의 ${Math.round(cutShare * 100)}% 동안 화면 가장자리에 걸려 몸이 잘려 보입니다 — 머리·다리가 잘린 채 서 있지 않게, 멈추는 자리는 몸 전체가 화면 안에 들어오도록 fx/fy 와 scale 을 조정하세요.`);
       if (s.maxHeightRatio > 0.55) issues.push(`그림 ${s.pictureId}가 화면 높이의 ${Math.round(s.maxHeightRatio * 100)}%로 너무 큽니다 — 배우 scale(%)로 줄이세요.`);
-      if (s.maxHeightRatio < 0.12 && s.visibleMs > 0) issues.push(`그림 ${s.pictureId}가 화면 높이의 ${Math.round(s.maxHeightRatio * 100)}%로 너무 작아 안 보입니다 — 도트를 확대하지 말고(뭉개진 블록이 됩니다) 더 큰 캔버스로 다시 그리거나(author_pixel_art), 장면에 필요 없는 소품이면 빼세요.`);
+      if (s.maxHeightRatio < 0.12 && s.visibleMs > 0) issues.push(`그림 ${s.pictureId}가 화면 높이의 ${Math.round(s.maxHeightRatio * 100)}%로 너무 작아 안 보입니다 — 도트를 확대하지 말고(뭉개진 블록이 됩니다) 더 큰 캔버스로 다시 그리거나(author_pixel_art), 장면에 필요 없는 소품이면 빼세요. 글자(제목·지명 띠)를 그린 그림이면 도트 글자는 깨져 읽히지 않으니 빼고 say(context:"narration")나 타이틀 화면 글자로 보이세요.`);
     }
     if (Math.max(...subjects.map((s) => s.maxHeightRatio)) < 0.3) issues.push(`가장 큰 주체도 화면 높이의 ${Math.round(Math.max(...subjects.map((s) => s.maxHeightRatio)) * 100)}% 입니다 — 장면의 주연이 위압적인 존재(기계·괴수)라면 24×32 칩을 키우지 말고 author_pixel_art kind:\"walker\" 로 처음부터 큰 도트(64×80 이상)로 그려 쓰세요. 주연이 사람이면 이 지적은 무시해도 됩니다.`);
     if (!subjects.some((s) => s.travelPx >= 24)) issues.push("화면 안 주체가 하나도 움직이지 않습니다(이동 24px 미만) — enter/move/exit 로 실제로 이동시키세요.");

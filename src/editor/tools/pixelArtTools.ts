@@ -193,7 +193,7 @@ export function pixelArtPreview(data: unknown): { dataUrl: string; label: string
 const authorPixelArt: ToolDefinition = {
   name: PIXEL_ART_TOOL,
   description:
-    "맞는 칩셋·물체·캐릭터·그림이 없을 때 «없다»고 멈추지 말고 도트를 직접 찍어 이 프로젝트에 넣는다. 문자 한 글자 = 화소 한 칸, '.' = 투명, palette 에 {글자:'#rrggbb'}. "
+    "맞는 칩셋·물체·캐릭터·그림이 없을 때 «없다»고 멈추지 말고 도트를 직접 찍어 이 프로젝트에 넣는다. 그림 안에 글자(제목·지명 띠·간판 글씨)를 그려 넣지 않는다 — 도트 글자는 깨져 읽히지 않는다(제목·지명은 대사·내레이션·타이틀 화면 글자로). 문자 한 글자 = 화소 한 칸, '.' = 투명, palette 에 {글자:'#rrggbb'}. "
     + "kind:\"object\" — 맵에 놓을 물체(예: 부서진 기계 잔해, 깃발, 간판, 조형물). 16px 칸 단위 칩셋에 구워 id `workshop:<이름>` 로 등록되니 stamp_tileset_object 의 objectId 로 놓는다. "
     + "kind:\"charset\" — 맵 위를 걷는 캐릭터·기계·탈것(작은 인물용 24×32, directions 마다 stand 한 장+선택 stepA/stepB, 안 주면 걷기를 자동 생성). 컷신 배우로 character:{resourceId, characterIndex}. "
     + "kind:\"walker\" — **대형 유닛(전투기계·괴수·탈것·거인)은 24×32 charset 을 확대하지 말고 이걸로** 원본 해상도(48×48~160×192, 보통 64×80~96×112)로 직접 찍는다: directions:{right:{stand, stepA?, stepB?}, down?, up?}(모든 프레임 같은 캔버스, 발은 맨 아래 줄, 보통 64×80~96×112). 한 대마다 실루엣이 확연히 다르게(다리 수·몸통 비율·무장), 재질 4~6단 명암+눈·불빛 강조색. 도트 질감: 둥근 «깡통 덩어리»(필로우 셰이딩)로 칠하지 말고 한 방향 광원(왼쪽 위)으로 면마다 단단한 3~4단 명암, 패널 이음선·리벳·관절 부품·포신처럼 구조가 실루엣에 드러나게, 다리는 걸음마다 뚜렷하게 앞뒤로 벌어지게(stepA/stepB 를 직접 찍는다). 컷신 배우 {name, resourceId:<결과 resourceId>, scale:100} 하나로 걷기 프레임이 전부 붙는다. "
