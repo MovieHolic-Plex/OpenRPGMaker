@@ -32,6 +32,8 @@ export const ROUTE_STYLES: Readonly<Record<string, RouteStyle>> = {
   sengoku_edo: { roadWidth: 3, noMainStreet: true, ground: "풀밭", road: "다진 흙길", yard: "돌길(이시다타미)" },
   sky_island: { roadWidth: 1, noMainStreet: true, ground: "풀밭", road: "디딤돌 길(1)", yard: "광장 자갈 포석" },
   modern_campus: { roadWidth: 2, noMainStreet: true, ground: "캠퍼스 잔디", road: "보도블록", yard: "붉은 벽돌 포석" },
+  // 도쿄풍 도시: 시작 맵 거리는 조수가 compose_modern_city_street 로 통째로 짠다 — 큰길을 미리 칠하면 구성기가 replace 를 요구한다.
+  modern_city: { roadWidth: 2, noMainStreet: true, road: "보도 포석", yard: "벽돌 포장(공원 광장)" },
 };
 
 /**
@@ -39,7 +41,7 @@ export const ROUTE_STYLES: Readonly<Record<string, RouteStyle>> = {
  * 건물 사각형이 맵 밖이라 build_jp_city_building 을 거절당했다). 칩셋마다 거리·마을 한 장이 서는 크기를 씨앗으로 조금 흔든다.
  */
 export function startMapSizeFor(tilesetId: string, plan: StartPlan): { width: number; height: number } | undefined {
-  const base = tilesetId === "jp_city" ? { w: 52, h: 34 } : tilesetId === "joseon_baram" ? { w: 48, h: 36 } : tilesetId === "wizarding_world" ? { w: 48, h: 36 } : tilesetId === "sengoku_edo" ? { w: 56, h: 48 } : tilesetId === "sky_island" ? { w: 50, h: 34 } : tilesetId === "modern_campus" ? { w: 48, h: 36 } : undefined;
+  const base = tilesetId === "jp_city" ? { w: 52, h: 34 } : tilesetId === "joseon_baram" ? { w: 48, h: 36 } : tilesetId === "wizarding_world" ? { w: 48, h: 36 } : tilesetId === "sengoku_edo" ? { w: 56, h: 48 } : tilesetId === "sky_island" ? { w: 50, h: 34 } : tilesetId === "modern_campus" ? { w: 48, h: 36 } : tilesetId === "modern_city" ? { w: 60, h: 48 } : undefined;
   if (!base) return undefined;
   return { width: base.w + (plan.seed % 3) * 4, height: base.h + ((plan.seed >> 2) % 3) * 3 };
 }
