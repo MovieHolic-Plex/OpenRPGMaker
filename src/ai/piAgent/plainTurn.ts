@@ -1,4 +1,4 @@
-import { requestsEmeraldMonsterGame, classifyMonsterGameRequest, MONSTER_GAME_INITIAL_TOOLS, MONSTER_GAME_PRODUCTION_PROMPT, MONSTER_FREE_CAMPAIGN_NOTE, MONSTER_FREE_KIT_NOTE, hasMonsterCollectIntent, MONSTER_TOURNAMENT_INITIAL_TOOLS, MONSTER_TOURNAMENT_PROMPT, MONSTER_EXPEDITION_INITIAL_TOOLS, MONSTER_EXPEDITION_PROMPT } from './monsterGameRequest';
+import { requestsEmeraldMonsterGame, classifyMonsterGameRequest, MONSTER_GAME_INITIAL_TOOLS, MONSTER_GAME_PRODUCTION_PROMPT, MONSTER_FREE_CAMPAIGN_NOTE, monsterScaleNote, MONSTER_FREE_KIT_NOTE, hasMonsterCollectIntent, MONSTER_TOURNAMENT_INITIAL_TOOLS, MONSTER_TOURNAMENT_PROMPT, MONSTER_EXPEDITION_INITIAL_TOOLS, MONSTER_EXPEDITION_PROMPT } from './monsterGameRequest';
 // 평문 조수 턴의 순수 부분 — 의도 선언 → 실행 계획, 그리고 Pi 요청(계획 턴·실행 턴) 조립.
 //
 // 채팅 패널(`aiChatPanel.plainPiTurn` + `aiPiAgentCommand.runPiCommand`)과 헤드리스 생성기
@@ -140,7 +140,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     const routingAudit = "intent:emerald-monster-game → 전체72맵/60종 제작";
     // One producer owns shared world/DB/session; never scatter a fresh campaign across map bundles.
     return { mode: "single", plan: { ...plan, routineEdit: false, routingAudit }, questionPromoted: false,
-      initialToolNames: [...MONSTER_GAME_INITIAL_TOOLS], intentNote: MONSTER_GAME_PRODUCTION_PROMPT, routingAudit };
+      initialToolNames: [...MONSTER_GAME_INITIAL_TOOLS], intentNote: MONSTER_GAME_PRODUCTION_PROMPT + monsterScaleNote(input.text), routingAudit };
   }
   // 포켓몬 낱말 없이 말한 몬스터 수집 게임·포획 없는 대회형(2026-10-14 자유도 감사 #3·#5) — 자유 경로로 빠지면 칩셋이 버들항·사막·숲 섞임이었다.
   if (!plan.readOnly) {
@@ -159,7 +159,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     if (kind === 'campaign') {
       const routingAudit = "intent:monster-collect-free → 몬스터 칩셋 캠페인 제작";
       return { mode: "single", plan: { ...plan, routineEdit: false, routingAudit }, questionPromoted: false,
-        initialToolNames: [...MONSTER_GAME_INITIAL_TOOLS], intentNote: MONSTER_GAME_PRODUCTION_PROMPT + MONSTER_FREE_CAMPAIGN_NOTE, routingAudit };
+        initialToolNames: [...MONSTER_GAME_INITIAL_TOOLS], intentNote: MONSTER_GAME_PRODUCTION_PROMPT + MONSTER_FREE_CAMPAIGN_NOTE + monsterScaleNote(input.text), routingAudit };
     }
   }
   if (isGenrePresetBriefRequest(input.text)) {

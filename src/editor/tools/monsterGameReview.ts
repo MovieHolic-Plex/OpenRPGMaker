@@ -3,6 +3,8 @@ import { isEmeraldMonsterStyle } from '@/project/emeraldMonsterStyle';
 import { collectorFieldMenu } from '@/project/fieldMenu';
 import { resolveAssetResourceUrl } from '@/assets/generatedAssetResourceResolver';
 import { isPassableLanding } from '@/project/collision';
+import { checkMonsterCampaignDefinition } from '@/project/monsterCampaignConsistency';
+import { LEGACY_CAMPAIGN_PLAN } from '@/project/examples/monsterExpedition/campaignPlan';
 
 /** 키 순서와 무관한 직렬화 — 보수가 맵 객체를 다시 짜며 lowerTiles 키를 뒤로 옮기기만 해도 지문이 바뀌어
  * 「마지막 변경 뒤 read_monster_game」 완료 검사가 끝나지 않았다(2026-10-07 사막 기획서 실편집기 녹화, 저장소에서 다시 읽은 문서). */
@@ -24,6 +26,8 @@ export function monsterGameFingerprint(p: Project): string {
 /** Actual complete authored inventory, never a model supplied success flag. */
 export function reviewMonsterGame(p: Project) {
   const issues: string[] = [], campaign=p.system.monsterCampaign;
+  // 검수 하한은 캠페인 정의(plan)가 정한다 — 체육관 3개·0개로 지은 캠페인이 72맵/8배지 상수에 막히지 않게. plan 이 없으면 옛 고정 계약.
+  const plan=campaign?.plan??LEGACY_CAMPAIGN_PLAN;
   const maps=Object.values(p.maps), species=p.database.monsterSpecies??[];
   const roster=campaign?.speciesIds.map(id=>species.find(s=>s.id===id))??[];
   const allCommands: Record<string,unknown>[]=[];
@@ -38,8 +42,8 @@ export function reviewMonsterGame(p: Project) {
     if(id.startsWith('oprn_emerald_field_cast_')&&(asset.meta?.width!==288||asset.meta?.height!==256||asset.meta?.frameWidth!==24||asset.meta?.frameHeight!==32))issues.push(`필드 캐스트는16×32 원본을 x4 여백에 담은288×256 컨테이너여야 합니다:${id}`);
   }
   if(!campaign)issues.push('실제 몬스터 캠페인 정의가 없습니다.');
-  if(maps.length<72)issues.push(`전체 캠페인은 최소72맵이 필요합니다(현재${maps.length}).`);
-  if(roster.length<60||new Set(campaign?.speciesIds).size!==roster.length)issues.push(`도감에 고유60종이 필요합니다(현재${roster.length}).`);
+  if(maps.length<plan.maps)issues.push(`전체 캠페인은 최소${plan.maps}맵이 필요합니다(현재${maps.length}).`);
+  if(roster.length<plan.species||new Set(campaign?.speciesIds).size!==roster.length)issues.push(`도감에 고유${plan.species}종이 필요합니다(현재${roster.length}).`);
   const missing=roster.flatMap((s,i)=>!s?[campaign!.speciesIds[i]!]:!known(s.graphic.monsterResourceId)||!known(s.graphic.backResourceId)||!s.types?.length||!s.skillsByLevel?.length||!campaign?.speciesNotes[s.id]?[s.id]:[]);
   const skillIds=new Set(p.database.skills.map(s=>s.id));
   const speciesIds=new Set(species.map(s=>s.id));
@@ -50,7 +54,7 @@ export function reviewMonsterGame(p: Project) {
     for(const move of s.skillsByLevel??[]){const skill=p.database.skills.find(k=>k.id===move.skillId);if(skill&&(!skill.maxPp||skill.maxPp<1))issues.push(`기술PP 누락:${skill.id}`);}
   }
   if(missing.length)issues.push(`종별 정면/뒷면·타입·기술·생태 연결 누락: ${missing.join(', ')}`);
-  if((campaign?.badges.length??0)<8)issues.push('체육관 배지8개가 필요합니다.');
+  if((campaign?.badges.length??0)<plan.gyms)issues.push(`체육관 배지${plan.gyms}개가 필요합니다(현재${campaign?.badges.length??0}개).`);
   const switchIds=new Set(p.switches.map(s=>s.id));
   for(const b of campaign?.badges??[])if(!p.maps[b.cityMapId]||!switchIds.has(b.switchId))issues.push(`배지 참조 오류:${b.id}`);
   for(const o of campaign?.objectives??[])if(!switchIds.has(o.switchId)||o.requiresSwitchId&&!switchIds.has(o.requiresSwitchId))issues.push(`목표 참조 오류:${o.id}`);
@@ -69,12 +73,13 @@ export function reviewMonsterGame(p: Project) {
   const reached=new Set<string>([p.startMapId]);const queue=[p.startMapId];for(let i=0;i<queue.length;i++)for(const target of graph.get(queue[i]!)??[])if(!reached.has(target)){reached.add(target);queue.push(target);}
   const disconnected=maps.filter(m=>!reached.has(m.id)).map(m=>m.id);if(disconnected.length)issues.push(`시작부터 연결되지 않은 맵:${disconnected.join(', ')}`);
   for(const c of transfers)if(typeof c.mapId!=='string'||!p.maps[c.mapId])issues.push(`출입구 대상 맵이 없습니다:${String(c.mapId)}`);
-  if(transfers.length<142)issues.push(`전체 맵 연결이 부족합니다(현재${transfers.length}, 기준142방향).`);
+  if(transfers.length<plan.links)issues.push(`전체 맵 연결이 부족합니다(현재${transfers.length}, 기준${plan.links}방향).`);
   const start=p.maps[p.startMapId];if(!start||!isPassableLanding(p,start,p.startPos.x,p.startPos.y))issues.push('저작 시작 위치가 통행 가능한 실제 맵 칸이 아닙니다.');
   const opening=p.system.opening;if(!opening?.enabled||!opening.scenes.length)issues.push('교수·몬스터 소개와 플레이 진입 오프닝이 필요합니다.');
   if(opening?.scenes.some(scene=>scene.kind==='video'||scene.durationMs!==0))issues.push('에메랄드 교수 소개는 Enter 확인 페이지로 이어져야 합니다. 기존 오프닝 교체가 요청된 경우 replaceOpening:true로 보수하세요.');
   if(!p.meta.oprnOpeningBook?.portraitResourceId||!known(p.meta.oprnOpeningBook.portraitResourceId))issues.push('실제 교수 초상 그림이 소개에 연결되지 않았습니다.');
   for(const scene of opening?.scenes??[])if(scene.kind==='image'&&!known(scene.resourceId))issues.push(`오프닝 실제 그림이 없습니다:${scene.id}`);
   if(!opening?.musicResourceId||!known(opening.musicResourceId))issues.push('실제 오프닝 음악이 연결되지 않았습니다.');
-  return {reference:p.meta.oprnMonsterStyle??null,resolution:p.system.playResolution??null,cameraZoom:p.system.cameraZoom??1,campaignId:campaign?.id??null,maps:maps.length,species:roster.length,badges:campaign?.badges.length??0,objectives:campaign?.objectives.length??0,transfers:transfers.length,trainerBattles:commands('battleProcessing').length,shops:commands('shop').length,missingSpecies:missing,start:{mapId:p.startMapId,...p.startPos},issues,verificationScope:'authored structure/resources only',playbackVerified:false as const};
+  for(const finding of checkMonsterCampaignDefinition(p))if(finding.severity==='blocker')issues.push(finding.message);
+  return {reference:p.meta.oprnMonsterStyle??null,resolution:p.system.playResolution??null,cameraZoom:p.system.cameraZoom??1,campaignId:campaign?.id??null,plan:{gyms:plan.gyms,species:plan.species,maps:plan.maps,links:plan.links,declared:!!campaign?.plan},maps:maps.length,species:roster.length,badges:campaign?.badges.length??0,objectives:campaign?.objectives.length??0,transfers:transfers.length,trainerBattles:commands('battleProcessing').length,shops:commands('shop').length,missingSpecies:missing,start:{mapId:p.startMapId,...p.startPos},issues,verificationScope:'authored structure/resources only',playbackVerified:false as const};
 }

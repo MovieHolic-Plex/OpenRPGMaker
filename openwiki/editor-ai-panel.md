@@ -4255,3 +4255,23 @@ Pi 최종 적용은 `store.flush()`의 결과까지 기다린다. `saved` 응답
 ## 응답 오류와 이미 반영된 변경의 분리 (2026-10-05)
 
 Pi가 error 뒤 done을 보내도 성공 완료로 승격하지 않는다. 최종 실행 축은 failed이며 활동 로그에 원본 오류가 남는다. 변경이 반영됐으면 전달 축은 applied와 실제 저장 관찰을 유지하고, 실패 보드·응답 오류 상태·되돌리기 안내를 표시한다. 변경이 없으면 no-change와 응답 실패를 함께 표시한다. 제공자 콘텐츠 차단은 친절한 오류 문구를 제공하지만 자동 재시도하거나 실패 자체를 숨기지 않는다. 독립 SQLite에서 오류 스트림을 주입하는 하네스 controls는 실모델 성공률에 넣지 않는다.
+
+
+## 조수 통째 교체 직후 쓰기가 「작업 중 프로젝트가 바뀌었습니다」로 거절되던 원인 (2026-10-14)
+
+증상: `build_monster_game(create)` 처럼 프로젝트를 통째로 교체한 뒤의 쓰기(`patch_event_page`·`set_title_screen`·`generate_title_art`…)가
+`commit-rejected: 작업 중 프로젝트가 바뀌었습니다`(`assistantHumanEdits.ts` `valid=false`)로 거절 — 감사 4/4 런.
+가설(`store.replaceProject` 가 lineage 를 올린다)은 **틀렸다**: 조수 체크포인트는 `store.replace` 로 들어가고 lineage 는 그대로(1)였다.
+
+실측 원인(런 중 `valid` 가 꺼지는 순간의 스택·`refreshFromHost` 상태를 잡음): 호스트 폴링(`teamSession.ts` 3초)이 `refreshFromHost` 를 불러
+`emit({scope:'project', origin:'system', projectSwitch:true})` 를 냈다. 이유 — 저장 뒤에 호스트(`electron/main/dispatch.ts`
+`separateMediaAfterSave`)가 새 프로젝트의 처음 몇 번의 저장마다 base64 업로드 자산을 파일로 떼면서 **저장 응답에 없는 다음 리비전**을
+썼다(저장 4 → 분리 5, 같은 내용). 클라이언트의 `isOwnSavedHostRevision(5)` 가 거짓이라 호스트 문서를 다시 받아 `persistedBaseline` 과
+비교했고, 저장 문서가 접힌 형태(타일셋 참고문서 번들 소유·제목 기본값)라 `jsonEqual` 이 «다름» → 통째 교체로 방송.
+`AssistantHumanEdits` 는 `projectSwitch` 를 사람 편집과 구분하지 못하므로 `valid=false`.
+조수가 큰 일(자산 수백 개를 싣는 첫 저장들)을 한 직후에만 나타나 «통째 교체 직후»로 보였다. 사람 편집기에서도 같은 방송이 undo 이력을 지웠다.
+
+수정(`dispatch.ts`): 저장 응답이 미디어 분리 **뒤** 리비전·sha 를 싣는다(분리는 저장의 일부). 클라이언트는 그 리비전을 자기 것으로
+인식하고 refresh 를 건너뛴다 — 다음 저장의 `expectedSha` 도 호스트 행과 맞는다. `AssistantHumanEdits` 의 사람 편집 보호는
+그대로다(진짜 팀 변경·프로젝트 전환은 여전히 `valid=false`). 디버깅 힌트: `valid` 가 꺼진 순간 `change.projectSwitch`·`origin`·호출 스택을
+`globalThis` 에 남겨 두면 어느 방송인지 바로 보인다(이번 진단법).

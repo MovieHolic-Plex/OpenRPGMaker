@@ -247,3 +247,15 @@ It requires an existing catalog; full generation without the option remains supp
 - **알려진 한계** — `review_monster_game`(monster-free-a 소유)은 72맵·8체육관 기준이라 대회형·탐험형에 맞지 않아 프롬프트가 쓰지 말라고 한다.
   체육관 개수 파라미터(0~8)는 monster-free-a 의 `campaignPlan.ts` 가 합쳐져야 「체육관 세 개」가 지켜진다. 탐험형은 「전투마다 회복」 자동 플레이에서만
   통과하는 소모 경고가 남는다. 도감 메뉴 첫 줄은 포획 없는 게임에서도 「포획」 수를 센다(표시만).
+
+
+
+## 규모 인자 — 체육관 0~8관 (2026-10-14, monster-free-a)
+
+`createMonsterExpedition({gymCount, speciesCount})` 는 기본(8관·60종)에서 이전과 똑같은 프로젝트를 만든다(여섯 옵션 변형의 sha 가 같다).
+`gymCount<8` 이면 `world.ts` 가 `campaignShape` 로 마을·길·체육관·리그 방을 자르고(`campaignLevels` 로 레벨 곡선을 마지막 체육관에 맞춤),
+진행 잠금 `mx_badge_k>N` 을 마지막 배지로(0관은 `mx_starter`) 옮긴다. 0관은 체육관 없는 마을에 「조련사 회관」을 세우고 관측탑 보스가
+엔딩을 건다. `speciesCount<60` 은 쓰지 않는 계통을 통째로 덜어 낸다(`campaignSpecies.ts`). 결과 규모는 `system.monsterCampaign.plan`
+(`{gyms,species,maps,links}`)에 적히고 검수·`qa:game check` 가 그 계획과 정의-이벤트 일치(`monsterCampaignConsistency.ts`)를 본다.
+측정(2026-10-14, 모델 없이): 0관 24맵·3관 32맵(눈 테마 41맵)·8관 90맵, 모두 몬스터 키트 시트(monster_overworld·gyms·rooms·dungeon…)만 쓴다.
+이미 지은 캠페인의 체육관을 줄이는 것은 `resizeGyms.ts`(`configure_monster_campaign badgeCount`). 상세는 `editor-ai-tools.md` 같은 날 절.

@@ -10,6 +10,7 @@
 import { TILE } from "@/project/defaults/constants";
 import { itemAllowsBattle } from "@/project/itemUsage";
 import { isMonsterNoCaptureGame, monsterSpeciesForEnemy } from "@/project/monsterCollection";
+import { checkMonsterCampaignDefinition } from "@/project/monsterCampaignConsistency";
 import type { GameMap, Project } from "@/project/types";
 import type { Finding } from "./types";
 import { visitAllCommands, type RawCommand } from "./walk";
@@ -43,6 +44,9 @@ export function checkMonster(project: Project, briefText?: string): Finding[] {
   if (system.monsterBattleParty !== true && system.battleParty !== "monsters") {
     findings.push({ severity: "warning", code: "monster-battle-party-off", message: "몬스터 파티 전투가 꺼져 있어 잡은 몬스터가 아니라 영웅이 싸웁니다(configure_monster_system battleParty:true)." });
   }
+
+  // 1b) 캠페인 정의(도감·배지·진행 목표)가 실제로 지은 이벤트·도감과 맞는가 — 정의만 줄이고 관장은 그대로인 손상.
+  for (const f of checkMonsterCampaignDefinition(project)) findings.push({ severity: f.severity, code: f.code, message: f.message });
 
   // 2) 몬스터를 얻는 길 — giveMonster(스타터) 와 던질 수 있는 공.
   const gives: { command: RawCommand; where: Finding["where"] }[] = [];
