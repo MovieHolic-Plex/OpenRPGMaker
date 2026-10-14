@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5c70495864238de6cf747d3ad5e330e609bbbfe79b301e608d1d3633e65e2ecf",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "two wide-mouthed terracotta storage jars seen from above at 3/4, dark open mouths with water inside",
+ "label": "pirate-isles/pi-water-jar",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "two terracotta storage jars with wide openings",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both jars clearly show wide elliptical openings viewed from above at a 3/4 perspective, revealing the dark interior rim shadow and blue water inside (top jar opening is 4 rows tall, bottom jar opening is 3 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4516
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "two terracotta storage jars",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both jars clearly display foreshortened elliptical openings seen from above (upper jar opening is 4 rows tall with dark interior shadow and blue water), with rounded south faces below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3832
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two wide-mouthed terracotta jars filled with water",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both jars clearly show wide elliptical openings viewed from above (3-4 rows of interior showing dark shadow and blue water) resting on rounded front faces in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3246
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "two overlapping terracotta storage jars with wide openings",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both jars clearly display foreshortened elliptical openings showing dark inner rims and blue water inside (top jar opening spans rows 2-5, bottom jar spans rows 8-10) above their rounded front bodies.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2999
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.593Z",
+ "cells": {
+  "16": [
+   "deb1d9ec2382b830"
+  ],
+  "24": [
+   "05c53f76391f6c73",
+   "0e36cb5e30f0d1bc",
+   "2e96100a8f06ef7c",
+   "70ec0b7052001e5e",
+   "8b88e36ff441bd7b",
+   "90db3d1d1fe65b2b"
+  ],
+  "32": [
+   "4701372b8a99160f",
+   "6e4be9e03793e8ee",
+   "9f58fd51a5270726",
+   "cf962da540505c52",
+   "dd78470f54e23afc",
+   "e8d7695cf8ae4efa"
+  ],
+  "48": [
+   "00d662fc0f3d7a57",
+   "2390d65e2bcfbaa1",
+   "6572d37a4dc4eb6e",
+   "9bcb24e1bf94b0e4",
+   "ba8d338649d3f095",
+   "e2fb4f4ade2fe664"
+  ]
+ }
+}

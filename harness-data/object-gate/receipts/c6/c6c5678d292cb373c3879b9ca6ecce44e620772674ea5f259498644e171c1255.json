@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c6c5678d292cb373c3879b9ca6ecce44e620772674ea5f259498644e171c1255",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "large grey sea rock shaped like a skull with two dark hollow eyes, mossy top",
+ "label": "pirate-isles/pi-skull-rock",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "skull-shaped rock",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The skull rock is drawn as a flat, direct front-facing elevation with eye sockets, nasal cavity, and teeth viewed straight-on at eye level. There is no visible horizontal top surface foreshortened in 3/4 top-down view; the moss is simply patterned across the vertical forehead.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4529
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "skull-shaped rock",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The skull is drawn as a flat, straight-on front elevation (icon style). The eyes, nasal cavity, teeth, and forehead are centered and face directly towards the camera with no foreshortened top surface of the cranium/boulder visible from the required 45-degree overhead angle.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4990
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "skull-shaped sea rock",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The skull rock is drawn as a flat front elevation / 2D icon facing directly forward at camera level, with the eyes, nose, and teeth arranged straight-on rather than viewed from a 45-degree top-down perspective. The moss sits flat on the forehead with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3397
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "skull-shaped sea rock",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The skull rock is drawn in pure front elevation with eyes, nasal cavity, and teeth facing directly toward the camera at eye level. The moss is painted directly onto the vertical forehead rather than a top horizontal plane seen from a 45-degree downward angle, showing 0 top rows.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5691
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.588Z",
+ "cells": {
+  "16": [
+   "1dfa22f7c18f47ce",
+   "b4857b7c2a240aee",
+   "e2d489fdaf512eeb",
+   "ecf1ea1775926dbc"
+  ],
+  "24": [
+   "160992544930cfa8",
+   "188537686166e8c5",
+   "1a709f6d8074ac71",
+   "2e51747d8c2cdd64",
+   "439f5e48c0be1c61",
+   "533ae6e29c7f1d80",
+   "630feb548f48f655",
+   "6988735fa9ef90f8",
+   "70e3bf56fdabb241",
+   "7295c217a656ed62",
+   "75b9d9bd3075101f",
+   "8a74c88937ec4df7",
+   "9709b4492273a9c2",
+   "9a7699d6cd89e888",
+   "9c6e53de005e8409",
+   "a3dbfecdce663fd8",
+   "b69e2621baca6745",
+   "c855337d67bbc4af",
+   "dc12f60b0f2b93b2",
+   "e63f7855669e62ba",
+   "ea6f800f6042e63e",
+   "f5340d68c08f7b34",
+   "f721af2d34bcb2d4",
+   "f90f70ac743a8616"
+  ],
+  "32": [
+   "39a221d2b2925cd3"
+  ],
+  "48": [
+   "0df8005267acebd7",
+   "2a168fe5cfcb0488",
+   "480c97f29fdffe62",
+   "61e12c0fb74b9149",
+   "b52f9ecc461250b2",
+   "e6fd101dba036f61"
+  ]
+ }
+}

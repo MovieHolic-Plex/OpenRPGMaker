@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "51ae524866226afd990db80349d6f4fdf630811265ac198edfd7ac855bbcf442",
+ "width": 32,
+ "height": 32,
+ "kind": "other",
+ "name": "naval deck cannon on a four-wheeled wooden truck carriage with breeching rope, aimed south",
+ "label": "pirate-isles/pi-cannon-int",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cannon barrel and wooden truck carriage",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cannon is viewed from above-rear looking down along its length towards the south-facing muzzle. The entire top length of the barrel (rows 0-24) and carriage is foreshortened in 3/4 perspective, ending in the visible bore opening at rows 26-29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6066
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cannon barrel and wooden truck carriage",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cannon is viewed from above aimed south, showing the foreshortened top length of the cylindrical barrel running from the breech at row 0 down to the muzzle at row 26, flanked by the carriage cheeks and wheels.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5840
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cannon barrel and wooden carriage",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cannon is viewed from above at a 3/4 angle looking south: the entire length of the barrel is visible from breech to muzzle (rows 0-25), with the breeching rope looping behind the carriage and the muzzle facing south at the bottom.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4349
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cannon barrel and wooden truck carriage",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cannon is viewed from above in classic 3/4 perspective: the barrel length is visible from the rear breech (row 0) down to the south-facing muzzle (row 26), and the carriage shows depth with the rear wheels positioned higher (rows 8-14) than the front wheels (rows 24-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 19503
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.592Z",
+ "cells": {
+  "16": [
+   "6b9a8806debda172",
+   "d8160dad5ce7c117",
+   "e65de72a98fe5d6e",
+   "e8f2b78c3a86d939"
+  ],
+  "24": [
+   "0754e9a40ea0de55",
+   "0e5207a2ce3f7cf6",
+   "11b487b9a9714d91",
+   "23abe798be0cccf9",
+   "30b02edd95e9aa21",
+   "32d6b6120e4ba577",
+   "3c24bb1278250c8d",
+   "3ffa3fa2c719e54f",
+   "482491980f091bd0",
+   "49f4ee149f1c0d3a",
+   "50f6b7e334f6e1af",
+   "676a2ef82180c573",
+   "78bd489f34ac0709",
+   "9205f737b610da05",
+   "965b6fbedfe10362",
+   "a08fb8518e121894",
+   "af1d2848a01dd328",
+   "b20837041c2d2496",
+   "b5693ab31809b8af",
+   "b7254c1e2b2fe2ce",
+   "bbc1d225e9b9cd8c",
+   "c1199fb0d8ba41af",
+   "d217ffc97210366b",
+   "d4b97e7b47ac73e9"
+  ],
+  "32": [
+   "7cefa3ebab173086"
+  ],
+  "48": [
+   "1f7c2ad644279620",
+   "2697374a4a2d03f8",
+   "294cf6206dfe28eb",
+   "3998149eb3ef0101",
+   "d4bfd2f626863afc",
+   "e13dda30513fff61"
+  ]
+ }
+}

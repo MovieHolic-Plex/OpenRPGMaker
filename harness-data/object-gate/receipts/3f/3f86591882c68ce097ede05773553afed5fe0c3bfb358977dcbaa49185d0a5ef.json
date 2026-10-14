@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3f86591882c68ce097ede05773553afed5fe0c3bfb358977dcbaa49185d0a5ef",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "large chart table covered with a sea chart showing islands, a dotted route line, compass rose and brass dividers",
+ "label": "pirate-isles/pi-map-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "chart table top",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop covered with a sea chart spans rows 2 to 16, clearly displaying the top surface in proper 3/4 perspective above the front legs and apron.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5434
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "chart table top and frame",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the table displaying the chart spans clearly from row 2 to row 16 (15 source pixel rows), with the south-facing table apron and legs visible below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5087
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "chart table top",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop displaying the sea chart is clearly visible from above, spanning approximately 16 pixel rows (rows 1-16) above the south-facing apron and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3661
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "chart table with tilted or foreshortened top surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chart tabletop surface extends across rows 1-16 displaying the map and tools, resting atop a front-facing table frame and legs spanning rows 18-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3313
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.590Z",
+ "cells": {
+  "16": [
+   "b68da456bc32463e",
+   "c6ef313a7ce85640",
+   "d65ee18c28111035",
+   "e4e2448970588bd2"
+  ],
+  "24": [
+   "0681cca4cdb1b850",
+   "0c0c89d0d3849692",
+   "0f851591d73bc14f",
+   "1fb50e9378c26467",
+   "21ee54d488305695",
+   "273dc5b0dbac2425",
+   "352164c32b5905b8",
+   "377e06f2550568e2",
+   "487561cd748460e6",
+   "4c0f6527e8f6ba3d",
+   "5518b2c155513277",
+   "5ed2419c5e64b0c7",
+   "77b192bd0b2dbdc3",
+   "7afd1baff575e0a4",
+   "9a1992267034b0f4",
+   "9b22e6f2c6062d24",
+   "9d75b84cfd0713bf",
+   "a22d2e749fde209d",
+   "c3245d2be42faa25",
+   "d25be6ca397dba9a",
+   "d449ffecbd16b018",
+   "d59868ee9dd3eb1b",
+   "d908120cbe98ada3",
+   "fbbbb30d2214dc7f"
+  ],
+  "32": [
+   "a348b1c5f5144714"
+  ],
+  "48": [
+   "42c382f18db0e6a2",
+   "63939f84df1bbc32",
+   "bd2eca873ed94543",
+   "cb74bc7fbf6b6485",
+   "d6b768bb5fd75d24",
+   "feaaca026adae939"
+  ]
+ }
+}

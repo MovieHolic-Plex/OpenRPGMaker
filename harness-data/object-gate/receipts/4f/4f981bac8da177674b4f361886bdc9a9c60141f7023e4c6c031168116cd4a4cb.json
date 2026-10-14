@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4f981bac8da177674b4f361886bdc9a9c60141f7023e4c6c031168116cd4a4cb",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "hanging oil lantern on an iron wall bracket, glowing",
+ "label": "pirate-isles/pi-lantern-wall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lantern and wall bracket",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bracket arm and lantern cap/base are drawn as a flat 2D elevation with no visible top surfaces foreshortened from a 45-degree top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7657
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lantern cage and wall bracket",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object (wall bracket and lantern) is drawn in a flat side-view / front elevation style typical of a 2D platformer, with no top surfaces visible from a top-down 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13793
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hanging oil lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted lantern hanging from an iron bracket drawn in front elevation; permitted to be flat under the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11146
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lantern and wall bracket",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern and its mounting arm are drawn flat against the wall plane in front elevation, which is valid for wall-mounted fixtures.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7312
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.591Z",
+ "cells": {
+  "16": [
+   "a24eb5c2a74eca4f"
+  ],
+  "24": [
+   "0548ad142f88b022",
+   "0f6ad47b3b267f74",
+   "1727ef121949b726",
+   "7d9850b0720dfcbc",
+   "abc8caf849259541",
+   "d7902e5c6d8a808b"
+  ],
+  "32": [
+   "34ca98cf741739c8",
+   "3c0a7a6ff30db421",
+   "75d3635a4466139d",
+   "81e5f024709cae88",
+   "ae040bb199361fe8",
+   "d59eabdb001f4fee"
+  ],
+  "48": [
+   "1bc4d67ef6960ad1",
+   "2587398341005b6d",
+   "3f5fcf6dff797e81",
+   "55c709fd903e32cf",
+   "b5986b4754014b6e",
+   "f12bd4e5a7e9bc74"
+  ]
+ }
+}

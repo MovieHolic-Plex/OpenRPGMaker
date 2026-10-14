@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d59944160ad9d06880f3ca65b42dfb77c57bf6524a7f74af96a1e76e3257ab15",
+ "width": 32,
+ "height": 16,
+ "kind": "seat",
+ "name": "log bench: a split log seat with flat light top seen from above, resting on two stumps",
+ "label": "pirate-isles/pi-log-bench",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "split log bench seat",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The flat split-log top surface is clearly visible from above across rows 4-8 (5 pixel rows), with the south-facing front edge extending down rows 9-11 resting on two stumps.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4106
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "split log bench",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The flat light-colored split wood top surface is clearly visible from above across rows 4 to 8 (5 pixels deep), with a south-facing bark front face on rows 9-11 resting on two stump legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3587
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "split log bench seat",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The flat split-log top surface is clearly visible from above, spanning rows 4 through 8 (5 pixels tall), with the front curved face of the log beneath it on rows 9-11 and supporting stumps below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3971
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "split log bench",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The flat split-log seat surface is clearly foreshortened and visible from above across 5 pixel rows (rows 4-8), positioned over a distinct front face (rows 9-11) and support stumps.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4967
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.589Z",
+ "cells": {
+  "16": [
+   "e1ad9dee600de8ef",
+   "efb758d86baff7bd"
+  ],
+  "24": [
+   "462bf17e45d3c951",
+   "66d7319e82f91cc2",
+   "68faaa07092d0dc9",
+   "7f11b1b5950d3568",
+   "841ba1e639b8fbe1",
+   "93c789540bcfc09d",
+   "a545b01737485c41",
+   "b0479f998c945d17",
+   "c06d79fa57ba262b",
+   "c8b0f1b3529e0667",
+   "da3ebd9cc780346e",
+   "dcc0b92373e6d7c9"
+  ],
+  "32": [
+   "2e99b3316e75ec22",
+   "a71121020b52021c"
+  ],
+  "48": [
+   "1bea501f48058ef2",
+   "3ea137650e840823",
+   "7c60cc2e118e8dbe",
+   "c8c54fdc5c745dc1",
+   "d3b1e5e494dc376c",
+   "eab64660004a278c"
+  ]
+ }
+}

@@ -1,0 +1,172 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d993d49cac3b4bb8afb7f236580fe71f8a9ff8bbb7209fe989373197b2f9701c",
+ "width": 48,
+ "height": 80,
+ "kind": "structure",
+ "name": "stilt house on wooden piles over the water with thatched roof and porch deck",
+ "label": "pirate-isles/pi-stilt-hut",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "thatched-roof stilt house",
+    "kind_matches": true,
+    "top_rows": 30,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The thatched roof shows a tall south-facing slope spanning rows 0 to 29 (~30 rows), consistent with standard RPG Maker building perspectives.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6146
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "thatched roof stilt house with wooden porch",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The thatched roof shows an extensive downward-sloping top surface spanning rows 1-28, and the front stairs show foreshortened horizontal tread steps, typical for a top-down JRPG building.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4292
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stilt house with thatched roof and porch deck",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure 2D side-scroller front elevation: the porch deck shows zero floor depth (the railing sits directly against the front wall), the stairs/ladder are drawn flat with no tread surfaces, the cross-braced stilts have no depth, the water line at the bottom shows a side-view wave profile, and the thatched roof has no top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 17401
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stilt house with thatched roof and porch",
+    "kind_matches": true,
+    "top_rows": 30,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The thatched roof displays its top-sloping surface from rows 0 to 29 in classic JRPG top-down perspective, and the steps leading up from the water show horizontal treads.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5730
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.579Z",
+ "cells": {
+  "16": [
+   "092d43221b237433",
+   "15df2f2d4ec4d0d9",
+   "19c6885c164878bc",
+   "1d6c9884eb82d83e",
+   "27169758dba8f75c",
+   "2f33627302bea548",
+   "311d420bbdf218fe",
+   "4104a30716402c87",
+   "41ca52513bc42229",
+   "6cad0bc0aa43cb70",
+   "7b9a6caf11f19c90",
+   "8a03327d37e758cc",
+   "9e45a9c2bf35122d",
+   "ad74f8492ebdce7b",
+   "c3d3ac6ee32ec74b"
+  ],
+  "24": [
+   "038ccd7a6ef93e0f",
+   "151a6ebceb9eee68",
+   "2840a6607ada0dc5",
+   "3a2cfde1fabfffad",
+   "427bdb72728aafa2",
+   "558094a3da51bca0",
+   "5c71913ff52e1b81",
+   "5d73ed8973f5c6b8",
+   "8d9a2287fdcd97c2",
+   "992fbf674fa34598",
+   "a747b006a051da61",
+   "b7a03fd02e6a7330",
+   "cfed3217a14cd936",
+   "d7acfd4ff29e4a38",
+   "eba88585da966dd7",
+   "f1907ff7e4d6be6d"
+  ],
+  "32": [
+   "034deda28671a3f3",
+   "0444949b13631ca6",
+   "0fd4ac626ea4b665",
+   "25840eef2f8a7ef6",
+   "28a7110345064e39",
+   "2a90ed8df0dfcf04",
+   "2b3a098debb09f0e",
+   "33277bfe7dbb5795",
+   "334a386b0bb75b2e",
+   "471825b0b89e17b3",
+   "4e8ecd8df4ff38c3",
+   "537fe7eb5b2e24b9",
+   "59d7456be54897f9",
+   "5c6396967b344a81",
+   "5e04fa96f6f34cce",
+   "5ede073aed9d3eba",
+   "6776845e7e9e2cbc",
+   "67d4642e018386e2",
+   "6dad44474c344794",
+   "80dda6ff083cd344",
+   "88f7e7e714192c98",
+   "9a7814f9b9cb1f26",
+   "a5d40f501499bf61",
+   "a7f291d47890cdd1",
+   "b2e8aca3c2e2faa2",
+   "b9ab63b19c989055",
+   "be05811fe6fdc4be",
+   "c2a5f313c6a62f76",
+   "c8ed5c95d6e0b028",
+   "decc64bf4dd1662b",
+   "e2043e03a4dc2581",
+   "ed7d9efc404f46b9",
+   "f32e9f4892bfe404",
+   "fba049a809a95bf1",
+   "fbecc18be3a5dfcc",
+   "fc194f1afb0e245a"
+  ],
+  "48": [
+   "4a6a6ff6bcbe1fc3",
+   "b427d6dff95511b6",
+   "d0a152198cf659ab",
+   "fd9010339eae27fb"
+  ]
+ }
+}

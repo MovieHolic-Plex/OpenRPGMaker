@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "04cee1b77de42ba0e0a39347284f7242532251492780ace6e5f965adbe7f758a",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "round wooden tavern table with two ale mugs, a lit candle and a plate on top",
+ "label": "pirate-isles/pi-tavern-table-round",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round wooden tabletop with central pedestal and base",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round tabletop surface is drawn as a wide foreshortened ellipse spanning rows 3 to 17 (~14 rows of surface area) with items sitting on top, followed by a visible south rim and pedestal base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4378
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round tabletop on pedestal base",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round wooden tabletop is viewed from 3/4 top-down perspective, displaying an elliptical top surface spanning approximately 14 pixel rows (rows 4 to 17) with table items resting on it, above a front edge and pedestal base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4022
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round wooden tavern table",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop is rendered as a foreshortened ellipse spanning rows 3 to 17 (~15 pixel rows of top surface) with objects placed across it, sitting atop a south-facing edge rim and pedestal base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3187
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round wooden tabletop",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop is drawn as an elliptical surface spanning from row 3 to row 17 (about 15 pixel rows tall) with items resting on top of it, resting on a pedestal base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3066
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.592Z",
+ "cells": {
+  "16": [
+   "345a50d9649a755c",
+   "5b3e14c5c8cc2a10",
+   "9a000d355c2a344f",
+   "e7d5b27788827caa"
+  ],
+  "24": [
+   "080897d3c68c65ab",
+   "0b2ed03450444f6d",
+   "0e5b54bc9d7ae3ac",
+   "2615b3dbe440ecf4",
+   "2c848ddccb73a25c",
+   "2f9d5b2e2aca7704",
+   "441202efd6ceddb0",
+   "4b18853533a1d6f5",
+   "4bc829cc99ed07b4",
+   "5dab23708f3112fa",
+   "71821cbd08a3518f",
+   "987a31fc53fef85a",
+   "9b9a5e9bc5ea4c14",
+   "a4a21337d1761a9d",
+   "a9908c406d37fd49",
+   "b4cafe3833800207",
+   "b6f405dd9d9e8fad",
+   "b920fad8092f8679",
+   "b9737f21f56caa51",
+   "cf5ea8cb2cdc19b0",
+   "d4da0cb8a9545d2f",
+   "f329d95431c7ab92",
+   "f91e220074576d89",
+   "f984cd60961db9e9"
+  ],
+  "32": [
+   "9a79d6dc323dd235"
+  ],
+  "48": [
+   "574f1e2b7ca86a03",
+   "65046fc196fffe32",
+   "6a161b415e7e70d1",
+   "6b1d3da0a336595a",
+   "df30345b92149f59",
+   "e07ac6cda44e9c6b"
+  ]
+ }
+}

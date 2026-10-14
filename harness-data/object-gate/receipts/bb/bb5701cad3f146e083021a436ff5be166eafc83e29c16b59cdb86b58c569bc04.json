@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bb5701cad3f146e083021a436ff5be166eafc83e29c16b59cdb86b58c569bc04",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "tall wooden kitchen shelf with clay pots, bowls and an iron pan, a water jug on top",
+ "label": "pirate-isles/pi-galley-shelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall wooden kitchen shelf",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shelf unit is visible across rows 3-6 (around 4 source pixel rows deep), upon which the top water jug rests. The cornice and front face extend downward correctly without receding isometric side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4876
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall wooden kitchen shelf",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shelf unit spans rows 3-6 (around 4 rows tall), clearly visible with the jug resting on it, leading to a front molding band at rows 7-8.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5248
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden kitchen shelf",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shelf is visible across rows 3-6 (4 rows deep), with the water jug standing on it set back behind the front edge at row 7.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10386
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "shelf",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shelf unit is visible across rows 3-6 (4 rows deep) with the water jug standing on it, showing proper top-down foreshortening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10755
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.592Z",
+ "cells": {
+  "16": [
+   "9f244a0073a6cdae",
+   "cb35959d8cc131f7"
+  ],
+  "24": [
+   "052081ab9205cf8f",
+   "312c22fbfcf83566",
+   "455a7527493cf8ff",
+   "51e236a69c76df64",
+   "5c7d2ac96a3be2b4",
+   "7a62863769fb7938",
+   "85c74d10df0f9a94",
+   "a41541da012c712f",
+   "bf2ffe18ab9f4a3d",
+   "cf4432b37179f61e",
+   "d2d5889c32fab111",
+   "f86f67fa8110fc49"
+  ],
+  "32": [
+   "369074d2546bd9fe",
+   "73e30ccfe896e8bc",
+   "8658f475b1371241"
+  ],
+  "48": [
+   "129ffe0d5394fccb",
+   "a098365e6c86318a",
+   "a996d9f241103118",
+   "bd3a7b31ab8d2d77",
+   "db37e1ec4caea6ab",
+   "ffc512664cf817fa"
+  ]
+ }
+}

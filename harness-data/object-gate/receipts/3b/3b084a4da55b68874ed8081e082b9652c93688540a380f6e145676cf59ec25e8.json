@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3b084a4da55b68874ed8081e082b9652c93688540a380f6e145676cf59ec25e8",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "galley work table with a loaf of bread, a fish, a soup bowl and a knife on top",
+ "label": "pirate-isles/pi-galley-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "galley work table",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from above, spanning approximately 8 pixel rows (rows 1-8) with items resting on it, above a visible front apron and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6032
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "work table",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop has a prominent horizontal surface visible from row 1 to row 8 (8 rows tall) displaying various items, with a front apron and legs visible beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5912
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "work table",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop is clearly visible from above, spanning approximately 8 pixel rows (rows 1-8) with items resting on it, above a front apron and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5743
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "work table",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from above across rows 1-8 (8 rows tall), holding food items. Below row 9, the front rim, apron, and legs extend down to row 15 in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5755
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.591Z",
+ "cells": {
+  "16": [
+   "70c02c8640b85c65",
+   "ca5061204bd8500d"
+  ],
+  "24": [
+   "046d04a399e5948a",
+   "201fd4007a356a49",
+   "21e90b6a291fa755",
+   "5c9efed85d4ca3d8",
+   "6d2d4075cd7bcbb2",
+   "a77a1d41064fba2a",
+   "bb9bc625d335f867",
+   "cb125d0cc409e5ae",
+   "df8990f92f30e309",
+   "e504ed97482da6e5",
+   "e915253da8205c62",
+   "ff4ecea3efbdb55e"
+  ],
+  "32": [
+   "4aae6f4524603b68",
+   "a185e8c674c9f8de"
+  ],
+  "48": [
+   "15ec7474f53eef4d",
+   "51cca98183c2537c",
+   "57a24d89491770c0",
+   "8469372322ac8787",
+   "8ae04f7e17ba4f29",
+   "93dd2397231b90b3"
+  ]
+ }
+}

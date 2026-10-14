@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "db1fecde641d2f15153c3858f91093aee0d9f2903965f6f6d37cc5d3cdc001c9",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "stack of cargo crates, two below and one on top",
+ "label": "pirate-isles/pi-crates",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stack of wooden cargo crates",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top crate clearly shows a foreshortened top surface across rows 1-7 (~7px tall) above its south front face (rows 8-14), and the lower crates also display their visible top surfaces (rows 15-20) in proper 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3909
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stacked cargo crates",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top crate displays a clear 7-row top surface (rows 2-8) above its front face (rows 9-14). The bottom crates also feature visible top surfaces (rows 16-21) above their front faces (rows 22-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5537
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stack of cargo crates",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top crate shows a clear 7-row horizontal top face (rows 1-7) above its front face (rows 8-14), and the bottom crates similarly show visible top surfaces (rows 15-21) above their south faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5927
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stack of wooden cargo crates",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top crate has a prominent 7-pixel-tall top surface (rows 2-8) showing horizontal planks viewed from above, followed by its front face (rows 9-15). The lower crates similarly display visible top surfaces before transitioning to their front faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3464
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.583Z",
+ "cells": {
+  "16": [
+   "34923628553dd626",
+   "5c91d097c08797d9",
+   "88b92a6251b010ea",
+   "8aaa8e89c7b4132d"
+  ],
+  "24": [
+   "0c84ba67c0d59a2b",
+   "34c3b17da94c6298",
+   "498ea6155af65c7a",
+   "49b0921013d68513",
+   "4ddec86ad0abc288",
+   "58f47441265d5d8e",
+   "5ea4d8c229a074a6",
+   "7bc9d9d5be8b136d",
+   "7f84e590957799ef",
+   "81f948b05c71a45f",
+   "894e592f2f79183c",
+   "89dacce3fffc99a9",
+   "9631732755b2c254",
+   "9d79d1fb1a32fde1",
+   "9eb3655ff63766ee",
+   "a721f55a2061c3e1",
+   "aeda4543df4f545b",
+   "d39048dc50f47bcb",
+   "e9c22f8ac1c5994d",
+   "ecf5e4150bd0d31f",
+   "ef63d5cccfccbb75",
+   "f36c8e2de73b32e1",
+   "fa9e9ba07aa537f0"
+  ],
+  "32": [
+   "d62055b7d2deca37"
+  ],
+  "48": [
+   "36609b63c7632131",
+   "387ad89fa8753642",
+   "43163e03bc5cfa1c",
+   "98f5f19ad1d23f8c",
+   "d04eb6562469574f",
+   "d16274ca6a968327"
+  ]
+ }
+}

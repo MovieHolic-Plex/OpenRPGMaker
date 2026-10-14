@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "24e9779f46c5725c94b18b570eb0323956b118247ad3390c691e9251ca4a505f",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "round tropical bush",
+ "label": "pirate-isles/pi-bush",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "spherical bush canopy",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The spherical canopy is shaded with top-down lighting, showing the upper dome/surface across rows 2-7 transitioning to a shaded lower underside.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8191
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bush foliage canopy",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush is rendered as a rounded volume with the upward-facing top foliage clearly illuminated across rows 2-7, transitioning into the shadowed underside on rows 9-14, appropriately depicting the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5924
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round bush foliage",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The spherical bush shows its upward-facing foliage across rows 2–8 with lighter top-down illumination before transitioning into the shaded south-facing underside (rows 9–15). It has no horizontal cut or planar top surface to miss, and is naturally rounded in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12364
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "foliage canopy of the round bush",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The spherical foliage canopy features overhead highlighting across rows 2–7 representing the upper surface seen from above in 3/4 view, transitioning to shaded lower rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6772
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.575Z",
+ "cells": {
+  "16": [
+   "df883c8016c5a87b"
+  ],
+  "24": [
+   "14aeec545aa88d93",
+   "208a40d6b4d294c6",
+   "86d247910919022b",
+   "990373f708dbd24a",
+   "9ab85b4d1c1de686",
+   "ff4032b15e673db9"
+  ],
+  "32": [
+   "46eb548f3745a914",
+   "79e269aa249710cd",
+   "84a72a9d0ac7380a",
+   "bb371524b8d068a2",
+   "c57d9f6535d3df7e",
+   "d2372184a47ce491"
+  ],
+  "48": [
+   "20b787fdbc4955db",
+   "4ccb1033caac1274",
+   "5efffccb97d3d124",
+   "5ff3e6d0ceeac4f2",
+   "6348363e85303d29",
+   "7cfbf432015493f6"
+  ]
+ }
+}

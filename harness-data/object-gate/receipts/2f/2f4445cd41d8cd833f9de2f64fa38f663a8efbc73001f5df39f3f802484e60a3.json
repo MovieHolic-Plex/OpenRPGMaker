@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2f4445cd41d8cd833f9de2f64fa38f663a8efbc73001f5df39f3f802484e60a3",
+ "width": 32,
+ "height": 96,
+ "kind": "structure",
+ "name": "white and red striped stone lighthouse with lantern room and gallery",
+ "label": "pirate-isles/pi-lighthouse",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lighthouse tower and gallery",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The gallery platform shows an elliptical top surface foreshortened from rows 21 to 25 (~5 source pixel rows), the conical roof slopes forward across rows 0-9, and the base ledge exposes 3 rows of top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6588
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone lighthouse tower",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The gallery walkway shows a foreshortened top deck surface across rows 21-25 (about 4-5 source pixel rows deep), the conical lantern roof clearly slopes downward across rows 0-10, and the base plinth shows a visible top step at rows 86-89.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5751
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "striped lighthouse tower with lantern and gallery",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The conical roof shows 10 rows of top/slope surface (rows 0-10), the gallery deck provides a clearly visible top surface ring around the lantern (rows 21-25, ~4 rows tall), and the base plinth also shows a top ledge (rows 86-88).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4788
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lighthouse tower with lantern gallery and conical roof",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The conical roof slopes downward facing the camera (rows 0-10, ~11 rows) and the gallery platform beneath the lantern displays an elliptical foreshortened top walkway surface (rows 21-24, ~4 rows), correctly indicating a 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5454
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.580Z",
+ "cells": {
+  "16": [
+   "082e65b85cd19b7f",
+   "1d640fa1fb534409",
+   "1e76c04db939b031",
+   "20009c9343f2478c",
+   "3fa30bfd420d6a2e",
+   "56c0aab5c835ae91",
+   "6d6d5d9b7c884b6a",
+   "73f5717d37f6ea39",
+   "8ed6de4b35090af9",
+   "9030597045fb31d8",
+   "bc68dbff3b850c59",
+   "f7d0ae98a0ea6d1f"
+  ],
+  "24": [
+   "00c039cae7c15f0a",
+   "043f589012acea39",
+   "0700a5c34083d426",
+   "12c735fd6e5b9401",
+   "26ffe308225310a2",
+   "2abf7a1e1144b4f0",
+   "3203df8604b9cf18",
+   "3bcdc0c669b825cf",
+   "5b325d760b07f1c9",
+   "658720d4bdbc4610",
+   "667e8301ab162573",
+   "6b2d987f27d3fd5a",
+   "6b4c663c15521a52",
+   "7a0f43f55283465b",
+   "7ec44064f7ca43f7",
+   "89590490e65c9095",
+   "8cb33a5dad99c0f5",
+   "99854e2d9570d188",
+   "b50f975cd607d095",
+   "c016b7f8e478f24e",
+   "c5312f1c75ac3875",
+   "c5575dd633991c43",
+   "e678c3133427635b",
+   "fa925959d13527c1"
+  ],
+  "32": [
+   "073c7dfaee432be9",
+   "4aef1ba890badee5",
+   "8dc7b785e9758a27"
+  ],
+  "48": [
+   "1937336a2ac9faee",
+   "24e6cee8e891805d",
+   "312fc9a05de8680f",
+   "43aa61bbbd87b2db",
+   "48c906ac740012e5",
+   "ce5f75ca92e720ba"
+  ]
+ }
+}

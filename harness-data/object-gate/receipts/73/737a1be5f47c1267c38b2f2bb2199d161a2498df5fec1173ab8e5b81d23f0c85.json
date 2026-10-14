@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "737a1be5f47c1267c38b2f2bb2199d161a2498df5fec1173ab8e5b81d23f0c85",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "world globe on a small round wooden side table, seen from above at 3/4 (round table top visible, curved latitude lines)",
+ "label": "pirate-isles/pi-globe",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "world globe on a round wooden side table",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round wooden tabletop shows a foreshortened elliptical top surface across rows 16-19 (4 source pixel rows) upon which the globe stand rests, before the front bevel/edge and pedestal.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5173
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "world globe on round side table",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round table top shows a clear foreshortened elliptical top surface across rows 16-19 with front rim thickness on rows 20-22, supporting the globe in standard 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4840
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round wooden side table with world globe",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round wooden tabletop is drawn in 3/4 perspective with its top surface visible from rows 16 to 19 (about 4 rows) before curving down into the front rim at rows 20-22. The round pedestal base also shows foreshortening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4959
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "globe and round wooden side table",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round table top surface is clearly visible from above across rows 16-20 (~5 rows tall), showing foreshortening in 3/4 perspective with the globe's base resting on it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5606
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.590Z",
+ "cells": {
+  "16": [
+   "039eec0071a44888",
+   "e51bc1ed5235b600"
+  ],
+  "24": [
+   "35d1dcd718fdbe74",
+   "51d4cf864acc82c9",
+   "6a210a7a06ff781e",
+   "8a5b21683f7cd206",
+   "a5362126814add5c",
+   "ad55352401c8b148",
+   "b09aac6d071ce288",
+   "b338bf97e37934b1",
+   "caf4bed937e724e3",
+   "ce6f4c9498ab465d",
+   "d392279b3359325d",
+   "e8abb690a720fac2"
+  ],
+  "32": [
+   "524c9afdea08d428",
+   "b82ccf2f8ea1220d",
+   "c43810dc553db1f9"
+  ],
+  "48": [
+   "0a8aa2ebd555b18b",
+   "2b9eab70eccd4062",
+   "2cde6342219f19b3",
+   "387b0a91a8f324d5",
+   "48cbdeb2966cdc3c",
+   "7e796b4532ec0566"
+  ]
+ }
+}

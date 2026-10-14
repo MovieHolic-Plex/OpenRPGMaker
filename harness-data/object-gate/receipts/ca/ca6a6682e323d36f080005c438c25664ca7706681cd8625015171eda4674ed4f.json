@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ca6a6682e323d36f080005c438c25664ca7706681cd8625015171eda4674ed4f",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "washed-up seaweed pile on the sand",
+ "label": "pirate-isles/pi-seaweed",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "washed-up seaweed pile",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seaweed forms an irregular clump scattered on the ground plane spanning rows 3 through 13 with lighter top-facing surfaces and darker base/shadow pixels.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5411
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "washed-up seaweed pile",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seaweed forms an irregular cluster lying on the ground spanning rows 4 to 13, showing its surface spread out across the floor in standard top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4463
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pile of seaweed lying on the ground",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seaweed is spread across the ground plane from rows 4 to 13, viewed from the standard 3/4 top-down angle without unnatural vertical elevation or isometric projection.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4106
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pile of washed-up seaweed",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seaweed is scattered flat across the ground plane from row 3 to row 14, showing the irregular spread typical of top-down 3/4 view floor debris.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4802
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.577Z",
+ "cells": {
+  "16": [
+   "3cbd0b94303049c1"
+  ],
+  "24": [
+   "062ecf9675ff63cd",
+   "6a04c9483f177069",
+   "90cf7cc35eadce97",
+   "94ed0d72968f6d12",
+   "a76814122fb12031",
+   "e331357ee85c98a2"
+  ],
+  "32": [
+   "083d0603b836017f",
+   "0b284d37a32d44ba",
+   "1c2f924465f396e3",
+   "6f8b3e7619a95d72",
+   "b605a5fd3efaee2e",
+   "df93462cbf0367f8"
+  ],
+  "48": [
+   "2b44c20e62f61d93",
+   "2e749d9357b4fb25",
+   "3f48817e689d50aa",
+   "59428b928d87bdcb",
+   "6767e49317896c6a",
+   "b035cd1c70a0f738"
+  ]
+ }
+}

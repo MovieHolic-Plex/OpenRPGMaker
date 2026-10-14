@@ -1,0 +1,162 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ad66957258ad1c76f130bd8c1c57edf5dc939f82a0c27c6494702de1af7c0ae7",
+ "width": 96,
+ "height": 96,
+ "kind": "structure",
+ "name": "grand two-storey pirate captain mansion with tile roof, balcony and flag",
+ "label": "pirate-isles/pi-captain-house",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "two-storey building with sloped tile roof and balcony",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a large south-facing sloped tile roof visible from row 0 to row 39 (approx 40 rows tall) representing the top slope in standard 3/4 RPG perspective. The balcony also shows its top floor surface (rows 58-59).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4323
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "two-storey mansion with tile roof",
+    "kind_matches": true,
+    "top_rows": 41,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mansion's pitched tile roof shows a large downward-sloping top surface spanning rows 0 to 40, correctly establishing the 3/4 top-down perspective above the south-facing facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5862
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two-storey mansion with pitched tile roof",
+    "kind_matches": true,
+    "top_rows": 41,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof slope is clearly visible and foreshortened in standard JRPG 3/4 top-down perspective, occupying rows 0-41 above the vertical front facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4150
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "two-storey mansion building with tiled pitched roof",
+    "kind_matches": true,
+    "top_rows": 41,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a massive forward-sloping tiled roof occupying rows 0-41 (approx. 41 rows of visible top slope), consistent with RPG Maker 3/4 top-down building standards. Balcony and window sills also show top thickness.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3807
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.582Z",
+ "cells": {
+  "16": [
+   "06a0caf8004e03fe",
+   "0dded1eaeaf517e1",
+   "220ac8872b8644b4",
+   "2211734d8c2a4cfb",
+   "36171138de159e0a",
+   "3e4d625bc4a92c84",
+   "492c4bf82e50993f",
+   "4b588f6bdda260f3",
+   "5387e91d193ffb00",
+   "5640daa884e51e69",
+   "579ebef792dd89e6",
+   "5bab3eb14570b8f7",
+   "5f133a06b9f1d9d5",
+   "5f2841532dc75739",
+   "64004bf2e3e439ad",
+   "69a85e626a116510",
+   "95197f8712403b3f",
+   "97bbea31549f31fd",
+   "9ce759cedd0453c5",
+   "a8bebf5c56dfcb71",
+   "aee9498712759b49",
+   "b6e50a3162af4156",
+   "b74ecba6f5ba6cfc",
+   "b84a71dd85c7b428",
+   "c313ea2170e74e6c",
+   "c8a8747562628994",
+   "d8cfab1a1e55b0d8",
+   "da9925369d1dd941",
+   "de7a9be7bb33579f",
+   "df6f4c3d199662f0",
+   "f288df028f33c281",
+   "f59a404a34a7e311",
+   "fc5ad209b2924719",
+   "fcf1c2b2acd4967a",
+   "fd10d7d9cbb58388",
+   "fdee41bf715b7622"
+  ],
+  "24": [
+   "09550a4d98b36877",
+   "136d218d83de52d2",
+   "157b3373a65aa2ae",
+   "1ab6e4a2eb3b3ea9",
+   "2063352431549b35",
+   "21beed8ecbc5d355",
+   "2cd3f30220cdb39b",
+   "329f6d32ac48e9c7",
+   "610bbfa75af4ec40",
+   "66228d26ca2087f8",
+   "6e54f9d700e05b17",
+   "8db410a0c58634c0",
+   "e26a2e8b79452ead",
+   "e4ec54e312352ce2",
+   "e76d93e517108a2b",
+   "f27a6228d0be3ddc"
+  ],
+  "32": [
+   "274f653affe8fa47",
+   "6f9c8506f65c9651",
+   "813d6840a84e0494",
+   "854697d0342f0d88",
+   "8c3c3f51f92b05d9",
+   "8d6278449aaea941",
+   "957041607252b377",
+   "bd42cf52f049c166",
+   "f3588bd3014d3bf7"
+  ],
+  "48": [
+   "44ce95597e79794d",
+   "48979a96cde00709",
+   "80fad4f970e10984",
+   "caf5a9936cd77e1b"
+  ]
+ }
+}

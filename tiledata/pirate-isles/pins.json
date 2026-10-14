@@ -1,7 +1,7 @@
 {
 "version": 1,
 "tilesPerRow": 48,
-"count": 1166,
+"count": 1171,
 "cells": {
 "sand/0.0": 1,
 "sand/1.0": 2,
@@ -1167,6 +1167,11 @@
 "bamboo-raft/1.0": 1162,
 "crab/0.0": 1163,
 "log-bench/0.0": 1164,
-"log-bench/1.0": 1165
+"log-bench/1.0": 1165,
+"grass/2.0": 1166,
+"grass/3.0": 1167,
+"grass/4.0": 1168,
+"grass/5.0": 1169,
+"fort-barracks/3.1": 1170
 }
 }

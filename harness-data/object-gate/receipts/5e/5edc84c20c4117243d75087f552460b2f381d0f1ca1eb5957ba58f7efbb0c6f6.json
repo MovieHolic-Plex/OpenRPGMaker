@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5edc84c20c4117243d75087f552460b2f381d0f1ca1eb5957ba58f7efbb0c6f6",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "heap of fishing nets with floats lying on the ground",
+ "label": "pirate-isles/pi-nets",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pile of fishing nets with floats",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The net pile is drawn as a foreshortened ellipse spanning rows 5 to 14 (10 rows high), showing the top surface spread out on the ground with floats distributed across it in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3065
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pile of fishing net with floats",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The net forms an elliptical mound resting on the ground from row 5 to row 14, fully displaying its top surface in 3/4 view with red floats scattered across it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4222
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "heap of fishing net with floats",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The heap of net is drawn as an elliptical mound lying on the floor, spanning rows 5 to 14 in 3/4 top-down perspective with floats scattered across its surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3298
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "heap of fishing nets",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The net heap forms an elliptical pile lying on the floor, foreshortened in 3/4 top-down view showing its top surface across roughly 8-10 rows with floats distributed over it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3365
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.584Z",
+ "cells": {
+  "16": [
+   "c5b2dd49e143ff74"
+  ],
+  "24": [
+   "1332322ead63e346",
+   "47da67d32a32977a",
+   "6f662563bee09613",
+   "7e4d854c5848ba70",
+   "955307b4b50ac27c",
+   "9c7687dc59cd0271"
+  ],
+  "32": [
+   "635e9e779f09ecd6",
+   "833cd592c7dc5c88",
+   "959bcab4e9cc57bb",
+   "a1847eaa5be946dd",
+   "e0045c3f558b9923",
+   "e363211007473975"
+  ],
+  "48": [
+   "1f77488f85558b67",
+   "2decf3b984199b8a",
+   "3bea951e23c6bb38",
+   "94d86df2e323e2fb",
+   "ada54b90866bc027",
+   "dc588369ffabf45c"
+  ]
+ }
+}

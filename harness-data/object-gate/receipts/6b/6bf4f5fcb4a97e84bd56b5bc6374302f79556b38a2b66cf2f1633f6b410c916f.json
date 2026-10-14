@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6bf4f5fcb4a97e84bd56b5bc6374302f79556b38a2b66cf2f1633f6b410c916f",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "standing iron brazier seen from above at 3/4: wide round fire bowl full of glowing coals with flames, on a tall tripod stand",
+ "label": "pirate-isles/pi-torch-stand",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brazier bowl and tripod stand",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brazier bowl opens toward the viewer with a visible 4-row elliptical interior (rows 8-11) filled with glowing coals and fire, showing proper 3/4 top-down foreshortening rather than a flat side profile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7467
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round fire bowl atop a tripod stand",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fire bowl opening is foreshortened and clearly viewed from above at a 3/4 angle, showing 5 rows of glowing coals/fire bed (rows 7-11) inside the circular rim before the front wall of the bowl drops down (rows 12-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5226
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brazier bowl on tripod stand",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round fire bowl opening is foreshortened as an ellipse (rows 7 to 11, roughly 5 rows tall) filled with glowing coals and flames, viewed from above before curving down into the bowl's south exterior wall and tripod base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5080
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fire bowl on tripod stand",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening of the fire bowl is drawn foreshortened with the glowing coal bed visible inside across rows 7-11 (5 rows tall), with the front exterior wall of the bowl extending below it across rows 12-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7162
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.595Z",
+ "cells": {
+  "16": [
+   "062ea7a4ffed1108",
+   "0f4665db45b286a0"
+  ],
+  "24": [
+   "22ab0126de1204a1",
+   "2b73ff25aeb6612f",
+   "53fa2a83856038c3",
+   "573743b18fc28610",
+   "61cad28da5f58bfb",
+   "79f0fb37b42533fd",
+   "9899b8929947737f",
+   "a05c7ede2181823d",
+   "aa6e953fe44cfd24",
+   "af35b6d0c694ab04",
+   "b3fb6d1da9916791",
+   "f69647260bc64835"
+  ],
+  "32": [
+   "004cdbeb322becd1",
+   "c9f02de346e0cea3",
+   "f0c81a4305fb5fc0"
+  ],
+  "48": [
+   "182ce0615d61c44c",
+   "1a5eeee101667193",
+   "320e4712b5b47ac2",
+   "9b012e52cf35dfb1",
+   "b239e2776bbac395",
+   "f4f7302c1789cfd6"
+  ]
+ }
+}

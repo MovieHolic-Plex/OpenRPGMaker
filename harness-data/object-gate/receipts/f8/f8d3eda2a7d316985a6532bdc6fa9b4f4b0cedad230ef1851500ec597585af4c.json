@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f8d3eda2a7d316985a6532bdc6fa9b4f4b0cedad230ef1851500ec597585af4c",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "cave stalagmite seen from above at 3/4: a broad flat rock ledge (top surface visible, with a small drip pool) and a thick rock spike with a wet flat top, curved strata rings",
+ "label": "pirate-isles/pi-stalagmite",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stalagmite column and broad rock ledge with drip pool",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock spike has a visible flat wet top (rows 1-3, ~3 rows tall), and the broad ledge on the right presents a clear top surface spanning rows 7-13 (~6-7 rows tall) containing a drip pool, stepping down to a south-facing front edge at rows 14-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4020
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stalagmite column and rock ledge",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stalagmite spike has a flat wet top visible at rows 1-3 (~3 rows tall), and the broad lower ledge shows a substantial horizontal top surface with a blue drip pool at rows 7-13 before dropping off to the south face at rows 13-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3680
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rock stalagmite with ledge",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object clearly displays top-down horizontal surfaces: the spike top shows 3 rows of wet flat surface (rows 1-3) and the broad lower rock ledge shows roughly 5-6 rows of top surface (rows 8-13) containing a small blue drip pool, before terminating at the front edge at row 13 above a shadowed south face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3609
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rock stalagmite with ledge and spike",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object clearly displays top-down 3/4 perspective with a visible flat wet top on the spike (rows 1-3) and an expansive top surface on the lower ledge containing a small blue drip pool (rows 7-12) above a front-facing shadowed cliff base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4188
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.595Z",
+ "cells": {
+  "16": [
+   "af8e542f57c05f8e"
+  ],
+  "24": [
+   "3d6bb8923b97391c",
+   "43400db5cbddbca5",
+   "723d70353423dafa",
+   "8ce2604758d89f99",
+   "cbf77f6d914ac154",
+   "fd4121b4e6d676f4"
+  ],
+  "32": [
+   "37907240ef6e52f0",
+   "50e1249388f71092",
+   "989f51a19e299616",
+   "a228c9ed3c0bdf15",
+   "bac91956b14ed734",
+   "ccd74e2b98d0701a"
+  ],
+  "48": [
+   "54eb63335a1e0334",
+   "7d697a2e794e4190",
+   "b8369f22f486e3e5",
+   "c7b7e2171492c1d1",
+   "eafc96dd523731bf",
+   "f931cfabf04d00b1"
+  ]
+ }
+}

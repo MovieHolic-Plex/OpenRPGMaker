@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "100d073bbb4647a320f998e2e66a2fef8cf2ec16e7a14eeae8bf7fae845035cd",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "small coastal boulder",
+ "label": "pirate-isles/pi-rock-small",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rounded coastal rock / boulder",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The boulder shows a clear upward-facing rounded surface spanning rows 3-8 with lighting from above/north-west, transitioning smoothly to the shaded south-facing lower slope down to row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5374
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "smooth rounded boulder",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The boulder shows its rounded top surface illuminated across rows 3-8, transitioning down into darker front-facing facets and shadows towards the ground.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4005
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "boulder",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The boulder is viewed from above at a 3/4 angle, displaying an upward-facing lit surface spanning rows 3-8 before sloping down into shaded front facets toward the base at rows 10-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5025
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "coastal boulder",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The boulder has an upward-facing top surface visible across rows 4 to 8, highlighted from above, sloping down into shadow on the lower front and sides in standard top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6108
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.576Z",
+ "cells": {
+  "16": [
+   "03fc48c460573372"
+  ],
+  "24": [
+   "12e36ade10d6db2d",
+   "5d0326fb231de3b0",
+   "76861abf2036fe7b",
+   "94748dcb8f85423d",
+   "d15edf98b1df10e7",
+   "f1b6b57dc4fd162e"
+  ],
+  "32": [
+   "0ee56e3955c74927",
+   "2978799734678bef",
+   "c0b7bcc0475954b7",
+   "db57abb2ffceda25",
+   "e331e1f5c0f9c7f3",
+   "fa20070fc9533aba"
+  ],
+  "48": [
+   "19906b59a6861cc6",
+   "1e0a9f4816791400",
+   "653875174260f566",
+   "8da86f07b2c40585",
+   "a5490e4a3196b1dc",
+   "d4f0d32246f39179"
+  ]
+ }
+}

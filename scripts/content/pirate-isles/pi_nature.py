@@ -114,7 +114,12 @@ def canopy(c, lumps, mat='grass', s=0):
             if 1 - d < 0.12 and hsh(x, y, s + k) % 3 == 0: return None
             nz = math.sqrt(max(0.0, 1 - d))
             li = -0.5 * nx - 0.65 * ny + 0.55 * nz
-            tt = 2 if li > .95 else 1 if li > .7 else 0 if li > .38 else -1 if li > .05 else -2
+            # 화풍 2판: 덩이 안 작은 잎송이(3px 세포, 엇갈림)마다 왼쪽 위 빛 — 버들항 나무처럼 잎송이가 읽히게
+            gx, gy = x / 3.2, y / 3.2
+            iy = int(math.floor(gy)); ix = int(math.floor(gx + (iy % 2) * .5))
+            fx = gx + (iy % 2) * .5 - ix - .5; fy = gy - iy - .5
+            li += (-fx - fy) * 0.42 + (hsh(ix, iy, s + k) % 3 - 1) * 0.06
+            tt = 3 if li > 1.18 else 2 if li > .92 else 1 if li > .66 else 0 if li > .36 else -1 if li > .05 else -2 if li > -.25 else -3
             if d > .78 and (nx + ny) > 0.3: tt = min(tt, -2)
             q = hsh(x, y, s + 31) % 9
             if q == 0 and tt < 2: tt += 1                     # 잎 반짝

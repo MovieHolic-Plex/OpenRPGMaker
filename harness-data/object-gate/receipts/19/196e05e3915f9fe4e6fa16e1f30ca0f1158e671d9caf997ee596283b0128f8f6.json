@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "196e05e3915f9fe4e6fa16e1f30ca0f1158e671d9caf997ee596283b0128f8f6",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "sailor's sea chest with teal painted lid, iron corners and rope handles",
+ "label": "pirate-isles/pi-sea-chest",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sea chest with teal lid",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the teal lid occupies rows 3 through 8 (about 6 rows tall), tapering toward the back in classic 3/4 perspective, with the front lip and chest body visible below on rows 9-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6463
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sea chest with teal painted lid",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chest features a clearly visible top surface on the lid spanning rows 2 to 8 (marked by a bright edge highlight on row 8), followed by the front lip of the lid (rows 9-10) and the south-facing chest body below it (rows 11-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7175
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sailor's sea chest",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The teal lid top surface is clearly visible from above across rows 2-8 (about 6 rows tall) leading to the highlighted front edge at row 8, followed by the lid overhang (rows 9-10) and chest front body (rows 11-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6588
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sea chest with teal lid",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the teal lid is clearly visible and foreshortened from row 2/3 to row 8 (around 6 pixel rows), with the front overhang of the lid at rows 9-10 and the chest's front face at rows 11-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5609
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.590Z",
+ "cells": {
+  "16": [
+   "25fa6d367f180dfd"
+  ],
+  "24": [
+   "045480c2f46b5c51",
+   "3dbe0357296b9e7e",
+   "40e782742860a61f",
+   "491cc647541b29a1",
+   "55453ee715796218",
+   "c09e248320681245"
+  ],
+  "32": [
+   "25493e3ce42658a2",
+   "5577cc48e697a2db",
+   "abc3c252eacc997d",
+   "c0f88bf142a4f3fd",
+   "c12072a72be9b8db",
+   "f22aea31be01b803"
+  ],
+  "48": [
+   "06ae0d21ba59e53a",
+   "4418b9da691f1b47",
+   "7f779e8b70054797",
+   "c215694d7fd1518b",
+   "dfad702b21b80560",
+   "e2d4d50c6d412caa"
+  ]
+ }
+}

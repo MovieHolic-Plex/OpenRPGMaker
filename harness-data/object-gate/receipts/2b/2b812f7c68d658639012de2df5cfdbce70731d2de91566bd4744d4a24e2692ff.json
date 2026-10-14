@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2b812f7c68d658639012de2df5cfdbce70731d2de91566bd4744d4a24e2692ff",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "two stacked slatted wooden lobster traps, slatted lids seen from above",
+ "label": "pirate-isles/pi-lobster-traps",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stacked slatted wooden lobster traps",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top trap clearly displays its horizontal slatted lid seen from above in rows 0-4 (5 rows tall, brightly lit), with the vertical front face shaded below in rows 5-8.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11540
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stacked wooden lobster traps",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lobster trap clearly shows its slatted top lid foreshortened from above across rows 0–4 (4–5 px) in a lighter illuminated tone, followed by the darker vertical front face in rows 5–7.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11802
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stacked slatted lobster traps",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top trap clearly shows its slatted top surface from above (rows 0-4, brightly lit with a front edge rail at row 4) and its shaded south face (rows 5-7).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6045
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stacked lobster traps",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both stacked traps are rendered in pure front elevation with two-tone vertical slats. Neither the top trap nor the bottom trap shows a foreshortened top lid/surface seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6902
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.587Z",
+ "cells": {
+  "16": [
+   "c338bfdc5158dc5b"
+  ],
+  "24": [
+   "0e867e4908abe552",
+   "472e0a4b96856f1b",
+   "8f5765ddb8f137ed",
+   "a453461b357f46bb",
+   "b2c197dd1015f7eb",
+   "ff96f8526da31c1b"
+  ],
+  "32": [
+   "3db12bcbc120b9e6",
+   "53986b54623f40df",
+   "59bb08f7cba87508",
+   "928121b86b117ab5",
+   "c54f04609f610b4e",
+   "e8e1e51a47470946"
+  ],
+  "48": [
+   "1c922c9d251e9a32",
+   "1face1efe8fdff39",
+   "6ff71b5db39260e6",
+   "8987b52885415467",
+   "ea8d72d4e3f55daa",
+   "fd67c9c04b1d395a"
+  ]
+ }
+}

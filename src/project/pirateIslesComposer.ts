@@ -205,7 +205,12 @@ class Board {
         if (a.eight) m |= (conn(x + 1, y - 1, set) ? NE : 0) | (conn(x + 1, y + 1, set) ? SE : 0) | (conn(x - 1, y + 1, set) ? SW : 0) | (conn(x - 1, y - 1, set) ? NW : 0);
         t = this.autoTile(a.id, a.eight ? m : m & 15);
         if (m === 255 && ch === "s" && hash01(x, y, this.seed + 1) < 0.1) t = this.floor("sand", 1 + Math.floor(hash01(x, y, 2) * 2));
-        if (m === 255 && ch === "g" && hash01(x, y, this.seed + 3) < 0.08) t = this.floor("grass", 1);
+        if (m === 255 && ch === "g") {
+          // 풀밭 무늬: 꽃 8% · 풀 덩이 변형(2~5열) 약 18% — 한 칸 무늬 반복을 깬다(화풍 2판). 변형 칸이 없는 옛 시트는 0번으로 남는다.
+          const r = hash01(x, y, this.seed + 3);
+          if (r < 0.08) t = this.floor("grass", 1);
+          else if (r < 0.26) { const v = this.floor("grass", 2 + Math.floor(hash01(x, y, this.seed + 4) * 4)); if (v >= 0 && v !== this.floor("grass", 1)) t = v; }
+        }
       } else if (PLAIN[ch]) {
         const p = PLAIN[ch]!;
         t = this.floor(p.id, p.col);

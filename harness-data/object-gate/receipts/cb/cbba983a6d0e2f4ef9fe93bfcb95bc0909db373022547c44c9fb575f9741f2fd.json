@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cbba983a6d0e2f4ef9fe93bfcb95bc0909db373022547c44c9fb575f9741f2fd",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "water cask lying on a wooden cradle with a brass tap facing south",
+ "label": "pirate-isles/pi-water-barrel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water cask on cradle",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cask is lying horizontally facing south: the front circular head occupies rows 4-13 with a brass tap at row 11-13, while the top curved surface of the barrel body extends back 4 rows (rows 0-3) showing the bulging bilge and metal hoops.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11469
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal water cask on cradle",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cask is lying horizontally facing south with a brass tap on its front face (rows 4-13). The top curved surface of the barrel body recedes north and is visible across rows 0-3 (4 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8811
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water cask lying horizontally on a wooden cradle",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cask lies horizontally with its circular south head visible from rows 4-13 and tap at rows 11-14. Rows 0-3 (4 source pixel rows) clearly show the top curved, bulging surface of the barrel receding northwards with wooden planks and metal hoops visible from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9190
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal water cask on cradle",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cask lies horizontally with its south circular head at rows 4-13; above it, the curved top surface of the cylinder body recedes north across rows 0-3 (4 source pixel rows) with visible staves and hoops, correctly foreshortened in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9970
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.592Z",
+ "cells": {
+  "16": [
+   "e4e54e534030b0b2"
+  ],
+  "24": [
+   "5680e859c91a390b",
+   "96f0a10de2f852d2",
+   "97b03d322aac9880",
+   "a18cd105877635b5",
+   "c96bef84e5c9827f",
+   "e60dd143eed738de"
+  ],
+  "32": [
+   "5f371f1d14756876",
+   "6081be973c4708f2",
+   "6870bbe7b28e1739",
+   "ae95aa0e95801b4f",
+   "c5d464137d4c3d5d",
+   "e05837fed8b5a201"
+  ],
+  "48": [
+   "a9e448a8e4f33c83",
+   "ab408aae60097b0f",
+   "bf2b0c575bc2e6d2",
+   "c66b4586d161bec2",
+   "cd4aece51594268e",
+   "dd4336cfecc76eef"
+  ]
+ }
+}

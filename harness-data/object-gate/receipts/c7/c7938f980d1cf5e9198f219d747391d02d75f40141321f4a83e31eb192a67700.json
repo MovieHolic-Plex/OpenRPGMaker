@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c7938f980d1cf5e9198f219d747391d02d75f40141321f4a83e31eb192a67700",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "low jungle fern",
+ "label": "pirate-isles/pi-fern",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fern foliage clump",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The foliage clump shows upper, top-facing lit leaf surfaces across rows 7-11 with darker shaded front foliage beneath, presenting appropriate 3/4 view volume for organic ground cover.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5714
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "clump of low fern fronds",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The foliage is rendered with layered frond clusters showing upper highlighted leaf surfaces (rows 7-11) descending into darker shadowed undergrowth, presenting proper 3/4 foreshortening rather than a flat cutout.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6606
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "low jungle fern / foliage clump",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The foliage clump displays foreshortened top surfaces across rows 7-11 with lighter top highlights, transitioning down to shaded lower fronds near the base (rows 12-15), consistent with a 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8656
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fern foliage clump",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The foliage clump shows upper, top-facing surfaces highlighted across rows 7 to 11 with shaded undersides and base below, giving a proper 3/4 downward view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4319
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.576Z",
+ "cells": {
+  "16": [
+   "f1a2db6f8f153712"
+  ],
+  "24": [
+   "01770d23ba9e3580",
+   "11d4b0d4a0e4592b",
+   "3c773aa010557011",
+   "565b0074226790f8",
+   "6a2ad1d719e9cc05",
+   "da1dd3f7542d5674"
+  ],
+  "32": [
+   "42640e6288bc97ad",
+   "4cfededfcc14994e",
+   "65d45840d178dc58",
+   "8d71f48bba7e29e4",
+   "cd365e52c0b94eec",
+   "f4a0b384335adb37"
+  ],
+  "48": [
+   "2001932a76e2e726",
+   "30a0ae15c3388bf4",
+   "5b941435b859040a",
+   "c627490862a7005f",
+   "f16a19d27be1a6b1",
+   "ff7f7133c8f85fd1"
+  ]
+ }
+}

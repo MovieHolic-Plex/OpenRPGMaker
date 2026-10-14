@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3ff606a7262f1743122dc5040513d5455b97862fc3d6f6b0c33197a40708f5ec",
+ "width": 32,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "nautical sea chart pinned to the wall with brass tacks: islands, a dotted route, an X and a compass rose, no text",
+ "label": "pirate-isles/pi-wall-map",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flat chart/map pinned to wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted flat nautical chart correctly rendered flat against the vertical wall with islands, dotted route, compass rose, and brass pins.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4900
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "parchment chart pinned to wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted flat chart showing islands, dotted route, X, and compass rose; flat presentation is correct for wall-mounted graphics.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3236
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "nautical sea chart pinned flat to wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted chart depicted flat against the vertical wall surface as expected for the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3251
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "nautical sea chart pinned flat to wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted sea chart drawn flat against the vertical wall plane as expected for wall-mounted decor.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3529
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.596Z",
+ "cells": {
+  "16": [
+   "196c5057bc5d7e62",
+   "f09fa4bc91949396"
+  ],
+  "24": [
+   "10417ce46f81c9cf",
+   "1d8e336141d4187d",
+   "2872523c754f7425",
+   "28d482e38c2f25b1",
+   "2c6eb0b0aa885b29",
+   "44f8f2155a4cdc14",
+   "4a83f86911a2cf23",
+   "9ebba16c752bd0ec",
+   "b751d2d3e12156dc",
+   "eec79fe6331a3119",
+   "f9e4cf087cf9a5c0",
+   "fdc033e99fafb069"
+  ],
+  "32": [
+   "761b26b7d2b753e3",
+   "995d9e39c1132c89"
+  ],
+  "48": [
+   "3e73ab82d31637e9",
+   "d87ac8be94da27c5",
+   "e2840fa44871b189",
+   "e666a07bdf5c99ef",
+   "e832c0525121a5db",
+   "f861078af727f9b6"
+  ]
+ }
+}

@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a3c3b5c8d407d44c3aa89e7b7a032afc3cab168239405fe2f76ce5ae21b9de76",
+ "width": 48,
+ "height": 16,
+ "kind": "terrain",
+ "name": "white-gold beach sand floor tiles, 3 variants (plain, wind ripples, shells)",
+ "label": "pirate-isles/pi-sand",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "beach sand floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tiles (three 16x16 variants showing sand texture, ripples, and shell/starfish details) covering the full 16-row floor surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4228
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sand floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground/terrain tiles representing beach sand with texture variations and small shells viewed from above, covering the full 16px ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3895
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "beach sand floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tiles (3 variants: ripples, plain, and shells/starfish) viewed from top-down perspective, covering the full 16-row tile height.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2891
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "beach sand floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tiles (three 16x16 variations: sand texture, ripples, and sand with small shells/starfish), viewed correctly from above as a ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3653
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:32.182Z",
+ "cells": {
+  "16": [
+   "389a6f8fcdd00c54",
+   "9fd74cf67b6797c8",
+   "db73f7335d8688fd"
+  ],
+  "24": [
+   "218d6803a923cb08",
+   "2d68d1b43925dda6",
+   "6539aff6a8ea2ca0",
+   "b80ce5664fb8f093"
+  ],
+  "32": [
+   "5cebe0ca95a23be9",
+   "62c043e515cc4686",
+   "72f4e496e55f74e7",
+   "8813dbb37274bc2e",
+   "96b2eb1d874516b9",
+   "c60533f8cd2aae0f",
+   "cbd429c7a8420ab3",
+   "d6a7b530a9b38991",
+   "e03b7c7a96968f70",
+   "e3bea393cadc56de",
+   "e91425d74b6ab00c",
+   "f155c393ecdbfa84"
+  ],
+  "48": [
+   "3d1da2109e6f9a8b",
+   "93607beaae28bfe3"
+  ]
+ }
+}
