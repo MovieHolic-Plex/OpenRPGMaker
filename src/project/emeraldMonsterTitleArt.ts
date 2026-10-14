@@ -7,6 +7,9 @@
 // 항목이 없거나 id 가 다르면 지금의 사슴(해안) 그림으로 돌아간다 — 빌드가 그림 파일 유무로 깨지지 않는다.
 import type { Project, TitleEffect, UploadedAsset } from './types';
 import stagArtwork from '../../public/assets/emerald-monster/title-asset.json';
+import meadowTitle from '../../public/assets/emerald-monster/title-meadow-asset.json';
+import desertTitle from '../../public/assets/emerald-monster/title-desert-asset.json';
+import snowTitle from '../../public/assets/emerald-monster/title-snow-asset.json';
 
 export const MONSTER_TITLE_THEMES = ['default', 'coast', 'desert', 'snow'] as const;
 export type MonsterTitleTheme = typeof MONSTER_TITLE_THEMES[number];
@@ -26,6 +29,9 @@ interface TitleVariant { readonly asset: UploadedAsset; readonly effects?: Title
 //     desert: { asset: desertTitle as UploadedAsset },
 // 파일 이름: default → title-meadow-asset.json, desert → title-desert-asset.json, snow → title-snow-asset.json. coast 는 넣지 않는다(사슴 그림).
 const VARIANTS: Partial<Record<Exclude<MonsterTitleTheme, 'coast'>, TitleVariant>> = {
+  default: { asset: meadowTitle as UploadedAsset },
+  desert: { asset: desertTitle as UploadedAsset },
+  snow: { asset: snowTitle as UploadedAsset },
 };
 // ────────────────────────────────────────────────────────────────────
 
