@@ -5,6 +5,21 @@
 
 <!-- releases -->
 
+## 0.215.0 — 2026-10-14
+
+### 기능
+
+- **modern_city** — leafy street trees, lawn variants and composer greenery (quality-b) (#2552) (`dee37f1`)
+- **sengoku-edo** — 버들항 결 맞추기 — 잎 덩이 나무·고른 풀밭·잔돌 흙길·잔물결 해자·바랜 기와 (#2551) (`148fe88`)
+- **desert-east** — 버들항 수준 명암·질감 — 야자·평지붕·풀·흙길·물 (#2550) (`06ad748`)
+- **snow-north** — beodeul-level shading for trees, snow roofs, walls, slush/frost, hearth (#2548) (`ea63257`)
+- **modern-campus** — quality-b — brighter lawn, fuller trees, cream school walls, green roofs (#2547) (`12d462c`)
+- **gothic-manor** — buldeul-level grass clumps, dirt path, 5-step dead trees with soft outlines (#2544) (`190fe3c`)
+
+### 정리
+
+- **ai** — one composed-layout marker + one isComposedLayoutMap for layout-quality advice; jp_city street hedge/wall fills no longer fail silently (#2549) (`041afb7`)
+
 ## 0.214.0 — 2026-10-14
 
 ### 기능
