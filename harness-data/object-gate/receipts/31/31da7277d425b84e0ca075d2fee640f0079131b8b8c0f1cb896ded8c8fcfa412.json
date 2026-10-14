@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "31da7277d425b84e0ca075d2fee640f0079131b8b8c0f1cb896ded8c8fcfa412",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "기숙사 책상 + 위 선반(스탠드·책)",
+ "label": "modern-campus-int/mc-dorm-desk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dorm desk with hutch",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper shelf top is visible across rows 1-3 (3 pixels tall), and the main desk surface is clearly shown from above across rows 13-19 (7 pixels tall) with objects placed on top of it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4085
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dorm desk with upper hutch shelf",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the upper bookshelf spans rows 1-3 (3 rows), and the desk work surface spans rows 13-19 (7 rows) showing objects resting in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3921
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dorm desk with upper hutch shelf",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk tabletop is clearly visible from above across rows 13-19 (approx 7px deep) with objects standing on it, and the very top of the upper bookshelf unit is also visible at rows 1-3 (3px deep).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3907
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dorm desk with upper bookshelf unit",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the upper shelf unit shows 3 rows of visible top surface (rows 1-3), and the desk workspace top is clearly foreshortened and visible from above across 7 rows (rows 13-19).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4092
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.311Z",
+ "cells": {
+  "16": [
+   "5323579eb684c85c",
+   "72fbc97330db82c3",
+   "827fc480ed10cb95",
+   "8a279b7d1b39e069"
+  ],
+  "24": [
+   "0150bbd96e222509",
+   "2f312a690056114f",
+   "2fc27880a687eedb",
+   "3fd64f0de74fedb4",
+   "55223f4f7dc5de26",
+   "63ae6af3fe04711e",
+   "6d0c8d464146eabf",
+   "7115840cec84bb1d",
+   "720256dcd2468b09",
+   "735a6a17f25c13cb",
+   "743cd0f87b207e3d",
+   "841bcdc8889688e4",
+   "882793750ecacd90",
+   "a692ad663bad4f16",
+   "b7410e8a77f2e9d5",
+   "bbb26328b8e7aae2",
+   "c41798220ee2840d",
+   "c4e8b3bd68e471ed",
+   "d16f14a88d806b04",
+   "d369f54aa7d68808",
+   "d93c17887ec1d05d",
+   "e783aa9bd82f4528",
+   "fa33c8f883f29b3c",
+   "ff6f2e0016a73823"
+  ],
+  "32": [
+   "fe32b9b8f840cfa3"
+  ],
+  "48": [
+   "0e800f2dec9f3b27",
+   "5b942c77f00e8405",
+   "689f33957508e305",
+   "a3920024e036a0fe",
+   "bbf7a11fe20b657b",
+   "fd5c34c3ed2a85a4"
+  ]
+ }
+}

@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ebe7f1c10d4d3b4bdbfe0744b32257c553077f719e29231b0b62348a5d774d48",
+ "width": 48,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "피크닉 탁자(앞뒤 의자 붙은 나무 탁자)",
+ "label": "modern-campus/mc-picnic-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "picnic table",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main table surface is prominently visible from above (rows 9-18, ~10px tall) with a distinct south-facing front rim (rows 19-21, 3px tall). The accompanying benches also show top surfaces and south faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4803
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "picnic table top",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The picnic table tabletop clearly shows its horizontal top surface across rows 8–18 (11 source pixel rows) and south front edge across rows 19–21, with benches also showing visible top surfaces in proper 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5601
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "picnic table",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main table surface is clearly foreshortened and visible across rows 9-18 (10 rows) above a 3-row front-facing edge (rows 19-21), with benches also showing both top surfaces and front faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4541
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "picnic table",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main table surface shows a broad horizontal top visible from rows 9 to 18 (10 rows) above a 3-row front edge (rows 19-21), correctly matching the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4531
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.869Z",
+ "cells": {
+  "16": [
+   "3720b98ca5cbcd59",
+   "4f5c4dc9932f76e1",
+   "5b421a50a62b8e6c",
+   "8f1c86d198fc3e7d",
+   "de8b626a1aae3718",
+   "ea9e9f1c6b11c15f"
+  ],
+  "24": [
+   "2478c229c2832dfa",
+   "25ae82ceeae23152",
+   "79e622e445c30318",
+   "9ba32131c257f501",
+   "c6179da206fb64e4",
+   "c9259687e801d05f",
+   "e3789349d071a730",
+   "f114bd5029daec64"
+  ],
+  "32": [
+   "0ee2f64889736dc0",
+   "15958a46ab014a60",
+   "6a48f7f7dea385a8",
+   "841e89e2d046e629",
+   "cdb8ef99e6edf2ce",
+   "fe1a81c81cc0736d"
+  ],
+  "48": [
+   "32711f754603be27",
+   "4b593e5bd621290c"
+  ]
+ }
+}

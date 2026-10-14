@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5b1137c52446314109802bac8df8c79d4addcdc9becff8d676f847e9b311cf24",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "은행나무(가을 노랑)",
+ "label": "modern-campus/mc-tree-ginkgo",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The organic tree canopy features a rounded crown cluster with 6 rows of top surface visible (rows 1-6) lit from above, tiered foliage clusters showing upper curvature, and an elliptical ground patch at the base (rows 41-46) consistent with 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11393
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "foliage canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree canopy and trunk are drawn in pure front elevation (side-view platformer style) with vertically stacked lobes and a flat vertical trunk. While an elliptical grass patch is placed at the base, the main body itself lacks the 3/4 top-down downward angle and visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9300
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "yellow ginkgo tree foliage and trunk",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The foliage consists of stacked rounded lobes with visible lit upper surfaces (top cluster rows 1-7), and the base features an elliptical grass patch/shadow (rows 41-46) confirming 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4816
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ginkgo tree foliage canopy",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The foliage canopy is drawn as a flat side-scroller silhouette with rounded vertical lobes and a flat bottom edge at row 33, presenting a pure front elevation rather than a 3/4 overhead perspective. There is no visible horizontal top surface of the main canopy.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6385
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.871Z",
+ "cells": {
+  "16": [
+   "5356937dfda34000",
+   "6c1474ec4def3605",
+   "8574b02312506ed7",
+   "a98fc2887602e936",
+   "bbb67de6920afe38",
+   "c2e55caebf6feaf9"
+  ],
+  "24": [
+   "132da0d1c30ee8dd",
+   "1662eb3fc7a59088",
+   "1f583fc08904506f",
+   "226c2d203a9c487d",
+   "2a3dd4f16f6f5887",
+   "49769121385b7f00",
+   "7aab216ff9d40b7b",
+   "ac114d985bd87022",
+   "d0682bc1557e91ed",
+   "d4c9862df6fbf930",
+   "f0b6fb7d3c3b76df",
+   "f5911b6f1e60da85"
+  ],
+  "32": [
+   "5fd0c7d05195e3fb",
+   "9d0edee832695d83",
+   "c4416ffffe9dd27d",
+   "ce92c0a3a8039be5"
+  ],
+  "48": [
+   "74e7a66331295e20",
+   "ca52c639ec6fa11c",
+   "fa46245bf05f24e0"
+  ]
+ }
+}

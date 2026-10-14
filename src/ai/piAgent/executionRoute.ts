@@ -13,6 +13,7 @@ import { formatWorldmapChoiceNote } from '../worldmapChoiceNote';
 import { formatBeodeulTownNote, type BeodeulTownTarget } from "./beodeulTownRoute";
 import { formatJpCityNote, type JpCityTarget } from "@/ai/jpCityPolicy";
 import { formatGothicNote, type GothicTarget } from "@/ai/gothicPolicy";
+import { formatCampusNote, type CampusTarget } from "@/ai/campusPolicy";
 import { formatSfStationNote, type SfStationTarget } from "@/ai/sfStationPolicy";
 import type { AutonomyResolution } from "@/ai/autonomyLevels";
 import {
@@ -88,6 +89,8 @@ export interface PiIntentNoteInput {
   readonly jpCity?: JpCityTarget | null;
   /** 요청·대상 맵이 고딕 저택(gothic_manor) 칩셋이면 그 대상(gothicPolicy). jp_city 대상이 잡히면 쓰지 않는다. */
   readonly gothic?: GothicTarget | null;
+  /** 요청·대상 맵이 캠퍼스(modern_campus) 칩셋이고 프로젝트에 칩셋이 있으면 그 대상(campusPolicy). */
+  readonly campus?: CampusTarget | null;
   /** 요청·대상 맵이 SF 정거장·네온 거리(sf_station)면 그 대상(sfStationPolicy). jp_city·고딕보다 먼저 잡힌다. */
   readonly sfStation?: SfStationTarget | null;
   /**
@@ -118,6 +121,7 @@ export function buildPiIntentNote(input: PiIntentNoteInput): string | null {
     : input.beodeulTown ? formatBeodeulTownNote(input.beodeulTown, input.targetMap)
     : input.jpCity ? formatJpCityNote(input.jpCity, input.targetMap)
     : input.gothic ? formatGothicNote(input.gothic, input.targetMap)
+    : input.campus ? formatCampusNote(input.campus, input.targetMap)
     : null;
   const scopeNote = input.selection
     ? formatScopeNote({ mapId: input.selection.mapId, region: input.selection }, input.intent)

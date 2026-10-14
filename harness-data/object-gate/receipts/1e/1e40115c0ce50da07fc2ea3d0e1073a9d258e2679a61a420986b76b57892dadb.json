@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1e40115c0ce50da07fc2ea3d0e1073a9d258e2679a61a420986b76b57892dadb",
+ "width": 64,
+ "height": 32,
+ "kind": "frame",
+ "name": "축구 골대(흰 철관 + 그물)",
+ "label": "modern-campus/mc-soccer-goal",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "soccer goal frame and net",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The goal shows clear 3/4 perspective depth with the top roof of the net extending 8 pixel rows back (rows 2–10) between the front crossbar and the rear top support bar.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7569
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "soccer goal frame with net",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof/netting surface of the soccer goal is clearly foreshortened and visible from row 2 to row 10 (approx 8-9 rows) above the front crossbar, correctly depicting depth in 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6415
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "soccer goal frame with net",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The goal shows its 3D depth in top-down 3/4 perspective: the horizontal top net roof stretches backward from the front crossbar (row 10) to the rear top pipe (row 2), measuring about 8 source pixel rows of foreshortened top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6669
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "soccer goal frame and net",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The goal roof/top net surface recedes backward between the front crossbar (row 11) and the back top bar (rows 2-3), occupying approximately 8 visible source pixel rows from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7714
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.871Z",
+ "cells": {
+  "16": [
+   "25adf44e751b0a0a",
+   "43d79468da9458a6",
+   "85eb3968e59d289b",
+   "8a21568702e02b90",
+   "9067889f8d18e5c2",
+   "a558ce647fde8b03",
+   "ab3ecb66142230cf",
+   "be1944ab4189de0a"
+  ],
+  "24": [
+   "0131ca8446b94801",
+   "029ea4001671f4ed",
+   "02dc55c74ea424bf",
+   "0ec4330ec9b56dfe",
+   "19ac70cb83efed4a",
+   "1b86b196155a43f7",
+   "228fb14e32adf584",
+   "25397fb264e166d6",
+   "2683e77d4a4051e3",
+   "280904e2b306533f",
+   "2c8eaf98efb484d4",
+   "394282c6f1cbbc37",
+   "4753a64816465711",
+   "69affd8dcef2452f",
+   "6d75f01c1bcb22b0",
+   "6d7ea09670e7af99",
+   "6f75f6e19b7d503a",
+   "79f682f8c87062dc",
+   "8ea7fff74f509a50",
+   "922635b4c0acf5ee",
+   "9632933ebcbf7111",
+   "a857f9d393b255ad",
+   "ad6237d4c8836351",
+   "b12d2168f659cd04",
+   "bdd40b0becd0ea89",
+   "c223633a2bf69ef2",
+   "c6025978c860e2d1",
+   "c65f6bd01b271574",
+   "c8b1d7c1003dcbba",
+   "d14a8429c15c3e41",
+   "d882056a53429ccf",
+   "d8f4fe4dcb25d434",
+   "da1c81014f6d2989",
+   "ddd37826379548e3",
+   "e2915b6978c9213a",
+   "f4ac5aa3922f6ab9"
+  ],
+  "32": [
+   "918a742f192b17b1",
+   "ec3e31379f9efcae"
+  ],
+  "48": [
+   "099630b458115081",
+   "15c4d2a0e8725588",
+   "1a51db210aee3b04",
+   "2f83dfccc9f40f4b",
+   "3d6e829c0b3472f4",
+   "47f84a4c67a28ccc",
+   "4e8a900328e09887",
+   "997053f147f2559e",
+   "9e104884542c7027",
+   "b2b722480840d371",
+   "c28f9f6a4b493d07",
+   "ffa8416fe1b9a7d5"
+  ]
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ce207bdd6ea64b6d44c8d5355b14ab8e74cf0c153a563c3b1f4aad1256e8360c",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "소화기함(빨간 문 + 흰 띠)",
+ "label": "modern-campus-int/mc-fire-cabinet",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fire extinguisher cabinet",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet top is clearly shown foreshortened across rows 1-5 (5 source pixel rows) with a front edge highlight on row 5 and a cast shadow onto the front face on row 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10005
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fire extinguisher cabinet",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-5 form a clear foreshortened horizontal top surface with top edge highlight and a south-edge overhang casting a shadow onto the front face at row 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7152
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fire extinguisher cabinet",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cabinet is clearly rendered across rows 1-5 in a lighter red tone with edge highlights, showing proper 3/4 top-down foreshortening above the south-facing door (rows 6-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5710
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fire extinguisher cabinet",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-5 form a 5-pixel-tall top surface with a front edge highlight on row 5 and a drop shadow cast onto the front face on row 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6159
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.309Z",
+ "cells": {
+  "16": [
+   "75771baab93117d1",
+   "adeac43bf79b0c04"
+  ],
+  "24": [
+   "16010c15d96b19bf",
+   "22bfbbf4a1ded8a8",
+   "2871170808069e36",
+   "4cc45d61039bd487",
+   "79bfdb5573986222",
+   "7e1962df8b9971c6",
+   "85f318ec8b76ebc7",
+   "a038fa1c96db29b9",
+   "acfa9d6376714d66",
+   "e78ed77344edaaa0",
+   "f0b1a0095bdef832",
+   "f1879c1919be7d5e"
+  ],
+  "32": [
+   "14d5f25080c91e41",
+   "4af5d15fcc7524ce",
+   "bf40b61485e9ebe9"
+  ],
+  "48": [
+   "0f36784c15aba373",
+   "302d326807a1b6c5",
+   "5733316db5419f5c",
+   "8356604ff028cfdd",
+   "c04a8729f4e86ebf",
+   "ed6081f5a873840b"
+  ]
+ }
+}

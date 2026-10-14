@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "789a716dba9683aa744490e57a974409dc67a8735697b2eb5e3573e4109fba53",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "흙 운동장 흰 선(가로, 석회)",
+ "label": "modern-campus/mc-dirt-line",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dirt sports ground with horizontal chalk line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile showing dirt field surface with a chalk line across rows 7-8.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4309
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dirt ground with chalk line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile showing dirt ground with a horizontal chalk line, appropriately rendered as a ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4833
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dirt ground surface with chalk line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing dirt schoolyard field with a horizontal white chalk line; entire tile is ground plane viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4055
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dirt ground with chalk line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile showing a dirt sports field ground with a horizontal chalk line painted across it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4104
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.865Z",
+ "cells": {
+  "16": [
+   "5b882fc32a77c7b2"
+  ],
+  "24": [
+   "3b9b07372fefb19a",
+   "6909dd947d79ac75",
+   "a366e93bec6731a4",
+   "bb652b6890c8d707",
+   "c4b8225513a6dc5f",
+   "e39a6f5f3f581021"
+  ],
+  "32": [
+   "05af550628094f28",
+   "0862a3a898e082fc",
+   "16fa36629a7d3576",
+   "495979a64a656046",
+   "8bf391b37b9054bc",
+   "e00b278ffbbf7331"
+  ],
+  "48": [
+   "054265077ed13742",
+   "98c1b5ceb82d9062",
+   "99ebe2714430593f",
+   "c2a8accf83e5904b",
+   "d44b975380d1c82a",
+   "febe88544ca31b36"
+  ]
+ }
+}

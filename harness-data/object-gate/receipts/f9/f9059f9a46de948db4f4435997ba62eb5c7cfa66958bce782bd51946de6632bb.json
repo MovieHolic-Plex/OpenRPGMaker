@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f9059f9a46de948db4f4435997ba62eb5c7cfa66958bce782bd51946de6632bb",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "국기 게양대(흰 깃대 + 학교 깃발 + 돌 기단)",
+ "label": "modern-campus/mc-flagpole",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flagpole with flag and finial",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole and its top finial are drawn in pure front elevation with no visible top surface or cut face at the top end. Although the base plinth shows a top surface, base plinths do not count for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10390
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flagpole with flag",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole and flag are drawn in flat front elevation with 0 visible top rows. The gold cap at the top is a 3x3 square without a foreshortened top surface. By definition, a base plinth does not count as the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7278
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flagpole with flag and finial",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gold finial/pole cap at the top (rows 0-3) is drawn in pure front elevation with a flat horizontal top edge and no visible top surface. Even though the base plinth shows an elliptical top surface, credit cannot be given based on the plinth alone.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6301
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flagpole with flag and stone base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole and top finial are drawn in pure front elevation with no visible top surface at the top end (the golden cap is a flat 3x4 pixel rectangle). Although the base plinth has top-down curvature, base plinths do not substitute for the main body's top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6837
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:11.493Z",
+ "cells": {
+  "16": [
+   "248948f975835917",
+   "50bdc418124c94ef",
+   "a0a44b3bea9e7418"
+  ],
+  "24": [
+   "02bf319566a0163f",
+   "38d5dad47f840230",
+   "4d2838cb5a06d1f4",
+   "6d2b11cba2173143",
+   "72b75893bcf89ddd",
+   "7ccab5c406f97b83"
+  ],
+  "32": [
+   "10edd65152594fc9",
+   "150f807095717dda",
+   "15d79ed99321f350",
+   "279625f6e601f024",
+   "657e2082694ad763",
+   "93fc7ed422ba6559",
+   "c2a7b928bbd33873",
+   "c3f78d89e48258f0",
+   "ce1e1ef5324b3855",
+   "d7a4a9abec773fbb",
+   "d87a43395178c54c",
+   "f7b0dda8388d3f4e"
+  ],
+  "48": [
+   "246ec39dc11955f2",
+   "6bd9966a6c48f5bc",
+   "8f856423eefb8f1a"
+  ]
+ }
+}

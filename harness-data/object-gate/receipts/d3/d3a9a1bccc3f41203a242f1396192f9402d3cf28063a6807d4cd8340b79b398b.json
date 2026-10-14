@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d3a9a1bccc3f41203a242f1396192f9402d3cf28063a6807d4cd8340b79b398b",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "낮은 탁자(밝은 나무, 책·컵)",
+ "label": "modern-campus-int/mc-low-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "low wooden table with items on top",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible across rows 3-8 (6 rows deep) with books and a cup resting on it, followed by the table apron on rows 9-11 and legs on rows 13-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5658
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "low wooden table with books and cup on top",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop is clearly drawn in 3/4 view, showing 6 source pixel rows of horizontal surface (rows 3-8) with placed objects, followed by a front apron and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4506
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "low wooden table with items on top",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from rows 3 to 8 (6 source pixels tall) with books and a cup resting on it, followed by a south-facing front apron (rows 9-11) and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5371
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "low wooden table with items on top",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface clearly extends from row 3 to row 8 (6 rows tall) displaying books and a cup, with the south front apron visible from row 9 to row 11 and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5129
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.312Z",
+ "cells": {
+  "16": [
+   "0bd3680a5d18c52b",
+   "ea7ff5310c3dca24"
+  ],
+  "24": [
+   "0e4933b9021790f7",
+   "2868066852a9c90e",
+   "2ac252ae99ae41df",
+   "428a5e5fee8ee1b0",
+   "715220e19baf0bd8",
+   "7f63baa5dc6f357b",
+   "9be6a5061a7f6d78",
+   "a1203c36192fb275",
+   "a9c5e7dfd7c4f5e5",
+   "c1ffb95a340d52a1",
+   "c40780d1e9dd59f2",
+   "f9188c4d9a6424a5"
+  ],
+  "32": [
+   "6358db23ef0ea8b3",
+   "f84b85c7eaa1b5be"
+  ],
+  "48": [
+   "1595701504df9d46",
+   "21652ee145a5a8be",
+   "46f603a0aa5f9193",
+   "8c5ca9e3c281c2f0",
+   "adca0fa20019494a",
+   "d3b9ec7bfaf01488"
+  ]
+ }
+}

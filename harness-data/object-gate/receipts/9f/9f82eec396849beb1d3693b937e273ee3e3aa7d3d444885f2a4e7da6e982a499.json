@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9f82eec396849beb1d3693b937e273ee3e3aa7d3d444885f2a4e7da6e982a499",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "교실 유리문 캐비닛(교재장)",
+ "label": "modern-campus-int/mc-cabinet-glass",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cabinet / bookshelf with glass upper doors and closed lower doors",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet top surface is clearly visible across rows 1 to 5 (5 pixels deep) with a small potted plant resting on it, above the south-facing doors and shelves.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7864
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "classroom glass-door cabinet / bookshelf",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cabinet is clearly drawn across rows 1-4 (about 4 pixel rows tall) with a potted plant resting on it, leading to the south-facing front doors below row 5.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5870
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "classroom glass-door cabinet",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet has a clear top surface spanning rows 1 to 5 (5 pixels deep) upon which a small potted plant rests, before transitioning to the front face at row 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3768
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "classroom glass cabinet with books on shelves and bottom doors",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-5 form a clear 5-row deep horizontal top surface upon which a small potted plant sits, with the front face extending from row 6 down to row 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5011
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.308Z",
+ "cells": {
+  "16": [
+   "19ff33609cd1fbd2",
+   "302f5be66c5015c2",
+   "9b5be4ec8113f4dc",
+   "d379c159d10f3a31"
+  ],
+  "24": [
+   "0379b433985dbb1b",
+   "10c737459623f38c",
+   "1521e5a968c2be2c",
+   "16934643b9adbd77",
+   "18462f2c99341831",
+   "1dc970e01714443a",
+   "1e4e69160bbb5307",
+   "2bc7d5def1b978d1",
+   "2ce5c7ede01c7da9",
+   "3b37a82bd8b6f184",
+   "3fd202cb3597ed44",
+   "4abcf23b32b6c09b",
+   "4bab9f5af365e929",
+   "5dc7633e2e58925e",
+   "63e62c6205a17ac0",
+   "67e156de4547088a",
+   "73b9740fa5f1e001",
+   "abd7a15d02a51dfd",
+   "b1a17c6fdb22aa65",
+   "b5c0c2a784ed8397",
+   "c7ad8c828e924b26",
+   "e8b3acf181dc5655",
+   "fa53cf659bb72883",
+   "fda3e3d16a32fe43"
+  ],
+  "32": [
+   "72b428d491a53eef"
+  ],
+  "48": [
+   "04d77a7a7e66ea3a",
+   "3101495d110857fa",
+   "3b16721ca7bd157f",
+   "6946b39065496812",
+   "d75386d7412864c7",
+   "e6b377aad0da6c48"
+  ]
+ }
+}

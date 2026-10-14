@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3a58d38baccf3e9f65c9a3ac5f5b4dfcb64cc42999a34de1d8741e9dfa1c8bf2",
+ "width": 32,
+ "height": 96,
+ "kind": "structure",
+ "name": "시계탑(벽돌 탑 + 돌 난간 옥상 + 작은 돔)",
+ "label": "modern-campus/mc-clock-tower",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "clock tower",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rooftop terrace inside the stone balustrade clearly reveals its horizontal floor surface from row 10 to row 18 (9 source pixel rows deep), correctly establishing the top-down 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6712
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick clock tower with rooftop terrace and dome",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the tower features a recessed roof terrace/balustrade showing around 9 rows of horizontal floor surface (rows 10-18) around the dome in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6261
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brick clock tower with rooftop terrace and dome",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rooftop terrace floor is seen from above between rows 10 and 18 (about 9 rows deep) within the surrounding stone parapet, confirming the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6959
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brick clock tower with rooftop terrace and dome",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rooftop terrace at the top of the tower (rows 10-18) clearly shows the horizontal floor surface surrounding the dome in 3/4 perspective, with a front parapet wall below it (rows 19-24).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6089
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.305Z",
+ "cells": {
+  "16": [
+   "0c01c2c95747d2e4",
+   "1655776aad5652b0",
+   "34c5c3b474f89b61",
+   "4271f648f61d7295",
+   "4f2ace46c811a8ef",
+   "7f29b027fec322d9",
+   "8f53c41b6c535ba6",
+   "be610bf39f0670f6",
+   "cd89f969c0be2b1f",
+   "d55dbae4e6fcd65a",
+   "da624039dd904183",
+   "db516d4a7f6b0f85"
+  ],
+  "24": [
+   "04d80eca37f9abb2",
+   "151b02ae9b6bf3bd",
+   "213396aa72763afb",
+   "2441de5f788a144f",
+   "24b6000d2082d52d",
+   "298dbbf759d763bb",
+   "2e8bb5fcd30da9ec",
+   "3156c79791e5cdfc",
+   "322c6a4088e315b3",
+   "3e2a0b123b08ad6d",
+   "3e93a0c9ce3ac3cb",
+   "613fa3cc070a43be",
+   "65ed8c57f0767c4b",
+   "788c0c5ab899707a",
+   "7b6e5621364ab76d",
+   "888efe95b981b083",
+   "8d35c1c6d4a81ec1",
+   "9031300a074dc167",
+   "a4dedfd9ef50f826",
+   "ad6536453d713fb6",
+   "bcfe52deb8d75315",
+   "c709302157af3ece",
+   "d924ad7d2c1c8477",
+   "f958f60598fb596d"
+  ],
+  "32": [
+   "a0bca6fbe5db6ae4",
+   "b3ed714d691d9a26",
+   "e7242e510684cc5a"
+  ],
+  "48": [
+   "16e260489ad9edbb",
+   "77c83e2df9331adc",
+   "8070d8174f0c5b0c",
+   "8e8d3f59ed961f22",
+   "90aa4a8d2a5f9661",
+   "ab117db6ddbe07be"
+  ]
+ }
+}

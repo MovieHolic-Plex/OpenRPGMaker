@@ -1,0 +1,148 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a225a133ba71eb92a2f3451dffe981126b4241de316282001230ac0d20b91d1c",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "트로피 장(유리문 + 금속 컵)",
+ "label": "modern-campus-int/mc-trophy-case",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "trophy display cabinet",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet has a clearly defined 5-row top surface (rows 1-5) illuminated in a lighter tone consistent with top-down lighting in 3/4 perspective, with no isometric side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11188
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "trophy cabinet with glass doors",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn as a flat architectural front elevation. Rows 1-5 are a front-facing wooden top header/cornice matching the bottom baseboard (rows 28-31), complete with vertical wood grain stripes. The cabinet has no visible top surface receding backward, and all interior elements (trophies, shelves, certificates) are drawn completely flat from the front.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9044
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "trophy display cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn in complete orthographic front elevation. Rows 1-5 represent the front wooden header/cornice of the frame rather than a top surface viewed from above (the vertical side posts and glass compartments begin directly beneath it without any top depth plane). Furthermore, the shelves and trophies inside are drawn flat from the front with no visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10447
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "trophy display case",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn as a flat 2D front architectural elevation. The tan section at rows 1-5 represents a front wooden header/cornice rather than a foreshortened top surface, showing vertical wood grain with no visible top depth receding to a back wall. Furthermore, all interior elements (cups, bases, certificates, and shelves) show zero top surface or depth (e.g., no elliptical openings on the trophy cups and flat 2px shelf divider edges).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9581
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.313Z",
+ "cells": {
+  "16": [
+   "1c6f001062a7054f",
+   "3e65b1ef0447d0ec",
+   "d6619a3adabaaf89",
+   "e49070df66c4c481"
+  ],
+  "24": [
+   "075cd62f4759e954",
+   "23af1f1ba817beea",
+   "354b54b5ae0ac666",
+   "3a01c5384a6c5e7b",
+   "4d116bdeb14251eb",
+   "77c41bcda381c00e",
+   "81f6059a7319337e",
+   "87b9ba58e9aa35c5",
+   "8f9431549823ff89",
+   "9637a094c5421e6a",
+   "9dd7d9f3296133ad",
+   "a9823292fc41f329",
+   "b7b46b6c3566e0b3",
+   "c4dd46cbf208532d",
+   "c8516f62e87d808b",
+   "ca63470355343b03",
+   "cc2fcfd32359e30f",
+   "d3793b8c059ba944",
+   "d42df2f14aadd0d8",
+   "dd213be36f6f7b2c",
+   "e5790532c170fead",
+   "ea45dd42c6e4bbb2",
+   "f71a419021c34529",
+   "fb804e6c1f41760d"
+  ],
+  "32": [
+   "19ba3e37bfc6b9f1"
+  ],
+  "48": [
+   "512af8bb1a9120c2",
+   "7df6fa477d66f677",
+   "b1442f133d1c87dd",
+   "b4b8bf0a89795c4c",
+   "dad98b22241ca32c",
+   "f2644568f98ca0aa"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1d1e09d88594e00e1b429c9dabf5eda0aa71205f89e05ff32526f5cc6625291b",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "잔디 경계석(북동 변)",
+ "label": "modern-campus/mc-curb-ne",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass lawn with stone curb along north and east borders",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile viewed directly from top-down perspective, depicting grass enclosed by stone border curbs along the top and right edges.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5487
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass lawn with northeast stone curb border",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a grass surface bordered by north and east stone curbs, properly viewed from a top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4019
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass tile with northeast stone border",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing a grass surface framed by a north-east stone curb seen from above in top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4106
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass ground tile with stone border curb on north and east edges",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing top-down flat ground surface (grass lawn bordered by stone curb on north and east edges).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4599
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.866Z",
+ "cells": {
+  "16": [
+   "f74b564c02245794"
+  ],
+  "24": [
+   "3ff1d31234d7ecef",
+   "5870bf3c56e09356",
+   "9a93c0d773db1959",
+   "a4637bf6914c4494",
+   "fa37ffaa1de19077",
+   "fc3d4e5ddb33f5fb"
+  ],
+  "32": [
+   "18eb8a3418d296a2",
+   "44d58a941c4ddc38",
+   "9e8c337ced061c5f",
+   "ac752b2643b825dd",
+   "bd5ed4d58d81dd2b",
+   "dbf7b447997be25f"
+  ],
+  "48": [
+   "318f157d466e6bba",
+   "493414fb271f67bc",
+   "7a252896aebca174",
+   "85945098059c9618",
+   "885bff41b54ca84d",
+   "8f05af353ee04b44"
+  ]
+ }
+}

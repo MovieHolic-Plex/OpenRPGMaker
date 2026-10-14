@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8bb011a1eb905f01ecb26a13c42227f0452593c80928f84cc1e74c8243d76bd0",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "둥근 회양목",
+ "label": "modern-campus/mc-shrub",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round boxwood shrub",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shrub is drawn in pure front elevation with vertical side outlines (rows 6-13) and a front-facing tiered arch silhouette. There is no foreshortened top surface showing the upper volume from a 3/4 overhead perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8354
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rounded boxwood bush",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shrub is drawn in flat front elevation with straight vertical sides (rows 7-12) and a flat horizontal base. There is no visible foreshortened top surface or elliptical curvature to indicate the 3/4 downward angle.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7496
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "trimmed boxwood shrub (dome-shaped hedge)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shrub is drawn entirely in front elevation with flat vertical side walls (rows 7-13), a perfectly flat horizontal base line at row 13, and no foreshortened top surface or curved ground contact ellipse visible from a 3/4 overhead perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7344
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "trimmed boxwood shrub",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shrub is drawn as a flat front elevation with straight vertical sides (rows 6-12), a completely flat bottom baseline at row 13, and an arched top with 0 rows of foreshortened top surface visible from a 45-degree angle.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10452
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.871Z",
+ "cells": {
+  "16": [
+   "b96612afeb8e573b"
+  ],
+  "24": [
+   "5dddba650eea32f3",
+   "79405d6f2d8f63be",
+   "98536bec4a350865",
+   "ab5268f2ae141a7f",
+   "d17de55eb5b6d8f6",
+   "eaf8ef1c4ad6626d"
+  ],
+  "32": [
+   "7b0998315123af00",
+   "7d103968f07be6eb",
+   "85947d43dc7c3b88",
+   "c27039ed46a9d529",
+   "c4b3c163e3889373",
+   "d93b58ddfefe404a"
+  ],
+  "48": [
+   "130ef6de67c333ae",
+   "5266da47c3947726",
+   "677c26dc97cbf98a",
+   "9c789a9c831d3c04",
+   "a7167265eaa495c4",
+   "e6ffe90baddbdafe"
+  ]
+ }
+}

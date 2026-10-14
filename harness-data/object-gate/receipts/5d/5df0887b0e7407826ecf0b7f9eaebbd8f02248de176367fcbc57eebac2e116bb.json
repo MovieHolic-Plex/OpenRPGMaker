@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5df0887b0e7407826ecf0b7f9eaebbd8f02248de176367fcbc57eebac2e116bb",
+ "width": 32,
+ "height": 32,
+ "kind": "seat",
+ "name": "라운지 소파(2인, 남색 가죽풍)",
+ "label": "modern-campus-int/mc-lounge-sofa",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "2-seater lounge sofa",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat cushions are viewed from above across rows 13-20 (8 rows tall), resting between armrests whose tops are visible across rows 12-17 (6 rows tall), with the front apron below at rows 21-27.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6436
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "2-seater lounge sofa with cushions and armrests",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sofa is correctly rendered in 3/4 top-down perspective: the seat cushions are clearly viewed from above spanning rows 13-19 (7 pixel rows), matching the top surfaces of the armrests (rows 12-17), with the south-facing front base spanning rows 21-26.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15196
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lounge sofa (seat and armrests)",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sofa clearly shows horizontal top surfaces: the seat cushions span rows 13-20 (8 source pixels tall) foreshortened from above, and the armrest top surfaces span rows 12-17 (6 source pixels tall). Below them, the front vertical apron and armrest front faces are rendered in darker navy (rows 22-26 and 18-26).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9329
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lounge sofa",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sofa is drawn in pure front elevation: the backrest cushions (rows 13–20) and seat base (rows 21–27) face directly forward toward the camera. The seat surface seen from above is completely absent (0 rows), and the top rim of the backrest is only a 2px edge line (rows 9–10).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 20081
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.312Z",
+ "cells": {
+  "16": [
+   "1de5b47bc8a637ea",
+   "24641e2b973118e4",
+   "26288ef0531d309a",
+   "56f629c6e1acaed1"
+  ],
+  "24": [
+   "0707961b182e2fbc",
+   "1495acca284dc202",
+   "2e68efc506f3a4cd",
+   "30ec78ad9d94c548",
+   "3ced7c28a0894984",
+   "429320b54ac3d305",
+   "4ca87eb5b49c3615",
+   "543062911d9af22e",
+   "54e93b1ce0e9e84c",
+   "7bca482d78c88de6",
+   "894123454cb6f3f4",
+   "8bda2993ef362b55",
+   "8eadc72630d5c77c",
+   "9657849f07e32981",
+   "a3f712de8fc1c236",
+   "c38d54a25d83ed8f",
+   "d09e8704a8a4762c",
+   "f74484a7fa41abe6"
+  ],
+  "32": [
+   "f646400ef4ec6465"
+  ],
+  "48": [
+   "3f9da508d65d9629",
+   "527e2a9499904724",
+   "7c7af49716d927ce",
+   "835afd39e1d8addb",
+   "d3da4e98e9192c30",
+   "fa90c2b3e74ce557"
+  ]
+ }
+}

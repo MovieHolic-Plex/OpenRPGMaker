@@ -82,6 +82,7 @@ import { STRUCTURE_KIT_TOOLS } from "./structureKitTools";
 import { TILESET_OBJECT_TOOLS } from "./tilesetObjectTools";
 import { HAND_INTERIOR_TOOLS } from "./handInteriorTools";
 import { JP_CITY_TOOLS } from "./jpCityTools";
+import { CAMPUS_TOOLS } from "./campusTools";
 import { WIZARDING_SPACE_TOOLS } from "./wizardingSpaceTools";
 import { SF_STATION_TOOLS } from "./sfStationTools";
 import { GOTHIC_PLACE_TOOLS } from "./gothicPlaceTools";
@@ -223,6 +224,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(HAND_INTERIOR_TOOLS, "tile"),
   // 일본 도시(jp_city) 건물 조립 — 부품 사전으로 가변 폭·층수 건물을 jp_city 맵에 짓는다(M3). oprn-jp 맵에서만 동작한다.
   ...withDomain(JP_CITY_TOOLS, "tile"),
+  // 현대 학교·캠퍼스(modern_campus) 야외 구성(학교 마당·교외 거리)과 건물 문 ↔ 실내 이음. modern_campus 맵에서만 동작한다.
+  ...withDomain(CAMPUS_TOOLS, "tile"),
   // 마법 학교(해리포터풍, wizarding_world) 공간 빌더 — 13공간 레시피로 방·야외 한 장을 한 번에 짓는다(통행 한 덩이 보장).
   ...withDomain(WIZARDING_SPACE_TOOLS, "tile"),
   // SF 정거장·네온 거리(sf_station) 맵 구성기 — 정거장·연구 기지 실내·네온 거리·달 기지를 씨앗으로 한 장째 짠다. oprn-scifi 맵에서만 동작한다.

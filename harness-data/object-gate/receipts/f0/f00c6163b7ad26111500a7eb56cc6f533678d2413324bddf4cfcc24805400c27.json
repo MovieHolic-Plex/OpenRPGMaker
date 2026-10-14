@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f00c6163b7ad26111500a7eb56cc6f533678d2413324bddf4cfcc24805400c27",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "잔디 경계석(북 변)",
+ "label": "modern-campus/mc-curb-n",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass tile with north border curb stone",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing a grass surface with a stone curb along the northern edge; correctly rendered from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4244
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass terrain tile with northern stone border",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a horizontal terrain tile showing grass ground with a stone border along the north edge viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4642
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass ground tile with stone border edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing flat grass ground with a northern curb edge, viewed from top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4249
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass terrain tile with stone curb edge",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting grass ground with a stone border along the northern edge, viewed from standard top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3779
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.865Z",
+ "cells": {
+  "16": [
+   "386e9d90ce5068ee"
+  ],
+  "24": [
+   "0479846a66545179",
+   "0d7941a3ceb0cbdb",
+   "3699660be368622d",
+   "4fe559805bce2ac0",
+   "6a66780693c2c155",
+   "e2a1622779cdb57d"
+  ],
+  "32": [
+   "146225e0eb690fd2",
+   "2b414214c4a7564f",
+   "306ade0e8ef141e9",
+   "347336fa95765c09",
+   "cb1f365fd69468dc",
+   "e78207a85a977e61"
+  ],
+  "48": [
+   "74d49da5de80f978",
+   "76bf382bd3e429c3",
+   "8aad4dbf528b4fc8",
+   "c1564382ae4c1187",
+   "e195690308e897be",
+   "e2b7c339ab9d0e5b"
+  ]
+ }
+}

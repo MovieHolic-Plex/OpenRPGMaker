@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0dc6a0eec74c923e888c6613f65bf9192b18d167c2527d75db5512381b0f8d58",
+ "width": 32,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "코르크 게시판(색 종이 덩이)",
+ "label": "modern-campus-int/mc-cork-board",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cork bulletin board",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Cork bulletin board mounted flat to the wall with pinned papers; wall_mounted objects are permitted to be flat front elevations.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5068
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cork bulletin board with pinned papers",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted cork board pinned with colored papers, viewed straight on as permitted for wall-mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4121
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cork bulletin board with pinned notes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cork board is mounted flat against a vertical wall, which is standard for wall_mounted items in 3/4 top-down perspective. The frame and pinned papers are shown flat with no visible top surface, conforming to the allowed flat wall-mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12076
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cork bulletin board with pinned notes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted cork board drawn flat against the wall, permitted for wall_mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12224
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.307Z",
+ "cells": {
+  "16": [
+   "44603381466e318e",
+   "bee1aeb6cd0f06ff",
+   "c888d75af1a4f5ab",
+   "f8002f95cd040d6d"
+  ],
+  "24": [
+   "11a1aa664e9623f3",
+   "1e631c6565aa0f2a",
+   "37f3b08563b86205",
+   "5a23390a4bcf2908",
+   "61f511e095d95787",
+   "7cdfe62220034635",
+   "878868dda7a54e20",
+   "887bf102b2bc205a",
+   "8991f48ff7ca9156",
+   "8db1b7696e98594a",
+   "90100ceb89fe5d09",
+   "c656c95740c5f85a",
+   "cceee63e51a8bf74",
+   "cd95e3153d9e7bfa",
+   "d265e352a3b8a88d",
+   "dc6365832102e275",
+   "edaf7bc9c65da6fb",
+   "ee04a44f91d3296e"
+  ],
+  "32": [
+   "6945a783b6222daf"
+  ],
+  "48": [
+   "17963ca187731361",
+   "364bbc92ee764701",
+   "71a536d66b9a4d19",
+   "83771c8d73c56e6c",
+   "cc58f3f26fe00751",
+   "ec6ff93fd2479e33"
+  ]
+ }
+}

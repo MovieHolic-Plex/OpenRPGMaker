@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "818629d292b7f3850f5fca8e0d0f3242a1e888d8f4709615dcf4b500aa3a9e66",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "소나무",
+ "label": "modern-campus/mc-tree-pine",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "foliage canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tree's canopy consists of rounded overlapping foliage clumps with visible rounded top surfaces (topmost dome spanning rows 2-6, ~5 rows of top-facing highlight and shading), and the base sits within an elliptical ground patch (rows 40-46) conforming to 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7443
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn in a side-scrolling platformer / pure front elevation style. The foliage puffs and the long straight trunk (rows 30-44) are viewed completely horizontally from the side with no top-down foreshortening or visible top surface of the canopy, despite an elliptical ground shadow placed at the base.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7449
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "foliage canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tree has overlapping rounded foliage clumps with clear overhead highlight/shading on their upper surfaces (rows 2-6 provide ~5 rows of top volume on the uppermost clump), and an elliptical ground patch at the base (rows 41-46) confirming 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5601
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tree canopy",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The foliage canopy is rendered in 3/4 top-down view with overlapping clusters; the uppermost dome spans roughly rows 1 to 6 showing illuminated top-facing surfaces, supported by an elliptical ground patch at rows 41-46.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9897
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.871Z",
+ "cells": {
+  "16": [
+   "3f1b9b8d4c9887cf",
+   "56692880c7a8dc15",
+   "76359105a32628c1",
+   "9072bff8e8231b11",
+   "a4ffafdcd2b84d75",
+   "a6b121d5e4e8dcab"
+  ],
+  "24": [
+   "09f684625ebb5e8b",
+   "0c95ba69b08e622b",
+   "2078cdffffa64d07",
+   "2b3c7b7ec287285b",
+   "472daf66725c3d6b",
+   "47e0198553936409",
+   "48578bb04d2bc2d3",
+   "4fb2f6a544a87525",
+   "80218ec3e7dba467",
+   "b2f1f547c9a03ba0",
+   "e483ea6892704753",
+   "ec122f0eaa21924c"
+  ],
+  "32": [
+   "1f4d8feebfe2b02b",
+   "70f04e3665d4f158",
+   "b33457a5c8e44de5",
+   "e98fc6d99268fc9e"
+  ],
+  "48": [
+   "052f9d5b9a63a27f",
+   "1174466944f04436",
+   "3acd12c3b942cda8"
+  ]
+ }
+}

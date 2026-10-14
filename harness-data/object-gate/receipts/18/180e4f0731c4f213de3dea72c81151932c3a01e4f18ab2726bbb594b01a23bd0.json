@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "180e4f0731c4f213de3dea72c81151932c3a01e4f18ab2726bbb594b01a23bd0",
+ "width": 64,
+ "height": 32,
+ "kind": "terrain",
+ "name": "복도 대형 타일(옅은 청록 회색)",
+ "label": "modern-campus-int/mc-floor-corridor",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "corridor floor tiles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "2x2 grid of large stone/ceramic floor tiles seen from above as flat ground terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4379
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "floor tiles",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Grid of flat floor tiles for a corridor, correctly depicted as a horizontal ground surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4167
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "large corridor floor tiles",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Floor tiles depicting flat horizontal corridor flooring viewed from above across the full 32x32 pixel area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4399
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "floor tiles",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat horizontal floor tiles viewed from above, perfectly matching the terrain kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4075
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.306Z",
+ "cells": {
+  "16": [
+   "135fd17b9c247e68",
+   "1fda0db2a8efdedc",
+   "25a2f13479dbd0fa",
+   "3209e8152408487d",
+   "8daf0dbbc3a19f05",
+   "dc08f76a058e77cc",
+   "f10af2b14ecd95e1",
+   "f1d14e91d6164d6d"
+  ],
+  "24": [
+   "0734cd291f710af6",
+   "09a0c9dd80fbc73b",
+   "0c2f43e9aa712d91",
+   "162de437b5674207",
+   "1b901a6798bb868d",
+   "22f919eee3d9ed09",
+   "2addd209459365d4",
+   "366e864c7e6a3a48",
+   "3b45c1d5d150b52c",
+   "4ed8733c94adcc91",
+   "518160525ed83545",
+   "62a03c937efbf9c1",
+   "631712cb03797e70",
+   "64ccaadf7091c3c3",
+   "6c4b3ec9c330df52",
+   "7beafc4e8e05c51c",
+   "818083d9057827f0",
+   "82d7b3f821c63888",
+   "8a0d692ce5b3b4b3",
+   "8e0032116b2e0255",
+   "966256b0ca56c3f9",
+   "9f9c0f9608936436",
+   "a11eb1788c4ed795",
+   "abc1a0da566b9d7e",
+   "b5fb406c79fc9b0d",
+   "b9a1e6ad3d97a071",
+   "cbc278975808ac69",
+   "d32a93176d131d59",
+   "de9113547c0e9cb0",
+   "e1aebcd0ffa64a25",
+   "e892ec596240c667",
+   "eca8e0ad8dce33f7",
+   "f00623595c24458d",
+   "f080040b1a5c9700",
+   "f7fa22c510c7a6c8",
+   "f85c49b4c6350a83"
+  ],
+  "32": [
+   "a4cbae59f2cd0508",
+   "f2d8b45f66ec8af7"
+  ],
+  "48": [
+   "066fb825047893ae",
+   "270f2c40f20e9f2a",
+   "690410596ace3053",
+   "85775d902ec0e0b4",
+   "a03a1ec80683e56f",
+   "b4b5de96976a431d",
+   "bd553eed773adaac",
+   "bd59ee8231107f1c",
+   "d13b7f6f2aa6f783",
+   "e82bb1cc659d4ef8",
+   "f019d0fa13efbb44",
+   "f6b86acd8177d819"
+  ]
+ }
+}

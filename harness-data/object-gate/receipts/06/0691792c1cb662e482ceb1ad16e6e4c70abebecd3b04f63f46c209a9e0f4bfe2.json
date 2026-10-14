@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0691792c1cb662e482ceb1ad16e6e4c70abebecd3b04f63f46c209a9e0f4bfe2",
+ "width": 32,
+ "height": 32,
+ "kind": "other",
+ "name": "승용차(주차, 흰색)",
+ "label": "modern-campus/mc-car",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "passenger car",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The car is drawn in a standard top-down 3/4 perspective, clearly showing the roof (rows 6-13, 8px tall), front windshield (rows 14-18), hood (rows 19-25), and south-facing front bumper/grille/headlights (rows 26-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9086
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "passenger car",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The car is drawn in a standard 3/4 top-down perspective facing south: the hood is visible from above (rows 19-25, ~7 rows), the roof/windshield spans rows 0-18, and the vertical front bumper with headlights and grille is shown at the bottom (rows 26-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7891
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "passenger car body",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The car is drawn facing south in 3/4 perspective, showing both horizontal surfaces (roof across rows 7-13, hood across rows 19-25) and the south front face (headlights and bumper across rows 26-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8185
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "passenger car facing south",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The car is drawn facing south in top-down 3/4 view: horizontal surfaces viewed from above include the hood (rows 19-25, 7 rows) and the roof (rows 7-13, 7 rows), while the south vertical front face displays the headlights and front bumper (rows 26-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8280
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.873Z",
+ "cells": {
+  "16": [
+   "1939b8fa79225497",
+   "8159dbe804cb17d4",
+   "9f1001c440b7262b",
+   "d465a61fc56c8f63"
+  ],
+  "24": [
+   "028c40d1075b1d7a",
+   "04778d23c66404d2",
+   "05592a668e4fcdb3",
+   "0fee1c166ffc9c9f",
+   "121a1a3665c9c83b",
+   "16fc39f002e49a4b",
+   "1a34fa87a51fa55a",
+   "2cfb231c4c7f22e3",
+   "3ee40aba6162a908",
+   "6ae0624ee6ff4bdd",
+   "6b69f629843ba0e1",
+   "761260af61fc27d4",
+   "80962da4b83ac522",
+   "9cf504b9b3565a9e",
+   "b7cd954adb6c9431",
+   "c092989aab13c148",
+   "cceef6f7301f6e17",
+   "d33f74febe73795d",
+   "dba506c81d1eb2b5",
+   "df7ddeb8324b342e",
+   "e4c6d64bf5363b1d",
+   "e9ba45150a84fe1a",
+   "fbecb9293dacff9e",
+   "fe0549fa7bc4eb75"
+  ],
+  "32": [
+   "9ea45bf95526a5c4"
+  ],
+  "48": [
+   "0ab537640e1bb02c",
+   "3a339d3d6f147922",
+   "60bbb051514059a4",
+   "630f78180cd92be9",
+   "e648dbbce3b018d2",
+   "e6b6ac0148f4918c"
+  ]
+ }
+}

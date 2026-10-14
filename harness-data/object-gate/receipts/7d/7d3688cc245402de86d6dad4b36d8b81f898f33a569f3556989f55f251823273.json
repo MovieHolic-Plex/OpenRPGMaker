@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7d3688cc245402de86d6dad4b36d8b81f898f33a569f3556989f55f251823273",
+ "width": 48,
+ "height": 32,
+ "kind": "frame",
+ "name": "철봉(높이 다른 셋)",
+ "label": "modern-campus/mc-pullup-bars",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal pull-up bars (gymnastic bars)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pull-up bars are drawn in pure front elevation; the horizontal crossbars and post caps are only 1-2px thick lines/highlights with no visible top surface foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5915
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal pull-up bars on vertical posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pull-up bars and vertical posts are drawn in pure front elevation; the horizontal crossbars and post caps show no visible foreshortened top surfaces looking down at 45 degrees, appearing as flat 2D silhouettes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6143
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pull-up bars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pull-up bars are drawn in a flat 2D front elevation. The horizontal crossbars are only 1 pixel thick with no visible top surface, the post caps are flat 1-2px shapes, and the vertical posts end in flat horizontal cuts at the ground.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6578
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal pull-up bars (gymnastic bars)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pull-up bar frames are drawn in pure front elevation. Neither the horizontal beams nor the post tops display a foreshortened top surface; the beam is represented by a 1px highlight and a dark underside shadow with 2D profile caps.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5661
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:11.494Z",
+ "cells": {
+  "16": [
+   "027267fa5e08c2f1",
+   "29fee3ecbdae632a",
+   "54ab9ec128d2418d",
+   "94d6b76ddf6cf847",
+   "9d9657261ec9be74",
+   "e41570fadc32e999"
+  ],
+  "24": [
+   "0b3a27f4f3bb5a63",
+   "0ceda207ad4b020c",
+   "604a88203c8c428b",
+   "90a7ba14830c2b4c",
+   "ba0c1ca217a10b24",
+   "ced5def1374d83a8",
+   "e4c7a2b95d9211b3",
+   "ec84a7277fd56f3e"
+  ],
+  "32": [
+   "28aafc690a2b768e",
+   "44aefb964dd4eed5",
+   "65ace6a1e45d5b5b",
+   "75215a91c65bc6ef",
+   "a92178f451cf06c0",
+   "ff162b240ac14956"
+  ],
+  "48": [
+   "1c28ee0ddf4f0e40",
+   "73580cd19006fb9c"
+  ]
+ }
+}

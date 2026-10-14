@@ -5,6 +5,7 @@ import joseonBaramSheet from "./joseonBaramSheet.json";
 import modernCitySheet from "./modernCitySheet.json";
 import jpCitySheet from "./jpCitySheet.json";
 import wizardingWorldSheet from "./wizardingWorldSheet.json";
+import modernCampusSheet from "./modernCampusSheet.json";
 import sfStationSheet from "./sfStationSheet.json";
 import gothicManorSheet from "./gothicManorSheet.json";
 import atlasBiomeInteriorSheet from "./atlasBiomeInteriorSheet.json";
@@ -61,6 +62,7 @@ export function bundledChipsetTilesPerRow(key: string): number {
   if (key === "tex_modern_city") return modernCitySheet.tilesPerRow;
   if (key === "tex_jp_city") return jpCitySheet.tilesPerRow;
   if (key === "tex_wizarding_world") return wizardingWorldSheet.tilesPerRow;
+  if (key === "tex_modern_campus") return modernCampusSheet.tilesPerRow;
   if (key === "tex_sf_station") return sfStationSheet.tilesPerRow;
   if (key === "tex_gothic_manor") return gothicManorSheet.tilesPerRow;
   if (key === "tex_atlas_biome_interior") return atlasBiomeInteriorSheet.tilesPerRow;
