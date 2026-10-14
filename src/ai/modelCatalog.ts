@@ -34,8 +34,8 @@ const CODEX_MODELS: readonly string[] = [
  * OAuth wire gemini-3.8-flash-high / HIGH verified 2026-09-14.
  */
 const ANTIGRAVITY_MODELS: readonly string[] = [
-  "gemini-3.8-flash",
   "gemini-4-argon",
+  "gemini-3.8-flash",
   "gemini-3.7-flash",
   "claude-opus-4-5",
   "claude-opus-4-6",

@@ -52,7 +52,7 @@ export const OH_MY_PI_PROVIDERS: readonly OhMyPiProvider[] = [
   {
     id: ANTIGRAVITY_PROVIDER_ID,
     label: "Google",
-    defaultModel: "gemini-3.8-flash",
+    defaultModel: "gemini-4-argon",
     envVars: [],
     authKind: "oauth",
   },

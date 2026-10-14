@@ -18,7 +18,7 @@ describe("account selection and persisted work models", () => {
       expect(configForRole(next, role).reasoningEffort).toBe("medium");
     }
     expect(configForRole(next, "writer").providerId).toBe(google);
-    expect(configForRole(next, "writer").model).toBe("gemini-3.8-flash");
+    expect(configForRole(next, "writer").model).toBe("gemini-4-argon");
     expect(next.ultrabrainProviderId).toBe(codex);
     expect(next.ultrabrainModel).toBe("gpt-6.1-sol");
     expect(next.ultrabrainReasoningEffort).toBe("high");

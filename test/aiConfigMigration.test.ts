@@ -120,7 +120,7 @@ describe("loadAiConfig — 제공자는 Antigravity·Codex 둘뿐이다", () => 
     store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ authMode: "chatgpt" }));
     const config = loadAiConfig();
     expect(config.providerId).toBe("google-antigravity");
-    expect(config.model).toBe("gemini-3.8-flash");
+    expect(config.model).toBe("gemini-4-argon");
   });
 
   it("providerId 없이 gpt 모델만 남은 옛 blob 도 Antigravity 로 마이그레이션한다", () => {
@@ -143,8 +143,8 @@ describe("loadAiConfig — 옛 공장 기본 모델을 새 기본으로 소급�
 
     const config = loadAiConfig();
 
-    expect(config.model).toBe("gemini-3.8-flash");
-    expect(config.liteModel).toBe("gemini-3.8-flash");
+    expect(config.model).toBe("gemini-4-argon");
+    expect(config.liteModel).toBe("gemini-4-argon");
   });
 
   it("역할·Ultrabrain 슬롯에 남은 옛 공장 기본도 함께 승격한다", () => {
@@ -159,9 +159,9 @@ describe("loadAiConfig — 옛 공장 기본 모델을 새 기본으로 소급�
 
     const config = loadAiConfig();
 
-    expect(config.roleModels?.writer?.model).toBe("gemini-3.8-flash");
-    expect(config.roleModels?.vision?.model).toBe("gemini-3.8-flash");
-    expect(config.ultrabrainModel).toBe("gemini-3.8-flash");
+    expect(config.roleModels?.writer?.model).toBe("gemini-4-argon");
+    expect(config.roleModels?.vision?.model).toBe("gemini-4-argon");
+    expect(config.ultrabrainModel).toBe("gemini-4-argon");
   });
 
   it("사용자가 직접 고른 모델은 그대로 보존한다", () => {
