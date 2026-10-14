@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3acc4ddf6021f41987fcdc49093aa6431484de20610c08aaf8e6af08ef09f9a4",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "기울어진 묘비",
+ "label": "gothic_manor/gm-tomb-tilt",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tilted gravestone / stele",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the stone slab is visible across rows 1-3 (3 source pixel rows tall), rendered with lighter top-plane shading above the darker front face starting at row 4.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8599
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tilted gravestone",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the tilted stone slab clearly shows a foreshortened top surface across rows 0-3 (3-4 pixel rows deep) rendered in a lighter gray tone above the darker south face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6035
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tilted gravestone",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the stone slab is clearly rendered in lighter tones across rows 0-3 (approx. 3-4 pixels tall), distinct from the darker front face spanning rows 4-11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5988
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tilted gravestone",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The gravestone features a distinct, lighter top surface spanning rows 0-3 above the south face, matching the downward 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5295
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.460Z",
+ "cells": {
+  "16": [
+   "f270711af471f0d9"
+  ],
+  "24": [
+   "2ab772e0d4b58db2",
+   "323df93eabd0bea1",
+   "32691560a8610450",
+   "3ba206122dd462eb",
+   "a24072ebb7e2156b",
+   "b147ba49afe950e9"
+  ],
+  "32": [
+   "0ca31220f2b01c35",
+   "270905933660e6ed",
+   "2b8ea4eceafe189f",
+   "4d5d939038f1d09c",
+   "c506c4e0f610e505",
+   "c88a6c258c0e0cdb"
+  ],
+  "48": [
+   "0039298708ecd455",
+   "03c517cf9add3e98",
+   "3ef83d9bd4de5626",
+   "5570abbdc5396b12",
+   "75105059679909bd",
+   "92a393809784f227"
+  ]
+ }
+}

@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "383e2d85ff97b3dcc9d6292d26b0315f089665e61aa4893c6476f342e9a6b158",
+ "width": 32,
+ "height": 32,
+ "kind": "column",
+ "name": "눈보기 석등(유키미, 넓은 갓)",
+ "label": "sengoku-edo/se-lantern-snow",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "umbrella cap (kasa) and lantern body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern cap (kasa), fire box, and leg bases are drawn in pure front elevation: all horizontal edges (including the wide circular umbrella rim at rows 11-13 and the foot pads at rows 27-30) are drawn as perfectly flat horizontal lines rather than foreshortened ellipses/curves characteristic of a 3/4 top-down view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7530
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone lantern (yukimi-dōrō)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire lantern is drawn in orthographic front elevation: the wide umbrella cap has a dead-straight horizontal bottom edge (rows 11-13) with no elliptical curve or foreshortened top surface, the fire box is a flat frontal rectangle, and the legs/feet are drawn straight on.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5696
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "kasa (wide umbrella cap) of the yukimi stone lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wide umbrella cap, light box, and legs are drawn strictly in front elevation. The rim of the cap forms a straight horizontal line across rows 11-13 rather than an elliptical curve seen from a 45-degree angle, and no horizontal top surface is visible anywhere on the lantern.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4593
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "umbrella/cap (kasa) and lantern structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wide stone umbrella (kasa) is drawn in pure front elevation with a completely straight horizontal bottom rim (rows 11-13) rather than an elliptical curve seen from a 3/4 overhead perspective. The conical roof shows no top-down circular foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5686
+  }
+ ],
+ "decidedAt": "2026-10-13T19:37:02.181Z",
+ "cells": {
+  "16": [
+   "65f44ed5fa547e2a",
+   "849830ade618d0e3",
+   "e057e1b4d75cd7dd",
+   "ecf6e10e0a2893aa"
+  ],
+  "24": [
+   "04795361d70bef04",
+   "0b59841ad713aeca",
+   "0e98a38b92a61fbf",
+   "0ff2ad5f052ceced",
+   "14cc27c83b20227e",
+   "1777d3bd07b3c939",
+   "1a6f6edb3784dc92",
+   "1c506079b6b2a072",
+   "282989ee3355e51d",
+   "4bb0f2babb6174f4",
+   "5554b9a6e28e439a",
+   "65bb6063be2f0631",
+   "7fc7c585f5d8fac7",
+   "a881de96112d7965",
+   "abbcc5e32f489917",
+   "af7065ab12db53c5",
+   "c107240ff9541a18",
+   "c157933b09fd7646",
+   "d8b74a8264388d39",
+   "e300b0dc332f8a28",
+   "ea47751b1e0c59e2",
+   "eb98d5a25ba5b870",
+   "f6fd9fd334bc57a7",
+   "f72da070238d7adc"
+  ],
+  "32": [
+   "7ad6d4bc57553c4c"
+  ],
+  "48": [
+   "02485ed0d3e2d942",
+   "3d3a113252d6822c",
+   "4a19103109f433b1",
+   "50262dfbdfb70336",
+   "575b39e1d9dcb5f2",
+   "e08fde0fcf77c091"
+  ]
+ }
+}

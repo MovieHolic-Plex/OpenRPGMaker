@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0095a6f1c7fa7473300f0555ef52457c02b484d3ac0a26c26b9488662176e596",
+ "width": 32,
+ "height": 16,
+ "kind": "organic",
+ "name": "가시 덤불(마른 넝쿨·붉은 열매)",
+ "label": "gothic_manor/gm-bramble",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tangled dry bramble patch with red berries",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The dry vine cluster is viewed from a 3/4 top-down angle, spreading across the ground with illuminated upper vine surfaces across rows 2–7 and shadowed front/bottom edges down to row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5014
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tangled thorn bush / dry vine patch with red berries",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bramble patch spreads horizontally on the ground plane in 3/4 perspective, with lit top-facing vine surfaces across rows 2-7 and shaded front/lower segments down to row 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5963
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tangled dry thorn vine patch with red berries",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The dry thorn bramble is rendered as a low mound/patch on the ground with top surfaces illuminated across rows 1-8, depth into shadowed recesses, and scattered berries/debris on the ground plane below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5096
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "thorn bush cluster with berries",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bramble/thorn bush is viewed from a top-down 3/4 angle, displaying illuminated upper tangled surfaces across rows 2-7 with darker south-facing underbrush below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4874
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.462Z",
+ "cells": {
+  "16": [
+   "01a98c81a0f0e0ab",
+   "7494768dfa1db1e3"
+  ],
+  "24": [
+   "0e1b2fe6f2f95750",
+   "33d66a0ccb17dd23",
+   "400f4babe1f82237",
+   "470d7f743045d864",
+   "52d7b8653af7b93c",
+   "58a172a5a1183de0",
+   "6bc4d1aa130ad341",
+   "6d65073b1d06edf4",
+   "73e4b933d15b8a6d",
+   "7c8bc0c6b64d3c34",
+   "b2a6f962fd80a483",
+   "be140a52ff1a32a0"
+  ],
+  "32": [
+   "324412c7e2fa3665",
+   "9fabb5c092f98744"
+  ],
+  "48": [
+   "759cc891e5436554",
+   "8baded04d24249b7",
+   "b4c4e167c587ebad",
+   "d1b9688a0ffd2980",
+   "d62be8a383097330",
+   "eb16b51e17f26227"
+  ]
+ }
+}

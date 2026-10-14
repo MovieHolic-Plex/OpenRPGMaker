@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5f02cfd0aa906040b2e56991f7a81921db3ddfe9cfd2ea29c6d7d2aa9bf14669",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "허들(트랙 장애물)",
+ "label": "modern-campus/mc-hurdle",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hurdle horizontal crossbar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hurdle is drawn in flat front elevation with a 1px outline on top (row 4) and no visible top surface on either the crossbar or the base feet.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4349
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal hurdle bar and legs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hurdle bar (rows 4-8) is drawn straight-on with no top surface visible (only a 1px dark border on row 4). The legs and feet are also drawn in pure flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5948
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal hurdle bar and legs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hurdle bar is drawn as a flat 2D rectangle (rows 4-8) with only a 1px outline on top, and the T-shaped base feet are drawn in flat front view with no visible depth or top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4182
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "crossbar and frame of track hurdle",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hurdle crossbar is drawn as a flat rectangle (rows 4-8) with only a 1px outline on top and no foreshortened top surface; the legs and feet are also drawn in pure 2D front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7134
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.872Z",
+ "cells": {
+  "16": [
+   "2b017a8e12e7d0ca"
+  ],
+  "24": [
+   "641d40239671b227",
+   "a4a7853dd0efe97a",
+   "a9dc3de7a7c34f8d",
+   "c24be2748b4a34b3",
+   "c6f248c4503bd125",
+   "d7ee6759732fbe4d"
+  ],
+  "32": [
+   "04213a4b5cf3c77f",
+   "60bbd75d405aeab9",
+   "66cdc182e6d79042",
+   "c8b29138c5c9eeec",
+   "d2fbfd1c9cb6bf01",
+   "d988e31d0c1ea436"
+  ],
+  "48": [
+   "401aabab064b19e9",
+   "83348b84101ba7a7",
+   "856a682391378773",
+   "962d6807f1889664",
+   "ac1c1131bb2a2b81",
+   "c72b493be7c74d50"
+  ]
+ }
+}

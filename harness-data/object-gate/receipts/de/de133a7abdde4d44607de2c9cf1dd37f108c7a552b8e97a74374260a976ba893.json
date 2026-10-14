@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "de133a7abdde4d44607de2c9cf1dd37f108c7a552b8e97a74374260a976ba893",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "stone bridge abutment (terrain overlay)",
+ "label": "sky-island/si-sbridge-arch-e",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone brick wall terrain tile with overlay shadow",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing a stone brick surface with a dithered shadow overlay; valid terrain texture.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5220
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone brick wall face / abutment terrain overlay",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical stone wall face / abutment texture with shadow overlay, legitimately classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4723
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone bridge abutment terrain overlay",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a stone wall face / abutment overlay with shadow/water transition, correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3903
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone wall surface with shadow overlay",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a stone wall face / abutment with a dithered shadow overlay; valid terrain element.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3843
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.983Z",
+ "cells": {
+  "16": [
+   "c6dd7dbbb11f847c"
+  ],
+  "24": [
+   "6b49c838358d044f",
+   "77fb8d5c37c1addf",
+   "a5705128d26ee869",
+   "b39c5c086870aba2",
+   "d1982856ecacaf3b",
+   "f76cc7ca996254a4"
+  ],
+  "32": [
+   "1db7436dbf2ae39f",
+   "833ad11020eb520c",
+   "a2f13ce4b4758146",
+   "b9de9aa1bde73036",
+   "c16ff3a77ef9d81c",
+   "e6739e74301add72"
+  ],
+  "48": [
+   "26148cd048e54ff2",
+   "5c75a1010dd60fa7",
+   "859d7cae4404c05b",
+   "bf5e85d2606e44a8",
+   "d6b9eb8c184067d7",
+   "d95069e2fcc0e22f"
+  ]
+ }
+}

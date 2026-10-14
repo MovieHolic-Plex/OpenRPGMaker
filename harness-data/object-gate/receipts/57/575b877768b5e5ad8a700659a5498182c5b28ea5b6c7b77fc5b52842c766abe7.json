@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "575b877768b5e5ad8a700659a5498182c5b28ea5b6c7b77fc5b52842c766abe7",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "시안 자판기(윗면 + 앞 유리창 + 버튼)",
+ "label": "sf-station/sf-street-vending-cyan",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire vending machine is drawn straight-on as a pure front elevation. From the top outline at row 1 down through the header panel (rows 2-10), display window (rows 12-25), coin slot, and bottom dispenser slot (rows 27-29), every element is viewed directly from the front with no visible horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11008
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in straight-on front elevation: rows 2-10 form the upper front canopy/display glass, rows 12-25 show the drink buttons and coin slot, and rows 27-30 show the bottom dispense flap. No horizontal top surface is visible (only a 1-2px black outline at rows 0-1).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10572
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn straight-on from the front: rows 2-10 form the front upper sign/lightbox panel, followed by the item display panel and coin slot, with no foreshortened top surface shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5444
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cyan vending machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The vending machine is drawn strictly from a front elevation view. The top is capped by only a 1px outline (row 1) and a 1px colored line (row 2) above the front lightbox/window, showing no foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8343
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:06.342Z",
+ "cells": {
+  "16": [
+   "05fe0a9739a8608d",
+   "d1a18081fcc10550"
+  ],
+  "24": [
+   "06fe38128a4502f0",
+   "08df3406bafbc16d",
+   "15959d598f726ce2",
+   "1ed7383789faff30",
+   "252f3352f3ad638b",
+   "27643a418d606fdd",
+   "7f99970776379187",
+   "875af4f60049c281",
+   "87ddd9e2e8c1673c",
+   "b32d17757c7025c9",
+   "baa71bfe155ec83c",
+   "e2dc85cfe2dd2816"
+  ],
+  "32": [
+   "6b4c957bdab701ff",
+   "99dc3fe9f3fcbb2d",
+   "eae65151aae39cdf"
+  ],
+  "48": [
+   "08bd165131622060",
+   "5de3b265de7b5271",
+   "66e6822aaed62f63",
+   "7d89a56d826ee448",
+   "7d9aab0ba95e4598",
+   "a7b2642a79cb4ab0"
+  ]
+ }
+}

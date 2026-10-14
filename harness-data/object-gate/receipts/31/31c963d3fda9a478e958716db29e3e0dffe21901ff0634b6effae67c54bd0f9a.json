@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "31c963d3fda9a478e958716db29e3e0dffe21901ff0634b6effae67c54bd0f9a",
+ "width": 64,
+ "height": 48,
+ "kind": "other",
+ "name": "세운 실린더 증기 기관(받침대 + 뚜껑이 보이는 실린더 + 크로스헤드 + 누운 플라이휠) (프레임 3)",
+ "label": "steampunk-city/sp-engine-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical cylinder steam engine with horizontal flywheel on base",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylinder features a clearly drawn foreshortened circular top lid spanning rows 8 to 16 (about 9 source pixel rows), the base platform has a prominent top surface spanning rows 26 to 38, and the flywheel is foreshortened in correct 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4567
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "steam engine with vertical cylinder and horizontal flywheel on a plinth",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The vertical cylinder clearly displays an elliptical top cap (~9 rows, y=7-15), the plinth shows a broad horizontal top deck (~11 rows, y=27-37), and the flywheel is foreshortened in correct 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4460
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vertical cylinder steam engine on base plinth",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The vertical cylinder clearly displays an elliptical top cap spanning rows 7-15 (~8-9 rows) with rivet details, the horizontal flywheel is foreshortened from above, and the base plinth shows a wide top deck across rows 27-37.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3882
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical cylinder steam engine with horizontal flywheel on base",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The vertical cylinder clearly shows its foreshortened circular top lid spanning rows 7 to 16 (~9-10 rows tall) with bolt detailing, the platform top surface spans rows 27 to 37, and the horizontal flywheel is depicted in matching 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3457
+  }
+ ],
+ "decidedAt": "2026-10-13T18:41:09.125Z",
+ "cells": {
+  "16": [
+   "044530208a33e31e",
+   "06c512960a523ac8",
+   "10acec14b3102827",
+   "28bbba24b264b399",
+   "2cb81e8962f020f1",
+   "4edeacc4ec198d00",
+   "71deb2b7a1452ea9",
+   "a8a7ef440b4be4cf",
+   "aecc8b2536363233",
+   "b93027cd8259b4a3",
+   "f015f3e668231ba1",
+   "fe897afeb0fb8f46"
+  ],
+  "24": [
+   "1abb6e074c4a0695",
+   "312e6ad2828069a1",
+   "37dadc107d5af36a",
+   "66db86d1c8a27d68",
+   "6e984cd849db100d",
+   "94a8ce1e6c630ff6",
+   "9fa9f45de3a0c394",
+   "9fb3bde5a5270280",
+   "a995a16934e1d2fb",
+   "b20685b47b4211a2",
+   "b68fb5de81ddecfb",
+   "bb39861e7a55f711",
+   "bb59c5aaec854f47",
+   "bd69dae3cd3a7a7f",
+   "c06b5d0fe07dd9ca",
+   "e1ec37bc5d1d24c0",
+   "e86c4e6d8524e613",
+   "ed7c80c42085e3aa"
+  ],
+  "32": [
+   "01777751b813dfd0",
+   "16b733203fa6b875",
+   "26e0980538c23e00",
+   "56e4a3ea79b01488",
+   "5e3177fa3e49b3d7",
+   "645129d17fa7f7ef",
+   "7a8597753192182d",
+   "def84a92096d7bfd"
+  ],
+  "48": [
+   "7567c1ba5f4eef9b",
+   "8f5342994070420f",
+   "99300a69a4c8b1fc",
+   "d7ee0162445d89cf",
+   "de72a8fd40b1807e",
+   "fee917a9e7f72b95"
+  ]
+ }
+}

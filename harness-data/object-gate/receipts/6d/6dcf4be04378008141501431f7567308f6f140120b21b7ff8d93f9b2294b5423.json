@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6dcf4be04378008141501431f7567308f6f140120b21b7ff8d93f9b2294b5423",
+ "width": 48,
+ "height": 32,
+ "kind": "frame",
+ "name": "볏단 걸이(하사, 나무 틀 + 볏단)",
+ "label": "sengoku-edo/se-rice-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rice sheaf drying rack with wooden frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire drying rack is drawn as a flat front elevation. The horizontal beam, the vertical posts, the hanging rice sheaves, and the base feet show no top surfaces or 3/4-view depth, with sheaves ending in a flat horizontal line across row 21.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6778
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "straw drying rack (wooden frame with hanging rice sheaves)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire rack and hanging sheaves are rendered in pure front elevation as if for a side-scrolling platformer. The horizontal crossbeam (rows 3-7), vertical posts (rows 23-25), and support bases (rows 27-30) show no foreshortened top surfaces, only 1px edge highlights and vertical shading.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5957
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden drying rack with hanging rice sheaves",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure—hanging rice sheaves, horizontal rail, vertical posts, and base footings—is depicted as a flat 2D side-scroller/architectural front elevation. There are no foreshortened top surfaces visible on the main body or frame members (only 1-2px horizontal band highlights).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4846
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rice sheaf drying rack with hanging sheaves and wooden support posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire rack is drawn in a flat side-scroller/architectural front elevation. The horizontal beam, vertical posts, base blocks, and hanging sheaves show no foreshortened top surfaces (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5978
+  }
+ ],
+ "decidedAt": "2026-10-13T19:37:02.183Z",
+ "cells": {
+  "16": [
+   "2586404314cb39af",
+   "3453ba487ef0e96c",
+   "6fc055fbcd3662de",
+   "c3b640b32a54cf43",
+   "da75ed8049b93390",
+   "f00a6c1c4ad3238e"
+  ],
+  "24": [
+   "1799a65b7aeb786b",
+   "1caec7acc646eaf3",
+   "23799dcea9188eba",
+   "282c3e38ac86f04b",
+   "31e4b86e123950db",
+   "31f4e8267b65bce4",
+   "99a13cb28b5d92e2",
+   "a7392ba81e07e761"
+  ],
+  "32": [
+   "7d5c8c7e3cd33324",
+   "975f7bb1ea5102d4",
+   "c4f9e18f1a3a4134",
+   "f077315b90435d9e",
+   "f2f0ab86067716fa",
+   "f627246c0c1ed91b"
+  ],
+  "48": [
+   "477952a51f8210b6",
+   "857f541eff64154b"
+  ]
+ }
+}

@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "40854ac4e4ce16b7eca45d4fd6fe59260f51cd35c50a4f33068afc0216f48b4b",
+ "width": 32,
+ "height": 48,
+ "kind": "frame",
+ "name": "옷걸이 틀(이코, 걸린 기모노)",
+ "label": "sengoku-edo/se-kimono-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "kimono rack top horizontal beam and feet",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top crossbeam shows a clear 4-row top surface (rows 2-5) above a darker front face (rows 6-7). The base feet also show top surfaces (rows 26-28) and front faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3385
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "kimono rack (ikō) frame with hanging garment",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper horizontal beam shows a distinct 3-row top surface (rows 2-4) above its darker front face (rows 5-7), and the wooden base blocks also show clear top surfaces (rows 27-28).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4370
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "kimono rack frame with hanging kimono",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal beam has a clearly rendered top surface from row 2 to row 5 (4 rows) above a shaded front face (rows 6-8). The wooden base feet also show distinct top faces (rows 26-28) and front faces (rows 29-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3159
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal top beam and support feet of the clothes rack frame",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal beam clearly displays a 4-row deep top surface (rows 2-5) with a 2-row south face (rows 6-7), and both support base feet similarly show 3-row top surfaces (rows 26-28) above their south faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3283
+  }
+ ],
+ "decidedAt": "2026-10-13T19:42:40.483Z",
+ "cells": {
+  "16": [
+   "367dda9c938144c8",
+   "6bc0b4a843582e11",
+   "8c358453a83a5b59",
+   "b5652b20302b757b"
+  ],
+  "24": [
+   "0825a3ffe852c8dc",
+   "0e4e2643f54672d4",
+   "0ebb58f152a36a86",
+   "2b43e96e29c0ba79",
+   "6c6947786f8bd9ce",
+   "803c441a28b32038",
+   "a1e55b400d346c62",
+   "abbe74756ccc837c",
+   "c80c61fed1c53bb1",
+   "ca64900cd171f9a9",
+   "d3c7d1955f0a7504",
+   "ffeede8e73020157"
+  ],
+  "32": [
+   "276b4d1799231b1f",
+   "3e7a9044e1d1a972",
+   "df73b9519c4fcccf"
+  ],
+  "48": [
+   "4cd877a130cd9e61",
+   "4db3012afc511abe",
+   "bc2c8ffe6a314703"
+  ]
+ }
+}

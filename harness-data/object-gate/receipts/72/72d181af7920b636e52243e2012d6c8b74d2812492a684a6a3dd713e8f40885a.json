@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "72d181af7920b636e52243e2012d6c8b74d2812492a684a6a3dd713e8f40885a",
+ "width": 16,
+ "height": 32,
+ "kind": "organic",
+ "name": "small young tree",
+ "label": "sky-island/si-tree-young",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "foliage canopy",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The organic tree canopy features rounded spherical volumes with upward-facing surfaces (rows 2-8) rendered with 3/4 lighting, anchored by a foreshortened elliptical grass patch at the base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9293
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "foliage canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn in flat front elevation (side-scroller style), consisting of two stacked circular foliage lobes over a straight vertical trunk with no top-down perspective or visible top surface on the canopy.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7871
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "foliage canopy",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The foliage canopy has an upper rounded crown with highlighted top surfaces (rows 2-8), and the base features a foreshortened elliptical ground patch (rows 26-29) confirming the 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7046
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn in flat front elevation like a side-scrolling platformer asset: the canopy consists of two stacked 2D circles with no top-down foreshortening, and the trunk is a straight vertical pole with a flat bottom edge.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6172
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.426Z",
+ "cells": {
+  "16": [
+   "7331fc03bfeebaa0",
+   "a8164d74e7a96294"
+  ],
+  "24": [
+   "10fbf3a44306db6d",
+   "1dbfda337f2b6dfd",
+   "43eafbb3211de8ad",
+   "51b0ead9d07bf2da",
+   "5730c43612f6adf1",
+   "78e03404e49a9a14",
+   "7b2f4737aa5d81aa",
+   "832c376485fc6fd1",
+   "841517d97e160827",
+   "ab262a9fe2cdbd53",
+   "f1beb6778bf85d76",
+   "f4f977815629aa96"
+  ],
+  "32": [
+   "1ccd6680c04e06be",
+   "883189de3d827187",
+   "8c21da91aca621c0"
+  ],
+  "48": [
+   "0a4b8101f3bba327",
+   "1a5c9135c124fbef",
+   "71853bbd6825c798",
+   "8d1ee68b25416df6",
+   "94cbddc01754bea0",
+   "a7df081793b0a4e2"
+  ]
+ }
+}

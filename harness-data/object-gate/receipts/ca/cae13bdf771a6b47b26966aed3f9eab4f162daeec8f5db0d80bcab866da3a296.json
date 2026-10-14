@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cae13bdf771a6b47b26966aed3f9eab4f162daeec8f5db0d80bcab866da3a296",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "3D 프린터(상자 몸체 + 윗면 출력 베드 + 유리 덮개)",
+ "label": "sf-station/sf-3d-printer",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "3D printer body",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the machine occupies rows 1 to 14 (14 rows tall) and clearly shows a foreshortened elliptical print bed/feature seen from above, while the south vertical front face occupies rows 15 to 30 with a chamber window and controls.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9552
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "3D printer",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the printer occupies rows 2–14 (13 rows tall) with a foreshortened elliptical print bed, resting above the front face (rows 15–30) which features the chamber window and controls.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8987
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "3D printer body",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the printer occupies rows 2 to 14 (13 rows tall), showing foreshortened circular/elliptical features viewed from above. The south front face occupies rows 15 to 30 with the internal chamber window and control lights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9516
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "3D printer box",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the machine occupies rows 1 to 14 (14 source pixel rows), correctly displaying a foreshortened horizontal ellipse (print bed / display) viewed from above. The south front face occupies rows 15 to 30 with a front-facing viewing window.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8339
+  }
+ ],
+ "decidedAt": "2026-10-13T15:30:54.892Z",
+ "cells": {
+  "16": [
+   "22f432a36ca76bac",
+   "31cae4a686d55477",
+   "39b57aa7dd94a435",
+   "66d50e6e853950b0"
+  ],
+  "24": [
+   "050c066a99f15383",
+   "10d02cc9ff9b146c",
+   "12376b6b405f85a1",
+   "12b455556a3b0f5d",
+   "138352742873f72f",
+   "1e00fa2cacd4845b",
+   "2276de8632bf2793",
+   "28974661a99e1bf0",
+   "34a4da0654519e40",
+   "40b770626ed685e8",
+   "554b3907dbfe58c8",
+   "5f54f7904c5a57f4",
+   "68f0b206e41e169a",
+   "73e0155c0b6fa4c3",
+   "8f51c482081af303",
+   "9639dada17ffc10f",
+   "9a198c3da5453412",
+   "9c828fd4561df14c",
+   "af1c732f402c4d83",
+   "c8aa52012a95f71f",
+   "d63108004e24eaa4",
+   "da2192e100cedcb0",
+   "dab3584fd9ddd7b0",
+   "f75e0581a81ad0cb"
+  ],
+  "32": [
+   "6d508fda8ee47b9f"
+  ],
+  "48": [
+   "5be87aa661cd33f7",
+   "5f9579960e55ec69",
+   "84a30352c3475f93",
+   "864b11cfb06731f8",
+   "c38aaaa2632b1a4b",
+   "de775a8daef6ab63"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b28cbf9698ec294964dd56d52e214f656e60973a355405dc94c16455e81759f0",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "광차(석탄 실은 무쇠 통, 작은 바퀴)",
+ "label": "steampunk-city/sp-minecart",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "minecart tub with coal",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The minecart shows a clear 3/4 perspective with an interior opening filled with coal (rows 3-7, 5 rows deep) bounded by a front rim bar (row 8) and the south front wall with rivets and wheels below (rows 9-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5228
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron minecart body",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The minecart's top opening is clearly visible from above across rows 3-7 (filled with dark coal, measuring ~4-5 rows tall) separated by a distinct horizontal front rim at row 8 from the 5-row-tall vertical front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4949
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "minecart tub with coal",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The minecart shows a clear 3/4 view: the front rim is at row 8, with the front wall extending down to row 12 with rivets and wheels beneath, while the top opening extends from row 3 to row 7 (with coal inside spanning 4 rows), framed by the back rim at row 2.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6102
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "minecart body",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The minecart displays a clear 3/4 view with a top opening spanning rows 4-7 (4 rows tall) containing coal, bordered by a front rim at row 8 and a front face with rivets spanning rows 9-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4762
+  }
+ ],
+ "decidedAt": "2026-10-13T18:32:03.860Z",
+ "cells": {
+  "16": [
+   "adb4de0c12875875"
+  ],
+  "24": [
+   "01a884b268119b4c",
+   "1986475e957a8ea4",
+   "6ab1b45649360022",
+   "822779dd76652fcf",
+   "e34e0ff5aca8852d",
+   "e6b75d9f21c03c37"
+  ],
+  "32": [
+   "1ae232da34e9ca7b",
+   "85c96a467afa1c2d",
+   "9bc611dfd7047f57",
+   "bdb3b98c1aa6366a",
+   "c13fd5c7f94760e2",
+   "c3703b6902f00f21"
+  ],
+  "48": [
+   "0b6a98eac2c22ac6",
+   "2327a59ef8a0301d",
+   "2f8a0a5c91e599d7",
+   "3d5a3e952160f0cf",
+   "b4827a4e39761725",
+   "ea2334e2e25c6e99"
+  ]
+ }
+}

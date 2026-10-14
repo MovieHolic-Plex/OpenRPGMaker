@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f583009372a42c2f59e5af2fa41f583ee25e549a9ccc34ca0c414114580be96c",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "가로등(검은 주철 기둥 + 등갓)",
+ "label": "modern-campus/mc-lamp-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "streetlamp cap and lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lampshade cap at rows 0-5 is drawn in pure front elevation with horizontal cylinder-shading bands and a flat straight top edge, showing 0 rows of visible top surface. The lantern and base are also drawn entirely flat from the front.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5140
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lamp cap and lantern housing",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire lamppost is drawn in flat 2D front elevation with perfectly horizontal stripes across the cap, lantern, and base, showing no foreshortened top surface or 3/4 view perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4426
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "streetlamp head and pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire streetlamp is drawn in flat front elevation: the top hood (rows 0-5) has no visible top surface foreshortened from above, the yellow lantern housing (rows 6-11) is a flat front rectangle, and the base only has a 1px edge line at row 27.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5054
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "street lamp head and cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cap, lantern box, pole, and base are all drawn in pure flat front elevation. The top cap has a flat horizontal outline with no foreshortened top plane or ellipse, and the glowing lantern head is a flat square front face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5757
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.869Z",
+ "cells": {
+  "16": [
+   "5300d787855b97f2",
+   "cae2a3876495a937"
+  ],
+  "24": [
+   "0f3298ffa8cb0330",
+   "4806aa5515c6172f",
+   "99005d87ecd0f8d7",
+   "99faf5a529de9cb2",
+   "b4367b5405a84940",
+   "b4f2101ef3b150ee",
+   "b592527bd6bff3de",
+   "d1955c081a860113",
+   "d1ce15e6496950f5",
+   "de7e2f7f5555eef9",
+   "e6a3856822f21674",
+   "f3ecf18587cc5b12"
+  ],
+  "32": [
+   "888429e732dbdcaf",
+   "bd97359351bc8c8c",
+   "f71e6f0d9be54422"
+  ],
+  "48": [
+   "0ac0f26fc74b47ba",
+   "12d406f5e0ee5615",
+   "2e7bfeb72ccf17ba",
+   "46aa139c186405dd",
+   "9fa55f0b2376f27d",
+   "bf6864c5cd68f626"
+  ]
+ }
+}

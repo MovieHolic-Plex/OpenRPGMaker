@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7cc84a5a27c7b3641394a646a702885399ee33ac9df38bdd2a7ea0f49a6cedcb",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "배관 도랑 덮개(세로 — 사람이 건너는 무쇠 격자)",
+ "label": "steampunk-city/sp-pipe-grate-ns",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ground grate over drainage ditch",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical metal trench grate set flush into the ground terrain, viewed flat from above across the full 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4379
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical cast iron trench grating embedded in the ground",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat terrain feature (a trench grate set flush into the floor) viewed directly from above spanning rows 0 to 15, matching the terrain tile category with no improper isometric side faces or standing front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4400
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "drain trench grate set into floor",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor/ground terrain tile depicting a vertical cast-iron grate over a drainage trench spanning all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4784
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical cast-iron trench grate embedded in ground",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a flat ditch cover/grating flush with the ground, viewed from top-down as terrain floor covering all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4531
+  }
+ ],
+ "decidedAt": "2026-10-13T18:45:09.736Z",
+ "cells": {
+  "16": [
+   "061f5b71e50492cb"
+  ],
+  "24": [
+   "47959a710d97ed8e",
+   "545e24dc459cabea",
+   "7907e6ec0b6905a2",
+   "aead4691af1d80bf",
+   "ca701b313884cfaf",
+   "d7da294f0282e57e"
+  ],
+  "32": [
+   "2d5e6773544c46a2",
+   "6e5f572601db5de1",
+   "ad11c9bdce2fb4b4",
+   "e53c5485b3c56205",
+   "fa94c39a1b907777",
+   "fb7fea49daa997ec"
+  ],
+  "48": [
+   "1b220436596b49f4",
+   "57bbefdc6d8397bb",
+   "5d65ff2e44c94e00",
+   "5e42e7bbeb3add58",
+   "9929ca55ad965156",
+   "eef59bcec79a00d1"
+  ]
+ }
+}

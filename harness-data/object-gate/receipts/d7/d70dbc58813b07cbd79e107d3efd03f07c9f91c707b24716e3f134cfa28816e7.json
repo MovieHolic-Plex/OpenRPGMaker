@@ -1,0 +1,153 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d70dbc58813b07cbd79e107d3efd03f07c9f91c707b24716e3f134cfa28816e7",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "장미 아치(쇠 트렐리스·시든 덩굴)",
+ "label": "gothic_manor/gm-rose-arch",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron trellis archway with vertical posts and upper cross-panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The arch is rendered strictly as a 2D architectural front elevation. The top horizontal beam and the vertical trellis columns show no top-down receding surfaces (top_rows = 0), appearing flat like a side-scroller asset.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4870
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "metal trellis rose arch",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The arch is drawn strictly in pure front elevation: the top rail, lintel, and crossbars are flat horizontal bands with no top surface visible from above (top_rows: 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3881
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron trellis rose arch",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire trellis arch is drawn in pure flat front elevation. The top lintel/beam has only a 1px outline at row 0 with no visible top surface, and the side trellis pillars and crossbars show no top plane or 3/4 depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3774
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "metal trellis rose arch",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The arch is rendered strictly as a 2D flat architectural front elevation. The top horizontal bar (rows 0-1) is a 1px line with an outline and shows no horizontal top depth, and the trellis shows no canopy or depth into the scene.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4257
+  }
+ ],
+ "decidedAt": "2026-10-13T16:52:42.787Z",
+ "cells": {
+  "16": [
+   "00d6a7ef2c2a8078",
+   "29cbd6132b74fac1",
+   "3eeb1ad0d0c24926",
+   "7ee5f2f9d3285269",
+   "7ef39b4796fb63c1",
+   "93c550dcc4f0d822",
+   "bc85973aaf6799e0"
+  ],
+  "24": [
+   "2c75b1e3634dcf5a",
+   "45810a89d3ce09b7",
+   "51578d84ef9becf5",
+   "b3b69bbaaf88772e"
+  ],
+  "32": [
+   "00cb814c1a7a1981",
+   "03878cb9879b4fe0",
+   "110a92d5fee935ef",
+   "14b4497eaae62e72",
+   "199b5e831de1ee3d",
+   "32d1a56df632cdd3",
+   "35023cdf02c5970f",
+   "3b0265938fe00612",
+   "3d160210cfc341b0",
+   "51391135de35a21a",
+   "5e758b22f7fa7b48",
+   "634ffa442ae3817f",
+   "6ffacf95a979f8ca",
+   "79b5ce45baaf6a5e",
+   "87a0f1369ac5386a",
+   "9b6d862aecc6534c",
+   "a883636ed4c04f03",
+   "bf8b596ca14e0e8b",
+   "d3516c9f525f5dd3",
+   "d99c6a361b50567e",
+   "da1c8ca03cf48294",
+   "dac679729fe77ca0",
+   "e83e240e39b6e9c4",
+   "e8741b3d27f88ceb"
+  ],
+  "48": [
+   "351dc2349913c3be"
+  ]
+ }
+}

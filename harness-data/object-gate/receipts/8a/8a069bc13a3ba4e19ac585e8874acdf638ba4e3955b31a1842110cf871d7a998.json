@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8a069bc13a3ba4e19ac585e8874acdf638ba4e3955b31a1842110cf871d7a998",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "데미즈야(손 씻는 곳, 지붕 + 돌 물확)",
+ "label": "sengoku-edo/se-chozuya",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "temizuya (ablution pavilion with tiled roof and stone water basin)",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof shows a full forward-facing sloped surface (rows 2-15), and the stone basin below displays a clear top opening with water inside (rows 32-34) above its south front face (rows 36-43).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4580
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "temizuya pavilion roof and water basin",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof shows its full foreshortened top slope from rows 2 to 14, and the lower stone water basin shows a clear top surface and 3-row water interior opening (rows 32-34) above its south front face (rows 36-43).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6378
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "temizuya pavilion roof and water basin",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof shows its forward-sloping tiled surface from rows 2 to 15 (~14 rows), and the stone water basin beneath clearly shows its top rim and interior water basin from rows 31 to 35.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4413
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "roofed water ablution pavilion (temizuya) with stone water basin",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof shows a substantial foreshortened top slope of tiles (rows 3 to 15, ~13 rows), and the stone water basin below shows its top opening and water surface (rows 31 to 34, 4 rows tall) in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4434
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.071Z",
+ "cells": {
+  "16": [
+   "1461b4214faf4431",
+   "4a6ee5a1e6f6b430",
+   "c0927bc99cc0477e",
+   "d6c179bf99e0cee5",
+   "e7934734921fa985",
+   "f0b57e3b07168807"
+  ],
+  "24": [
+   "0c2eaac4a6c2890c",
+   "27bda4cb0e617f4a",
+   "2ae9a77305c5157d",
+   "3536e35173fa8304",
+   "457fd5c367601657",
+   "45d26bdd0e512625",
+   "7ca8db66f46e3262",
+   "8f76ec4bddf93d1c",
+   "987e0606c372961b",
+   "b494c8cc19f18b4b",
+   "ba749de8773ab5fe",
+   "e18ad94850a4f8e6"
+  ],
+  "32": [
+   "135eb755ac3273fa",
+   "34f6b23295585437",
+   "43655b7cfa103d7b",
+   "c5fe33bb73335161"
+  ],
+  "48": [
+   "3955cb9e3dc13459",
+   "561332146f97ed83",
+   "c7f502d837f219c8"
+  ]
+ }
+}

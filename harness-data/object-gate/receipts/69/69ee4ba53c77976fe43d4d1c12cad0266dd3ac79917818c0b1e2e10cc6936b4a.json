@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "69ee4ba53c77976fe43d4d1c12cad0266dd3ac79917818c0b1e2e10cc6936b4a",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "무쇠 화덕(냄비·주전자)",
+ "label": "gothic_manor/gm-stove",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cast iron kitchen stove counter",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stove top counter is clearly visible across rows 5 to 15 (11 source pixel rows) with pots resting on it, leading down to the vertical south front face (rows 16-28) showing the hearth openings.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4321
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cast iron hearth/stove counter",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hearth counter has a prominent foreshortened top surface spanning rows 5 to 15 (11 source pixel rows) holding cookware, with the south vertical front face spanning rows 16 to 28.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4358
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cast iron stove / hearth counter",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stove counter shows an 11-pixel-tall horizontal top surface (rows 5-15) bearing cookware and a stovepipe, above a 14-pixel-tall vertical front face (rows 16-29) with oven doors.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4356
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cast iron kitchen stove / hearth",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stove counter shows a generous top surface of 11 pixel rows (rows 5 to 15) supporting cookware, and a vertical south face from row 16 to 28 with oven/firebox openings.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5167
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.503Z",
+ "cells": {
+  "16": [
+   "2f2922ff09b2e429",
+   "60802820975c13fa",
+   "d58cae32398e2982",
+   "f98ab3a70d0047b4"
+  ],
+  "24": [
+   "04013f0f9385fb18",
+   "099d2d5776938d74",
+   "0b2e166c75f2598b",
+   "114c4a7ee48b8012",
+   "12380839da4d72cf",
+   "190b67a2a0fe08ab",
+   "1916ddfa98fc96ac",
+   "4e12b7bf76e32746",
+   "5a49c934045ec14a",
+   "6ce982a54ed8ff7e",
+   "6efce1443dcf9ed1",
+   "730b4abd3220cd13",
+   "83d5d8094c698a80",
+   "85e284525186d6c0",
+   "8c01e5927998a826",
+   "9c5dac18a788a547",
+   "b149302836de95e9",
+   "b909124ea819fdfa",
+   "b91654b7245cbe4f",
+   "be2eb29c20c62d00",
+   "bfc6f41f937fbe18",
+   "d7d59ecb3d78dd9a",
+   "e7fda41751fa270e",
+   "f27720c2b4c81c86"
+  ],
+  "32": [
+   "c0e7af1aceba6559"
+  ],
+  "48": [
+   "0c42e84a6a3d30a8",
+   "38460d3a61ba251e",
+   "60a975287a3ca7b3",
+   "9ab46cdfcaf41341",
+   "c4f6ced3989d80a5",
+   "f84f673178f65b2f"
+  ]
+ }
+}

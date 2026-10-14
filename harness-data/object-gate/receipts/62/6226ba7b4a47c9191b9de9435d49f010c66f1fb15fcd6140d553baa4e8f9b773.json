@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6226ba7b4a47c9191b9de9435d49f010c66f1fb15fcd6140d553baa4e8f9b773",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "대 울타리(겐닌지 담, 1칸)",
+ "label": "sengoku-edo/se-fence-bamboo",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bamboo fence panel (Kenninji-gaki)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire bamboo fence is depicted in direct front elevation with no visible top surface or depth showing the thickness of the wall or posts.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3651
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bamboo fence section",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bamboo wall/fence is drawn straight-on in pure front elevation; the top cap/coping has only a 1px outline at row 1 and shows no top horizontal surface or depth foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3498
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bamboo fence section",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence and its top trim/cap are drawn in pure front elevation with completely flat vertical bands and vertical bamboo posts, showing 0 pixel rows of top depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3261
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bamboo fence section (Kenninji-gaki)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence and its upper decorative band are drawn entirely as a flat vertical front elevation from row 1 to 29. There is no visible top surface, roof slope, or cap depth seen from above (only a 1px dark border at row 1).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4164
+  }
+ ],
+ "decidedAt": "2026-10-13T19:42:40.482Z",
+ "cells": {
+  "16": [
+   "5a935d8dbe5d47c1",
+   "6768d796430d27ab"
+  ],
+  "24": [
+   "06d716c02961c444",
+   "38500cc4cb5ecfd0",
+   "4283618d6451524e",
+   "577c7839c889cc0e",
+   "7907ba645dd6f77a",
+   "7ece87f8517fd211",
+   "8e974a9333d2bac2",
+   "a539e449823d4efb",
+   "d2d938940ef2213f",
+   "d4e2def7dc5a7d0a",
+   "e55a9dad023c10f1",
+   "f63ee024cc668316"
+  ],
+  "32": [
+   "098c477bf7ab18d0",
+   "70afde3c456a8851",
+   "75d6d452ebec2a22"
+  ],
+  "48": [
+   "1cf9886d25ab8320",
+   "386236080bde9213",
+   "4ea460e3cecff9eb",
+   "ab528553862458e4",
+   "da812c6517bb9a02",
+   "f824fa9425ccad5f"
+  ]
+ }
+}

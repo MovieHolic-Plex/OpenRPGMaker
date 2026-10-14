@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9be7a29630c7d34b99775d0c313f0dd91c888d5ca3c9298e0d7b3e289e4d9f18",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "냄비 선반(구리 냄비·단지)",
+ "label": "gothic_manor/gm-pot-shelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pot shelf cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body of the shelf has no visible top surface at row 0 (only a 1px border line), and the inner shelf boards are drawn as flat 2px horizontal bands with no top surface depth, resulting in a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6245
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall wooden shelving unit with pots and canisters",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet top has no visible top surface (row 0 is just a 1px border line), and the shelf boards are drawn as flat 2px horizontal bands without any visible depth/top surface, rendering the entire main body as a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6464
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden shelf unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shelf frame has no visible top surface at row 0 (only a 1px border), shelf boards are drawn as 2px flat front horizontal strips, and the jars on the shelves are flat 2D rectangles without visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5962
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall wooden shelving unit with pots and jars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main cabinet body has no visible top surface (row 0 is only a 1px boundary line), and the shelf surfaces are drawn as flat 1-2px horizontal divider strips. The canisters/jars on the shelves are also drawn as flat rectangles, resulting in a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5411
+  }
+ ],
+ "decidedAt": "2026-10-13T16:47:35.280Z",
+ "cells": {
+  "16": [
+   "7721daec6e30f0bf",
+   "8e01a9ff76b5b8e8",
+   "b080eb7689f7a2fa",
+   "e1fbd3bf8ed32da3"
+  ],
+  "24": [
+   "02a83349e82776dc",
+   "03a0cf1d74d4375d",
+   "088257339967a69b",
+   "1962f8d61145e86e",
+   "223ff1932a499962",
+   "22987b5806a47f82",
+   "596bee06d2a5748d",
+   "606c72fd45767f44",
+   "63a52580bcd2e573",
+   "79f5bf06746ab386",
+   "7dd029266d646138",
+   "812cf758d616867b",
+   "88b3d2bb2b2ada43",
+   "89b0668072ac3b27",
+   "8a62e29af729b055",
+   "95641aef7bb4ff90",
+   "966d896bea312016",
+   "9fa481fb4c7b9207",
+   "abc09f36e4c7efad",
+   "b88d6efc5afd2f7f",
+   "bb127a604fffe81d",
+   "bfb2dd3c5ea5de0a",
+   "ce81f9578979ebf6",
+   "db7952fcdb737b4a"
+  ],
+  "32": [
+   "1c408da2a214efe1"
+  ],
+  "48": [
+   "0f58320e7f83b78e",
+   "3302329c44f5995b",
+   "44cf74530e78c8d6",
+   "b0c5d1713ae51925",
+   "f09156b5d01c3fa0",
+   "fc3c7e15d4e0ae79"
+  ]
+ }
+}

@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "de4de682c4d1c6f5c584979f0cb0a0d8aa30bd725a1c6dc12579659b4bdee461",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "무쇠 화분(둥근 통, 흙과 다듬은 관목이 위에서 보인다)",
+ "label": "steampunk-city/sp-planter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "아가리 3행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round cast iron planter",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pot has an elliptical opening visible from above at rows 5-8 filled with dark soil and a bush, while the curved front face extends from row 9 to 15.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 5612
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cast iron planter tub with trimmed shrub and soil",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round planter shows a clear elliptical opening from rows 6 to 8 filled with visible dark brown soil and a green shrub, transitioning down into the front cylindrical wall from row 9 to 15.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 5201
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cast iron planter pot with trimmed bush",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round planter opening clearly shows the soil (dark brown across rows 6-8) and shrub from above in an elliptical foreshortened top view, above the front wall (rows 9-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5788
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cast iron planter pot with trimmed shrub",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round pot shows a clearly foreshortened opening from row 6 to 8 filled with dark soil and a spherical shrub emerging from it, with the front wall extending down to row 15.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 5336
+  }
+ ],
+ "decidedAt": "2026-10-13T18:49:04.018Z",
+ "cells": {
+  "16": [
+   "f51f19c098c48a24"
+  ],
+  "24": [
+   "7cb7b1b0d8d07c02",
+   "a584bab51607c1c2",
+   "b33d57e890e4a43c",
+   "cb44a054b41bfb03",
+   "d84dfbdb83653b8e",
+   "f49482defb04285e"
+  ],
+  "32": [
+   "0c2f31d9799f412b",
+   "1412ebb8d372e082",
+   "170c82a14e969ffe",
+   "4e142f2123a3fd4c",
+   "76dedc0413226228",
+   "fd9de2ea406a0c64"
+  ],
+  "48": [
+   "2c33c69ad161a34c",
+   "3309f961bb166e9a",
+   "507d645643c21f88",
+   "7b7520c74d5f59a9",
+   "e57d5149dfe6cd34",
+   "fff8c1348492a6a3"
+  ]
+ }
+}

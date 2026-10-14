@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b2a63cb33f5cf7685985aaaea625d9bf11e2ca2af61b59deac3e9e47b76e72ec",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "jp-lot-pay",
+ "label": "jp_city/street_hand/jp-lot-pay",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "parking lot pay machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in pure front elevation with no visible top surface. Rows 3-9 depict a front-facing illuminated sign box/panel above a yellow accent bar (rows 11-12) and the front control panel (screen and slots, rows 13-29). The top of the casing is just a 1px outline at row 2.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 9903
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "parking lot payment machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire machine is drawn in flat front elevation with a straight rectangular bounding box. Rows 3-9 depict the front-facing illuminated header sign (with a yellow accent band below at rows 11-12), followed by the screen, slots, and LEDs on the lower front face. There is no visible top surface foreshortened from above (only a 1px top outline on row 2).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 9033
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "parking payment machine (ticket/fare machine)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in direct front elevation: the top illuminated sign (rows 3-9), the yellow rain visor (rows 11-12), and the lower console with screen and slots (rows 13-29) all face purely forward. Neither the machine's roof nor the top of the visor shows any foreshortened top surface (only a 1px outline at row 2).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 7885
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "parking pay machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire machine is drawn in flat front elevation with a 1px black outline at row 2. The upper section (rows 3-10) is a front-facing illuminated sign/header above a yellow band, rather than a horizontal top surface seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 9407
+  }
+ ],
+ "decidedAt": "2026-10-13T17:30:03.088Z",
+ "cells": {
+  "16": [
+   "33b17d93eb877f4f",
+   "bfcd29a3d107e799"
+  ],
+  "24": [
+   "14f8f4f1a53c1021",
+   "3c7cfe88bc9f2579",
+   "7a558fa99c6f7d95",
+   "80b3d84280e861f9",
+   "9c50b303aa02f134",
+   "e43c4bee79716ff9",
+   "e7d65bd80c22d36f",
+   "e9146ea05c1d33e8",
+   "ef8b88419c639465",
+   "f445eb3fcc4275cb",
+   "f842e4a84a43851e",
+   "fecaf64449cb635e"
+  ],
+  "32": [
+   "1a25036ff666d173",
+   "464414f085a4f9cc",
+   "fbc8c9af15aa78c8"
+  ],
+  "48": [
+   "55b33416db4f62b6",
+   "5d3cda79fe12c5f0",
+   "6e56b0c9c6e70586",
+   "801f0622855fc06e",
+   "92a5a36a1dbea98e",
+   "b4ecfe5d0e2f53e3"
+  ]
+ }
+}

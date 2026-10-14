@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6399409e907c0a25bae871b153a82dd7a0896ad57f9a7cabaf84c070f620ed17",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "흑백 체크 타일 바닥",
+ "label": "steampunk-city/sp-floor-checker",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "checkered floor tile pattern",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tile shown entirely from top-down perspective across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3758
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "checkered floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Checkered floor tile terrain texture filling the 16x16 tile area viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5413
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "checkered floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 floor tile depicting a 2x2 grid of checkered floor tiles with subtle southern bevel shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3622
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "checkered floor tile pattern (2x2 grid of 8x8px square tiles)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor tile terrain showing a top-down view of 4 checkered square tiles with subtle lighting and bottom bevel shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3952
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.462Z",
+ "cells": {
+  "16": [
+   "aa2e752604a45f6c"
+  ],
+  "24": [
+   "12d022083d3fb839",
+   "150c81c48eaccece",
+   "1804ec0a4b57b72d",
+   "1da412bf8e4c60fb",
+   "cada6cc9017fd903",
+   "efcbebd0e869c367"
+  ],
+  "32": [
+   "51b606469911e1ab",
+   "60da5a9dd2d38b0d",
+   "62751e670e2c09b5",
+   "a0e73874146f54b4",
+   "aa9a680a3b0d3cbb",
+   "dc06f1992750bfd1"
+  ],
+  "48": [
+   "0978bea43ca7d019",
+   "4ef782b0e3219540",
+   "618bed6d4a53ba78",
+   "9f61ab10677e9469",
+   "bee60c73bd50a386",
+   "dfdc1f35bf86e310"
+  ]
+ }
+}

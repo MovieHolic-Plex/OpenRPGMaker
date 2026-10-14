@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5d616b677bfb1b98caceac7e7460d9f21cfc609200fb86418326b91c0825ec6f",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "테슬라 코일(둥근 받침 + 구리 감은 탑 + 놋쇠 고리 + 구 + 불꽃) (프레임 2)",
+ "label": "steampunk-city/sp-tesla-coil-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "copper-wound coil shaft and brass terminal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The copper-wound shaft consists of strictly horizontal 1px stripes with no curvature or top surface, and the top terminal cap has only a 1px contour outline at row 4 with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8850
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "copper coil tower (column)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The copper coil column and the top terminal sphere are drawn in pure front elevation with flat horizontal cross-sections and no visible top surface on the column or terminal structure (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13044
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "Tesla coil tower (copper coil column with base and electrode assembly)",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base plinth shows a clear 3-row foreshortened top surface (rows 39-41) surrounding the column base with south face descending to row 46, and the central brass collar/torus shows depth with a top-down opening/recess (rows 12-16), consistent with 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8736
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "copper coil tower with terminal cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The coil tower and top terminal bulb are drawn in pure front elevation with straight horizontal bands and a 1px flat edge at the very top (row 4). The visible top on the base plinth cannot be credited according to the instructions.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11658
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:44.594Z",
+ "cells": {
+  "16": [
+   "5058129dbf630551",
+   "662431d549f0c685",
+   "666aab35fc27f97c"
+  ],
+  "24": [
+   "32a719ee8bbaa49b",
+   "690400b29e5ba70b",
+   "a08a2842a35989b3",
+   "c6eb7e80c9050012",
+   "f463cc35fd9e9024",
+   "fe619dde1dd8484b"
+  ],
+  "32": [
+   "1348d6e7c2a2ccd8",
+   "3493420d57271c46",
+   "41b3dce38d9b80ce",
+   "4252711277aac3bd",
+   "4be1f084213ad9a1",
+   "55b48e857b5c92ee",
+   "a810b924b12181f5",
+   "adbea3abbbf1a451",
+   "b216676fdeb0b345",
+   "c35e7e9bfbbe15a9",
+   "cab9d6d39020f115",
+   "e44a9ee2b9b4d98f"
+  ],
+  "48": [
+   "952da52575a6f93f",
+   "9c994ea24a2fc0e0",
+   "b715370744d10bbc"
+  ]
+ }
+}

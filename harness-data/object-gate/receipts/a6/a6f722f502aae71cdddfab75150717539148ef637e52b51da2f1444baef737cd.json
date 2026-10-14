@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a6f722f502aae71cdddfab75150717539148ef637e52b51da2f1444baef737cd",
+ "width": 32,
+ "height": 16,
+ "kind": "container",
+ "name": "무쇠 석탄 통(안이 보인다)",
+ "label": "steampunk-city/sp-coal-bin",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cast iron coal bin filled with coal",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening into the coal bin spans rows 1-7 showing the dark coal contents inside viewed from above, with the front rim at row 8 and the front wall spanning rows 9-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4390
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cast iron coal bin",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening into the coal bin is clearly visible from rows 1 to 7 (7 rows deep), showing coal inside, with a rim at row 8 and the front riveted plate from row 9 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6918
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cast iron coal bin filled with coal",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The interior of the coal bin is visible across rows 1-7 (7 rows deep) showing coal chunks inside from a top-down 3/4 angle, with the front rim at row 8 and the front wall spanning rows 9-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5288
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cast iron coal bin filled with coal",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening into the coal bin is clearly visible from rows 1 to 7 (7 rows tall) showing the coal inside, with a front metal wall extending from row 8 to 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4357
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.465Z",
+ "cells": {
+  "16": [
+   "08aa704e85989127",
+   "19dad2f0a61eeb76"
+  ],
+  "24": [
+   "0161d2cfae4d70da",
+   "03b4111f012544cb",
+   "0f41cd914a62c33e",
+   "1b4040c8fdb9d155",
+   "2e73e0fedd729fe8",
+   "4f86c4c73d9dbdaa",
+   "78ddb1e63426f667",
+   "7db8fd32bc7bde69",
+   "a4b18080148e1350",
+   "ad286a5b8a555fc6",
+   "f1b3adb80be715f1",
+   "f1c1caf7ed2a3e66"
+  ],
+  "32": [
+   "0e85852c440c21e7",
+   "4ebe64bfe90f1f37"
+  ],
+  "48": [
+   "6666a111ae3f23eb",
+   "7622d8c9b917d31a",
+   "897775016a0bfa78",
+   "8d80f4bb054bedf1",
+   "cab2679084b2e8c7",
+   "fe770795a0301c15"
+  ]
+ }
+}

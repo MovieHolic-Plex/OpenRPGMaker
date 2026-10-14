@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4b979aa6e703ad9fb24e2f905486ccf7f05aaba3ef05d596b210c6ba76be1034",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "캠퍼스 잔디(변주)",
+ "label": "modern-campus/mc-lawn-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing a continuous top-down grass surface across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5107
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 flat grass terrain tile viewed from above as ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4842
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile representing grass; entire 16x16 area is ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4379
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ground grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat grass ground texture covering the full 16x16 tile with subtle color variations.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4239
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.862Z",
+ "cells": {
+  "16": [
+   "07b7d89cfb1f14fd"
+  ],
+  "24": [
+   "3b637a1e3a03fd83",
+   "807e014dce64d6a3",
+   "a2c10bc27aa4b86a",
+   "a2dad2d14f3e135f",
+   "c742b56e62d122c7",
+   "eb61391251b69998"
+  ],
+  "32": [
+   "95a700cde80255df",
+   "9eac21fc12bab8d8",
+   "a98b3932a5cb0ec9",
+   "c7c4365715a6e0d7",
+   "dc46330ce2a2c997",
+   "ff27d877ceb06b6a"
+  ],
+  "48": [
+   "12a8563d4c2a5895",
+   "5f78468efd1ee57a",
+   "7d3caff195e81e64",
+   "881f5388713a41a7",
+   "982a1ab7637b45e3",
+   "a99c340c9b7abd7b"
+  ]
+ }
+}

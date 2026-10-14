@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d813a93451875a1d12a0301b266c290a396d23774eff0a75332926fc18dc3960",
+ "width": 16,
+ "height": 32,
+ "kind": "organic",
+ "name": "tall amethyst crystal cluster on a rock",
+ "label": "sky-island/si-crystal-cluster",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "amethyst crystal cluster on rock base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crystal cluster and supporting rock are drawn entirely in front elevation with no visible top surface or 3/4 angle foreshortening; crystal terminations are 2D silhouette points and the rock base has no top depth plane.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 16149
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "crystal cluster and rock base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crystal cluster and its rock base are drawn in straight side profile/front elevation. Neither the rock base nor the crystal facets show any foreshortened top surfaces angled toward the 45-degree top-down camera.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5704
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "amethyst crystal cluster",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crystal prisms and rock base are drawn entirely in front elevation with vertical shafts and 2D profile tips, showing no foreshortened top surfaces or top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3749
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "amethyst crystal cluster",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crystal cluster and its rock base are drawn in flat front elevation with vertical crystal shafts, profile apex facets, and zero visible top surface around the rock or crystal tops.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6490
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.428Z",
+ "cells": {
+  "16": [
+   "5ad61bafded9930d",
+   "f0edbcbce1b05e70"
+  ],
+  "24": [
+   "3387a998690069b5",
+   "33df6bfae4507064",
+   "65cb075949076acb",
+   "6b97f3d749598e69",
+   "74e640cca515f6a8",
+   "860a51ae764b2563",
+   "87ff3e8172d43a9a",
+   "9371f5cfc27cc67d",
+   "9c6017be7b2cb5fa",
+   "b8e759773142f92a",
+   "d34fe9b1df5cd56d",
+   "d73a14122f273841"
+  ],
+  "32": [
+   "4797d5a266b68198",
+   "a25af261da0a3135",
+   "c40ce56db11553f6"
+  ],
+  "48": [
+   "3131c353a2a08993",
+   "46f153f151996960",
+   "cbffca982f5657c7",
+   "d9ead1a951e9e0aa",
+   "f61b3df823c7512a",
+   "fc7167e597f2a3ce"
+  ]
+ }
+}

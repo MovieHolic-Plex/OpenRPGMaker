@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4377d2b5cf9a0ac44d1e70d10d1ad17ee2dc54631d587e2e3ee1a185528f1d64",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "배관 도랑 — 가로 + 북 갈래",
+ "label": "steampunk-city/sp-pipe-new",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pipe trench tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a horizontal pipe trench with a north branch embedded into the floor. As a terrain/ground feature, it correctly matches the terrain category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4142
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pipe trench tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting a recessed floor trench with a horizontal pipe branching north, viewed top-down in standard JRPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4232
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pipe trench terrain tile (horizontal + north branch)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a recessed pipe trench running horizontally with a branch going north. As a terrain/floor feature viewed top-down, standard standing-object projection rules do not apply.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3459
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pipe trench (horizontal and north branch in floor channel)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting an embedded trench in a stone floor with pipes branching north and horizontally; top-down 3/4 perspective correctly shows trench depth, channel floor, and floor margins.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3782
+  }
+ ],
+ "decidedAt": "2026-10-13T18:45:09.736Z",
+ "cells": {
+  "16": [
+   "3d73cc711182af60"
+  ],
+  "24": [
+   "037ca3ac272507a9",
+   "327884435fa0a622",
+   "358eb707e3dec777",
+   "5c6506e0fbe389f9",
+   "e4f59fd5f8335697",
+   "fb0bf9614023f298"
+  ],
+  "32": [
+   "3bef0eec3876bd8d",
+   "3fc529a410bf20b1",
+   "5cdca148474ce8d6",
+   "a53da59e3405f56a",
+   "b0a7ead1baf4fab3",
+   "ca43c720fb1761cf"
+  ],
+  "48": [
+   "3b041058ac212087",
+   "bf6af639766e9100",
+   "c8d364ef552450fa",
+   "db7b35d66936a837",
+   "ead1a000e1fe81a5",
+   "f43b04b840b73fb6"
+  ]
+ }
+}

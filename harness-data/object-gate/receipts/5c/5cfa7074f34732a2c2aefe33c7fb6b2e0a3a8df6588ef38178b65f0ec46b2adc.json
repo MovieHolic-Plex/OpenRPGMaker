@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5cfa7074f34732a2c2aefe33c7fb6b2e0a3a8df6588ef38178b65f0ec46b2adc",
+ "width": 48,
+ "height": 32,
+ "kind": "terrain",
+ "name": "small pond with stone rim and lily pads (terrain)",
+ "label": "sky-island/si-pond",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "elliptical stone-rimmed pond with water and lily pads",
+    "kind_matches": true,
+    "top_rows": 19,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pond is properly drawn in foreshortened 3/4 perspective as an ellipse with an expansive top surface of water (19 rows tall) and surrounding stone border.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5062
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone-rimmed pond with water and lily pads",
+    "kind_matches": true,
+    "top_rows": 19,
+    "opening_visible": true,
+    "opening_rows": 19,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pond is rendered in a proper 3/4 perspective ellipse with 19 rows of foreshortened water surface visible inside the stone rim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4991
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "small stone-rimmed pond with water and lily pads",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": true,
+    "opening_rows": 18,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pond is drawn as a foreshortened ellipse correctly viewed from a 3/4 perspective, showing both the stone rim and the water surface (rows 7 to 24) with lily pads.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5607
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone-rimmed pond with water and lily pads",
+    "kind_matches": true,
+    "top_rows": 26,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pond is a ground/terrain feature foreshortened into an ellipse appropriate for the 3/4 top-down perspective, with 18 rows of visible water surface and a flat stone border around it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6188
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.434Z",
+ "cells": {
+  "16": [
+   "5d46874d43a7053a",
+   "7b631d1becd0a5b7",
+   "92cd6baa522ef734",
+   "d55749032a53ab28",
+   "eff6d338666520a1",
+   "fa43b11581bb79c0"
+  ],
+  "24": [
+   "3ecef9e8b142945b",
+   "45a69e1846c826b1",
+   "76ad143cbae13d7c",
+   "78de6f48947b86a4",
+   "a4b5ccc272788162",
+   "ede082b8f6cb369c",
+   "f6ed0bc2f35fd41a",
+   "ffe992f26dc277b8"
+  ],
+  "32": [
+   "38c6758fa7e2df1e",
+   "424d485a08930c98",
+   "77b2b93720064def",
+   "836113669f933793",
+   "b11577c59091145b",
+   "e70ac1aa8e917807"
+  ],
+  "48": [
+   "4acb511bc41b26c1",
+   "74d856e9b4878cff"
+  ]
+ }
+}

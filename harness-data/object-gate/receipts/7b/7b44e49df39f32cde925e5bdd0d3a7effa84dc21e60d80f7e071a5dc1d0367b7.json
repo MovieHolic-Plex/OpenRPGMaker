@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7b44e49df39f32cde925e5bdd0d3a7effa84dc21e60d80f7e071a5dc1d0367b7",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "술통 받침대(동서로 누운 통 둘 + 꼭지)",
+ "label": "steampunk-city/sp-barrel-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "barrel rack with two horizontal barrels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire rack and both horizontal barrels are drawn in flat front elevation as if for a side-scrolling platformer. The barrels have perfectly vertical straight hoop bands instead of curved/elliptical bands seen from 45 degrees, the vertical posts have no visible top surfaces (only a 1px cap), and the barrel cradles are drawn completely flat without top depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9263
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "barrel rack with two horizontally stacked barrels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire rack and both horizontal barrels are drawn in a flat 2D side-scroller/front elevation view. The upright posts, horizontal barrel planks, and vertical barrel bands are completely straight lines with no top surface foreshortening visible on the frame, posts, or cylinders.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6046
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "barrel rack with two horizontal barrels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire rack and the two stacked barrels are drawn in a flat front elevation (side-scroller view). There are no foreshortened top surfaces visible on the frame posts, shelves, or the barrels themselves (bungs are placed dead center on the vertical front profile).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6560
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stacked horizontal barrels in a rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal barrels are drawn in flat front elevation: the metal hoops are completely straight vertical bands with no perspective curve, the bung holes are placed at the dead vertical center of each barrel facing forward, and the upright posts and barrels show 0 px of top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6057
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:44.594Z",
+ "cells": {
+  "16": [
+   "268c17ec65133893",
+   "620e528b2272446e",
+   "a8d1167598ad5876",
+   "c0ad1e58692452cf"
+  ],
+  "24": [
+   "01d9670acfd16cb8",
+   "06c08b50cdeca943",
+   "48a84ba425c8f962",
+   "4bbf45fab7938c46",
+   "5ac0e899520bf964",
+   "64aba38a1769138a",
+   "69b6e40920741d5e",
+   "7a772bd0f3faa29b",
+   "8705c7b460b0a28a",
+   "9a7075455dda0b85",
+   "a5bb0c8908e520e9",
+   "a9621467546d5269",
+   "abee93f21ef59c6f",
+   "b42320a148cfa863",
+   "bb44668993303c25",
+   "c8b1d4e5c6846044",
+   "cac443531929cdd2",
+   "cd9ce24ab75093c1",
+   "d060fb7e457f1217",
+   "dd305aa2dee67ce9",
+   "dd5a4020c0684d86",
+   "e3896190a635e049",
+   "e828c932f2128007",
+   "f5cc32c13c0dc46b"
+  ],
+  "32": [
+   "7e1af3e76002ef93"
+  ],
+  "48": [
+   "095a160bde022502",
+   "4ab707bcbd6bcb94",
+   "b2333cd85e700fbe",
+   "d7656f02ded2e351",
+   "d9eb823f8f912694",
+   "ebd32e9778058156"
+  ]
+ }
+}

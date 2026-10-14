@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "92ec7694e9b8c18c59bb69fd19d8e79d6682f82c1bd32a39540fd7eecdd0c592",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "곡식 자루(주둥이를 접어 연, 낟알이 보인다)",
+ "label": "steampunk-city/sp-sack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "open grain sack",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rolled-down opening clearly reveals the grains inside from above, spanning rows 2 to 5 (about 4 rows) in proper 3/4 perspective above the front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4930
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "open grain sack",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rolled-open top of the grain sack is drawn in clear 3/4 perspective, revealing the yellow grain inside across rows 2–5 (4 pixel rows deep) above the front face (rows 6–14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5414
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "open grain sack",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rolled-down mouth of the sack forms an ellipse showing a 4-row deep top opening filled with grain (rows 2-5), resting above a 9-row front face (rows 6-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8025
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "open grain sack with rolled-down rim",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening of the sack is clearly visible from above across rows 2-5 showing the yellow grain inside, resting above the south front face (rows 6-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5564
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:44.595Z",
+ "cells": {
+  "16": [
+   "86ca366cf72ba3c8"
+  ],
+  "24": [
+   "0bb95174e78cd0eb",
+   "42e569c3c2129ff1",
+   "458653835e7704f2",
+   "855f084156e57a34",
+   "e9f13450168d7a0b",
+   "ef52d3a383c5057b"
+  ],
+  "32": [
+   "10a0150728dbb776",
+   "4a27e315701349c7",
+   "aae4343d93e097b6",
+   "d2fdfe69e23661f9",
+   "e0b35a7b1ebbfa60",
+   "fcc2d30c964e766d"
+  ],
+  "48": [
+   "1e4973c0c3745081",
+   "591028cb17494816",
+   "7a1397a29bde4c05",
+   "830d8fe5840ef1ce",
+   "8b7e7229fd47b44b",
+   "dfac75b008944636"
+  ]
+ }
+}

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f04baec64e4937f394e88d08bb13d14ba849a6bf91d7b851c0f4b47d2cbd1d66",
+ "width": 32,
+ "height": 48,
+ "kind": "column",
+ "name": "쌍 가스등(광장용, 등 둘)",
+ "label": "steampunk-city/sp-gas-lamp-double",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "double street lamp post with lanterns",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire street lamp is drawn as a flat 2D front elevation: the lantern roofs, crossbars, central finial, post collar, and base plinth all consist of flat horizontal bands with no top horizontal surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6499
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "street lamp post with two lanterns",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern caps, central post, horizontal crossbar, middle collar, and bottom base are all drawn flat in direct front elevation with zero top surface or elliptical foreshortening visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5746
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "double gas lamp post with two lanterns",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The central post, horizontal crossbar, collar, and both lantern caps are rendered in pure front elevation using flat horizontal bands with no top surfaces visible from above (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6518
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "central lamp post with double lantern arms",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lamppost, cross-arms, lantern caps, middle collar, and base are all drawn in pure flat front elevation with straight horizontal bands and no top surfaces visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6221
+  }
+ ],
+ "decidedAt": "2026-10-13T18:16:30.907Z",
+ "cells": {
+  "16": [
+   "7f87e835e9ce14b5",
+   "96d269297ad8a022",
+   "a70adb272ac7952a",
+   "b4a3d50b58732c3d",
+   "cce3624c0d8d8271",
+   "fb686b750da3b73b"
+  ],
+  "24": [
+   "21ed93a0f3b3ddb3",
+   "4ea0da374c459619",
+   "50efd611f0a430f4",
+   "7277a7752bb7c710",
+   "86ecea4cba58dc07",
+   "9113da0fb16f8f5d",
+   "c5b698c04be0df59",
+   "ce23361c07b5a589",
+   "df6e833fbc142bc0",
+   "efb61326179d711c"
+  ],
+  "32": [
+   "0a83f3e475020565",
+   "5b1a13c3dd236f29",
+   "84815a370cfba2d3",
+   "a354a4cd9b0eb9f4"
+  ],
+  "48": [
+   "1934d3c154a0cfc3",
+   "bd1d01c975eb057a",
+   "ce7171a84656d203"
+  ]
+ }
+}

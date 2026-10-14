@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a9c2f027b47b40e43a338361f141008d1a69a5473504a9505a2fcf9356bd51bd",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "waterfall falling through open sky (terrain overlay)",
+ "label": "sky-island/si-falls-air",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical waterfall column",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical stream of falling water designed as a repeating terrain overlay tile; spans full vertical height (rows 0-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3620
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "waterfall stream",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical water overlay / autotile strip representing falling water terrain spanning the tile height; terrain rules apply.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4431
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "waterfall stream",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Continuous vertical column of falling water designed as a seamless terrain overlay/tile extending across rows 0-15. As a vertical terrain feature, top-surface foreshortening does not apply.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3146
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "waterfall stream",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Continuous vertical stream of falling water tileable vertically as a terrain/overlay element, appropriately represented without standing object perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3862
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.981Z",
+ "cells": {
+  "16": [
+   "a7cbe9b0644c95b4"
+  ],
+  "24": [
+   "102aacfeac25b2f2",
+   "114269d0aaae7ac5",
+   "4a82c9b8b959aa98",
+   "86d6078806c86aae",
+   "a2560c0b48d5cb19",
+   "e31e6076592dc4bc"
+  ],
+  "32": [
+   "3fbe10a105a405c3",
+   "6efb97aa2024e63f",
+   "a44cf0e3880069cf",
+   "b247e9ecf2576c60",
+   "dc0eb478da2a6c6f",
+   "eee5811606bb87fc"
+  ],
+  "48": [
+   "01608046d793dbc3",
+   "3b1f6e484a41f71e",
+   "473f375ffba3171a",
+   "4d65a5574efb010a",
+   "b6c82a4b955fe951",
+   "c178357aff627a91"
+  ]
+ }
+}

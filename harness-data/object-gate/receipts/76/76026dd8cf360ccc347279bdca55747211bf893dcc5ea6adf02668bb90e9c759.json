@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "76026dd8cf360ccc347279bdca55747211bf893dcc5ea6adf02668bb90e9c759",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "화물 상자 더미(크고 작은 상자 세 개 윗면·띠·표식)",
+ "label": "sf-station/sf-street-crate-pile",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stacked and adjacent cargo crates",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the left crate stack and the right cargo container show distinct 3-4 pixel row top surfaces foreshortened in 3/4 perspective above their vertical front faces.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 3행 < 4"
+   ],
+   "ms": 3994
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stacked and side-by-side cargo crates",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "All crates (the top green parcel, the wooden crate, and the metal cargo container) clearly display foreshortened top surfaces (3 to 4 pixel rows tall) above their vertical south-facing front faces, in proper 3/4 RPG view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4815
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stacked and adjacent cargo crates",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "All crates (the green top box, the orange crate, and the wide blue metal cargo crate) show distinct 3-4 row horizontal top surfaces foreshortened in standard 3/4 view above their front faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4030
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cargo boxes / crates",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "All crates show distinct top surfaces seen from above (rows 3-6 on both the brown crate and the blue container, rows 1-2 on the small green crate) above their front south faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5079
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:31.925Z",
+ "cells": {
+  "16": [
+   "120cf620e07afcb4",
+   "a1ff332b4630c0c6"
+  ],
+  "24": [
+   "0037dd61fef51d53",
+   "1c97c45c228a66ec",
+   "347aba5421357f69",
+   "424a621c02052adc",
+   "70c6a21fc9281c0e",
+   "927ea16cbbe9db60",
+   "96a9e05337347202",
+   "b270a2e3c4bdcf33",
+   "c6b097ae5f446edf",
+   "c7310aa33e91be12",
+   "ca2f149612700f5d",
+   "f720c96178565892"
+  ],
+  "32": [
+   "52cfa0e4183ef140",
+   "c39c10a63fadce9c"
+  ],
+  "48": [
+   "74c747b3871f0ba4",
+   "839287f1e6af20a7",
+   "b25df8cc807d3eb4",
+   "c304b3fa9d6e9f63",
+   "e99491897a83ba07",
+   "ef266657e9e1bab2"
+  ]
+ }
+}

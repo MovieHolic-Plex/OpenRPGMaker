@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8ac4b7353d45031edf89d8c658cd009080990ed48e66860d9b6d30bd13926db8",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "길가 등롱(나무 기둥 사각 등)",
+ "label": "sengoku-edo/se-street-lantern",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "street lantern (cap, lamp housing, and post)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern cap, rectangular light box, and post are drawn in pure front elevation with straight horizontal bands and outlines. No foreshortened top surface is visible on the cap or housing; only the base plinth shows any 3/4 curvature.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6057
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "roadside lantern head and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern roof, eave, and illuminated housing are drawn in pure front elevation with straight horizontal bands and no visible top surface. Although the base plinth shows a top surface, base plinths do not count for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5129
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lantern box and cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern cap (rows 0-7) and illuminated lamp box (rows 8-15) are drawn straight-on in flat front elevation with completely horizontal edges and 90-degree corners, showing 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5556
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lantern head and cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern housing and cap are drawn in flat front elevation. The roof/cap at rows 0-7 has a completely straight horizontal bottom rim (rows 6-7) and vertical cylindrical shading with no foreshortened top surface visible. The lantern box (rows 8-15) is also a pure flat rectangle with straight horizontal boundaries.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5460
+  }
+ ],
+ "decidedAt": "2026-10-13T19:42:40.481Z",
+ "cells": {
+  "16": [
+   "1357662f24250c0e",
+   "13e5352d546e2a04"
+  ],
+  "24": [
+   "14234ad3aa6a2738",
+   "15df7e5d3e5eeb90",
+   "20d1acca7aa454df",
+   "37bbbf0e100af362",
+   "437c594e3bc2a7cc",
+   "5383a1255a50459e",
+   "6d445b2978eb9dd0",
+   "a8c80c70097c929f",
+   "aeaf60176ac18124",
+   "c7cad389f183a434",
+   "caf90ad71427d009",
+   "d5562a8f94e417e2"
+  ],
+  "32": [
+   "4fb89e508e7db325",
+   "bf10b5bf3958fcbf",
+   "efe8e038d8263507"
+  ],
+  "48": [
+   "1c123bc257cdc6c2",
+   "423c616094823c96",
+   "6b4848060078f9e2",
+   "6c33eb7497dba38f",
+   "a0355a913e66dde9",
+   "e7b12ad5b8956b82"
+  ]
+ }
+}

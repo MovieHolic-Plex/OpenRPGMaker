@@ -1,0 +1,138 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2a1c37e3314c4506cfb1b9ca20d0e9123b94696991b0d223a2d14c88789085ba",
+ "width": 48,
+ "height": 32,
+ "kind": "frame",
+ "name": "철봉(높이 다른 셋)",
+ "label": "modern-campus/mc-pullup-bars",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "three connected pull-up bars with vertical posts and base blocks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal bars and base blocks are drawn completely flat in pure front elevation with no visible top surface. The bars are horizontal bands with simple 2D shading and the base blocks at rows 25-29 show only vertical front faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6527
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "three connected pull-up bars of differing heights with metal posts and crossbars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pull-up bar frame is drawn in flat front elevation (side-scroller style). The horizontal crossbars show no top surface (only a 1px outline over shaded front faces), and the vertical posts and footings are rendered completely flat from the front.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5474
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "three horizontal pull-up bars of differing heights on vertical posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal crossbars and base blocks are drawn in pure front elevation with simple horizontal shading bands (1px highlight, 1px midtone, 1px shadow) and no foreshortened top surfaces. The posts and caps are also drawn from a straight-on side-scroller perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6084
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "three horizontal pull-up bars with vertical support posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pull-up bars, vertical posts, and base footings are drawn in pure front elevation as if for a side-scrolling platformer, with no foreshortened top surfaces visible on the horizontal bars or bases.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5995
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.304Z",
+ "cells": {
+  "16": [
+   "08a1b3afbce33c70",
+   "0bd5a932421aab63",
+   "3bec7e2b0b4e7f39",
+   "55926e005991e403",
+   "55ce1d8052236663",
+   "b7eae132bff30b27"
+  ],
+  "24": [
+   "079851db5c2e11db",
+   "2a3f79c923eff389",
+   "2c39a5111d776fd3",
+   "35854e1093a39874",
+   "3c3e4adb24ab6a71",
+   "501d8d50feab3b13",
+   "8db2b4f66f84fb94"
+  ],
+  "32": [
+   "1b91f05696671108",
+   "606973137f033bc8",
+   "6c97aea930480e8b",
+   "aa6ada5f00cc78de",
+   "e408391cb755407e",
+   "f9349931bce857a1"
+  ],
+  "48": [
+   "963f60b1375803f2",
+   "f9d2a7a99383276a"
+  ]
+ }
+}

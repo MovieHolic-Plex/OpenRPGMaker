@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0b37474fea2d006d6a87951ff19d730df9dc97eb2b37785c0da2f8af91513668",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "waterfall spray mist (terrain overlay)",
+ "label": "sky-island/si-falls-mist-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "waterfall spray mist overlay",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Cloud-like clusters of water spray and foam serving as a terrain overlay effect. As a non-standing terrain/particle overlay, standard 3/4 standing volume perspective rules do not apply.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4102
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "waterfall spray mist",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Water spray / mist effect classified as terrain overlay; flat atmospheric effect with no standing geometry.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4220
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "waterfall spray mist overlay",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Water spray/mist terrain overlay with translucent white and cyan patches, exempt from standing object 3/4 perspective requirements.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4646
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "waterfall spray / mist overlay",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Semi-transparent or white/light blue splash mist shapes intended as a terrain/water overlay; not a solid standing object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7614
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.982Z",
+ "cells": {
+  "16": [
+   "27220368b3239297"
+  ],
+  "24": [
+   "2d4b82f609ccc7c7",
+   "4400ad741de875b4",
+   "9bb0e43ce962959a",
+   "a3927be151f2a88a",
+   "afdd4e64ff6ddf42",
+   "b0f0eb1f8e6e42b0"
+  ],
+  "32": [
+   "13e561704bcc8b58",
+   "3d0c581fe91fc8be",
+   "598a559a4275d803",
+   "a6c7636ca10faf6e",
+   "a89aeb98737d3475",
+   "da1d07d7a7e5704f"
+  ],
+  "48": [
+   "6995a973373a4bf9",
+   "79abbbd567216275",
+   "95a07316aab45ba4",
+   "981c5ce3d2f6e92d",
+   "cd219a5f234c3709",
+   "fb52592c4c1af1b1"
+  ]
+ }
+}

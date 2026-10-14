@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ea0abf4a18d94db2b72cc6c814127b65af5645bb78cdbc94709926ac0c16cf16",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "round leafy tree",
+ "label": "sky-island/si-tree-round",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "canopy and trunk of tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree canopy and trunk are drawn in a flat side-scroller front elevation with no foreshortened top surface visible. Only the grass patch at the base is tilted, while the main body has 0 top rows.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15396
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "canopy and trunk of leafy tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn in a flat side-scroller elevation with stacked front-facing foliage lobes and a flat vertical trunk. Despite an elliptical grass patch at the base, the tree itself shows no top-down surface or 3/4 foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11105
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tree canopy",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tree canopy is rendered with stacked spherical lobes showing visible top surfaces (~8 rows of illuminated top crown) consistent with top-down 3/4 perspective, anchored over a foreshortened elliptical grass patch at the base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7251
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "foliage canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn from a flat side-scroller/front perspective: the canopy lobes and trunk are rendered in pure front elevation without any top-down foreshortening or visible top surface (top_rows = 0), and the base of the trunk sits flatly despite the ground patch ellipse.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7475
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.425Z",
+ "cells": {
+  "16": [
+   "7329e75942752bd1",
+   "8d8d6ac7e5b75552",
+   "b0ddc0a38ec50d8d",
+   "c00e5bca6a326000",
+   "c14f2bce04b36d5f",
+   "ea29090db95a0be7"
+  ],
+  "24": [
+   "114ea1cba2b6257a",
+   "373a12d8b4ea1093",
+   "518a7934f573aba8",
+   "70d7de053ae9a2d8",
+   "7633e93bbfd6c80c",
+   "7943615b5d76831a",
+   "8a54b7fdb9e29b0c",
+   "abe87635d004c838",
+   "c3db62a0f8b9328f",
+   "cf44b1438772f274",
+   "ddab30e07d3feeb0",
+   "e6f62ff769a879e4"
+  ],
+  "32": [
+   "305ea40e8c360285",
+   "6bfb8c3d2e155aaa",
+   "e3a3944c092cf999",
+   "f883b145ed6a215c"
+  ],
+  "48": [
+   "71e26dfc6c93fa58",
+   "b5cddc678a4c6f8e",
+   "f89509d389849e33"
+  ]
+ }
+}

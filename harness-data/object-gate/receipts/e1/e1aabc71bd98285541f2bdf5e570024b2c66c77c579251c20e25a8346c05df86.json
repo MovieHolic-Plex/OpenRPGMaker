@@ -1,0 +1,125 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e1aabc71bd98285541f2bdf5e570024b2c66c77c579251c20e25a8346c05df86",
+ "width": 16,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "다도 도구(검은 쟁반 + 찻사발·물병)",
+ "label": "sengoku-edo/se-tea-set",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "black tray / tea table",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brown horizontal surface on the low table/tray body is only 2 pixel rows tall (rows 8-9), which functions merely as a edge band rather than a foreshortened 3/4 top surface. Moreover, the objects show inconsistent perspectives: the tea bowl is viewed from directly top-down while the bottle and container are drawn as flat front elevations without visible tops.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "윗면 2행 < 3"
+   ],
+   "ms": 12156
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tea tray / low tea table with tea ceremony implements",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brown surface is only 2 source pixel rows tall (rows 8-9) with flat vertical items (water bottle and canister drawn as flat rectangles without visible top surfaces). The tea bowl is drawn in flat overhead view while the bottles are in flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 10318
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tea tray / low tea table",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tea board/tray shows a foreshortened top surface (rows 8-10, 3px tall) and a distinct south front face (rows 11-13). The tea bowl also clearly displays its opening with green tea visible inside.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12850
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "black tea tray with tea board and utensils",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The black tray is seen from a top-down 3/4 perspective, showing its interior floor/top surface across rows 7–12 (enclosed by front rim at rows 13–14). The tea bowl also clearly displays its opening with green tea visible inside.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11064
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.077Z",
+ "cells": {
+  "16": [
+   "bbf3edf3e27f0eef"
+  ],
+  "24": [
+   "060ce856b47b5210",
+   "0b6f44f6020a4513",
+   "7a1f677ddb13d0c9",
+   "93505af96fa5de65",
+   "9ae77b2d7f6eb423",
+   "edf34f3011c77ad0"
+  ],
+  "32": [
+   "07db49cbe8c22794",
+   "15f4b9290a19e347",
+   "5133f596fd3a1203",
+   "c2eb34b64f1897fc",
+   "d30fb11cd56cc002",
+   "de1be2393fcbf339"
+  ],
+  "48": [
+   "0c8ea16728149a2c",
+   "1ef7667521e32fbc",
+   "4ff0ed5598501765",
+   "8cd87911b4c3a0b1",
+   "e66e46090e993645",
+   "f05e30dae2526ff6"
+  ]
+ }
+}

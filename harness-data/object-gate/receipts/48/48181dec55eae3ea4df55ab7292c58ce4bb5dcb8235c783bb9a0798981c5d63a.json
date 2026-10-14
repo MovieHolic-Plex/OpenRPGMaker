@@ -1,0 +1,173 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "48181dec55eae3ea4df55ab7292c58ce4bb5dcb8235c783bb9a0798981c5d63a",
+ "width": 32,
+ "height": 64,
+ "kind": "structure",
+ "name": "안테나 마스트(굵은 받침 + 기둥 + 가로대)",
+ "label": "sf-station/sf-antenna-mast",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "antenna mast (base, central pillar, and crossbeam)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crossbeam (rows 21-30) and central mast are drawn in flat front elevation with no visible top surfaces (0px). For structures, lintels/crossbeams must show their top planes in 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10279
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "antenna mast with base, pillar, and crossbar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure, including the crossbar (lintel) and pillar, is drawn in pure 2D front elevation with flat horizontal bands and zero visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10010
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "antenna mast (pillar and crossbar)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "While the bottom base block shows a top plane (rows 46-53), the crossbar (horizontal beam/lintel) and mast body are drawn in pure front elevation with 0px of top surface visible. For structures, lintels and horizontal beams must show their top surfaces in 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11548
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "antenna mast (base, vertical pillar, and horizontal crossbar)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure front elevation. Both the crossbar (rows 22-29) and base (rows 46-63) share the same flat 2D shading pattern (light upper half, dark lower half, with rivets/lights facing directly forward on row 24) without any foreshortened top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9527
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:27.304Z",
+ "cells": {
+  "16": [
+   "4a2b9bb94f3ab313",
+   "4dbbbde6bcd0f853",
+   "800b3a5c8cad6d17",
+   "801960c5a38e5f00",
+   "9bf7b975ce40b282",
+   "af3f9944ce41ccb7",
+   "da50cf1be226cea4",
+   "f7396216ec4691d5"
+  ],
+  "24": [
+   "0192301343c26d5b",
+   "19c7144ffc295e70",
+   "27e99da510a58dba",
+   "28d68ac99898a488",
+   "29622a4a5cc7b907",
+   "30830b665fee9cd9",
+   "32c1016c21e84795",
+   "3a5118ef745a7154",
+   "3f244977760aecd5",
+   "4008aff057b0720f",
+   "4149171a7359e715",
+   "451b56ed6bba8d83",
+   "4b111100d060288b",
+   "4fae3cf55ee280bf",
+   "51d3e0539bf305c8",
+   "51f71e1d9fdc294c",
+   "583e808e518b094b",
+   "5abcf178dbf24dae",
+   "5fa9c6b14fd8b0cc",
+   "7578cc3900c27471",
+   "76341882e7b54ac9",
+   "8e3fdbbb0c467a0d",
+   "94e83bcdabbcdd5e",
+   "a76b0c81d676a22f",
+   "b93d930f936ef145",
+   "b9cdea81c4911485",
+   "b9d2274f23ab44ce",
+   "be9590bb0af757a1",
+   "c921b83fcc4bee3a",
+   "ce75211e287d17e4",
+   "da8bfad306adf362",
+   "e9dacc5ba66a8122",
+   "f9810fefa2e7dc4b",
+   "fc990955bdf9cbdd"
+  ],
+  "32": [
+   "371bd4c5e589bb46",
+   "b851db60661fd3f2"
+  ],
+  "48": [
+   "1199079634a87223",
+   "2a21bcbc7dcd7a92",
+   "2c1dc63f554d8d3a",
+   "2c40438bdfc6f345",
+   "3332287ccbc24616",
+   "38f7162d8b3a342b",
+   "3ec1952bb2300366",
+   "5fa312e1f01c7fec",
+   "98f3c1df5acbe157",
+   "9f6914b9cffa91a6",
+   "ac512dc0d5e15f13",
+   "fb63e176a7b28088"
+  ]
+ }
+}

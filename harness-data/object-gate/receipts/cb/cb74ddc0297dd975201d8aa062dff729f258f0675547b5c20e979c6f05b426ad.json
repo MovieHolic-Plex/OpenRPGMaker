@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cb74ddc0297dd975201d8aa062dff729f258f0675547b5c20e979c6f05b426ad",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "운하 갓돌(남쪽 물가)",
+ "label": "steampunk-city/sp-quay-lip",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "canal stone embankment and curb",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile correctly depicts a canal coping stone edge in 3/4 perspective: rows 1-4 show the foreshortened horizontal top surface of the curb stone, and rows 5-15 depict the vertical stone canal wall face below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4052
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "canal coping stone and quay wall",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-4 clearly show the horizontal top surface of the coping stone blocks (4 rows tall), followed by the vertical front face of the stone quay wall extending down through rows 5-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5715
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "canal coping stone and embankment wall",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts canal terrain with a 4-pixel deep horizontal coping stone surface (rows 1-4) above a vertical canal wall face (rows 6-15), properly foreshortened for top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4873
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "canal wall coping and stone face",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a canal edge/wall: rows 1-4 show the top surface of the stone coping (4 rows deep), with the vertical stone wall face extending from row 6 down to row 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3232
+  }
+ ],
+ "decidedAt": "2026-10-13T18:27:58.052Z",
+ "cells": {
+  "16": [
+   "769cbfeb7b36f910"
+  ],
+  "24": [
+   "10c794a609097bc5",
+   "11259fe48c392bee",
+   "1d9d8af4fb075bed",
+   "7fbb5af62cec4418",
+   "881ff924b017a7a2",
+   "f4e591ff26e4c1df"
+  ],
+  "32": [
+   "2bb41e8ef08175ba",
+   "2c1c81f6bea6020e",
+   "41e081899c0296ed",
+   "5a33e4fae33825a0",
+   "c0eb46a3d9742ff5",
+   "de9d098aafde2288"
+  ],
+  "48": [
+   "16ee4567ffbc4edc",
+   "637679064e1e4304",
+   "76d8c5d58c3b3861",
+   "bf9779935e7c2799",
+   "cdef940f56aa2d25",
+   "fc875c76e75867e0"
+  ]
+ }
+}

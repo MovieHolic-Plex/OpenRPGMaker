@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d82f1153010ddcd8929096a7fd8aa00d17748eb244da727a56629b4fe325e2d6",
+ "width": 48,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "교실 영사막(말아 내린 흰 막)",
+ "label": "modern-campus-int/mc-screen-proj",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "classroom projector screen (pulled down)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted pull-down projection screen correctly depicted flat against a vertical wall, consistent with 3/4 perspective conventions for wall-mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7972
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pull-down projector screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The projector screen is mounted flat against the wall. As a wall-mounted object, it is appropriately depicted in a flat frontal view without a receding top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9104
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "projector screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted pull-down projection screen correctly depicted flat against the north wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5440
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "projector screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Classroom projector screen mounted flat against a south-facing wall. As a wall-mounted flat object, it correctly shows the flat pull-down screen face without isometric distortion.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6385
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.307Z",
+ "cells": {
+  "16": [
+   "051c1fe6242786d3",
+   "59914bd1e844c9ff",
+   "65fe11a154c4c324",
+   "66b47e2ea1f740b4",
+   "a7e5f5e005223ece",
+   "c9bb5a08d1b7d3bf"
+  ],
+  "24": [
+   "2afb67c8b3b71b81",
+   "3ecd630d87de7281",
+   "4505f42edeccd611",
+   "9f089061feae4773",
+   "aee43bb614985eaa",
+   "e62830f604c05549",
+   "ee26b50fa343131f",
+   "fe84a1d97c809630"
+  ],
+  "32": [
+   "2226a96903163e69",
+   "8c45aa44aa91a91f",
+   "9be1ca4b061d0abf",
+   "be01d7a05a24f227",
+   "e2fdc32b713469a0",
+   "f30433f22b258070"
+  ],
+  "48": [
+   "2957a010c2a8fe3c",
+   "6c1cb054738da655"
+  ]
+ }
+}

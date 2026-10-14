@@ -1,0 +1,133 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "90dc3416ea4bf6901517b9c76f062343d1b6c46a05ce843a7593bd17d7744b51",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "땅 위 배관 — 세로",
+ "label": "steampunk-city/sp-pipe-ns",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical pipe segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pipe is drawn as a flat 2D elevation with perfectly horizontal bands (rows 2-3, 12-13) and vertical shading columns with 0px of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 60058
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pipe segment running north-south along the ground",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The asset is a tileable ground-pipe running north-south (vertical on the map). Because it lies horizontally along the ground surface, the entire 16-row length presents the top-facing cylindrical crest of the pipe to the 3/4 camera, complete with a ground shadow cast to the east.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7659
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vertical pipe segment",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pipe segment spans the full tile vertically from row 0 to 15 with no visible top surface (top_rows: 0) and flat horizontal bands, showing a pure front elevation with no 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10953
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical pipe segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pipe is drawn as a flat 2D elevation spanning the full tile height with no visible top surface (top_rows = 0). The metal joint bands at rows 2-3 and 12-13 are drawn as flat horizontal lines with no foreshortened curve or elliptical arc, typical of side-view/front-elevation sprites.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7627
+  }
+ ],
+ "decidedAt": "2026-10-13T18:40:36.079Z",
+ "cells": {
+  "16": [
+   "f8076e1e1838a3c8"
+  ],
+  "24": [
+   "0228e1cf2208538b",
+   "110b76481ea66683",
+   "5421f0ca53cc6e1f",
+   "617188bda4ed34c8",
+   "808896461d9d760e",
+   "d8e7b7559600cb92"
+  ],
+  "32": [
+   "02c684db6e03686a",
+   "30b41f3054656dcd",
+   "647550d3d4f88898",
+   "9d81f6cecf0192d4",
+   "b10055ba078d681b",
+   "c94a52a69ca454d9"
+  ],
+  "48": [
+   "02640d711164ef42",
+   "542110f8e6092607",
+   "88f78c51030ea7a5",
+   "902ab061f41e95ff",
+   "ba686155c69cdda6",
+   "d9f8842053270c46"
+  ]
+ }
+}

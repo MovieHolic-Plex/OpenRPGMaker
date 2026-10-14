@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6020f0b4f652ef31de913974c4aea15e3fdd58061c648f26201c2c291dd1d665",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "다진 흙길(변주)",
+ "label": "sengoku-edo/se-road-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "packed dirt ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing packed dirt texture and embedded small stones across the entire 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3478
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "packed dirt ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting packed dirt ground with small embedded pebbles; entire 16x16 surface is top-down ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4072
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "packed dirt ground tile with embedded pebbles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing a packed dirt surface with small stones seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6162
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dirt path ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a packed dirt surface with small embedded stones, filling the entire 16x16 ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3276
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.058Z",
+ "cells": {
+  "16": [
+   "1e8071483c3a3233"
+  ],
+  "24": [
+   "0203c82ae046bdf9",
+   "32c98cbfa139ffbe",
+   "38d1b52f849020a8",
+   "6a7e04bfe7221562",
+   "b44255343a35d44c",
+   "fc4b08fc619b72d8"
+  ],
+  "32": [
+   "1ec67b1a41533f60",
+   "2f05610282ef3a81",
+   "65d02cd92cd4889e",
+   "6af88e843f0226d0",
+   "e2aec9f2f9f55f9e",
+   "fd5bbc011cd5645b"
+  ],
+  "48": [
+   "0e0653c75bc5fc0b",
+   "16cd98092a9eb61f",
+   "2bf880d6dd3c2af2",
+   "67e4a9a877bf5d59",
+   "d54dd2549535e5f6",
+   "f337d3aaf0745b43"
+  ]
+ }
+}

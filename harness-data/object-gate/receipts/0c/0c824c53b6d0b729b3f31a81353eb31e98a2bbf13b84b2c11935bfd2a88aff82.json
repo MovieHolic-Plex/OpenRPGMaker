@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0c824c53b6d0b729b3f31a81353eb31e98a2bbf13b84b2c11935bfd2a88aff82",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "잔디 경계석(남동 변)",
+ "label": "modern-campus/mc-curb-se",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass plot with stone curb border",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile showing a lawn bordered by a stone curb on the south and east edges, viewed from above in consistent top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5929
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass lawn with stone border curb",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Top-down ground/terrain tile depicting a grass area bordered by a stone curb along the south and east edges.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9922
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass terrain tile with southeast border curb",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing grass bordered by curb paving along the south and east edges, consistent with top-down 3/4 perspective ground tiles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4582
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass lawn with curb border on south and east edges",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing grass surface surrounded by a stone curb along the south and east edges, viewed from the standard top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5034
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.866Z",
+ "cells": {
+  "16": [
+   "e839508a6991505c"
+  ],
+  "24": [
+   "4f7ae32a8a9829d0",
+   "58acbd1f9da671fd",
+   "6000d9f3299c6d56",
+   "b6086c87a918571e",
+   "ddd145b35ab1e2c9",
+   "f838d210d5e1b1b4"
+  ],
+  "32": [
+   "5b0696e8eabe2412",
+   "77a9f42a51044731",
+   "a6c5217bd5366391",
+   "d823ba2d92f080fa",
+   "dc57bcab29320bf5",
+   "f6c052f81404b9c4"
+  ],
+  "48": [
+   "55ab7bd0ad484501",
+   "70f201600ab60a83",
+   "7b62bcc62c2bd13f",
+   "912ed08e7c27a1b1",
+   "a06d8c3ae0d06e71",
+   "d68612afc280bf62"
+  ]
+ }
+}

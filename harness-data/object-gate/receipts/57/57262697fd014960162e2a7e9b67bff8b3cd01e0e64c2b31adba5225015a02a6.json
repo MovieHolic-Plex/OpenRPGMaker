@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "57262697fd014960162e2a7e9b67bff8b3cd01e0e64c2b31adba5225015a02a6",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "철쭉 덤불(분홍 꽃)",
+ "label": "sengoku-edo/se-azalea",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bush / foliage clump",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bush is drawn as an upright rounded shape (11px wide by 13px tall) resting flat on the ground line at row 14. It lacks 3/4 foreshortening or a distinct top surface seen from above, presenting as a flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7204
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bush with pink flowers",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The shrub is rendered as a rounded dome/mound with lighter green highlights on the upper portion indicating a visible top surface viewed at 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4392
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "azalea bush",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush is rendered as a rounded volumetric mound with the upper surface spanning roughly rows 3-7, lit from above with pink flower clusters visible across the top and front surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5246
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bush / shrub",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rounded azalea bush shows an upward-facing top surface across rows 3-7 with top-down lighting and pink blossoms, transitioning into the shadowed south face below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7109
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.069Z",
+ "cells": {
+  "16": [
+   "0a9cf46c51400cec"
+  ],
+  "24": [
+   "25eb6e122d3584e1",
+   "278b72348f868f83",
+   "2b8cd80b0f9fba60",
+   "45d700f6279e48f9",
+   "d4d11f77def24c24",
+   "f576040d9adc93b4"
+  ],
+  "32": [
+   "1b0fd1413480ba70",
+   "8f6883464d579988",
+   "f52ef015cd03e8ba",
+   "f6efbb09ba2c77de",
+   "f84d96f2d9696c2a",
+   "fbd321141f3151a2"
+  ],
+  "48": [
+   "10c0b2e5f0546e32",
+   "19bcfb1cdc21db8c",
+   "78d62dcb9fd85162",
+   "93b89ab5e5c3a679",
+   "da157621688a5e3a",
+   "e4a33fbffd2611d4"
+  ]
+ }
+}

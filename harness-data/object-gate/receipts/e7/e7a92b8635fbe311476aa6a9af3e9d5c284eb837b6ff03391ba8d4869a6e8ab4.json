@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e7a92b8635fbe311476aa6a9af3e9d5c284eb837b6ff03391ba8d4869a6e8ab4",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "south interior wall top rim seen from above (flat)",
+ "label": "sky-island/si-void-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall top rim terrain border",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a standard horizontal interior wall top rim terrain boundary, showing a 6-pixel wide top ledge transitioning into dark ceiling/void below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6680
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall top rim",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal wall cutaway/rim tile viewed from above, matching standard RPG Maker interior south wall top terrain conventions.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3285
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall top rim",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal top rim of the south interior wall spans rows 0-5 (6 pixel rows) viewed from above, bordering the dark void/lower area below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4941
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall top rim terrain tile",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a terrain strip representing the top edge/cutaway rim of an interior wall seen from above, spanning rows 0-5 with black void below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3746
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.561Z",
+ "cells": {
+  "16": [
+   "a0fc5c9689fea14f"
+  ],
+  "24": [
+   "049ef7d933a20abd",
+   "0d4167fa02de277c",
+   "4e38c98695296b04",
+   "690a18220215f812",
+   "6fe29345957b7d66",
+   "98f334c52d12e28f"
+  ],
+  "32": [
+   "63065102fc724fbf",
+   "9153548569d2874e",
+   "9fb3ae6da80b5f5f",
+   "acb10af9ac329c00",
+   "af0e46c4ec5fd57b",
+   "c43f930515bcb11b"
+  ],
+  "48": [
+   "1cf47e1503f0f68f",
+   "65097edd9441f341",
+   "94890b13b2dfb50e",
+   "d206c77438347b87",
+   "e602622c6d9172f9",
+   "fa679ffc0c96e25e"
+  ]
+ }
+}

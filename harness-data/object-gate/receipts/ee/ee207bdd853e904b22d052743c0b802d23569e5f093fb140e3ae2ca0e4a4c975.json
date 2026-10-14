@@ -1,0 +1,148 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ee207bdd853e904b22d052743c0b802d23569e5f093fb140e3ae2ca0e4a4c975",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "tall double-door wooden wardrobe",
+ "label": "sky-island/si-wardrobe",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden wardrobe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is rendered as a flat architectural front elevation. The area in rows 1-3 is a front-facing upper rail/frieze framed between the left and right vertical stiles rather than a top horizontal surface. The actual top surface of the wardrobe is represented only by a 1px boundary line at row 0.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8492
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wardrobe body",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wardrobe is visible across rows 0–3 (4 rows tall), shaded from back to front with a bright front edge highlight on row 3 that casts a shadow onto the doors below on row 4.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9423
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tall double-door wooden wardrobe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wardrobe is drawn as a flat architectural front elevation. The lighter band across rows 1-3 is the upper front rail/frieze framed between the left and right vertical stiles (which extend all the way from row 0 to 30), rather than a horizontal top surface seen from above. There is no visible top surface foreshortened from a 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11276
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall double-door wooden wardrobe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wardrobe is drawn straight-on as an architectural front elevation. The area above the doors (rows 1-3) is framed by the left and right vertical frame stiles, representing the front top rail rather than a foreshortened top surface. There is no visible top surface (0px).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8226
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.566Z",
+ "cells": {
+  "16": [
+   "b190618cd07ee0fd",
+   "b1d1b0917e1af8ed",
+   "bfaee6e8326abd07",
+   "fdd9c2bb8bf3f804"
+  ],
+  "24": [
+   "0d981a1fd39b1391",
+   "16c6d3d430139f0d",
+   "20b40d777b188ee1",
+   "2bd2b8df3c7deded",
+   "5771d3ab2b1ddd85",
+   "5a2ef4415880b7b0",
+   "5ce284e2ab46aaa9",
+   "5e59132f360482df",
+   "68bbde9035cc844a",
+   "7a83a1ef96ab856a",
+   "7b47567e363fb1eb",
+   "81bcd2435617edff",
+   "938f0de488e4ab99",
+   "986bbd78e1d84796",
+   "a5cabbbe0893c588",
+   "aa54a787a16e0aa6",
+   "c062bde82c8e6418",
+   "c32e691485cff4dc",
+   "cb127bedb82b4a76",
+   "cd9e588664ccf165",
+   "da75cd30ce1d695b",
+   "ec13cc31a631b661",
+   "f94a22e08811f355",
+   "fde107acf4d85dd5"
+  ],
+  "32": [
+   "cffda5a6a4f23f82"
+  ],
+  "48": [
+   "464c6d35f8f124c8",
+   "6b1e2fd0fa0d6f22",
+   "7c7f75dc699e12cd",
+   "8b42e0f8ba59442a",
+   "c41475b2b0e9fc8e",
+   "fb8196db05e47dd6"
+  ]
+ }
+}

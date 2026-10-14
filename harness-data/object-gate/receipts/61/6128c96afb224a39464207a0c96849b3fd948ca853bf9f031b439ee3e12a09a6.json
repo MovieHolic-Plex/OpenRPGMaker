@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6128c96afb224a39464207a0c96849b3fd948ca853bf9f031b439ee3e12a09a6",
+ "width": 16,
+ "height": 48,
+ "kind": "box",
+ "name": "neon sign tower v1",
+ "label": "sf-station/sf-neon-v1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "neon sign tower box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign cabinet is drawn strictly in pure front elevation with only a 1px outline at the top (row 2) and no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4613
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "neon sign box on base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign tower is drawn completely in flat front elevation with a 1px outline at the top (row 2) and no visible horizontal top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4658
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "neon sign cabinet on pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign cabinet extends from row 2 to row 35 with only a 1px black outline at the top (row 2); no horizontal top surface is visible from above, making it a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 3260
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sign cabinet on support pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign cabinet has only a 1px black outline at row 2 with no foreshortened top surface visible, representing a pure front elevation view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 3822
+  }
+ ],
+ "decidedAt": "2026-10-13T15:16:44.016Z",
+ "cells": {
+  "16": [
+   "21e7c522c171b0ed",
+   "7078e9e4638179df",
+   "9922ff27991ec235"
+  ],
+  "24": [
+   "0d94bfd8558a656e",
+   "57294e63caed9354",
+   "5a37a2a6735c9ac7",
+   "6ae1b19e0fc557a9",
+   "9060a92cc2a3cb51",
+   "e90e599956b70a5d"
+  ],
+  "32": [
+   "0365e931045d1607",
+   "098a531b56cdd798",
+   "2ddc603a8ae2391d",
+   "4bc015ff4a2407b5",
+   "5afa983be75ac8cb",
+   "5dc4e367dac5416f",
+   "6637bb1728be1534",
+   "7f70ddea0814d8bf",
+   "86abe03d99f2dd8b",
+   "d87b0584b7aa6a95",
+   "dd1d4b8a4a1f817d",
+   "f5d3ccd425e7b7ad"
+  ],
+  "48": [
+   "00a25ad50f112e8d",
+   "c6572a0fb68679ea",
+   "d970dd0feb0491d0"
+  ]
+ }
+}

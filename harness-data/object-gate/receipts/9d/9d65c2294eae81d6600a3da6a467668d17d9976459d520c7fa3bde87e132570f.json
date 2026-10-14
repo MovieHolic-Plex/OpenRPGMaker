@@ -1,0 +1,243 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9d65c2294eae81d6600a3da6a467668d17d9976459d520c7fa3bde87e132570f",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "airlock module v2",
+ "label": "sf-station/sf-air-v2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sci-fi wall segment with airlock door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat 2D architectural elevation wall with no visible top surface, roof, or depth foreshortening on either the wall or the door lintel.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4854
+  },
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sci-fi airlock wall module",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire wall segment and airlock door are drawn strictly as a flat front elevation with no visible top surface or roof depth (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4822
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "airlock wall module with sliding door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat vertical wall elevation with no top surface, roof, or foreshortened horizontal depth visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8832
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "airlock wall module",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The airlock module is drawn in pure front elevation as a flat 2D sci-fi wall and door. There is no visible top surface or roof slope at the top (top_rows = 0), and horizontal lintels are represented only by 1-2px flat trim lines.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6697
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "airlock wall module with central door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat 2D architectural elevation typical of a side-scroller, with no visible top surface or roof foreshortening on either the wall body or the door frame.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5552
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "airlock wall and door module",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The airlock module is drawn in pure flat front elevation like a 2D side-scroller wall, showing only vertical surfaces and a 1px top border with no top horizontal surface or depth visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3919
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "airlock wall section with sliding door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire wall and airlock door are drawn strictly in flat front elevation with no visible top surface, roof slope, or foreshortened horizontal depth on the lintels or wall top.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5742
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "airlock wall section and sliding door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The airlock wall and door are drawn as a completely flat architectural front elevation with no visible top surface, roof slope, or foreshortened horizontal depth anywhere on the main structure.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4955
+  }
+ ],
+ "decidedAt": "2026-10-13T15:16:44.016Z",
+ "cells": {
+  "16": [
+   "3715621c45abcc5b",
+   "41c627cce7ef3a50",
+   "85ef550812a87d7c",
+   "9b35a7987e7d90c8",
+   "a44877662a7b2ab6",
+   "b0258e41926ce439",
+   "d983e5befcad8d86",
+   "ea7a62c558a3a20e",
+   "fafc3297237f4ec3"
+  ],
+  "24": [
+   "7f999231cca1cf01",
+   "c433c063e008f56e",
+   "e26e3d741a2fa597",
+   "e4e1131d289e2214"
+  ],
+  "32": [
+   "03440c6b146770e5",
+   "03ec24ba524fcce0",
+   "0c330879b75ed590",
+   "1d70719211cc6415",
+   "2487334e41055aae",
+   "4525a12aab7bd19f",
+   "458cd7375eb1d7ee",
+   "50ee245c40e0440b",
+   "54425a92960dbbe1",
+   "58b2d0e78ea25780",
+   "84d7455aead0501f",
+   "85bb3e2173dff06e",
+   "9363f011e67d2b73",
+   "9a940532fbc9e67a",
+   "aad7dd46c1f37180",
+   "abed08b1bc561fa8",
+   "ac67ff5ee7a346a5",
+   "af7da3e76247c6c0",
+   "b59282cf81936d28",
+   "bc8b9c33c78b0f0d",
+   "da8adde2f1871a69",
+   "e65bd9cb9ec599db",
+   "e70662c107ec834b",
+   "f0eb00f925e15066"
+  ],
+  "48": [
+   "3160555b5b908887"
+  ]
+ }
+}

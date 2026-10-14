@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0b88ded5c0813a77399ede9b84f3e986208ea67add58bbb524e8d98f71b399d0",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "에어록 모듈(사다리꼴 지붕 윗면 + 미닫이 문)",
+ "label": "sf-station/sf-airlock",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "airlock module structure with sloped roof and sliding door",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The trapezoidal metallic roof surface is clearly visible from above, spanning rows 2 to 16 (approximately 15 rows tall) above the south-facing wall and door.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4344
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "airlock module structure",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The trapezoidal roof surface spanning rows 2 to 16 provides a clear 15-row top slope seen from above in 3/4 view above the south-facing wall and sliding door.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4107
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "airlock module structure with sloped roof and sliding door",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The trapezoidal roof/top surface spans from row 2 to row 17 (approx 15 pixel rows), showing a foreshortened top surface above the south wall and sliding door.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3869
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "airlock module structure with sloped roof and sliding door",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features a prominent foreshortened top roof plane spanning rows 2 to 16 with paneled detailing and a skylight/vent, situated above the south wall and sliding door.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6564
+  }
+ ],
+ "decidedAt": "2026-10-13T15:38:14.589Z",
+ "cells": {
+  "16": [
+   "086aea619df959d0",
+   "2eb333f44899a8a7",
+   "2fa1ba195efcb83a",
+   "32a9eb533dfca72d",
+   "8275d7aa05d0a10b",
+   "8fa19ad1b0186529",
+   "9e95fac3a92e45a8",
+   "d5b3167620d494b4",
+   "f9beea2e195b67dd"
+  ],
+  "24": [
+   "68afd6a8f28c75c6",
+   "9edc72affec11f43",
+   "ee98e8f0d70f197b",
+   "eef0181cd65b995f"
+  ],
+  "32": [
+   "05d132f73070bf82",
+   "08a7061ae927554c",
+   "09b33783c0b43439",
+   "0be78da6695dc064",
+   "0e3b2d5e1571c4b8",
+   "0f41e98c2c1879d5",
+   "2f3e5cbe12a08a46",
+   "384b8eac5482daa7",
+   "5a2702725715a5aa",
+   "785f0f95c3b5320b",
+   "7cbcfa77cb4b7676",
+   "80c7800b1dbffc7c",
+   "8e7a08bbb98865b8",
+   "966335027097bd53",
+   "994eec54da67a324",
+   "9c8c024dd145858f",
+   "a69586f085cf1399",
+   "c0675feef4a9c2a5",
+   "c5652f98de2b5fb7",
+   "c826d6f73029835a",
+   "cffee8f7b4a06183",
+   "de4db8bebb668cfc",
+   "f894c9c75a418393",
+   "fc6af87832cd8e76"
+  ],
+  "48": [
+   "82199bec8e6b0cd5"
+  ]
+ }
+}

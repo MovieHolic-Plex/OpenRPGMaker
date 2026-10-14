@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f63be6fb8c7aefae7fa80193ef918bb90417e47eb7215c5ae38dfbb4591d0af5",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "풀밭 모서리(북서쪽 흙길)",
+ "label": "sengoku-edo/se-grass-edge-nw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass and dirt ground transition tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain autotile showing the edge between green grass and a dirt path at the northwest corner. Flat ground tile viewed from standard top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6413
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass ground patch corner over dirt path",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing a patch of grass with dirt/path background along the north-west edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2676
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass and dirt ground transition tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing a patch/border of grass meeting a dirt path. Entire tile represents horizontal ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2769
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass to dirt path transition terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile depicting a grass corner bordering dirt; viewed top-down as expected for ground autotiles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2890
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.060Z",
+ "cells": {
+  "16": [
+   "89cb1b3733805c65"
+  ],
+  "24": [
+   "1c58a06a9d950b48",
+   "2eb8416006aea9bb",
+   "a16a8f89ca30dcc2",
+   "b20c2e09822f86fd",
+   "b7ea7228689feea5",
+   "e0ee9b542ca0a694"
+  ],
+  "32": [
+   "11c8533c7c5fd397",
+   "162bb636ea2a977c",
+   "2af5c02763362115",
+   "952ff0b26915dc16",
+   "c10fdfe65286b01e",
+   "edd146af37ccd251"
+  ],
+  "48": [
+   "3f7f3ffab78e7a4f",
+   "6a7d288d48bf8b02",
+   "7f81d13319718d89",
+   "849c9a8ec890d470",
+   "b8b7a25aa9c0463b",
+   "dc7a03d9fef3a0d0"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3cb3a41dc68771d8468f532bf032a08a987e7990cfe9e34ca755045ec9a7a45d",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "cloud platform edge tile against sky (terrain)",
+ "label": "sky-island/si-cs-inw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cloud platform terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a cloud surface with sky visible in the top-left corner; top surface spans the entire tile as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2698
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cloud platform terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile representing a cloud platform surface meeting open sky in the upper-left corner; fully visible from above as a top-down ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3438
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cloud platform edge tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Cloud platform terrain tile with sky visible in the upper-left corner; functions as a top-down ground/platform surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3307
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cloud platform terrain tile with sky edge corner",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a cloud surface with sky visible in the top-left corner; fully visible from above as top-down terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3275
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.977Z",
+ "cells": {
+  "16": [
+   "907bca810cd1d703"
+  ],
+  "24": [
+   "0be18f545bf62af8",
+   "3da6c4bd1fe9abff",
+   "57bcf5527d57a758",
+   "58e38eb545af2263",
+   "678e526d1da9714d",
+   "ad4aa955b95a1752"
+  ],
+  "32": [
+   "101fd12a01c4db83",
+   "2f2bfbd7721a6762",
+   "3647b3bd77a93333",
+   "837a340c2c398332",
+   "9d2de5dce2aee1d0",
+   "bf384c98587be2df"
+  ],
+  "48": [
+   "2d20dd207168a33c",
+   "5719fba3e13c8a49",
+   "60df1abbbb4577ad",
+   "6b00adce8c015b8f",
+   "8344743e62dd7e4f",
+   "927d6a014cc14f0c"
+  ]
+ }
+}

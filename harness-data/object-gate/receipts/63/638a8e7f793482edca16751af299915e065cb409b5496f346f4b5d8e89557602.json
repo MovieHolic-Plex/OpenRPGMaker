@@ -1,0 +1,151 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "638a8e7f793482edca16751af299915e065cb409b5496f346f4b5d8e89557602",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "통신 중계기(받침 위의 장비 상자와 작은 접시)",
+ "label": "sf-station/sf-comms-relay",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "equipment box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The equipment box is drawn in a pure front elevation with no visible top surface (only a 1px dark edge line under the outline). The satellite dish is also drawn as a pure front-facing circle without foreshortening. The base plinth cannot be credited as the top surface of the main object.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14785
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "equipment box on pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The equipment box is drawn in pure front elevation with only a 1px edge line at row 9 and no visible top surface. The dish is also drawn facing flat toward the camera as a 2D circle, consistent with a side-scroller/platformer elevation rather than 3/4 top-down view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 20023
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "communication repeater unit (equipment box and dish on base plinth)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The equipment box, parabolic dish, and supporting base are drawn in flat front elevation. The equipment box shows only a flat front face with LEDs and no foreshortened top surface (row 9 is merely a 1px inner shade line). The dish is rendered as a flat circle facing directly forward.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12261
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "equipment box and dish",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main relay equipment (box and satellite dish) is drawn in pure front elevation: the circular dish faces directly forward instead of being tilted/foreshortened for the 3/4 view, and the equipment box shows only its vertical front face with no top surface (row 9 is merely a 1px edge shade). Per guidelines, the pedestal/base plinth does not count as the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11835
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:27.306Z",
+ "cells": {
+  "16": [
+   "46413fc7a16df8ee",
+   "4c3080b740c0b56d",
+   "9ce5f1418803f5d1",
+   "dbfc81300dc932d9"
+  ],
+  "24": [
+   "12f87bc543ddf96f",
+   "15697e93dd3f7c12",
+   "1864ce54345332f2",
+   "286a81ef5b098f6d",
+   "4ae592bdd290006c",
+   "4d5b2efec6cccf92",
+   "4f27816fb113c005",
+   "50ef0c7a2b2fe2d9",
+   "5bbfdad8552db2e6",
+   "80a0cdce0f3c5053",
+   "923d924e1f860a54",
+   "9394c851b10502d8",
+   "aec4125675c6f214",
+   "afeab39f4f9ca45e",
+   "ce9dc0b26d367c1b",
+   "d7f2753a3ff43627",
+   "de1491582053e632",
+   "df02d0143306be27",
+   "e611e72736cffb17",
+   "e72c26aacb19663e",
+   "f2bb9674dd37c8b5",
+   "fa492fb704d689a7"
+  ],
+  "32": [
+   "6df766a90c200465"
+  ],
+  "48": [
+   "0210f2eaf00fdfcb",
+   "3543c043ffde5d6b",
+   "3d76906a111083c3",
+   "9a2f7a4dde033f48",
+   "c966a62e895f2308",
+   "ddb23c2e414a7211"
+  ]
+ }
+}

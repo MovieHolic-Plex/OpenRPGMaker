@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e93bf0e1dae23bf9ccdea8f2782cc31c32c0ceddd3f857761d0163c13a31463c",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "첨두 머리 묘비(해골 새김)",
+ "label": "gothic_manor/gm-tomb-arch",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pointed-arch tombstone/stele",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pointed stele is drawn entirely flat in pure front elevation with no visible depth or top surface showing the thickness of the stone.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6814
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pointed headstone / tombstone",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pointed stone slab is drawn as a flat 2D silhouette with an engraved cross/motif, showing 0 rows of top surface/thickness for the stone slab.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6041
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tombstone / stele with pointed arch",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pointed stele is drawn completely flat from the front with no visible top depth or receding surface on its pointed crest (only a 1px outline).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6207
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pointed tombstone / stele",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pointed stone slab is drawn as a flat 2D silhouette with no visible top thickness/slanted surface seen from above; it is a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5826
+  }
+ ],
+ "decidedAt": "2026-10-13T16:52:42.784Z",
+ "cells": {
+  "16": [
+   "5f6851702ba7d437"
+  ],
+  "24": [
+   "2cdf3c614f44b551",
+   "4b650e7e3bf88931",
+   "977cd3957ab5ec01",
+   "a311432b6ed15ab4",
+   "b50e1414f8538021",
+   "d07c648e3b0f809e"
+  ],
+  "32": [
+   "1d1cd3ea48407807",
+   "37433588a838b826",
+   "4b0337035c8e17d4",
+   "55deeee9692a2aea",
+   "64b825f8f3ef58ab",
+   "ad0d6e54a803e801"
+  ],
+  "48": [
+   "1ffdab8c35e1a7e8",
+   "25a781b4cb88c61e",
+   "4c2fd198bcf205a2",
+   "a4cbfc6280ac11f3",
+   "f5337d6d39982212",
+   "f534bc4c1d79d1d7"
+  ]
+ }
+}

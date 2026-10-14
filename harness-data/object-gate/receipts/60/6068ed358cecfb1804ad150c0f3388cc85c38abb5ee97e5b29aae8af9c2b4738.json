@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6068ed358cecfb1804ad150c0f3388cc85c38abb5ee97e5b29aae8af9c2b4738",
+ "width": 32,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "벽면 네온 막대 간판(벽에 붙은 가로 램프 띠 판)",
+ "label": "sf-station/sf-street-neon-bars-wall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall-mounted neon strip sign panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted flat panel sign with horizontal neon light strips, designed to sit flush against a vertical north wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6041
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rectangular wall-mounted neon bar panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat wall-mounted sign panel with horizontal neon strips. As a wall-mounted fixture mounted flat against a north wall, it correctly displays its front-facing surface without requiring a 3/4 top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8078
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall-mounted neon sign board",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Rectangular sign board mounted flat against a vertical wall with three horizontal neon bars. Flat orientation is explicitly allowed for wall_mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6731
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall-mounted neon strip signboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted rectangular neon board viewed flat against the wall, permitted for wall_mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4412
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:06.341Z",
+ "cells": {
+  "16": [
+   "c057cb4809904a22",
+   "dcbf537a5faf5b7a"
+  ],
+  "24": [
+   "1081ea932e39eb0f",
+   "15165bb3c33988ec",
+   "181e6e5274db8c77",
+   "3608a23698f4492d",
+   "5390cd92f0488e4c",
+   "65e9585f4244779f",
+   "6b91534c2089f449",
+   "81551c2e24d2d1eb",
+   "8bcd220b6b669626",
+   "de321af051ef2a47",
+   "e5f4f48803f0cbd3",
+   "ed9efa2fbfe9b772"
+  ],
+  "32": [
+   "04f77af74aed1c7d",
+   "34ef335b4ab671e4"
+  ],
+  "48": [
+   "016127feb2ed0cad",
+   "537c99cb91a19233",
+   "a8be3d0e42890282",
+   "c68b8e5dc3eede61",
+   "d1233c5b2d0c2cfb",
+   "f17bc719c02f898f"
+  ]
+ }
+}

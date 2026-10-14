@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9536a3b45d1e075986495a330222ab4ea153e66749b6caff1508216f19dbc181",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "발광 볼라드(원통 + 윗면 램프)",
+ "label": "sf-station/sf-street-bollard",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical bollard with illuminated top lamp",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the bollard is drawn as a foreshortened ellipse spanning rows 3 to 8 (6 rows tall) containing a yellow illuminated lamp, positioned clearly above the vertical front cylindrical body (rows 9-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6245
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "illuminating cylindrical bollard",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the bollard is clearly shown as a foreshortened ellipse spanning rows 3-8 (6 rows tall) containing a yellow glowing lamp, sitting above the vertical front cylindrical body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4756
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cylindrical bollard with illuminated top lamp",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylindrical bollard features a well-defined elliptical top surface (rows 3 to 8, approx. 6px tall) containing a yellow illuminated lamp, transitioning to the south-facing curved vertical body with hazard stripes below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4473
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "illuminated bollard",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the cylinder is clearly visible from above across rows 3-8 (6 rows) containing an elliptical glowing orange lamp, while the front face extends down below with hazard stripes and the lower cylinder body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11773
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:06.343Z",
+ "cells": {
+  "16": [
+   "4b5a855b5efc6242"
+  ],
+  "24": [
+   "33f96969644a6fbe",
+   "a5726eac2248debd",
+   "ac14ecb20436425a",
+   "b3fcd5ec780d595b",
+   "b70c997cbfc0b412",
+   "ed99ef37a95382cb"
+  ],
+  "32": [
+   "11c4df40d4b24a89",
+   "54f57254bffe7f3b",
+   "5a4b3253f573e3de",
+   "6c2d43937e1c58ed",
+   "7d3acb372b946e0c",
+   "b33d1637895bbab8"
+  ],
+  "48": [
+   "6d1b2103d7caf0ac",
+   "8248817b324458d9",
+   "9b5d14dd4380e78f",
+   "a5639ace4b703fb6",
+   "adfee498ba0bc2ea",
+   "d6e917219f210fd8"
+  ]
+ }
+}

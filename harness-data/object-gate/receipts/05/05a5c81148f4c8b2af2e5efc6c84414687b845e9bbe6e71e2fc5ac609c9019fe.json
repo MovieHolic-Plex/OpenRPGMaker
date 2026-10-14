@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "05a5c81148f4c8b2af2e5efc6c84414687b845e9bbe6e71e2fc5ac609c9019fe",
+ "width": 48,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "여관 접수대(놋쇠 종 + 숙박부)",
+ "label": "steampunk-city/sp-inn-counter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "inn reception counter",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter's horizontal top surface spans rows 4 to 12 (approx 9 pixel rows) displaying the brass bell, guest register, and pen, followed by a south front face spanning rows 13 to 26.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3517
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "inn reception counter",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter top is clearly visible from above, spanning rows 4 to 12 (approx 8-9 source pixel rows) bearing the bell and register, above a front south face (rows 13 to 25).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4056
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "inn reception counter",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the reception desk is clearly depicted from row 4/5 down to row 13 (approx 9 rows tall) displaying the bell, guest book, pen, and abacus, with the vertical front face extending below from row 14 to row 26.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3397
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "inn reception counter",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter's horizontal top surface is prominently visible from row 4 to row 12 (approx. 9 pixel rows deep) with items resting flat on top (register, bell, pen, organizer), above a vertical south-facing paneled front (rows 14-25).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3235
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.470Z",
+ "cells": {
+  "16": [
+   "04f1aebb67ebcbb8",
+   "0a480befb730bd4c",
+   "1557b3dbc306946f",
+   "3f2ce5a8e441f7a4",
+   "66b8c53c6b732c89",
+   "bf06863349f936c7"
+  ],
+  "24": [
+   "10aad3115dcf073c",
+   "1ffc55fbe170a49f",
+   "57eeba1e3a7d0e41",
+   "59d513eb3affb193",
+   "961418c4e3e3388c",
+   "c44095a5ca0acacf",
+   "ce57f69cf9dc3197",
+   "e45522c26b48a4c2"
+  ],
+  "32": [
+   "1c6f386226bcbbb3",
+   "61fa1cc3be05beb2",
+   "92364a4577310eae",
+   "9d4ddaaf2aabd059",
+   "a2e3cb73ffacfc51",
+   "ae08eb566680d1f2"
+  ],
+  "48": [
+   "2e947cea08f92037",
+   "43fb4f78fc5258d1"
+  ]
+ }
+}

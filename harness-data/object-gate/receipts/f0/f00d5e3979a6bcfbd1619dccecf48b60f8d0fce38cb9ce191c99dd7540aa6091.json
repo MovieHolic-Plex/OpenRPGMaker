@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f00d5e3979a6bcfbd1619dccecf48b60f8d0fce38cb9ce191c99dd7540aa6091",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "tall wooden bookshelf seen from above-front: deep flat top with a book lying on it, shelves full of books",
+ "label": "sky-island/si-bookshelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall wooden bookshelf",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bookshelf is clearly visible from rows 1 to 5 (5 pixel rows deep) with books resting on it, showing proper 3/4 top-down foreshortening above the vertical shelves.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3814
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall wooden bookshelf",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bookshelf spans rows 1 to 5 (around 5 rows tall) and shows two books lying flat on it, clearly establishing the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3642
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tall wooden bookshelf",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bookshelf shows a deep horizontal top surface spanning rows 1 to 5 (5 pixels tall) with two books lying flat on it, followed by the front face showing three shelves of books in standard 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4511
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bookshelf",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bookshelf is clearly visible from rows 1 to 5 (5 pixels tall) with books lying flat on it, correctly demonstrating 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4198
+  }
+ ],
+ "decidedAt": "2026-10-13T18:47:30.236Z",
+ "cells": {
+  "16": [
+   "96169e9c248341cd",
+   "d28dc159b6e8f498"
+  ],
+  "24": [
+   "0d611ea4def04852",
+   "32bb97e233aa8564",
+   "3567dca320641791",
+   "3c8d3b8f278dac60",
+   "3f4ceffdc4f62a86",
+   "631739b315ec7cb9",
+   "b0126bfbe1f3e76d",
+   "d748e90b74c8c7f3",
+   "eb2e8ea4447871ca",
+   "ed0c6248d27148cc",
+   "f0bbdca9355ee893",
+   "f245c2a506b3d4ec"
+  ],
+  "32": [
+   "3ca059d8ce782609",
+   "c83f8904d8203826",
+   "efaa51c6163e552e"
+  ],
+  "48": [
+   "1fbd4b44cf8e3809",
+   "2308d7dfcebd4f06",
+   "8da1369242641105",
+   "b39f020517396298",
+   "cc0678559421b594",
+   "e5e8b4facb1aa740"
+  ]
+ }
+}

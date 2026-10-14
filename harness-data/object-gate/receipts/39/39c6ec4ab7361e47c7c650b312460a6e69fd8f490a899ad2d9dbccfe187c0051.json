@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "39c6ec4ab7361e47c7c650b312460a6e69fd8f490a899ad2d9dbccfe187c0051",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "갑옷 한 벌(받침대·미늘창)",
+ "label": "gothic_manor/gm-armor",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "suit of armor on plinth",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The suit of armor stands on a circular wooden plinth showing a clear foreshortened top surface (rows 26-28, ~3px tall) and south front face (rows 29-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4711
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "suit of armor on a wooden pedestal plinth",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden display plinth shows a clear foreshortened top surface across rows 25-27 on which the feet stand, with the front rim visible below on rows 28-30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3252
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "suit of armor on a round wooden plinth with halberd",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round wooden plinth shows a clear 3-row foreshortened top surface (rows 25-27) upon which the armor stands, correctly establishing the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4489
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "suit of armor on wooden plinth",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The suit of armor stands on a circular wooden plinth whose top surface is clearly visible from above across rows 25-27 (3 rows tall) with the front curved edge visible below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4325
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.505Z",
+ "cells": {
+  "16": [
+   "777a935a0f1c8f9c",
+   "8b7d02f31acacc38"
+  ],
+  "24": [
+   "0b49bc2659729655",
+   "147dbaf9bf57a8a2",
+   "163ac440d6b40099",
+   "1c68d02e34fa112f",
+   "476c7e9ef7812120",
+   "4ecdc566faf63d3d",
+   "689c11d8ab8c1dcd",
+   "88ccfdc8f864db93",
+   "ae6105e11ac99386",
+   "b27b3d6c712e92f5",
+   "b34617927d05836f",
+   "bbf8a9d91d0867e5"
+  ],
+  "32": [
+   "2d5bb12676c2937e",
+   "d88e4a04ba9b6d11",
+   "e71466d1aa6752b2"
+  ],
+  "48": [
+   "297a8adc1b7c9837",
+   "631f9ab486564422",
+   "81ea1dcfd1fffe4e",
+   "9e9456b515ca05f4",
+   "b0f40e6d0440d587",
+   "dc3e3c8d4b2522bd"
+  ]
+ }
+}

@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d4aa8fa3bc0db2c5758e98c98573206a306f9813ed6c65fc548431763192405d",
+ "width": 16,
+ "height": 32,
+ "kind": "frame",
+ "name": "칼걸이(긴칼·짧은칼 두 자루)",
+ "label": "sengoku-edo/se-sword-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sword rack base and upright frame",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main base plinth of the rack clearly displays a 4-pixel-tall top surface (rows 17-20) illuminated from above, transitioning to a shaded 3-pixel-tall south front face (rows 21-23).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6965
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "weapon rack frame and swords on stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The base plinth has a top surface (rows 16-20), but the rack frame and horizontal bars/swords are drawn in pure front elevation with flat 2px crossbars showing 0px top surface. For a frame/rack, the horizontal beams must show top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13761
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sword rack frame and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal rack beams / swords are drawn as flat 2px-tall bars with no top surfaces visible. The frame is drawn in pure flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11031
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sword rack frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main rack and horizontal sword beams are drawn in pure front elevation with no visible top surfaces (0 px). While the base plinth shows a 4-row top surface, the instructions explicitly exclude base plinths and require horizontal beams of frames to show top faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9762
+  }
+ ],
+ "decidedAt": "2026-10-13T19:37:02.185Z",
+ "cells": {
+  "16": [
+   "1fd1e0d5507e7eeb",
+   "bee2d7a9cbc6e952"
+  ],
+  "24": [
+   "0dda485cdfa20e59",
+   "269a48de9ab4b83f",
+   "2b8d8d5db99b0e4c",
+   "351ce786a9d5435f",
+   "3f80a4adaea59e5d",
+   "7be9d8b919bff184",
+   "91eb346d458b45f1",
+   "b96f3753202f6e20",
+   "c562587fc1449587",
+   "ca69d35f49b038f8",
+   "d52383741fe3a052",
+   "fd925bb29790086f"
+  ],
+  "32": [
+   "5bc699ea076531e6",
+   "b250ee9088b65350",
+   "f5a6ca3221c7de05"
+  ],
+  "48": [
+   "05fa1ad2cfea33e2",
+   "17909552ed922dd1",
+   "80b58a509475c62f",
+   "96223a77c81505a4",
+   "c8e0505976e03012",
+   "df87b8cfa72d9c29"
+  ]
+ }
+}

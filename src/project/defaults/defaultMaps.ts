@@ -25,6 +25,16 @@ const BUNDLED_PLAIN_GROUND_TILES: Record<string, number> = {
   wizarding_world: 577,
   // 해적 군도: 맨 모래(pi-sand 첫 칸, 자리 키 핀 고정).
   pirate_isles: 1,
+  // 1번 = 풀밭(반복 가능한 아래층 바닥).
+  sengoku_edo: 1,
+  // 3번 = 하늘섬 풀밭(반복 가능한 아래층 바닥). 섬·하늘은 compose_sky_island_map 이 깐다.
+  sky_island: 3,
+  // 스팀펑크 도시: 4번 = 판석 보도(반복 가능한 아래층 바닥, 굽기 핀 tiledata/steampunk-city/bake-pins.json 이 번호를 고정한다).
+  steampunk_city: 4,
+  // 24번 = 캠퍼스 잔디(반복 가능한 아래층 바닥).
+  modern_campus: 1,
+  // SF 정거장: 갑판 판 기본 변형(sf:floor:deck-plate 첫 칸, 자리 키 핀 고정).
+  sf_station: 60,
   scarloxy_chipset_grassland: 0,
   scarloxy_chipset_wilds: 0,
   atlas_biome_interior: 258,

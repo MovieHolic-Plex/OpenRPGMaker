@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "24729842e7aee28faa3ce16c13412cd2639666695d03d1253bb235061d0395ee",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "벽돌 벽면 아치 창(윗줄)",
+ "label": "steampunk-city/sp-wall-window-u",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick wall with arched window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall face terrain tile with an arched window. In top-down 3/4 view, south-facing wall surfaces are flat vertical planes, correctly matching the terrain category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6210
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick wall face with arched window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall face terrain tile with arched window embedded; as a south-facing wall surface, no top horizontal face is expected.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4431
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brick wall face with arched window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile depicting an arched window mounted on a vertical brick wall, which appropriately shows the south-facing vertical wall plane without an exposed top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4673
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brick wall with arched window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting an arched window set into a vertical south-facing brick wall face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3855
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.464Z",
+ "cells": {
+  "16": [
+   "2f3c1fa75578852d"
+  ],
+  "24": [
+   "0ae1a8659bbd5564",
+   "2d4a2ec68ddcd0d9",
+   "6a2c65e3489f7149",
+   "96dd545060af963b",
+   "9c44cfb1181689a5",
+   "cb1900c00034d02c"
+  ],
+  "32": [
+   "2fa88060d884fa28",
+   "347ee4304d849fe6",
+   "3d740273fcc7b9fe",
+   "5ed5d56a06f23ce2",
+   "aab1f78407055d66",
+   "ec4cf56cd692e5a3"
+  ],
+  "48": [
+   "042466cf1118e2ac",
+   "4816680bf7bb2232",
+   "4ce6b7ac70a933f2",
+   "7059d47965dea6a2",
+   "a7755a39ee5c8a93",
+   "f0cd714b940169f0"
+  ]
+ }
+}

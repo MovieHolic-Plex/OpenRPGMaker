@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e6967f84daf56bd51c680f68eeefcdb46eb0576af9795697363e717c98b3b318",
+ "width": 32,
+ "height": 32,
+ "kind": "flat",
+ "name": "파헤친 무덤 구덩이(흙더미·삽)",
+ "label": "gothic_manor/gm-grave-open",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dug grave pit and dirt mound with shovel",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": true,
+    "opening_rows": 20,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The grave pit is drawn from above looking down into the hole, showing the rectangular rim and interior walls, with an adjacent oval dirt mound and shovel lying on/in the mound.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4289
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dug grave pit with dirt mound and shovel",
+    "kind_matches": true,
+    "top_rows": 26,
+    "opening_visible": true,
+    "opening_rows": 22,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The grave pit is viewed from above at a 3/4 angle, showing the inner north wall of the pit foreshortened from rows 6-9 and depth into the opening, with an oval dirt mound and shovel alongside.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4746
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dug grave pit with dirt mound and shovel",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": true,
+    "opening_rows": 23,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The dug pit is viewed from a 3/4 top-down angle, showing the interior back and side walls receding into shadow, alongside an oval mound of earth and shovel seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4807
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dug grave pit with dirt mound and shovel",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The grave pit is viewed looking down into the ground with the interior walls shaded in 3/4 top-down perspective, alongside an oval dirt mound with a shovel.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3736
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.461Z",
+ "cells": {
+  "16": [
+   "309c1e1c54e393c1",
+   "3d51abfe082bd863",
+   "554acaa68d390855",
+   "8e2eb63aa9d529da"
+  ],
+  "24": [
+   "33df69b46a729dc9",
+   "3ba53cbfef54c59c",
+   "4f73aac2df9f103a",
+   "54dbeb9b69aa7371",
+   "5e651d8ab2e0447d",
+   "5ee3bf4a588eb359",
+   "607f936aec691da9",
+   "64b3a429e3a657b3",
+   "668f460f1b82942b",
+   "6b481637537368ba",
+   "6e7f454cc96cf635",
+   "76942047476420ed",
+   "778d132614f51fa0",
+   "8ce8500f7268b43b",
+   "8f42b28433a46dd2",
+   "9c5948d93d47aaf6",
+   "b07be6f1ec5e70bc",
+   "b23dded90e483427",
+   "c3d484b5a0924353",
+   "e13b64d73348122e",
+   "e25f6c0d836c99b9",
+   "e5f059f908841f4a",
+   "ec990e60bccd3507",
+   "f868bd7b59ae76a4"
+  ],
+  "32": [
+   "70fb19fced40fc58"
+  ],
+  "48": [
+   "0b7383b615f6a672",
+   "5b458d36458f5a0d",
+   "708f66e4c63ddb7b",
+   "8a879a78b61015f0",
+   "931b174c60283a63",
+   "e61be8dd57557e41"
+  ]
+ }
+}

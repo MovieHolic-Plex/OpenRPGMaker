@@ -1,0 +1,61 @@
+{"png": "sp-floor-plank.png", "kind": "terrain", "name": "나무 판자 바닥", "label": "steampunk-city/sp-floor-plank"}
+{"png": "sp-floor-iron.png", "kind": "terrain", "name": "리벳 철판 바닥", "label": "steampunk-city/sp-floor-iron"}
+{"png": "sp-floor-checker.png", "kind": "terrain", "name": "흑백 체크 타일 바닥", "label": "steampunk-city/sp-floor-checker"}
+{"png": "sp-floor-herring.png", "kind": "terrain", "name": "쪽매 마루(바구니 짜임, 여관)", "label": "steampunk-city/sp-floor-herring"}
+{"png": "sp-floor-stone.png", "kind": "terrain", "name": "낡은 돌바닥(보일러실)", "label": "steampunk-city/sp-floor-stone"}
+{"png": "sp-rug.png", "kind": "flat", "name": "빨강·놋쇠 무늬 깔개", "label": "steampunk-city/sp-rug"}
+{"png": "sp-ceiling.png", "kind": "terrain", "name": "천장(벽 윗면 덩어리)", "label": "steampunk-city/sp-ceiling"}
+{"png": "sp-wall-brick-u.png", "kind": "terrain", "name": "벽돌 벽면(윗줄)", "label": "steampunk-city/sp-wall-brick-u"}
+{"png": "sp-wall-brick-d.png", "kind": "terrain", "name": "벽돌 벽면(아랫줄, 걸레받이)", "label": "steampunk-city/sp-wall-brick-d"}
+{"png": "sp-wall-panel-u.png", "kind": "terrain", "name": "벽지 벽면(윗줄, 초록 줄무늬 벽지 + 천장 몰딩)", "label": "steampunk-city/sp-wall-panel-u"}
+{"png": "sp-wall-panel-d.png", "kind": "terrain", "name": "나무 징두리 벽면(아랫줄)", "label": "steampunk-city/sp-wall-panel-d"}
+{"png": "sp-wall-iron-u.png", "kind": "terrain", "name": "리벳 철판 벽면(윗줄)", "label": "steampunk-city/sp-wall-iron-u"}
+{"png": "sp-wall-iron-d.png", "kind": "terrain", "name": "리벳 철판 벽면(아랫줄, 발판)", "label": "steampunk-city/sp-wall-iron-d"}
+{"png": "sp-wall-window-u.png", "kind": "terrain", "name": "벽돌 벽면 아치 창(윗줄)", "label": "steampunk-city/sp-wall-window-u"}
+{"png": "sp-wall-window-d.png", "kind": "terrain", "name": "벽돌 벽면 아치 창(아랫줄, 창턱)", "label": "steampunk-city/sp-wall-window-d"}
+{"png": "sp-wall-door-u.png", "kind": "terrain", "name": "벽 통로(윗줄, 돌 상인방 + 어두운 틈)", "label": "steampunk-city/sp-wall-door-u"}
+{"png": "sp-wall-door-d.png", "kind": "terrain", "name": "벽 통로(아랫줄, 문턱)", "label": "steampunk-city/sp-wall-door-d"}
+{"png": "sp-boiler.png", "kind": "round_body", "name": "세운 보일러(리벳 원통 + 화실 문 불빛 + 압력계)", "label": "steampunk-city/sp-boiler"}
+{"png": "sp-boiler-f1.png", "kind": "round_body", "name": "세운 보일러(리벳 원통 + 화실 문 불빛 + 압력계) (프레임 2)", "label": "steampunk-city/sp-boiler-f1"}
+{"png": "sp-boiler-f2.png", "kind": "round_body", "name": "세운 보일러(리벳 원통 + 화실 문 불빛 + 압력계) (프레임 3)", "label": "steampunk-city/sp-boiler-f2"}
+{"png": "sp-furnace.png", "kind": "container", "name": "벽돌 화덕(위가 트인 불 아가리)", "label": "steampunk-city/sp-furnace"}
+{"png": "sp-coal-bin.png", "kind": "container", "name": "무쇠 석탄 통(안이 보인다)", "label": "steampunk-city/sp-coal-bin"}
+{"png": "sp-engine.png", "kind": "other", "name": "세운 실린더 증기 기관(받침대 + 뚜껑이 보이는 실린더 + 크로스헤드 + 누운 플라이휠)", "label": "steampunk-city/sp-engine"}
+{"png": "sp-engine-f1.png", "kind": "other", "name": "세운 실린더 증기 기관(받침대 + 뚜껑이 보이는 실린더 + 크로스헤드 + 누운 플라이휠) (프레임 2)", "label": "steampunk-city/sp-engine-f1"}
+{"png": "sp-engine-f2.png", "kind": "other", "name": "세운 실린더 증기 기관(받침대 + 뚜껑이 보이는 실린더 + 크로스헤드 + 누운 플라이휠) (프레임 3)", "label": "steampunk-city/sp-engine-f2"}
+{"png": "sp-engine-f3.png", "kind": "other", "name": "세운 실린더 증기 기관(받침대 + 뚜껑이 보이는 실린더 + 크로스헤드 + 누운 플라이휠) (프레임 4)", "label": "steampunk-city/sp-engine-f3"}
+{"png": "sp-dynamo.png", "kind": "box", "name": "발전기(구리 코일 드럼 + 무쇠 받침 상자)", "label": "steampunk-city/sp-dynamo"}
+{"png": "sp-pipe-wall.png", "kind": "wall_mounted", "name": "벽 구리 배관(밸브 손잡이)", "label": "steampunk-city/sp-pipe-wall"}
+{"png": "sp-gauge-wall.png", "kind": "wall_mounted", "name": "벽 압력계 묶음", "label": "steampunk-city/sp-gauge-wall"}
+{"png": "sp-valve-wheel.png", "kind": "wall_mounted", "name": "벽 밸브 바퀴", "label": "steampunk-city/sp-valve-wheel"}
+{"png": "sp-wall-clock-gear.png", "kind": "wall_mounted", "name": "톱니 벽시계(글자 없는 눈금)", "label": "steampunk-city/sp-wall-clock-gear"}
+{"png": "sp-tool-rack.png", "kind": "wall_mounted", "name": "벽 공구 판(렌치·망치·톱)", "label": "steampunk-city/sp-tool-rack"}
+{"png": "sp-shelf-wall.png", "kind": "wall_mounted", "name": "벽 선반(약병·단지)", "label": "steampunk-city/sp-shelf-wall"}
+{"png": "sp-workbench.png", "kind": "low_furniture", "name": "공방 작업대(바이스·공구·톱니)", "label": "steampunk-city/sp-workbench"}
+{"png": "sp-anvil.png", "kind": "other", "name": "나무 그루터기 위 모루(위에서 본 넓은 작업면)", "label": "steampunk-city/sp-anvil"}
+{"png": "sp-lathe.png", "kind": "low_furniture", "name": "선반 기계(무쇠 침대 + 주축대 + 심압대)", "label": "steampunk-city/sp-lathe"}
+{"png": "sp-drill-press.png", "kind": "tall_furniture", "name": "드릴 프레스(세운 기둥 + 둥근 작업대)", "label": "steampunk-city/sp-drill-press"}
+{"png": "sp-lab-bench.png", "kind": "low_furniture", "name": "실험대(플라스크·증류기·놋쇠 버너)", "label": "steampunk-city/sp-lab-bench"}
+{"png": "sp-tesla-coil.png", "kind": "column", "name": "테슬라 코일(둥근 받침 + 구리 감은 탑 + 꼭대기 놋쇠 도넛 + 불꽃)", "label": "steampunk-city/sp-tesla-coil"}
+{"png": "sp-tesla-coil-f1.png", "kind": "column", "name": "테슬라 코일(둥근 받침 + 구리 감은 탑 + 꼭대기 놋쇠 도넛 + 불꽃) (프레임 2)", "label": "steampunk-city/sp-tesla-coil-f1"}
+{"png": "sp-tesla-coil-f2.png", "kind": "column", "name": "테슬라 코일(둥근 받침 + 구리 감은 탑 + 꼭대기 놋쇠 도넛 + 불꽃) (프레임 3)", "label": "steampunk-city/sp-tesla-coil-f2"}
+{"png": "sp-drafting-table.png", "kind": "low_furniture", "name": "제도대(설계도 — 선만, 글자 없음)", "label": "steampunk-city/sp-drafting-table"}
+{"png": "sp-curio-cabinet.png", "kind": "tall_furniture", "name": "진열장(유리문 — 톱니·약병)", "label": "steampunk-city/sp-curio-cabinet"}
+{"png": "sp-bookshelf.png", "kind": "tall_furniture", "name": "책장", "label": "steampunk-city/sp-bookshelf"}
+{"png": "sp-bar-counter.png", "kind": "low_furniture", "name": "선술집 바(놋쇠 난간 + 잔)", "label": "steampunk-city/sp-bar-counter"}
+{"png": "sp-barrel-rack.png", "kind": "frame", "name": "술통 받침대(받침 위 세운 술통 둘 + 꼭지)", "label": "steampunk-city/sp-barrel-rack"}
+{"png": "sp-tavern-table.png", "kind": "low_furniture", "name": "선술집 둥근 탁자(잔·촛불)", "label": "steampunk-city/sp-tavern-table"}
+{"png": "sp-stool.png", "kind": "seat", "name": "둥근 걸상", "label": "steampunk-city/sp-stool"}
+{"png": "sp-chair.png", "kind": "seat", "name": "나무 의자(남향, 등받이 북쪽)", "label": "steampunk-city/sp-chair"}
+{"png": "sp-fireplace.png", "kind": "tall_furniture", "name": "벽난로(돌 벽난로 + 넓은 선반 + 화덕 바닥 + 불)", "label": "steampunk-city/sp-fireplace"}
+{"png": "sp-fireplace-f1.png", "kind": "tall_furniture", "name": "벽난로(돌 벽난로 + 넓은 선반 + 화덕 바닥 + 불) (프레임 2)", "label": "steampunk-city/sp-fireplace-f1"}
+{"png": "sp-fireplace-f2.png", "kind": "tall_furniture", "name": "벽난로(돌 벽난로 + 넓은 선반 + 화덕 바닥 + 불) (프레임 3)", "label": "steampunk-city/sp-fireplace-f2"}
+{"png": "sp-inn-counter.png", "kind": "low_furniture", "name": "여관 접수대(놋쇠 종 + 숙박부)", "label": "steampunk-city/sp-inn-counter"}
+{"png": "sp-bed.png", "kind": "low_furniture", "name": "무쇠 틀 침대(누비 이불, 머리판 북쪽)", "label": "steampunk-city/sp-bed"}
+{"png": "sp-wardrobe.png", "kind": "tall_furniture", "name": "옷장(두 문, 놋쇠 손잡이)", "label": "steampunk-city/sp-wardrobe"}
+{"png": "sp-nightstand.png", "kind": "low_furniture", "name": "침대 곁 탁자(기름등)", "label": "steampunk-city/sp-nightstand"}
+{"png": "sp-dresser.png", "kind": "tall_furniture", "name": "서랍장(거울 없음, 위에 단지)", "label": "steampunk-city/sp-dresser"}
+{"png": "sp-crate-in.png", "kind": "box", "name": "작은 나무 상자", "label": "steampunk-city/sp-crate-in"}
+{"png": "sp-sack.png", "kind": "box", "name": "곡식 자루(주둥이를 접어 연, 낟알이 보인다)", "label": "steampunk-city/sp-sack"}
+{"png": "sp-stairs-up.png", "kind": "terrain", "name": "오르는 나무 계단(북쪽으로)", "label": "steampunk-city/sp-stairs-up"}
+{"png": "sp-stairs-down.png", "kind": "terrain", "name": "내려가는 돌계단(바닥 구멍)", "label": "steampunk-city/sp-stairs-down"}

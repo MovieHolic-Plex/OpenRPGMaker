@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3a7af21fb2291a8c2d1464d799411226684dcaebdf7064304e626d0ede5dda83",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "캠퍼스 안내도(서 있는 지도판)",
+ "label": "modern-campus/mc-campus-map",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "standing signboard with campus map",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The board is drawn entirely in front elevation with no visible top surface (only a 1px border at row 6); the signboard frame, legs, and base show no depth from the required 3/4 top-down angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 8659
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "standing campus map board on legs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire board and frame are drawn completely flat from the front with only a 1px outline on top (row 6) and no visible horizontal top surface for the board, frame, or legs.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 7350
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "standing signboard / map board on legs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The board is drawn entirely in pure front elevation with no visible top surface (the top frame edge is only a 1-2px border line at rows 6-7), and the map/header is displayed flat on the south face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 7495
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "standing campus map board with legs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signboard is drawn in pure front elevation; the outer frame is a flat rectangle with only a 1px top edge outline (row 6) and no visible top surface foreshortened from above. The gray section in rows 7-11 is a front header panel enclosed by the side borders.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 7090
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.870Z",
+ "cells": {
+  "16": [
+   "2dfb63d748bfa12e",
+   "acc7727c8abc6888",
+   "cc6f8d43cf98a11e",
+   "ce3f1e42bba65eae"
+  ],
+  "24": [
+   "113930ff500a3019",
+   "1cba15cad729d4a6",
+   "1f3f07e0d0a028a7",
+   "3037b0f858ce3706",
+   "37e63895fcb576d3",
+   "3a89d37c6cf65b72",
+   "3c6e40bb13a7f920",
+   "3ec187e7d39cfbb3",
+   "4803bb9f23d55b1f",
+   "5c5714bd41b4c952",
+   "66119afa56de305d",
+   "7245ddb927ac5b63",
+   "8ebf938f20c36a5a",
+   "912cbc0a4af5b83a",
+   "9cd8c2291d0bcfe9",
+   "aa06d698d6c9d701",
+   "bb7210c3cb6aee7c",
+   "c3b7de37444cba38",
+   "c8d6f96ed8ecfc64",
+   "d516085936e7059e",
+   "d711dc08544fe517",
+   "d8b500f14dfb4591",
+   "ef140e97b7ed2a07",
+   "fcfb93d712e4da9b"
+  ],
+  "32": [
+   "bbf92affefd52839"
+  ],
+  "48": [
+   "12bc42d56f7487f3",
+   "4a4a315538c6e74c",
+   "5dae60ef88e0d447",
+   "9048fc4f0f25a7a5",
+   "9eebd26f82ca27d6",
+   "d38c2cd6c965c6d1"
+  ]
+ }
+}

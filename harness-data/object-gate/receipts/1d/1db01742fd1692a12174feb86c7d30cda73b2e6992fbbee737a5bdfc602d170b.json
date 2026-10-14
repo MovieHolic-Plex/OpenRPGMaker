@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1db01742fd1692a12174feb86c7d30cda73b2e6992fbbee737a5bdfc602d170b",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "잔디 경계석(북서 변)",
+ "label": "modern-campus/mc-curb-nw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "curb-edged grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing a grass patch bounded by top-down stone border curbs on the north and west edges.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4963
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass and stone curb border tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting grass with a stone curb edge on the north and west borders. Not a standing object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4982
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "curb stone border around grass terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a grass patch bordered by a stone curb along the north and west edges.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3518
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "curbed grass terrain tile (northwest corner)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing grass ground bordered by curb stones along the north and west edges, viewed entirely from above as flat ground.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3867
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.866Z",
+ "cells": {
+  "16": [
+   "4132020e078a8742"
+  ],
+  "24": [
+   "105b365949c1f0d7",
+   "3c5bedc26b74108e",
+   "40b4ec9a3d39b154",
+   "55257ad9967987f9",
+   "60259f24ed967224",
+   "b27671810a5a93d5"
+  ],
+  "32": [
+   "722fa765ecf79694",
+   "a0a09eec68aa17e0",
+   "c20009284121383d",
+   "cccba6a645ae8996",
+   "d5b139dd0c43b1a4",
+   "fcfa7d8c67764b74"
+  ],
+  "48": [
+   "055145138bdc0b65",
+   "10e1ac0f61752e3a",
+   "b2c1ccb0b92e9eac",
+   "e38c74703b7b0429",
+   "fad6c497a9333513",
+   "fe569a3deec81935"
+  ]
+ }
+}

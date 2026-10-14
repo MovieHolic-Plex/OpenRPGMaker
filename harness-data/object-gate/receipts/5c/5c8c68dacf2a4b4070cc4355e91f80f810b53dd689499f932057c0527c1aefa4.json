@@ -1,0 +1,145 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5c8c68dacf2a4b4070cc4355e91f80f810b53dd689499f932057c0527c1aefa4",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "가로등(받침 + 가는 기둥 + 위 팔 + 발광 머리 + 땅 빛 웅덩이)",
+ "label": "sf-station/sf-street-lamp-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lamp head and post",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The streetlight head at rows 2-5 is drawn in pure front elevation with straight horizontal bands and no visible top surface (top_rows: 0). The object is also misclassified as a box.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5104
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lamp head and post",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The streetlamp is drawn straight-on in pure front elevation with horizontal stripe shading across the lamp head and no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5938
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lamp head and post",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lamp head is drawn in pure 2D front elevation with horizontal bands across rows 2-10 and no top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4610
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "streetlamp (lamp head and pole)",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lamp head (rows 2-10) is drawn in pure front elevation with straight horizontal bands and no top surface visible from above. The pole is also drawn flat straight-on. The supplied kind 'box' does not match a streetlamp.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4730
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:31.924Z",
+ "cells": {
+  "16": [
+   "4019f82f92eee172",
+   "6993bd51138cbfe0"
+  ],
+  "24": [
+   "2cefa2d811e8bd8d",
+   "3c1dd29dbae402f8",
+   "3fc961747d3f706f",
+   "4ec606d1fa5a467c",
+   "551b8367347eb30e",
+   "8ce5450534ca13ae",
+   "901892cf6ec1f2f1",
+   "a4b0f57d3fc1426d",
+   "ad72cabcc483050f",
+   "b3a36f0024e74ff7",
+   "c089c0d5011da7ea",
+   "da75cf5917b7ec3d"
+  ],
+  "32": [
+   "a391420fbe632a59",
+   "b843530058176c31",
+   "f5a8e6702f4f949e"
+  ],
+  "48": [
+   "2aafd92676cf48d3",
+   "5487ae1eb8e7e14a",
+   "80686044d2f12903",
+   "8743da6e7e38ee81",
+   "ea87b781c688c0a6",
+   "f29c4fe8c8b079ee"
+  ]
+ }
+}

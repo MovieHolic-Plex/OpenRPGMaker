@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "80261d6d96f82036aa81cb2557a152ef4885c3b973d3710f872988bebd478d60",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "토끼풀 꽃 잔디",
+ "label": "modern-campus/mc-lawn-flower",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "clover grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing grass texture with small white and yellow clover flowers.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4467
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "clover grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts top-down grass terrain with clover flowers scattered across the ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4913
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "clover flower grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A full 16x16 ground terrain tile representing grass with clover flowers, appropriately viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5767
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "clover grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a full 16x16 patch of ground terrain representing grass with small white and yellow clover flowers.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3683
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.862Z",
+ "cells": {
+  "16": [
+   "599eeef2a84223c1"
+  ],
+  "24": [
+   "737d3a5befc64625",
+   "7bf010066dd18f04",
+   "7bf727461a3e976b",
+   "8dd6327cff9621e1",
+   "a159a9a0c4d07189",
+   "d4715045af00910c"
+  ],
+  "32": [
+   "45a0b4239d4a55e3",
+   "4991ca97715d6a1a",
+   "657ac27061a93aef",
+   "6c9264019d26c30a",
+   "7070c10167ffcb52",
+   "aedf265bc2d5ab38"
+  ],
+  "48": [
+   "02b48f92a4ffc1bb",
+   "06d988593542f82b",
+   "1e40ce81e6ebe872",
+   "6ea99f7de066ec90",
+   "8cadfda2676aace1",
+   "b0d38ca1e011bf8b"
+  ]
+ }
+}

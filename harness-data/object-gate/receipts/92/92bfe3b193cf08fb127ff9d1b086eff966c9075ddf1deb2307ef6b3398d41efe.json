@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "92bfe3b193cf08fb127ff9d1b086eff966c9075ddf1deb2307ef6b3398d41efe",
+ "width": 48,
+ "height": 48,
+ "kind": "container",
+ "name": "분수(둥근 화강암 수반)",
+ "label": "modern-campus/mc-fountain",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "granite fountain basin with water pool",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": true,
+    "opening_rows": 18,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round granite basin has a clearly rendered top-down elliptical opening (rows 17-34, ~18 rows tall) showing the water surface inside, with the front basin wall extending south to row 42.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3822
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round granite basin with water and central spout",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": true,
+    "opening_rows": 18,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basin opening is drawn as an ellipse displaying water across rows 17-34 (18 source pixel rows tall) with the south curved front rim/wall visible beneath it from rows 35-42.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3267
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round granite basin with water and central spout",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 18,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basin opening is clearly rendered as a large top-down foreshortened ellipse filled with water spanning rows 17 to 34 (18 source pixel rows tall), with the front rim and south outer wall visible below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4421
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round granite basin",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 17,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fountain basin shows a wide elliptical opening filled with water (rows 17-33, ~17 rows tall) and a curved front south wall underneath (rows 34-42), conforming well to standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4515
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.870Z",
+ "cells": {
+  "16": [
+   "0bf67aa622fd4847",
+   "110cafefecd57214",
+   "1821c41ba6a5b5ee",
+   "1c6eac4cb7e0b574",
+   "3a0f697ff2e35644",
+   "3a7d1804bfbd2efe",
+   "7af7c9ea10990f5c",
+   "7f3a93c88e0cbf84",
+   "9ca5c269dd098d9e"
+  ],
+  "24": [
+   "1bc871b233047447",
+   "2486a6eaa067990b",
+   "5175eeda3e3700ca",
+   "de446e1ef0c77de3"
+  ],
+  "32": [
+   "0172ea5b3025945e",
+   "0818fe6be7aa2023",
+   "0b5dd5725f7813a1",
+   "135e40257edbc504",
+   "1ca3101886fc5aec",
+   "2032b60c80e39d6f",
+   "3d6b4d5fb4b9fdb2",
+   "5fc164a6937ad861",
+   "606613ed829b3102",
+   "7356b7e763627120",
+   "7672bf48d4e8bdae",
+   "7cbf835ceb5e720b",
+   "898b317f1055e6f2",
+   "8e727a0614509bd3",
+   "a270b175df76ebf9",
+   "a4a407a4210d751b",
+   "a76142a4f2c5e4d0",
+   "b03fb854240bbeca",
+   "b5c8b81e0ff5b273",
+   "bb373effd669248b",
+   "c01bc04f40a587d2",
+   "ea75fe3d8063dd84",
+   "efb9fd1df5efee6c",
+   "fd8411a93e370269"
+  ],
+  "48": [
+   "148f83afc48feb7c"
+  ]
+ }
+}

@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0a7cbe0a68304cd2f933f09dc91253bf907f148a1237884c62da6269902ebb6e",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden rail fence segment (north-south)",
+ "label": "sky-island/si-fence-v",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 1행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fence post / rail segment",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence segment/post is drawn in pure front elevation; the only indication of a top plane is a 2-pixel-tall cap/highlight at rows 4-5, which fails the requirement for a fully foreshortened top surface (3+ pixels).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 8586
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal rail of fence segment",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The crossbeam/rail displays a clear 3-row top surface in rows 3-5 (lighter tan tone) above an 8-row south face (rows 6-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13437
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden rail fence segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence segment has no valid top surface visible from above; the only horizontal band at rows 4-5 is merely 2px tall, functioning as an edge highlight/cap line rather than a foreshortened top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12120
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden rail fence segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence segment is drawn in flat elevation with no visible top surfaces (only a 2px light band at rows 4-5, which functions as an edge highlight/cap rather than a foreshortened horizontal top face).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12846
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.429Z",
+ "cells": {
+  "16": [
+   "93b43655f2f33d2a"
+  ],
+  "24": [
+   "19e229f317177c1e",
+   "668567f3e3165c8e",
+   "851609b7564e9102",
+   "bf15030be8c78132",
+   "dc40d2f9723d4de1",
+   "dcd7e8dc4878e4fe"
+  ],
+  "32": [
+   "052deabb3f53adc7",
+   "6eaa6ef44fab12b9",
+   "a71772b06b6c28e8",
+   "c5c18f018eb85b0b",
+   "d025468d7378ad23",
+   "de6a96aa3a5edf16"
+  ],
+  "48": [
+   "196ebc6abafb77d4",
+   "95f27aa5d2be8768",
+   "a3be01d471d311ad",
+   "bf7d779f4479d405",
+   "ee6f5f5b8c47ac6d",
+   "f81cc2002763341d"
+  ]
+ }
+}

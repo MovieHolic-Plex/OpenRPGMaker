@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "43b18466f9d934825e72e7ea69d329defeac4f15039345eae093d91bbbef9613",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "기타 앰프(검은 스피커 상자)",
+ "label": "modern-campus-int/mc-amp",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "guitar amplifier cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire amp is drawn in pure front elevation: row 7 is only a 1px outline border, directly followed by the front control panel (rows 8-14) and the front speaker mesh (rows 15-30) with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6292
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "guitar amplifier cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The amplifier is drawn in pure front elevation with only a 1px outline on top (row 7) and the control panel and speaker grille facing directly forward with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6780
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "guitar amplifier cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The amplifier is drawn in flat front elevation. Rows 7-8 are merely the top 1-2px border/outline, followed directly by the front control panel (rows 9-14) and front speaker grille (rows 15-30). There is no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5622
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "guitar amplifier cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire amp is rendered from a pure front elevation. Only a 1-pixel dark outline exists at row 7 with no foreshortened top surface visible above the front control panel and speaker grille.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6489
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.313Z",
+ "cells": {
+  "16": [
+   "32981c78f244aae3",
+   "94a9626345381752"
+  ],
+  "24": [
+   "49a8806faf471a20",
+   "52e908e015cb02a3",
+   "65c8ad07a81f2ca2",
+   "9fd3c66d7c9f8a72",
+   "ae63aa185408e994",
+   "bcd3903ce5b415eb",
+   "be083ed6a59dcecd",
+   "da328c954f894806",
+   "e3f467e8c46fbb45"
+  ],
+  "32": [
+   "70ab50143bf18108",
+   "a97b3bcb4d6106de",
+   "eb06e080b3764059"
+  ],
+  "48": [
+   "0f02504ccd6de032",
+   "11a6cea5ef984c12",
+   "3aaa96505d99071a",
+   "6292b2f9359aa3f6",
+   "682807e0aeabaaae",
+   "91a00bcddca0671e"
+  ]
+ }
+}

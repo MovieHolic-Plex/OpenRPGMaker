@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3b0ed7069954e9f76fe9cdd85ca05a12cd45d84334856b92c79468a13b2ad763",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "방화 물통 더미(받침 위 통 여섯)",
+ "label": "sengoku-edo/se-bucket-stack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stacked tiered cylinders/buckets (largest at rows 9-14)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylinders/buckets are drawn straight-on with completely flat horizontal tops/rims and no visible top elliptical surface for any tier, resulting in a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5851
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stacked wooden tubs/buckets",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stacked tubs are drawn as flat rectangular tiers with straight horizontal lines and no foreshortened elliptical top surfaces or openings visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3455
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tiered stack of round tubs/buckets",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each tier has only a 1px flat horizontal stripe (e.g. row 8 for the base tier, row 4 for the middle tier) where the top/interior should be, with completely flat horizontal rims instead of elliptical top surfaces or visible interior openings.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 5284
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bottom tier tub/drum",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stacked tiers are drawn in front elevation with purely horizontal and vertical color bands. The main bottom tub has only a 1px dark edge line (row 9) with no visible elliptical top surface or opening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5561
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.073Z",
+ "cells": {
+  "16": [
+   "fedc04bb06dc447b"
+  ],
+  "24": [
+   "1127cbbe627ad8d5",
+   "75efc161cd91e45e",
+   "b6c89589f067a713",
+   "bfd22a45bd9f2873",
+   "d0ee13ad669d9752",
+   "e046d389115df4bd"
+  ],
+  "32": [
+   "06c0866369635b67",
+   "55510e617775b063",
+   "7b9d847286744e46",
+   "b7b6841f1834d292",
+   "c20599cccb632d43",
+   "f7e77f8e8dcee258"
+  ],
+  "48": [
+   "2be2f9740a085d9f",
+   "340ab709961dc7cf",
+   "58f7289bbf590865",
+   "6a13367570d0d572",
+   "8f4870b52b039bc4",
+   "ad770532834b20ea"
+  ]
+ }
+}

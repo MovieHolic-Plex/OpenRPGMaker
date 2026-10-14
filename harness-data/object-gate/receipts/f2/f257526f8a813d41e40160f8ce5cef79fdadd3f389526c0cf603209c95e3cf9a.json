@@ -1,0 +1,154 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f257526f8a813d41e40160f8ce5cef79fdadd3f389526c0cf603209c95e3cf9a",
+ "width": 64,
+ "height": 32,
+ "kind": "organic",
+ "name": "large fluffy cumulus cloud floating in the sky (organic)",
+ "label": "sky-island/si-cloud-puff-l",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cumulus cloud",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cloud is drawn in side-view elevation as seen from the ground looking horizontally at the sky, with circular puffs stacked vertically in screen space rather than showing the foreshortened top surfaces of the cloud mass seen from a 45-degree downward angle.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10659
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cumulus cloud",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cloud is drawn as a flat front-elevation silhouette of overlapping circular puffs (typical of a 2D side-scroller) with no top-down perspective or visible foreshortened top surfaces (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7326
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cumulus cloud",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cloud is drawn as a flat side-scroller front elevation composed of 2D circular lobes with no foreshortened top surface (0 pixel rows) visible from a 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6843
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cumulus cloud puff cluster",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cloud is drawn in pure 2D side elevation (like a platformer or side-scroller backdrop), composed of flat circular puffs stacked in the vertical plane with no overhead top-down 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8137
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.433Z",
+ "cells": {
+  "16": [
+   "468ab851c9b19abe",
+   "510669bd2693b7ba",
+   "6aef8404d4cfce8e",
+   "7076033e2178d628",
+   "b72a2e27aa2dc185",
+   "be07e8d60965f128",
+   "d522e732bcef5166",
+   "ff5b777e95b36224"
+  ],
+  "24": [
+   "06882481e452e1ad",
+   "0dc86a3cb55cec83",
+   "189f47d1b3f2ec5f",
+   "1cbb4100ffd6d193",
+   "2072fb0c284b133e",
+   "2223d89560d89b4c",
+   "2917807cfa6f4b07",
+   "2adacc7dd979faa8",
+   "34e2c9e470db2b4e",
+   "3a03e689c30e29b4",
+   "428cbbbf1a6595fd",
+   "4bac5bcecc3d1d5b",
+   "67398b07cd539d86",
+   "6e9e42cc6472b6c3",
+   "765f768720b207b2",
+   "7caa3a4c43a7baf2",
+   "83a0a25dbc5600ec",
+   "841f17db91bfa6aa",
+   "878ccd7a2feb69ee",
+   "9491e8b50fbc96a4",
+   "9c4abc7e85168f8b",
+   "9f62ff062882ed86",
+   "b8d4f07c7aa8d061",
+   "bd3ab753620ed2c3",
+   "c18f29a28178ddd7",
+   "c2026df10a9e7fc9",
+   "c8129a4922dd573f",
+   "d754cf7e76ef2068",
+   "dbe1ab1f4f610bf0",
+   "dc97f14633150694",
+   "e836b202291cb2c9",
+   "e8f1d2a1d8c5559b",
+   "ed93957c786f6ff8",
+   "f98d9bea5c2c0706",
+   "ffff638842119e32"
+  ],
+  "32": [
+   "b8964d045fa9a308",
+   "d41c98d898d29640"
+  ],
+  "48": [
+   "2113d4743012c578",
+   "4680f8af7662ffbc",
+   "73ec4d564145aee9",
+   "76b0c7b7fbc4fcca",
+   "7a905db9ca8b5df9",
+   "87508915bc25b327",
+   "ad7dbb3377fea690",
+   "b4fcabaffc61dae1",
+   "be3de527774738fb",
+   "d0c2cd1e66b511a8",
+   "e89f86bab7b904d7",
+   "f48e41a5e05b6802"
+  ]
+ }
+}

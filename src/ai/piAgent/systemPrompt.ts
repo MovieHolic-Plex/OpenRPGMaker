@@ -14,6 +14,11 @@ import { HAND_INTERIOR_POLICY_LINE } from "../handInteriorPolicy";
 import { jpCityPromptLines } from "../jpCityPolicy";
 import { gothicPromptLines } from "../gothicPolicy";
 import { pirateIslesPromptLines } from "../pirateIslesPolicy";
+import { sengokuPromptLines } from "../sengokuEdoPolicy";
+import { skyIslandPromptLines } from "../skyIslandPolicy";
+import { steampunkPromptLines } from "../steampunkCityPolicy";
+import { campusPromptLines } from "../campusPolicy";
+import { sfStationPromptLines } from "../sfStationPolicy";
 import { JOSEON_POINTER_LINE } from "../joseonPolicy";
 
 export function describeScopedMaps(project: Project, mapIds: readonly string[]): string[] {
@@ -69,6 +74,15 @@ export function buildPiAgentSystemPrompt(
     ...(spatial ? jpCityPromptLines(project, mapIds) : []),
     ...(spatial ? gothicPromptLines(project, mapIds) : []),
     ...(spatial ? pirateIslesPromptLines(project, mapIds) : []),
+    // 전국·에도(sengoku_edo) — 칩셋이 프로젝트에 있을 때만 줄이 붙는다.
+    ...(spatial ? sengokuPromptLines(project, mapIds) : []),
+    // 하늘섬(sky_island) — 칩셋이 프로젝트에 있을 때만 줄이 붙는다(없는 칩셋을 «있다»고 말하지 않는다).
+    ...(spatial ? skyIslandPromptLines(project, mapIds) : []),
+    // 스팀펑크 도시(steampunk_city) — 칩셋이 프로젝트에 있을 때만 줄이 붙는다.
+    ...(spatial ? steampunkPromptLines(project, mapIds) : []),
+    // 캠퍼스(modern_campus) — 칩셋이 프로젝트에 있을 때만 줄이 붙는다(없는 칩셋을 «있다»고 말하지 않는다).
+    ...(spatial ? campusPromptLines(project, mapIds) : []),
+    ...(spatial ? sfStationPromptLines(project, mapIds) : []),
     ...(spatial ? [JOSEON_POINTER_LINE] : []),
     ...(spatial ? ["마을·방에 물건을 배치할 때 사용자 선택 태그가 있는 공용 기물을 먼저 검색하고, 시대·장소·기능이 맞으면 우선 사용한다. 이미 만들어 둔 장소·오브젝트를 먼저 쓴다: list_spatial_designs 의 data.shared 에서 찾아 장소는 import_region_reference({id}) 한 번으로 맵째 가져오고, 오브젝트(고목·봉우리·기후 지형·항구 부품·성문루·집 외형·마을 소품)는 stamp_object({objectId,mapId,x,y}) 로 찍는다. 행마다 owner(어디 곁에 두나)를 따르고, 칸 번호를 하나씩 칠해 다시 그리지 않는다. 태그 「요청 시에만」(사막 메사·짐승 뼈)은 사용자가 그 물건을 말했을 때만 찍는다 — 사막 기본 꾸밈은 고목 덩이·선인장·사구·물가 야자."] : []),
     ...genreMechanicLines(project),

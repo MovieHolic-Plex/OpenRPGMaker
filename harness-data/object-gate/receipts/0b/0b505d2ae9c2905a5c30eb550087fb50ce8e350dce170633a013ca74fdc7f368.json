@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0b505d2ae9c2905a5c30eb550087fb50ce8e350dce170633a013ca74fdc7f368",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass ground tile",
+ "label": "sky-island/si-grass-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ground plane",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 grass terrain surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2989
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 grass terrain tile representing ground surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3998
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass ground terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a 16x16 flat grass ground texture viewed from above, representing continuous horizontal ground terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2600
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flat grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless horizontal terrain surface covering the full 16x16 tile in top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2619
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.973Z",
+ "cells": {
+  "16": [
+   "6a672c8c54df0fa1"
+  ],
+  "24": [
+   "491f3a86a0aa797f",
+   "56395a42ec7a6166",
+   "7e634bdfdcf1bcdd",
+   "b0307bb6a582fecc",
+   "deb1e9837ca0b93d",
+   "e744322ec1adb9f3"
+  ],
+  "32": [
+   "781f8bc97ad08f92",
+   "7b9f8a7e710b4b0e",
+   "8773559b06a1c558",
+   "9e9325a07aec8c9a",
+   "cf9e1336fc2ad3dd",
+   "e3aa47032e4ed366"
+  ],
+  "48": [
+   "1c92884ea5d77fe1",
+   "37c0a25b45b1e1e4",
+   "5de53d27527789f8",
+   "925ead0260e0cdb6",
+   "a10cc6a8ef053252",
+   "f640d973ed474999"
+  ]
+ }
+}

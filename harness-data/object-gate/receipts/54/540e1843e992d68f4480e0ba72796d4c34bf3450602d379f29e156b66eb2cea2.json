@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "540e1843e992d68f4480e0ba72796d4c34bf3450602d379f29e156b66eb2cea2",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "cobblestone plaza edge on grass (terrain)",
+ "label": "sky-island/si-plaza-sw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cobblestone plaza tile with grass border",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tile representing cobblestone paving bordered by grass along the left and bottom edges; standard top-down ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4992
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cobblestone ground tile with grass edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing cobblestone plaza surface bordering grass at the bottom and left edges, viewed top-down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4155
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cobblestone ground tile edge with grass border",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing cobblestone paving bordered by grass along the bottom and west edges.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3552
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cobblestone plaza edge on grass",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tile depicting a top-down cobblestone plaza surface bordering grass along the south and west edges.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3998
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.979Z",
+ "cells": {
+  "16": [
+   "9755eeec8bed8bc5"
+  ],
+  "24": [
+   "6860aad917f8d5d0",
+   "824a411eef4e58ee",
+   "861514498f5ff487",
+   "c34cf246b7cb7e0c",
+   "cc41d4ba8d2097e1",
+   "d58b218045d994ed"
+  ],
+  "32": [
+   "1988154f8dc3d21f",
+   "30fe706982924b68",
+   "4ba34f94c8e56bc5",
+   "7b71314d090a743a",
+   "8afd09b663020a51",
+   "b49eddf479aaaded"
+  ],
+  "48": [
+   "4994353942231af6",
+   "4c345f84b33cc9ee",
+   "57698e46371bd0f5",
+   "595d4fd6d3cfb5fa",
+   "c218017d5dfbe1fa",
+   "eda1f2175b4af197"
+  ]
+ }
+}

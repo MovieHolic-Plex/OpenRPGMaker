@@ -1,0 +1,146 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e97e8ed74a682be74550e0551985ee4c53b2844ad7981cac6017caf6a28f4f53",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "낮은 자판기 겸 냉장 진열대(2칸, 글자 없음)",
+ "label": "modern-campus-int/mc-vending-low",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vending machine / refrigerated display unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire unit is drawn in straight-on front elevation from row 7 to 31 with no foreshortened top surface visible (only a 1-2px dark outline at row 7-8 and a 1px highlight line at row 9 above the front-facing button panel).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5557
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vending machine / display counter",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The vending machine is drawn straight-on in pure front elevation from row 8 to 31 with only a 1px border/highlight at rows 8-9 and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4388
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vending machine / refrigerated display counter",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The vending machine is drawn in pure front elevation with no visible top surface foreshortened from above (only a 1px outline at row 8 and a 1px highlight line at row 9).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4682
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vending machine / display case",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn straight-on from the front: the upper button/sign panel, display shelves, and bottom dispenser slots are all in pure front elevation with no visible top surface (0px top surface, only a 1px border outline at row 8).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6301
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.314Z",
+ "cells": {
+  "16": [
+   "2dad5412c1a12668",
+   "66bab92bbcb3dec9",
+   "dea3846429acaa22",
+   "e2f274679aaa1023"
+  ],
+  "24": [
+   "25553af75c771385",
+   "3aa9de61b694eb65",
+   "47b47850028b6488",
+   "5cec43bfab1d0706",
+   "5f857f05e9809969",
+   "6357360eec252c14",
+   "6b3163bd696c2ad7",
+   "70a82f94489b6ba9",
+   "77f0ed61f609d98c",
+   "78adfbdbf291aac8",
+   "827c7dab134af160",
+   "97e005a4ff84adc9",
+   "a834d4e640498ae5",
+   "c46743d425c84152",
+   "df459d3ab116bdbb",
+   "dfac8efa473d7fa1",
+   "e738d0bdba574186",
+   "efdb446a5d6f10da"
+  ],
+  "32": [
+   "c2fc0bbfca8cfe99"
+  ],
+  "48": [
+   "0a11fe945042f393",
+   "22286aec54ba483e",
+   "296fd5448e56f587",
+   "47c758d16b6980da",
+   "6cc70661736e31b3",
+   "926a1b435a073e47"
+  ]
+ }
+}

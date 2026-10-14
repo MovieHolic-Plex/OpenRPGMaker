@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0e3348cdcb4697f26cb04cf2a6b328f4979afe3efb755edb732842199e219a57",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "달 탐사 로버(위에서 내려다본 넓은 흰 지붕 윗면 + 태양 전지판 + 조종석 유리 + 양옆으로 튀어나온 바퀴 넷 윗면 + 짧은 앞면 + 그림자)",
+ "label": "sf-station/sf-rover",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "moon rover body",
+    "kind_matches": true,
+    "top_rows": 19,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof surface showing the cockpit glass, solar array, and body frame spans rows 2-20 (~19 rows), while the south/front bumper spans rows 21-26.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5635
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lunar exploration rover body",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rover's large horizontal top deck (with cockpit glass and solar array) spans rows 1-20, followed by a south-facing front bumper/grille section across rows 21-27, correctly providing a 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5511
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lunar rover body",
+    "kind_matches": true,
+    "top_rows": 19,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top deck of the rover is prominently shown from rows 2 to 20 featuring solar panels and cockpit glass, transitioning to a south front bumper on rows 21 to 26.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5590
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lunar exploration rover body",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rover's top deck/roof with solar panels and cockpit glass spans rows 1 to 20, followed by a south front bumper/face from rows 21 to 26. The 3/4 perspective correctly presents both the extensive top surface and the front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6086
+  }
+ ],
+ "decidedAt": "2026-10-13T16:10:32.600Z",
+ "cells": {
+  "16": [
+   "425278ff5116d5c1",
+   "5c9c33d28bbfd94a",
+   "5d6dfbf31b22c617",
+   "76c5ea9cc9a0c4eb",
+   "b4a41e63840a023a",
+   "f18b0c1c63a77e38"
+  ],
+  "24": [
+   "154473c9c51c56b9",
+   "233ded448e53268d",
+   "462fbcea7aa5b3b4",
+   "b5907008b0df3dcf",
+   "c10caf3d491e7ec8",
+   "cb198de413ce16b4",
+   "d11120ff6c4f4dc9",
+   "df8798c42157ca7a"
+  ],
+  "32": [
+   "0aa06dab5fe298cf",
+   "1445c1eb9009e303",
+   "b78576ac4e3b0478",
+   "bd7c3f8a584db0c5",
+   "e3ce07621ce38bd7",
+   "e40f18e0f7ab7087"
+  ],
+  "48": [
+   "84b4ee5ffbb9a642",
+   "eb406914d2b8ac36"
+  ]
+ }
+}

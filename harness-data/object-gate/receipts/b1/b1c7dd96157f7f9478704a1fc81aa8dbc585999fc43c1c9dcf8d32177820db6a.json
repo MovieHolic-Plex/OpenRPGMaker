@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b1c7dd96157f7f9478704a1fc81aa8dbc585999fc43c1c9dcf8d32177820db6a",
+ "width": 32,
+ "height": 16,
+ "kind": "organic",
+ "name": "석탄 더미",
+ "label": "steampunk-city/sp-coal-heap",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "coal pile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The coal pile is drawn as a flat front-elevation mound/silhouette rather than a 3/4 top-down pile showing an elliptical base or foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7952
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "coal pile mound",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coal heap is rendered as a foreshortened mound in 3/4 view with visible upward-facing faceted chunks and highlights across rows 4 to 9 before sloping down to the front edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4505
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "coal pile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The coal pile is drawn as a flat side-view profile with no visible top surface or 3/4 depth cues to indicate top-down angle, appearing like a 2D platformer mound cut off at the bottom.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5322
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "coal pile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The coal pile is drawn as a flat 2D mound silhouette with a straight horizontal base line and random single-pixel specks, showing no foreshortened top surface or depth cues consistent with a 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5562
+  }
+ ],
+ "decidedAt": "2026-10-13T18:16:30.908Z",
+ "cells": {
+  "16": [
+   "38c2392b55e8cbea",
+   "cefb41bec11a322e"
+  ],
+  "24": [
+   "09842c14e7343efa",
+   "167001ae9b5d9388",
+   "1b4f848332fc75b4",
+   "2ef96e36fbcee469",
+   "5c341277e09411f9",
+   "5d46875f05ee3b15",
+   "77122e8126ff6f45",
+   "82d6498fcc02e33b",
+   "91c7bc626a6c83c3",
+   "b61ad032e663c15d",
+   "c34ccf58c336ad7a",
+   "cdb85b498e0cced4"
+  ],
+  "32": [
+   "0a38fe12fdfcb66e",
+   "140df327073b00b5"
+  ],
+  "48": [
+   "601a355f550ba031",
+   "602eb5d8a9ea39bb",
+   "613cd65dacf290d5",
+   "62221c52db2cffa9",
+   "b0f515c84fa1c1d3",
+   "c477b6d520d784c3"
+  ]
+ }
+}

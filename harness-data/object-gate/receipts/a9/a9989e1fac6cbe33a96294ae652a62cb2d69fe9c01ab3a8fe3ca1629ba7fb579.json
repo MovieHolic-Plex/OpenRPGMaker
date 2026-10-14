@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a9989e1fac6cbe33a96294ae652a62cb2d69fe9c01ab3a8fe3ca1629ba7fb579",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "의무실 링 스캐너(둥근 구멍 몸체 + 앞으로 나온 침대)",
+ "label": "sf-station/sf-med-scanner",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "scanner chassis / cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main machine cabinet is drawn as a flat front elevation. The top row has only a 1px outline/edge highlight (row 0-1) before the front-facing control panel (rows 2-6) and main front face (rows 7-26), showing no foreshortened top surface of the large cubic body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6347
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "medical scanner cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 9,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main cabinet is drawn completely in flat front elevation with buttons and display directly on the vertical face (rows 1-6) and no foreshortened top surface visible at all (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5684
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "scanner housing (box body with circular scan bore)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The scanner housing is drawn in a flat front elevation. Rows 1-6 form the vertical front control panel (with screen and status LEDs) starting immediately beneath the top border, with 0 rows dedicated to the top surface of the main body. The circular bore and frame are also drawn straight-on.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5370
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "medical ring scanner housing",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 9,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire scanner is drawn in pure front elevation: the housing has no visible top surface (0px), the circular scanner bore is viewed straight-on, and the console panel, bed, and feet are all drawn completely flat from the front with zero 3/4 top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7093
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.951Z",
+ "cells": {
+  "16": [
+   "6586727c1077f849",
+   "953722fb4409e006",
+   "dda14252b502d434",
+   "e8b59d12f5731338"
+  ],
+  "24": [
+   "11cd35dff9892643",
+   "1803dcfa132f3826",
+   "2015ce3813263baf",
+   "24ea41582f2a4e84",
+   "3a97f7e3a65cbeea",
+   "3c9c29408c91dfad",
+   "41b9b7738275fd85",
+   "50e7b6887de06aa6",
+   "56cd13f42766194a",
+   "679b5c5f41d848cf",
+   "75c2f968c812eeae",
+   "8084c67f87e30818",
+   "b5057f55f3c27ea8",
+   "b54646a1f82e0e62",
+   "b89f2af9504d36ad",
+   "bd0a508e3f8d7083",
+   "c57b7d83b5521f31",
+   "d029e0c0f39b868d",
+   "d7810765a4ef89a3",
+   "daebaf577d872754",
+   "dd2018f43f17ac63",
+   "e09c2222ac002af0",
+   "f2dec8172325685a",
+   "f7f5692f5c7794fb"
+  ],
+  "32": [
+   "84ae7ae53ae108d2"
+  ],
+  "48": [
+   "4387586f4adfa0c6",
+   "66a3b8e7762c2860",
+   "74f54d75e88318f4",
+   "a92f7c68a6dbcd7e",
+   "c0f49447dae9de21",
+   "d1387c39bc1196ef"
+  ]
+ }
+}

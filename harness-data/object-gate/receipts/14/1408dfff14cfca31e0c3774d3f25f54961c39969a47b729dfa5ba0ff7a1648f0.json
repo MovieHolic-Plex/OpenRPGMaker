@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1408dfff14cfca31e0c3774d3f25f54961c39969a47b729dfa5ba0ff7a1648f0",
+ "width": 32,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "두루마리 서가(벽 앞)",
+ "label": "sengoku-edo/se-scroll-shelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bookshelf",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bookcase is drawn in pure 2D front elevation. Rows 2-5 represent a front cornice/header rather than a top surface seen from above (it has only a 1px top border at row 1). The shelf surfaces and scrolls show zero depth or 3/4 perspective foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9013
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "scroll bookshelf",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire bookshelf is drawn in pure front elevation: the top of the unit has no visible top surface (0 rows), the shelf boards show only 1-2px front edges with no visible depth or shelf surfaces, and the scrolls are drawn flat facing forward.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5271
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "두루마리 서가",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bookcase is drawn in pure front elevation: the top header board, side uprights, shelves, and base show only flat front-facing thicknesses with zero top surface depth visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12095
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "scroll bookshelf",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bookshelf is drawn as a flat 2D architectural front elevation. The top section (rows 3-6) is a front header beam framed by side posts with no visible top surface receding back. The shelf boards and scrolls are also drawn entirely flat from the front with no visible depth or top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6578
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.079Z",
+ "cells": {
+  "16": [
+   "056cba174dab35a6",
+   "0fe0e5bac963651f",
+   "1d5df890dd7f3a82",
+   "55c63fb1cf05725d",
+   "61fb8009a3c5b16a",
+   "fa08ddfe9ca64555"
+  ],
+  "24": [
+   "63c09130fab11054",
+   "86eb2b07f1ceef3a",
+   "91691537f1bb12ea",
+   "92911d42557f9ace",
+   "94c700fe2c6f8fba",
+   "9a821cd2e663fbc8",
+   "a34fdfb5e69ad4a1",
+   "b7e562927e310b03",
+   "bae750168ff838c9",
+   "e6147e865d921f31",
+   "ee116986a6b83df3",
+   "efb003aeddaa2078"
+  ],
+  "32": [
+   "458d0c853c889b27",
+   "8cbc748083072770",
+   "ca7b0dbc1fec1c5d",
+   "d083eed5632aeef2"
+  ],
+  "48": [
+   "75b9bd613af089e4",
+   "bc380d8554b416d3",
+   "be8a1584fc66ba00"
+  ]
+ }
+}

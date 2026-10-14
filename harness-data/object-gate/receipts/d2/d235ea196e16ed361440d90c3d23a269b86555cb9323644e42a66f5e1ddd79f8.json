@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d235ea196e16ed361440d90c3d23a269b86555cb9323644e42a66f5e1ddd79f8",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "트로피 선반(낮은 2칸, 금색 컵·방패 올림)",
+ "label": "modern-campus-int/mc-trophy-shelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "trophy shelf cabinet",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shelf is clearly visible spanning rows 9 through 14 (approx 6 pixels deep) displaying the bases of three golden trophies, above the front compartment face spanning rows 15 through 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11574
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "low trophy shelf / cabinet",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the shelf is clearly visible from rows 9 to 14 (approx 6 px tall) supporting three small trophies, above the south front face/compartment (rows 15-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3477
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "trophy shelf cabinet",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shelf is clearly drawn across rows 9 to 13 (approx 5 rows tall) holding three golden trophies, with the south front facade and shelf interior visible below from row 14 downwards.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4545
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "low trophy shelf cabinet",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shelf is clearly visible across rows 9 to 13 (approx 5 rows deep) with trophies resting on it, leading to the south-facing front compartment below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3841
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.314Z",
+ "cells": {
+  "16": [
+   "192a0ea8a4cd6a85",
+   "2111a139d5259d4c",
+   "6e5e206029293b56",
+   "d19bec9885c42f51"
+  ],
+  "24": [
+   "12c160e21c0575a2",
+   "1593379242ddc6b5",
+   "20ee2ae562d907f0",
+   "2ded7e7916dcb563",
+   "39b9209bbbe0c5f1",
+   "43706cd617df63c6",
+   "4551e3f25e958cc1",
+   "5f822f1c17af0a8b",
+   "64dcaf017f381403",
+   "6a8c670cf9c31f1b",
+   "90934a3f67adae6b",
+   "b4cc4fc8a3e4eb99",
+   "c9bf434bfaab01f9",
+   "cbdceb149126d120",
+   "d34e1c229f6b6f92",
+   "d5cbb2dfe41b6c54",
+   "e6b372cd9c16b12c",
+   "e8380c7d5e06f796"
+  ],
+  "32": [
+   "ca5e7693e6347553"
+  ],
+  "48": [
+   "1d1af1bdc6c607c3",
+   "6b55b656187dc243",
+   "6e70b5fbd67fd87c",
+   "92b11c111b18cf51",
+   "c00481c7b07e9281",
+   "e6c20ec1148dc751"
+  ]
+ }
+}

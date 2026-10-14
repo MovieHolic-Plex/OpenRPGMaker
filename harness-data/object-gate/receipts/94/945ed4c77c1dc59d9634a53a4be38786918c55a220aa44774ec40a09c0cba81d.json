@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "945ed4c77c1dc59d9634a53a4be38786918c55a220aa44774ec40a09c0cba81d",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "서버 랙(윗면 + 램프 줄)",
+ "label": "sf-station/sf-server-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "server rack cabinet",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the server cabinet occupies rows 2 to 10 (9 pixel rows), rendered with clear horizontal perspective above the south face containing server units and status lights (rows 11-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4463
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "server rack cabinet",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the server rack is clearly rendered across rows 2-10 (approx 9 rows tall) above the front panel with rack units and indicator lamps (rows 11-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4902
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "server rack cabinet",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the server cabinet occupies rows 2 to 10 (9 pixel rows) with proper perspective foreshortening before the vertical front face begins at row 11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5158
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "server rack",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the server rack is clearly rendered from rows 2 to 10 (approx. 9 rows tall) above the front face containing the indicator lamps (rows 11 to 30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4132
+  }
+ ],
+ "decidedAt": "2026-10-13T15:15:22.115Z",
+ "cells": {
+  "16": [
+   "b9f9ef42ce02d64f",
+   "bfb4da60286a7e99"
+  ],
+  "24": [
+   "0485fd0527a696da",
+   "1a21e2c0a2b96766",
+   "5680dbb6cb289c82",
+   "58fab987fb2fca51",
+   "6563c1eaae88c32c",
+   "6c876b56e501367f",
+   "77391328a78e4c8b",
+   "9e6953b1ecb1d040",
+   "ab12769d8d158b32",
+   "b429bf7d7ee9069e",
+   "d1bb1b610f959ff6",
+   "ead0d6fee2b21015"
+  ],
+  "32": [
+   "0aaaa1f09e40e1b5",
+   "27e6d8e1164c7690",
+   "ffca75ca508084d6"
+  ],
+  "48": [
+   "2ed286c1790ddc75",
+   "384282945be59ab4",
+   "4b253d1e620ab4bb",
+   "4db2bec2d116505e",
+   "53ff74a5822b6461",
+   "a56e55c852e4e57e"
+  ]
+ }
+}

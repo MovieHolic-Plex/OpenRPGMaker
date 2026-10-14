@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d94b4cd837c7f37cee089f9865408b58e414a83c226ba31fd14f46f63a4614c0",
+ "width": 48,
+ "height": 32,
+ "kind": "frame",
+ "name": "교문 미닫이 철문(닫힘, 3칸)",
+ "label": "modern-campus/mc-gate-slide",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sliding iron school gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate is rendered as a flat architectural front elevation. All horizontal beams and the bottom rail consist of only 1-2px thick bands without any visible top surface in 3/4 perspective, and the wheels are seen straight from the side/front.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5568
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sliding iron gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate, horizontal rails, vertical bars, and bottom wheels are all drawn strictly in pure 2D front elevation with no visible top surfaces (0 px).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5569
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sliding iron gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate, horizontal beams, bars, and wheels are drawn strictly in flat 2D front elevation with no visible top surface depth on the horizontal beams or rails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6176
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sliding metal gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate is drawn strictly from a front elevation view; neither the top beam, crossbars, nor base rail show any top horizontal surface depth (only 1px highlight lines), and the wheels are rendered flat in 2D profile.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7589
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.872Z",
+ "cells": {
+  "16": [
+   "404ad3f765223e82",
+   "4749300981507534",
+   "b2d76737024380b1",
+   "c50c0e03cc190dd3",
+   "d6b17f14a19417a4",
+   "e1683a7793970db3"
+  ],
+  "24": [
+   "147412df382a5d96",
+   "268b744b80aa7092",
+   "70ae1560873f5d5b",
+   "8c8572b94245b824",
+   "9478cab9a5234a8a",
+   "9546df8b3e6f3172",
+   "a0bf532f42cde880",
+   "e44c2b7f4c29e306"
+  ],
+  "32": [
+   "659ed2353ec4c61a",
+   "8d64e13dd99f733b",
+   "c6b94f99f5f6fff6",
+   "c6e3274269282cd7",
+   "d4b2cc647c0060d9",
+   "feaae0ad557abb34"
+  ],
+  "48": [
+   "82eff363bb0aa0c8",
+   "c3b7a514b86b6522"
+  ]
+ }
+}

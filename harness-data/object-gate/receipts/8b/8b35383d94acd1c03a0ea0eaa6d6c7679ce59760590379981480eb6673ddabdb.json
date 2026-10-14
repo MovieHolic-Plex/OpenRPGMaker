@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8b35383d94acd1c03a0ea0eaa6d6c7679ce59760590379981480eb6673ddabdb",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "무쇠 창살 담(한 칸, 잇는 조각)",
+ "label": "steampunk-city/sp-fence",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cast iron spikes on brick and stone wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire wall and railing are drawn in pure front elevation: the brick wall, stone band, and iron spikes/rail show only vertical front faces with no foreshortened horizontal top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7466
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cast iron fence on brick wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brick wall and iron railing are drawn entirely in front elevation with no visible top surface; the coping/ledge at row 8 is only a 1px line and the iron fence shows purely flat front-facing bars and spikes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8852
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cast iron railing on brick wall base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the brick wall base (rows 9-15) and the iron railing/spikes (rows 2-7) are drawn completely flat in pure front elevation with no visible top surface (row 8 is only a 1px highlight line between the wall and the railing).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7168
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cast iron fence on brick wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brick wall and iron railing are drawn entirely in front elevation with no visible top surface (the cap line at row 8 is only 1px tall and the iron bars show no horizontal top depth).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6610
+  }
+ ],
+ "decidedAt": "2026-10-13T18:31:07.467Z",
+ "cells": {
+  "16": [
+   "832e92390d161991"
+  ],
+  "24": [
+   "1b54e49c2d76d0b7",
+   "30c922baa786d8da",
+   "80ff0673b6c867e2",
+   "9648c624a9354128",
+   "9f7cd8b2c7e53b92",
+   "e4e4dd74a6099c84"
+  ],
+  "32": [
+   "42b22c839b6d9bc7",
+   "5ffa79696db2a2e9",
+   "9c495c7e8871d899",
+   "a8ccbe2f500d478a",
+   "d2e93980603a0178",
+   "e4013621d09535d8"
+  ],
+  "48": [
+   "160ab2effb18e21f",
+   "2016abc94405dbe1",
+   "3b6c61f40b73c5d2",
+   "3d4420a29f15f589",
+   "95076dd78ab18b04",
+   "e9dc2aa87f723494"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c7ef0695e9b480531db99b694dd0ca48a3e8c734914375c35942305c2b5b443a",
+ "width": 16,
+ "height": 32,
+ "kind": "round_body",
+ "name": "나무 들통 더미(목욕·물)",
+ "label": "sengoku-edo/se-buckets",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pile of three wooden water buckets/tubs",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each of the three wooden tubs shows a clear elliptical water surface/opening (3-4 rows tall) and a rounded front face below it, fitting the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4691
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "group of three round wooden tubs filled with water",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each wooden tub shows an elliptical top opening filled with water (about 3-4 px tall) as well as the curved front/south face (about 4 px tall), accurately depicting 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7680
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cluster of three wooden water buckets",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "All three wooden tubs clearly display foreshortened elliptical openings filled with blue water (3 rows of water interior each) above their curved front faces, correctly rendered in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7450
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pile of three wooden tubs filled with water",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "All three wooden tubs clearly display foreshortened elliptical top openings filled with blue water (approx 3-4 rows each) above curved south front faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7123
+  }
+ ],
+ "decidedAt": "2026-10-13T19:42:40.483Z",
+ "cells": {
+  "16": [
+   "47fb41574362d605"
+  ],
+  "24": [
+   "2c6f30bbd6e916b7",
+   "424d994cabea8acb",
+   "5cee60e78b9be082",
+   "8f5b0297eee59672",
+   "9a6fad28ab41cb03",
+   "9a7006aa3658384e",
+   "aaf30a40618e4c28",
+   "d24d54936ba8f005",
+   "f415c86030d61430"
+  ],
+  "32": [
+   "0a7e67e01218684e",
+   "4f894ab3670fadeb",
+   "bffe440c2b045e46"
+  ],
+  "48": [
+   "9a006dbf929753fd",
+   "a379bf7aeb99fd74",
+   "a3ec4738e684ae0c",
+   "d051dd2b4ab6a30f",
+   "d93c2132b12e1af2",
+   "eff3d6259982796d"
+  ]
+ }
+}

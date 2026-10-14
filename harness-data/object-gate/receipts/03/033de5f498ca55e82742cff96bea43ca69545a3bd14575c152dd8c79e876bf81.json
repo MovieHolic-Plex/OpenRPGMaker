@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "033de5f498ca55e82742cff96bea43ca69545a3bd14575c152dd8c79e876bf81",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "stone floor lantern with glowing light",
+ "label": "sky-island/si-lantern-floor",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone floor lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern is drawn in pure front elevation. The conical/pyramidal roof, intermediate platform (rows 14-17), and base plinth (rows 28-30) all have perfectly straight horizontal edges with zero foreshortened top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4618
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone lantern (roof, light chamber, shelf, pillar, and base)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire lantern is drawn in pure front elevation: the triangular roof, shelf (rows 15-17), and base (rows 28-30) all terminate in straight horizontal lines with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3411
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone floor lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern is drawn entirely in pure front elevation: the conical/pyramidal roof, middle platform, light box, pillar, and base are all drawn flat with no foreshortened top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3742
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone lantern with roof, light chamber, pillar, and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern is drawn in pure front elevation: the triangular roof, middle platform, and base plinth all have perfectly horizontal, flat edges with zero visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3258
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.564Z",
+ "cells": {
+  "16": [
+   "581893671e84983a",
+   "ec6b1b11e23edd14"
+  ],
+  "24": [
+   "35d6f75cda9c4d4e",
+   "37b5290f7a981537",
+   "52f0d1c82e284e2d",
+   "6e19e7796a1139ef",
+   "7e227cf9081da66b",
+   "8c0e791776f66db2",
+   "8df3cab558a79520",
+   "8ed6c17d8b660d6c",
+   "9b23e8c45cfbe874",
+   "9ea5696edf9acd70",
+   "c85af0c0d0edccfb",
+   "ff8fc81912034e48"
+  ],
+  "32": [
+   "6128d9cca0c919c1",
+   "7993d9487cf414d1",
+   "de38ae3787ac00fd"
+  ],
+  "48": [
+   "0a83bd3fc92e308a",
+   "2acc54e121465c2b",
+   "9e1bcc5dab5d89f0",
+   "bfcf828a9e1193e4",
+   "c3031c520e626d1a",
+   "db9582b9221894c7"
+  ]
+ }
+}

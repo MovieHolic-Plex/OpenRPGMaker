@@ -1,0 +1,11 @@
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/bld_misc/gm-bld-gatehouse.png", "kind": "structure", "name": "문루(둥근 탑 둘·첨두 아치 통로)", "label": "gothic_manor/gm-bld-gatehouse"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/bld_misc/gm-bld-mausoleum.png", "kind": "structure", "name": "묘소(박공 지붕·기둥 둘·쇠문)", "label": "gothic_manor/gm-bld-mausoleum"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/bld_misc/gm-bld-crypt.png", "kind": "structure", "name": "지하 납골당 입구(내려가는 돌계단·아치)", "label": "gothic_manor/gm-bld-crypt"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/bld_misc/gm-bld-belltower.png", "kind": "structure", "name": "종탑(사각 탑·종 창·첨탑)", "label": "gothic_manor/gm-bld-belltower"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/bld_misc/gm-bld-carriage.png", "kind": "structure", "name": "마차고(돌 아래층·목조 박공·큰 판자문)", "label": "gothic_manor/gm-bld-carriage"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/bld_misc/gm-bld-shed.png", "kind": "structure", "name": "정원사 헛간(판자벽·외쪽 지붕·삽)", "label": "gothic_manor/gm-bld-shed"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/bld_misc/gm-bld-greenhouse.png", "kind": "structure", "name": "버려진 온실(쇠틀 첨두 아치·깨진 유리·마른 화분)", "label": "gothic_manor/gm-bld-greenhouse"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/bld_misc/gm-bld-gazebo.png", "kind": "structure", "name": "무쇠 정자(팔각 지붕·기둥·난간)", "label": "gothic_manor/gm-bld-gazebo"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/bld_misc/gm-bld-folly.png", "kind": "structure", "name": "무너진 둥근 망루(폐탑)", "label": "gothic_manor/gm-bld-folly"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/bld_misc/gm-bld-well.png", "kind": "container", "name": "돌 우물(박공 지붕틀·도르래)", "label": "gothic_manor/gm-bld-well"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/bld_misc/gm-bld-fountain.png", "kind": "container", "name": "마른 분수(천사상·석조 수반)", "label": "gothic_manor/gm-bld-fountain"}

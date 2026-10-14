@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1201215bd57d39a62938d445ec720c87617d3c1fdbcfe9b43fdd05d6894eb783",
+ "width": 32,
+ "height": 16,
+ "kind": "column",
+ "name": "가족 묘비(넓은 두 칸 돌판)",
+ "label": "gothic_manor/gm-tomb-family",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "arched family tombstone / stele",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The arched stele is drawn completely flat from the front, showing frontal decorative moldings and horizontal engraving lines without any foreshortened top surface or slab thickness visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6141
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "arched family tombstone / stele",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The arched stele is drawn in pure front elevation with no visible top surface or depth along its rounded crest (only a 1px outline). The only horizontal strip is the 2px plinth ledge at rows 11-12.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4366
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "arched headstone / stele",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The arched stele and plinth are drawn in pure front elevation with only a 1-2px edge highlight along the curved top and horizontal rim, showing no foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4465
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "arched family tombstone slab",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The arched stele is drawn completely in flat front elevation. There is no top surface showing the thickness or depth of the stone slab from above; only the curved outline of the front face is depicted.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3630
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:15.455Z",
+ "cells": {
+  "16": [
+   "64f5497f0d40fc3e",
+   "a0d5b772a07ab1a5"
+  ],
+  "24": [
+   "2e7277e79663639d",
+   "472629d36091326f",
+   "6bb678a8e3327526",
+   "6c41e25d2b9b00ad",
+   "973c727d8e8cb53b",
+   "9d32c94089638a56",
+   "a4d7f36cc4cbd711",
+   "a5906846602be300",
+   "a5d38e9c71a0e840",
+   "a8fc9c61eb659eb3",
+   "e37a0a8c7c329edb",
+   "ff6dccfc9eb21f0c"
+  ],
+  "32": [
+   "a1eecf1601ac5d8a",
+   "b224ca2c8553f88a"
+  ],
+  "48": [
+   "77b5f70c3d2107b8",
+   "c08ede95a918c223",
+   "dffe46cb099dcfde",
+   "eaa1205355cec2bd",
+   "f129c237aac4948c",
+   "f4dcb0dccaee50ec"
+  ]
+ }
+}

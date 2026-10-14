@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "41a614966277836d46e5f8981a8991090ff46f937290bf34b8d3ae86dabf45ef",
+ "width": 32,
+ "height": 16,
+ "kind": "container",
+ "name": "손수레(위가 트인 나무 짐칸 + 큰 바퀴 둘 + 손잡이)",
+ "label": "steampunk-city/sp-handcart",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "아가리 1.5행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden cart body",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The handcart faces east (handle on right) with its side silhouette serving as the south face. The top opening into the cargo bed is clearly visible from above across rows 1-3 (3 pixel rows deep) revealing the darker interior cavity and cargo.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 7911
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden cart cargo bed",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cart is drawn as a flat 2D side-scroller elevation with circular side-view wheels and a side-profile handle. The open top is not viewed from above at a 45-degree angle (only a 2px dark band at rows 1-2 under the top rim), showing no interior floor or proper top opening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 9266
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "open wooden cart bed",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden cart bed shows its open interior cavity across rows 1-3 (3 pixel rows tall) between the back rim and the front wall, revealing the inside of the container from a top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 19773
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden cart cargo bed",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cart is drawn in pure 2D side elevation (side-scroller style), with circular wheels facing the viewer and a flat vertical cart wall. No top opening or interior floor is visible from a 3/4 downward angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 6816
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:58.211Z",
+ "cells": {
+  "16": [
+   "028c737865cd1c75",
+   "36d0b50780cd5faf"
+  ],
+  "24": [
+   "3bbb9c0def5354a7",
+   "4bba8dd2128e7443",
+   "61be2435883df268",
+   "62fe2149caed7188",
+   "76beb4d3aaf72b37",
+   "7db66b4e36a7270b",
+   "936726349d78de18",
+   "b3809b930894789b",
+   "c034c8f64c0669a0",
+   "c8537af000591fd6",
+   "f1755344858e9ad9",
+   "f72db01230423022"
+  ],
+  "32": [
+   "2048a97857cbb0d9",
+   "846f3913851792a8"
+  ],
+  "48": [
+   "00901c4da0cf5a66",
+   "391b53fd89a32a35",
+   "45a3a55f63548814",
+   "92e7e142e906d62f",
+   "bf7bd12eb4531db0",
+   "cf9fc7ee451c0cd2"
+  ]
+ }
+}

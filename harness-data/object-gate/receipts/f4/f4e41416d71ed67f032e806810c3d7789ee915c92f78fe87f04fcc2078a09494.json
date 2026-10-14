@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f4e41416d71ed67f032e806810c3d7789ee915c92f78fe87f04fcc2078a09494",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "정류장 쉼터(사다리꼴 지붕 윗면 + 유리 벽 + 안 벤치)",
+ "label": "sf-station/sf-street-transit-stop",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bus stop shelter with roof",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The shelter roof displays a substantial top slope surface spanning from row 1 to row 9 (approx 9 rows tall) with foreshortened panels before the front eave line at row 10-11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4927
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bus stop shelter roof and frame",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The shelter's trapezoidal sloped roof surface is clearly visible from rows 2 to 9 (8 pixel rows) showing panel divisions foreshortened from above, with interior bench and sign visible below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4328
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bus stop shelter roof canopy and booth",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The shelter has a clearly foreshortened sloped roof canopy visible across rows 1 to 10 (approx. 9-10 pixel rows tall) showing panel grid lines from above, and the interior bench also exhibits a distinct top seat plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3372
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bus stop shelter roof",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The shelter features a prominent sloped top roof paneling spanning rows 1-10 with clear pane dividers, correctly representing the top surface in 3/4 perspective above the south-facing open shelter interior.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3811
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:06.344Z",
+ "cells": {
+  "16": [
+   "31b8afebfac9c20c",
+   "46eeb28f9baf07ae",
+   "59816cc64bcdf106",
+   "7e16dbf3d0bce90d",
+   "83437d1aa387664b",
+   "ac35090470aa9553"
+  ],
+  "24": [
+   "0b6ed3b7eb5893b5",
+   "45d7d62c94dcf389",
+   "4fb4ab915c35678d",
+   "79cd523a32beb6c1",
+   "8ae057967c1fcfdd",
+   "8be24993bfdc7265",
+   "ba0ebe2df71eb6ca",
+   "da334b9a04edb54a"
+  ],
+  "32": [
+   "003344ca8c7c5033",
+   "33e4399c33c91439",
+   "515cb06f9073ce8a",
+   "5fbdb4f66e863b56",
+   "646e61dec40cf3ca",
+   "e3161d78a5ebbb89"
+  ],
+  "48": [
+   "6c40f0b2df8895a1",
+   "dd0a93f7e1f73b5f"
+  ]
+ }
+}

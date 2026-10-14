@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ecd5cd0ae6a64bb2dc0205e87f70c170b5c15153103b1302593716052eecfb25",
+ "width": 48,
+ "height": 48,
+ "kind": "organic",
+ "name": "흑송(구부러진 줄기 + 층진 잎 판)",
+ "label": "sengoku-edo/se-tree-pine",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "black pine tree with tiered foliage pads",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn in a pure 2D side/front elevation typical of a platformer rather than a 3/4 top-down view. The trunk rises in flat vertical profile without foreshortening, and the tiered foliage pads are rendered edge-on with flat horizontal undersides (notably the 8px straight horizontal bottom line at row 19) instead of showing elliptical top surfaces viewed from a 45-degree downward angle.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10220
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pine tree (bent trunk and tiered foliage pads)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn entirely in 2D side/front elevation: the trunk's curve exists purely in the X-Y plane with a flat horizontal cut at the base (row 46), and the foliage pads have flat horizontal bottoms (e.g. row 20 on the right pad) and domed tops typical of side-scroller platforms rather than foreshortened ellipses viewed from a 45-degree top-down angle.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6677
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "foliage pads and curved trunk of pine tree",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The foliage pads are drawn as rounded horizontal discs/ellipses seen from an elevated 3/4 angle, with the upper/top surfaces clearly visible and shaded from row 3 down through the canopy pads.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5509
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "curved pine tree with tiered foliage pads",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pine tree is drawn in a pure side/front elevation typical of a 2D platformer. The tiered foliage pads have straight horizontal bottom edges (e.g. row 21 on the right pad) viewed edge-on at eye level rather than foreshortened ellipses viewed from above, and the trunk shows no 3/4 depth or base.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7923
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.068Z",
+ "cells": {
+  "16": [
+   "5c37e91dee171d45",
+   "6ad5b5357ab86236",
+   "7a2b69a05347ebed",
+   "90da3781eabed44c",
+   "9d5fb156cc8a1d2b",
+   "a444d5c71957b2f4",
+   "ff9832b0d89a9438"
+  ],
+  "24": [
+   "07291de25d92271b",
+   "3c747e7be153e678",
+   "72bc86cff3a205cf",
+   "a8ab68a69356b8b9"
+  ],
+  "32": [
+   "0c4e9c3abb5f3dae",
+   "124eef8d80203e8d",
+   "49bc0bf21d357be2",
+   "53700625900b009b",
+   "692115c9ba081d94",
+   "73cc3fd16093f8c6",
+   "79b99ac3ee8acbd7",
+   "8acd9d18b6c95c6f",
+   "8d9d09c79b7f802a",
+   "9b97cdc9712c7854",
+   "9d7d98abd435097a",
+   "a3530137eb333f72",
+   "acffd2b366b34ab7",
+   "b043379e778cc06c",
+   "b1480aa7bc915810",
+   "ca44d258cca19d54",
+   "cc12a561130df64c",
+   "d2945024c856c07e",
+   "e633af1a304379a0",
+   "edcacdda939e3d18",
+   "f0c5b11677852375",
+   "f518a18112525be6"
+  ],
+  "48": [
+   "0176c519c8303a49"
+  ]
+ }
+}

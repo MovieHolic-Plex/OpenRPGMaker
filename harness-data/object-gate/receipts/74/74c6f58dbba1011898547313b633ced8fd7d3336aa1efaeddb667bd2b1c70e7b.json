@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "74c6f58dbba1011898547313b633ced8fd7d3336aa1efaeddb667bd2b1c70e7b",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "transparent viewport floor with metal frame showing stars below, two variants",
+ "label": "sf-station/sf-glass-floor",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "transparent viewport floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor/terrain tiles with metallic framing and glass viewport showing stars beneath; viewed directly as a horizontal surface from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3728
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "transparent viewport floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles viewed from directly above; the full 16 rows represent the floor plane showing stars and glass reflections beneath the metal frame.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4329
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "transparent viewport floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles depicting glass viewport panels framed in metal with stars beneath, viewed from above as a ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3769
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "transparent viewport floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor/terrain tile showing space and stars through framed glass viewport panels; the entire surface represents horizontal floor plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3232
+  }
+ ],
+ "decidedAt": "2026-10-13T16:10:30.408Z",
+ "cells": {
+  "16": [
+   "3071a2cb53ca7951",
+   "b38d4eb91ea14a2e"
+  ],
+  "24": [
+   "1a81e7e3c7970d33",
+   "1f8af9225cc255f9",
+   "3fb031a000acc1cd",
+   "40293694d3b889e3",
+   "403d378e516a4219",
+   "458d3c2d0e513d8f",
+   "57bd2e9898ae9fb0",
+   "6b79240978001774",
+   "a04b7c71280c6f5f",
+   "c9fbef249cf826ab",
+   "f020a8b59e11607a",
+   "fccfd1ec8c3e54f1"
+  ],
+  "32": [
+   "280e88c93f4f7b21",
+   "b73284e38b453da2"
+  ],
+  "48": [
+   "261e3e76193c8b16",
+   "4392d7a4f4455ed6",
+   "a4bddb86e1409713",
+   "c4b40d88c5624c86",
+   "e68bf571dfcebc5c",
+   "fee2272046b2e4a0"
+  ]
+ }
+}

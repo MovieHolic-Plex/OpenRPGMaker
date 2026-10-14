@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "20b8420617d3e798b96c2aa39ff6523d44faf2d2e433ad18d8f29301ba528e8a",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "위험 차단벽(노랑·검정 줄무늬 낮은 방벽)",
+ "label": "sf-station/sf-barrier",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hazard barrier",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrier is drawn entirely in front elevation: a yellow vertical panel with a hazard-stripe lower band and dark base, capped only by a 1px outline/trim (rows 2-3) rather than a foreshortened top surface showing the wall's depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 8012
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hazard barrier",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrier is drawn in a pure front elevation with no visible horizontal top surface (only a 1px black outline at row 2 and a 1px edge line at row 3). The yellow body and diagonal hazard stripes form a flat vertical surface facing the camera.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 7812
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hazard barrier",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn in pure front elevation (side-scroller platformer style) with only a 1px top outline (row 2) and 1px edge line (row 3). The main yellow body and hazard stripe trim form a single flat vertical face with no top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 9789
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hazard barrier",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrier is drawn in pure front elevation as a flat vertical panel (yellow body with hazard stripes along the bottom) with only a 1px dark top outline (row 2) and no visible foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 12582
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:27.305Z",
+ "cells": {
+  "16": [
+   "15d67b55ab2b906e",
+   "56b8bbcdbde7bf66"
+  ],
+  "24": [
+   "24709dd2fbb6f91d",
+   "4ecdf32cc8f8da0c",
+   "5e13f2fc454e1a38",
+   "77200fffda1b6cab",
+   "8d407e0361ce0ee0",
+   "9ce01eed78b72b7b",
+   "b0682133ee728d84",
+   "b4606d0786cf9274",
+   "b486a2a727c46198",
+   "c6de4a2f10856434",
+   "dcb6b714df9e88d0",
+   "e0bcc7ca6d8d9f89"
+  ],
+  "32": [
+   "62629c3427ff508d",
+   "74aed8275fc07bbd"
+  ],
+  "48": [
+   "352c80add3dc8005",
+   "6c4ba6958503dcdb",
+   "8944849ac66d5487",
+   "9763b81dc9ec8f84",
+   "a780f765a728659b",
+   "a7eb39dd6795d539"
+  ]
+ }
+}

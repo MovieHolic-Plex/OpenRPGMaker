@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "afee76e6747194091a58502bd994bca76c339035c3d9bff9e094237ca1727682",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "무쇠 창살 담(낮은 돌 받침 위, 한 칸 잇는 조각)",
+ "label": "steampunk-city/sp-fence",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cast iron fence on stone base",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone plinth base shows a clearly defined 3-row horizontal top surface (rows 10-12) in front of the iron bars, above its 2-row front face (rows 13-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6605
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cast iron bar fence on stone plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body of the iron fence (rows 0-9) is drawn in pure front elevation with flat vertical bars and horizontal crossbars showing no top surfaces. Although the stone base plinth below shows a top surface (rows 10-12), the frame's horizontal beams and bars lack top faces entirely.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12059
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron bar fence",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The iron fence frame is drawn in flat front elevation. The horizontal rails and vertical bars have no visible top surfaces, showing only flat 2D profiles without 3/4 perspective foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12699
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron bar fence",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The iron bars and horizontal rails are drawn entirely in flat front elevation with no visible top surfaces (only 1-2px edge lines). While the stone base below shows a 3px top surface, the main body of the frame/bars lacks foreshortened top faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 18750
+  }
+ ],
+ "decidedAt": "2026-10-13T18:49:56.823Z",
+ "cells": {
+  "16": [
+   "16cde6af6c0834e6"
+  ],
+  "24": [
+   "018c89ff30365c0c",
+   "6169baa090accc23",
+   "6580f004d0297d29",
+   "8e26f8767ee1bd59",
+   "9a8287fb9ea1f5fc",
+   "bde8ba9bd1965a4f"
+  ],
+  "32": [
+   "2fd8a70debf20631",
+   "6e48e1108887fe97",
+   "85fe51ce837335c9",
+   "b7f52d1d36202183",
+   "e6d81b61d8668afd",
+   "edd7b90486e254cc"
+  ],
+  "48": [
+   "53d75b42f3f6825f",
+   "68823077a77cb5a4",
+   "83f0c2b31fcf36da",
+   "848cdba54b4d29d8",
+   "edf0b785294ebbf3",
+   "fe9b43debffcdfd7"
+  ]
+ }
+}

@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fd961e898fa30ce5592e74aad81bffde4f3b5ef83eee30efb0c4a5e6a67d2cdb",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "의무실 침대(흰 매트리스 + 머리맡 모니터 + 담요)",
+ "label": "sf-station/sf-med-bed",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "infirmary bed",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed shows a foreshortened top surface across rows 9-22 displaying the mattress, pillow, and blanket, accompanied by the south-facing front bed frame across rows 23-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4288
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "infirmary bed with mattress and blanket",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 9-22 depict the foreshortened top surface of the bed (mattress, pillow, and blanket, 14 rows tall), while rows 23-31 form the south-facing front base of the bed.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4072
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "infirmary bed with mattress and blanket",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the mattress with bedding spans rows 9 to 23 (15 rows tall), followed by the south-facing front base of the bed from row 24 to 31 (8 rows tall), perfectly matching the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3731
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "infirmary bed with mattress, blanket, and base",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bed mattress with pillow and blanket is clearly visible across rows 9 to 23 (~15 source pixel rows), with the south front face/base shown beneath it from row 24 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3356
+  }
+ ],
+ "decidedAt": "2026-10-13T15:25:00.448Z",
+ "cells": {
+  "16": [
+   "25b6500d7842eeda",
+   "5c4b1513b051ba86",
+   "6c7c5a46d7c48f26",
+   "a1ccce3a452d091e"
+  ],
+  "24": [
+   "0bb0d27dba7478f0",
+   "15af9ff58a3a368c",
+   "187e3d7772916f5b",
+   "21a15c7c4b8b0877",
+   "333d55056dd7fe66",
+   "4f6af5707c9eaa5b",
+   "5d64d0c35d2b46d8",
+   "6be5924e0f6e3093",
+   "715cc9f43eb267d9",
+   "7b44c924f8f4f284",
+   "7cb45859bf432286",
+   "873cda0367b98865",
+   "8df73e69208b0aae",
+   "972ec668c2b8a00b",
+   "9e5f0b1a256c7550",
+   "bd0b09a4f995df47",
+   "ccd9cbbe9e5b7e95",
+   "d61baee8eec53af3",
+   "d6e8ed85210c89ec",
+   "dc51629d171ff223",
+   "eeccec99987de44c",
+   "f37e0a5d628eaff0"
+  ],
+  "32": [
+   "c86db3a90dae0616"
+  ],
+  "48": [
+   "18423c2d1427af60",
+   "3e7ca78c81aea114",
+   "505bf862a4b6dcce",
+   "56d292323bcef095",
+   "89ff1809b55909df",
+   "d1fd327d8601544c"
+  ]
+ }
+}

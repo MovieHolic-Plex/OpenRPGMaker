@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b9f08fee85779057213902f862d591fb8183445224b6dc45be7048794529e20b",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass island edge tile against sky (terrain)",
+ "label": "sky-island/si-gs-se",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floating grass island edge with cliff face",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-11 represent the foreshortened grass top surface of the island, and rows 12-15 show the south cliff/dirt face dropping off against the sky.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3411
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "floating grass island edge with cliff face",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Top grass surface extends across rows 0-11, with the south cliff face/overhang visible on rows 12-15 and open sky to the east.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3041
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "floating grass island edge terrain",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a grassy island surface (rows 0-11) overlooking a south cliff overhang/edge (rows 12-15) against sky background.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2873
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "floating grass island edge terrain tile",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing a top-down grass surface spanning rows 0-11 with a south cliff/dirt overhang transition on rows 12-15 bordering sky on the east.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3376
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.974Z",
+ "cells": {
+  "16": [
+   "af5e186c171e3c82"
+  ],
+  "24": [
+   "37fcbf1be790e402",
+   "6f746269c9791868",
+   "78cef23efcbffb82",
+   "88f51deda82a89e4",
+   "cbb1a541892b6544",
+   "d4fb745e6c015342"
+  ],
+  "32": [
+   "1db53acdb0113c80",
+   "28d04a55edb2da75",
+   "43808450dbe97687",
+   "771e228b91a89480",
+   "8ab4d2897ec94f45",
+   "debaec55288f6406"
+  ],
+  "48": [
+   "23aacdaa55bbbcfc",
+   "3bbda06c92d84f7d",
+   "4312e872c7955ada",
+   "a3cb85456e46032f",
+   "a8080d11aa8706bf",
+   "d70d93e4723b2f79"
+  ]
+ }
+}

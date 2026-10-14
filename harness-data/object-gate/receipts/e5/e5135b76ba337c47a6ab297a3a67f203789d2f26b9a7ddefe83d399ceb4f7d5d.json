@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e5135b76ba337c47a6ab297a3a67f203789d2f26b9a7ddefe83d399ceb4f7d5d",
+ "width": 16,
+ "height": 32,
+ "kind": "round_body",
+ "name": "나무 통 하나",
+ "label": "steampunk-city/sp-barrel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The barrel is drawn in proper 3/4 perspective with an elliptical top lid surface spanning rows 9-15 (about 6-7 pixel rows) showing wooden planks and a bung, above the south-facing cylindrical body extending to row 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5911
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The standing barrel shows both its cylindrical front body (rows 15-29) and a 6-row foreshortened top surface (rows 9-14) with wooden plank texturing and a central bung hole.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 18347
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top circular head of the barrel is drawn as a foreshortened ellipse spanning rows 9-14 (~6 pixel rows) showing wooden planking and a bung hole, atop the cylindrical south face spanning rows 15-29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4838
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrel is drawn in flat front elevation: the base (row 29) and metal bands (rows 15 and 27) are completely horizontal straight lines with zero elliptical curvature, and there is no elliptical top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10497
+  }
+ ],
+ "decidedAt": "2026-10-13T18:26:16.314Z",
+ "cells": {
+  "16": [
+   "2df52d7d31857e64",
+   "a75f30da5bbcc8d7"
+  ],
+  "24": [
+   "0573eb0e644e7290",
+   "287cfc2331adc1f5",
+   "33f0b3ecdaecf39f",
+   "400b03938a91024a",
+   "823931381f5193eb",
+   "8bbf9ccd82c921df",
+   "c5f5afc994404f76",
+   "dbe954c5443c95e0",
+   "dd4314aa04159d03"
+  ],
+  "32": [
+   "2fd88d911616bdb1",
+   "a5f8f844bbeb7c65",
+   "d1d9e0417494b3c8"
+  ],
+  "48": [
+   "0b5f7de0ad0142ab",
+   "2efbe7332b933c49",
+   "7109492a4a9562da",
+   "842e3675de6cd1e3",
+   "97179e004700be6a",
+   "c20bdd0b689748dc"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5a0dfe942b1e7c3b3efc892a5e552d3dfa5b1fca471464f006f88a5c2d7c88d4",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "체크 대리석 B",
+ "label": "gothic_manor/gm-fl-marble-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "checkered marble floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tile depicting a 2x2 checkered black and white marble pattern seen directly from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4997
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "checkered marble floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 sprite is a flat checkered floor terrain tile composed of alternating light and dark marble squares.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2945
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "checkered marble floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 checkered marble floor terrain tile viewed directly from above in 2x2 squares.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2478
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "checkered marble floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 checkered marble floor tile representing ground terrain viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2741
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.500Z",
+ "cells": {
+  "16": [
+   "73196c81b5dd3387"
+  ],
+  "24": [
+   "26caf8101de55425",
+   "805f17431479998a",
+   "8f9d19170d7d7de2",
+   "a68a1c2729c3a8bd",
+   "ac16cb66b09c5c64",
+   "e517d4d7d4d8cad4"
+  ],
+  "32": [
+   "0e81d60f74213ea6",
+   "9f2eec8aeee228e1",
+   "b67824d713cb1bea",
+   "c301391526bd4998",
+   "d9759bbdc59b0551",
+   "df0d7d0b11308d02"
+  ],
+  "48": [
+   "0dbf537ff150736f",
+   "236561615dfc6405",
+   "83c59fff7db76fd3",
+   "93b0a707e5baed1e",
+   "9ab78b2d95086369",
+   "bb56de266833d47a"
+  ]
+ }
+}

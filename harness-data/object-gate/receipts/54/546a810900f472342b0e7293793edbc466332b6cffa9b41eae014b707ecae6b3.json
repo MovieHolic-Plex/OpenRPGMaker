@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "546a810900f472342b0e7293793edbc466332b6cffa9b41eae014b707ecae6b3",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "테슬라 코일(둥근 받침 + 구리 감은 탑 + 꼭대기 놋쇠 도넛 + 불꽃)",
+ "label": "steampunk-city/sp-tesla-coil",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Tesla coil column with top brass toroid and base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top brass toroid displays a foreshortened elliptical opening (rows 6-9, 4px tall) and visible top curvature, providing proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5532
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "copper-wound column with top brass toroid terminal and round base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top brass toroid terminal is clearly drawn in 3/4 perspective as a foreshortened ellipse spanning rows 5–11, with the dark interior recess and central electrode visible from above (rows 6–9).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7733
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "copper-wound column with top brass toroid terminal and base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top brass doughnut/toroid terminal is rendered in proper 3/4 perspective spanning rows 5-12, clearly showing its elliptical top surface and central hole (rows 6-9, 4 rows tall) with the central electrode rod visible within.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5570
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tesla coil column and top toroid",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brass toroid at the top of the coil is rendered in 3/4 view, showing its elliptical center opening (rows 6-9, 4 rows tall) and foreshortened upper rim from row 5 down to row 10.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5868
+  }
+ ],
+ "decidedAt": "2026-10-13T18:47:14.486Z",
+ "cells": {
+  "16": [
+   "b70d27c1ef724d5d",
+   "d3ff0d2d7ccb830a",
+   "f3ee55abd92a0e11"
+  ],
+  "24": [
+   "11c52885960aadb3",
+   "1295ec63245fd627",
+   "46c1aa4fb403939d",
+   "97b2e7954453b60d",
+   "b6d2debc8437d2ea",
+   "c73ba6909c40fd62"
+  ],
+  "32": [
+   "005755b2f346f95c",
+   "097bd1a66976a3eb",
+   "33019652367d9553",
+   "66c5843e38aa1a31",
+   "72d1992708f89c68",
+   "80e5f51c9363cebe",
+   "94c25fa9b10012ea",
+   "a360b6ea2d6d69e5",
+   "b89572c90ee71252",
+   "d2c461a94e04e7a5",
+   "da67a05733e72586",
+   "e906f0a0d5ff9289"
+  ],
+  "48": [
+   "3586893b414cb3e8",
+   "89fabce945738d4e",
+   "9e5da93395aee06e"
+  ]
+ }
+}

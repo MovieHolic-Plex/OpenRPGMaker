@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7fffe712e7cd1cd645a9fc0364ed9b7bf97e47f98c99bcf93274ef78ddf3db01",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "carved stone stele with star emblem",
+ "label": "sky-island/si-stele",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "shaft of the stone stele",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the stele is distinctly rendered from rows 3 to 7 (5 source pixel rows tall) in a bright overhead illumination tone, clearly separated from the darker south-facing front face (rows 8 to 26).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12960
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "shaft of the stone stele",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stele shows a clearly defined foreshortened top surface (rows 3–7, 5px tall) in direct top lighting, positioned directly above the darker south-facing front face (rows 8–26) that contains the star emblem.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 24050
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "carved stone stele",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stele is drawn as a flat front architectural elevation. The lighter section at rows 3–7 has vertical shading (left highlight, right shadow) matching the front face below it, representing a front-facing lighter band/cap rather than a top surface seen from above. There is no visible horizontal top surface (at most a 1px edge highlight at row 3).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10150
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "shaft of the carved stone stele",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The flat top surface of the stele is clearly depicted as an illuminated horizontal plane spanning rows 3-7 (5 pixel rows tall) above the darker vertical front face (rows 8-26). The base also shows a 1px top surface at row 27.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8410
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.433Z",
+ "cells": {
+  "16": [
+   "cee631341a290642",
+   "d5f95d440e1396f6"
+  ],
+  "24": [
+   "3696d101b0269d68",
+   "4a5151a85cc7cd09",
+   "4f943e5b56eb4fd4",
+   "54bc501df235f674",
+   "5a27ae42a91da29d",
+   "6070affa655e4aca",
+   "6d306620fb85d770",
+   "71de669e97051d31",
+   "abb99a463c12dedb",
+   "b7da75bfb9e12dbd",
+   "c4a9ed6c0b874860",
+   "d0a361f326a0fb2b"
+  ],
+  "32": [
+   "75b7fc44883035ab",
+   "8aea6320311359fe",
+   "e4f20c1e3367e8df"
+  ],
+  "48": [
+   "0b91ccf1d75465a0",
+   "17b1fd7744629824",
+   "21c33d0a23f3642b",
+   "6454ed94b8532e48",
+   "97959963e2fd3e68",
+   "ff0478ac7ddd2595"
+  ]
+ }
+}

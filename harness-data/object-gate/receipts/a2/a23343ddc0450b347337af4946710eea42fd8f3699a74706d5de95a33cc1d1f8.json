@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a23343ddc0450b347337af4946710eea42fd8f3699a74706d5de95a33cc1d1f8",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "풀밭 가장자리(남쪽 흙길)",
+ "label": "sengoku-edo/se-grass-edge-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass terrain tile transitioning to dirt path at the south edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tile viewed from top-down 3/4 perspective, showing grass surface with dirt edge along the southern boundary.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3406
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass to dirt path transition tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a grass field edge transitioning into a dirt path at the southern border, viewed top-down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2707
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass ground tile with dirt path edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing grass surface transitioning to dirt path along the southern border.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7214
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass terrain tile bordering dirt path at south edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile depicting a grass surface with an irregular southern border meeting dirt path.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5227
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.059Z",
+ "cells": {
+  "16": [
+   "d6ccd91ad126c249"
+  ],
+  "24": [
+   "2b76e67ab8fa537b",
+   "7822b443005b613b",
+   "80d07977d2e28350",
+   "c3ffb797e186d48d",
+   "ef7d4a59541d1a4c",
+   "f752298c940fa802"
+  ],
+  "32": [
+   "477d702d4c6a2609",
+   "6d86d846bb3927c0",
+   "9dc5e08de99fe7d9",
+   "a0459f7897b957ca",
+   "a608cc4f69599df0",
+   "b37c0bc7f3579f35"
+  ],
+  "48": [
+   "07b9a49c471cd77e",
+   "535a37756f298966",
+   "56c34b17a29f5511",
+   "5b3aee8b19d77657",
+   "6c389be56e3eff4f",
+   "fd1f5560ae2bd407"
+  ]
+ }
+}

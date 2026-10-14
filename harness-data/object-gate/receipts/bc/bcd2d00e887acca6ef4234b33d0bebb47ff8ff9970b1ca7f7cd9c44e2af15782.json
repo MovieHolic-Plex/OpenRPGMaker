@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bcd2d00e887acca6ef4234b33d0bebb47ff8ff9970b1ca7f7cd9c44e2af15782",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "서버 랙(밝은 회색 윗판 윗면·환기 격자 + 어두운 앞면 램프 칸 여섯 + 손잡이)",
+ "label": "sf-station/sf-server-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "server rack",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1–7 depict the light gray top surface with a horizontal vent slot, before the dark front rack face starts at row 8.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6749
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "server rack cabinet",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the server rack is clearly foreshortened and visible from row 1 through row 6 (6 source pixels tall) with top-down grille/vent detailing, while rows 8 through 31 show the south vertical face with server bays and status LEDs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7515
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "server rack",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-7 depict the horizontal top panel of the server rack with a ventilation slot/handle detail, while rows 8-31 depict the south front face with indicator light panels.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6523
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "server rack",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the rack is clearly rendered in rows 0-7 (approx. 7-8 rows tall) in lighter grey with a vent/handle detail, while rows 8-31 depict the vertical front face with server units and indicator lights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6314
+  }
+ ],
+ "decidedAt": "2026-10-13T16:02:53.701Z",
+ "cells": {
+  "16": [
+   "03ce9de1c02f7c48",
+   "952ea50579ea400e"
+  ],
+  "24": [
+   "094a727f13b88260",
+   "0d0d22b305d38a07",
+   "2e205824759323db",
+   "43c4aacbc11fafa1",
+   "9524aee9fee07dad",
+   "9e3796081156335e",
+   "9ea40dbb8f221062",
+   "ab561f5c9499e124",
+   "b045dc2b778a17d2",
+   "c088df17d065c144",
+   "f698cdfcf1de27be",
+   "feeea0ecfc8afbf3"
+  ],
+  "32": [
+   "4ed1c741d75155c1",
+   "a25bbac633fc4790",
+   "e6870d992dbaf584"
+  ],
+  "48": [
+   "1081cb8c52d1cc97",
+   "13901a7f0b165321",
+   "966bea22e3de02c8",
+   "9d44708654ae637d",
+   "bda1b3d9e9676c16",
+   "d980fcde9ccb288d"
+  ]
+ }
+}

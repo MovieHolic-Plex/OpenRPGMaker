@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f3838343e443e466e48c8a320811add70d3cf098f650dd5e498bb87892130f12",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "dark hydroponic soil bed with furrows, sprouts and drip line, two variants",
+ "label": "sf-station/sf-hydro-soil",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "soil bed terrain with furrows, sprouts, and drip line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting top-down ground/soil surface with sprouts and irrigation lines filling the entire 16-row height.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4800
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hydroponic soil bed terrain tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tiles representing a hydroponic crop bed with furrows, sprouts, and drip lines viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5287
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "soil bed terrain tiles with furrows and sprouts",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tiles depicting soil furrows, sprouts, and irrigation drip lines, viewed entirely from above on the horizontal ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4491
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "soil bed terrain tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile representing hydroponic soil beds viewed from above with furrows and sprouts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3600
+  }
+ ],
+ "decidedAt": "2026-10-13T16:10:30.409Z",
+ "cells": {
+  "16": [
+   "01878acede687f6b",
+   "a5af94fb5d887370"
+  ],
+  "24": [
+   "068f9fd71d209a10",
+   "3f161e18f9ab983e",
+   "404caa46d45011fb",
+   "4d8dc49abf10b267",
+   "6474cc75ac485e9d",
+   "877615865d045d04",
+   "aeef615a0fdcce55",
+   "bca5c9346fa22993",
+   "bf3adb889dffd661",
+   "dde53fa340193d42",
+   "e4e2746148e82652",
+   "fae70e79a4ea024e"
+  ],
+  "32": [
+   "266859aec8cd6365",
+   "5ec95fbecf890a43"
+  ],
+  "48": [
+   "24e075b0e9326901",
+   "4881dd1f050ffe2d",
+   "934a6a29f6a4985f",
+   "ca464d143af12520",
+   "dbfcd008b8282d32",
+   "fdb124d3d789394b"
+  ]
+ }
+}

@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2e82f139034fe46e5ad1ae03e29d0c8cc854e0edb9f698240c7d70abc29e3d2c",
+ "width": 16,
+ "height": 64,
+ "kind": "column",
+ "name": "jp-lot-clock",
+ "label": "jp_city/street_hand/jp-lot-clock",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "street clock on pole with concrete base",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the clock housing (rows 1-8, 8px tall) and the pedestal base (rows 49-53, 5px tall) clearly show their light-shaded horizontal top surfaces viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7997
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "clock post / standing clock",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the clock housing top (rows 1-8, 7-8px tall) and the base plinth top (rows 49-53, 5px tall) are drawn as visible horizontal top surfaces in light-grey foreshortening above their front faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6050
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "clock head and post",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the clock head (rows 1-8) and the base plinth (rows 49-53) display substantial upward-facing top surfaces rendered in light grey top-down lighting above their darker south-facing vertical planes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6479
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "clock head enclosure and pole",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The clock head features a clearly rendered horizontal top surface spanning rows 1-8 (approx. 7-8 pixels tall) with top-down lighting and beveling, situated above the south-facing clock face (rows 9-23). The base plinth also clearly depicts a 5-pixel top surface (rows 49-53).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7788
+  }
+ ],
+ "decidedAt": "2026-10-13T17:30:03.090Z",
+ "cells": {
+  "16": [
+   "2bb01dfcbbe8de18",
+   "3a766b5be523b7e3",
+   "3cca0a95a350701b",
+   "425c7194dd1ab70a"
+  ],
+  "24": [
+   "04e3cb6dd9386539",
+   "05f19ade2464a2a2",
+   "1f4948c249064619",
+   "30befa13bc99792b",
+   "5715f51548a2ba3d",
+   "58a0141dc2169358",
+   "62efe38f8dd79a87",
+   "7f67d1e9d8b80fec",
+   "8cd0b0c140ed72b9",
+   "8dca24be643ea1de",
+   "ad15c024040236d8",
+   "d1359ed377d5d4b1",
+   "d4c2212345f30c80",
+   "d5fd89e7281f093d",
+   "da5c39ff763ee390",
+   "e63b6db13d1c86e3",
+   "ee6fcdd9b8be74ce",
+   "f3df1bbead59f1df"
+  ],
+  "32": [
+   "055ecd30ca6e8ac7",
+   "81a0129910ee7726",
+   "89a304e8ce0d6bd1",
+   "edfdeb71fa98e8cd",
+   "f4acdd0f8e475922",
+   "f660dc781de4a54b"
+  ],
+  "48": [
+   "0569fcb9ceab88a0",
+   "066388983eb5dc6a",
+   "1917beedcbaccf8a",
+   "299c8d27767393ab",
+   "39b22e4ebe3d5358",
+   "404b1b231a8dcd74",
+   "4d33313ac13a0abd",
+   "63cc35496fce2535",
+   "7f03b7175ad912ea",
+   "869fa59493bdfeb2",
+   "9a7ef53691c013bf",
+   "e433581d5eb5f8ed"
+  ]
+ }
+}

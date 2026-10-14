@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "291a2b4feac20ddd5db507c2e8067f21c33aa108dc4b3acb8a5c069569d1327b",
+ "width": 32,
+ "height": 32,
+ "kind": "other",
+ "name": "짐수레(나무 바퀴 둘 + 짐)",
+ "label": "sengoku-edo/se-cart",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden cart body with cargo inside and two side wheels",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": true,
+    "opening_rows": 14,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cart bed is viewed from above showing its interior floor and cargo (rows 5-20), followed by a clear 4-pixel south front face (rows 21-24) and forward-extending handles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5121
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cart bed with cargo",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 12,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cart's cargo bed is viewed from above with interior floor and two cargo sacks visible (rows 5-17), flanked by a front edge and south face (rows 18-24).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4179
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cart bed with cargo",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": true,
+    "opening_rows": 12,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cart interior/bed is clearly seen from above across rows 5 to 20 holding two round sacks, while the south front board of the cart body spans rows 21 to 24.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5707
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cart bed with cargo",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": true,
+    "opening_rows": 14,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cart bed interior is clearly viewed from above across rows 5-19 holding cargo sacks, with a distinct south-facing front wall on rows 20-23.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3186
+  }
+ ],
+ "decidedAt": "2026-10-13T19:42:40.482Z",
+ "cells": {
+  "16": [
+   "6a5e921eeca910ad",
+   "a0ebbb44cc980c47",
+   "f800418d8de1a857",
+   "ffcaebb70bd22ef5"
+  ],
+  "24": [
+   "09115a8b23dfe7d1",
+   "0d10b5a82a7f6cbc",
+   "1449dfae29ac053c",
+   "2a83d601f24989f4",
+   "360e502d077624eb",
+   "391882f20c5899f2",
+   "4c0f1bb575834d7f",
+   "606cefeee9ae500a",
+   "7257f5ca657d4e65",
+   "72d0c0fc9f8fc73d",
+   "7d311b2400ac40db",
+   "7efad2cecd0ee0a0",
+   "82d8c8d4f51402a7",
+   "8dd1f804ba6919d2",
+   "b870d05fc797838c",
+   "c58588a05c355a97",
+   "c9a4fc003235b43c",
+   "ca052eec33c45ee3",
+   "dcdf442dba5dedfe",
+   "e81702e902a71d3b",
+   "ea056135233b0b48",
+   "efb8e48731f3e04a",
+   "fe315b389d7650be",
+   "fe7a43b8dc76e527"
+  ],
+  "32": [
+   "fa2cfc2b958ea686"
+  ],
+  "48": [
+   "4a94273095301647",
+   "64fbf207f877275b",
+   "7ee53fcdbc88dfc5",
+   "8b49628810e10f4a",
+   "b32b924d37780afb",
+   "d0110acbb2ffc5b7"
+  ]
+ }
+}

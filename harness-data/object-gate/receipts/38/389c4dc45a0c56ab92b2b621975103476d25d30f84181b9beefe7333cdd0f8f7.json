@@ -1,0 +1,134 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "389c4dc45a0c56ab92b2b621975103476d25d30f84181b9beefe7333cdd0f8f7",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "도리이(붉은 신사 문, 폭 4)",
+ "label": "sengoku-edo/se-torii",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "torii gate roof and lintel",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper roof (kasagi) displays a clear top-down slope of dark roof tiles roughly 7 rows tall (rows 1-7) above the front red lintel face, properly capturing the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4856
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "torii gate roof (kasagi) and crossbeams",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper roof (kasagi) prominently shows a foreshortened top surface across rows 1-7, well over 3px tall, matching 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4622
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "roof cap and lintels of torii gate",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof cap (kasagi) displays an extensive foreshortened top surface spanning rows 1-7 (~7 pixel rows) with vertical paneling texture above the red front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4402
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "torii gate roof and lintel",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof/cap (kasagi) prominently shows its upper surface across rows 1 to 7 (approx. 7 source pixel rows) with textured roof details foreshortened in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4635
+  }
+ ],
+ "decidedAt": "2026-10-13T19:42:40.480Z",
+ "cells": {
+  "16": [
+   "1ac220bb7293f002",
+   "321939a2c75b4d62",
+   "382aea21294bdd3c",
+   "4ad592e326b01a08",
+   "6bf422f3f7efab85",
+   "8e5c0d87494cfb29",
+   "9297aa3fca147481",
+   "d604b2e358084f80",
+   "dc7ece3ce692c31f",
+   "e7fdf495001c4567"
+  ],
+  "24": [
+   "0c1c277601a8d49f",
+   "0fe4c5a1e48fe745",
+   "18501422a8115577",
+   "1891b9dade479705",
+   "363c9ca5d59cc263",
+   "49b6c0bb253f1016",
+   "661345704aa1c50c",
+   "a8937d6f65ffded5",
+   "c8976e38ee8074d4",
+   "cae432545a2fe576",
+   "e4b1a66abbd0e18f",
+   "e8b637988342683a",
+   "f3ab88101bdafde3"
+  ],
+  "32": [
+   "1d2b4c7fa2731ff2",
+   "1debfc371fe672c3",
+   "327d982465668e5a",
+   "402d718f669df104",
+   "43b561c69cae7339",
+   "e1cade1f99c6dc91",
+   "f18eeb3e1ec99f87",
+   "f3034bd0d643a976"
+  ],
+  "48": [
+   "1cc8fad45727c669",
+   "2702c4c207fca25e",
+   "413f2a85c77a7e1a",
+   "56f4c0a97273adef",
+   "615b3084f8db954d",
+   "af7a022255308559"
+  ]
+ }
+}

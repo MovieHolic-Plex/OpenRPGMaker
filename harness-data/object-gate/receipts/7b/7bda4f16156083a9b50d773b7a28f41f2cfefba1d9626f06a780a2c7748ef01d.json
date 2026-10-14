@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7bda4f16156083a9b50d773b7a28f41f2cfefba1d9626f06a780a2c7748ef01d",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "땅 위 배관 — 가로",
+ "label": "steampunk-city/sp-pipe-ew",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal pipe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal pipe and its lower support block are rendered in flat 2D front elevation (side-scroller style), with purely horizontal shading bands, straight vertical brackets, and no visible top surface foreshortening (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7661
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal pipe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal pipe and its support block are drawn in a flat 2D side-scroller / front elevation style with horizontal shading bands and straight vertical brackets, showing 0 rows of top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14833
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal pipe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal pipe and its support block are drawn in pure front elevation (side-scroller style). There is no visible top surface or 3/4 depth for the pipe, its brackets, or the ground support block.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8688
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal pipe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal pipe and its brackets are drawn in flat side/front elevation with horizontal shading bands and straight vertical brackets, with no foreshortened top surface visible (0 top rows). The support block at rows 12-14 is also drawn as a flat vertical rectangle with no top face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6982
+  }
+ ],
+ "decidedAt": "2026-10-13T18:40:36.079Z",
+ "cells": {
+  "16": [
+   "eabc6a6463d79281"
+  ],
+  "24": [
+   "2ae7c179e246236e",
+   "2f81692c6b62cc64",
+   "57643c13575c659c",
+   "68e57e6a60e34939",
+   "a75512fb670ff095",
+   "eb004937c0d739b8"
+  ],
+  "32": [
+   "6888b571acb8efbd",
+   "8e903bc230449a4e",
+   "b9d2ce3ffa540857",
+   "bc7dada8bdf0ac8d",
+   "c74ca50c46b896a3",
+   "e200c81bd70401d1"
+  ],
+  "48": [
+   "036f2a99a8ef9e54",
+   "4b3ecfeb2c7ebc22",
+   "b6c442eee0ffdf48",
+   "c8db03cc7388dbf5",
+   "dc1ca54478d1c93f",
+   "f0763112e8e45aaa"
+  ]
+ }
+}

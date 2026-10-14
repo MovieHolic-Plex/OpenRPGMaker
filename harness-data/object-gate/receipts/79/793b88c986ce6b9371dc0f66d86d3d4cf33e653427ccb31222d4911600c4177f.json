@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "793b88c986ce6b9371dc0f66d86d3d4cf33e653427ccb31222d4911600c4177f",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "태양광 패널 열(기울어진 셀 판 + 반사 + 받침 상자)",
+ "label": "sf-station/sf-solar-array",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "solar panel and support box",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The solar panel is tilted up toward the viewer showing 13 rows of its foreshortened cell surface and 4 rows of front frame edge. Additionally, the support box at the base clearly exhibits both a top face (rows 20-23) and a front face (rows 24-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5791
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "solar panel on support stand and base box",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The solar panel surface is tilted toward the camera and clearly visible from above across rows 1-13, with a distinct front edge from row 14-17. The support box below also features a visible 3-pixel-tall top surface (rows 21-23) above its front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6195
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "solar panel with support box",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The solar panel surface is angled and clearly visible from above across rows 1-13, with a 4-pixel front edge (rows 14-17). The base box also shows a clear 4-row top surface (rows 20-23) and front face (rows 24-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4222
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "solar panel and support box",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The solar panel face is tilted upward towards the camera spanning rows 1-13 (13 rows of foreshortened top surface), and the support box below shows a clear top surface spanning rows 20-23 (4 rows) above its front face (rows 24-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3579
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:09.616Z",
+ "cells": {
+  "16": [
+   "13fc9e2a22cdb11e",
+   "19e8854b8672fc1a",
+   "7956bcc550854383",
+   "8c30ef798d24838b",
+   "b229e372d307ee6d",
+   "e786fff2147ac7a7"
+  ],
+  "24": [
+   "0252a72049162b60",
+   "0e78f9400d1dd3be",
+   "2d55547932dde0bb",
+   "2e5eb19495f5bee8",
+   "af67473ec916e52b",
+   "b25e2f71ecbe80fc",
+   "e0f554123e0a8fd2",
+   "ebe7ced11a794474"
+  ],
+  "32": [
+   "4bd1d5a01c682eca",
+   "4e8779631068fced",
+   "52462392a453af18",
+   "6548e45998549029",
+   "851ec69435593dd9",
+   "cae84675727a3ce5"
+  ],
+  "48": [
+   "327027ff558efeb7",
+   "9067185115d4ed2d"
+  ]
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cb7c5b9895e40784d823f16fef5dcaa1763ff5f61ee30f3785ee6dc72c8ce31d",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "굵은 가로등 기둥 상자(윗면 + 긴 램프창 + 받침)",
+ "label": "sf-station/sf-street-lamp-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "streetlamp pillar / utility box housing",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the pillar box is clearly depicted from rows 1 to 9 (9 pixel rows tall) showing the horizontal upper plane with an inset panel, positioned above the vertical front face containing the lamp window (rows 11-21) and base plinth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10512
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "streetlamp pillar / standing post box",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the standing pillar is clearly foreshortened and visible across rows 1 to 9 above the south face (which houses the vertical lamp window from row 11 downwards).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6515
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tall street lamp pillar box with base plinth",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the main pillar box is clearly visible and foreshortened from row 1 to row 9 (9 rows tall) featuring its own foreshortened light panel, above the south front face which contains a tall lamp window.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8651
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "street lamp pillar box",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the pillar box is clearly visible across rows 2–9 (8 pixel rows deep) with a surface detail panel, above the front vertical face starting at row 10.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5340
+  }
+ ],
+ "decidedAt": "2026-10-13T15:44:10.259Z",
+ "cells": {
+  "16": [
+   "db1c99f5fefa86ab",
+   "df2ac438bb33b1ec"
+  ],
+  "24": [
+   "18f8eaca9c69bacf",
+   "269e951756126e3c",
+   "285a7bc1d5126b7e",
+   "3711a06634980263",
+   "6864a6b31cd349a7",
+   "76a43e8aa22110cb",
+   "7c59e49c23dba336",
+   "7e86664e176dec82",
+   "81257591dec441bc",
+   "86f29d7913a8ce8e",
+   "905ffa6a438c0b4c",
+   "93261f5d8b6ff6d4"
+  ],
+  "32": [
+   "666a9a6b7952dc40",
+   "873dc68ad2210427",
+   "fa11f8932f986b94"
+  ],
+  "48": [
+   "0fad1dd54f3c15e2",
+   "19e945077f6b0399",
+   "449b718c234f6add",
+   "6529fdf95fd8b564",
+   "8290b0da2cefef7d",
+   "a265d59b0e1f2464"
+  ]
+ }
+}

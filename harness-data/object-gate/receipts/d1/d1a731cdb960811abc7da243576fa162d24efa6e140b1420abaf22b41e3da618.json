@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d1a731cdb960811abc7da243576fa162d24efa6e140b1420abaf22b41e3da618",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "마른 갈대",
+ "label": "gothic_manor/gm-reeds-dead",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "clump of dry reeds with stalks and seed heads",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The reeds are drawn as purely vertical 2D flat stalks and seed heads in direct side elevation, with no top-down perspective, base depth, or foreshortened horizontal volume.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3969
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cluster of dry reeds with stalks and cattail heads",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The reed stalks and heads are rendered in pure vertical side elevation without any top-down foreshortening or depth, showing zero top rows.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3587
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "clump of dry reeds/cattails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The reeds and stalks are drawn entirely in front elevation with vertical stalks rising from a flat horizontal baseline at row 15, showing no depth, ground footprint, or top-down 3/4 angle.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3994
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "reed stalks and cattail plumes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The dry reeds are drawn as flat vertical stalks and plumes with no foreshortened top surfaces or depth, appearing as a pure 2D front elevation.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3820
+  }
+ ],
+ "decidedAt": "2026-10-13T17:01:50.505Z",
+ "cells": {
+  "16": [
+   "47ba29116fc2dd9a"
+  ],
+  "24": [
+   "24bb7af317da0261",
+   "329738ec484407b7",
+   "596f2699d8847b83",
+   "6c14381d335b6412",
+   "83b7f29ff9c4e7f7",
+   "f2b71523348cbc1c"
+  ],
+  "32": [
+   "42d25f9826abeed8",
+   "99b123364664e20b",
+   "adeba40a383b6612",
+   "bd5880207ff3f49b",
+   "dc95068548ce11e9",
+   "de10b477d520b240"
+  ],
+  "48": [
+   "6f66fdaf1af235f3",
+   "7d9d3b29e6c683a8",
+   "84098aaf20e8d04f",
+   "8bd7b3d68fa39cfb",
+   "dddd941271f1a849",
+   "f35f2966ecb16f1a"
+  ]
+ }
+}

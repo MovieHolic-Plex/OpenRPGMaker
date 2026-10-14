@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "153edd47825226d89c585c202d561403d7e1bfd8826f53143782aaafdf6d52f0",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "리벳 철판 바닥",
+ "label": "steampunk-city/sp-floor-iron",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "riveted metal floor plates",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 terrain floor tile showing a 2x2 grid of riveted steel floor panels viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4276
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "riveted iron plate floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor/ground terrain tile consisting of a 2x2 grid of riveted metal plates covering the full 16x16 canvas.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6452
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "riveted iron floor plates",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile depicting 4 riveted metal panels across the full 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4660
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "riveted metal floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile consisting of a 2x2 arrangement of riveted metal floor plates viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3842
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.462Z",
+ "cells": {
+  "16": [
+   "e9de2c8cbf9004ca"
+  ],
+  "24": [
+   "7cc0a2c8b5c9cb7a",
+   "9ac48b9678e0ea4c",
+   "9c4849d37df3b4e8",
+   "b6b584e4f434f7e5",
+   "d67f83c43a74078e",
+   "e6f9fcffe7b95ad1"
+  ],
+  "32": [
+   "60a89045b79ef677",
+   "64716ad7d4ccc43e",
+   "74fa8410637fe978",
+   "89a7dfb28905e7d6",
+   "be95f66f8a4998c3",
+   "d2833dd0305e09ae"
+  ],
+  "48": [
+   "3157155c346a4829",
+   "42bea38389ead48a",
+   "99901aa76d15ed61",
+   "a9ca0ea89510f05c",
+   "bbc3b1f415426499",
+   "cd82d9ef4be53a89"
+  ]
+ }
+}

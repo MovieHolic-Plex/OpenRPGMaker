@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8cba1949233dcea2af052c017cce5a0b5c4eb43c3111b4f36105ae4e73c56063",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "병풍(여섯 폭, 금 바탕 구름)",
+ "label": "sengoku-edo/se-byobu",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "six-panel folding screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The folding screen consists of vertically staggered flat vertical rectangular panels with only a 1px outline at the top (top_rows = 0). No top horizontal surface or thickness is visible from the 3/4 top-down angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5982
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "folding screen (six-panel byongpung)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The folding screen consists of flat vertical rectangular panels with only a 1px outline along the top edge and no visible top surface or thickness seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5691
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "folding screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The folding screen consists of flat vertical rectangular panels with only a 1px outline along the top edges; no horizontal top surface or frame thickness is visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4131
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "folding screen (six panels)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each panel of the folding screen is drawn entirely as a vertical flat surface with a 1px outline at the top and no visible horizontal top thickness/surface (0 rows of top).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5342
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.076Z",
+ "cells": {
+  "16": [
+   "3cb9487f384a09a5",
+   "5a685f9268907189",
+   "5c3dc7a8b189850c",
+   "b6a919a667ca55a2"
+  ],
+  "24": [
+   "048a355dcb533fc3",
+   "15dcfb2ea71ff5ad",
+   "2b024e8e4f1986e1",
+   "3ce46c3f40e49305",
+   "4cd3546700646fca",
+   "504cf700547c02a8",
+   "5de0725ee4939715",
+   "661a36781f3dd48c",
+   "86f33858ef47cb8e",
+   "8dd889f964998c32",
+   "99508d0edd608cf2",
+   "9a277cbf9d758e2e",
+   "9ead0cd10c1ca9ba",
+   "abbb564700317ec8",
+   "c23818d6a035ef56",
+   "c854dd48042b2485",
+   "ce5523e8d145f15e",
+   "e379c526679b5cf9",
+   "e4fdff66e06201d2",
+   "e5525f37b42fd63d",
+   "f021e43771e93a7d",
+   "f4354f6ebd27e54b",
+   "f697d6c5729ac53d",
+   "f83fca187dc50e5f"
+  ],
+  "32": [
+   "43188bdb44fcbdc3"
+  ],
+  "48": [
+   "1dd1dd11ac1f0cb8",
+   "30a5ea815259fc05",
+   "497a1a980fe1aff5",
+   "c0cd3d87663489a5",
+   "db02c10ade18722b",
+   "f61a48f0d5e14e94"
+  ]
+ }
+}

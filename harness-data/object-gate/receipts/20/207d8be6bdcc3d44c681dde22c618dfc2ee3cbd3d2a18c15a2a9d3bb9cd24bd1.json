@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "207d8be6bdcc3d44c681dde22c618dfc2ee3cbd3d2a18c15a2a9d3bb9cd24bd1",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "땅 위 배관 — 세로 + 동 갈래",
+ "label": "steampunk-city/sp-pipe-nes",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "box / chest junction along pipe",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body has a clearly visible top surface spanning rows 2 to 6 (5 source pixels tall) with an overhanging lip at row 7 and a darker vertical south face from rows 8 to 12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6099
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "junction box / pipe hub with east branch",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The central junction block shows a clearly delineated top surface across rows 2–7 (with valve/fixture and edge highlight on row 7) and a south-facing front vertical face across rows 8–12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8787
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pipe junction box / block",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main junction block clearly distinguishes its lit horizontal top surface (rows 2–7, 6 rows tall with a mounted meter/fixture) from its shaded south vertical front face (rows 8–12, 5 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5251
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pipe junction box",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The junction box has a 6-row lit top surface (rows 2-7) with a valve/fitting detail, and a 5-row shaded south-facing front surface (rows 8-12), adhering correctly to the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6908
+  }
+ ],
+ "decidedAt": "2026-10-13T18:40:36.080Z",
+ "cells": {
+  "16": [
+   "4b4fa1973854d7be"
+  ],
+  "24": [
+   "4c5d2040550cbc81",
+   "570646cc622d9426",
+   "ca12a1b978a31b12",
+   "ca4ed8cf71a4f674",
+   "d2bcc77c5665ccae",
+   "fde29b9580c22fd8"
+  ],
+  "32": [
+   "16626830bfbc3209",
+   "40886f04f49465bd",
+   "4d20b7830584f6a9",
+   "94d95c7b861a6f37",
+   "d9087d07edc88a97",
+   "e45e0286e6314062"
+  ],
+  "48": [
+   "31aefa615bf9bd38",
+   "464ada203bce8163",
+   "877497157b966229",
+   "a5eb6d98c0e6f5f4",
+   "f13856e6eea0d123",
+   "fcdcb6b58f071ab2"
+  ]
+ }
+}

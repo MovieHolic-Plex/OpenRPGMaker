@@ -5,6 +5,18 @@
 
 <!-- releases -->
 
+## 0.207.4 — 2026-10-14
+
+### 수정
+
+- **ci** — give the geography raster page the test's own time budget (`1dc9e7e`)
+
+## 0.207.3 — 2026-10-14
+
+### 수정
+
+- **ci** — install Playwright before the browser gate (`b6e0594`)
+
 ## 0.207.2 — 2026-10-14
 
 ### 수정

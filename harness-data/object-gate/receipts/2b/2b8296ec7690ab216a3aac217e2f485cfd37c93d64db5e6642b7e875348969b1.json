@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2b8296ec7690ab216a3aac217e2f485cfd37c93d64db5e6642b7e875348969b1",
+ "width": 32,
+ "height": 16,
+ "kind": "organic",
+ "name": "재배 상자(금속 테 + 흙 윗면 + 초록 잎 덩이)",
+ "label": "sf-station/sf-planter-box",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "planter box with soil and plants",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The planter box shows a clear 3/4 top-down perspective. The interior soil bed and rim span roughly 7 rows from row 3 to 9 (with 4 rows of soil visible between rims), and the front vertical face spans 5 rows (rows 10-14). No isometric side faces are visible.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9646
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "metal planter box with soil and plants",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The planter box shows a clear top opening with visible soil bed (rows 5-8, 4 rows tall) bounded by a horizontal rim (rows 3-9, 7 rows total) and a distinct vertical south face (rows 10-14, 5 rows tall), perfectly matching the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9121
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "metal planter box with soil and plants",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The planter box shows a clear top opening with visible soil bed (rows 5-8, 4px tall) inside the top rim (rows 3-9 total, 7px tall), correctly foreshortened above the south-facing front wall (rows 10-14, 5px tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8479
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "planter box with soil and plants",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The planter box shows a clear top-down view of the soil bed (rows 4-8, 5 rows tall) enclosed by the rim (rows 3-9, 7 rows total top surface) and a south front face (rows 10-14), correctly rendered in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6489
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.953Z",
+ "cells": {
+  "16": [
+   "0dae50e7051b7dac",
+   "ce14ba03792518f8"
+  ],
+  "24": [
+   "029970b076d439b9",
+   "13b6754055386a74",
+   "152d1506835bc6d3",
+   "2a6a87c41a59ec7c",
+   "435b58385a42b7f2",
+   "535400fa9c9088db",
+   "734a7918f5f87270",
+   "768c38df6999c9e0",
+   "a2a6d241c6233572",
+   "ce80351e36f272f1",
+   "ebbd7bc51dc451e2",
+   "f5ecde8079caafe3"
+  ],
+  "32": [
+   "09ccbb3dc5ecf59c",
+   "6a2217e679ce2839"
+  ],
+  "48": [
+   "06c344c91d17992b",
+   "1651cdb92cdd211e",
+   "234a7f70f63b82db",
+   "3c49477a7815354a",
+   "7f95ae07231ce43b",
+   "d7f82b0ce59eb2ae"
+  ]
+ }
+}

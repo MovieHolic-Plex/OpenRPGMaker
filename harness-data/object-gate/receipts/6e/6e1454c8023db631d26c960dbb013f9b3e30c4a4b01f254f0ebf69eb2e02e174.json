@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6e1454c8023db631d26c960dbb013f9b3e30c4a4b01f254f0ebf69eb2e02e174",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "tilled farm soil furrows (terrain)",
+ "label": "sky-island/si-field",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tilled farm soil furrows",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 ground terrain tile representing horizontal ridges and troughs of tilled farm soil, viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2935
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tilled soil ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a repeating terrain texture representing horizontal tilled soil furrows viewed from above in 3/4 perspective, with highlighted ridge tops and shaded trough bottoms across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3728
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tilled farm soil terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal ridges and furrows of tilled earth covering the entire ground tile, viewed from above as appropriate for terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2935
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tilled farm soil terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile consisting of horizontal tilled earth furrows viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3760
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.980Z",
+ "cells": {
+  "16": [
+   "ada51891e7eb1d57"
+  ],
+  "24": [
+   "6266ce67c342aad2",
+   "707a338520c37375",
+   "ae97895049cef42d",
+   "bc7efafeac4cd30d",
+   "e13d29a261c1cf72",
+   "fe1027fbe4b50ddd"
+  ],
+  "32": [
+   "034962c515c53773",
+   "63542e89cd444bc9",
+   "7e382463e1079b07",
+   "8bd9aac93d84ab8a",
+   "b5bd2299c5b3a835",
+   "cd9845e3ea74ffbb"
+  ],
+  "48": [
+   "2725f312845db4e2",
+   "8e4e880e29409d54",
+   "9eaf438c07ab8d4f",
+   "bde94ea67de1bb6b",
+   "e8d9a18078379048",
+   "f122429e2b0f8e34"
+  ]
+ }
+}

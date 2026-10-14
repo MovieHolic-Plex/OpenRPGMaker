@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "44b87498c3f8bf357f5d6f17850d83918780e106e3687ea8053102a7f22bca84",
+ "width": 64,
+ "height": 16,
+ "kind": "terrain",
+ "name": "나무 마루(윤 나는 판자)",
+ "label": "sengoku-edo/se-floor-wood",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden floor planks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal wooden floor planks forming a floor tile texture; entire 16x16 area represents horizontal ground/floor terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2654
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden floor planks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat wooden plank floor texture covering the entire 16-row tile; correctly categorized as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2364
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden floorboards",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image shows horizontal wooden floorboards viewed from above, perfectly matching floor terrain tiles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3301
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden floor planks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal wooden floorboards covering the tile, representing a flat floor surface seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2745
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.075Z",
+ "cells": {
+  "16": [
+   "1bed5cb59ae5d585",
+   "a188798f56f5c9fb",
+   "b92753038f2366be",
+   "c49258cb4f507f4c"
+  ],
+  "24": [
+   "05347462463a8e0b",
+   "055eee417667547f",
+   "1741d125d7844723",
+   "22f5aa3a9ec327ab",
+   "2c5ad22e8a3f48dd",
+   "46011e100cbcea5f",
+   "4e92aa57900b9398",
+   "569f4c0205cdf982",
+   "61212e916b462b40",
+   "6d1a368a4a34ab8b",
+   "6ddba92947393fa9",
+   "7e82b6b5469c1ac8",
+   "a0c5315b2f7201b0",
+   "b7e72987fcbea1f6",
+   "b864e50457e9aeba",
+   "b97b33c4ecbf4052",
+   "e18e720fdd098e72",
+   "e3e20f2afa93cd0a"
+  ],
+  "32": [
+   "32511b419b83db3e",
+   "65695bd1c8f763cd",
+   "df97ebb8f81cb447",
+   "f7a6900d2c41da60"
+  ],
+  "48": [
+   "0c59b1c7f6a719e1",
+   "11444cd6703db5c8",
+   "16a1bf7a49e157c9",
+   "1f886b81b1d858ad",
+   "369abb3b5fdfd328",
+   "544c94940797d241",
+   "5f42ecc65a1d16e5",
+   "713368db0580fff9",
+   "849b83d8f9338f7b",
+   "9c938de68e5e5767",
+   "b55f112659ae86f0",
+   "f80159db439d494a"
+  ]
+ }
+}

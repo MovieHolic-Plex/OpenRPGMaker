@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6fcb1a40b15ff1b0aae8b6fc37c73c986c93c0d49df744598482474212e28282",
+ "width": 16,
+ "height": 32,
+ "kind": "organic",
+ "name": "tangle of roots hanging down from a floating island (organic)",
+ "label": "sky-island/si-roots-hang",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hanging roots",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The roots are drawn in a flat 2D front elevation suitable for a side-scroller, showing no 3/4 top-down perspective depth or visible top surfaces (0 source pixel rows).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7726
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hanging roots",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hanging roots are drawn entirely as a flat 2D front elevation with 0 rows of visible top surfaces or depth foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7126
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hanging roots",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The roots are drawn in a flat 2D front elevation with 0 rows of top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4532
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hanging roots",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The roots hang purely vertically in a flat front elevation with no visible top surface or 3/4 perspective foreshortening (0 source pixel rows of top).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4357
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.432Z",
+ "cells": {
+  "16": [
+   "7c3f16220fbdf58b",
+   "eca4fcfed08c2f09"
+  ],
+  "24": [
+   "06897021fe6a33cf",
+   "2cbc7a11a56f2d75",
+   "44ffbc0694986d6c",
+   "53d8ecfc0486b838",
+   "568bc1d2bb5a353d",
+   "5a1006a83ff60d76",
+   "643b7652b89c04a4",
+   "691c06d019d292b2",
+   "74ecbd929022815f",
+   "ef152a7da6d3f9b1",
+   "fb334be086bcc0c1",
+   "fb9553fc2af2b8d1"
+  ],
+  "32": [
+   "afa1c31907880b89",
+   "b12716a34d1b1f11",
+   "bda881595f7bcec5"
+  ],
+  "48": [
+   "1fe95c0bf1016010",
+   "2453c46298464ffb",
+   "3a4926bf6f61fb32",
+   "6d22c920cc86406c",
+   "db809c1deeb08741",
+   "f2cecc786afb165e"
+  ]
+ }
+}

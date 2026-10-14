@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fefc18a2302a5c1fb014648895210e4feb7f74636c333b98f89e9b9b9818467c",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "고마이누(돌 사자, 받침 위, 오른쪽 봄)",
+ "label": "sengoku-edo/se-komainu",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "komainu statue on plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The plinth beneath the statue is drawn in pure front elevation as a flat rectangle with 0 source pixel rows of visible top surface (only a 1px outline at rows 21-22). In 3/4 top-down view, the top surface of the pedestal must be visible around the figure.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4562
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "komainu statue on a stone pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pedestal is drawn as a flat 2D rectangle (rows 22-31) with purely horizontal shading bands and no visible top surface foreshortening, and the statue resting on it is also drawn in pure side-elevation profile.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5190
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone lion statue on pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pedestal is drawn as a flat front elevation with only a 1px black outline at row 22 and zero rows of visible top surface where the statue sits.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4702
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "komainu statue on plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The plinth beneath the statue is drawn as a flat rectangular front elevation without any visible top surface (row 22 is only a 1px outline). The statue itself is also drawn in flat side profile.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3659
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.070Z",
+ "cells": {
+  "16": [
+   "17468849cc9ed12b",
+   "e388b0fca9e6c100"
+  ],
+  "24": [
+   "445db3b962ce51f0",
+   "4873df4b5c2e5745",
+   "4b2f3aedbb6f5f1c",
+   "b0a976788d722cb2",
+   "b573723842ab4a5f",
+   "c3bd2abea09ca91d",
+   "cce780d71a94b591",
+   "ea7fd263d46dd397",
+   "f26fe504f8bdf05c",
+   "f6c79ac02cd6fc8b",
+   "f794f888139409f2",
+   "fb317fae907576ee"
+  ],
+  "32": [
+   "a22d386ccff92515",
+   "f20876e979951618",
+   "f2d589a01392c513"
+  ],
+  "48": [
+   "463e62ffc97bf71b",
+   "54980b58f1f78793",
+   "87f34a647c47ef30",
+   "8d91b6f329b8d728",
+   "9d668f8232ea4ee1",
+   "cce1f7d9c706977c"
+  ]
+ }
+}

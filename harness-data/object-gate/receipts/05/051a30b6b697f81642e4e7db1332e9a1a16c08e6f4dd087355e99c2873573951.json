@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "051a30b6b697f81642e4e7db1332e9a1a16c08e6f4dd087355e99c2873573951",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "dark metal grating floor with faint cyan glow below, two variants",
+ "label": "sf-station/sf-deck-grate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "metal grating floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Two 16x16 terrain floor tiles depicting dark metal grating seen from above with occasional glowing cyan pixels beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4484
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "metal grating floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles covering 16x16 pixels with grating pattern and glow accents seen from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5806
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "metal grating floor",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image shows two 16x16 variants of a dark metal floor grating seen from above. As flat floor terrain, the entire surface represents a horizontal plane correctly viewed from the top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5297
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "metal grating floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Two 16x16 variants of a flat metal grating floor tile seen from directly above in top-down perspective, with faint cyan glowing slits below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4252
+  }
+ ],
+ "decidedAt": "2026-10-13T15:26:41.507Z",
+ "cells": {
+  "16": [
+   "9937bd5d90d1fb66",
+   "a7ad4b06fc4b28f2"
+  ],
+  "24": [
+   "00089cdbb4e95335",
+   "363619563d248022",
+   "3c553196a4152ad5",
+   "653787d83b988bc9",
+   "9cac23d733f5d999",
+   "ad02a93450b1f1ee",
+   "c3d53c4b4cc60181",
+   "c47f8aafe7d4c224",
+   "cc9324d23ce45b18",
+   "db78ab5c2717f25d",
+   "e7821cea94119dd5",
+   "f2b467863ef72371"
+  ],
+  "32": [
+   "173b6eb7fc50681d",
+   "e2ab7de7f72539b6"
+  ],
+  "48": [
+   "126ee6bf777a9b48",
+   "28ef9e6b9b34bf81",
+   "2e8d0ee69cf3def3",
+   "304d2901cb7d9bdd",
+   "39e07dc3f886d532",
+   "e325756c34ee06eb"
+  ]
+ }
+}

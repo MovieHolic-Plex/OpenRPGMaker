@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c362af65f021b3bbc7c788816fcdbd88b57e4e306a224918dfd3603b5f3c0bec",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "땅 위 배관 — 남·동 꺾임",
+ "label": "steampunk-city/sp-pipe-se",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "box / chest",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire upper section (rows 2-7) shows the vertical front face of the lid with a front-facing lock plate; there is no top surface visible (0 source pixel rows). The object is drawn as a flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7090
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "box / chest body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is drawn from a direct front elevation; the front face with the latch/lock starts immediately below the 1px top outline (row 1) with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7067
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "box / pipe junction block",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main block (rows 2–12) is rendered as a flat front elevation. It features a 1px top outline (row 2) with no visible top horizontal surface, showing front-facing details (a central brass fitting/latch and studs) directly on the front plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7351
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "square pipe junction box",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The junction box clearly shows a 6-row top surface (rows 2-7) viewed from above with a brass inspection plate and bolts, followed by a shaded 5-row south face (rows 8-12) connecting to a pipe segment exiting south.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14574
+  }
+ ],
+ "decidedAt": "2026-10-13T18:40:36.079Z",
+ "cells": {
+  "16": [
+   "5906714be5738a3e"
+  ],
+  "24": [
+   "2aba02c1a2779e36",
+   "34aa52e172406f9d",
+   "3af7e7080c8c0e0b",
+   "8cbe078cf4a6d614",
+   "aea3bd05a85236a6",
+   "d766ae572edf5203"
+  ],
+  "32": [
+   "0bbdcefcdfd0039a",
+   "11ff288f08641cb6",
+   "4d5141bffda648cf",
+   "8722eebac56c9b05",
+   "c2f09c62b61fa3da",
+   "e6cd6be6e901bb77"
+  ],
+  "48": [
+   "058fa66ee5878ebb",
+   "97bfb542683b1863",
+   "9aef4d2c7dcb3292",
+   "ad0d142e2bc8f2b5",
+   "e321710b781049b4",
+   "e556d7f2f4c5c8ea"
+  ]
+ }
+}

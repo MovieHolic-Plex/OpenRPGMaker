@@ -1,0 +1,153 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bac41462724eca680be87c9e59a752fdaf5e91afee243f6b9796794cb9a1ae8d",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "생선 노점(나무 판 + 생선 줄)",
+ "label": "sengoku-edo/se-stall-fish",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fish display rack / stall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure (fish display board, top beam/roof, and support posts) is drawn as a flat 2D front elevation. No horizontal top surface or depth is visible for either the stall surface or the rack frame.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6758
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fish display rack / stall board",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire display board and shelves with fish are drawn in pure front elevation facing straight at the viewer, mounted on two vertical posts with no visible top depth on the shelves or main counter surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5839
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fish drying rack / display board",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main display board and fish rows are drawn in pure front elevation on two vertical posts. The only horizontal element is a 2px strip at rows 3-4 representing a thin roof/ledge, failing the requirement for a visible top surface for low furniture/counter.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 6153
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fish drying rack / stall board",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn in pure front elevation on two vertical posts (rows 24-31). The main board with rows of fish (rows 10-23) faces straight south with zero foreshortened horizontal depth, and the upper section (rows 2-7) is drawn as a flat vertical panel or awning with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7645
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.072Z",
+ "cells": {
+  "16": [
+   "01e2221a87b40cdd",
+   "7dc8de9a56dabd0b",
+   "8625b9d8e3c6edb3",
+   "fe0e62d2e54be479"
+  ],
+  "24": [
+   "05a42341446940f7",
+   "0bf3a5618db805d3",
+   "1173de9e3c416e08",
+   "24201190ee92501a",
+   "2583384abe61f1be",
+   "3a8becf3dc2981fa",
+   "3db4d094cb3f899e",
+   "481678bebd264483",
+   "52b2b630b569077e",
+   "58a7c80664e5b0df",
+   "62f59d1308d85633",
+   "65ea52efd0e6e3f1",
+   "748091d1cdc5e75d",
+   "874a6bbcbdd9e830",
+   "9204ab24ecc07250",
+   "9b935fb7d7288b3d",
+   "a55b6d0bcb714e3a",
+   "b407ea3ee1564a11",
+   "b5dac7d0e7211ba6",
+   "bea289288f42033c",
+   "c7444c8c47ea8997",
+   "c9e1dd11c9d58e80",
+   "d963aa268a8dbee9",
+   "e43868a36662df39"
+  ],
+  "32": [
+   "3dcebe166e06485b"
+  ],
+  "48": [
+   "512f4d19d52cf706",
+   "73e076ff48b0fe2b",
+   "8ef257f1dc13e148",
+   "be942006e247ed17",
+   "d21bf7fda2e98d18",
+   "e68937498a4c8133"
+  ]
+ }
+}

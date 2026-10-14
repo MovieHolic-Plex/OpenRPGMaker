@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f65a6139e58bac7323674f3808c2d193d03141d94011db70eab62c0c8f98d11a",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "운하 물 (프레임 3)",
+ "label": "steampunk-city/sp-water-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "canal water tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Animated water terrain tile showing a foreshortened horizontal surface with horizontal wave highlights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2934
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "canal water tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Animated canal water surface tile with ripples and depth variation; valid terrain tile representing a horizontal surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3234
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "canal water surface tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing canal water with horizontal ripple highlights across the entire 16x16 surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2754
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "canal water tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Water surface terrain tile with horizontal ripple highlights and shadows viewed from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3088
+  }
+ ],
+ "decidedAt": "2026-10-13T18:27:58.052Z",
+ "cells": {
+  "16": [
+   "95f7a41955ee76f6"
+  ],
+  "24": [
+   "1362e7dd9bcc5664",
+   "6c4b4b0fcfb2f5b2",
+   "6d841f612f90b648",
+   "89e57015b0bac69e",
+   "a7414f8d434d6e7a",
+   "bdee6e39f51d3d17"
+  ],
+  "32": [
+   "2bee7d3468c5ec6f",
+   "39dab56556f8dc49",
+   "87861b76b668679b",
+   "a6e1eb0950f277e7",
+   "c694a14fbe3f8539",
+   "d72b1c972df141f2"
+  ],
+  "48": [
+   "15f68d4de89141eb",
+   "222a88933289937a",
+   "779c936c15b16fef",
+   "797aec0d25a24fc0",
+   "9a63b35be9c06c24",
+   "eafd10142d4d6636"
+  ]
+ }
+}

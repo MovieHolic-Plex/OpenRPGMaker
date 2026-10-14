@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "efba6c7c8ca181b70c62e2cc143100c997e50967036b11aae421a5836eac0c61",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "복도 벽(흰 벽 + 하늘색 띠 + 창틀 이음)",
+ "label": "modern-campus-int/mc-wall-corridor",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a vertical corridor wall face with decorative trim and lower paneling; terrain wall faces correctly fill the vertical tile face in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5260
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "corridor wall face tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile representing a vertical wall face with horizontal stripe and lower paneling/frame elements.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5151
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "corridor wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a terrain wall face tile showing a corridor wall with colored stripes and lower paneling/frame lines. As a standard vertical wall tile for top-down mapping, it is correctly categorized as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4373
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "corridor wall face tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting a south-facing corridor wall surface with decorative stripe and lower wainscot panels; wall face tiles represent vertical surfaces and correctly do not have top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3771
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.306Z",
+ "cells": {
+  "16": [
+   "05f3ab1d1c4e8b4d",
+   "3421ac5708fd395d",
+   "57b6675adacb492d",
+   "b4e25cf8180f81e9"
+  ],
+  "24": [
+   "03907847acc13675",
+   "07c740982217645c",
+   "0b72dd04139e2ca0",
+   "0c04951ba15c3419",
+   "1da8e4aaa6ba3751",
+   "21f864e031811996",
+   "23b24b5a78f17a4d",
+   "3a04d6850120ccf0",
+   "54ca49a5e6e4fd25",
+   "66075715806a0b6f",
+   "689e680a96ab83b9",
+   "6c3459d7cb51f268",
+   "7949011ef4602205",
+   "88c732dd3206f9b7",
+   "93f62aad42dece4a",
+   "9b35b5dd795be053",
+   "9e1bed3e8398d330",
+   "a83f90b3b1fd277c",
+   "ac282a58eda9ec81",
+   "b75cf06135b7a986",
+   "bb836f66fcb5a9e2",
+   "c8e524f8b7f46a1b",
+   "d94e5d5683df4048",
+   "ebb915fd09d3aeff"
+  ],
+  "32": [
+   "25c9d5267ddb7060"
+  ],
+  "48": [
+   "2a1da1adf9497ed6",
+   "2f9fd06a19c059ab",
+   "6033e71636f9234e",
+   "806fb77496a0596b",
+   "e08f11b2e4e9cf53",
+   "f245a82b71f4e8ac"
+  ]
+ }
+}

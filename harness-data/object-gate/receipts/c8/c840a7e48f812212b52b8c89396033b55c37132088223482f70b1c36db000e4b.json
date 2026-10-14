@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c840a7e48f812212b52b8c89396033b55c37132088223482f70b1c36db000e4b",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "canvas hammock seen from above: wide fabric bed surface with a pillow, slung between two posts with flat tops",
+ "label": "sky-island/si-hammock",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "canvas hammock slung between two posts with a blue pillow",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hammock bed surface spans rows 3 to 13 (approx 10 rows) viewed from above at 3/4 perspective, showing the textured fabric plane and a flat pillow lying on it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4562
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "canvas hammock bed surface slung between two vertical posts",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hammock fabric surface is broadly visible from above across rows 3-13 with an attached blue pillow (rows 4-8), plus top surfaces on both mounting posts (rows 0-1).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4155
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fabric hammock bed slung between posts",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hammock is viewed from above at a 3/4 angle, displaying roughly 9 rows of wide fabric bed surface (with a pillow lying on top) and posts with visible 2px flat tops.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3898
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "canvas hammock bed with blue pillow slung between two wooden posts",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hammock is clearly viewed from above at a 3/4 angle, displaying roughly 9 rows of fabric bed surface (rows 4-12) with a flat pillow resting on top and the south droop/edge shaded below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3381
+  }
+ ],
+ "decidedAt": "2026-10-13T18:47:30.237Z",
+ "cells": {
+  "16": [
+   "44d74a149770c60a",
+   "fca30f4d0cee7ffb"
+  ],
+  "24": [
+   "125b902bc637509d",
+   "456997c7b927737a",
+   "55b79c87b6a359d6",
+   "6e22021e8c4a605e",
+   "90d2e2135bd97024",
+   "bf1d2ae3ec86dfaa",
+   "c1bd5469134fd9a8",
+   "c1d55f08e2cf5402",
+   "e02d5470281465c1",
+   "e69f6fc58b4f44bf",
+   "ed80dbdb3392a0b8",
+   "ff8413fe6b60e673"
+  ],
+  "32": [
+   "762bf8eef81be617",
+   "c566f709b672f7a8"
+  ],
+  "48": [
+   "2cfd4c6fb5239fbd",
+   "3875e084b09e443e",
+   "56d7561cbedd0108",
+   "6470e8f60e3e24b6",
+   "721df967b6e67c49",
+   "954107e1cb03078a"
+  ]
+ }
+}

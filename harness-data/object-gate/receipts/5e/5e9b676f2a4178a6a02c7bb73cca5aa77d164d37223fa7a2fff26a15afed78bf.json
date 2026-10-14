@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5e9b676f2a4178a6a02c7bb73cca5aa77d164d37223fa7a2fff26a15afed78bf",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "wooden chair with backrest",
+ "label": "sky-island/si-chair",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "chair seat and backrest",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal seat surface is clearly depicted from above across rows 7 to 9 (3 rows tall) with the front apron below it at rows 10-11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3488
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden chair seat and backrest",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal seat cushion/board is clearly visible from above across rows 7 to 9 (3 rows tall), resting above the front apron on rows 10-11 and the legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3617
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "chair seat and backrest",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chair seat surface is clearly foreshortened and visible from above across rows 7-9 (3 pixel rows), with a 2-pixel front apron on rows 10-11 above the legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4200
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "chair with backrest and seat",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal seat surface is viewed from above across rows 7-9 (3 rows deep), positioned above the front apron/thickness at rows 10-11 and the legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3916
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.562Z",
+ "cells": {
+  "16": [
+   "6fd9a37df0d7c442"
+  ],
+  "24": [
+   "04a56779a01801bd",
+   "5fbc81b379ad46ea",
+   "6cc675259adc652d",
+   "93e7f8751537129e",
+   "f51eac7fc85a47aa",
+   "f98d9f7d05294e91"
+  ],
+  "32": [
+   "01d144e758d8249b",
+   "09f3a337bd00d08f",
+   "1b4e25e880a0188c",
+   "6af8c08e71542c5c",
+   "75afdeb9fe29273c",
+   "8b032cb0725bfe58"
+  ],
+  "48": [
+   "21d71ed9a0702bc1",
+   "623b22999147bd7a",
+   "8ff740a1b1a4bf54",
+   "bbd7d68715823063",
+   "d9565b76a526e09e",
+   "fa4673ae55fd1269"
+  ]
+ }
+}

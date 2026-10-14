@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "97096b7432f639f44e5b1018581bf2f53bfaaebf2c9213a8db53b3344e716352",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "갠 이불 더미",
+ "label": "sengoku-edo/se-futon-stack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stacked folded blankets (futons)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stack of three folded blankets is drawn in pure front elevation with each blanket depicted straight-on as a front face. There is no visible foreshortened top surface for the top blanket of the stack.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 7701
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stack of folded blankets",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stacked blankets are drawn entirely in front elevation. Each blanket layer only has a 1-2px edge highlight along its upper border rather than a visible top surface for the stack, showing no top-down depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 7269
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stack of folded blankets",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stack of three folded quilts is drawn in a pure front elevation. Each quilt repeats the same front-facing fold/border pattern, and there is no visible top surface foreshortened from above on the top of the stack.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 9311
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stack of folded blankets",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stack consists of three folded blankets shown from a pure front elevation. Each blanket is drawn flat-on with no foreshortened top surface visible on the uppermost blanket (no depth into the scene).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 7139
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.076Z",
+ "cells": {
+  "16": [
+   "2d02b0892b31984c",
+   "d56a3800584a5a6b"
+  ],
+  "24": [
+   "0b62262bcb0ddb36",
+   "16d7ebbc7b08cb43",
+   "27b8b1432ba1ffed",
+   "614e9e24e9aa1bda",
+   "8572a4351856c6aa",
+   "b0bbbab847ea5c3c",
+   "c3f4aa1173a3bfc6",
+   "d915301f422d0f41",
+   "fce87ff57f240042"
+  ],
+  "32": [
+   "151ad5bc0967e607",
+   "2852fdd78c1e514d",
+   "e36616280fc24a6a"
+  ],
+  "48": [
+   "71423412155198dd",
+   "755d4f070a903579",
+   "aa64aa61a0fdae64",
+   "d59b67841ad1e94f",
+   "ecb45fff5ff5e2a3",
+   "f0c7d5f14383c6e7"
+  ]
+ }
+}

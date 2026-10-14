@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f9eab55b925b578dbc9f9fe1070b94e1df249fc4ff22d7b225fe8eb37d8a6ccc",
+ "width": 16,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "걸린 초롱(붉은)",
+ "label": "sengoku-edo/se-lantern-hang",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hanging lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern body, cap, and wall bracket arm are drawn in a flat side/front elevation with straight horizontal bands and no top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6138
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "red paper lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern body, caps, and mounting arm are drawn in pure front/side elevation with perfectly straight horizontal ribs and zero foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8668
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hanging paper lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern is drawn in pure front elevation: the top cap (rows 6-7), body segments, and base (rows 23-24) have entirely straight horizontal lines with 0 rows of foreshortened top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12862
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hanging lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted lantern attached to a side wall bracket; as a wall-mounted fixture (wall torch/lantern category), it is legitimately drawn flat in elevation without a visible top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12241
+  }
+ ],
+ "decidedAt": "2026-10-13T19:37:02.185Z",
+ "cells": {
+  "16": [
+   "5c0399e37e02c073",
+   "d4dab446e66ce274"
+  ],
+  "24": [
+   "0dd6a8f5d011242d",
+   "11eb63a8cc2b0527",
+   "23db23acb7cac429",
+   "2f22d19415a3fdc3",
+   "36bf65388aba578b",
+   "4d17f45723ccfbfe",
+   "83d3c775ad0efe60",
+   "85349826fa0d402c",
+   "94bfd2eba4b544e7",
+   "aaedd78e7a661689",
+   "dce7b7157375917e",
+   "e7d6a6e04f4decab"
+  ],
+  "32": [
+   "4c378fa33dc95cc6",
+   "99d2521128d19dcb",
+   "dc657a38f44806df"
+  ],
+  "48": [
+   "13ba4a45c90e6776",
+   "228fe1e20aaa7843",
+   "28dafeee3e2ae0dd",
+   "a77c16ec1e0a61ae",
+   "c97113c37b1e6cb5",
+   "f28eed7a46c4e50a"
+  ]
+ }
+}

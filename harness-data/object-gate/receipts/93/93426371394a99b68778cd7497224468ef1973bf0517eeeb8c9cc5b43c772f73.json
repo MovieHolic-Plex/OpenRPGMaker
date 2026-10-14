@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "93426371394a99b68778cd7497224468ef1973bf0517eeeb8c9cc5b43c772f73",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "디딤돌(정원 징검돌)",
+ "label": "sengoku-edo/se-stepping-stones",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stepping stones",
+    "kind_matches": false,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stepping stones are drawn with 3-4px tall vertical front faces and only a 2px top surface, resembling upright cylinders or tombstones rather than flat garden stones seen in 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 9805
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stepping stones",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each stepping stone clearly displays both a light-colored top surface foreshortened in 3/4 view (rows 2-3 and 8-9) and a vertical south front face (rows 4-6 and 10-12).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8977
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stepping stones",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each stepping stone is rendered with a 3px vertical front face and only 2px of visible top plane, giving it an eye-level elevation/block appearance rather than a flat ground object viewed from a 45-degree top-down angle.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9594
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stepping stone",
+    "kind_matches": false,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn as a 3D block rather than lying flat, but its top surface is only 2 pixel rows tall (rows 2-3 / 8-9) while the vertical front face is 3 rows tall (rows 4-6 / 10-12), making it a near-front elevation with an insufficient top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 6642
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.074Z",
+ "cells": {
+  "16": [
+   "018e103363c0c1e1"
+  ],
+  "24": [
+   "05989f5d0720c6ee",
+   "0fa6b126b0ae1cae",
+   "2fd4009b67be8047",
+   "6dd8ca0d6f6dc706",
+   "8435b2a403fafe54",
+   "9cbed2e1c869d279"
+  ],
+  "32": [
+   "1134b097c5240601",
+   "4dd2a4e64e00fd37",
+   "698c2d95c7bb0eb2",
+   "792e79540d240786",
+   "8000274351791088",
+   "e903a305dcdf34cf"
+  ],
+  "48": [
+   "1e6925a21211925b",
+   "4d5b212324698378",
+   "7af1ba1565c7cca1",
+   "95882e7e5cc90685",
+   "9e40f38baea2c08e",
+   "c2457132df883a12"
+  ]
+ }
+}

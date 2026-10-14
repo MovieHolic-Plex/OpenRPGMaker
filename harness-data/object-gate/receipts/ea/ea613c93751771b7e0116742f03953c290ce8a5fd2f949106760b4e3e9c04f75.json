@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ea613c93751771b7e0116742f03953c290ce8a5fd2f949106760b4e3e9c04f75",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "후스마 벽(소나무 그림 미닫이 + 둥근 손잡이)",
+ "label": "sengoku-edo/se-wall-fusuma",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fusuma sliding doors wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile showing sliding fusuma screens between upper and lower horizontal beam runners.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5723
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fusuma sliding door wall face with pine tree painting",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Classified as terrain (interior wall face tile); in RPG Maker 3/4 perspective, wall faces are drawn frontally with top/bottom frame beams and do not represent freestanding standing objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5822
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fusuma sliding screen wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile depicting Japanese sliding doors (fusuma) with pine artwork, designed to tile vertically as an interior wall surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4059
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fusuma sliding door wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a south-facing wall tile (fusuma sliding door terrain) with top and bottom horizontal guide rails and painted panel faces, properly representing a standard RPG wall surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4751
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.075Z",
+ "cells": {
+  "16": [
+   "1610fd023bdb49d5",
+   "52c209378a7d5701",
+   "9fbb3537cb57f991",
+   "aea4c5146ccc3bd0"
+  ],
+  "24": [
+   "0a97f6ac13a677b6",
+   "144cb320229e4d04",
+   "219eb4e4b1067f25",
+   "232c7921a86ff986",
+   "2364c9da4c15bf67",
+   "2b7989af6a2ddf3d",
+   "4799fd4e8369c64e",
+   "4a54f9cc0b6e2900",
+   "4a68f0bf69c05378",
+   "5ee896d6be7ac330",
+   "72bffb0fbee498e4",
+   "787f960556e486b7",
+   "8a19ef10472d2b92",
+   "8d3b06c20e153aeb",
+   "8e292c5f1d43bce4",
+   "a841a20dc439d662",
+   "b62a187edc1648b6",
+   "d1975d64f2fa7b1c",
+   "d564d366a851f0d5",
+   "d8289510b7f06cf4",
+   "d8c8e83c99baac3e",
+   "f460301eeca3d9d2",
+   "fb618fcc44705829",
+   "fe9c2f4833d4a65a"
+  ],
+  "32": [
+   "3388c8a41c453b2a"
+  ],
+  "48": [
+   "0fa2899840475eea",
+   "1f09dfde2e849232",
+   "3b946efd993914e0",
+   "3e5d3ca3c2483103",
+   "a93db6d96694bde6",
+   "f1730e30a2563506"
+  ]
+ }
+}

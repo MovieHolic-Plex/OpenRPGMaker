@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0d284f35537e177eeaef836428c448b62e78f5238057b41988ab9c65bc74ac77",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "풀밭 모서리(북동쪽 흙길)",
+ "label": "sengoku-edo/se-grass-edge-ne",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass ground tile with dirt path edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing a grassy surface bordered by dirt path along the top and right edges, appropriate for top-down terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4718
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass terrain edge on dirt ground",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile transitioning from grass to dirt path in top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4143
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass and dirt terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile showing a patch of grass bordered by dirt along the north and east edges, correctly viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7323
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass terrain border on dirt ground",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tile showing a patch of grass transitioning to dirt at the top and right edges, viewed from the standard overhead map perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8964
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.060Z",
+ "cells": {
+  "16": [
+   "03d1fc9784dab406"
+  ],
+  "24": [
+   "43cd674b7231f6b7",
+   "442646c91a87bd88",
+   "70704ba79057a9e2",
+   "7b471287fb922909",
+   "885d00db9c711a04",
+   "e4e242b4076158f2"
+  ],
+  "32": [
+   "04b8691ba630813f",
+   "34e2a403246ac444",
+   "515b12dc216addd3",
+   "684f70c5d00cbec9",
+   "8231a1eb54150812",
+   "e994ea6d8a27a73f"
+  ],
+  "48": [
+   "000ed4e063bd1364",
+   "11bf19bb18c962a0",
+   "31fb79791a0aab29",
+   "8792798290f9d04c",
+   "8ee67eb004da798a",
+   "90c2dbbbaea1226d"
+  ]
+ }
+}

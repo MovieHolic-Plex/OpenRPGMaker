@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5471b319a91c6fdd5e03f703eaf4a05f5ebfb2dd6685f713fb6f6b8dacae8013",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "석등(가스가 등롱)",
+ "label": "sengoku-edo/se-lantern-stone",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone lantern (kasuga lantern)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern is drawn in a pure front elevation view. The roof eaves, lantern chamber, middle platform, and base are all drawn with perfectly straight horizontal lines without showing any foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3809
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone lantern (Kasuga-doro)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire lantern is drawn in pure front elevation with straight horizontal bands for the eaves, mid-platform, and base plinth; no horizontal top surfaces are visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5186
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone lantern (Kasuga lantern)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern is drawn in a pure 2D front elevation with perfectly horizontal eave lines, flat base steps, and a frontal view of the roof and firebox with 0 visible top-down foreshortened surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5717
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone lantern (Kasuga-doro)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone lantern is drawn as a flat front elevation. The roof, lantern platform, and base plinth all have completely flat horizontal boundaries with no visible foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3554
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.070Z",
+ "cells": {
+  "16": [
+   "049e3b610906003b",
+   "3a29abc5d3b3d4a4"
+  ],
+  "24": [
+   "145a94b778f7a60a",
+   "1d5739154ba0415a",
+   "1f2f682af6a1ac86",
+   "3cfb790e39dc1ec1",
+   "55fedcc24d5c7cde",
+   "5cd8887ff23ecdc1",
+   "84f8bf04a1054a7c",
+   "865dc540e12ab872",
+   "94141ba300f3fbcd",
+   "9e09b0b5fa1f9de2",
+   "b0fbeb53e9ebdba5",
+   "fbe96cb7c8491209"
+  ],
+  "32": [
+   "7cf834fb4bcb9af7",
+   "9c9005f7399ec942",
+   "c632b5578be3a688"
+  ],
+  "48": [
+   "1fc835e5e182507d",
+   "28e1f41339f665d5",
+   "28e482c10f83ac15",
+   "35ce7b2898c7aa19",
+   "ade08f2294f78a8d",
+   "e115b90376a8a89a"
+  ]
+ }
+}

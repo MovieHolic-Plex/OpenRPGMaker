@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cc0404703613753024d5b555dcc79d6e1829ea6f4ba72194fb3232bdaf0e8b2f",
+ "width": 48,
+ "height": 48,
+ "kind": "organic",
+ "name": "수양버들(강가, 늘어진 가지)",
+ "label": "sengoku-edo/se-tree-willow",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "weeping willow canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rounded crown of the weeping willow canopy shows a clear, foreshortened top surface with highlights and shading across rows 3-10 (approx 8 rows) before drooping into hanging branches.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3611
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "weeping willow tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rounded crown of the willow canopy displays a lit, foreshortened top surface across rows 3-10 before the trailing branches drape downward along the front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5106
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "weeping willow canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rounded dome of the willow canopy shows its foreshortened top surface across rows 3-10 with lighter highlights before the hanging branches droop downwards, typical for top-down JRPG trees.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2676
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "weeping willow tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The foliage canopy forms a rounded dome seen from above with top lighting and highlights across rows 3-10 (approx. 8 rows) before drooping downward in front of and around the trunk.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4430
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.069Z",
+ "cells": {
+  "16": [
+   "0be8c51f223f5f93",
+   "43ac1f34f15dede4",
+   "4c28756f14f523df",
+   "7a1cf1888abb1f95",
+   "8f91e3bc78234c54",
+   "cdffda5bca7da17f",
+   "dc7589a45d0bb911",
+   "f42edf11e21539ba",
+   "fef94b1b1ea5b5f3"
+  ],
+  "24": [
+   "29d58e2e6e2972e1",
+   "63ca2bd4033ca18b",
+   "86ea29f7eafcc5dc",
+   "b12b41a2b9de78a7"
+  ],
+  "32": [
+   "0f3c42dd677a7cde",
+   "138e2782413173ea",
+   "2006b6163d99c70a",
+   "35739ba81e49cfb7",
+   "3d8e3119a6022aa3",
+   "495f80f74866368b",
+   "496fed14a78a2905",
+   "4beb1c7ac0515123",
+   "66ea389c90c1e2e2",
+   "7f5d9338acde8946",
+   "8030a0756dc626c0",
+   "863fc0e446bba8f5",
+   "aac7451b4559782f",
+   "b47707fadffef2db",
+   "d0171fa87c2e9b72",
+   "d864b852f7a8595f",
+   "da437e6df1ca3852",
+   "de85cfeea6e03742",
+   "df1c1dc999f3fc33",
+   "e25f29071dd56cdc",
+   "e2d1e350b63afb77",
+   "f1e548cc577d8da3",
+   "f4626ddb60b5f2b9",
+   "fa92130bb3f5dc89"
+  ],
+  "48": [
+   "e947d7169dfef26b"
+  ]
+ }
+}

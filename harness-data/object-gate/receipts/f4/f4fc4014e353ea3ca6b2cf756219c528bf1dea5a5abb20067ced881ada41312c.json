@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f4fc4014e353ea3ca6b2cf756219c528bf1dea5a5abb20067ced881ada41312c",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "볼라드(돌 말뚝)",
+ "label": "modern-campus/mc-bollard",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone bollard / post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bollard is drawn entirely as a 2D front elevation silhouette with a rounded cap, straight vertical sides, and a completely flat horizontal bottom line at row 13-14 with no circular foreshortened top surface or base curve visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8248
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone bollard / post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bollard is drawn entirely in front elevation with perfectly horizontal lines for the groove/hole, middle band (row 9), and base (row 13). There is no visible elliptical top surface or foreshortened top cap to indicate a top-down 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6258
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone bollard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bollard is drawn as a flat silhouette with a straight horizontal middle band, flat bottom, and straight shadow bar. There is no visible top surface or elliptical foreshortening reflecting the 3/4 top-down angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10269
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone bollard / post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bollard is drawn entirely as a flat 2D front silhouette with straight horizontal bands (row 9) and a flat horizontal base/shadow, lacking the elliptical curves or foreshortened top surface required for a 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5478
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.869Z",
+ "cells": {
+  "16": [
+   "8b80840557c52923"
+  ],
+  "24": [
+   "3242ae4bbb03139b",
+   "5c7d73b047ddf158",
+   "76d10afc87d8e5dd",
+   "ab437a91e42c68f3",
+   "efa7f7a5d3047abc",
+   "f5a7b5c85bc52c2a"
+  ],
+  "32": [
+   "32ea9a291744dc3d",
+   "86ef4b837ca237a6",
+   "b1bc416b269e5ac8",
+   "c2b6ad1e247c8ecf",
+   "d68f26476cad6d03",
+   "e902b1fbf6b19da4"
+  ],
+  "48": [
+   "056ec89db6085d54",
+   "4a624c9d8e1af6d5",
+   "8f8b3a5ac48bfbd1",
+   "b838b73c5c6f05dd",
+   "e376dcdf3e3d6246",
+   "e8b8ffbab29ff4f2"
+  ]
+ }
+}

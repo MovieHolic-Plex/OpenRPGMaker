@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "18474b40d1fe2a58f72e3c5f3d318326628eef1ecb46dcffd6052a5eb53998c2",
+ "width": 32,
+ "height": 16,
+ "kind": "organic",
+ "name": "호박 무더기(하나는 웃는 등불)",
+ "label": "gothic_manor/gm-pumpkins",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pile of pumpkins / jack-o'-lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pumpkins are drawn in pure front elevation with vertical ribbing and stems placed directly on the top silhouette outline rather than inset on a foreshortened top surface. No top surface is visible.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4967
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pile of pumpkins (including one jack-o'-lantern)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pumpkins and their stems are drawn in pure front elevation/side profile like a 2D platformer sprite; stems sit directly atop the silhouette profile without any visible foreshortened top surface or depression around them.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4201
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pumpkins / jack-o'-lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pumpkins and stems are drawn in pure front elevation with straight vertical stripes and stems sitting flat on the top silhouette boundary, showing no foreshortened top surface around the stems.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4196
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pumpkins / jack-o'-lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pumpkins and jack-o'-lantern are drawn in a flat front elevation. Stems sit directly on the top outer silhouette edge rather than inside a foreshortened top surface, and the carved face is oriented directly toward the camera with no top visible.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4486
+  }
+ ],
+ "decidedAt": "2026-10-13T16:24:27.174Z",
+ "cells": {
+  "16": [
+   "3835f0226d936829",
+   "3b762d52fde330cd"
+  ],
+  "24": [
+   "3d44de87465202d5",
+   "40ed85a77305b808",
+   "4598bd66247c380c",
+   "499b9931aa8c7a85",
+   "573bc1da6a336277",
+   "5b5c047b951193c0",
+   "9ceae0c8479cbd49",
+   "9fd2ea4395bed615",
+   "a62b703b74a2ce1d",
+   "c4ea578bfbf6b85b",
+   "e713609f495169a2",
+   "f99fbfce89c62113"
+  ],
+  "32": [
+   "0ea3dfc8d34afb65",
+   "a032a0acc46a60df"
+  ],
+  "48": [
+   "6a18f53f92913d50",
+   "9308ea7f98c357ce",
+   "99881358a8b45fdb",
+   "b8a60d8c2b6e63b3",
+   "bb0840e69b7752d5",
+   "dd17b31b1fa0e3be"
+  ]
+ }
+}

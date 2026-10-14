@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2d272c202b5a300c5673a5182982c76c332708dc3cf12232ee2b1b605fb3bdb4",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "논(모내기 한 물논)",
+ "label": "sengoku-edo/se-paddy",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flooded rice paddy terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile depicting flooded water with regularly spaced rice seedlings; correctly represents a top-down ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10942
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flooded rice paddy terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid 16x16 terrain tile representing flooded rice paddy water with evenly spaced rice seedlings viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7070
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flooded rice paddy terrain tile with planted seedlings",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a flooded rice paddy with grid-planted seedlings; as a flat terrain tile viewed from above, the entire 16px tile represents ground surface with cast reflections and small plants.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3082
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flooded rice paddy tile with planted seedlings",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile represents a flat water/ground terrain surface (flooded rice paddy) seen from above, populated by repeating rice seedlings.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2896
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.061Z",
+ "cells": {
+  "16": [
+   "9bb305020d9617bb"
+  ],
+  "24": [
+   "18ce48a5a3bdf51d",
+   "46f71bc88835c141",
+   "7492f8d1198a0ac7",
+   "774a15e27aed3342",
+   "835246b6381aaa92",
+   "9f5386668d06583b"
+  ],
+  "32": [
+   "459bb0c63821d7df",
+   "584b73bb8bc6d555",
+   "761f35c490e6a767",
+   "96b9231af932fd9d",
+   "be12106b18bf78ed",
+   "fe134271a1ad4c13"
+  ],
+  "48": [
+   "0504194823e4eebf",
+   "450b5e4de4bcd747",
+   "78ccf76129dee616",
+   "8062b840739f91a3",
+   "95c2295e343660c8",
+   "9f4de4fb1179756c"
+  ]
+ }
+}

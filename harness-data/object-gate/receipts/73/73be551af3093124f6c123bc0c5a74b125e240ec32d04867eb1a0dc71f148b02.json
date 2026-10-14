@@ -1,0 +1,146 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "73be551af3093124f6c123bc0c5a74b125e240ec32d04867eb1a0dc71f148b02",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "급식 냉장 보관대(낮은 은색, 전자레인지·상자 올림)",
+ "label": "modern-campus-int/mc-fridge-counter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "refrigerated counter / storage cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn as a flat front elevation enclosed in a rectangular outline. There is no visible top surface for the main counter body (0 rows), only a 1px divider between the lower cabinet doors and the upper shelf/appliances.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5965
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "refrigerated counter / cabinet unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet and its counter surface are drawn strictly from a flat front view (side-scroller style). There is no visible top surface foreshortened toward the viewer; the separation between the lower doors and upper items is a single 1-pixel horizontal line, and the unit's outer frame shows no top surface at all.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6064
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "refrigerated counter unit with microwave and box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire counter unit, doors, microwave, and box are drawn in pure front elevation with no visible top surface foreshortened from above (0 rows of top surface on the counter body, and flat 2D front view enclosed by an outline).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5785
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "refrigerated storage counter with items on top",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire counter unit, the appliances on it, and the cabinet doors are drawn in pure front elevation with zero top surface visible (only 1px horizontal division lines).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4112
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:11.493Z",
+ "cells": {
+  "16": [
+   "297fefc0178904de",
+   "70b433bc1e0325c8",
+   "8840e4d2602c1c1b",
+   "ad061a35196ec4aa"
+  ],
+  "24": [
+   "038592c791012f08",
+   "090dbbe37a1ff41e",
+   "15417eb3488c694f",
+   "19cb68c345f94b9d",
+   "268daaecce78da4b",
+   "29113f5a03e19b47",
+   "42c22e2fe8a2ebf8",
+   "50c740aaf8a525b0",
+   "5acc4ebabf61feeb",
+   "5e263c6d28c67d4d",
+   "60cae5b2b0e9d8f0",
+   "a2e0a66cb29ab8af",
+   "cc9c3b55ba503b65",
+   "eda03a0aeb29da3a",
+   "ef67705745d50afb",
+   "f6ae170c754a9f67",
+   "f7c0cba6864ee124",
+   "fa6a7f02d1fc0fc1"
+  ],
+  "32": [
+   "d9f4abfdb65acf03"
+  ],
+  "48": [
+   "275c98474b5c997e",
+   "2e6ea29ca991a62e",
+   "3a2857c050f1120c",
+   "bba3f234e0b47bee",
+   "bedd536749242810",
+   "e2bcde0c74dc3944"
+  ]
+ }
+}

@@ -1,0 +1,145 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "807fc20750470289a1c127a0f548bbcb08ba7fc6f17038caff7ef010226607b8",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "급수 펌프장(다듬은 돌 1층, 폭 3, 구리 돔)",
+ "label": "steampunk-city/sp-pump-house",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water pumping station building with copper dome",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure front elevation. The circular base of the copper dome is drawn as a flat horizontal line rather than an ellipse showing a top surface, and the building cornice, lintels, sills, and roofline have no visible top surfaces (0 px).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10564
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pumping station building with copper dome",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat 2D architectural front elevation. The circular copper dome rests on a completely straight horizontal base line (row 23) rather than an ellipse, the dome ribs are drawn as straight vertical lines, and all cornices, lintels, sills, and rooflines are horizontal strips with zero visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 15907
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water pumping station building with copper dome",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building has a 1-story ashlar stone facade (rows 32-63) topped by a visible sloped roof section (rows 9-25, 17 rows tall) beneath and behind the copper dome, properly displaying the roof surface from the 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15738
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water pumping station building with roof and copper dome",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The single-story stone structure shows its vertical south facade (rows 32-63) topped by an entablature and an expansive roof surface/slope (rows 10-27, approx 18 rows tall) upon which the copper dome is mounted.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12698
+  }
+ ],
+ "decidedAt": "2026-10-13T18:26:54.641Z",
+ "cells": {
+  "16": [
+   "097818ef70101b60",
+   "47a7b24457be56fd",
+   "5268c518b01d4e34",
+   "5b49a833b82c763f",
+   "7ac783a07db361e5",
+   "ad47bbb38d7d0d56",
+   "adfe276b54325682",
+   "be575c6d7886e020",
+   "cf9feafd4dbd51b0",
+   "e43f2a59aa2a3135",
+   "e92cfd9654a45f67",
+   "f23eb674ecb90a8d"
+  ],
+  "24": [
+   "0a33dba7212445c6",
+   "0a66847c06e0ccb0",
+   "0d53766d9bbab0a6",
+   "18037f10b2e43cc2",
+   "2f1fb4b8dc4f0634",
+   "3784d06d70451134",
+   "514f65f0e4981504",
+   "5f57210bebf1d0c9",
+   "914f468edee8a490",
+   "ac8796bdaf5e5ebf",
+   "ae7560add06e917b",
+   "e09eef2397761aaf"
+  ],
+  "32": [
+   "18f777f49147a6d2",
+   "198abf9f17bac9b7",
+   "352ee75188eb3eb0",
+   "75978faf6ebbcd75",
+   "9b296a17789338b1",
+   "a3ee6bb7eeea1891",
+   "d57493c60c6d4b31",
+   "d732d634ec8039b9",
+   "da1bd6dc9d589347",
+   "e2e4b2bed45df832",
+   "ea6361dab141fc01",
+   "f8ba5758a15f6a19"
+  ],
+  "48": [
+   "1053bce88aeea6db",
+   "7f1f6eebe8f1a371",
+   "8bd3924ce37dcc88",
+   "c97354f3839f0d86"
+  ]
+ }
+}

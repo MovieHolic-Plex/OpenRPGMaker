@@ -1,0 +1,342 @@
+{
+ "name": "학교 교실 동 1층(교실 둘 + 복도)",
+ "tileset": "modern_campus",
+ "plan": [
+  "##########################",
+  "#...........##...........#",
+  "#...........##...........#",
+  "#...........##...........#",
+  "#...........##...........#",
+  "#...........##...........#",
+  "#...........##...........#",
+  "#...........##...........#",
+  "#...........##...........#",
+  "###.####.#######.####.####",
+  "#........................#",
+  "#........................#",
+  "#........................#",
+  "#........................#",
+  "############..############"
+ ],
+ "floor": "mc-floor-lino",
+ "wall": "mc-wall-class",
+ "zones": [
+  {
+   "x0": 1,
+   "y0": 10,
+   "x1": 24,
+   "y1": 14,
+   "floor": "mc-floor-corridor",
+   "wall": "mc-wall-corridor"
+  }
+ ],
+ "objects": [
+  {
+   "id": "sc-blackboard",
+   "x": 4,
+   "y": 1
+  },
+  {
+   "id": "mc-wall-clock",
+   "x": 9,
+   "y": 1
+  },
+  {
+   "id": "sc-notice-board",
+   "x": 1,
+   "y": 1
+  },
+  {
+   "id": "sc-teacher-desk",
+   "x": 5,
+   "y": 3
+  },
+  {
+   "id": "mc-desk-pair",
+   "x": 2,
+   "y": 5
+  },
+  {
+   "id": "mc-desk-pair",
+   "x": 5,
+   "y": 5
+  },
+  {
+   "id": "mc-desk-pair",
+   "x": 8,
+   "y": 5
+  },
+  {
+   "id": "mc-desk-pair",
+   "x": 2,
+   "y": 6
+  },
+  {
+   "id": "mc-desk-pair",
+   "x": 5,
+   "y": 6
+  },
+  {
+   "id": "mc-desk-pair",
+   "x": 8,
+   "y": 6
+  },
+  {
+   "id": "mc-desk-pair",
+   "x": 2,
+   "y": 7
+  },
+  {
+   "id": "mc-desk-pair",
+   "x": 8,
+   "y": 7
+  },
+  {
+   "id": "sc-back-locker",
+   "x": 4,
+   "y": 8
+  },
+  {
+   "id": "sc-cleaning-locker",
+   "x": 10,
+   "y": 8
+  },
+  {
+   "id": "mc-bin-wide",
+   "x": 11,
+   "y": 8
+  },
+  {
+   "id": "mc-board-green",
+   "x": 17,
+   "y": 1
+  },
+  {
+   "id": "mc-screen-proj",
+   "x": 14,
+   "y": 1
+  },
+  {
+   "id": "mc-cork-board",
+   "x": 22,
+   "y": 1
+  },
+  {
+   "id": "mc-wall-clock",
+   "x": 21,
+   "y": 1
+  },
+  {
+   "id": "mc-lectern",
+   "x": 22,
+   "y": 3
+  },
+  {
+   "id": "mc-lecture-bench",
+   "x": 15,
+   "y": 4
+  },
+  {
+   "id": "mc-lecture-bench",
+   "x": 19,
+   "y": 4
+  },
+  {
+   "id": "mc-lecture-bench",
+   "x": 15,
+   "y": 5
+  },
+  {
+   "id": "mc-lecture-bench",
+   "x": 19,
+   "y": 5
+  },
+  {
+   "id": "mc-lecture-bench",
+   "x": 15,
+   "y": 6
+  },
+  {
+   "id": "mc-lecture-bench",
+   "x": 19,
+   "y": 6
+  },
+  {
+   "id": "mc-cabinet-glass",
+   "x": 23,
+   "y": 8
+  },
+  {
+   "id": "mc-pc-cart",
+   "x": 24,
+   "y": 3
+  },
+  {
+   "id": "mc-window-class",
+   "x": 5,
+   "y": 10
+  },
+  {
+   "id": "mc-cork-board",
+   "x": 10,
+   "y": 10
+  },
+  {
+   "id": "mc-wall-clock",
+   "x": 14,
+   "y": 10
+  },
+  {
+   "id": "mc-window-class",
+   "x": 18,
+   "y": 10
+  },
+  {
+   "id": "mc-cork-board",
+   "x": 23,
+   "y": 10
+  },
+  {
+   "id": "mc-hall-locker",
+   "x": 5,
+   "y": 12
+  },
+  {
+   "id": "mc-hall-locker",
+   "x": 10,
+   "y": 12
+  },
+  {
+   "id": "mc-hall-locker",
+   "x": 14,
+   "y": 12
+  },
+  {
+   "id": "mc-hall-locker",
+   "x": 18,
+   "y": 12
+  },
+  {
+   "id": "mc-hall-locker",
+   "x": 22,
+   "y": 12
+  },
+  {
+   "id": "mc-water-fountain",
+   "x": 1,
+   "y": 12
+  },
+  {
+   "id": "mc-umbrella-stand",
+   "x": 24,
+   "y": 12
+  },
+  {
+   "id": "sc-classroom-door",
+   "x": 3,
+   "y": 9
+  },
+  {
+   "id": "sc-classroom-door",
+   "x": 8,
+   "y": 9
+  },
+  {
+   "id": "sc-classroom-door",
+   "x": 16,
+   "y": 9
+  },
+  {
+   "id": "sc-classroom-door",
+   "x": 21,
+   "y": 9
+  }
+ ],
+ "tables": [],
+ "goods": [],
+ "start": [
+  12,
+  13
+ ],
+ "rooms": [
+  {
+   "room": "classroom",
+   "x0": 1,
+   "y0": 1,
+   "x1": 11,
+   "y1": 8
+  },
+  {
+   "room": "lecture",
+   "x0": 14,
+   "y0": 1,
+   "x1": 24,
+   "y1": 8
+  },
+  {
+   "room": "corridor",
+   "x0": 1,
+   "y0": 10,
+   "x1": 24,
+   "y1": 13
+  }
+ ],
+ "doors": [
+  {
+   "x": 3,
+   "y": 9,
+   "to": "classroom",
+   "access": [
+    3,
+    8,
+    3,
+    12
+   ]
+  },
+  {
+   "x": 8,
+   "y": 9,
+   "to": "classroom",
+   "access": [
+    8,
+    8,
+    8,
+    12
+   ]
+  },
+  {
+   "x": 16,
+   "y": 9,
+   "to": "lecture",
+   "access": [
+    16,
+    8,
+    16,
+    12
+   ]
+  },
+  {
+   "x": 21,
+   "y": 9,
+   "to": "lecture",
+   "access": [
+    21,
+    8,
+    21,
+    12
+   ]
+  }
+ ],
+ "exits": [
+  {
+   "x0": 12,
+   "x1": 13,
+   "y": 14,
+   "to": "campus-yard",
+   "approach": [
+    12,
+    13
+   ]
+  }
+ ]
+}

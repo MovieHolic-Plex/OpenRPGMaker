@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5262efe00f0270da6a4b3ef4c228ce4f6bdbe0a9aab05ee3a16a84f4b3e6ca31",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "쇠 띠 두른 여행 트렁크",
+ "label": "gothic_manor/gm-trunk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "travel trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The trunk is drawn in pure front elevation: vertical metal straps run straight down without any bend or perspective foreshortening, the lid seam and latch face directly forward, and there is no visible top surface beyond a 1px top outline.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4780
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "travel trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The trunk is drawn straight-on in flat front elevation with a centered latch and vertical straps extending across the full height; row 0 is just a 1px outline with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5706
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "travel trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The trunk is drawn in pure front elevation as a barrel-topped chest, with horizontal shading bands across rows 1-9 representing the vertical curvature of the lid and a 1px outline at row 0. No horizontal top surface seen from above is depicted.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6437
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "travel trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The trunk is drawn in pure front elevation with vertical metal bands running straight down its front face, a lock clasp at row 9-11, and only a 1px outline at row 0 where the top surface should be.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4004
+  }
+ ],
+ "decidedAt": "2026-10-13T16:47:35.280Z",
+ "cells": {
+  "16": [
+   "4a1e43e783ce2d83"
+  ],
+  "24": [
+   "738133e77ff69a1a",
+   "a0f8af887ac4339a",
+   "aa05440121768ad8",
+   "c5c9fa49135d9da7",
+   "c5d6bae9ba82853e",
+   "ff214abe7c5e940e"
+  ],
+  "32": [
+   "059f64d16d4408ac",
+   "22e28de078e3edb0",
+   "6b0ca35eaa1f1596",
+   "792a697baec31f33",
+   "8fe800ba541cdb0c",
+   "aa03467a0ec7689e"
+  ],
+  "48": [
+   "02be47b695f2ba73",
+   "7910868ad9507e2d",
+   "8e3fc2b9cad9b65d",
+   "cc6afc5e96021719",
+   "d9a88e7303c4e008",
+   "f5b57cf5ff274390"
+  ]
+ }
+}

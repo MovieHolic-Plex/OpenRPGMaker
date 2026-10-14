@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1b5f6a53390a3bb7090200f8582c60804da52b9c4808a7882fe4b3a99188ad6e",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "낮은 담(남북 줄 — 위에서 길게 보이는 갓)",
+ "label": "steampunk-city/sp-fence-v",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "north-south running low wall segment",
+    "kind_matches": false,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a low wall running north-south, not an open frame or rack as specified by the kind. The top surface of the wall cap runs vertically down rows 0-14 across columns 6-11.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail"
+   ],
+   "ms": 4767
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "north-south low wall segment",
+    "kind_matches": false,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a north-south running wall/fence with its top cap viewed from above along rows 0-14, which does not match the 'frame' kind description (open frame or rack).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail"
+   ],
+   "ms": 4514
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "north-south running low wall segment",
+    "kind_matches": false,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a continuous north-south running low wall cap/ridge tile, completely misclassified under the frame/rack kind.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail"
+   ],
+   "ms": 5193
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "low wall running north-south",
+    "kind_matches": false,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is explicitly a low wall cap (rows 0-14, cols 7-12) running north-south, not an open frame or rack. Because the object is a solid wall rather than a frame/rack, kind_matches is false.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail"
+   ],
+   "ms": 7504
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:21.953Z",
+ "cells": {
+  "16": [
+   "6330ac0a3510804f"
+  ],
+  "24": [
+   "48e1bed2f6b02c4b",
+   "5082d4b2c7b3bc60",
+   "889b219754247de3",
+   "b2ecef1a47048a83",
+   "bf5cee6a2eae92a8",
+   "d6c4d2814e5fea30"
+  ],
+  "32": [
+   "1f5bb42c627f2633",
+   "20a7f67fb17f4a61",
+   "9b4f8df33ecb590a",
+   "efdc742d7ff68b1e",
+   "f2f7468b581e6f34",
+   "f9f8077bc5b48aac"
+  ],
+  "48": [
+   "199e12aaded4ae03",
+   "2f8ae3a553c24205",
+   "5fdd9c0fe64481c7",
+   "9cb2dee9a2d5af1a",
+   "bb2b7bfb4cea4094",
+   "d4804658b122bd48"
+  ]
+ }
+}

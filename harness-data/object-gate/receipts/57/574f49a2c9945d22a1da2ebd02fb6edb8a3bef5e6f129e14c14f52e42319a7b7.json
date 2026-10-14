@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "574f49a2c9945d22a1da2ebd02fb6edb8a3bef5e6f129e14c14f52e42319a7b7",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "천사 묘비(날개 접은 천사상)",
+ "label": "gothic_manor/gm-tomb-angel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "angel statue on a rectangular plinth",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The plinth base shows a 4-row top horizontal surface (rows 22–25) where the statue stands, distinctly lighter in tone with a highlighted front edge before dropping to the front vertical face (rows 26–31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15711
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "angel statue on a stone plinth",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The statue stands on a pedestal whose horizontal top surface is visible for 4 rows (rows 22-25) in front of the figure, clearly highlighted to indicate an upward-facing plane, above a 6-row vertical front face (rows 26-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9504
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "angel statue on a stone plinth",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The plinth beneath the angel statue clearly displays a 4-pixel-tall top surface (rows 22-25) rendered in a lighter stone tone before dropping down to the shaded front face (rows 26-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11821
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "angel statue on a stone plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire sprite is drawn in pure front elevation (2D side-view style). The angel and wings face straight forward with no foreshortened top surfaces, and the base/plinth consists of two vertical front-facing tiers (rows 22-25 and 26-31) with vertical south-face shading and zero visible horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 22249
+  }
+ ],
+ "decidedAt": "2026-10-13T16:24:27.173Z",
+ "cells": {
+  "16": [
+   "c551727502f7815e",
+   "e6007cecf582c556"
+  ],
+  "24": [
+   "032547aa241dbbf5",
+   "0679d1d6a90e3cc8",
+   "14dd7370cc3063e6",
+   "38cf7ebb060f0902",
+   "540e4ac3ee2c834f",
+   "61c9692908fda593",
+   "6a7fdbf8817f6798",
+   "8909f73ff8e33377",
+   "b5679f8d5e016fb6",
+   "b7fa395e92486158",
+   "ccc066f0c71dbfe6",
+   "dc354735b51abdf6"
+  ],
+  "32": [
+   "28856fd36771e346",
+   "ae8c9dcc5f5aa5e6",
+   "c0c479afd78aaf5f"
+  ],
+  "48": [
+   "17b4d3835b7caca8",
+   "17b56b5fdf960fcd",
+   "a0afc8349fdffe63",
+   "b2e36f39d2ca6ca1",
+   "c35449151c8c78c8",
+   "dd14374745aa66a5"
+  ]
+ }
+}

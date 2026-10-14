@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "33911708c83797da67e4a209b844537e0bd42716c54f30ee2ff45af6c7f48f39",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "낡은 널마루 B",
+ "label": "gothic_manor/gm-fl-boards-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden floor planks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 wooden floor plank terrain tile viewed from above, functioning as ground terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3593
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden floorboards tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile depicts flat wooden floor planks viewed from above, perfectly matching the terrain kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3608
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden floor planks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat wooden plank floor terrain tile viewed from above; spans all 16 rows as ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4052
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden floorboards",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Entire 16x16 tile represents a top-down wooden plank floor surface with seams and wear marks, matching the terrain category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3287
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.501Z",
+ "cells": {
+  "16": [
+   "91be280cbb381810"
+  ],
+  "24": [
+   "0fc3fcf719c7ed82",
+   "2447beabfadd0672",
+   "52fe2e7aa31176d5",
+   "86a4c1ed498a56c6",
+   "b836f432c18e15c5",
+   "e0ff77fdc348496d"
+  ],
+  "32": [
+   "4cb2e875caf016a1",
+   "5589edaa90694d32",
+   "5e6a83b0893581a3",
+   "b0c1924061a1c44b",
+   "dc3ee6258e2dae2c",
+   "f69af0c015681a1c"
+  ],
+  "48": [
+   "0eda146c7ffbeb6b",
+   "2b29466155e28716",
+   "63a17d75ec9a252e",
+   "79fce7b2c0762d55",
+   "c98d84cdc6189315",
+   "f882bd146464f155"
+  ]
+ }
+}

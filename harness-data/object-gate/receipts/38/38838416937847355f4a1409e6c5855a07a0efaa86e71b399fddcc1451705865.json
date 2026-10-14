@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "38838416937847355f4a1409e6c5855a07a0efaa86e71b399fddcc1451705865",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "rope bridge end with wooden posts (flat walkway)",
+ "label": "sky-island/si-bridge-v-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rope bridge walkway",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is a flat top-down bridge walkway terrain tile consisting of horizontal wooden planks viewed from above across all 16 rows, with side anchors/posts at the southern landing.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6858
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rope bridge walkway",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is the horizontal wooden bridge walkway spanning the tile from top to bottom (rows 0-15), viewed correctly from above as a walkable terrain surface. Flanking anchor posts are secondary details.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12878
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rope bridge walkway and landing ground",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a top-down horizontal bridge walkway with wooden planks spanning across a chasm onto landing terrain, functioning as valid terrain/floor tiles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6443
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rope bridge walkway",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is a flat rope bridge walkway surface viewed from above across all 16 rows, with horizontal wooden planks and gaps showing the chasm underneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5670
+  }
+ ],
+ "decidedAt": "2026-10-13T18:48:02.663Z",
+ "cells": {
+  "16": [
+   "6793110e8605cfa6"
+  ],
+  "24": [
+   "0853ba1d82b42788",
+   "1fb92f8be0a13a91",
+   "635457ed0fc90b4d",
+   "976398f3de41e8a6",
+   "9bc345cb59e92b06",
+   "e1d295c10ffed084"
+  ],
+  "32": [
+   "3897f5b5169745bd",
+   "4a1d0f005a3aa5eb",
+   "4b59e100b71a6005",
+   "ab72a2c24db7cde1",
+   "cc22f5814974ce45",
+   "f3ca2ccf1eb97488"
+  ],
+  "48": [
+   "196afd541b3a8d53",
+   "4e4b85e23ec4bcad",
+   "63a1dfbf2baa12ee",
+   "a2fe6b252c057ad4",
+   "b408da09153ee908",
+   "f4d9f9fde0c9a5fe"
+  ]
+ }
+}

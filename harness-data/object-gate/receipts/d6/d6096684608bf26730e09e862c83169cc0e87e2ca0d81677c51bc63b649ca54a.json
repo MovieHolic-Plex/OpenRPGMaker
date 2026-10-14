@@ -1,0 +1,159 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d6096684608bf26730e09e862c83169cc0e87e2ca0d81677c51bc63b649ca54a",
+ "width": 96,
+ "height": 64,
+ "kind": "structure",
+ "name": "환승 정거장(넓은 유리 천창 지붕 + 시안 띠 + 출입 게이트 + 노선 화면)",
+ "label": "sf-station/sf-street-transit-station",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "transit station building with glass skylight roof",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a prominent 16-pixel-tall sloped glass skylight roof section (rows 1-16) visible from above over the front south wall (rows 18-62).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5331
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "transit station building with glass skylight roof and entrance",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main building features a prominent sloped skylight roof occupying rows 1-16 (16 rows tall) complete with foreshortened panels and frame lines, providing proper top-down 3/4 perspective above the vertical south-facing wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6886
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "station building with sloped skylight roof",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building has a large sloped skylight roof visible across rows 1-16 (16 source pixel rows tall), properly depicting the top surface facing the 3/4 view camera above the south-facing facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5936
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "transit station building with glass skylight roof and entry gates",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The glass skylight roof spans rows 1 to 16, showing a large sloped horizontal surface foreshortened from above with panel framing and skylights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5404
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:31.921Z",
+ "cells": {
+  "16": [
+   "0d749cca6d48f329",
+   "1036768c36b5bca8",
+   "122f48428671dc18",
+   "12ee9328464951f3",
+   "13deb3bb828ac02a",
+   "19a69b6b3d56d9a4",
+   "19b75627d7bee817",
+   "1d31a5a64bcbb1cc",
+   "2194d1d765d57563",
+   "25035f788ecac4aa",
+   "696d29ec7b7e0e4d",
+   "6a0263ae19c00481",
+   "6d9c8e9199f8436e",
+   "8698c231b7c4a2d2",
+   "94c8d2c836c74286",
+   "96f74fe972d4d5ef",
+   "aaba0a5d93a56ab2",
+   "c265e31595e4ca43",
+   "c8d600edd5a8d792",
+   "cf1efe6f3c4802f3",
+   "d26f11f2e3cef123",
+   "da134b2495bc5bab",
+   "e08116760fc6ba3d",
+   "e4db3d96dfa5e4ff"
+  ],
+  "24": [
+   "0eaae188aad3f1d7",
+   "2023dd20f977b4d3",
+   "204a990d566262be",
+   "2d192f996e1f2809",
+   "3899093cf0029103",
+   "3cd988d611a98afb",
+   "3da652bd03b40fc2",
+   "403685be934d3b4b",
+   "468bafd6c7c50e40",
+   "4dd28a6e4ed0be17",
+   "55a55074060c9ad9",
+   "57cb4e57d12458c3",
+   "57e352ab864fe106",
+   "5b8f802971c6e9b4",
+   "673c1742d1800071",
+   "7981efb70fa10a31",
+   "8286c0dd40bc5838",
+   "9117f809dd5d1b40",
+   "983fe9c2c7b8f80a",
+   "9acaf5f55aea672c",
+   "adb3b4b3b51f6073",
+   "b0a8c0b6fed4f7d5",
+   "c9b04913f7fa21ff",
+   "cb0e9ee765bb9fa3"
+  ],
+  "32": [
+   "4ca174c2effe9e8e",
+   "55956f060e678549",
+   "b1e4c1ba91aef7e0",
+   "bbafbcedc31917b6",
+   "cb8e88ec1affc03b",
+   "f68b16eccb3df4c7"
+  ],
+  "48": [
+   "0cced93a59c25f24",
+   "196d61d187e8e2db",
+   "1e0a02936a6e5995",
+   "554f25f2d1352baa",
+   "645500ec4c2358d4",
+   "99ea8375bed9e224",
+   "c1cfb6dfa57ad59c",
+   "d236492f201f7694"
+  ]
+ }
+}

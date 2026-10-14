@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2b890ca90197a58223340bd60e66bd6233ac60e6fdabf9c7220f40aba7a419e6",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "석등(가스가 등롱)",
+ "label": "sengoku-edo/se-lantern-stone",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone lantern (Kasuga-dōrō)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire lantern is drawn in pure 2D front elevation (orthographic profile), exactly like a chess piece. The finial, roof, firebox opening, and base tiers have no foreshortened top surfaces or elliptical planes visible from the 45-degree camera angle; the roof even shows its underside rim.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7974
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone lantern (kasa roof, fire box, and base)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern is drawn in pure front elevation. The roof eaves (rows 8-9) and firebox window (row 12) are completely straight horizontal lines with no foreshortened elliptical curvature or top surface visible. The apex of the roof sits at the very top contour rather than showing the back slope or a 3/4 perspective angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8203
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone lantern (kasuga-dōrō)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire lantern is drawn in pure front elevation like a chess piece. The umbrella/roof (kasa) shows no foreshortened top surface from above and instead reveals an underside shadow (rows 9-10), indicating a straight-on or upward-looking perspective rather than the required 3/4 top-down view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8204
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone lantern (kasuga lantern)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lantern displays clear 3/4 view perspective: the downward-sloping roof surface is visible for about 5 pixel rows (rows 3–7) below the finial, and the circular base distinctly shows its top surface (rows 24–27, 4 rows) wrapping around the central post before dropping off at the front rim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9525
+  }
+ ],
+ "decidedAt": "2026-10-13T19:42:40.480Z",
+ "cells": {
+  "16": [
+   "2bc626216226fe2d",
+   "ac4e9947b3f6090d"
+  ],
+  "24": [
+   "4b2503f9c859b38c",
+   "4efcc78f42e97d15",
+   "4fde418aab65985e",
+   "797bad5240d6f14f",
+   "7b57e6b6ea03d6aa",
+   "8bcdd467d450c607",
+   "9f55221219d52e2e",
+   "a1055373acecdaf2",
+   "a7d088f14e55b95b",
+   "ab750d51e07d8785",
+   "b11c9f071e9b5ebd",
+   "bbf0de4392d20807"
+  ],
+  "32": [
+   "ae7681ca7215211e",
+   "c86e61edab9ecfc5",
+   "daa29d2c2dc7678b"
+  ],
+  "48": [
+   "144f16a29beeeaac",
+   "54963cb2d7d912a7",
+   "57eb121b2ff6e07b",
+   "6e90efa677f42eba",
+   "98517eb142f0f020",
+   "a79d870ac141fe22"
+  ]
+ }
+}

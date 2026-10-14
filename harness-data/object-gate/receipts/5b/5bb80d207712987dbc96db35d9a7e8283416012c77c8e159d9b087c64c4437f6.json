@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5bb80d207712987dbc96db35d9a7e8283416012c77c8e159d9b087c64c4437f6",
+ "width": 32,
+ "height": 32,
+ "kind": "round_body",
+ "name": "술통 더미(짚 두른 통 셋)",
+ "label": "sengoku-edo/se-sake-barrels",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stacked sake barrels",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top barrel shows a clearly foreshortened elliptical top cap across rows 3-7 (approx 5 rows tall), and the bottom barrels also display visible top surfaces on their shoulders.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3223
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stack of three straw-wrapped sake barrels (komodaru)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top barrel clearly displays an elliptical top cap spanning rows 3 through 7 (5 source pixel rows tall), and the two lower barrels also show curved foreshortened top surfaces flanking the top barrel.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3841
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stack of three straw-wrapped barrels",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top barrel shows an elliptical top cap from row 4 to row 7 (4 px tall), and the two lower barrels also show their elliptical top surfaces peeking out on either side.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3739
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stack of three straw-wrapped barrels",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top barrel shows an elliptical top cap spanning rows 3-7 (approx 5 rows tall), and the bottom barrels similarly show foreshortened circular top lids where exposed.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3112
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.073Z",
+ "cells": {
+  "16": [
+   "7e22a6b79bacb214",
+   "a7fd878e8593a375",
+   "b7be06339abceba8",
+   "b8331d76445b1e52"
+  ],
+  "24": [
+   "05ca24f00ac37143",
+   "08a660acca389721",
+   "0aea1592f674d6c3",
+   "254829d643518e49",
+   "2db25bc5b6b798f8",
+   "3b6536298a62a25c",
+   "3bdc28691afc3126",
+   "41eb366a39d21ede",
+   "4a3f32ef5be3a450",
+   "64550e0551e75eb2",
+   "6d5fdc09753202ca",
+   "75144fc266ef21fe",
+   "816ec5ef296ddb49",
+   "90ff63bdad155696",
+   "969494f0fbd6d750",
+   "96992d66b0cda10e",
+   "a12b7fc12233516e",
+   "cb717683b32a1589",
+   "ddd44d695781ec67",
+   "ddfbb3a3903500ba",
+   "e6ae4eaaf119f174",
+   "fe5cb70db2d3bc0e"
+  ],
+  "32": [
+   "f8c2a97a69a73685"
+  ],
+  "48": [
+   "248ae35cc848a9dd",
+   "75c3ea5f52397509",
+   "76e4af23367f12b1",
+   "9710ca03aef2d53c",
+   "a7ded3eaab5b0777",
+   "af6c01e28da60046"
+  ]
+ }
+}

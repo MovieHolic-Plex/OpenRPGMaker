@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cbcac68bf3159c881edd1d49ae7bc29a2225816aa1cb1c3f1a07fe616f120cc2",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "cloud platform edge tile against sky (terrain)",
+ "label": "sky-island/si-cs-nw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cloud platform terrain tile",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Cloud terrain edge tile with blue sky background on the northwest and a rounded puffy cloud ground surface across the rest of the tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3110
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cloud platform edge terrain tile",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Cloud terrain edge tile viewed from above with puffy border against blue sky, valid ground terrain tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4168
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cloud platform edge",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Cloud platform terrain edge tile against a sky background, showing a rounded cloud boundary viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3608
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cloud platform surface and edge against sky",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing the rounded edge of a cloud platform on a sky background; the walkable cloud top surface fills the bottom and right portions of the tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5463
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.976Z",
+ "cells": {
+  "16": [
+   "78eee4cb5db0da36"
+  ],
+  "24": [
+   "4388574000a96cd5",
+   "4b10cf1892bcc5f7",
+   "52dbb83ac0268de3",
+   "6410cb1d600181b1",
+   "a8c3612e11b15e2d",
+   "f74a45aebde3e6eb"
+  ],
+  "32": [
+   "04a5ccf16a86a3cb",
+   "160f3b686e9dbd30",
+   "2319a32fcb01a1c5",
+   "30be5cf22bd784c0",
+   "3b6c8201d58fea15",
+   "736087ea87340e08"
+  ],
+  "48": [
+   "703b03aed68dc8ce",
+   "71665308917f0ab8",
+   "86da9693e8c743d5",
+   "a2f7872b521b12c1",
+   "af4079260377bfbc",
+   "e6000c4ae19b7bdc"
+  ]
+ }
+}

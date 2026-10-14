@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6476f25cb3075b55d3746079097dfc0cc4c19f5d0844776e25efbb2b372927b2",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "줄무늬 차단 바리케이드(두꺼운 가로대 윗면 + 위험 사선 앞면 + 다리 + 경광등)",
+ "label": "sf-station/sf-street-barrier-stripe",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal barricade crossbar",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The crossbar clearly displays a 5-row deep top horizontal surface (rows 1-5, in grey with an orange strip) above a 5-row vertical south face featuring yellow-and-black hazard diagonal stripes (rows 6-10).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4879
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal barricade bar",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the main horizontal bar is clearly depicted across rows 1 to 5 (including an embedded reflector strip), with the hazard-striped south front face visible below it on rows 6 to 10.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5650
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "crossbar of the barricade",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1–5 form the top surface of the main crossbar (highlighted and shaded horizontally), while rows 6–10 form the vertical front face with yellow-and-black hazard stripes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4518
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal barricade beam",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the barricade's main crossbeam spans rows 1 through 5 (featuring a grey panel with an orange line), followed by the striped front face on rows 6 through 10, clearly showing both top and front planes in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4230
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:07.399Z",
+ "cells": {
+  "16": [
+   "451564bba90c327a",
+   "96b90b71a6c1151d"
+  ],
+  "24": [
+   "0c8aa01b47acb8f4",
+   "0dfd7dcd0cffbf19",
+   "303e71b50cf23791",
+   "638ef942817fcea4",
+   "63e4f337ca222386",
+   "7918adff33e892fe",
+   "8404d369bba2aa95",
+   "9c353719e4c7434e",
+   "c130853ced6e7114",
+   "c8595f43676d7230",
+   "dc59b24d74512e7d",
+   "f345061883aca8cd"
+  ],
+  "32": [
+   "5b55142dfee62b7f",
+   "d58fc3d1b0d5ab84"
+  ],
+  "48": [
+   "28b7542f83eab3f6",
+   "3a4ce35de5bd2c46",
+   "6864c14b9d33f118",
+   "b00a5f939e430a04",
+   "facdf780d95142b1",
+   "fce7993d723221ba"
+  ]
+ }
+}

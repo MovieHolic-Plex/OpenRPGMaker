@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3d1ac58110dc2cf539874d85d0198388ab5390e26f3af5010986c358b5911a09",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden rail fence segment (east-west)",
+ "label": "sky-island/si-fence-h",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden rail fence posts and horizontal crossbars",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fence posts display distinct 3-row foreshortened top surfaces (rows 2-4), and both horizontal rails show 2-row top surfaces distinct from their south-facing front faces, correctly portraying a 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9009
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden fence posts and horizontal rails",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fence posts have clearly visible top surfaces spanning rows 2-4 (3 rows tall in lighter tone), and the horizontal rails each show a 2-row top surface with darker front faces beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5349
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden rail fence segment",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both horizontal rails show a distinct 3-row foreshortened top surface (lighter brown, rows 3-5 and 9-11) above their south faces (darker brown, rows 6-7 and 12-13). The posts also show clear 3-row top caps (rows 2-4).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5579
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "posts and rails of fence",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden posts show clear 3-row tall top surfaces at rows 2-4 above their south-facing vertical shafts, and the horizontal rails similarly show distinct top planes (rows 4-5 and 10-11) distinct from their shaded south faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6528
+  }
+ ],
+ "decidedAt": "2026-10-13T18:50:50.430Z",
+ "cells": {
+  "16": [
+   "aeeefdbaf307c9b7"
+  ],
+  "24": [
+   "3563b01d95a60c82",
+   "416fbb00c76e18d2",
+   "41b408a1a87597cd",
+   "bb46b967fc2511ab",
+   "c0c7564634006569",
+   "d5916cfa0e06e001"
+  ],
+  "32": [
+   "18897da0f513ec1a",
+   "374e6144c958dc13",
+   "43c2e6491c13abd3",
+   "492fb3ddde8f136a",
+   "b069f08bb8a5a71a",
+   "c09c458e99c4babe"
+  ],
+  "48": [
+   "55cabf73504ef7d4",
+   "5d2ce53c615749fe",
+   "63cf53f3a7457b59",
+   "a1073763c2c49664",
+   "a191b4939997b4f5",
+   "acbf5b00ed11cecd"
+  ]
+ }
+}

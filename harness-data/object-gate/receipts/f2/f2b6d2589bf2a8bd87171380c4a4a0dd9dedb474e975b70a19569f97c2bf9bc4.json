@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f2b6d2589bf2a8bd87171380c4a4a0dd9dedb474e975b70a19569f97c2bf9bc4",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "벽 통로(아랫줄, 문턱)",
+ "label": "steampunk-city/sp-wall-door-d",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall doorway / threshold opening showing interior wood floor",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Doorway passage terrain tile showing interior floor planks (rows 6-13) and bottom threshold frame, correctly rendered in top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4034
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "doorway threshold and passage floor",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall passage threshold terrain tile depicting an open doorway with interior floor planks and doorframe borders. Correctly categorized as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4274
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "doorway threshold and interior wooden floor",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a wall doorway passage (bottom row) showing the doorway frame and an 8-pixel-tall wooden plank floor viewed from above (rows 6-13) meeting the lower threshold.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5133
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall passageway / threshold opening",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a doorway/passage cut through a wall, showing the opening, wooden floorboards running through it, and the bottom threshold frame.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4544
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:44.592Z",
+ "cells": {
+  "16": [
+   "a6a66ac7f96b43c9"
+  ],
+  "24": [
+   "3ac56c30194d6599",
+   "7bd046c718c66b53",
+   "b2c83c8c49c76fa3",
+   "b2fc839ceea2787e",
+   "b82af0eb4d7ae128",
+   "bf0b2b2c1bbed3ce"
+  ],
+  "32": [
+   "39865acd47b64b91",
+   "41a412e4fe90d36e",
+   "4fbb942a3a2de0bc",
+   "9bbf49b13b9b1549",
+   "a01c74a6844ac8cb",
+   "a43c0812dcac1023"
+  ],
+  "48": [
+   "6cf259a3b315a4af",
+   "8ce6de2fc1f97ea8",
+   "911cc1a152c7eb50",
+   "befa41e5e0755f7c",
+   "ca5fb6f9a1c047c0",
+   "dc1f553317579f5d"
+  ]
+ }
+}

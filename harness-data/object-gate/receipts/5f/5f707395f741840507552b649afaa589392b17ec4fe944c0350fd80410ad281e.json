@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5f707395f741840507552b649afaa589392b17ec4fe944c0350fd80410ad281e",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "iron mooring bollard seen from above-front: big flat oval cap top, rope wound around",
+ "label": "sky-island/si-bollard",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron mooring bollard with mushroom cap and rope",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the bollard displays a clear horizontal elliptical top surface across rows 2-4 (3 rows tall) with lighter shading, before dropping into the front face of the cap and the cylindrical post with rope wound around it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5471
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron mooring bollard with mushroom cap",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the bollard clearly shows its upward-facing horizontal elliptical surface on rows 2-4 (3 pixel rows tall) above the vertical rim and post.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4238
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bollard cap and post",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mooring bollard cap displays a clear 3-row elliptical top surface (rows 2-4) seen from above, positioned atop the vertical post with wound rope.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5038
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron mooring bollard with cap and rope",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cap of the bollard has a clearly defined foreshortened oval top surface on rows 2-4 (3 rows tall), above the vertical rim of the cap and cylindrical post with rope.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3676
+  }
+ ],
+ "decidedAt": "2026-10-13T18:46:20.919Z",
+ "cells": {
+  "16": [
+   "69b96d2e4d2bf34e"
+  ],
+  "24": [
+   "19d5e8a427cebd73",
+   "1e00dfedad79d810",
+   "5f2d73378f6c4e3d",
+   "9ac8a80550041811",
+   "cd191189e9168414",
+   "debcf9e1508da4d3"
+  ],
+  "32": [
+   "254b1602d6c07ef7",
+   "50b31f05e52d6a79",
+   "5a9b84e113222195",
+   "5fa1cdede352f93c",
+   "9341e4b2a3cd1e55",
+   "baa6b45af0bd0189"
+  ],
+  "48": [
+   "4036759a24674420",
+   "63030f392d55129f",
+   "807072526b0dd46d",
+   "83a16788773ea525",
+   "c34307bc7945bb7a",
+   "f50c9ae65584f29f"
+  ]
+ }
+}

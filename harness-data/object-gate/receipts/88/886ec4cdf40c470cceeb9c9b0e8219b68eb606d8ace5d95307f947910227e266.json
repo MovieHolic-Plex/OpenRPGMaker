@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "886ec4cdf40c470cceeb9c9b0e8219b68eb606d8ace5d95307f947910227e266",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "판자 마루(바깥)",
+ "label": "sengoku-edo/se-deck",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden plank floor",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat wooden plank floor terrain tile viewed from above, covering the full 16x16 tile area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3957
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden plank floor",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless horizontal wooden floorboards representing outdoor plank flooring terrain viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2903
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden plank floor",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless floor tile showing horizontal wooden planks seen from above; flat terrain surface fills the 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6706
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden plank floor",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal wooden floor planks representing an outdoor wooden deck terrain surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6763
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.061Z",
+ "cells": {
+  "16": [
+   "9103fd1f539bd92f"
+  ],
+  "24": [
+   "4433f4125865b13a",
+   "4bf6f6f10aa5339e",
+   "6b45bbf57759a49f",
+   "7c6f4c8061ba505b",
+   "7d0207322e2e8baf",
+   "beb22bfc0b815595"
+  ],
+  "32": [
+   "3a09a6e5db372cb3",
+   "6c2d7297412285ac",
+   "7b631e162c9a69ea",
+   "7d702c8e2439700e",
+   "9a5783df557a4b54",
+   "ae3fbefe2d2d5562"
+  ],
+  "48": [
+   "119521d6b0769613",
+   "2d49ef936ccbfa88",
+   "342dbe5693b0339c",
+   "767609a5e0db6427",
+   "ab2df52aaf9c42a9",
+   "ee96cab3b09cee3c"
+  ]
+ }
+}

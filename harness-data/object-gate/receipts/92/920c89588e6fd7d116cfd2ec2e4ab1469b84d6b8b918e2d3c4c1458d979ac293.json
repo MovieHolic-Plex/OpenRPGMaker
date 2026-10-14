@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "920c89588e6fd7d116cfd2ec2e4ab1469b84d6b8b918e2d3c4c1458d979ac293",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "배관 다발(굵은 구리관 셋 + 흰 밸브 + 받침 상자)",
+ "label": "sf-station/sf-pipe-cluster",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bundle of copper pipes with valve and base box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pipe bundle terminates in empty space at row 5 with a flat horizontal line and no elliptical cut face or top surface. Furthermore, the transverse brackets and valve across rows 8, 14-17, and 18 are rendered as completely flat horizontal rectangles without 3/4-view perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6063
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pipe bundle",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pipe bundle ends abruptly at row 5 with a flat horizontal outline. There are no elliptical top surfaces or circular cut faces showing the tops of the pipes. The entire upper structure (pipes, clamps, valve) is rendered in pure front elevation with strictly horizontal and vertical lines.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6668
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "copper pipe bundle",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pipe bundle terminates at the top with a completely flat horizontal edge (row 5) rather than elliptical top faces/openings for the cylindrical pipes. The entire pipe assembly and valve are drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5889
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "copper pipe bundle with valve",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pipe bundle terminates at row 5 with transparent space above, but has a completely flat horizontal black outline and a 2px flat edge tone without any visible top surface or elliptical cut faces. The valve and pipes are drawn in pure flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6324
+  }
+ ],
+ "decidedAt": "2026-10-13T15:28:17.424Z",
+ "cells": {
+  "16": [
+   "02552aa6b763cc5e",
+   "207365b03b3df06c"
+  ],
+  "24": [
+   "17732ce6186d5955",
+   "2c522f1814188a03",
+   "3cb7c5c5d7ebe703",
+   "45a8216b22f696e0",
+   "4adf058e3d70daca",
+   "94c13faccb05e4b7",
+   "9848227428be3148",
+   "a978f871b67f9b6e",
+   "cd5fbd27d3030981",
+   "fa9df07647dde2da",
+   "fdc858d0e494c728",
+   "fff9d652bf496ebe"
+  ],
+  "32": [
+   "9bc5249294fdf4e7",
+   "c5c424d22f842b3f",
+   "e0796ac6315b16ce"
+  ],
+  "48": [
+   "221ac2367f626bc5",
+   "305fec1625503fce",
+   "34e1194f6b69c7ee",
+   "ae9f30312c2f8e94",
+   "ecaafdf520fc9d40",
+   "f0a9ed27727c4f16"
+  ]
+ }
+}

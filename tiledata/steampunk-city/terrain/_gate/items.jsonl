@@ -1,0 +1,30 @@
+{"png": "sp-cobble.png", "kind": "terrain", "name": "자갈 포석(돌 셋트)", "label": "steampunk-city/sp-cobble"}
+{"png": "sp-cobble-b.png", "kind": "terrain", "name": "자갈 포석(얼룩 변주)", "label": "steampunk-city/sp-cobble-b"}
+{"png": "sp-cobble-oil.png", "kind": "terrain", "name": "기름 밴 자갈 포석", "label": "steampunk-city/sp-cobble-oil"}
+{"png": "sp-flag.png", "kind": "terrain", "name": "판석 보도", "label": "steampunk-city/sp-flag"}
+{"png": "sp-curb-s.png", "kind": "terrain", "name": "보도 연석(남쪽 차도로 턱)", "label": "steampunk-city/sp-curb-s"}
+{"png": "sp-curb-n.png", "kind": "terrain", "name": "보도 연석(북쪽 차도에서 오르는 턱)", "label": "steampunk-city/sp-curb-n"}
+{"png": "sp-brickpave.png", "kind": "terrain", "name": "벽돌 바구니 포석(광장)", "label": "steampunk-city/sp-brickpave"}
+{"png": "sp-tread.png", "kind": "terrain", "name": "줄무늬 철판 바닥", "label": "steampunk-city/sp-tread"}
+{"png": "sp-grate.png", "kind": "terrain", "name": "배수 철창(자갈 속)", "label": "steampunk-city/sp-grate"}
+{"png": "sp-cinder.png", "kind": "terrain", "name": "석탄재 마당", "label": "steampunk-city/sp-cinder"}
+{"png": "sp-cinder-b.png", "kind": "terrain", "name": "석탄재 마당(바퀴 자국)", "label": "steampunk-city/sp-cinder-b"}
+{"png": "sp-grass.png", "kind": "terrain", "name": "그을린 풀(쌈지 공원)", "label": "steampunk-city/sp-grass"}
+{"png": "sp-soil.png", "kind": "terrain", "name": "화단 흙", "label": "steampunk-city/sp-soil"}
+{"png": "sp-rail-n.png", "kind": "terrain", "name": "선로 북쪽 레일(자갈 도상)", "label": "steampunk-city/sp-rail-n"}
+{"png": "sp-rail-s.png", "kind": "terrain", "name": "선로 남쪽 레일(자갈 도상)", "label": "steampunk-city/sp-rail-s"}
+{"png": "sp-tram-n.png", "kind": "terrain", "name": "노면 궤도 북쪽 레일(자갈 포석 속)", "label": "steampunk-city/sp-tram-n"}
+{"png": "sp-tram-s.png", "kind": "terrain", "name": "노면 궤도 남쪽 레일(자갈 포석 속)", "label": "steampunk-city/sp-tram-s"}
+{"png": "sp-water.png", "kind": "terrain", "name": "운하 물", "label": "steampunk-city/sp-water"}
+{"png": "sp-water-f1.png", "kind": "terrain", "name": "운하 물 (프레임 2)", "label": "steampunk-city/sp-water-f1"}
+{"png": "sp-water-f2.png", "kind": "terrain", "name": "운하 물 (프레임 3)", "label": "steampunk-city/sp-water-f2"}
+{"png": "sp-quay.png", "kind": "terrain", "name": "운하 석축(북쪽 물가, 벽면이 물로 내려간다)", "label": "steampunk-city/sp-quay"}
+{"png": "sp-quay-lip.png", "kind": "terrain", "name": "운하 갓돌(남쪽 물가)", "label": "steampunk-city/sp-quay-lip"}
+{"png": "sp-deck.png", "kind": "terrain", "name": "나무 부두 판자", "label": "steampunk-city/sp-deck"}
+{"png": "sp-deck-edge.png", "kind": "terrain", "name": "부두 끝(판자 앞면 + 물 위 말뚝)", "label": "steampunk-city/sp-deck-edge"}
+{"png": "sp-platform.png", "kind": "terrain", "name": "승강장 판석", "label": "steampunk-city/sp-platform"}
+{"png": "sp-platform-edge.png", "kind": "terrain", "name": "승강장 끝(놋쇠 안전선 + 선로로 내려가는 벽)", "label": "steampunk-city/sp-platform-edge"}
+{"png": "sp-bridge-w.png", "kind": "terrain", "name": "운하 돌다리 서쪽 난간(남북으로 건넌다)", "label": "steampunk-city/sp-bridge-w"}
+{"png": "sp-bridge-m.png", "kind": "terrain", "name": "운하 돌다리 가운데(남북으로 건넌다)", "label": "steampunk-city/sp-bridge-m"}
+{"png": "sp-bridge-e.png", "kind": "terrain", "name": "운하 돌다리 동쪽 난간(남북으로 건넌다)", "label": "steampunk-city/sp-bridge-e"}
+{"png": "sp-flag-b.png", "kind": "terrain", "name": "판석 보도(배수 홈 변주)", "label": "steampunk-city/sp-flag-b"}

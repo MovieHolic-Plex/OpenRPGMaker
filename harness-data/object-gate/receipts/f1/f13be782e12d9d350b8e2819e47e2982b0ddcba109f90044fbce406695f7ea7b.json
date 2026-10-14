@@ -1,0 +1,154 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f13be782e12d9d350b8e2819e47e2982b0ddcba109f90044fbce406695f7ea7b",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "장미 아치(쇠 트렐리스·시든 덩굴)",
+ "label": "gothic_manor/gm-rose-arch",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "trellis arch frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The trellis arch is drawn as a flat 2D planar elevation without depth, thickness, or top surfaces visible along the arch or pillars.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4605
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "metal trellis arch with rose vines",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The arch is rendered as a flat 2D frame with no depth or top/underside surface visible. The posts and horizontal rung bands are completely flat horizontal lines without 3/4 perspective foreshortening or depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3918
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "metal trellis arch with vines",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The arch trellis is drawn in pure 2D front elevation with no depth, thickness, or top surface visible. The cross-rings on the vertical poles are drawn as flat horizontal lines without any ellipse/curve, and the arch has no north-south depth or visible top slope.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5044
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "trellis arch frame with vines",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The arch is rendered in pure 2D front elevation. The horizontal rings on the pillars are drawn as flat horizontal lines without elliptical curve or depth, and the arch structure shows no visible top surface or north-extending depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3645
+  }
+ ],
+ "decidedAt": "2026-10-13T16:24:27.174Z",
+ "cells": {
+  "16": [
+   "27c04a3b7ed20037",
+   "83adc82cd6a9bdc0",
+   "888a97485e0bc869",
+   "8b3e49b5a466c107",
+   "93764b5ef76d8aac",
+   "977bd6f4778c6440",
+   "c041a721d77f1457",
+   "f2f9ae7737e3c35a"
+  ],
+  "24": [
+   "14b845beab406cfb",
+   "1dbd99814a0e3dc7",
+   "e8e4fab783f7ae5f",
+   "efc56f80a738b29f"
+  ],
+  "32": [
+   "081c92d4147cc886",
+   "14ee1ef0edd09bea",
+   "1677cc10f862cfd3",
+   "232ef374532431ec",
+   "24650fb9f2d9e87c",
+   "43123145ff3c4cba",
+   "493102e455dbc1d4",
+   "5336741288ebd7de",
+   "576b6396b7633d6d",
+   "614df7e9937b474b",
+   "6b39553f107d5b3d",
+   "6c1702dbf06579f9",
+   "75c36c7c7be54f18",
+   "7844c903d51cd3cc",
+   "82569ae065c2b22f",
+   "928864a6af061100",
+   "9aa2299198db39d7",
+   "9af1ca6d299a3e0c",
+   "a86ce9b2c40f051e",
+   "b23044c781376b1b",
+   "bcbd59037eced438",
+   "c8308d1bdd731f4e",
+   "caf9caa129e04e71",
+   "eef5d4c8473aa847"
+  ],
+  "48": [
+   "c47d136d71df3b30"
+  ]
+ }
+}

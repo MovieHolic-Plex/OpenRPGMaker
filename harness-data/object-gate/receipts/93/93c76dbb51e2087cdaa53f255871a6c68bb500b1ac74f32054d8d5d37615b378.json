@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "93c76dbb51e2087cdaa53f255871a6c68bb500b1ac74f32054d8d5d37615b378",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "rope bridge end with wooden posts (flat walkway)",
+ "label": "sky-island/si-bridge-h-e",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rope bridge wooden walkway with post",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bridge walkway surface is viewed from above across rows 3-13 (~10 rows of visible horizontal plank surface), functioning correctly as top-down terrain over the abyss/water backdrop.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5290
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rope bridge walkway",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal rope bridge walkway viewed from above in 3/4 top-down perspective, with vertical wooden planks spanning rows 3-12 between edge ropes over a chasm/water, anchored by a vertical post.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10885
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bridge walkway with support post",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bridge floor planks and ropes are viewed from above as top-down walkway terrain over water/chasm, with a vertical post extending through the tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6397
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rope bridge walkway and post",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "East-west rope bridge walkway viewed from above, showing horizontal wooden planks spanning between the guide ropes across the chasm terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6400
+  }
+ ],
+ "decidedAt": "2026-10-13T18:48:02.662Z",
+ "cells": {
+  "16": [
+   "dfcd91e9b12eb74d"
+  ],
+  "24": [
+   "01bd55a47a3d5be6",
+   "1bd89ad98c2f701c",
+   "681d9a8a30bc5e7f",
+   "755d7c23237c0df1",
+   "947754191e249a18",
+   "b61e449ac0a9703a"
+  ],
+  "32": [
+   "1ab5c4464a383110",
+   "4b0ede1c5d8858af",
+   "850a33bb08644789",
+   "856bdeae70434079",
+   "e04a63386f73e24b",
+   "fbad680191908b2f"
+  ],
+  "48": [
+   "0cf13af17dc49a30",
+   "12af60566a8752ba",
+   "1cc87039aa58f788",
+   "236c9dd01a965a2c",
+   "898626cc0b68acb7",
+   "eab71e27fea2b7e1"
+  ]
+ }
+}

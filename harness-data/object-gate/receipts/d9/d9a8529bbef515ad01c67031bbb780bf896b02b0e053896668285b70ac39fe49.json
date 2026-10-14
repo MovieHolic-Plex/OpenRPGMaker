@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d9a8529bbef515ad01c67031bbb780bf896b02b0e053896668285b70ac39fe49",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "wooden beehive box seen from above-front: large flat roof lid on top clearly visible, entrance slot",
+ "label": "sky-island/si-beehive",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "beehive box with overhanging lid",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof lid has a clearly visible flat top surface spanning rows 1-6 (6 rows tall), with its front face on row 7 and the hive body and entrance slot below on rows 8-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3955
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden beehive box with roof lid",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large flat roof lid clearly shows its top surface foreshortened from above across rows 1-6 (6 rows tall), with its front overhang at row 7, above the front-facing box body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3440
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden beehive box with roof lid and entrance slot",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid/roof of the beehive box occupies rows 1-6 (6 pixel rows deep) seen clearly from above, with a 1px front overhang in row 7 and the south face of the hive body in rows 8-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4221
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden beehive box with roof lid",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof lid shows a large foreshortened horizontal surface from rows 1 to 6 (6 pixel rows tall), followed by a 2-pixel south rim/overhang, with the hive box front and entrance slot below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3544
+  }
+ ],
+ "decidedAt": "2026-10-13T18:46:20.920Z",
+ "cells": {
+  "16": [
+   "d7e8e83815c7219b"
+  ],
+  "24": [
+   "37d26158a752ac46",
+   "40962b2e6782e368",
+   "4b8d21cda70d45d5",
+   "5ec9209ac344b1ef",
+   "784ffe46cc22c10b",
+   "e8d8fed9d6b9218e"
+  ],
+  "32": [
+   "0f57e13d2cc8ebdf",
+   "1cd681ecf8ab18ac",
+   "2ec7e973a3087836",
+   "5d5d8c241af2969d",
+   "67fe53dec2d1ae13",
+   "d1be7ebd5689f1e5"
+  ],
+  "48": [
+   "2fee2d1e0ef4f7a6",
+   "41f8ebb22adefe23",
+   "9434ca23a8a99b89",
+   "b2a2d40aafe70d22",
+   "c035521750cdf5db",
+   "cd608f62b918477f"
+  ]
+ }
+}

@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "deaec2f04d2a2765c2adab7a43d38aaed1435c9b39e47ca62732c43453b1e78d",
+ "width": 48,
+ "height": 32,
+ "kind": "other",
+ "name": "누운 압력 탱크(리벳 철판 원통 — 위가 넓게 보인다, 돌 받침·맨홀·압력계)",
+ "label": "steampunk-city/sp-boiler-tank",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal cylindrical pressure tank",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal tank is drawn in pure front elevation with horizontal lighting bands centered on row 8-10 and only a 1px outline at the top (row 1). No foreshortened top surface is visible, and the support legs underneath are also drawn as flat vertical rectangles without visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11205
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal pressure tank cylinder",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal tank and its two support legs are drawn in pure front elevation (side-scroller style). There is no visible top surface (top_rows = 0, only a 1px outline at row 1), and the attachments (manhole, gauge, junction box) are mounted flat on the front projection.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14014
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal cylindrical pressure tank on two block feet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal tank and its support legs are drawn in straight architectural side/front elevation. While the manhole lid detail has an elliptical rim, the main cylinder body and its support feet exhibit no foreshortened top plane or 3/4 perspective, showing straight horizontal bands and flat rectangular support blocks.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6517
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal pressure tank cylinder on support legs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylindrical tank is rendered as a flat front elevation with a 1px black outline at the top (row 1) and no visible top surface. The vertically symmetrical side caps and flat legs show only the front view without 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10790
+  }
+ ],
+ "decidedAt": "2026-10-13T18:49:04.019Z",
+ "cells": {
+  "16": [
+   "2d7253dc330876f3",
+   "3349b9c0572b0f17",
+   "3dcf9f146dde25da",
+   "46ef9bfe094f5d65",
+   "fa1dc45cb660e711",
+   "fc871f74bbad5079"
+  ],
+  "24": [
+   "078261a7968a1b33",
+   "0f94437cae49a290",
+   "13ad782685eeb859",
+   "25e76218d248743a",
+   "75a41b9e5e8066a6",
+   "83039708d3fca710",
+   "e5106f4b6b336e41",
+   "f28dbb344fd0dc58"
+  ],
+  "32": [
+   "92cc2bd0538310fa",
+   "af468fd0c358e14b",
+   "b3bb56bd4c838c06",
+   "c9ad535734cd5187",
+   "cab0cc809fa2e094",
+   "f1c2786ab5bdce8d"
+  ],
+  "48": [
+   "4aadbd4229bf93a1",
+   "580fb586b8a13059"
+  ]
+ }
+}

@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "943352959a7e407c89ae60ed67ce6cc2e374cb67ba9082c05de7ecaefabe05fd",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "airlock module v1",
+ "label": "sf-station/sf-air-v1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sci-fi wall and airlock door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire wall and airlock door unit is drawn in flat side-scroller/architectural front elevation with zero visible top surfaces or depth on the walls, panels, or door frame.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5265
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "airlock wall module with panels and sliding door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure, including the upper consoles/screens and the lower airlock door, is rendered in a flat 2D side-view elevation. No horizontal surfaces or tops of lintels/frames are visible (0 source pixel rows of depth).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4571
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "airlock wall module with panels and sliding door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire module, including the wall panels, hazard striping, and sliding airlock door, is drawn as a flat 2D side-scroller front elevation with zero pixel rows showing a top surface from a 3/4 downward angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4600
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sci-fi airlock door and wall panel module",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire airlock module and door are drawn in a flat side-scroller/front-elevation view with no visible top surface or depth on the door frame, lintel, or wall cap.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4328
+  }
+ ],
+ "decidedAt": "2026-10-13T15:18:29.118Z",
+ "cells": {
+  "16": [
+   "03258d2285943a05",
+   "3935d67f0ae24b10",
+   "46769dbb5baf49e7",
+   "68aebe2164b81330",
+   "6cd032d3c63b6fb1",
+   "6eb7a4ed6e30e60d",
+   "7babbac0777aad05",
+   "a4fb5013feb95b39",
+   "ef570137acf7237e"
+  ],
+  "24": [
+   "054368a6c6fb7ccb",
+   "0d62dc3fa58c6a70",
+   "59cbba7d3fb4aa66",
+   "c68985731b8090f8"
+  ],
+  "32": [
+   "1f22095e3673b462",
+   "32261d17453212a8",
+   "33af74f205592e1d",
+   "36220ba89a706f49",
+   "44056bcc1d3ce54b",
+   "45e16173803d0da0",
+   "4afa416c7b6d705e",
+   "5493f894c7b1f87e",
+   "5a9becc167f04415",
+   "5c410769edc7d6c9",
+   "5c8aafa571dfd200",
+   "79e563498ac9d8fa",
+   "7cbfa9795e58e65b",
+   "875b60bdd0fb4dc1",
+   "9aed9691053a4bc6",
+   "9c28c01845c4c27a",
+   "b4f66150b543a6c0",
+   "b8400923ce185ac8",
+   "de318866c955b78e",
+   "e3dc3fe897467442",
+   "e8772c57da061af9",
+   "f83b57164cb0641a",
+   "fbd999260bd2f17a",
+   "fc1819efc96f9207"
+  ],
+  "48": [
+   "a2206e3b82caefe6"
+  ]
+ }
+}
