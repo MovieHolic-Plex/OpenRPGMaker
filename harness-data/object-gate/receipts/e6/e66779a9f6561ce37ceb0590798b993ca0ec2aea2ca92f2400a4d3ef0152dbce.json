@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e66779a9f6561ce37ceb0590798b993ca0ec2aea2ca92f2400a4d3ef0152dbce",
+ "width": 48,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "회의 탁자(흰 상판)",
+ "label": "modern_city/interior/mci-t-meeting",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tabletop",
+    "kind_matches": true,
+    "top_rows": 22,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop has a prominent foreshortened top surface spanning rows 2 to 23 (22 rows), with a south-facing front apron from rows 24 to 26 and legs beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5882
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "table top and legs",
+    "kind_matches": true,
+    "top_rows": 22,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large white horizontal tabletop surface spans from row 2 to row 23 (approx. 22 pixels tall), with the front edge spanning rows 24 to 26 and legs extending downward to row 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7961
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "conference table with white tabletop and legs",
+    "kind_matches": true,
+    "top_rows": 22,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop's top surface occupies rows 2 through 23 (22 rows deep), with the front edge of the tabletop visible on rows 24-26 and legs extending beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2727
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tabletop",
+    "kind_matches": true,
+    "top_rows": 22,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The conference table features a large visible white tabletop surface spanning rows 2 to 23 (22 rows tall), followed by a 3-row front edge (rows 24-26) and legs underneath, consistent with top-down 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4469
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:05.389Z",
+ "cells": {
+  "16": [
+   "43c9b276f46e17f7",
+   "9f16c49966b7374f",
+   "ab6b832b41a40a7e",
+   "db8af24889e9f242",
+   "ddcf1972d09a7003",
+   "e367e4eb23ad8fd3"
+  ],
+  "24": [
+   "15d508ae98bca30c",
+   "3d8ca4a147836ec0",
+   "56dfe5447c583436",
+   "66b7bf10d96ce6df",
+   "995bef21cf20d523",
+   "c106e8472905b906",
+   "e169a7fe0b471768",
+   "f3b8bec9f61df15b"
+  ],
+  "32": [
+   "03910365209e5ec5",
+   "593eef0c30aa80e6",
+   "88e06ec550825e1f",
+   "cea15dd7c36f17c4",
+   "d4e2a0664a7af020",
+   "de53021aaaeb0258"
+  ],
+  "48": [
+   "8dd3a1ba9c40c026",
+   "c0f871a966cb4cf5"
+  ]
+ }
+}

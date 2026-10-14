@@ -248,6 +248,29 @@ R.good('mci-g-vase', '꽃병', desc='세 송이 꽃병.')(G.g_vase)
 R.good('mci-g-books', '책 더미', desc='엇갈려 쌓은 책 셋.')(G.g_books)
 
 
+# ═══════════════ 3/4 관문에서 뺀 조각 ═══════════════
+# 네 번(처음 + 다시 그림 3회) 그려도 object-gate(gemini-3.8-flash ×4 과반)가 「정면 입면도」로 떨어뜨린 조각.
+# 기준을 낮추지 않고 뺀다 — 굽지 않으며, 예제 방·조수 사전에도 없다(그림 함수는 art_v2.py 에 이력으로 남는다).
+DROPPED = {
+    'mci-chair-office-n': '북향 사무 의자 — 등받이 뒷면이 입면도로 읽힘(남향 의자 + 뒤판 책상 줄로 대신)',
+    'mci-chair-wood-n': '북향 나무 의자 — 같은 이유(식탁은 남향 의자 + 양 끝 카페 의자로)',
+    'mci-partition': '사무 칸막이 — 얇은 판이 입면도로 읽힘',
+    'mci-curtain': '병상 칸막이 — 얇은 판',
+    'mci-stanchion': '줄 세우기 기둥 — 가는 기둥',
+    'mci-drums': '드럼통 — 뚜껑 타원이 안 읽힘',
+    'mci-copier': '복합기 — 4회 불합격',
+    'mci-server-rack': '서버 랙 — 4회 불합격',
+    'mci-gondola-v': '세로 진열대 — 4회 불합격(가로 진열대로 대신)',
+    'mci-atm': 'ATM — 4회 불합격',
+    'mci-ticket-machine': '발권기 — 4회 불합격',
+    'mci-g-espresso': '탁상 에스프레소 머신 — 4회 불합격',
+    'mci-g-cake': '탁상 케이크 — 4회 불합격',
+    'mci-sidedoor-wood': '옆문 — 조립 방 그림(세로 칸막이)이 「칸막이 윗면 없음」으로 불합격. 세로 칸막이 틈은 문 없이 연다',
+}
+for _k in DROPPED:
+    R.objs.pop(_k, None); R.goods.pop(_k, None)
+
+
 # ═══════════════ 미리보기 ═══════════════
 def piece_images():
     """[(id, 이름, RGBA 배열, 관문 종류)] — 등록 순서(바닥 → 벽면 → 가구 → 탁자 → 탁상)."""

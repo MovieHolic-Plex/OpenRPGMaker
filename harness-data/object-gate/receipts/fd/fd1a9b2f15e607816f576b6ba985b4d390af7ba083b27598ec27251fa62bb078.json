@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fd1a9b2f15e607816f576b6ba985b4d390af7ba083b27598ec27251fa62bb078",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "사무 전화기",
+ "label": "modern_city/interior/mci-g-phone",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "office telephone body",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main slanted/top surface with the keypad and handset cradle spans rows 4–11 (8 rows tall), while rows 12–13 represent the shaded south-facing front edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7100
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "telephone body",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The office desk phone is viewed from above at a 3/4 angle, showing its angled top surface (rows 4-11, 8px tall) with the keypad and handset resting on it, and a darker south-facing front edge (rows 12-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7074
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "telephone body",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk telephone is drawn in top-down 3/4 view with a foreshortened top surface (rows 5–11, 7px tall) displaying the handset cradle and keypad, and a shaded south-facing front edge (rows 12–13, 2px tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8937
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "telephone console",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top/slanted surface of the desk telephone is clearly foreshortened and visible from above across rows 4-11 (8 rows), displaying the handset cradle and keypad, with the front south-facing edge visible at rows 12-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6774
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:59.362Z",
+ "cells": {
+  "16": [
+   "af7f519dc5ce65c1"
+  ],
+  "24": [
+   "6eedc4b3484ce6f6",
+   "75ea7c69544bb455",
+   "984a1599c9a75fdd",
+   "ab8565c706c7f9d4",
+   "b52a7f808d8eecbb",
+   "eee4c4c87fdfafa5"
+  ],
+  "32": [
+   "06bc0aeade058f9e",
+   "0f21cf4057611dcb",
+   "5049469517d5b47e",
+   "86ab0a1d7930ba96",
+   "a3b18872a176e8d9",
+   "f069796b3f83e743"
+  ],
+  "48": [
+   "2d37badfc1b0b691",
+   "4203bf1ce133f579",
+   "5a2a82b6e964186f",
+   "7b6fdcc23cfcac4e",
+   "9c3881e4c5bff9e4",
+   "cdc0f53d28d56574"
+  ]
+ }
+}

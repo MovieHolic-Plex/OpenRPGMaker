@@ -73,24 +73,39 @@
    "y": 3
   },
   {
-   "id": "mci-security-gate",
-   "x": 6,
-   "y": 7
-  },
-  {
-   "id": "mci-security-gate",
-   "x": 10,
-   "y": 7
-  },
-  {
    "id": "mci-planter",
    "x": 1,
-   "y": 7
+   "y": 8
   },
   {
    "id": "mci-planter",
-   "x": 17,
-   "y": 7
+   "x": 3,
+   "y": 8
+  },
+  {
+   "id": "mci-security-gate",
+   "x": 5,
+   "y": 8
+  },
+  {
+   "id": "mci-security-gate",
+   "x": 8,
+   "y": 8
+  },
+  {
+   "id": "mci-security-gate",
+   "x": 11,
+   "y": 8
+  },
+  {
+   "id": "mci-planter",
+   "x": 14,
+   "y": 8
+  },
+  {
+   "id": "mci-planter",
+   "x": 16,
+   "y": 8
   },
   {
    "id": "mci-reception",

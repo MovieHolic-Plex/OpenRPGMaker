@@ -1,0 +1,148 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4b72f3e8a9483684a06e83e67091ac600565a2700c67a5e03f0991ee932e5cf1",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "옷장",
+ "label": "modern_city/interior/mci-wardrobe",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wardrobe / tall cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wardrobe is drawn strictly in front elevation. The top section (rows 1-4) is a decorative crown molding/fascia with front-facing dentils and a plaque, casting a shadow onto the doors below at row 5, with no top horizontal surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14313
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wardrobe (tall wooden cabinet with double doors and a bottom drawer)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire wardrobe is drawn in flat front elevation. Rows 1-4 depict a front-facing crown molding/frieze with decorative corbels and a center panel rather than a receding horizontal top surface, with no foreshortened top plane visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13779
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wardrobe",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wardrobe is visible across rows 1–4 (with a front rim at row 4) and has items resting on top (a cream folded blanket/box and books), showing depth in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14756
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wardrobe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wardrobe is drawn in pure front elevation. Rows 1–4 form a vertical front cornice/frieze with dentil accents and an inset panel, below which are the front doors and bottom drawer. There is no visible top horizontal surface shown from the 3/4 downward angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9208
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:12.629Z",
+ "cells": {
+  "16": [
+   "58fd426b050ce817",
+   "c49616fdf967ec4b",
+   "c8a425e313da841a",
+   "e9135d626f5ab743"
+  ],
+  "24": [
+   "1a3af56d3784020d",
+   "34adf1742da65bc3",
+   "3be57bca64c266ae",
+   "481cf5896c2503dd",
+   "4a3f97492a8e5aab",
+   "58c69db4f2ea8662",
+   "61ddf27d51880c31",
+   "6d74f1634a1f33b3",
+   "6f6e3987fa38fbbf",
+   "7aa7d3d53e8e40bb",
+   "962959d8f0200ac0",
+   "a07a02309141ef75",
+   "aaa839260fd5d1f5",
+   "ba47a777f0fead73",
+   "bb7179e71dc3c01d",
+   "bbe434045e6f69fd",
+   "bdec31af4f95505a",
+   "c0cea2d09b76ad14",
+   "c498b7f6064b85c3",
+   "c72bc322b59efe55",
+   "cee6b03f0bebea84",
+   "cfe5d4e31225a36d",
+   "eeae8fb6f744fc07",
+   "f9c804e3602060d9"
+  ],
+  "32": [
+   "ce6b5126e1a522df"
+  ],
+  "48": [
+   "00479fdc90eed64d",
+   "6aa6e80d240b7d65",
+   "6f5033164f2e06f8",
+   "87a1176ae1b2413a",
+   "9b1db92ba629a1de",
+   "f3d0af160dcb9b00"
+  ]
+ }
+}

@@ -13,6 +13,8 @@ ASSEMBLED_ONLY = {'door', 'sidedoor'}
 
 def export():
     os.makedirs(OUT, exist_ok=True); rows = []
+    for f in os.listdir(OUT):                      # 뺀 조각의 옛 그림을 남기지 않는다
+        if f.endswith('.png'): os.remove(os.path.join(OUT, f))
     for id_, ko, a, kind in P.piece_images():
         o = P.R.objs.get(id_)
         if o and o['kind'] in ASSEMBLED_ONLY: continue

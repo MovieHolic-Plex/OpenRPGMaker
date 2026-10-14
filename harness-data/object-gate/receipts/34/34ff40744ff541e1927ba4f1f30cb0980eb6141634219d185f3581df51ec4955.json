@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "34ff40744ff541e1927ba4f1f30cb0980eb6141634219d185f3581df51ec4955",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "내려가는 계단",
+ "label": "modern_city/interior/mci-stairs-down",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "descending staircase",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The descending stairs correctly depict 3/4 top-down perspective, with alternating horizontal step treads (3 px tall top surfaces seen foreshortened from above) and vertical risers (2 px tall front faces).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7402
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "descending staircase",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The descending staircase correctly depicts alternating top horizontal treads (3 rows each) and vertical risers (2 rows each) in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5792
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "descending staircase",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The descending stairs show alternating 3-4px deep horizontal treads (top surfaces seen foreshortened from above) and 2px dark risers, properly rendered in the standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5848
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "descending staircase",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The staircase correctly portrays 3/4 top-down perspective with each step showing a visible horizontal tread (top surface, ~3-4px tall) alternating with a vertical riser face (2px tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5074
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:05.388Z",
+ "cells": {
+  "16": [
+   "7242a745139ab888",
+   "8b27a2ebe00f7355",
+   "da25f6a768cdab90",
+   "ea005f6cd3207acc"
+  ],
+  "24": [
+   "020ba8c7298af1df",
+   "03819090bcd012e1",
+   "10aa1f2b7f4730c6",
+   "297d094c40bac4dd",
+   "3308c147d76580fa",
+   "35a19cfc40d9dd6f",
+   "4959c5f029fb41e6",
+   "4e3569edb7c51e0f",
+   "58bf22e6d114b6b2",
+   "5c6073338b907995",
+   "762f132a82884239",
+   "776ba5123c31db32",
+   "834dcb6bbd4ace11",
+   "8d10f79bd98ae91b",
+   "8e8a6e73e9a90a06",
+   "9fb78d2fa38b654a",
+   "a2b8c972f45d9db5",
+   "a30c90d1fa4e9252",
+   "a37b79dbf393e907",
+   "ba10fdd347d19178",
+   "bc5dd6688108765c",
+   "bff663db7236926d",
+   "e0adc1eb7803df30",
+   "fd75b1e94d94b10e"
+  ],
+  "32": [
+   "cfd71318bd4e8658"
+  ],
+  "48": [
+   "14432b9fbaa9c1e0",
+   "1acaa9fbcdaf1486",
+   "32531da118c063f2",
+   "b41606e135740059",
+   "bff99f0179764cb6",
+   "d6b08b14aed2c248"
+  ]
+ }
+}

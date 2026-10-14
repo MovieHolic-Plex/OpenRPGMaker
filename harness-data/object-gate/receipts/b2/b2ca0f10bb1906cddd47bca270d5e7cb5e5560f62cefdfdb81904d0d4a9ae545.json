@@ -1,0 +1,148 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b2ca0f10bb1906cddd47bca270d5e7cb5e5560f62cefdfdb81904d0d4a9ae545",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "개찰구",
+ "label": "modern_city/interior/mci-ticket-gate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "subway ticket turnstiles / fare gates",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The turnstile pillars and central flap barrier are drawn in pure front elevation (like a 2D side-scroller asset). There is no visible top surface foreshortened along the depth axis (only a 1px outline along row 3); the upper screen, card reader, and flaps are drawn flat against the front plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9756
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ticket gate pedestal",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The gate pedestals show a distinct 11-pixel-tall top surface (rows 3–13) containing the displays and card tap targets, above a 10-pixel-tall front vertical face (rows 14–23).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5493
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "turnstile housing / ticket gate pillars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The turnstile is drawn in a flat front elevation. Both pillars terminate at row 2 with only a 1px outline, showing no visible top surface (0 rows). The display screen, card reader, flaps, and lower stainless steel panels are all rendered directly facing the camera with no 3/4 perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13090
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ticket gate pillars and barrier",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ticket gate consoles are drawn entirely in flat front elevation with 0px of visible top surface; the screen, card sensor, and central barrier flaps are all depicted facing directly forward rather than showing the horizontal top deck of the consoles.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10273
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:50.060Z",
+ "cells": {
+  "16": [
+   "1a663fbbb7d1f96d",
+   "b90778ccb6a4565d",
+   "da000e04e4d29000",
+   "e1173f47ea65c37e"
+  ],
+  "24": [
+   "0a4037a86e343bb8",
+   "2187cf8cf98715ac",
+   "247bcb60bf99abb2",
+   "2d2b7c699ab9ae5e",
+   "2d7370af337139be",
+   "34d4c499946eb2b0",
+   "3b176cc46af6af1e",
+   "43cae3d5afa16867",
+   "6a6628969ad02834",
+   "6eda737be6e7ac89",
+   "6f0d882fa7ace4d1",
+   "8e7b4065f3c4397d",
+   "9246c723724d13de",
+   "95e89f411c56bd7e",
+   "a1e28d5fac016f54",
+   "b9a95cf04ab3f02b",
+   "c055abc50343e118",
+   "c0720ed6c5e3d3c5",
+   "c36d818aa8ab3ad8",
+   "ea0a0b0e012a12d1",
+   "ebfeb52f500c63e9",
+   "ece8f1ded1babf5e",
+   "f570eb9c7b11d422",
+   "f9ce8092b4cfa77c"
+  ],
+  "32": [
+   "6a57f90e4ab677aa"
+  ],
+  "48": [
+   "0860fdd6d14e0b21",
+   "3d22d9a28f20d85f",
+   "5dfc04d21a59d27a",
+   "cf46133d95732e0b",
+   "da03ea6027c8ad2e",
+   "de9b97c0841beaf1"
+  ]
+ }
+}

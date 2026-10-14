@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cbea5fd6e94fa78422b39ca3589b813670d2361b4e7827affdbe0a92215f2c83",
+ "width": 32,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "벽걸이 TV",
+ "label": "modern_city/interior/mci-tv-wall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall-mounted flat-screen TV and soundbar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted TV screen with bezel and floating soundbar mounted flat against a vertical wall, which is permitted to be flat for the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3593
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flat-screen television screen and frame mounted on wall with a soundbar below",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The television is designed as a wall-mounted flat object hanging flush against a vertical north wall, for which a flat frontal view without a top surface is standard and permissible.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5873
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "TV screen and soundbar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted TV flat against the wall with no top depth; permissible for wall-mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5739
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall-mounted TV screen and soundbar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted TV mounted flat against a south-facing wall; permitted to be flat front elevation per wall_mounted rules.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5327
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:02.402Z",
+ "cells": {
+  "16": [
+   "1ece235c1250d1c4",
+   "2c6d0dd67bbe77ec",
+   "496450e49ed2051d",
+   "7a9eaba465fac345"
+  ],
+  "24": [
+   "043fa1f90d1bc0f2",
+   "12d4df3a647c8997",
+   "1534e6cf5f7553cc",
+   "2addcf0b0667277e",
+   "303140229987257e",
+   "33c05b464f11255d",
+   "3458d4b6e34c4c8e",
+   "354dd1c252503215",
+   "3abcfff659ad8610",
+   "47cb8514177df87f",
+   "4c13ece1e0b67aba",
+   "5c7bc405770ee337",
+   "70b2c661628dffb5",
+   "adf6260dd0ff34dd",
+   "b0e48a528b2152fd",
+   "be575f4f1f8a4aaf",
+   "c8a53fa9312f43e7",
+   "de10347c5634d55e",
+   "df7e38553bc53f67",
+   "ec58d82bf60d2c9a",
+   "f7d9d069d3429072",
+   "fd918804558235b2"
+  ],
+  "32": [
+   "14f2db9e6e7d11c0"
+  ],
+  "48": [
+   "7ebd4568dd95570c",
+   "85ce5789fc035b23",
+   "8855edbf02c4c092",
+   "88e820899fce7d74",
+   "97dc00da93b4b2bc",
+   "b97827abff66d259"
+  ]
+ }
+}

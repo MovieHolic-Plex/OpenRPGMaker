@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a4a244dee8a1b27e6f849779b7925b451c8a7755e93a9c13a57138d6964ad1af",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "나무 의자(북향)",
+ "label": "modern_city/interior/mci-chair-wood-n",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden chair",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn as a flat architectural front elevation: the backrest has no visible top thickness, the seat surface is only 2px tall (rows 14-15), and the whole structure forms a flat 2D rectangle with straight legs.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 9806
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden chair facing north",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn as a flat 2D orthographic elevation with no foreshortened top surface visible on either the backrest or the seat; the entire structure consists of flat rectangular frames and vertical legs.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7674
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden chair",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn as a completely flat orthogonal 2D elevation made of rectangular boxes with no foreshortened horizontal surfaces showing depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7944
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden chair",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn as a flat 2D front elevation enclosed in a single rectangular outline (rows 4–18) with straight vertical legs below (rows 19–28). Neither the top rail of the backrest nor any horizontal seat surface is viewed from above (top_rows is 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7441
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:53.421Z",
+ "cells": {
+  "16": [
+   "eeed650b47508b8e",
+   "f0ef3808c1bbba93"
+  ],
+  "24": [
+   "16712f773f6b25fa",
+   "2cafc7abbfb20855",
+   "48b7303af403eb17",
+   "4f07f147b332daba",
+   "80c491fd116f0d6d",
+   "9041b497234c2358",
+   "ab98abdf9b2c5011",
+   "c0cb22ad233ff26a",
+   "c1f0df2fc37241c0",
+   "c69dd9a374339c2a",
+   "dfbace591bf87e20",
+   "f3401fe92b5a65dc"
+  ],
+  "32": [
+   "2a09f45df06e0658",
+   "69b60398f800ea7c",
+   "a593b86f4983d39e"
+  ],
+  "48": [
+   "1a39c85d713ad1d8",
+   "25550a4267450f02",
+   "cf405eb98cfb83aa",
+   "d5badca9b584d2ad",
+   "d5d5c151ebe6100d",
+   "fcfe7c70432c58c4"
+  ]
+ }
+}

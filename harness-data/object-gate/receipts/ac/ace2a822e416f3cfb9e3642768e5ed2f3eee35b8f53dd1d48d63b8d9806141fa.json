@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ace2a822e416f3cfb9e3642768e5ed2f3eee35b8f53dd1d48d63b8d9806141fa",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "1인 안락의자",
+ "label": "modern_city/interior/mci-armchair",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "single-person armchair",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The armchair is drawn in 3/4 top-down perspective: the top of the backrest is visible (rows 4-6, 3px tall), the back cushion is shown vertically (rows 7-12), the seat cushion surface is seen foreshortened from above (rows 13-20, 8px tall), and the front face of the seat/base drops down vertically (rows 21-25).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6659
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "armchair",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The armchair is drawn in 3/4 perspective with an 8-row visible seat cushion surface (rows 13-20) and a 4-row visible top surface on the backrest (rows 3-6).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5085
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "1-person armchair",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The armchair faces south in 3/4 view. The horizontal seat cushion surface is clearly visible from above spanning rows 13 to 20 (about 8 rows tall), and the top surface of the backrest is visible spanning rows 3 to 6 (4 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7890
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "single armchair",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chair faces south in standard 3/4 view: the top of the backrest is 4 rows tall (rows 3-6), the horizontal seat cushion surface viewed from above is 8 rows tall (rows 13-20), and the front face of the seat cushion drops down 5 rows (rows 21-25) above the legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6205
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:24.133Z",
+ "cells": {
+  "16": [
+   "4d1a4cd51bee694b",
+   "71ad2bdf66c986cf"
+  ],
+  "24": [
+   "2465813ac09fd58a",
+   "358f6c85854f9515",
+   "40502965275009bf",
+   "4113970b8728983d",
+   "43dfce1d6480095a",
+   "4ab31ca8d8c7aeaf",
+   "698873dffd8edd19",
+   "84f4ba5f15ecd026",
+   "b4f1be92c6408739",
+   "c873790f93dccad7",
+   "da4774d134b0b0ed",
+   "ebf3e9ac0214e5e5"
+  ],
+  "32": [
+   "4eeff669c531ac75",
+   "7672ce5102addfcc",
+   "9a9f826cd59add3b"
+  ],
+  "48": [
+   "526dcb642d2e5c9f",
+   "894a7cd3f1d1f85f",
+   "a9464bf4ac5bafdd",
+   "d98079b28050f765",
+   "e395cacddd3c8aea",
+   "f81fca7b269a1f04"
+  ]
+ }
+}

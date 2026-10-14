@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b4c47833a4b433b8cc7dc0cf71681eaff9569baf17af5a582283043af79371a4",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "계산 단말",
+ "label": "modern_city/interior/mci-g-register",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "POS terminal / cash register",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The terminal is drawn completely flat from the front as a 2D icon/elevation. The screen (rows 1-6) and lower base (rows 7-14) have no visible top surfaces (0 px depth), only 1px outline/bevel borders.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6646
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "POS checkout terminal / cash register",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The terminal monitor and base are rendered purely from the front with no visible top surface (0 pixel rows) on either the screen unit or the base body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4998
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cash register / POS terminal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The terminal is drawn completely flat from the front: the screen, base unit, and card reader are displayed in pure orthographic front elevation with no visible top surface or 3/4 perspective angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4244
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "POS terminal / cash register",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The monitor, terminal base, and card reader are all drawn straight-on in pure front elevation with no visible top surface foreshortening on either the screen unit or the base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7019
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:59.362Z",
+ "cells": {
+  "16": [
+   "9ca05c80f91c372b"
+  ],
+  "24": [
+   "15fb1263c486a20e",
+   "66f51b16baef6616",
+   "8a0631ddfe9f1699",
+   "a02e3574be9aa68c",
+   "a306b14a9533275c",
+   "eb7495ed81d9e444"
+  ],
+  "32": [
+   "0718fa5bb8edf2e3",
+   "1c90e5d8d97df7a7",
+   "24bc8c43ba00c09c",
+   "2512359858ccfb29",
+   "8e6d9dd9d6cefb58",
+   "e539ffd465b681d8"
+  ],
+  "48": [
+   "065b205b56c0d2f1",
+   "2cebcd6174443265",
+   "2fd6ca1c3d9a67d5",
+   "41c7d8d277952058",
+   "422e1fcd385e6c9f",
+   "56d0173d38284a60"
+  ]
+ }
+}

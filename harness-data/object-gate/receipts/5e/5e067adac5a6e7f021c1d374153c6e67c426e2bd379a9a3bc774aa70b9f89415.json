@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5e067adac5a6e7f021c1d374153c6e67c426e2bd379a9a3bc774aa70b9f89415",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "개찰구",
+ "label": "modern_city/interior/mci-ticket-gate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ticket barrier pedestal",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surfaces of the barrier pedestals containing the card reader screen and indicator span rows 3 to 13 (11 rows), with the vertical front faces extending below from row 14 to 23.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4616
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ticket barrier stanchions",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surfaces of the ticket gates where the displays and sensors sit are clearly visible from rows 4 to 13 (10 rows tall), before transitioning to the vertical south front faces from rows 14 to 24.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3998
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ticket gate pillars",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the gate pillars containing the IC card readers/screens spans rows 3 to 13 (11 pixels tall), while the south vertical faces span rows 14 to 23.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4549
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ticket gate unit (pair of turnstile pillars with central flap barrier)",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surfaces of the gate consoles are clearly visible from row 3 to row 12 (approx. 10 rows), featuring the IC card reader screen and indicator light. Below a clear edge highlight at row 13, the vertical front faces extend down to row 23.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3867
+  }
+ ],
+ "decidedAt": "2026-10-14T01:18:10.780Z",
+ "cells": {
+  "16": [
+   "5369244aaf71c79e",
+   "7f523be5acf5e767",
+   "b07c0a35ee18f13f",
+   "cf287fbb991db078"
+  ],
+  "24": [
+   "3275120f17e740cd",
+   "33d948c89bf9d0d0",
+   "34d4c499946eb2b0",
+   "3566a4d4c590c6a3",
+   "455de02f89b9b15f",
+   "4ab5398fadd6a312",
+   "5588749c70959f97",
+   "6a6628969ad02834",
+   "6e33587088db745f",
+   "6eda737be6e7ac89",
+   "6fa6db591b52f507",
+   "72d4545c352b110c",
+   "8c56d0fd1a7be826",
+   "903725cfc4d9ff68",
+   "95e89f411c56bd7e",
+   "98081dee5409c96b",
+   "9ce105e5f3223de1",
+   "a1e28d5fac016f54",
+   "a319405328915c8d",
+   "bc0b450fae2eb441",
+   "d5986f11b48e1736",
+   "e158102456d86016",
+   "ece8f1ded1babf5e",
+   "f0bf93e4079cb1f7"
+  ],
+  "32": [
+   "15fd2ce958729397"
+  ],
+  "48": [
+   "3fa28eb447dd3089",
+   "5883d1cac4922e0b",
+   "6a0c6cffe281c792",
+   "9087959a33703eee",
+   "9ffcd6a79b3503e5",
+   "bcf4beaf95061397"
+  ]
+ }
+}

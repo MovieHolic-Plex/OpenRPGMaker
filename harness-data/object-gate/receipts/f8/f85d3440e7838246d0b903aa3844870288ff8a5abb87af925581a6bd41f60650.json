@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f85d3440e7838246d0b903aa3844870288ff8a5abb87af925581a6bd41f60650",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "세면대",
+ "label": "modern_city/interior/mci-washbasin",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sink vanity cabinet with mirror",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sink countertop has a clearly visible top surface from rows 12 to 18 (7 rows) with a recessed basin depression (opening) visible from rows 13 to 17 (5 rows). Below it, the front face of the cabinet spans rows 19 to 30, showing a proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5426
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "washbasin vanity unit with sink bowl and mirror above",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The vanity counter top spans rows 12-18 (7 rows) showing the recessed sink basin (rows 13-17, 5 rows), with a front-facing cabinet below (rows 19-30) and mirror above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4642
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sink vanity cabinet with basin",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The washbasin vanity shows a clear 7-row top counter surface (rows 12-18) containing a 5-row recessed basin opening (rows 13-17), and a 12-row front face (rows 19-30) depicting the cabinet drawer with a handle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5428
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bathroom vanity sink",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The washbasin vanity has a clearly foreshortened top counter surface (rows 12-18, 7 rows tall) containing a visible recessed basin bowl (rows 13-17, 5 rows tall), resting above a front-facing cabinet (rows 19-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5223
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:12.630Z",
+ "cells": {
+  "16": [
+   "126caddb30a98f0a",
+   "531f0b541a91d884"
+  ],
+  "24": [
+   "2dfd8ce7139a9b07",
+   "337ff1c3401c3b3a",
+   "74d7993b9beb0b19",
+   "83a91b3a0cbcdcda",
+   "8ec6b6a32a4050fe",
+   "8fd5d6b5982e9db0",
+   "b9b1978972f060d3",
+   "c43d1fca4c418fe3",
+   "c99a22b69693e54c",
+   "d4b12a473086a56b",
+   "d52492f9afa6bff2",
+   "f62ef2832ecc44e5"
+  ],
+  "32": [
+   "09860a95590a5d79",
+   "3f2d5ff14d9d367c",
+   "e1d9e43715ed0449"
+  ],
+  "48": [
+   "33442eff3850b2c8",
+   "36ea7b1ec62e6773",
+   "4675fa22640429db",
+   "745243be9c7b2b62",
+   "93db576efe1a31c4",
+   "ba5182085f020299"
+  ]
+ }
+}

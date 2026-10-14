@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "11c493968ff94d2ea5e3a30f7e9036397a8f47b93cbda015f973035792a11cef",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "링거 걸대",
+ "label": "modern_city/interior/mci-iv-stand",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "IV pole with circular/elliptical top head and wheeled base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the top head (rows 2-6) and the wheeled base (rows 22-30) are drawn as foreshortened ellipses visible from above in standard 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5719
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "IV drip stand pole with top cap, base, and hanging drip bag",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the stand is drawn as an ellipse spanning rows 2 to 5 (4 rows tall), and the wheeled base is also drawn as a foreshortened elliptical disc from rows 22 to 29, correctly depicting the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6036
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "IV pole stand with base and top hanger",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the top cap (rows 2-6) and the wheeled base (rows 22-29) are drawn as distinct foreshortened horizontal ellipses in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5905
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "IV drip stand pole with top hanger cap and wheeled base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top circular/elliptical fixture spans rows 2-6 (5 rows tall), clearly foreshortened in 3/4 perspective, matched by an elliptical wheeled base spanning rows 22-29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5690
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:50.059Z",
+ "cells": {
+  "16": [
+   "66b8aa82ea7f5fb7",
+   "f2cf82760a552c7e"
+  ],
+  "24": [
+   "0c7c59ac18a45bb3",
+   "0f49543b91045c00",
+   "11ac454b225d5355",
+   "25cf27585a61f9f3",
+   "27429ff67fd217c5",
+   "29131f1a9bd4d831",
+   "321b2da79d7cea55",
+   "3273ee094be33b3f",
+   "385cfa0549e2e11e",
+   "5c4369439f7537d0",
+   "6cabf42b9f0b8c6d",
+   "d3b00c73e20b223b"
+  ],
+  "32": [
+   "29c625b45b5fb9a0",
+   "353e4b081b55d143",
+   "97bc81fe4b5a924b"
+  ],
+  "48": [
+   "1f39e243ac1d3459",
+   "7f3f01b9d221306f",
+   "b5bd78ac2237d7a6",
+   "b78a97819f50a391",
+   "ebd75895d5c05907",
+   "f2d212e6062e0a5c"
+  ]
+ }
+}

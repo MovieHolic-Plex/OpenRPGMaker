@@ -61,12 +61,12 @@
    "y": 3
   },
   {
-   "id": "mci-desk-pc",
-   "x": 1,
+   "id": "mci-chair-office-s",
+   "x": 2,
    "y": 9
   },
   {
-   "id": "mci-chair-office-n",
+   "id": "mci-desk-pc-back",
    "x": 1,
    "y": 10
   },
@@ -74,11 +74,6 @@
    "id": "mci-plant-tall",
    "x": 6,
    "y": 10
-  },
-  {
-   "id": "mci-sidedoor-wood",
-   "x": 7,
-   "y": 7
   },
   {
    "id": "mci-sofa",
@@ -116,19 +111,14 @@
    "y": 5
   },
   {
-   "id": "mci-chair-wood-n",
-   "x": 12,
-   "y": 8
+   "id": "mci-cafe-chair-e",
+   "x": 11,
+   "y": 7
   },
   {
-   "id": "mci-chair-wood-n",
-   "x": 13,
-   "y": 8
-  },
-  {
-   "id": "mci-armchair",
-   "x": 8,
-   "y": 8
+   "id": "mci-cafe-chair-w",
+   "x": 14,
+   "y": 7
   },
   {
    "id": "mci-plant-tall",

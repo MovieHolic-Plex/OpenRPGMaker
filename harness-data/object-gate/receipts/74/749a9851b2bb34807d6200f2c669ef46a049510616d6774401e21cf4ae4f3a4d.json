@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "749a9851b2bb34807d6200f2c669ef46a049510616d6774401e21cf4ae4f3a4d",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "링거 걸대",
+ "label": "modern_city/interior/mci-iv-stand",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "IV pole with top hanger and IV bag",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The upper structure of the IV stand (hanger bracket at rows 1-5 and IV bag at rows 5-15) is drawn in pure front elevation with a flat 1px horizontal outline at the top and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5201
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "IV pole with hanger and hanging IV bag",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, top hanger bracket, and IV bag are drawn in pure front elevation with no visible top surface at the upper end. The only foreshortened element is the wheeled base plinth, which does not grant credit for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7970
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "IV drip pole with hanging fluid bag and wheeled base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole and top bracket are drawn in pure front elevation with only a 1px outline at row 1. There is no visible top surface or cut face at the top end of the column/pole.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5888
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "IV pole shaft and top hanger frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole and top hanger structure are drawn in pure front elevation with only a 1px outline at row 1 and no visible top surface or cut face. The IV bag is also a flat front rectangle, with only the wheeled base showing top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7040
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:02.705Z",
+ "cells": {
+  "16": [
+   "1047f17994d7eef0",
+   "b81b65ce29132e23"
+  ],
+  "24": [
+   "014bc81420ee362c",
+   "1c6da1a261f2fbfb",
+   "3d86aef817c675e4",
+   "407352b0ad7ae4b3",
+   "444b946c964b537f",
+   "72f6edb632eb734c",
+   "78f72693651766a6",
+   "7b88b1f3ac68ff27",
+   "820574eb7aaed189",
+   "a1f568b001c06f6c",
+   "b6fe768aaf5793d4",
+   "dcd766cbdedbdf13"
+  ],
+  "32": [
+   "27a51959b4808d9a",
+   "65da62735c265886",
+   "f486e8996197d880"
+  ],
+  "48": [
+   "6606c739ab25b33c",
+   "765f86d99d9b61c0",
+   "9013f9a17b073ed0",
+   "937888cac128e66f",
+   "b5b678abd71dbd98",
+   "eb23b057157e053b"
+  ]
+ }
+}

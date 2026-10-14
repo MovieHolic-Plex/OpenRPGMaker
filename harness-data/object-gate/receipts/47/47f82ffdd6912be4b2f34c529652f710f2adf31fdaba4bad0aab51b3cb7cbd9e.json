@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "47f82ffdd6912be4b2f34c529652f710f2adf31fdaba4bad0aab51b3cb7cbd9e",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "출입 보안 게이트",
+ "label": "modern_city/interior/mci-security-gate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "turnstile security gate pillars and barrier",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate pillars and center barrier have no visible top surfaces (only a 1px outline/highlight at the top edge) and are drawn directly as a flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4787
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "security gate turnstiles and barrier",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both turnstile posts are rendered strictly from the front without any visible top surface (0px top surface). The central barrier also has only a 1px edge highlight at row 11, making the entire structure a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8202
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "security turnstile pillars with central flap gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both security gate pillars and the central barrier are drawn in pure front elevation with no visible top horizontal surfaces (only 1px outline/rim lines at rows 6 and 11).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5112
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "security gate turnstile pedestals and barrier",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The two pedestals are drawn completely flat from the front with only a 1px outline on top (row 6) and no visible horizontal top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4964
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:02.706Z",
+ "cells": {
+  "16": [
+   "4367a2c9b829984c",
+   "65ddb3906dd5d3e5",
+   "a9b5f3d58b2ba499",
+   "f4fdb755d2d0b501"
+  ],
+  "24": [
+   "0011dde4be089889",
+   "0e0c7a44b430e1ce",
+   "1c44106a14bc8557",
+   "2d508b54f1d0ef27",
+   "335d059a4833f9ac",
+   "4168967496ead95d",
+   "4972403448ae1531",
+   "5412dc3abf6d2fe7",
+   "5a928122244d52fe",
+   "6094460fa26dcfe2",
+   "7bdd047d9df6ca48",
+   "8160c6a02e0a02a6",
+   "93e6e473c8759c4f",
+   "96f3608fc0b20ff6",
+   "a3cc51b65d33bb9b",
+   "a7069e56e0ab14ca",
+   "b16371954b1935e3",
+   "b942e6385bb5d796",
+   "c276205a75a69db8",
+   "d205c30130cb0fe6",
+   "d4bc176591ab3b0e",
+   "db6f9aadb3560ba9",
+   "dee9bd9793e1a178",
+   "f8459b54a440f7b2"
+  ],
+  "32": [
+   "c3494b47135e4f87"
+  ],
+  "48": [
+   "3b7663d8e8045bcb",
+   "5f225ef90cbfbfe0",
+   "6bba8097208c5514",
+   "b952ee7a8e0827d7",
+   "ee59642b544a77ab",
+   "fb2103b5615444c1"
+  ]
+ }
+}

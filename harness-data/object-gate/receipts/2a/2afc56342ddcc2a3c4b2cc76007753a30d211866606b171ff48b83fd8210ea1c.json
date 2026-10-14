@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2afc56342ddcc2a3c4b2cc76007753a30d211866606b171ff48b83fd8210ea1c",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "진열대(양면)",
+ "label": "modern_city/interior/mci-gondola",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "double-sided display shelf / gondola shelving unit",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper section (rows 1-11) represents the top horizontal shelf tiers viewed from above in 3/4 perspective, displaying items/compartments with significant depth (11 rows) before transitioning to the south-facing vertical shelves below (rows 12-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4484
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "double-sided display shelf / gondola",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 6-11 form a visible horizontal top surface (about 5-6 pixel rows deep) populated with items seen from above, sitting atop the south-facing vertical shelf unit (rows 12-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8898
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "double-sided display shelf / bookcase",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire display shelf is drawn in pure front elevation with straight vertical and horizontal dividers. There is no visible top surface (0px) showing the depth of the unit from the 3/4 overhead perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9951
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "double-sided display shelf / bookcase",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire unit is rendered in flat 2D front elevation: all tiers and shelves display books/goods straight-on with 0px of visible horizontal top surface on the shelf unit or individual shelves.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5970
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:46.509Z",
+ "cells": {
+  "16": [
+   "2ffba2280926768e",
+   "651e6f49bdaf95d4",
+   "c15712b87ecb7c4b",
+   "f8a54162bf8470b0"
+  ],
+  "24": [
+   "0cb320813ee82ae3",
+   "1b8725f1a2f9f7ec",
+   "1f00d086145b6cdd",
+   "306b3bd57ec9cd28",
+   "3a41dbb0cddcae5c",
+   "3fe90b9a046af6c4",
+   "5c0280d8a03bbe92",
+   "6402805aa169e12a",
+   "6deaf7563e0a22ac",
+   "70d4c4ddb3b0b5c6",
+   "717040c07e84bd3b",
+   "7c364544130534d7",
+   "9fdd2c4335685879",
+   "a12567b33ee68f26",
+   "aafd771f28504bf1",
+   "d589205b992f32a8",
+   "dd90a9ea0b625b1f",
+   "e57a12b2f95d135a",
+   "e6dd0bb48dd7e10f",
+   "f765336c2638e946",
+   "f8292fad9e2d38ff",
+   "f8e381e32b98851b",
+   "fbd2ee127d503ab3",
+   "fd31a44b02f49bb9"
+  ],
+  "32": [
+   "693cc62807f17e02"
+  ],
+  "48": [
+   "0c4fe556c13d0c11",
+   "0c9a35746ece1e64",
+   "2f32210cc0e98f59",
+   "7db4e16aa575e7f4",
+   "9d452ff3b2ed3154",
+   "a7d0a3aec21a9c94"
+  ]
+ }
+}

@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cd6e1b86bd311d75157452ef7cf3d7bcf9454fa0036aee978e8c38bd3efa7620",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "계산 단말",
+ "label": "modern_city/interior/mci-g-register",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "computer monitor and terminal tower",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The monitor and tower are drawn from a pure front elevation with only a 1px border at row 4 and row 7, showing no visible top foreshortened surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4716
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "computer monitor and tower terminal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The monitor and terminal unit are drawn completely flat from the front with only a 1px border at row 4 and no visible top depth surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3702
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "computer monitor and tower",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The monitor and tower are drawn strictly from the front with a 1px bezel/edge and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4533
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "computer monitor and terminal box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The monitor and terminal tower are drawn completely as a flat 2D front view with only a 1px outline along the top edges and no foreshortened top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3698
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:05.389Z",
+ "cells": {
+  "16": [
+   "38a619862c58abce"
+  ],
+  "24": [
+   "2f4ca6b6ef360cf2",
+   "68e6ad3dc6e95668",
+   "7b556c0900eedcf4",
+   "c29822a7e80219f0",
+   "c6d2053d0511db06",
+   "dbaa5c786c05e952"
+  ],
+  "32": [
+   "5575fa2cba796406",
+   "6fff814ad281609e",
+   "c322ebb32c8cd231",
+   "d549c25581828c13",
+   "db21f9268d9a69ae",
+   "eb6d90f97c91c330"
+  ],
+  "48": [
+   "1cb84c8c7a7b1c52",
+   "1cedac304056c852",
+   "9bdfb922b0ab3dcb",
+   "c25b3e6e27f56eb2",
+   "c9116745e3b2cea0",
+   "cb6e1152ef6df602"
+  ]
+ }
+}

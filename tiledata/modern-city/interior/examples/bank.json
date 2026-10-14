@@ -80,24 +80,14 @@
    "y": 5
   },
   {
-   "id": "mci-stanchion",
-   "x": 5,
-   "y": 7
+   "id": "mci-planter",
+   "x": 4,
+   "y": 8
   },
   {
-   "id": "mci-stanchion",
-   "x": 7,
-   "y": 7
-  },
-  {
-   "id": "mci-stanchion",
-   "x": 9,
-   "y": 7
-  },
-  {
-   "id": "mci-stanchion",
+   "id": "mci-planter",
    "x": 11,
-   "y": 7
+   "y": 8
   },
   {
    "id": "mci-wait-bench",

@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1f682f2a6d052b44dd93097c1ba7eb1d82b443b86ee0e0d1417eda0bbb5ba449",
+ "width": 48,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "창고 선반",
+ "label": "modern_city/interior/mci-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "warehouse shelving rack with boxes",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the main shelf body is prominently visible across rows 6-10 (approx. 5 pixel rows) with boxes resting on it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4522
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "warehouse shelving unit with boxes",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body of the shelving unit has a clearly rendered top deck spanning rows 7 to 11 (5 source pixel rows deep), upon which boxes rest. Below row 12, the front-facing shelves and vertical support pillars are depicted without isometric side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5555
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "warehouse shelving rack",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top deck of the shelf is clearly foreshortened and visible from row 6 to row 10 (5 rows deep) with proper shading and rim highlight.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5249
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "warehouse shelving rack",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shelving unit is clearly rendered across rows 6 to 11 (approx 5-6 pixel rows tall) with boxes resting on it, properly capturing the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4836
+  }
+ ],
+ "decidedAt": "2026-10-14T01:20:27.013Z",
+ "cells": {
+  "16": [
+   "1963f0f771411774",
+   "62ea37d7a4730b69",
+   "6a0caf4836f3dadd",
+   "71ba2f91babb3c26",
+   "d0bb718f448eac01",
+   "e0931d490c0837df"
+  ],
+  "24": [
+   "1df832ba3950a2aa",
+   "28e985c468521ad4",
+   "38f9a5d941dc3bcd",
+   "4d47b0a6afbb4e9e",
+   "6e597b13854992ac",
+   "9f373130d23cbaeb",
+   "d7e5d905080087e5",
+   "da12030203799290"
+  ],
+  "32": [
+   "0aaf7d4f5667fe91",
+   "1aa6ed3b24c51dc0",
+   "6b4ebfad4c02d2c2",
+   "a6d778abe6899c17",
+   "b5826f8ecf67624a",
+   "f5bd70af914ea7c4"
+  ],
+  "48": [
+   "04ea594a55a77e4c",
+   "903658025d074c05"
+  ]
+ }
+}

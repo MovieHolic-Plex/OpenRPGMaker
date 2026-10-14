@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "68a97a1d2c53b13431fa3477720af223027985a1dbbc82d34c8041d624261878",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "사무실 카펫 타일(청회색)",
+ "label": "modern_city/interior/mci-carpet-office",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "office carpet floor tiles",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Modular blue-grey office carpet floor texture viewed flat from above as a terrain surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4110
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "office carpet floor tiles",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor/terrain tile texture viewed from above, perfectly matching the terrain kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3289
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "carpet floor tiles",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 32x32 area consists of flat office carpet floor tiles with seam grid lines and subtle texture patterning, representing horizontal ground terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4739
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "carpet floor tiles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "2x2 set of office carpet floor tiles with woven texture patterns; valid ground terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4186
+  }
+ ],
+ "decidedAt": "2026-10-14T00:57:23.693Z",
+ "cells": {
+  "16": [
+   "2064bf331747022f",
+   "742158fdfbb4470d",
+   "9b87ffa426408ae6",
+   "cfca2a77542758ce"
+  ],
+  "24": [
+   "002824c4d95e57ee",
+   "01e18cf043dba27a",
+   "0b6afeceb727aa8c",
+   "1711170f25bbbcb5",
+   "18fdd31d4574f7be",
+   "29b2eba7461f0efd",
+   "358bdc8b53eda35c",
+   "3a4ba492cee0d332",
+   "493fa754d59fb4da",
+   "6222806051af0c57",
+   "654bd4ac97b17bb2",
+   "6ae71b5b5cdacbec",
+   "7313ae56459f87e7",
+   "75e9741260691cc5",
+   "911ef583aab92005",
+   "9d2159d00264d477",
+   "b01710f58c1e510b",
+   "b404b3d3a3fd53c5",
+   "ce5dae6d16bd4bd9",
+   "d70c79590da4cf26",
+   "d793278aedec104f",
+   "dcc3d43329d1b35b",
+   "e137f1febc0b1f8b",
+   "e600b293d3c446f8"
+  ],
+  "32": [
+   "daf4cf65b5642904"
+  ],
+  "48": [
+   "0018bcf6aa9a32f0",
+   "13fbd6acbcd892d2",
+   "561907adb85ab52d",
+   "58faa75783eb4463",
+   "eba99cb83d294608",
+   "f5ba1481cd5ce816"
+  ]
+ }
+}

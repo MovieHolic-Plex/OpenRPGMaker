@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "70f863119dd72352add0f01c5806c229004d65a56d7c3ec7634e39e1a9723c99",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "음료 냉장고",
+ "label": "modern_city/interior/mci-cooler",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "beverage refrigerator / display cooler",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire refrigerator is drawn in flat front elevation. Rows 1-4 depict the front-facing illuminated header sign/lightbox of a commercial display cooler rather than a top surface seen from above, and the shelves and drinks inside are drawn completely flat with zero top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7248
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "beverage refrigerator / reach-in cooler",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn in a flat architectural front elevation. Rows 1-4 depict the illuminated front header/lightbox sign of the refrigerator, below which are two glass doors with completely flat shelves and rectangular drink icons. There is no visible top surface foreshortened from above (only a 1px dark border at row 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6535
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "beverage display refrigerator",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The beverage refrigerator is drawn entirely in front elevation with no visible top surface (0 rows); the upper panel (rows 1-4) is drawn as a flat front lightbox/header, and the shelves and drinks show no top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5746
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "beverage refrigerator",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire refrigerator is drawn as a flat front elevation. Rows 1-4 depict the front lightbox/header panel, not a receding top surface, and the shelves, bottles, and outer dark frame show zero top-down depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6260
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:11.885Z",
+ "cells": {
+  "16": [
+   "29753f5613eacdf7",
+   "4b5277bf69e19f39",
+   "c1f935e9946d4668",
+   "f96985deb5e8de8f"
+  ],
+  "24": [
+   "154af947a00de1d5",
+   "1cc6a76cec284fe4",
+   "251d8eefd7d4526f",
+   "25cee9aca3f0ece9",
+   "33f1cdc5c08c23ce",
+   "3f1853055248d9a6",
+   "4396a73696204900",
+   "594b5b16a4c88912",
+   "5cbc83a7d31bd07b",
+   "5dd4436fbd68a259",
+   "674f0948bc5517d3",
+   "7b8af97ce733036e",
+   "8501939f2fbc8dfb",
+   "8a342c95c8985a0d",
+   "8e591f118fc31da5",
+   "94e44f97bf7fc0c2",
+   "9ad62b16a949ffae",
+   "a6de93cb4bcdb38e",
+   "aeb050b72c1bd831",
+   "b298d7736b290b1b",
+   "b8823fc08081be49",
+   "bdb717c02667e601",
+   "eae60e7a256ee0e9",
+   "f10342355cfa0295"
+  ],
+  "32": [
+   "dd24976681fc5c32"
+  ],
+  "48": [
+   "042fa0981a481cdb",
+   "49e58e7d43ac5dbb",
+   "896e687672b83fb7",
+   "a20e86a7403522a3",
+   "ded4d146bba0e2d6",
+   "f50cc81fa08bac12"
+  ]
+ }
+}

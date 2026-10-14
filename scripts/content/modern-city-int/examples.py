@@ -45,21 +45,19 @@ EX['office-floor'] = dict(
     objects=[
         O('window-city', 2, 1), O('window-city', 5, 1), O('wall-clock', 8, 1), O('whiteboard', 13, 1), O('window-blind', 16, 1),
         O('notice-board', 12, 8), O('ac-wall', 16, 8),
-        O('shelf-office', 1, 3), O('filing', 3, 3), O('coffee-station', 7, 3), O('copier', 10, 3), O('plant-tall', 5, 3),
-        # 사무 섬 A(서쪽) — 북쪽 줄은 남향 의자 + 뒤판 책상, 남쪽 줄은 화면 책상 + 북향 의자
-        O('chair-office-s', 1, 5), O('chair-office-s', 4, 5), O('desk-pc-back', 1, 6), O('desk-pc-back', 3, 6),
-        O('desk-pc', 1, 7), O('desk-pc', 3, 7), O('chair-office-n', 2, 8), O('chair-office-n', 3, 8),
-        # 사무 섬 B(동쪽)
-        O('chair-office-s', 7, 5), O('chair-office-s', 10, 5), O('desk-pc-back', 7, 6), O('desk-pc-back', 9, 6),
-        O('desk-pc', 7, 7), O('desk-pc', 9, 7), O('chair-office-n', 8, 8), O('chair-office-n', 9, 8),
-        # 남쪽 벽가 1인 줄
-        O('chair-office-s', 2, 10), O('chair-office-s', 3, 10), O('desk-pc-back', 1, 11), O('desk-pc-back', 3, 11),
+        O('shelf-office', 1, 3), O('filing', 3, 3), O('coffee-station', 7, 3), O('plant-tall', 10, 3), O('plant-tall', 5, 3),
+        # 사무 줄(모두 남쪽을 보고 앉는다: 남향 의자 + 화면이 북쪽인 책상) — 줄마다 뒤로 2칸 통로
+        O('chair-office-s', 2, 5), O('chair-office-s', 4, 5), O('desk-pc-back', 1, 6), O('desk-pc-back', 3, 6),
+        O('chair-office-s', 8, 5), O('chair-office-s', 10, 5), O('desk-pc-back', 7, 6), O('desk-pc-back', 9, 6),
+        O('chair-office-s', 2, 8), O('chair-office-s', 4, 8), O('desk-pc-back', 1, 9), O('desk-pc-back', 3, 9),
+        O('chair-office-s', 8, 8), O('chair-office-s', 10, 8), O('desk-pc-back', 7, 9), O('desk-pc-back', 9, 9),
+        O('chair-office-s', 2, 11), O('chair-office-s', 4, 11), O('desk-pc-back', 1, 12), O('desk-pc-back', 3, 12),
         O('plant-tall', 6, 12),
         # 회의실
         O('chair-office-s', 14, 3), O('chair-office-s', 15, 3), O('chair-office-s', 16, 3),
         O('plant-tall', 18, 3), O('door-wood', 13, 7),
-        # 복도 동쪽: 서버 랙·복합기 자리
-        O('server-rack', 17, 10), O('partition', 12, 11), O('copier', 11, 10),
+        # 복도 동쪽: 대기 소파·서류장
+        O('plant-tall', 11, 10), O('filing', 15, 10), O('shelf-office', 17, 10),
     ],
     tables=[T('t-meeting', 14, 4, 3, 2)],
     goods=[G('laptop', 14, 4), G('coffee', 16, 5), G('papers', 15, 4)],
@@ -86,10 +84,10 @@ EX['konbini'] = dict(
     floor='mci-vinyl-store', wall='mci-wall-store', exitWidth=2,
     zones=[dict(x0=11, x1=14, y0=1, y1=4, floor='mci-concrete', wall='mci-wall-metal')],
     objects=[
-        O('cooler', 1, 3), O('cooler', 3, 3), O('cooler', 5, 3), O('magazine', 7, 3), O('atm', 9, 3),
-        O('gondola', 2, 6), O('gondola', 5, 6), O('gondola', 2, 9), O('gondola', 5, 9),
+        O('cooler', 1, 3), O('cooler', 3, 3), O('cooler', 5, 3), O('magazine', 7, 3), O('fridge', 9, 3),
+        O('gondola', 2, 6), O('gondola', 4, 6), O('gondola', 2, 9), O('gondola', 4, 9),
         O('freezer', 8, 6),
-        O('counter-register', 11, 9), O('copier', 14, 8),
+        O('counter-register', 11, 9), O('fridge', 14, 8),
         O('basket-stack', 5, 11),
         # 뒷방
         O('rack', 11, 3), O('pallet', 14, 3),
@@ -97,7 +95,7 @@ EX['konbini'] = dict(
     ],
     tables=[], goods=[],
     start=[6, 11],
-    rooms=[dict(room='store', x0=0, y0=5, x1=15, y1=12), dict(room='backroom', x0=10, y0=0, x1=15, y1=5)],
+    rooms=[dict(room='backroom', x0=10, y0=0, x1=15, y1=5), dict(room='store', x0=0, y0=0, x1=15, y1=12)],
     narrow=[dict(x0=13, y0=6, x1=13, y1=8, why='뒷방 문에서 계산대 안쪽으로 가는 직원 길')],
 )
 
@@ -121,12 +119,11 @@ EX['apartment'] = dict(
     objects=[
         O('window-curtain', 2, 1), O('ac-wall', 4, 1), O('window-city', 9, 1), O('art-frame', 12, 1),
         O('bedside', 1, 3), O('bed-double', 2, 3), O('bedside', 4, 3), O('wardrobe', 5, 3),
-        O('desk-pc', 1, 9), O('chair-office-n', 1, 10), O('plant-tall', 6, 10),
-        O('sidedoor-wood', 7, 7),
+        O('chair-office-s', 2, 9), O('desk-pc-back', 1, 10), O('plant-tall', 6, 10),
         O('sofa', 8, 3), O('fridge', 11, 3), O('kitchen', 12, 3),
         O('rug', 8, 4), O('coffee-table', 9, 5),
-        O('chair-wood-s', 12, 5), O('chair-wood-s', 13, 5), O('chair-wood-n', 12, 8), O('chair-wood-n', 13, 8),
-        O('armchair', 8, 8), O('plant-tall', 14, 10),
+        O('chair-wood-s', 12, 5), O('chair-wood-s', 13, 5), O('cafe-chair-e', 11, 7), O('cafe-chair-w', 14, 7),
+        O('plant-tall', 14, 10),
     ],
     tables=[T('t-wood', 12, 6, 2, 2)],
     goods=[G('vase', 12, 6), G('coffee', 13, 7)],
@@ -146,8 +143,6 @@ EX['hospital-ward'] = dict(
           '#................#',
           '#................#',
           '#................#',
-          '#................#',
-          '#................#',
           '########..########'],
     floor='mci-vinyl-hospital', wall='mci-wall-hospital', exitWidth=2,
     zones=[],
@@ -157,13 +152,12 @@ EX['hospital-ward'] = dict(
         O('iv-stand', 5, 3), O('hosp-bed', 6, 3), O('bedside', 7, 3),
         O('iv-stand', 10, 3), O('hosp-bed', 11, 3), O('bedside', 12, 3),
         O('iv-stand', 14, 3), O('hosp-bed', 15, 3), O('bedside', 16, 3),
-        O('curtain', 2, 6), O('curtain', 6, 6), O('curtain', 11, 6), O('curtain', 15, 6),
-        O('med-cart', 9, 8),
-        O('wait-bench', 1, 10), O('plant-tall', 4, 10), O('wait-bench', 12, 10), O('plant-tall', 16, 9),
+        O('med-cart', 9, 3),
+        O('wait-bench', 1, 8), O('plant-tall', 4, 8), O('wait-bench', 12, 8), O('plant-tall', 16, 8),
     ],
     tables=[], goods=[],
-    start=[8, 10],
-    rooms=[dict(room='ward', x0=0, y0=0, x1=17, y1=11)],
+    start=[8, 8],
+    rooms=[dict(room='ward', x0=0, y0=0, x1=17, y1=9)],
 )
 
 # ── 사무 빌딩 로비: 엘리베이터 · 보안 게이트 · 안내 데스크 · 우편함 · 대기 소파 ──
@@ -189,7 +183,7 @@ EX['lobby'] = dict(
         O('art-frame', 2, 1), O('wall-clock', 9, 1), O('art-frame', 16, 1),
         O('mailboxes', 1, 3), O('plant-tall', 3, 3), O('elevator', 5, 3), O('elevator', 8, 3), O('elevator', 11, 3),
         O('plant-tall', 14, 3), O('stairs-up', 16, 3),
-        O('security-gate', 6, 7), O('security-gate', 10, 7), O('planter', 1, 7), O('planter', 17, 7),
+        O('planter', 1, 8), O('planter', 3, 8), O('security-gate', 5, 8), O('security-gate', 8, 8), O('security-gate', 11, 8), O('planter', 14, 8), O('planter', 16, 8),
         O('reception', 14, 10), O('plant-tall', 18, 10),
         O('sofa', 1, 10), O('coffee-table', 2, 11),
     ],
@@ -225,7 +219,7 @@ EX['cafe'] = dict(
         O('plant-tall', 14, 9),
     ],
     tables=[T('t-counter', 1, 5, 4, 1), T('t-wood', 9, 3, 5, 1)],
-    goods=[G('espresso', 1, 5), G('register', 3, 5), G('cake', 13, 7), G('coffee', 9, 7), G('coffee', 10, 3)],
+    goods=[G('coffee', 1, 5), G('register', 3, 5), G('vase', 13, 7), G('coffee', 9, 7), G('coffee', 10, 3)],
     start=[5, 9],
     rooms=[dict(room='cafe', x0=0, y0=0, x1=15, y1=10)],
     narrow=[dict(x0=1, y0=4, x1=4, y1=4, why='카운터 뒤 직원 길')],
@@ -252,7 +246,7 @@ EX['bank'] = dict(
         O('wall-clock', 3, 1), O('art-frame', 8, 1), O('notice-board', 14, 1),
         O('filing', 1, 3), O('shelf-office', 14, 3), O('chair-office-s', 5, 4), O('chair-office-s', 8, 4), O('chair-office-s', 11, 4),
         O('teller', 4, 5), O('teller', 10, 5),
-        O('stanchion', 5, 7), O('stanchion', 7, 7), O('stanchion', 9, 7), O('stanchion', 11, 7),
+        O('planter', 4, 8), O('planter', 11, 8),
         O('wait-bench', 1, 9), O('wait-bench', 13, 9), O('plant-tall', 16, 6), O('plant-tall', 1, 6),
     ],
     tables=[T('t-counter', 7, 5, 3, 1)],
@@ -280,7 +274,7 @@ EX['concourse'] = dict(
     zones=[],
     objects=[
         O('route-map', 2, 1), O('route-map', 7, 1), O('wall-clock', 11, 1), O('route-map', 15, 1),
-        O('ticket-machine', 1, 3), O('ticket-machine', 3, 3), O('ticket-machine', 5, 3),
+        O('magazine', 1, 3), O('cooler', 3, 3), O('plant-tall', 5, 3),
         O('stairs-up', 15, 3),
         O('ticket-gate', 6, 6), O('ticket-gate', 9, 6), O('ticket-gate', 12, 6),
         O('bench-metal', 1, 8), O('bench-metal', 16, 8), O('bench-metal', 16, 10),
@@ -310,8 +304,8 @@ EX['warehouse'] = dict(
     objects=[
         O('rack', 1, 3), O('rack', 4, 3), O('rack', 11, 3), O('rack', 14, 3),
         O('ac-wall', 8, 1),
-        O('pallet', 2, 6), O('pallet', 3, 6), O('pallet', 12, 6), O('drums', 15, 6), O('drums', 16, 6),
-        O('pallet', 1, 8), O('drums', 16, 9), O('pallet', 14, 9),
+        O('pallet', 2, 6), O('pallet', 3, 6), O('pallet', 12, 6), O('pallet', 15, 6), O('pallet', 16, 6),
+        O('pallet', 1, 8), O('pallet', 16, 9), O('pallet', 14, 9),
     ],
     tables=[T('t-wood', 4, 7, 3, 1)],
     goods=[G('papers', 4, 7), G('phone', 6, 7)],

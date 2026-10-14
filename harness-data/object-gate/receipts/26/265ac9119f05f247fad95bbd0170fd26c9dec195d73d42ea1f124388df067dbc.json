@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "265ac9119f05f247fad95bbd0170fd26c9dec195d73d42ea1f124388df067dbc",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "옷장",
+ "label": "modern_city/interior/mci-wardrobe",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wardrobe/cabinet with top surface",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the cabinet is clearly visible from rows 1 to 7 (7 pixels deep), with an object resting on it, leading down to the front-facing doors and drawer below (rows 8-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4841
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden wardrobe with double doors and bottom drawer",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wardrobe is clearly visible from rows 1 to 7 (7 pixels deep, with an item sitting on it), and the front vertical face extends from row 8 to row 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3642
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wardrobe / cabinet",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wardrobe features a clear top surface spanning rows 1 through 7 (7 pixels deep) holding an item, with the south face showing cabinet doors and a bottom drawer from row 8 downwards.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3741
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden wardrobe/cabinet with top surface and doors/drawer",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wardrobe is clearly visible from rows 1 to 7 (7 pixels deep), with an item resting on it. The front face with cabinet doors and a lower drawer extends from row 8 down to row 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3229
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:24.133Z",
+ "cells": {
+  "16": [
+   "7e78a0d8e3f8caaa",
+   "bcc08a063a7d2f9f",
+   "c65ef3dd7b8818b8",
+   "e7194d99d08e8e36"
+  ],
+  "24": [
+   "060d8c9e954000f6",
+   "11cd68c4543d4cc6",
+   "1de33f9cb7d18e68",
+   "260deca1c8a838a5",
+   "2f58e697bbad88ae",
+   "3627712e33e2392e",
+   "3781a8d0054a7fa9",
+   "3e9aa0e99e8f09d4",
+   "481cf5896c2503dd",
+   "4a3f97492a8e5aab",
+   "4e128e0a4a143b5d",
+   "6d23124afa5828a5",
+   "a7afb1f38274acb2",
+   "a89b291028243bcc",
+   "b20566cfb9eb0846",
+   "b98102211d1d374d",
+   "bfe0f7d209778f2b",
+   "c173f9c2ba9490dc",
+   "c498b7f6064b85c3",
+   "cee6b03f0bebea84",
+   "eeae8fb6f744fc07",
+   "f41c932069ef8a32",
+   "f7c77f4c78df1ef7",
+   "f9c804e3602060d9"
+  ],
+  "32": [
+   "f542e002e712b6d8"
+  ],
+  "48": [
+   "157df7f3ed4c7732",
+   "286942e903e6bb53",
+   "b3c96bbd67f7fb29",
+   "bf52ff0bd30d6a13",
+   "d17a0358d8881db8",
+   "e11c1ad701d22f78"
+  ]
+ }
+}

@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5a0b4859cc2fb24c086212bebdc1e1f4c3c960dfc3751053148e54cbdad58a90",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "꽃병",
+ "label": "modern_city/interior/mci-g-vase",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vase",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The vase body (rows 8-13) is drawn as a flat rectangle with a straight horizontal top edge; there is no elliptical opening or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4325
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cylindrical vase",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The vase body (rows 8-13) is a flat rectangular front elevation with a straight 4px horizontal top edge; there is no opening ellipse or top rim showing depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4616
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cylindrical vase body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The vase is drawn as a flat 4-pixel-wide rectangle from row 8 to 13 with a flat horizontal rim; no visible elliptical opening or top rim foreshortening is present.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7678
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vase body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The vase is drawn as a flat rectangular cylinder from row 8 to 13 with a flat horizontal top edge and no visible elliptical rim or opening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3182
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:05.390Z",
+ "cells": {
+  "16": [
+   "ef6aae4be0937f21"
+  ],
+  "24": [
+   "0ab1e9dde32d9f38",
+   "307c15f6fa7632e3",
+   "466f5ea4aa3f1dec",
+   "597678639510241c",
+   "a066b9e1ca6bebda",
+   "bab28769a8bb4a0d"
+  ],
+  "32": [
+   "22f781b53e0b75b7",
+   "28e56783caf32f60",
+   "5bc9045c83574852",
+   "730de90b2aeb32d8",
+   "915c59977635b370",
+   "c56b7d013b0f02ec"
+  ],
+  "48": [
+   "574b8a4c6806f296",
+   "68bf0e0041e33ef7",
+   "7aa51709051d25b1",
+   "864228925802b347",
+   "953347ed2bc0ea1a",
+   "e4f3054097b0a5a3"
+  ]
+ }
+}

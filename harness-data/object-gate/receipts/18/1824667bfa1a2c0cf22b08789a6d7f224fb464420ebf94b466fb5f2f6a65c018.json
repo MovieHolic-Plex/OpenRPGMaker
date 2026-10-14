@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1824667bfa1a2c0cf22b08789a6d7f224fb464420ebf94b466fb5f2f6a65c018",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "긴 화분 상자",
+ "label": "modern_city/interior/mci-planter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "planter box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The planter box is drawn as a flat rectangular front elevation spanning rows 14 to 30. The 2px white band (rows 15-16) is merely an edge highlight/rim, not a foreshortened top surface or opening showing soil/depth. The bushes simply emerge from behind a flat front-facing box.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5240
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "planter box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The planter box is drawn entirely in pure front elevation from rows 14 to 31. The top edge is only a 2-pixel white rim band with bushes protruding directly behind it; there is no top surface or visible opening interior showing depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5147
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "planter box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The planter box is drawn as a flat rectangular front elevation spanning rows 14-30 with only a 2px white highlight rim (rows 15-16) at the top. There is no visible top surface or opening showing depth/soil from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4364
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rectangular planter box containing bushes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The planter box is drawn in pure front elevation with a massive flat front face (rows 17-29) and only a 2px horizontal rim/highlight (rows 15-16). There is no top opening, depth, or visible soil plane from which the bushes emerge.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 3144
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:05.386Z",
+ "cells": {
+  "16": [
+   "aa989ee4bda90fbc",
+   "d513cc4e6209c8b2",
+   "e25042bb4566e5a4",
+   "fbd8c138c366a27e"
+  ],
+  "24": [
+   "02698ccb8333e7eb",
+   "1bda53700fa51229",
+   "1db3699f28017a67",
+   "45fe45c4dec67296",
+   "4766ef0381f10185",
+   "49be50f6f0631bcd",
+   "5962eddd2adcbb2c",
+   "59a5b1f932f13148",
+   "6d67398dbc923bb0",
+   "71e4987f817e0e51",
+   "7476a657f9cda451",
+   "766e09a702c33800",
+   "767fa498952a2e38",
+   "96738876f08c9fd8",
+   "9ac2bb662242ce1a",
+   "b297c70f5e00df61",
+   "bba655a956cdd2af",
+   "bcbdc2443e4f3471",
+   "d9a0c81b41813106",
+   "db8efdbb1ea16d14",
+   "e0c832a9493a7bf1",
+   "f656b985a1ec5293",
+   "fb7a2a039146ed96",
+   "fe12a1ab0dcc468a"
+  ],
+  "32": [
+   "b531431bb37eece5"
+  ],
+  "48": [
+   "11b51c7996a56216",
+   "36312941b6b03c02",
+   "62ed1dd78df50a96",
+   "64bf00fe38b86616",
+   "9f335bcd45ccd9ff",
+   "d12de28f2f96aa54"
+  ]
+ }
+}

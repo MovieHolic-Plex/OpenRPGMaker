@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e4647e9a44be8d4431f8fff4912c8ed0b2d0993d03287a86e871050fdb0a08b0",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "주방·욕실 작은 흰 타일",
+ "label": "modern_city/interior/mci-tile-small",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "small square ceramic tiles pattern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Grid of small white/light-gray square tiles with grout lines, correctly functioning as a flat terrain/floor texture.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5209
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "kitchen/bathroom white tile grid",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless floor/wall tile terrain texture composed of a regular grid of white square tiles separated by grout lines.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5417
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "small white ceramic tile grid pattern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat repeating floor/wall tile texture; properly categorized as terrain with no isometric projection issues.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5214
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "small square tile grid pattern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat tiling texture for kitchen or bathroom floors/walls; correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5210
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:02.400Z",
+ "cells": {
+  "16": [
+   "095b422cf9075a01",
+   "0f31bf7f016e01a1",
+   "483d8d3ce1e2eec2",
+   "81546546a62d8233"
+  ],
+  "24": [
+   "0250218c3647f188",
+   "1d7b4fea8e2b1160",
+   "1d8e0fc63a955c4c",
+   "2e4b79fcded282e9",
+   "34f06981bc963e81",
+   "468c0c7a5f801069",
+   "49ed47ae634c5459",
+   "57f72fe76807e18d",
+   "5fb218a50093b081",
+   "6d2e3315c269254d",
+   "77916038b5b0b3c9",
+   "808bc5b12bb3d49c",
+   "85a493c9c1342216",
+   "87a9d472d0efd5bf",
+   "a08efedfc07c0d6f",
+   "a4e5b6e5f3094c27",
+   "c840521135a00b4c",
+   "d437d839f0493795",
+   "de82ea564f91ceb2",
+   "e434a489eea5cafb",
+   "f33eef4cc064e738",
+   "f38918cf31a2b4ce",
+   "f8c714362ed428af"
+  ],
+  "32": [
+   "d7bf926342f9600d"
+  ],
+  "48": [
+   "1bee3b88c66b37fd",
+   "356f819e1136bd3d",
+   "4c20345bcb21c4d9",
+   "75906f7c236353a4",
+   "eeea519ff50072e9",
+   "fae1f96dd3156a84"
+  ]
+ }
+}

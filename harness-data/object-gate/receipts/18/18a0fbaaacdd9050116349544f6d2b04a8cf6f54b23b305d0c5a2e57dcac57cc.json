@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "18a0fbaaacdd9050116349544f6d2b04a8cf6f54b23b305d0c5a2e57dcac57cc",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "음료 냉장고",
+ "label": "modern_city/interior/mci-cooler",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "beverage refrigerator / display cooler",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the refrigerator is clearly visible from row 5 to row 11 (7 pixel rows deep) with boxes resting on it and casting shadows, looking down at a 3/4 angle above the front display doors.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5425
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "beverage refrigerator",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the refrigerator is clearly visible across rows 5–11 (with two boxes resting on it and casting shadows on row 8) before transitioning to the glass-front interior displays on row 12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5981
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "drink refrigerator with shelves visible through glass doors and boxes on top",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the refrigerator is visible across rows 5-8 (about 4 pixel rows deep), providing a surface upon which two boxes rest with visible cast shadows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5419
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "beverage display refrigerator",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the refrigerator is clearly depicted across rows 5-10 (at least 4-6 source pixel rows tall), with two boxes resting on it and casting shadows. The shelves inside also show foreshortened horizontal depth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5586
+  }
+ ],
+ "decidedAt": "2026-10-14T01:20:31.480Z",
+ "cells": {
+  "16": [
+   "36cf78332713030b",
+   "8714d44f2afeb0fa",
+   "bd772ab19e1c5a95",
+   "e93e26d9ebe94d1c"
+  ],
+  "24": [
+   "0bc0e7d28fbfd98c",
+   "1429fc2223c5bf6a",
+   "1f5587035927247a",
+   "2907ce2bd5738ac7",
+   "2a01b166a2f064b5",
+   "42955cc2832b262a",
+   "48132d9b5dc11073",
+   "59d661a47bb84015",
+   "647aff4cd5abfd4e",
+   "6707a69d416efc0f",
+   "778886863259823b",
+   "7ed3fb9c648901fe",
+   "8fdaa3d797a6981a",
+   "9feae158fbd61b04",
+   "a11f92a004e66b01",
+   "b606b9e50b033733",
+   "bef886e31ecd4e17",
+   "c377fb7e65e5ee3e",
+   "c6ff1b298d2d96a3",
+   "d18e295aa7c0ac73",
+   "e81badcaf144f0c7",
+   "ec105edb4f48d358",
+   "fd014d3c95a15481",
+   "ffcaf46f7649cfca"
+  ],
+  "32": [
+   "be6228265cc36caf"
+  ],
+  "48": [
+   "4e0634fb3d5bea87",
+   "511cb7d83263fe40",
+   "5cf65d611845123e",
+   "7ee94d54bb993fdf",
+   "9e6d124672b3f67f",
+   "a76c1a1a850b23fb"
+  ]
+ }
+}
