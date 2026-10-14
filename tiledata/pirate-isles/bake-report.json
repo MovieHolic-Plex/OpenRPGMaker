@@ -3,13 +3,13 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 1171,
-  "kits_checked": 162,
-  "groups_checked": 34,
+  "tiles_checked": 1198,
+  "kits_checked": 166,
+  "groups_checked": 38,
   "autotiles_checked": 12
  },
  "reassembly": {
-  "kits": 162,
+  "kits": 166,
   "mismatched": 0,
   "ids": []
  },
@@ -17,16 +17,16 @@
   "cells_off_palette": 0
  },
  "tiles": {
-  "count": 1171,
+  "count": 1198,
   "rows": 25,
-  "kits": 162,
-  "groups": 34,
+  "kits": 166,
+  "groups": 38,
   "autotiles": 12
  },
  "adopted": {
-  "pieces": 174,
+  "pieces": 178,
   "by_group": {
-   "terrain": 28,
+   "terrain": 32,
    "nature": 25,
    "buildings": 25,
    "props": 38,

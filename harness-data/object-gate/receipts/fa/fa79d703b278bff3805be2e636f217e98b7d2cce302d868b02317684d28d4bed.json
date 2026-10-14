@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fa79d703b278bff3805be2e636f217e98b7d2cce302d868b02317684d28d4bed",
+ "width": 48,
+ "height": 48,
+ "kind": "terrain",
+ "name": "large dark grass shade patch over jungle grass floor, 3x3 tiles, organic outline",
+ "label": "pirate-isles/pi-grass-shade-d",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dark grass shade patch on ground",
+    "kind_matches": true,
+    "top_rows": 30,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain patch / shadow cast across ground tiles; correctly represents ground level surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4064
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dark grass shade patch on ground",
+    "kind_matches": true,
+    "top_rows": 30,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground patch viewed from top-down perspective with no 3D standing vertical face required.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3882
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dark grass shade patch on grass floor",
+    "kind_matches": true,
+    "top_rows": 30,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain patch viewed entirely from above as ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3138
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "shade patch on grass floor",
+    "kind_matches": true,
+    "top_rows": 31,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain feature representing an organic dark grass / shade patch on the ground plane, correctly viewed from the top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3552
+  }
+ ],
+ "decidedAt": "2026-10-14T08:46:20.694Z",
+ "cells": {
+  "16": [
+   "1f7c9299387f5153",
+   "2cb14f79ceb3b09a",
+   "35a16927fcad226d",
+   "415b9d375b255291",
+   "4a1bb8123b162469",
+   "633d0e7b8dc25ce0",
+   "cf3e2f27fe125c53",
+   "d60370f512625138",
+   "ef012934849c0255"
+  ],
+  "24": [
+   "06decc38d44dae5a",
+   "4bbc706948471f33",
+   "59d506de140849ce",
+   "d7a940c5eae0d7ff"
+  ],
+  "32": [
+   "05babf349dcff997",
+   "081ded558d0694a0",
+   "0b413872118fc631",
+   "0bd15cda79607524",
+   "11d51b316118c5c8",
+   "20381821f4a9c9e8",
+   "220a96331bbd1c85",
+   "24dca33dab9f86f1",
+   "2619ad8aaf88daf9",
+   "3d519d8f92127d7d",
+   "4ef4f06d3f09e85d",
+   "4f2a0912e1ce6b1f",
+   "5538d60f4fe25008",
+   "568efe2635df5d6f",
+   "7d9ed0812f737498",
+   "892936971349e7c3",
+   "a085d45d43aa83b5",
+   "a94a71b6327e98a8",
+   "ab159acf8436e8a3",
+   "c0fd1a4d8b2e809f",
+   "cd6938279402675e",
+   "de2bba176947d3ba",
+   "e7806418f75dd530",
+   "e9d5921da425f5b3"
+  ],
+  "48": [
+   "c57ceb31f3c7b44e"
+  ]
+ }
+}

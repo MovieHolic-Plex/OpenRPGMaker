@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bf4310bab42fae1fe9eaca3c6e7649ea6af6f385ac8412e4a9f41240a9d81ac5",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "small thatched village hut with bamboo walls and wooden door",
+ "label": "pirate-isles/pi-hut-thatch",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "thatched roof and bamboo wall hut",
+    "kind_matches": true,
+    "top_rows": 36,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building prominently displays its large thatched roof slope facing the viewer (rows 0-36) above the south-facing front wall and entrance (rows 37-63), typical of top-down JRPG structure perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4000
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "thatched roof hut",
+    "kind_matches": true,
+    "top_rows": 37,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Classic RPG Maker style building with a tall foreshortened thatched roof slope spanning rows 0 to 37 over the south-facing bamboo wall and door (rows 38 to 63).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4472
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "thatched village hut",
+    "kind_matches": true,
+    "top_rows": 36,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The multi-tiered thatched roof slope is shown facing forward from rows 0 to 36 in standard 3/4 top-down perspective, with the front wall beneath it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3929
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "thatched village hut",
+    "kind_matches": true,
+    "top_rows": 36,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The thatched roof shows an extensive front-facing roof slope from row 1 to row 36 (36 rows), typical of 3/4 perspective JRPG buildings, over the south wall face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3344
+  }
+ ],
+ "decidedAt": "2026-10-14T08:46:20.695Z",
+ "cells": {
+  "16": [
+   "2f8254c4171f72fd",
+   "60b8a68e0f2ad53b",
+   "6f54ebdc25df9d20",
+   "7945d52421a79064",
+   "7b0fdfe742810175",
+   "8c0803ba214f3e3d",
+   "9368abcfd56a4ebf",
+   "a37eac64fc29479d",
+   "b716983bb436fd43",
+   "bc404eb9bff6f9eb",
+   "bd177d2fed9b3668",
+   "efcc7dae23140684"
+  ],
+  "24": [
+   "1ce6f4515ddc6267",
+   "2eda74e6953bb213",
+   "45a27efc6d2c40bf",
+   "5c78967b12f3c301",
+   "5ea94bd33744e698",
+   "66239f541945983a",
+   "66e19bae5d7a0313",
+   "8d6a06a5200662ea",
+   "ab6505cf64b7fc01",
+   "bd90cbb609f25414",
+   "d122bb3687f05d7a",
+   "eb8ba4ee19ee9f93"
+  ],
+  "32": [
+   "0dba1865c830e73f",
+   "1de0fe2072ba182d",
+   "32839f25f7b142fa",
+   "5856b396029f52ef",
+   "7ff6f783657b487e",
+   "85d8243ae945beb2",
+   "af56dfbf307c0624",
+   "c2fa5e650d5ea500",
+   "c8a53d6afd4158be",
+   "d5bd46dad04b76b6",
+   "d8bc8057879ce3d7",
+   "f5ff59ffdd2f81f3"
+  ],
+  "48": [
+   "0fa26720cfcee49d",
+   "361bafc1ae17ef00",
+   "636a2db3c989386a",
+   "fd4371d7c6b1b63a"
+  ]
+ }
+}

@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "36fcaeb5e08b025c51746ff391eed032bcd8dd5c8681b0a10e3703b1c924fd5f",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "small plank fish shack on the pier with net hanging and fish sign",
+ "label": "pirate-isles/pi-fish-shack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "thatched/shingled roof and wooden plank walls of a shack",
+    "kind_matches": true,
+    "top_rows": 38,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a large south-facing roof slope occupying rows 0 to 37 (approx 38 rows tall), clearly presenting the top surface of the structure above the front plank wall in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5486
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fish shack with thatched roof and plank walls",
+    "kind_matches": true,
+    "top_rows": 38,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large thatched roof slope is prominently foreshortened and visible from row 0 to 38 (over half the structure's height), accurately representing the downward-facing roof surface in 3/4 top-down perspective. The door threshold also displays a visible horizontal step.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4652
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "thatched-roof wooden fish shack",
+    "kind_matches": true,
+    "top_rows": 38,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The thatched roof slopes down towards the viewer across rows 0-38, presenting a large foreshortened top surface typical of top-down JRPG buildings above the vertical south facade (rows 39-63).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4402
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fish shack with thatched roof and plank walls",
+    "kind_matches": true,
+    "top_rows": 38,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a large foreshortened roof slope spanning rows 1-38, clearly showing the roof surface from the standard 3/4 top-down angle above the vertical front wall (rows 39-63).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3334
+  }
+ ],
+ "decidedAt": "2026-10-14T08:46:20.696Z",
+ "cells": {
+  "16": [
+   "3791448b7f1accf6",
+   "50040c921a1399f7",
+   "62d03072cfab7834",
+   "68b79e898acf65b7",
+   "87ce4f046efcbe7b",
+   "b82f500a3dd8611e",
+   "cae430c332791472",
+   "e310646174c4f4af",
+   "e63057eea2d65289",
+   "e88dc5bbb0baf56f",
+   "f118ed96b6750abc",
+   "f37f32ae2e21acc6"
+  ],
+  "24": [
+   "030796e83c540327",
+   "49be98eb7ef888f5",
+   "5573709c376011b6",
+   "6c81302fad819483",
+   "719325eceee0a472",
+   "757da6655f725ff2",
+   "a720a129b6524b54",
+   "aa44cce562ba3ae1",
+   "c296aeb9bf8bf45e",
+   "c2f1ce7869a49972",
+   "c50cd87f2a28f88d",
+   "e2df5be4dadae0c6"
+  ],
+  "32": [
+   "13528b94d98a3894",
+   "20f486d377106a94",
+   "22b42ac12530d9ee",
+   "42c063e4add4b324",
+   "664938238aab2e19",
+   "77597ea5fade70de",
+   "7d230976657218e1",
+   "856188ec5b4d35d8",
+   "8ba70e8a452559bf",
+   "8e1b11df47c8fb18",
+   "9347e7e2cc74546f",
+   "c7330e25c03dfc90"
+  ],
+  "48": [
+   "54a371518afa6c54",
+   "7dba0da169490181",
+   "b5a21bf9eddc4a91",
+   "c3ec8ffe4d656c42"
+  ]
+ }
+}

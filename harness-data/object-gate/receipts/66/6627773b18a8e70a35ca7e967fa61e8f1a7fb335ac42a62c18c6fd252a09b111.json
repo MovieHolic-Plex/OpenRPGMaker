@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6627773b18a8e70a35ca7e967fa61e8f1a7fb335ac42a62c18c6fd252a09b111",
+ "width": 96,
+ "height": 16,
+ "kind": "terrain",
+ "name": "tropical jungle grass floor tiles, 6 variants (plain, small flowers, four with small grass tufts)",
+ "label": "pirate-isles/pi-grass",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A strip of 6 16x16 terrain floor tiles depicting flat jungle grass ground with tufts and small flowers.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4004
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal ground terrain tiles covering the entire 16px height with small flowers and grass tuft details.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3528
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tropical jungle grass floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tiles (16px high) with small decorative flowers and tufts, viewed appropriately from above in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4032
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tropical jungle grass floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal strip of 6 16x16 grass terrain tiles showing flat ground with minor texture variations, flowers, and tufts appropriate for top-down terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3439
+  }
+ ],
+ "decidedAt": "2026-10-14T08:46:20.693Z",
+ "cells": {
+  "16": [
+   "316d475846bb226f",
+   "5b20651b00ee670a",
+   "701ae8906d6cfb6a",
+   "83da9ea7ff98920d",
+   "aad3564b6f4a9d24",
+   "dffad3271bc5e379"
+  ],
+  "24": [
+   "084a4b0dc00a8bb0",
+   "0ba14651e4c29e0e",
+   "18a5bfa759e52206",
+   "34e5fafaf9bd26c3",
+   "45a3f5141f9045c8",
+   "5716a7bf8125e17b",
+   "7fc6800da469aed8",
+   "c375209ce8005f96"
+  ],
+  "32": [
+   "0b75d49ae88813e5",
+   "1672d726e31c2fd0",
+   "18506dd43bf35f3b",
+   "44b09af71d15ff89",
+   "4cbfdfc6ede21149",
+   "a59e8b60a2656b96"
+  ],
+  "48": [
+   "a61f1953ad4b1d67",
+   "ab11dca3873d2f49",
+   "b9891cafeed63008",
+   "e837adfdfc501640"
+  ]
+ }
+}

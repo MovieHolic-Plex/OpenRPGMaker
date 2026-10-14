@@ -81,46 +81,40 @@ def sand_px(x, y, v=0):
     return K('sand', t)
 
 
-# 풀 그늘 덩이(변형마다 자리 다름, 16 주기로 감싼다): (cx, cy, rx, ry)
-GRASS_CLUMPS = {          # 칸 안에 다 들어간다(이웃 칸이 다른 변형이어도 덩이가 칸 경계에서 잘리지 않게)
-    0: (),
-    1: (),
-    2: ((5.0, 7.0, 3.4, 2.1), (12.0, 12.5, 2.6, 1.7)),
-    3: ((10.5, 6.0, 3.0, 2.0), (4.0, 12.5, 3.0, 1.9)),
-    4: ((8.0, 10.0, 4.2, 2.5),),
-    5: ((4.0, 6.0, 2.6, 1.7), (11.0, 10.0, 3.0, 1.9)),
-}
-GRASS_LIGHT = {2: ((11.0, 5.0, 3.8, 2.4),), 3: ((5.5, 5.5, 4.0, 2.6),), 4: ((5.0, 4.0, 3.6, 2.2), (12.5, 13.5, 2.8, 1.8)), 5: ((11.5, 4.0, 3.6, 2.2), (4.5, 12.5, 3.0, 2.0))}
+# 풀(화풍 2판 2차, 2026-10-14 감독 판정 「잔 점 반복이 번잡」): 바탕은 조용한 면, 명암은 여러 칸에 걸친 큰 그늘 덩이
+# (at-grassshade 4이웃 오토타일, 구성기가 잡음으로 몰아 깐다)와 드문 풀포기(변형 2~5).
+GRASS_TUFTS = {2: ((5, 9),), 3: ((11, 6),), 4: ((4, 4), (12, 12)), 5: ((9, 11),)}
 
 
-def _wrap(d): return d
+def _tuft(x, y, tx, ty):
+    """풀포기 하나(폭 5, 높이 4): 잎 끝 밝게, 밑 짙게. 없으면 None."""
+    dx, dy = x - tx, y - ty
+    if dy == 0 and dx in (-2, 0, 2): return -1
+    if dy == 1 and -2 <= dx <= 2: return 1 if dx == -1 else 0 if dx in (-2, 0) else -1
+    if dy == 2 and -2 <= dx <= 2: return 0 if dx < 0 else -1
+    if dy == 3 and -1 <= dx <= 1: return -2
+    if dy == -1 and dx in (-1, 1): return 1 if dx < 0 else 0
+    return None
 
 
 def grass_px(x, y, v=0):
-    """밀림 풀(화풍 2판): 바탕 0단 + 밝은 풀 얼룩(+1, 부드러운 잡음 경계) + 짙은 풀 덩이(-1, 위 끝은 풀잎 삐침·밑은 -2 그늘)
-    + 드문 풀잎 반짝임(+1/+2)·풀잎 밑 그늘. 버들항 잔디처럼 넓은 덩이 명암, 같은 무늬 반복을 피하려고 변형마다 덩이 자리가 다르다."""
+    """밀림 풀 바탕: 0단 조용한 면 + 아주 드문 풀잎 점(±1). 변형 2~5 는 풀포기 하나둘."""
     x %= 16; y %= 16
+    for (tx, ty) in GRASS_TUFTS.get(v, ()):
+        r = _tuft(x, y, tx, ty)
+        if r is not None: return K('grass', r)
     t = 0
-    for (cx, cy, rx, ry) in GRASS_LIGHT.get(v, ()):
-        d = (_wrap(x - cx) / rx) ** 2 + (_wrap(y - cy) / ry) ** 2
-        if d < 0.55 or (d < 1.0 and hsh(x, y, 29 + v) % 3): t = 1
-    for (cx, cy, rx, ry) in GRASS_CLUMPS.get(v, GRASS_CLUMPS[0]):
-        dx, dy = _wrap(x - cx), _wrap(y - cy)
-        d = (dx / rx) ** 2 + (dy / ry) ** 2
-        if d <= 1.0:
-            t = -2 if dy > ry * 0.45 and d > 0.45 else -1
-            if dy < -ry * 0.3 and hsh(x, y, 37 + v) % 4 == 0: t = 0          # 덩이 윗면 풀잎 빛
-            break
-        # 덩이 위로 삐친 풀잎(1~2px 세로)
-        if abs(dx) < rx * 0.85 and -ry - 2.2 < dy < -ry * 0.75 and hsh(x, 0, 39 + v) % 3 == 0:
-            t = -1; break
-    if t >= 0:
-        q = hsh(x, y, 23 + v) % 53
-        if q == 0: t = min(t + 2, 2)
-        elif q < 3: t += 1
-        elif q == 3: t = -1
-        elif hsh(x, (y - 1) % 16, 23 + v) % 53 in (1, 2): t = max(t - 1, -1)        # 풀잎 밑 그늘
-    return K('grass', max(-2, min(2, t)))
+    q = hsh(x, y, 23 + v) % 97
+    if q == 0: t = 1
+    elif q == 1: t = -1
+    return K('grass', t)
+
+
+def grass_shade_px(x, y):
+    """큰 그늘 덩이 속: -1 단 면 + 드문 -2 풀잎 그늘·0 단 잎 끝."""
+    x %= 16; y %= 16
+    q = hsh(x, y, 211) % 61
+    return K('grass', -2 if q == 0 else 0 if q == 1 else -1)
 
 
 def _pebble(x, y, s):
@@ -182,17 +176,21 @@ def cobble_px(x, y, v=0):
 
 
 def deck_px(x, y, v=0, mat='wood', t=0):
-    """갑판·마루: 가로 판자 폭 4(이음 1), 판 끝 엇갈림, 못."""
+    """갑판·마루(화풍 2판): 가로 판자 폭 4 — 판 윗 턱 빛(+1)·몸·결 줄(-1, 짧은 가로 획)·이음 그늘(-2),
+    판 끝 이음은 -2 와 그 앞 -1 그늘, 못은 판 끝 이음 곁에만(-2 점 + 0 점, 한 판에 한 쌍)."""
     x %= 16; y %= 16
     row = y // 4; vv = y % 4
-    off = (row * 5) % 16
+    off = (row * 5 + v * 3) % 16
     uu = (x + off) % 16
     tone = t + ((hsh(row, (x + off) // 16, 61 + v) % 3) - 1)
     if vv == 3: return K(mat, t - 2)
-    if uu == 15: return K(mat, t - 1)
-    if vv == 0: tone += 1
-    if uu in (1, 13) and vv == 1: return K(mat, t - 3)
-    if hsh(x, y, 63 + v) % 17 == 0: tone -= 1
+    if uu == 15: return K(mat, t - 2)
+    if uu == 14 and vv > 0: return K(mat, tone - 1)
+    if uu == 0 and vv == 0: return K(mat, tone + 2)
+    if vv == 0: return K(mat, tone + 1)
+    if uu in (1, 13) and vv == 1 and row % 2 == 0: return K(mat, t - 2 if uu == 1 else t)
+    if vv == 2 and (uu + hsh(row, 0, 65 + v)) % 9 < 3 and hsh(row, uu // 4, 67 + v) % 2: return K(mat, tone - 1)
+    if hsh(x, y, 63 + v) % 23 == 0: return K(mat, tone - 1)
     return K(mat, tone)
 
 
@@ -225,9 +223,45 @@ def _sand_shells(x, y):
 
 PIECES['sand']['draw'] = lambda c: [fill_px(c, i * 16, 0, f) for i, f in enumerate([lambda x, y: sand_px(x, y, 0), lambda x, y: sand_px(x, y, 1), _sand_shells])]
 
-tile_row('grass', 'tropical jungle grass floor tiles, 6 variants (plain, small flowers, four with dark grass clumps and light patches)',
+tile_row('grass', 'tropical jungle grass floor tiles, 6 variants (plain, small flowers, four with small grass tufts)',
          [lambda x, y: grass_px(x, y, 0), lambda x, y: _grass_flowers(x, y)] + [(lambda v: lambda x, y: grass_px(x, y, v))(v) for v in (2, 3, 4, 5)],
-         desc='밀림 풀밭(변형 6: 맨 풀·작은 꽃·풀 덩이 무늬 4). 3~6열은 짙은 풀 덩이·밝은 풀 얼룩 — 넓은 풀밭에 섞어 반복 무늬를 깬다.', tags=['풀'])
+         desc='밀림 풀밭(변형 6: 맨 풀·작은 꽃·풀포기 4). 3~6열은 드문 풀포기 — 넓은 풀밭에 가끔 섞는다. 큰 명암은 at-grassshade.', tags=['풀'])
+
+
+# 큰 풀 그늘 덩이(여러 칸에 걸친 한 덩이, 불투명 바닥 칸): 테두리는 grass_px 와 같은 바탕이라 옆 맨 풀 칸과 이음이 없다.
+# (cx, cy, rx, ry) 타원 몇 개의 합집합 + 들쭉날쭉한 테. 구성기가 풀밭 속(둘레까지 모두 풀)에 잡음으로 몰아 찍는다.
+GRASS_PATCHES = {
+    'grass-shade-a': (3, 2, ((17, 15, 13, 8), (31, 13, 9, 6), (12, 20, 7, 5))),
+    'grass-shade-b': (2, 2, ((15, 16, 11, 9), (21, 12, 7, 6))),
+    'grass-shade-c': (4, 2, ((18, 16, 14, 8), (40, 15, 13, 7), (30, 11, 10, 5))),
+    'grass-shade-d': (3, 3, ((22, 20, 15, 11), (30, 30, 11, 8), (14, 28, 8, 7))),
+}
+
+
+def _patch_draw(blobs, w, h, s):
+    def draw(c):
+        W, H = w * 16, h * 16
+        for y in range(H):
+            for x in range(W):
+                d = min(((x + .5 - cx) / rx) ** 2 + ((y + .5 - cy) / ry) ** 2 for (cx, cy, rx, ry) in blobs)
+                d += (per16(x, 1.3 + s, 0.25, 0.15) + per16(y, 2.9 + s, 0.25, 0.15)) * 0.5 + (hsh(x // 2, y // 2, 230 + s) % 3 - 1) * 0.06
+                if d < 0.72: col = grass_shade_px(x, y)
+                elif d < 1.0: col = grass_shade_px(x, y) if hsh(x, y, 231 + s) % 3 else grass_px(x, y)
+                else: col = grass_px(x, y)
+                c.P(x, y, col)
+        # 덩이 남쪽 테 = -2 (덩이 밑 그늘), 북쪽 테 위 = 드문 짙은 풀잎 삐침
+        shade = {K('grass', -1), K('grass', -2)}
+        for y in range(H):
+            for x in range(W):
+                col = c.get(x, y)
+                if col in shade and y + 1 < H and c.get(x, y + 1) not in shade and hsh(x, y, 233 + s) % 3: c.P(x, y, K('grass', -2))
+                if col not in shade and y + 1 < H and c.get(x, y + 1) in shade and hsh(x, 0, 235 + s) % 4 == 0: c.P(x, y, K('grass', -1))
+    return draw
+
+
+for _k, (_w, _h, _b) in GRASS_PATCHES.items():
+    piece(_k, f'large dark grass shade patch over jungle grass floor, {_w}x{_h} tiles, organic outline', _w, _h, 'terrain', group='terrain',
+          tags=['풀', '그늘'], desc=f'풀밭의 큰 그늘 덩이({_w}×{_h} 칸 한 덩이, 불투명 바닥). 둘레가 모두 풀인 곳에 통째로 깐다. 걷는다.')(_patch_draw(_b, _w, _h, len(_k)))
 
 
 def _grass_flowers(x, y):

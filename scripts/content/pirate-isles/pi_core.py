@@ -258,17 +258,23 @@ def stones(c, x, y, w, h, mat='stone', t=0, bh=5, blen=(6, 9), s=0, moss=0.0, mo
 
 
 def straw(c, x, y, w, h, t=0, s=0, tier=5, mat='thatch'):
-    """짚 지붕 결: tier 행마다 한 단(위 밝은 끝 → 아래 그늘), 세로 짚 가닥(밝·어두운 짧은 줄)."""
+    """짚 지붕 결(화풍 2판 — 버들항 기와 문법의 짚 버전): tier 행마다 볏짚 다발 한 줄.
+    줄 안에서 위→아래로 한 단씩 내려가는 램프(+1 → 0 → -1 → -2), 다발(폭 3, 줄마다 엇갈림)마다 왼쪽 빛면·오른쪽 그늘면,
+    줄 아래 끝은 짚 끝이 들쭉날쭉 늘어지며 다음 줄에 그늘을 드리운다."""
+    ramp = {4: (1, 0, -1, -2), 5: (1, 1, 0, -1, -2), 6: (1, 1, 0, 0, -1, -2)}.get(tier) or tuple([1] + [0] * (tier - 3) + [-1, -2])
     for j in range(h):
         row = j // tier; vv = j % tier
         for i in range(w):
-            base = t + (1 if vv == 0 else 0 if vv < tier - 2 else -1 if vv == tier - 2 else -2)
-            r = hsh(i, row, s) % 7
-            if r == 0: base += 1
-            elif r == 1: base -= 1
-            # 아래 끝 들쭉날쭉(짚 다발 끝)
-            if vv == tier - 1 and hsh(i, row, s + 3) % 3 == 0: base = t
-            c.P(x + i, y + j, K(mat, base))
+            u = (i + (row * 2) % 3) % 3
+            k = (i + (row * 2) % 3) // 3
+            base = t + ramp[vv]
+            if u == 0 and vv < tier - 1: base += 1                            # 다발 빛면
+            elif u == 2 and tier - 3 <= vv < tier - 1: base -= 1              # 다발 그늘면(아래쪽만)
+            if hsh(k, row, s) % 9 == 0 and vv < tier - 1: base -= 1           # 바랜·젖은 다발
+            if hsh(i, j, s + 5) % 17 == 0 and vv < tier - 2: base += 1        # 짚 가닥 반짝
+            # 아래 끝 들쭉날쭉(다발 끝이 늘어짐)
+            if vv == tier - 1 and hsh(i, row, s + 3) % 3 == 0: base = t + ramp[tier - 2]
+            c.P(x + i, y + j, K(mat, max(-3, min(3, base))))
 
 
 def leafy(c, cx, cy, rx, ry, mat='grass', t=0, s=0, lumps=4.0, shade=True):
@@ -417,7 +423,9 @@ def hip_roof(c, x, y, w, h, mat='thatch', inset=None, s=0, ridge=True, eave=3, t
     for i in range(x, x + w):
         jag = hsh(i, 0, s + 7) % 2
         c.P(i, y + h - 1, K(mat, -2 if jag else -1))
-        if mat == 'thatch' and jag and hsh(i, 1, s) % 2: c.P(i, y + h, K(mat, -2))
+        if mat == 'thatch' and jag and hsh(i, 1, s) % 2:
+            c.P(i, y + h, K(mat, -2))
+            if hsh(i, 2, s) % 3 == 0: c.P(i, y + h + 1, K(mat, -3))           # 처마 끝 늘어진 짚(화풍 2판)
     return lx, rx
 
 

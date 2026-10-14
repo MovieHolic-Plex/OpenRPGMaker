@@ -206,10 +206,10 @@ class Board {
         t = this.autoTile(a.id, a.eight ? m : m & 15);
         if (m === 255 && ch === "s" && hash01(x, y, this.seed + 1) < 0.1) t = this.floor("sand", 1 + Math.floor(hash01(x, y, 2) * 2));
         if (m === 255 && ch === "g") {
-          // 풀밭 무늬: 꽃 8% · 풀 덩이 변형(2~5열) 약 18% — 한 칸 무늬 반복을 깬다(화풍 2판). 변형 칸이 없는 옛 시트는 0번으로 남는다.
+          // 풀밭 무늬: 꽃 6% · 풀포기 변형(2~5열) 약 12%(화풍 2판). 큰 명암은 grassPatches. 변형 칸이 없는 옛 시트는 0번으로 남는다.
           const r = hash01(x, y, this.seed + 3);
-          if (r < 0.08) t = this.floor("grass", 1);
-          else if (r < 0.26) { const v = this.floor("grass", 2 + Math.floor(hash01(x, y, this.seed + 4) * 4)); if (v >= 0 && v !== this.floor("grass", 1)) t = v; }
+          if (r < 0.06) t = this.floor("grass", 1);
+          else if (r < 0.18) { const v = this.floor("grass", 2 + Math.floor(hash01(x, y, this.seed + 4) * 4)); if (v >= 0 && v !== this.floor("grass", 1)) t = v; }
         }
       } else if (PLAIN[ch]) {
         const p = PLAIN[ch]!;
@@ -219,6 +219,7 @@ class Board {
       } else t = this.floor("water", 0);
       this.setLower(x, y, t);
     }
+    this.grassPatches();
     // 벽 천장 남쪽 가장자리 아래 두 줄 = 앞면
     for (let y = 0; y < this.h - 1; y++) for (let x = 0; x < this.w; x++) {
       const ch = this.g(x, y);
@@ -226,6 +227,28 @@ class Board {
       if (!face || this.g(x, y + 1) === ch) continue;
       const v = hash01(x, y, this.seed + 5) < 0.7 ? 0 : 1 + Math.floor(hash01(x, y, 6) * 3);
       for (let r = 0; r < 2; r++) if (y + 1 + r < this.h && "fx".includes(this.g(x, y + 1 + r))) this.setLower(x, y + 1 + r, this.faceTile(face, r, v));
+    }
+  }
+
+  /** 넓은 풀밭에 큰 그늘 덩이(grass-shade-a~d, 여러 칸 한 덩이)를 잡음으로 몰아 깐다. 덩이와 둘레 1칸이 모두 풀이어야 한다(화풍 2판). */
+  grassPatches(): void {
+    const KINDS: readonly [string, number, number][] = [["grass-shade-a", 3, 2], ["grass-shade-b", 2, 2], ["grass-shade-c", 4, 2], ["grass-shade-d", 3, 3]];
+    if (!KINDS.every(([id]) => this.has(id))) return;
+    const used = new Set<number>();
+    for (let y = 1; y < this.h - 1; y++) for (let x = 1; x < this.w - 1; x++) {
+      if (noise2(x, y, this.seed + 11, 4) < 0.2 || hash01(x, y, this.seed + 12) > 0.35) continue;
+      const [id, kw, kh] = KINDS[Math.floor(hash01(x, y, this.seed + 13) * KINDS.length)]!;
+      let ok = true;
+      for (let yy = y - 1; ok && yy <= y + kh; yy++) for (let xx = x - 1; xx <= x + kw; xx++) {
+        if (!this.inb(xx, yy) || this.g(xx, yy) !== "g" || used.has(this.idx(xx, yy))) { ok = false; break; }
+      }
+      if (!ok) continue;
+      const k = this.kit(id)!;
+      for (let r = 0; r < kh; r++) for (let c = 0; c < kw; c++) {
+        const t = k.rows[r]?.tiles[c] ?? -1;
+        if (t >= 0) this.setLower(x + c, y + r, t);
+      }
+      for (let yy = y - 1; yy <= y + kh; yy++) for (let xx = x - 1; xx <= x + kw; xx++) used.add(this.idx(xx, yy));
     }
   }
 

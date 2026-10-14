@@ -1,7 +1,7 @@
 {
 "version": 1,
 "tilesPerRow": 48,
-"count": 1171,
+"count": 1198,
 "cells": {
 "sand/0.0": 1,
 "sand/1.0": 2,
@@ -1172,6 +1172,33 @@
 "grass/3.0": 1167,
 "grass/4.0": 1168,
 "grass/5.0": 1169,
-"fort-barracks/3.1": 1170
+"fort-barracks/3.1": 1170,
+"grass-shade-a/0.0": 1171,
+"grass-shade-a/1.0": 1172,
+"grass-shade-a/2.0": 1173,
+"grass-shade-a/0.1": 1174,
+"grass-shade-a/1.1": 1175,
+"grass-shade-a/2.1": 1176,
+"grass-shade-b/0.0": 1177,
+"grass-shade-b/1.0": 1178,
+"grass-shade-b/0.1": 1179,
+"grass-shade-b/1.1": 1180,
+"grass-shade-c/0.0": 1181,
+"grass-shade-c/1.0": 1182,
+"grass-shade-c/2.0": 1183,
+"grass-shade-c/3.0": 1184,
+"grass-shade-c/0.1": 1185,
+"grass-shade-c/1.1": 1186,
+"grass-shade-c/2.1": 1187,
+"grass-shade-c/3.1": 1188,
+"grass-shade-d/0.0": 1189,
+"grass-shade-d/1.0": 1190,
+"grass-shade-d/2.0": 1191,
+"grass-shade-d/0.1": 1192,
+"grass-shade-d/1.1": 1193,
+"grass-shade-d/2.1": 1194,
+"grass-shade-d/0.2": 1195,
+"grass-shade-d/1.2": 1196,
+"grass-shade-d/2.2": 1197
 }
 }
