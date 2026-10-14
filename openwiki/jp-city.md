@@ -399,3 +399,16 @@ python3 scripts/content/jp-city/bake_refs.py                   # 문서·그림�
 - 생울타리·철망·블록담은 `fill_region`/`build_wall` 이 받지 않는다(위층 4방 오토타일) → 4방 비트(N1 E2 S4 W8)로 `variantMap` 칸을 골라 `stamp_layer_block` 3층으로 찍는다(`edgeLine`). **구성기 본문의 `fill(…, "생울타리"/"블록담")` 은 optional 단계라 조용히 실패한다**(미수정, 별건).
 - 측정: `bun scripts/qa/jp-street-probe.mts --from 3 --seeds 3 --w 64 --h 56 --style shopping` 이 `empty <seed> X%` 와 `.empty.json`(마스크)을 낸다. `NOLOT=1` 이면 이 단계 없이(비교용).
 - 키트 그림 `scripts/content/jp-city/blocks/lot_art.py`(`ENABLED` 만 굽는다, `street_hand.py` 가 등록). 관문 실패로 빠진 것: `jp-lot-pay`·`jp-lot-hoarding`·`jp-lot-notice`.
+
+## 시설 실내 6묶음 — 병원·학교 별관·IT 사옥 + 방 구성(program)·길 고르기 (2026-10-14)
+
+- 블록 3개(`BLOCK_ORDER` 끝): `interior_hospital`(`hs-`, 병원 가구 36 + 바닥 2·벽면 2 + 문 2) · `interior_school2`(`sx-`, 학교 복도·교무·특별교실·옥상 보강 20) · `interior_office2`(`ox-`, 자유석·급탕실·로비 보강 18). 틀은 `scripts/content/jp-city/interior/inst.py`(`Inst`: ikit Registry 위에 관문 종류·`_gate/*.png`·`items.jsonl`·`kinds.json` 내보내기). 그림 엔진은 캠퍼스 `px.py`(modern3 램프).
+  핀 15554 → 15940(덧붙이기만, 옛 번호 이동 0). 분류는 `interior/categories.py` 6번째 묶음(hospital-lobby·hospital-exam·hospital-ward·hospital-pharmacy·school-hall·school-staff2·school-roof2·office2·office2-common).
+- 3/4 관문: `gate_kinds.py` 가 이 세 블록을 `_gate/kinds.json` 으로 함께 검사한다. 문(종류 `part`)은 `gate_rooms.py` — 예제 렌더(`verify-shots/jp-city/interior-*-1x.png`)에서 문을 화소 그대로 품은 5×5 칸 조각을 잘라 kind `structure` 로 판정받고, 그 영수증이 문을 덮는다(gate_assembled 와 같은 규칙).
+  1차 판정(76점)에서 «정면 입면도·윗면 0행»이 많았다 — 윗면을 1~2px 테로만 그리면 판정자는 윗면으로 세지 않는다. 윗면은 4~6행 별개의 판으로 그린다(`box(c, …, top=5…)`).
+- 예제 5맵(생성기 `interior/gen_places6_{hospital,annex}.py` → `examples/*.json`): 종합병원 1층 외래(30×19: 대기실·종합 접수·진찰실 둘·처치실·원내 약국 투약 창구·계단/엘리베이터 홀) + 2층 병동(30×22: 2인 병실 넷·간호사 대기소·복도·계단 홀) — 장소 `jp-city-hospital-1f-30x19`; 학교 특별교실동(26×16: 취주악부실·인쇄실·트로피장 복도) `jp-city-school-annex-26x16`; IT 사옥 1층 로비 + 자유석 층 `jp-city-office-tower-1f-16x11`. 표 `examples/places6-{hospital,annex}.json`, 참고문서 용도 `interior-hospital`(`jp-interior-hospital-index`).
+  예제 방 사각형(`rooms`)은 겹치지 않게 — 겹치면 방 견본이 옆 방 몫까지 가져간다(간호사 대기소가 복도 3줄을 먹어 빈 바닥 5줄이 됐다).
+- **방 구성(program)**: `extract.mts` 가 places3~9(지하 던전 places4 제외)도 견본·program 표로 싣는다(jp_city 견본 35 → 144). 시험 `node scripts/content/jp-city/qa/program-rooms.mjs [program…]`(조수와 같은 `build_hand_interior_room({tileset:"jp_city", floor, wall, layout:{program}})`, floor·wall 은 필수) → `verify-shots/jp-city/program/`.
+  `layout.ts`: 화풍 묶음이 없는 칩셋(jp_city)에서 program 이면 **같은 예제 맵 → 같은 건물** 견본을 먼저 고른다(전에는 종류만 같으면 아무 건물 — 사무 엘리베이터 홀에 호텔 붉은 카펫, 학교 복도에 다른 건물 나무 복도). HUB·출입 순서에 학교 昇降口·로비·병원 대기실·사옥 로비를 더했다. program 으로 짠 평면에는 «참고 예제와 n% 같다» 경고를 내지 않는다(도구가 짠 것이다).
+- **길 고르기**(`src/ai/jpCityPolicy.ts` `jpFacilityOf`): 만들기 요청이고 실내면 사무실·회사 → office, 병원·진료실·대기실·병동·약국·의원 → hospital, «일본»·昇降口·신발장·上履き 가 붙은 학교 낱말 → school 로 jp_city 시설 실내 노트를 붙인다. 그냥 «교실·교무실·대학교 캠퍼스·기숙사»는 캠퍼스(`campusPolicy`) 그대로, 폐병원·폐교는 던전 장소 그대로. 결정: 일본 시설이라고 밝힌 요청만 jp_city 로 — 국적 없는 학교 낱말까지 옮기면 캠퍼스 칩셋(현대 학교) 사용자가 길을 잃는다.
+- 남은 것: program 배치 후보가 병실을 옆문으로 지나가게 짜는 경우(병동 program 후보 1) · 동·서 벽면 걸이 없음 · 의사·간호사 NPC 는 Actor1 이벤트.
