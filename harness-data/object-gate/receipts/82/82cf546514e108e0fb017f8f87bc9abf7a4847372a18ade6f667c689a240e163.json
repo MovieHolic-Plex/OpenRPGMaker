@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "82cf546514e108e0fb017f8f87bc9abf7a4847372a18ade6f667c689a240e163",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "farm crop plants: cabbage mature (plants only, the soil is a separate tile underneath)",
+ "label": "beodeul_farm/crop_cabbage_mature",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cabbage heads",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Spherical cabbage heads with top-down 3/4 lighting: highlights and lighter tones occupy the top rows (rows 1-4) representing the upward-facing surface, while shadow and darker leaves form the lower south edge (rows 6-7).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4621
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cabbage heads",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each cabbage is rendered as a 6x6 pixel rounded organic form with clear 3/4 view top-down lighting (highlighted upper hemisphere spanning ~3 rows, shaded southern underside and cast shadow).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5941
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cabbage heads",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabbage heads are rounded domes with upper highlights and shading showing the top dome across roughly 3-4 rows per head in standard 3/4 overhead perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3822
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cluster of four mature cabbages",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each cabbage head is a rounded sphere shaded for top-down 3/4 perspective, with the upper surface illuminated across the top 3-4 rows and underside shading at the base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3334
+  }
+ ],
+ "decidedAt": "2026-10-14T05:55:32.804Z",
+ "cells": {
+  "16": [
+   "a3c0201fc52f4bbd"
+  ],
+  "24": [
+   "11048f164d10cffd",
+   "55bb44500b42264a",
+   "5a0cf8a1bd002d8f",
+   "7dde83ddd528664b",
+   "88b118e914b499fe",
+   "9c62fd97ed0b4a8f"
+  ],
+  "32": [
+   "00e9109b8eb40fde",
+   "4d1d929320b5313d",
+   "56ab97da6cd11727",
+   "666b97f8e5e47c0d",
+   "bafc4679b4014520",
+   "f686ec119ea09ce6"
+  ],
+  "48": [
+   "3261c5caab89760a",
+   "823e2483b40d4240",
+   "849c51670093267b",
+   "8ac22eb5f010d01d",
+   "bf9a9e00ffc29cd8",
+   "f54537891ed6b42a"
+  ]
+ }
+}

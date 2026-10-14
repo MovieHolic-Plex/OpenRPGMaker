@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f8fe699f1e093f988f5b28820f3078d498ce584808fad76704d63a849b3cfc86",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "farm crop plants: tomato young (plants only, the soil is a separate tile underneath)",
+ "label": "beodeul_farm/crop_tomato_young",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "young tomato plants with wooden stakes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden stakes are drawn as flat 2D vertical rectangles with flat horizontal tops (row 4 only has a 1px highlight line) and no visible top surface, and the foliage is arranged entirely in a flat side/front elevation profile.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4491
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "young tomato plants with vertical wooden stakes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden stakes and foliage are rendered completely in flat front view; the stakes are straight 2px-wide vertical rectangles with only a 1px edge highlight on row 4 rather than any foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4001
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "young tomato plants with supporting wooden stakes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stakes and foliage are drawn in pure front elevation; the vertical wooden posts are straight 2px columns with only a 1px lighter row at row 4, and the leaves have no visible depth or top-down surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3864
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tomato plants with supporting wooden stakes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The plants and wooden stakes are drawn in pure front elevation with no visible top surface foreshortening on either the foliage or the stakes (row 4 of the stakes is merely a 1px top edge highlight).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5196
+  }
+ ],
+ "decidedAt": "2026-10-14T05:55:32.805Z",
+ "cells": {
+  "16": [
+   "2307d70704455da4"
+  ],
+  "24": [
+   "3e1d2e06e7ba94e8",
+   "7d049ae08bb9397f",
+   "a2924542037dbfa3",
+   "bc045cb6726c2c13",
+   "dce183ec82b2a18d",
+   "e6459a34dc450d1b"
+  ],
+  "32": [
+   "04a33d344300d663",
+   "123e381ef791c173",
+   "521876eeb645cd4f",
+   "99d95cb2361b1600",
+   "af4604350a5aeca8",
+   "ef785fb49a720e09"
+  ],
+  "48": [
+   "092e48988a422601",
+   "757d9b5325c9bbbd",
+   "8b3a0f81a1a548c5",
+   "adfe551406105095",
+   "d585799c80ae7c7f",
+   "e72e3586f55fb80c"
+  ]
+ }
+}

@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f595a79d928edd5c4616eae19c8669af6f974dae7f5b036e6c640292bcac0042",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "small wooden chicken coop hut on short legs (terracotta tiled roof, plank walls, small door, ramp, nest box)",
+ "label": "beodeul_farm/object_coop",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "small wooden chicken coop hut with large tiled roof",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The terracotta tiled roof slope spans rows 4 to 23 (approx. 20 rows tall) showing the top surface foreshortened from above, above the front wooden plank wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3599
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "chicken coop hut with tiled roof",
+    "kind_matches": true,
+    "top_rows": 21,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The southern roof slope is prominently displayed from row 4 to row 24 (approx. 21 rows tall) with tiled texture in standard JRPG 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5111
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "chicken coop with terracotta tiled roof and stilted base",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The terracotta tiled roof slope forms the top surface of the structure, spanning approximately 20 pixel rows (rows 4-23) in standard JRPG 3/4 top-down projection above the front wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3652
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden chicken coop with terracotta tiled roof on stilts",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof slope is heavily foreshortened and clearly viewed from above (rows 4-23, ~20 rows tall) over the vertical wooden front wall and stilts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3305
+  }
+ ],
+ "decidedAt": "2026-10-14T05:55:32.807Z",
+ "cells": {
+  "16": [
+   "0715cba6a872c585",
+   "6145f99b13b10b5b",
+   "6b7fce9dd636dfc9",
+   "8ee0464a3ca4e652",
+   "b6a8c7115f44460c",
+   "c0b980c121ab6f1b",
+   "c2b0670ec15da266",
+   "c92e7afc37491366",
+   "e6a96b98d738b421"
+  ],
+  "24": [
+   "5d3f60cdca3d352f",
+   "7ec98cdc3ad5d894",
+   "855af4e354b72480",
+   "df33ab27f9a54893"
+  ],
+  "32": [
+   "05cedd889cf3bfb0",
+   "0b6e2f82521fbc69",
+   "0f26909b4232efc7",
+   "2c5961976cd1af0c",
+   "2d34b4e241516f91",
+   "386fdda6430986b7",
+   "39108dce76a707bd",
+   "498a866ace6951be",
+   "5172aa777edf92ed",
+   "5180a86a28d82eaa",
+   "5271f0a9e1e48b41",
+   "5d7e730f75babcab",
+   "685caccccebf9a77",
+   "77295692ab836d26",
+   "78db7238ccf8ef83",
+   "7b832495eb7eace6",
+   "80c7ed27a042b013",
+   "8f3b4699aadf3db6",
+   "b5d6b53b5ab2cb8b",
+   "cc3da8db42cfbfe5",
+   "d8cfe5c54e2bd045",
+   "e4f325ccc8208ee6",
+   "e6964da9085ba112",
+   "f680d58112d9f734"
+  ],
+  "48": [
+   "00d27c062e1dd6cb"
+  ]
+ }
+}

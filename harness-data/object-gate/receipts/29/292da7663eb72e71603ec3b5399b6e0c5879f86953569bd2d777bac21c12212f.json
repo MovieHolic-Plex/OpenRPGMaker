@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "292da7663eb72e71603ec3b5399b6e0c5879f86953569bd2d777bac21c12212f",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "farm crop plants: wheat young (plants only, the soil is a separate tile underneath)",
+ "label": "beodeul_farm/crop_wheat_young",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "young wheat crop sprouts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crop tufts are drawn as flat 2D vertical cutouts/spikes with no visible top surface or perspective depth (top_rows: 0), appearing in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5132
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "clumps of young wheat sprouts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The young wheat stalks are drawn in flat side-scroller/front elevation as vertical 1-2px columns with no top-down perspective or depth; top_rows is 0.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7341
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "crop shoots / wheat sprouts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The young wheat plants are drawn in pure front elevation as flat vertical blades with horizontal baselines at rows 5 and 13, lacking any visible top-down depth or top surface (top_rows: 0).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5426
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rows of young wheat sprouts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sprouts are drawn as flat vertical 2D blades in pure front elevation with zero top-down perspective or foreshortened horizontal depth (0 top rows), resembling a side-scroller graphic rather than 3/4 top-down view.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5373
+  }
+ ],
+ "decidedAt": "2026-10-14T05:55:32.804Z",
+ "cells": {
+  "16": [
+   "2fbb7803c0c26d54"
+  ],
+  "24": [
+   "0342a26ddf5227bc",
+   "3f87119e360164ad",
+   "6f2a2cd50727bf38",
+   "c8d23289c5574e97",
+   "d586938168e7e203",
+   "dc8d8318848e33b0"
+  ],
+  "32": [
+   "5f23117001481abc",
+   "79a7c97c3aaafbc1",
+   "bfa1d28465102fc5",
+   "d84006946bfa3d95",
+   "dbb995220b3c9937",
+   "f05b75ad5b3e7b47"
+  ],
+  "48": [
+   "022b1a97988cc567",
+   "53967263ed597a23",
+   "5b3d3c62f381006c",
+   "8645bd291b660080",
+   "87abd938acc1376c",
+   "bc07e118faec8db8"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8c11875dd2602c96abf71ec9c55e0befbfce51d8e62461e605a71982b9f2ba57",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece 'endW' (slim posts with cap tops, two rails)",
+ "label": "beodeul_farm/fence_endW",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence post with horizontal rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The post cap top surface is clearly visible across rows 0-3 (4 source pixels tall), and both horizontal rails show 2-pixel-tall top surfaces with distinct south-facing shadow faces below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5351
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden fence post with two horizontal rails",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the wooden post is visible across rows 0-2 (3 rows tall) with foreshortened shading, and the horizontal rails clearly distinguish visible lighter top surfaces from darker front/underside faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5645
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden fence post with two horizontal rails",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fence post features a 3-row top surface/cap (rows 0-2), and both horizontal rails show distinct 2-row top surfaces (rows 3-4 and 10-11) above their shaded front/underside faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7534
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden fence post with connecting rails",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The post has a clearly defined 3-4 pixel top surface cap (rows 0-3) seen from above, and the horizontal rails show distinct lighter top surfaces (rows 3-4 and 10-11) above their shaded front faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6010
+  }
+ ],
+ "decidedAt": "2026-10-14T06:21:16.328Z",
+ "cells": {
+  "16": [
+   "d52611fd1294a0ea"
+  ],
+  "24": [
+   "2bdbe2aa2d27eaed",
+   "379b54210fa71024",
+   "476ba61c632be946",
+   "946885fef66450e2",
+   "9bc2098c38cbfaac",
+   "b6487ea927b620fc"
+  ],
+  "32": [
+   "2a366af6bf14c5b5",
+   "6534e8634ed53119",
+   "677ff8221231f48c",
+   "763e876bd86d3485",
+   "7853304827441022",
+   "8ce6b17e0f91aa11"
+  ],
+  "48": [
+   "0208bfc6b30810b2",
+   "071cabbd4f620ced",
+   "30fdf965f0c29c4e",
+   "3c29eac56af5ee50",
+   "90d98f58381ba910",
+   "a4036581b4112e85"
+  ]
+ }
+}

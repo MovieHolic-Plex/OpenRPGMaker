@@ -1,0 +1,157 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1e98e5c6eaa8e66a5f2996467c2e5edccf295a4bebd47beedd4048f07a58272d",
+ "width": 96,
+ "height": 80,
+ "kind": "terrain",
+ "name": "packed dirt farm lane autotile (straight edges, wheel ruts, grass verge) on grass",
+ "label": "beodeul_farm/lane_sample",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dirt farm lane terrain path",
+    "kind_matches": true,
+    "top_rows": 74,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain autotile layout viewed from above in top-down perspective, with the ground surface fully visible and correctly shaded south edges.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7033
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dirt farm lane on grass ground",
+    "kind_matches": true,
+    "top_rows": 75,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain path tiles viewed from top-down 3/4 angle with southern edge transition shading. Fully consistent with JRPG ground autotile presentation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3624
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "packed dirt lane terrain",
+    "kind_matches": true,
+    "top_rows": 74,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain path autotile viewed top-down on the ground plane with slight drop shadow / edge transition to grass.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5833
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dirt farm lane terrain autotile",
+    "kind_matches": true,
+    "top_rows": 74,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain autotile viewed correctly from top-down 3/4 perspective with horizontal ground surface fully visible.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4802
+  }
+ ],
+ "decidedAt": "2026-10-14T05:55:32.804Z",
+ "cells": {
+  "16": [
+   "03c776888c373952",
+   "0bc9d55fa65df430",
+   "17db2e9a973e2f7d",
+   "27393009a7ea3204",
+   "61f50eeeef447a94",
+   "772584b075288657",
+   "91804b41818ecd6c",
+   "aef36a8cc34037f9",
+   "dbb6dc46e0bbdf7e",
+   "ef5fdb09b253a1be"
+  ],
+  "24": [
+   "06c8b1fb713960b5",
+   "19d0f9de3d9678d4",
+   "1d9cd9b146fdf70c",
+   "4322a0e7937fdd5f",
+   "4c7ab5ea5847146e",
+   "4e2f987d2510056d",
+   "5ce97c1fa8832862",
+   "5f2202a8c37ee075",
+   "633f9529e889f78f",
+   "66b15548f7a0b6fa",
+   "686c8fe5d1a430f4",
+   "7b8c35ac44f9a043",
+   "81a2f1cc86fab2b5",
+   "8216ca403c5e63d8",
+   "897e59af4b4f69cf",
+   "905fa0db02bf2096",
+   "b5be36db70f7e784",
+   "c22c7e0bac5619ca",
+   "cdaf0b811fa81ace",
+   "dbaa0d6261325ba1",
+   "dee4cf5e823c0b31",
+   "e38de4ac2ddee9f0",
+   "e6703bf974ea4b91",
+   "f06952b3669ddf12",
+   "f2e6f8cc0aa8290c",
+   "fa3b3c6987fb43ec",
+   "fca58f1b5f5a352a"
+  ],
+  "32": [
+   "0bb7bc56d32f4f71",
+   "1d69b15d4f07dede",
+   "324dbb2eace5adc6",
+   "552575f0385b2807",
+   "6790efe8c121cfb6",
+   "765b5cfcb7cb081a",
+   "7a0c7e1c5e3d1ee6",
+   "826599bee99d06e2",
+   "a6db14a124c3d8ae",
+   "aa7d29b96e60e8a2",
+   "b350775a5ba25d68",
+   "b9aa4bde2dd4eed0",
+   "d252273c71997209",
+   "fe88e568eee4ecd3",
+   "fea7824ec70804f7"
+  ],
+  "48": [
+   "1f516bf55b7d3870",
+   "4ec66291591cf087",
+   "637bca9af7c5ef54",
+   "640e9bfc3956d95b",
+   "766507af5dbd8f69",
+   "9b39a761b8bf145c",
+   "c52a343b8f1d486d",
+   "d15affd4fc3ec420"
+  ]
+ }
+}

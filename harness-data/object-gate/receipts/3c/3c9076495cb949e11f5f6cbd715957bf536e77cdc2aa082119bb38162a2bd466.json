@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3c9076495cb949e11f5f6cbd715957bf536e77cdc2aa082119bb38162a2bd466",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece 'cNE' (slim posts with cap tops, two rails)",
+ "label": "beodeul_farm/fence_cNE",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fence post and rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the central post is visible across rows 0-3 (4 source pixels tall), and the horizontal rails clearly display foreshortened top surfaces (rows 3-4 and 10-11).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14565
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden fence post with connecting rails",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the main vertical post shows a clear top surface/cap foreshortened across rows 0-3 (approx 3-4 rows), and the horizontal rails distinctly show their top surfaces (2 rows tall each, rows 3-4 and 10-11) above their south faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4569
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden fence post and rails",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The vertical fence post features a 3-row top cap surface (rows 0-2) foreshortened from above, and the horizontal rails show distinct 2-row top surfaces (rows 3-4 and 10-11) above their vertical south faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5062
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fence post and rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The central post has a clearly defined cap/top surface spanning rows 0-3 (4 rows tall), and the horizontal rails on the left show light-toned top surfaces (rows 3-4 and 10-11) foreshortened above their front faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4145
+  }
+ ],
+ "decidedAt": "2026-10-14T06:21:16.327Z",
+ "cells": {
+  "16": [
+   "0c096b7b0484580c"
+  ],
+  "24": [
+   "004480688f6dfcef",
+   "14c135ad9e972adc",
+   "18fb56493150266d",
+   "63870605a447d5ec",
+   "8ba247dbad1d2b2a",
+   "9616bd1a6ba06e01"
+  ],
+  "32": [
+   "0decb8fcfe91860d",
+   "2ed51947f9418b0a",
+   "2f598dbb41a2cab0",
+   "6b156f75bc3e30b3",
+   "77f5a4b06faa139a",
+   "7f197a3a23294f99"
+  ],
+  "48": [
+   "1d021009ac617f3b",
+   "7c794e478d324b58",
+   "ba5822c720f5ab35",
+   "c0a5a91d7b694489",
+   "c730889ac717e047",
+   "fcac90217dcc5d17"
+  ]
+ }
+}

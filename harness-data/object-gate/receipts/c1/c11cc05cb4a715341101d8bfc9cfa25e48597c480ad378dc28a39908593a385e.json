@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c11cc05cb4a715341101d8bfc9cfa25e48597c480ad378dc28a39908593a385e",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece 'vN' (slim posts with cap tops, two rails)",
+ "label": "beodeul_farm/fence_vN",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence post and rail segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence piece is drawn in flat front elevation. The left element abruptly ends at row 5 with 0 rows of visible top surface, and the post on the right shows a flat vertical face without any foreshortened top surface visible from the 45-degree overhead angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 52800
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden farm fence",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence rails extending from the post show no horizontal top surfaces (0 top rows); they are drawn flat with no depth from the 3/4 overhead perspective. While the post has a 4px cap at rows 0-3, the frame rails lack any visible top faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 46071
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fence post and rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The post has a clearly defined 4-row tall top surface (rows 0-3) showing the cap from an overhead 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9923
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fence post and rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The post cap shows a clear foreshortened top surface spanning rows 0-3 (4 source pixels tall) with appropriate 3/4 view lighting.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11963
+  }
+ ],
+ "decidedAt": "2026-10-14T06:21:16.328Z",
+ "cells": {
+  "16": [
+   "b78da6f59829e009"
+  ],
+  "24": [
+   "791cc631358222d6",
+   "993bfb844f6a8e46",
+   "a005689f760f534f",
+   "a20869f9290a5059",
+   "bb2c10dd74ba6908",
+   "ea7fff91a5516f84"
+  ],
+  "32": [
+   "1346205ed53bdac9",
+   "b4d9cb547e2cab40",
+   "d71662822a24e1fe",
+   "d776e343df81cb10",
+   "dc3bd4a1e9063dd0",
+   "fc13ee2d7d1a0f9d"
+  ],
+  "48": [
+   "414d17f11f3fc5bc",
+   "6fde0d22da1b2a81",
+   "80ed361175f676e3",
+   "8f23b7e7c7a7bfd9",
+   "a73a05c55d60131d",
+   "e6e975ff3888fd77"
+  ]
+ }
+}

@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b84d5e5c7a6628107c6a76843a62621ff7963eef2358aa6eb6ea1e36cf6385fa",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece 'post' (slim posts with cap tops, two rails)",
+ "label": "beodeul_farm/fence_post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The post is rendered as a flat vertical rectangle (rows 2-15) with only a 1-pixel dark line at row 2 where the top cap should be seen from above. There is no visible horizontal top surface showing the post's cross-section or cap.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 20305
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden fence post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The post is rendered as a vertical rectangle with column shading and only a 1px dark edge line at row 2 where the top cap should be, lacking any visible foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9431
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden fence post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The post is drawn as a flat vertical rectangle (rows 2 to 14) with only a 1px dark border at row 2 where the top should be; no top surface of the post or cap is shown foreshortened.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9360
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical wooden fence post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The post is rendered as a flat vertical rectangle spanning rows 2 to 14 without a visible top surface (row 2 is merely a 1px outline/cap line).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9145
+  }
+ ],
+ "decidedAt": "2026-10-14T05:55:32.806Z",
+ "cells": {
+  "16": [
+   "ae8130910e5b852d"
+  ],
+  "24": [
+   "1913b7546b7ad17a",
+   "41d15a278070966c",
+   "963615cddbea303a",
+   "9da5c801a36142a0",
+   "a3b3ab8df5a29838",
+   "ac6ce07badf141c1"
+  ],
+  "32": [
+   "58d9dffac26bfd9b",
+   "5bd0454aa4d265bd",
+   "70021b75eb0edf51",
+   "9b7e9c21afbf7b0e",
+   "b504d84150c15504",
+   "d0e0bbea7e9d3ea7"
+  ],
+  "48": [
+   "4131568a317dc193",
+   "55c078abe9bea517",
+   "820207f73a035560",
+   "9578be701e99e2eb",
+   "bb20c5ea944c293e",
+   "bf192e09b95a70a7"
+  ]
+ }
+}

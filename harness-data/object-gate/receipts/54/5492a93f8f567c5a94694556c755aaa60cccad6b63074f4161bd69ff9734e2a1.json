@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5492a93f8f567c5a94694556c755aaa60cccad6b63074f4161bd69ff9734e2a1",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece 'v' (slim posts with cap tops, two rails)",
+ "label": "beodeul_farm/fence_v",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical fence section (post and rails)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The vertical fence piece is drawn flat without visible top surfaces on its rails or beams; the 1px light rows at row 0, 6, and 12 are edge highlights, not foreshortened horizontal surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 28424
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fence post and vertical rail section",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The post cap shows a clear foreshortened top surface spanning rows 0-3 (4 source pixels tall) with top-down lighting and shading, correctly displaying 3/4 perspective rather than a flat front view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 83592
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vertical fence post and rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The vertical fence post on the right features a clearly rendered top cap surface occupying rows 0-3 (4 rows tall) viewed from above in 3/4 perspective, transitioning to the front shaft below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6032
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical fence segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": false,
+    "evidence": "The fence shows an isometric receding side face in columns 8-10 with a diagonally sloped top cap (rows 0-3) and shaded side surface (rows 4-14) alongside the front face, violating the south-facing 3/4 camera view with no receding side faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "옆면(아이소)",
+    "윗면 0행 < 3"
+   ],
+   "ms": 28150
+  }
+ ],
+ "decidedAt": "2026-10-14T06:21:16.327Z",
+ "cells": {
+  "16": [
+   "371bf3b97507b750"
+  ],
+  "24": [
+   "56e5e60f2f171720",
+   "57cdfd3c923e3106",
+   "971c6cb114b11a6f",
+   "9b4534cbc937901e",
+   "a4736b68b5ee0f33",
+   "e18ba20c8de2a4c2"
+  ],
+  "32": [
+   "08c2d67c844ea36e",
+   "38b35aa28fa96a59",
+   "421e68482ac42926",
+   "56c33567550d54ae",
+   "71b885dcc5bb9988",
+   "944040b1b898cfe1"
+  ],
+  "48": [
+   "8c4b82aa1d42fdc7",
+   "aac781ec180d23cb",
+   "c107e284c9bc11cc",
+   "c9d33e69299d4017",
+   "d707e3821f5e39a0",
+   "ec3629053233e9ba"
+  ]
+ }
+}

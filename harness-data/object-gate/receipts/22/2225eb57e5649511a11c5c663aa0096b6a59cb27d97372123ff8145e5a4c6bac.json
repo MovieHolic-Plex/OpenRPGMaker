@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2225eb57e5649511a11c5c663aa0096b6a59cb27d97372123ff8145e5a4c6bac",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece 'endE' (slim posts with cap tops, two rails)",
+ "label": "beodeul_farm/fence_endE",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence post with horizontal rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The vertical fence post features a clearly demarcated top face/cap on rows 0-3 (4 rows tall) in a lighter wood tone above the south face on rows 4-15, and the horizontal rails also show top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4978
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden fence post with two horizontal rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fence post features a 4-row tall top surface (rows 0-3), and the horizontal rails clearly display 3-row top faces (rows 2-4 and 10-12) above their south-facing shaded fronts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3868
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden post with horizontal rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fence post top shows a 4-row (rows 0-3) top surface cap, and the horizontal rails each show distinct 2-row top surfaces (rows 3-4 and 10-11) foreshortened in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4660
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden fence post with two horizontal rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The post has a 4-pixel-tall top face/cap (rows 0-3) and both horizontal rails show distinct 2-pixel-tall top surfaces (rows 3-4 and 10-11) consistent with 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4828
+  }
+ ],
+ "decidedAt": "2026-10-14T06:19:08.574Z",
+ "cells": {
+  "16": [
+   "a5124488ca2320d2"
+  ],
+  "24": [
+   "0ff02acf0a87bd8e",
+   "3622ec9ff2b0261c",
+   "41acfb5328b9c0af",
+   "6936b365dbfa9e73",
+   "b9876e57177aedfa",
+   "f75cb88c16ecf525"
+  ],
+  "32": [
+   "3e9861e0a0741ccd",
+   "7ea735a4eb071cfa",
+   "8e73399a57f2a4b6",
+   "9e98a57c6adedc66",
+   "a5a94d8f87ad1c53",
+   "d8637593b2774cd8"
+  ],
+  "48": [
+   "57bbd89cbd8e4de6",
+   "8539a9fd1e5e3e02",
+   "8ecbfb26bd55491e",
+   "c7389e8d56f9a53d",
+   "cd38bb880581ce0e",
+   "e75a26587d080c0b"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6d99aa3da4da1ddd473d559d28c346d6a7cd6467fd3947ef1b36b12430f19f14",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "farm crop plants: cabbage young (plants only, the soil is a separate tile underneath)",
+ "label": "beodeul_farm/crop_cabbage_young",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "four young cabbage sprouts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each sprout is drawn in a pure front elevation silhouette with vertical leaf tips and no top surface or interior foliage visible looking down into the plant.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7025
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "young cabbage plant cluster",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each of the four young plants is drawn in pure 2D front/side elevation with upright silhouette leaves and a dark base/shadow line, showing no foreshortened top-down leaf spread or upper surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4982
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "young cabbage sprout",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The young cabbage plants are drawn in pure front elevation as vertical leaf silhouettes with a horizontal base shadow; there is no top-down view showing the inner rosette or foreshortened spreading leaves.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3690
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cluster of four young cabbage sprouts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each sprout is drawn as a flat side-view/front-elevation silhouette of upright leaves with no visible top surface, interior rosette, or downward perspective into the plant.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4582
+  }
+ ],
+ "decidedAt": "2026-10-14T05:55:32.804Z",
+ "cells": {
+  "16": [
+   "caeb0c54ac43cc8f"
+  ],
+  "24": [
+   "04243e6714f0e814",
+   "27ac7568314bf47b",
+   "5e654718f51a3565",
+   "a42e03faa3f4e261",
+   "a8825106a8cf8aae",
+   "fd17498b994642b3"
+  ],
+  "32": [
+   "07c74c31503ad744",
+   "4170790efe9b766c",
+   "5b69eb1cd70c7bf3",
+   "726811152bd708ba",
+   "be855dbb44b6b9ca",
+   "f42dda770b2a45b0"
+  ],
+  "48": [
+   "273384dd20e2e4da",
+   "2c41bfec364adf82",
+   "2fb3c65c0e5eb3a1",
+   "38e85a72f2ddbec3",
+   "7d4059bec21f3992",
+   "e3c30883d64b0448"
+  ]
+ }
+}

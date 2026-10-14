@@ -4,7 +4,7 @@
   python3 scripts/content/beodeul-farm/bake_farm.py --gate-export DIR   # 3/4 관문에 낼 투명 PNG + items.jsonl 만 쓴다
   python3 scripts/content/beodeul-farm/bake_farm.py                     # 관문 영수증을 확인하고 굽는다
 
-입력  farm_art.py (행 문자열 손 도트, 2판 2026-10-14)
+입력  farm_art.py (행 문자열 손 도트, 3판 화풍 정렬 2026-10-14)
 출력  public/assets/beodeul-city/beodeul-city-chipset.png  — 앞 216행(27,648칸)은 그대로, 뒤 6행(768칸)
       src/assets/beodeulCityTileset.json · beodeulCitySheet.json — 칸 표 + 오토타일 farmland / farmland_watered + 키트 bd-farm-* + 칸 묶음
 덧붙이기 전용: 앞 칸 번호는 바뀌지 않는다. 1판(2026-10-13)의 칸 번호는 그대로 두고, 새 조각은 꼬리 768칸의 빈 자리에만 넣는다.
@@ -48,6 +48,10 @@ FENCE_ROW = 5
 OBJECT_AT = {"barn": (0, 16), "coop": (0, 24)}
 # 여러 칸 기물의 통행: 위쪽 몇 줄은 ★(사람 뒤로 지나감, 그림이 사람 위), 나머지는 막힘. 버들항 헛간 키트와 같은 규칙.
 OBJECT_STAR_ROWS = {"barn": 3, "coop": 1}
+# 3판 새 칸: 흙길 오토타일 16칸(마스크 m → 열 32+m, 행 0) · 풀 무늬 6칸(행 1, 열 32~)
+LANE_ROW, LANE_COL = 0, 32
+GRASS_ROW, GRASS_COL = 1, 32
+GRASS_ORDER = ["tufts", "tufts2", "clover", "flowers_w", "flowers_y", "pebbles"]
 OBJECT_DOOR = {"barn": dict(id="door", kind="entrance", dx=2, dy=5, w=2, h=1, note="큰 두 짝 문(문 칸 자체는 막힘, 그 아래 칸이 문 앞 길)"),
                "coop": dict(id="door", kind="entrance", dx=0, dy=2, w=1, h=1, note="닭 드나드는 문·사다리(막힘, 아래 칸이 앞마당)")}
 
@@ -55,7 +59,7 @@ OBJECT_DOOR = {"barn": dict(id="door", kind="entrance", dx=2, dy=5, w=2, h=1, no
 LEGACY_KEYS = ({f"soil:{n}" for row in SOIL_ORDER for n in row} | {f"wet:{n}" for row in SOIL_ORDER for n in row}
                | {f"crop:{n}" for n in CROP_ORDER[:9]} | {f"fence:{n}" for n in FENCE_ORDER[:7]})
 
-GATE_KIND = {"crop": "organic", "fence": "frame", "object": "structure", "soil": "terrain", "wet": "terrain"}
+GATE_KIND = {"crop": "organic", "fence": "frame", "object": "structure", "soil": "terrain", "wet": "terrain", "lane": "terrain", "grass": "terrain"}
 
 
 def tid(row, col): return BASE + row * COLS + col
@@ -81,6 +85,10 @@ def build_cells():
         cells[tid(CROP_ROW, c)] = (A.img_of(A.CROPS[n]), f"crop:{n}")
     for c, n in enumerate(FENCE_ORDER):
         cells[tid(FENCE_ROW, c)] = (A.img_of(A.FENCE[n]), f"fence:{n}")
+    for m in range(16):
+        cells[tid(LANE_ROW, LANE_COL + m)] = (A.img_of(A.LANE_TILES[m]), f"lane:{m}")
+    for i, n in enumerate(GRASS_ORDER):
+        cells[tid(GRASS_ROW, GRASS_COL + i)] = (A.img_of(A.GRASS_VARS[n]), f"grass:{n}")
     for name in OBJECT_AT:
         r0, c0 = OBJECT_AT[name]
         for t, im in object_tiles(name).items():
@@ -105,6 +113,47 @@ def soil_sample(roles, w=5, h=4):
     return im
 
 
+def lane_sample():
+    """흙길 표본: 가로 줄·세로 줄·T자·끝·굽이가 다 나오는 6×5 판(바탕 풀)."""
+    cells = {(x, 2) for x in range(6)} | {(2, y) for y in range(5)} | {(4, 3), (4, 4), (5, 4)}
+    grass = A.img_of(A.GRASS)
+    im = Image.new("RGBA", (6 * T, 5 * T), (0, 0, 0, 0))
+    for y in range(5):
+        for x in range(6):
+            if (x, y) in cells:
+                m = ((x, y - 1) in cells) * 1 + ((x + 1, y) in cells) * 2 + ((x, y + 1) in cells) * 4 + ((x - 1, y) in cells) * 8
+                im.paste(A.img_of(A.LANE_TILES[m]), (x * T, y * T))
+            else: im.paste(grass, (x * T, y * T))
+    return im
+
+
+def grass_sample():
+    """풀 무늬 표본: 무늬 칸 6개를 바탕 잔디 사이에 섞은 4×3 판."""
+    grass = A.img_of(A.GRASS)
+    lay = [["tufts", None, "clover", None], [None, "flowers_w", None, "tufts2"], ["pebbles", None, "flowers_y", None]]
+    im = Image.new("RGBA", (4 * T, 3 * T), (0, 0, 0, 0))
+    for y, r in enumerate(lay):
+        for x, n in enumerate(r): im.paste(A.img_of(A.GRASS_VARS[n]) if n else grass, (x * T, y * T))
+    return im
+
+
+def fence_sample():
+    """울타리 조립 표본(7×7): 문 달린 둘레 6×5 + 홀로 선 가로 줄(서끝·가로·동끝) + 세로 줄(북끝·세로·남끝) + 홀로 선 말뚝.
+    울타리 조각은 이웃과 이어져야 뜻이 서는 부품이라(세로 띠는 칸 위아래로 이어진다) 조각 하나보다 조립 그림으로 판정받는다
+    (AGENTS 「부품 예외」: 부품을 화소 그대로 품은 조립 그림의 영수증, 같은 판정자·기준)."""
+    lay = [["cNW", "h", "h", "h", "cNE", None, "vN"],
+           ["v", None, None, None, "vE", None, "v"],
+           ["v", None, None, None, "vE", None, "vS"],
+           ["cSW", "h", "gate", "h", "cSE", None, None],
+           [None, None, None, None, None, None, "post"],
+           ["endW", "h", "endE", None, None, None, None]]
+    im = Image.new("RGBA", (7 * T, len(lay) * T), (0, 0, 0, 0))
+    for y, r in enumerate(lay):
+        for x, n in enumerate(r):
+            if n: im.alpha_composite(A.img_of(A.FENCE[n]), (x * T, y * T))
+    return im
+
+
 def gate_items():
     """관문에 낼 그림 목록: (이름, 그림, 종류, 판정자에게 줄 이름, 덮는 칸 key 들)."""
     roles = A.role_rows()
@@ -115,15 +164,21 @@ def gate_items():
         ("soil_plot_wet", soil_sample(wet_roles), "terrain", "watered (darker) tilled farm soil field autotile",
          [f"wet:{n}" for row in SOIL_ORDER for n in row]),
     ]
+    items.append(("lane_sample", lane_sample(), "terrain", "packed dirt farm lane autotile (straight edges, wheel ruts, grass verge) on grass",
+                  [f"lane:{m}" for m in range(16)]))
+    items.append(("grass_variants", grass_sample(), "terrain", "grass ground tiles with small tufts, clover, wild flowers and pebbles",
+                  [f"grass:{n}" for n in GRASS_ORDER]))
     for n in CROP_ORDER:
         items.append((f"crop_{n}", A.img_of(A.CROPS[n]), "organic",
                       f"farm crop plants: {n.replace('_', ' ')} (plants only, the soil is a separate tile underneath)", [f"crop:{n}"]))
     for n in FENCE_ORDER:
-        items.append((f"fence_{n}", A.img_of(A.FENCE[n]), "frame", f"wooden farm fence piece '{n}' (thick posts with cap tops, rails)", [f"fence:{n}"]))
+        items.append((f"fence_{n}", A.img_of(A.FENCE[n]), "frame", f"wooden farm fence piece '{n}' (slim posts with cap tops, two rails)", [f"fence:{n}"]))
+    items.append(("fence_assembled", fence_sample(), "frame", "wooden farm fence assembled: a fenced paddock ring with a gate, a short free-standing rail run, a north-south run and a lone post",
+                  [f"fence:{n}" for n in FENCE_ORDER]))
     for name in OBJECT_AT:
         rows, w, h = A.OBJECTS[name]
-        label = {"barn": "farm barn building (red plank walls, tiled gable roof, hayloft dormer, big double door)",
-                 "coop": "small wooden chicken coop hut on short legs (plank roof, small door, ramp, nest box)"}[name]
+        label = {"barn": "farm barn building (terracotta tiled gable roof with hayloft dormer, half-timbered plaster walls, big plank double door, stone footing)",
+                 "coop": "small wooden chicken coop hut on short legs (terracotta tiled roof, plank walls, small door, ramp, nest box)"}[name]
         items.append((f"object_{name}", A.img_of(rows), "structure", label,
                       [f"object:{name}:{x},{y}" for y in range(h) for x in range(w)]))
     return items
@@ -200,12 +255,16 @@ def main():
         return
 
     # ---- 관문 ----
-    blocked, provisional = {}, []
+    blocked, provisional, cleared = {}, [], set()
     for name, im, kind, _label, keys in gate_items():
         st, why = gate_state(im, kind)
         if st is None:
-            for k in keys: blocked[k] = f"{name}: {why}"
-        elif st == "provisional": provisional.append(name)
+            for k in keys: blocked.setdefault(k, f"{name}: {why}")
+        else:
+            cleared.update(keys)
+            if st == "provisional": provisional.append(name)
+    # 한 칸은 그것을 화소 그대로 품은 그림(낱개 또는 조립 표본) 중 하나라도 통과하면 덮인다.
+    blocked = {k: v for k, v in blocked.items() if k not in cleared}
     legacy_blocked = sorted(k for k in blocked if k in LEGACY_KEYS)
     if legacy_blocked:
         print("3/4 관문 미통과 — 1판 칸을 비울 수 없어 굽지 않는다:", file=sys.stderr)
@@ -218,6 +277,7 @@ def main():
     dry_group, dry_ids = soil_group(0, "farmland", "버들항 경작지(마른 흙)")
     wet_group, wet_ids = soil_group(WET_COL, "farmland_watered", "버들항 경작지(물 준 흙)")
     present = {key for _, key in cells.values()}
+    has = lambda key: key in present
 
     # ---- 시트 ----
     sheet = Image.open(SHEET_PATH).convert("RGBA")
@@ -246,6 +306,7 @@ def main():
                 "vN": "세로 울타리 북쪽 끝 말뚝(남으로 이어짐)", "vS": "세로 울타리 남쪽 끝 말뚝(북으로 이어짐)", "post": "홀로 선 말뚝",
                 "vE": "세로 울타리(동쪽 둘레: 가로대가 말뚝 동쪽 옆)"}
     obj_ko = {"barn": "헛간", "coop": "닭장"}
+    grass_ko = {"tufts": "풀 포기", "tufts2": "풀 포기 둘", "clover": "토끼풀", "flowers_w": "흰 들꽃", "flowers_y": "노란 들꽃", "pebbles": "잔돌"}
     for i in range(ROWS_ADDED * COLS):
         t = BASE + i
         if t not in cells:
@@ -255,6 +316,13 @@ def main():
             wetv = typ == "wet"
             TS["passability"].append(dict(yes)); TS["priority"].append("lower"); TS["terrain"].append(0)
             TS["tileMeta"].append(meta(("물 준 " if wetv else "") + "경작지 " + soil_desc[n], ("물 준(한 단 어두운) " if wetv else "") + f"버들항 경작지 오토타일 {soil_desc[n]}. 걸음. 농사 런타임이 밭 흙을 이 그룹으로 그린다.", ["경작지", "farmland"], "passable"))
+        elif typ == "lane":
+            m = int(n); dirs = "".join(d for b, d in ((1, "북"), (2, "동"), (4, "남"), (8, "서")) if m & b) or "외딴 한 칸"
+            TS["passability"].append(dict(yes)); TS["priority"].append("lower"); TS["terrain"].append(0)
+            TS["tileMeta"].append(meta(f"버들항 농장 흙길 · {dirs}" + ("으로 이어짐" if m else ""), f"반듯한 가장자리의 다져진 흙길 오토타일(마스크 {m}). 걸음. 그룹 `beodeul_farm_lane`.", ["흙길", "길", "farm_lane"], "passable"))
+        elif typ == "grass":
+            TS["passability"].append(dict(yes)); TS["priority"].append("lower"); TS["terrain"].append(0)
+            TS["tileMeta"].append(meta(f"버들항 농장 풀밭 · {grass_ko[n]}", f"바탕 잔디(737)와 이음새 없이 섞는 풀 무늬 칸({grass_ko[n]}). 걸음. 넓은 풀밭에 드문드문(10칸에 1~2칸) 섞는다.", ["풀밭", "풀 무늬", "grass"], "passable"))
         elif typ == "crop":
             TS["passability"].append(dict(yes)); TS["priority"].append("lower"); TS["terrain"].append(0)
             if n == "seeded":
@@ -274,11 +342,17 @@ def main():
     TS["count"] = COUNT
 
     # ---- 오토타일·칸 묶음 ----
-    TS["autotileGroups"] = [g for g in TS["autotileGroups"] if g["id"] not in ("farmland", "farmland_watered")] + [dry_group, wet_group]
+    groups = [dry_group, wet_group]
+    if all(has(f"lane:{m}") for m in range(16)):
+        lane_ids = [tid(LANE_ROW, LANE_COL + m) for m in range(16)]
+        others = [t for g in TS["autotileGroups"] if g["id"] in ("beodeul_road_autotile", "beodeul_sand_autotile") for t in g["memberTileIds"]]
+        groups.append(dict(id="beodeul_farm_lane", name="버들항 농장 흙길", neighborhood=4, memberTileIds=lane_ids,
+                           connectTileIds=sorted(set(lane_ids + others)), edgeConnects=True, outsideConnects=True,
+                           variantMap={str(m): lane_ids[m] for m in range(16)}))
+    TS["autotileGroups"] = [g for g in TS["autotileGroups"] if g["id"] not in ("farmland", "farmland_watered", "beodeul_farm_lane")] + groups
     TS["tileGroups"] = [g for g in TS["tileGroups"] if not g["id"].startswith("beodeul:farm")]
     ct = lambda n: tid(CROP_ROW, CROP_ORDER.index(n))
     ft = lambda n: tid(FENCE_ROW, FENCE_ORDER.index(n))
-    has = lambda key: key in present
     fence_ids = [ft(n) for n in FENCE_ORDER if has(f"fence:{n}")]
     TS["tileGroups"] += [
         dict(id="beodeul:farmland", name="버들항 경작지", role="path", source="bundled-default", tileIds=sorted(dry_group["memberTileIds"]), defaultLayer="lower", confidence="high",
@@ -292,14 +366,25 @@ def main():
              description="밀·배추·토마토의 싹/자라는 중/익음과 씨 뿌린 이랑(각 윗층 한 칸, 투명 바탕). 경작지 칸 위에 얹는다. 밀 익음은 칸을 거의 다 덮는 이삭 띠.",
              placementRules="경작지 칸 위 윗층에 한 칸씩. 한 줄(가로 이랑)은 한 작물·한 단계로 맞추고, 밭 하나에 단계 둘~셋을 줄 단위로 섞으면 자라는 밭이 된다. 경작지 밖(풀·길)에는 얹지 않는다."),
         dict(id="beodeul:farm_fence", name="버들항 밭 나무 울타리", role="object", source="bundled-default", tileIds=fence_ids, defaultLayer="upper", confidence="high",
-             description="굵은 말뚝(머리 윗면 4행)과 가로대: 가로·세로 둘(서쪽 둘레 v·동쪽 둘레 vE — 세로 가로대는 말뚝 바깥 옆면에 붙는다)·모서리 넷·문·끝 말뚝 넷·홀로 선 말뚝. 윗층, 막힘. 키트 `bd-farm-fence-*`·`bd-farm-fenced-*` 가 조립 예다.",
+             description="가는 말뚝(머리 윗면 2행)과 가로대 둘: 가로·세로 둘(서쪽 둘레 v·동쪽 둘레 vE — 세로 가로대는 말뚝 바깥 옆면에 붙는다)·모서리 넷·문·끝 말뚝 넷·홀로 선 말뚝. 윗층, 막힘. 키트 `bd-farm-fence-*`·`bd-farm-fenced-*` 가 조립 예다.",
              placementRules="밭·목장 둘레 한 칸 밖에 빈틈 없이 두른다: 위 줄 = 왼쪽 위 모서리 + 가로… + 오른쪽 위 모서리, 왼쪽 옆 = 세로 v, 오른쪽 옆 = 세로 vE, 아래 줄 = 왼쪽 아래 모서리 + 가로… + 오른쪽 아래 모서리. 문 한 칸은 길 쪽 가로 줄 안에 둔다. 줄이 끝나면 끝 말뚝으로 닫는다(가로대가 허공에서 끊기지 않게)."),
     ]
+    if all(has(f"lane:{m}") for m in range(16)):
+        TS["tileGroups"].append(dict(id="beodeul:farm_lane", name="버들항 농장 흙길", role="path", source="bundled-default",
+                                     tileIds=[tid(LANE_ROW, LANE_COL + m) for m in range(16)], defaultLayer="lower", confidence="high",
+                                     description="반듯한 가장자리의 다져진 흙길 오토타일(그룹 `beodeul_farm_lane`, 이웃 4방향). 버들항 모랫길과 같은 흙색, 포석길·모랫길과 이어진다.",
+                                     placementRules="농가 마당·밭 사이 길은 이 흙길로 1~2칸 폭 곧게 낸다. 마을 큰길(포석)에서 갈라져 나오게 이어 칠하면 가장자리가 저절로 맞는다. 밭 둑 사이 1칸 길에도 쓴다."))
+    grass_ids = [tid(GRASS_ROW, GRASS_COL + i) for i, n in enumerate(GRASS_ORDER) if has(f"grass:{n}")]
+    if grass_ids:
+        TS["tileGroups"].append(dict(id="beodeul:farm_grass", name="버들항 농장 풀 무늬", role="floor", source="bundled-default",
+                                     tileIds=grass_ids, defaultLayer="lower", confidence="high",
+                                     description="바탕 잔디 737 과 이음새 없이 섞는 풀 무늬 칸(풀 포기·토끼풀·흰/노란 들꽃·잔돌).",
+                                     placementRules="넓은 풀밭이 납작해 보이지 않게 10칸에 1~2칸꼴로 흩어 놓는다. 같은 칸을 줄지어 놓지 않는다. 길·밭 둘레 한 칸 안에 몰지 않는다."))
     objs = [n for n in OBJECT_AT if all(has(f"object:{n}:{x},{y}") for y in range(A.OBJECTS[n][2]) for x in range(A.OBJECTS[n][1]))]
     if objs:
         TS["tileGroups"].append(dict(id="beodeul:farm_buildings", name="버들항 농가 건물", role="object", source="bundled-default",
                                      tileIds=sorted(t for t, (_, k) in cells.items() if k.startswith("object:")), defaultLayer="upper", confidence="high",
-                                     description="헛간 6×6(붉은 널벽·기와 맞배지붕·건초 다락·큰 두 짝 문)과 닭장 3×3. 키트 `bd-farm-barn`·`bd-farm-coop` 로 통째로 찍는다.",
+                                     description="헛간 6×6(버들항 민가와 같은 테라코타 기와 맞배지붕·건초 다락 박공·회벽과 목재 보·큰 두 짝 널문·돌 기초)과 닭장 3×3(기와 지붕·널벽). 키트 `bd-farm-barn`·`bd-farm-coop` 로 통째로 찍는다.",
                                      placementRules="키트로만 찍는다(칸을 낱개로 섞지 않는다). 농가 마당(흙길·풀) 위, 문 앞에 1칸 이상 길을 둔다. 위쪽 줄은 ★(사람 뒤), 아래쪽 줄은 막힘."))
 
     # ---- 키트 ----
@@ -376,8 +461,8 @@ def main():
                          width=w, height=h, tileSize=16, learnedFrom="db-authored",
                          rows=[row([-1] * w, [tid(r0 + y, c0 + x) for x in range(w)]) for y in range(h)],
                          parts=[OBJECT_DOOR[name]],
-                         ai=dict(description={"barn": "붉은 널벽·기와 맞배지붕·건초 다락 박공·흰 테 두 짝 문의 큰 헛간.",
-                                              "coop": "말뚝 다리 위 작은 판잣집 닭장(널지붕, 작은 문, 경사 사다리, 알 상자)."}[name],
+                         ai=dict(description={"barn": "버들항 민가 문법의 큰 헛간: 테라코타 기와 맞배지붕·건초 다락 박공·회벽과 목재 보·큰 두 짝 널문·창과 화분·돌 기초.",
+                                              "coop": "말뚝 다리 위 작은 닭장(테라코타 기와 지붕, 가로 널벽, 작은 문, 경사 사다리, 알 상자)."}[name],
                                  placementRules=f"땅(풀·흙길) 위에 찍는다. 위 {star}줄은 ★(사람 위에 그려짐), 아래 줄은 막힘. 문 앞 칸에 길을 잇고 막지 않는다. 농가 마당에 밭·울타리·건초·물통과 함께 둔다.",
                                  tags=["버들항", "농장", "건물" if name == "barn" else "물체"], role="prop", repeatability="fixed", layerHome="upper", themes=themes)))
 

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3b909134c00f0f602e568f90a7b53761c56146d8ada6d7c719568d6cec3d8b82",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece 'gate' (slim posts with cap tops, two rails)",
+ "label": "beodeul_farm/probe_gate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence gate frame (post and horizontal rails)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "While the post cap shows a 4px top area, the main horizontal rails are drawn in pure front elevation with only a 1px edge highlight (rows 5 and 13) instead of foreshortened top surfaces. For a frame object, horizontal beam tops must show visible top faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11240
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden post with gate rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fence post cap has a clearly defined 4-row top surface (rows 2-5) seen from above in 3/4 perspective, and the horizontal rails also have top-lit horizontal surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6010
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fence post and rails",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fence post top displays a clear foreshortened top cap surface of 3 rows (rows 2-4) in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5754
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fence post and rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fence post features a clearly rendered square top face measuring 4 pixel rows (rows 2-5) viewed from above, with the vertical front face extending down to row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8170
+  }
+ ],
+ "decidedAt": "2026-10-14T06:07:41.838Z",
+ "cells": {
+  "16": [
+   "959e390b5d6479ea"
+  ],
+  "24": [
+   "07703fc996e6ed16",
+   "1d4c95f1a0b074e9",
+   "4c9de502748061d9",
+   "60d8e96fb3993cfc",
+   "72b215b923412056",
+   "e18a6ed1705d5d8e"
+  ],
+  "32": [
+   "3f46e1aa8dafd8a6",
+   "5998d01ae02339a0",
+   "affe2d4df96eea39",
+   "cee8953522baa784",
+   "d00321bf5f958deb",
+   "f8807dda5527c16f"
+  ],
+  "48": [
+   "36698b20fc63c582",
+   "3e6bb75d9b708bfb",
+   "70a3d10b1598a00a",
+   "93bbd4c942c84ba3",
+   "97e479a68e59a1c0",
+   "f76cb3a013b55d7c"
+  ]
+ }
+}

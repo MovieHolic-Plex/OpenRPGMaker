@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "96c158bb4c8dc6968525e836e1572ceb4246bfc30a32bbe1e68a72fe07abf486",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece 'vS' (slim posts with cap tops, two rails)",
+ "label": "beodeul_farm/fence_vS",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fence post / vertical fence section",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence post top is rendered as a flat 1-2px highlighted cap line (rows 4-5) rather than a foreshortened top plane visible in 3/4 view, making it a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 8331
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden fence post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence post top at rows 3-4 is merely a 1px outline with a 1px highlight cap, lacking a foreshortened top surface (>=2-3px) viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6282
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden fence post",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The post has only a 1px flat edge highlight at row 4 beneath a 1px top outline, lacking an adequate foreshortened top surface (requires >2px), resulting in a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 6430
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical fence post and rail",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence post only features a 1-2px cap highlight at rows 4-5, which does not constitute a true foreshortened top surface according to the rules, and the rest of the structure is drawn in pure front elevation with flat bottom cuts.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6058
+  }
+ ],
+ "decidedAt": "2026-10-14T05:55:32.806Z",
+ "cells": {
+  "16": [
+   "d68c1002e0308d65"
+  ],
+  "24": [
+   "36bf29e804316f5f",
+   "4fa8fe8bb02c9d79",
+   "898827063d11f918",
+   "b05a62738a4f3040",
+   "b59bcdd2a6dea6e7",
+   "f5ad1e6577992e12"
+  ],
+  "32": [
+   "0d0c925f765b27be",
+   "0f35f822a61c877a",
+   "528500dfcaa67028",
+   "854903e2aeb7a9d6",
+   "b57815bc2119efec",
+   "fa9b0adb51feb2c3"
+  ],
+  "48": [
+   "11f9ab95d85e4d10",
+   "27044605aaf0dbfe",
+   "4a0a7e7b2571f99f",
+   "8793a553b8caea3c",
+   "b6144dd60bfac513",
+   "fc48d69161be7683"
+  ]
+ }
+}

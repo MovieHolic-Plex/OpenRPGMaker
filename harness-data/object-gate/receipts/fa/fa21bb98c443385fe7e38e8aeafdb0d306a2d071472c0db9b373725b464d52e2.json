@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fa21bb98c443385fe7e38e8aeafdb0d306a2d071472c0db9b373725b464d52e2",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece 'vN' (slim posts with cap tops, two rails)",
+ "label": "beodeul_farm/fence_vN",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence post and rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence piece consists of purely vertical rectangular bands drawn in front/side elevation without foreshortened top surfaces. The rails have 0 top rows, and the post cap lacks a visible top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 25644
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fence post and rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "While the post cap on the right shows 4 rows, the fence rails on the left have 0 rows of visible top surface, ending abruptly with a flat horizontal outline at row 4 without any foreshortened top face shown for the horizontal elements.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 23205
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vertical fence post and rail segment",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fence post at rows 0-3 features a clearly defined 4-row tall top surface/cap seen from above before transitioning to the front vertical face from row 4 downward.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5182
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical fence post and rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The post has a clearly defined 4-row top cap surface visible from above (rows 0-3) before transitioning to the front south face at row 4.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6159
+  }
+ ],
+ "decidedAt": "2026-10-14T06:19:08.575Z",
+ "cells": {
+  "16": [
+   "6660d8be64171461"
+  ],
+  "24": [
+   "0585b50ed45cb71e",
+   "435e2011945563ee",
+   "73ce14980862e231",
+   "d88c9b89a7dae91b",
+   "de4b99452bd2d199",
+   "f36e5a13b7847838"
+  ],
+  "32": [
+   "1a49600b964a46f5",
+   "39ae07fe996e7d2e",
+   "936ae5430596ede6",
+   "a659a073bab80fcf",
+   "ee4a4e6318f79b83",
+   "fd6c56938e40f35c"
+  ],
+  "48": [
+   "31f24b6ea046230e",
+   "395c4484d05e5490",
+   "507468e612f52ae3",
+   "78a177464cb3c30e",
+   "9dd4a11fb3244369",
+   "bc117f6bd7f4b7b5"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "23494b50074d259a3bb9d757ba951ff099c9feb3cf275e035d610057a8e1abf5",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "farm crop plants: wheat mature (plants only, the soil is a separate tile underneath)",
+ "label": "beodeul_farm/crop_wheat_mature",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "crop rows of mature wheat",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wheat consists of two repeating tiers of vertical stalks and grain heads drawn in pure front elevation with no visible horizontal top surface or depth, resembling a side-scrolling texture.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6385
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "two stacked rows of wheat stalks with grain heads",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crop plants are drawn in flat front elevation as vertical stalks (rows 5-6 and 13-14) with grain heads directly above them, separated by flat horizontal base lines, showing zero foreshortened top surface or overhead depth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5577
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rows of mature wheat stalks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wheat is drawn as two flat horizontal rows viewed straight from the front/side like a 2D side-scroller tile, showing only vertical stalks and front-facing grain heads with no visible top surface (0 rows of top depth).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4357
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dense rows of wheat stalks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wheat is drawn in pure front elevation as two stacked horizontal bands of vertical stalks and grain heads, with no visible top surface or 3/4 top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 19648
+  }
+ ],
+ "decidedAt": "2026-10-14T05:55:32.804Z",
+ "cells": {
+  "16": [
+   "0b196f0148777c5e"
+  ],
+  "24": [
+   "0a9324cd6bda61b6",
+   "0cdb67d2ef96a934",
+   "5ab7a91f5092e761",
+   "7ae71efacfa5dfd5",
+   "f2bd62808b7ab8f6",
+   "fec2cea1e3356400"
+  ],
+  "32": [
+   "6e5e068a40a9d066",
+   "8f02eba9489b48dc",
+   "b588524239531b8c",
+   "cfe8022cd1fabc55",
+   "d3acfa7d65fd9b4d",
+   "f022e2dcd8545ec3"
+  ],
+  "48": [
+   "3f563e65a8bb51fd",
+   "48c0e2b26b826b64",
+   "511d3a302c49d82d",
+   "91663e908fc92aa8",
+   "bb2f7003d56e5743",
+   "f5b8fb51b186c453"
+  ]
+ }
+}

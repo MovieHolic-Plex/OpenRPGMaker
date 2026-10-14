@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b1664ab5ecdef4663e950ffc25a72c267397535452c79e0e4952c57981ff3acc",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "farm crop plants: cabbage sprout (plants only, the soil is a separate tile underneath)",
+ "label": "beodeul_farm/crop_cabbage_sprout",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tiny cabbage sprouts (Y-shaped leaves and stem)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each sprout is drawn as a flat 2D silhouette forming a simple 'Y' shape (1px stem, two upright 1px leaf tips) directly facing the viewer with no top surfaces, leaf tops, or depth visible.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7041
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sprouts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each sprout is drawn as a completely flat 2D 'Y'-shape front elevation with no depth or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4150
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sprout plants",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sprouts are drawn as flat 2D V-shaped silhouettes in pure front elevation with no visible top surface or 3/4 downward angle.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2919
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "small sprout",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each sprout is drawn as a flat 2D 'Y' shape in pure front elevation (3x3 pixels plus a stem and shadow) with no top surfaces visible or 3/4 perspective foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 23227
+  }
+ ],
+ "decidedAt": "2026-10-14T05:55:32.804Z",
+ "cells": {
+  "16": [
+   "e9b942b3b9721e93"
+  ],
+  "24": [
+   "382d87559933c5eb",
+   "50b63e2ed9543cf0",
+   "610ea7b511fd9f61",
+   "63b320e16c7bdc4d",
+   "8f5c0f7c0ee248b9",
+   "b1197c8551928929"
+  ],
+  "32": [
+   "04be172d5cf5ca88",
+   "08de7b4e02109cd0",
+   "211481e06bd17f17",
+   "474867c450e44590",
+   "7fe66dacd4c554d3",
+   "93c7c54977bb35e6"
+  ],
+  "48": [
+   "2d746a4d6a12fc0c",
+   "3346e8c37534ffde",
+   "5904064a8b1970b1",
+   "7761c3d4873488da",
+   "7c9fe2f6dec54169",
+   "d8cce0a2542b55b6"
+  ]
+ }
+}
