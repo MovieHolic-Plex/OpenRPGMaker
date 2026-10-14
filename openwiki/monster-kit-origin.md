@@ -287,3 +287,19 @@ Claude 중단 시점(I5)의 보고서 네 장을 `harness-data/tileset-authoring
   2층 내려가는 계단은 1층 올라가는 계단과 **같은 자리**에 둔다.
 - 캠페인(`world.ts`): 집은 마을마다 부엌·거실·서재 셋을 돌려 쓰고 모두 2층(시작 마을은 「내 방」), 센터도 2층 라운지. `attachStairs` 가 1층 계단 발치 ↔ 2층 `_dn` 발치를 `playerTouch` 이동으로 잇고 도착은 상대 발치 바로 아래 칸. 맵 72 → 90.
 - 확인: 모델 없이 `build_monster_game create` → 게임 검사 막힘 0·경고 0·자동 플레이 엔딩. 출하 플레이어 실걷기 `node scripts/qa/runtime/monster-stairs.mjs <project.json> <out>`(unshare -rn) — 집·센터 계단을 실제 방향 입력으로 오르내린다.
+
+## 체육관 풀관·실내 지역 방 GBA 다시 그리기 · 타이틀 테마 변형 (2026-10-14)
+
+- **체육관 시트**(`monster-gyms`, run `g1`): 풀관 바닥 `gy_fl_turf*`·꽃은 소스가 이미 본 시트 민트 풀(`mo.grass_tex`)이었는데 번들이 옛 굽기(`g103`, 겨자색)였다 — 다시 구워 맞췄다.
+  나무 줄 칸막이 `gy_hedge_at*` 는 `gyms_common.hedge` 를 본 시트 수관(`forest.crown`)과 같은 잎 덩이 다섯 문법(`HEDGE_CLUMPS`, 왼쪽 위 빛·덩이 사이 짙은 틈·잎 점)으로 다시 그렸다.
+  같이 바뀐 칸: `g_bigrock`(본 시트 정본을 따라옴). 굽기 규칙 변화로 `gy_vent_up*` 3칸에 `defaultLayer: upper`+받침이 붙었다(그림은 그대로).
+- **실내 지역 시트**(`monster-rooms`, run `m8`): 연구소·학교·박물관·백화점·배(복도·선실·갑판) 벽·바닥(`rooms_kit`)과 가구(`rooms_furn`)를 `interior2` 의 GBA 결로 — 바닥 결·벽 징두리·3톤 재질·1px 윗면 빛.
+  사천왕 방·뱃머리·챔피언 단은 그대로. 같은 칸 이름·번호·불투명/빈 칸 구분을 지켰다(`tiles.json` 동일, 맵 90장 무수정).
+- 적대 검수 한 바퀴(캠페인 맵 원본 해상도 렌더): 연구소 벽 무늬 없음 · 칠판 얼룩 · 접수대 잡티 · 선실 바닥 과대비/침대 머리판이 벽과 붙음 · 탁자 잡티 · 백화점 주황 과채도 · 칸마다 같은 반짝임(격자) → 한 번 고침.
+- 확인: `python3 harness.py … draw/bake/wire`(옛 run 견본 맵이 없어 `cycle_theme.sh` 가 쇼케이스를 다시 만든 뒤 wire), `node/wire_check.mts` 「시트 7장 ok」,
+  모델 없는 `qa:game check` 네 테마(풀밭·해안·사막·눈) 막힘 0·자동 플레이 엔딩, 출하 플레이어 `monster-stairs.mjs`·`monster-journey.mjs`(`unshare -rn` + `ip link set lo up`).
+- **3/4 관문**: 판정자(google-antigravity gemini)를 이번 작업에서 쓸 수 없어 영수증 없음 — `object-gate check` 거절, 프로필도 미보정. 「3/4 관문 미통과」.
+- **타이틀 키아트 변형**: `scripts/content/monster-title-art.py` 가 풀밭(기본)·사막·눈 세 장을 240×160 좌표 도트로 찍는다(생성 이미지 아님) → `public/assets/emerald-monster/title-<meadow|desert|snow>{.png,-asset.json}`.
+  고르는 배선은 `src/project/emeraldMonsterTitleArt.ts`(VARIANTS 표). 해안은 기존 사슴 그림 그대로.
+- 눈 테마 시작 마을 주민은 여전히 People1 기본 칩이다. `pokemon-character-casting` 에 눈 후보 셋(`snow_resident_m`·`snow_resident_f`·`snow_trainer`)이 **사용자 판정 대기**로 있다 —
+  사용자 Allow → build → 캠페인 배선(지금 `configureEmeraldMonsterCast` 는 빈 함수)이 필요하고, 원작 판형 파생이라 공개 저장소에는 못 넣는다.
