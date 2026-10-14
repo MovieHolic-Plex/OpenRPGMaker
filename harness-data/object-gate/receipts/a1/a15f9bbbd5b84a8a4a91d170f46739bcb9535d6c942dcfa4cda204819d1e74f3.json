@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a15f9bbbd5b84a8a4a91d170f46739bcb9535d6c942dcfa4cda204819d1e74f3",
+ "width": 32,
+ "height": 16,
+ "kind": "frame",
+ "name": "관람 차단 줄(놋쇠 기둥 둘·붉은 줄)",
+ "label": "gothic_manor/gm-stanchion",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brass stanchion posts and velvet rope",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brass stanchions and hanging velvet rope are drawn entirely in front elevation with flat horizontal baselines and 2D diamond finials; no circular or elliptical top surfaces are shown for the round bases or posts.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4174
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "two brass stanchions connected by a red velvet rope",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both stanchions and their bases are drawn in pure front elevation: the circular bases and tops show no elliptical top surfaces from above, and the hanging rope is depicted straight-on as a 2D profile.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3836
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brass stanchion posts and red velvet rope",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brass stanchions and hanging velvet rope are drawn in a flat side/front elevation: the circular bases and post tops have no visible elliptical top surfaces or foreshortened depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3495
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brass stanchions and hanging rope",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both stanchions and the velvet rope are drawn strictly in side/front elevation: the stanchion bases are flat profiles rather than foreshortened ellipses viewed from above, the finials are drawn frontally, and no horizontal top surface is visible anywhere.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3885
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.505Z",
+ "cells": {
+  "16": [
+   "b5c5f31cb09cb339",
+   "c2f7e2b5c93891c9"
+  ],
+  "24": [
+   "147fdd4b4f33b4cb",
+   "381c7991782506a6",
+   "4445d0ec373fcf3c",
+   "7f860202aa09b57c",
+   "870fa9db89cded68",
+   "97cfe14636888add",
+   "ba2780ac199c5322",
+   "c08d62367e77ad66",
+   "e7b01cac3b36d33b",
+   "ea97b325d160b169",
+   "f0612a8d9ad5d2f5",
+   "fb0c11551c4bd00c"
+  ],
+  "32": [
+   "a2ae8c9cedf96285",
+   "f0ea67754fd1cdb3"
+  ],
+  "48": [
+   "1ce6e4386a451edd",
+   "284e227cae634bef",
+   "6ca94ab0d94983b7",
+   "8155589ef75b8092",
+   "81ebf2250e796e22",
+   "b9a444e4e992b0a7"
+  ]
+ }
+}

@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f2b40ba462c28e98fce10535253cdfea0c0f120702f3c01df98e297409e87457",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "첨두 머리 묘비(해골 새김)",
+ "label": "gothic_manor/gm-tomb-arch",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pointed gravestone with skull carving",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gravestone is drawn as a flat front elevation silhouette with a 1px outline over its pointed top and no visible top thickness or receding depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5643
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pointed tombstone / stele with skull engraving",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pointed stele is drawn as a flat front elevation silhouette without any visible top surface, depth facet, or top thickness visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5879
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pointed-top gravestone with skull engraving",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pointed head of the tombstone is drawn purely as a flat 2D silhouette/front elevation with a 1px contour and no visible top surface or thickness foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6431
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pointed-head tombstone / stele",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gravestone is drawn as a flat 2D silhouette/front elevation with a 1px outline at the top point and no visible top surface or slab thickness receding into depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9026
+  }
+ ],
+ "decidedAt": "2026-10-13T16:24:27.171Z",
+ "cells": {
+  "16": [
+   "d80dbf758c745856"
+  ],
+  "24": [
+   "1763576aae3d7724",
+   "6444e897ee4bbe76",
+   "6c9e19491f04f60e",
+   "90c34db931f8cec8",
+   "b6ea64417f592b54",
+   "c7809d1562aa295a"
+  ],
+  "32": [
+   "079d6cbf4c1eb789",
+   "315c2d4086238f5a",
+   "4c03a968f1467b27",
+   "95bd9559de171a0a",
+   "bc6d111488f61f2a",
+   "d37493bb82212404"
+  ],
+  "48": [
+   "41533826d5f2fa0f",
+   "8df3bf2a170ab7a5",
+   "a3f467222fe9d0d8",
+   "ae2fb411bd314e67",
+   "bf047f0c470f2c10",
+   "f6e41d85992528af"
+  ]
+ }
+}

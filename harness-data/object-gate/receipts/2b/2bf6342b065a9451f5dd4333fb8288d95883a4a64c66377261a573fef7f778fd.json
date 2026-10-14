@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2bf6342b065a9451f5dd4333fb8288d95883a4a64c66377261a573fef7f778fd",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "받침 위 돌 항아리(장례 항아리)",
+ "label": "gothic_manor/gm-urn",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone urn on a brick pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The urn and pedestal are drawn in pure front elevation with straight horizontal bands and a flat side-profile finial/lid (rows 1-5) with 0 rows of top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5959
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone urn and pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the stone urn and the pedestal are drawn in pure front elevation: the urn lid and body have no visible top plane or opening, and the rectangular brick pedestal is drawn entirely flat from the front with horizontal mortar lines and zero top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7988
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone urn on a pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the stone pedestal (rows 17-31) and the funerary urn on top (rows 1-16) are drawn in pure front elevation. The urn lid/finial and body show no top-down elliptical surfaces, and the pedestal shows only a flat vertical front face with horizontal brick lines and zero visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5403
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone funeral urn on a pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the urn and the pedestal base are drawn in straight front elevation with no visible top surface or 3/4 downward tilt on either the urn's tiers or the pedestal top.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6541
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.461Z",
+ "cells": {
+  "16": [
+   "949740f87b22ac46",
+   "b639eb411b9e2cfc"
+  ],
+  "24": [
+   "26627ffa136a8998",
+   "324bc3b34840449f",
+   "3c519da0c7bb9206",
+   "43870c68b689dca9",
+   "50aa8a853aac9fbe",
+   "5cf7266985cd44b7",
+   "80e3bebd4f4722f1",
+   "9f77b6c6da689dc6",
+   "a342c252ba9ab53f",
+   "a41a4c8c88fe2f16",
+   "c2e214eb265f3b27",
+   "e3ff8eb2f4c51f51"
+  ],
+  "32": [
+   "212151ba1ac53693",
+   "52de2ea521e67fc8",
+   "fb441f790da33bda"
+  ],
+  "48": [
+   "0b7d43a6c02ef1e9",
+   "4969a5cfec1f0eff",
+   "628d949bf40c9a2b",
+   "9dadb583c9242a5c",
+   "af1e1d3dec0db093",
+   "e8dedcd1ad4215c6"
+  ]
+ }
+}

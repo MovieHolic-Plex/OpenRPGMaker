@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d57bfafa248e97f8c8fd02eab4a5a115deb82e7ef0408ca165bac42f089da0a6",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "냄비 선반(구리 냄비·단지)",
+ "label": "gothic_manor/gm-pot-shelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "shelf unit with pots/jars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire shelf unit is drawn in pure 2D front elevation: there is no foreshortened top surface visible on the furniture frame (rows 1-4 form a vertical front cornice), the shelf boards are drawn as 1-2px edge strips rather than receding horizontal surfaces, and the pots/jars inside are flat rectangles with 1-2px lid bands rather than elliptical tops or openings.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5436
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall shelf unit with pots/jars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shelf unit has no visible top surface (0 rows), and the pots/jars on the shelves are drawn as flat rectangular front-facing silhouettes without any visible elliptical openings or 3/4-perspective top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4934
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pot shelf unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shelf unit and the pots on it are drawn in pure front elevation. The top of the cabinet has 0 rows of visible top surface (rows 1-4 depict a vertical front cornice/frieze), the interior shelves are rendered as flat horizontal beams without floor depth, and the pots are drawn as flat rectangles without elliptical openings or 3/4 top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5321
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pot shelf / shelving unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire shelf unit is drawn as a flat front elevation with 0px of top surface visible at the top, flat 2px shelf divider bands with no shelf floor depth, and completely flat rectangular pots with straight horizontal lines instead of elliptical top surfaces or openings.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5673
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.504Z",
+ "cells": {
+  "16": [
+   "4bceee4a4cf006a7",
+   "650bb98ed3c23b24",
+   "a4bb313a97871fbf",
+   "f19c5ac0677fd658"
+  ],
+  "24": [
+   "0ceefba93b61f411",
+   "0f02ce5f7e2c1d22",
+   "1df71656320e333a",
+   "2c815644ac3c3912",
+   "2f227d3e881203b2",
+   "3708f624c08a6891",
+   "4e3dea2b22d00b3f",
+   "52783065bc95e275",
+   "56e00f5c0c84a53e",
+   "5bb184af5da6bef5",
+   "740ac0bf11cedc2b",
+   "77f70cc44f1c9204",
+   "7ba55227b1e97dcc",
+   "860aafd74d28a602",
+   "87b8f49d1c5f9517",
+   "915fffb2310082cd",
+   "9d50af1c808ad4ff",
+   "bc4c5ae934ea15a9",
+   "c3de0e218b9526dc",
+   "c49c8f3518e80bb3",
+   "ecbfbdda8a67ebd0",
+   "f868eb6c5cedad90",
+   "fbeae9ad9d1c9f3e",
+   "fcf468352b89b75b"
+  ],
+  "32": [
+   "da06f1ba3ddb9699"
+  ],
+  "48": [
+   "1fbb458cd7e2b9a1",
+   "3abfc1edbdd2efd6",
+   "428b499abcda0ad6",
+   "562c3c52f2f00e7d",
+   "85fcc6a2e3bfba08",
+   "e2260c827bab5a0c"
+  ]
+ }
+}

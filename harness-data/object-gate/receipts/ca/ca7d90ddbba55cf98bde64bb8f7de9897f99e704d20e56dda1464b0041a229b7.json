@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ca7d90ddbba55cf98bde64bb8f7de9897f99e704d20e56dda1464b0041a229b7",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "바닥 검붉은 얼룩",
+ "label": "gothic_manor/gm-ov-stain",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dark red floor stain / puddle with blood droplets",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat blood stain / decal lying on the floor surface spanning rows 6 to 12 with surrounding droplets, rendered correctly on the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3628
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dark red floor stain puddle",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat blood/liquid stain on the floor spanning rows 6 to 12 (7 rows tall) seen from above as a floor decal with surrounding droplets.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4724
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dark red floor stain / puddle",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat stain/spatter on the floor covering roughly rows 6-12 (7 rows tall) with surrounding droplets, viewed correctly from above as a floor decal.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3483
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dark red floor stain / puddle decal",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat blood/liquid stain on the floor spanning rows 6 to 12 with small splatter droplets around it, viewed appropriately as a flat decal on the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3107
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.501Z",
+ "cells": {
+  "16": [
+   "9c009ab8ecb993e1"
+  ],
+  "24": [
+   "1b50d2d16c3e0396",
+   "44db7846507af34f",
+   "68c7b83d214383e8",
+   "932d84086c1fbedb",
+   "b5638fd0f10662e9",
+   "eb00976a4fa60e7f"
+  ],
+  "32": [
+   "240e43f97b6c2f4c",
+   "33aa3f1766227b9f",
+   "55d72f4a4c7707cd",
+   "5ed1bde649a33881",
+   "9e3aa690d72e02b1",
+   "faca39c2b2c0426a"
+  ],
+  "48": [
+   "623ffb68cf856203",
+   "6fc8ce6d992a5ff5",
+   "81b2cebb676d6aa0",
+   "ae0132fcd4653f37",
+   "c5f2528987bba798",
+   "f5f3682d03314919"
+  ]
+ }
+}

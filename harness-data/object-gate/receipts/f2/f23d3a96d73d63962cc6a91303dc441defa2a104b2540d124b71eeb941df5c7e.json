@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f23d3a96d73d63962cc6a91303dc441defa2a104b2540d124b71eeb941df5c7e",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "냄비 선반(구리 냄비·단지)",
+ "label": "gothic_manor/gm-pot-shelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "shelving unit / pot rack",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the shelving unit features a large visible top/hood surface spanning rows 0 to 8 (8 rows tall), clearly showing 3/4 top-down foreshortening rather than a pure front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6222
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall wooden shelving unit with pots/containers",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof/surface of the shelving unit is visibly foreshortened across rows 0-8 (approx. 9 rows tall) before meeting the shelf fascia at row 9.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4936
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tall shelf / cabinet with arched wooden pediment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn entirely in pure front elevation. The arched wooden top (rows 0-8) shows vertical front-facing planks and grain rather than a horizontal top surface seen from above. All shelf boards and objects inside are also drawn flat from the front with zero depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10209
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall wooden shelf unit with jars/pots",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the shelf unit is shown angled/foreshortened from above across rows 0–8 (approximately 8 source pixel rows) before the front lip at row 8–9. Items on shelves also show top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5953
+  }
+ ],
+ "decidedAt": "2026-10-13T16:57:24.059Z",
+ "cells": {
+  "16": [
+   "30515b2666aa878b",
+   "8cd2914eeb16a611",
+   "96f29fe0c108c592",
+   "bf0d03d05c89711a"
+  ],
+  "24": [
+   "1df54b75d047be5a",
+   "30dd4468e7e2fe46",
+   "345156e107d8dab8",
+   "3b122153e762a753",
+   "46013c75d4a7aa5b",
+   "5a06af4abc660db9",
+   "5f966032747211a2",
+   "6d53850550e2fee2",
+   "7ed285c2705bf855",
+   "8190a5e659353f58",
+   "87261ea0ea918c2d",
+   "9698a34261e50de6",
+   "a2067d05ae32b2d8",
+   "ad57c6ffc4c8f8ea",
+   "b2da062473c09274",
+   "bdd0515c913e7560",
+   "c09a82b45cd154c4",
+   "d1ae71d23bb14aa6",
+   "d2a8edf86b388575",
+   "dad9b64197a2908d",
+   "e53531efd33f9865",
+   "f20b95b16b1bb8a4",
+   "f3f141fca3f43ed9",
+   "fd22efccf5bd365e"
+  ],
+  "32": [
+   "3497645eed1879f1"
+  ],
+  "48": [
+   "0505762d9d36105a",
+   "1090b98cd2647608",
+   "38a6a741e4f9e884",
+   "565d0a27f1ed551f",
+   "dfba166e14e34a9e",
+   "e3f1f783c5f32968"
+  ]
+ }
+}

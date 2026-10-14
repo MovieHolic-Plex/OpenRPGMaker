@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d734af7612c4337d3e024a035b9f54dcf58b31b2c3d329365939648f6282c2d3",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "서재 책상(촛대·펼친 책·깃펜)",
+ "label": "gothic_manor/gm-desk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "desk",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk surface is clearly visible from row 4 to row 15 (12 source pixels tall) showing a desk mat, open book, candle base, and inkwell, above the front drawer face extending from row 16 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3323
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "study desk",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the desk spans rows 4 through 15 (12 source pixel rows) with an inlaid desk pad, candlestick, open book, and inkwell with quill resting on it, followed by the south-facing front drawers from row 16 downward.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3291
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "study desk with drawers and desk pad",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the desk is clearly visible spanning rows 4 to 15 (12 rows tall), displaying a green blotter with an open book, candle, and inkwell with quill, while the front face with drawers is shown below from row 16.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3078
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "study desk with desk pad and drawers",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk tabletop occupies rows 4 to 15 (12 source pixels tall) showing a green writing mat, candlestick, open book, and quill, above a clearly defined south drawer face from row 16 downward.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3358
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.502Z",
+ "cells": {
+  "16": [
+   "1201e8b7c27f2706",
+   "68b413c4aef7df71",
+   "87d3d7754da08e7e",
+   "9267fd9e15e10567"
+  ],
+  "24": [
+   "0605d94ad034a5c4",
+   "084c75b2229a514f",
+   "10ccd828e2fda4b2",
+   "2544afe967c046aa",
+   "39bca386dbb68de3",
+   "3b9641e52609dd6c",
+   "530dbab418338104",
+   "5860cfca457b86d3",
+   "66d5bdd4f0fe5979",
+   "7dcc8f41905332c0",
+   "817048a5682ee7d2",
+   "8726f6b95a480f44",
+   "88e355d6b77827b0",
+   "8b52503450fb2435",
+   "96f88285b0f6796d",
+   "a31e2b2f34a8b061",
+   "acb887f3cbfb9766",
+   "b3fa6a005ea9681b",
+   "b5357c213702e020",
+   "bb7a0ea4cd81fc3c",
+   "c41a83e7830fd9f8",
+   "e9d2c53cb6d564cd",
+   "ea2bcd1460b02ec9",
+   "ff8c648bc88e3697"
+  ],
+  "32": [
+   "5576a3953bc7c6ff"
+  ],
+  "48": [
+   "17587c2b885cbfce",
+   "37617a70e652692d",
+   "5b849f8d8988688a",
+   "738b45832914b7e5",
+   "80c72c3475504148",
+   "c49149e1e7fcdf9d"
+  ]
+ }
+}

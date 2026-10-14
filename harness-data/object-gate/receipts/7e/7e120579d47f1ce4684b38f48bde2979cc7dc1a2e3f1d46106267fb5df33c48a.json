@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7e120579d47f1ce4684b38f48bde2979cc7dc1a2e3f1d46106267fb5df33c48a",
+ "width": 48,
+ "height": 16,
+ "kind": "seat",
+ "name": "예배당 긴 의자",
+ "label": "gothic_manor/gm-pew",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "chapel pew seat",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pew is viewed from a 3/4 top-down angle, showing the top rail and spindles of the backrest at the back, followed by a clearly visible horizontal seat surface spanning rows 9-13 (5 pixel rows tall) between the side supports.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6145
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pew bench",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal seat surface is clearly rendered from above across rows 9–13 (5 pixel rows deep), complete with cast shadows from the backrest slats falling forward across the seat.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8307
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden church pew",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bench seat surface is clearly foreshortened and visible from above across rows 9-13 (5 pixel rows tall), situated between the backrest and the front edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4442
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "church pew / chapel bench",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pew is drawn in flat front elevation as if for a side-scroller: it shows the backrest top rail and spindles straight-on, followed by a 2px horizontal band (rows 7-8) and a vertical front face/legs (rows 9-13) with no foreshortened seat surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11879
+  }
+ ],
+ "decidedAt": "2026-10-13T16:52:42.786Z",
+ "cells": {
+  "16": [
+   "3fd00cdab8c54318",
+   "51b36ad864fe57fe",
+   "f1ba29650f306b6f"
+  ],
+  "24": [
+   "22e6ad9de66541ae",
+   "4cc03834e6f33d53",
+   "5ffc7345c81ee792",
+   "cd1811bf2ee32d53"
+  ],
+  "32": [
+   "0f75044312e8884c",
+   "17b3f90cbe50d961",
+   "258269cdf8aec6de",
+   "492fd71da486bee9",
+   "54a7f6218992971a",
+   "7909d67cb05b9d46",
+   "b95000be643f5bed",
+   "c3ff1310a3c6963a",
+   "cbe1c38b1218d626",
+   "d7cbddbc7eea6655",
+   "e2e827c59107fcba",
+   "f59e90551fc4ef4d"
+  ],
+  "48": [
+   "7d3b21372bdf7e30",
+   "dabe1dc2bd17273c"
+  ]
+ }
+}

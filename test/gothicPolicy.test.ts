@@ -1,7 +1,7 @@
 // gothic_manor 라우팅·지침 — 칩셋이 프로젝트에 있을 때만, 판타지 성은 끌지 않는다. 이 파일은 작성 시 실행하지 않았다(not run).
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
-import { describesGothicPlace, gothicPromptLines, gothicTargetFor, formatGothicNote, GOTHIC_POINTER_LINE, GOTHIC_DETAIL_LINE, isGothicManorTilesetDef } from "@/ai/gothicPolicy";
+import { describesGothicPlace, gothicPromptLines, gothicTargetFor, formatGothicNote, GOTHIC_EXPOSED_TOOLS, GOTHIC_POINTER_LINE, GOTHIC_DETAIL_LINE, isGothicManorTilesetDef } from "@/ai/gothicPolicy";
 import { declaredIntent } from "./intentFixture";
 import type { Project } from "@/project/types";
 
@@ -16,7 +16,7 @@ function withGothic(): Project {
 }
 
 describe("고딕 낱말", () => {
-  it.each(["저택 호러 게임", "폐성 탐험", "미술관 추리", "고아원 괴담", "정신병원 탈출", "묘지 마을", "haunted mansion"])("%s", (t) => expect(describesGothicPlace(t)).toBe(true));
+  it.each(["저택 호러 게임", "폐성 탐험", "미술관 추리", "고아원 괴담", "정신병원 탈출", "묘지 마을", "haunted mansion", "흉가 저택과 정원 만들어줘", "공동묘지와 예배당", "미술관 호러 갤러리"])("%s", (t) => expect(describesGothicPlace(t)).toBe(true));
   it.each(["판타지 성 하나 만들어줘", "중세 왕국 마을", "마왕성 던전", "숲속 마을", "일본 상가 거리"])("%s 는 아니다", (t) => expect(describesGothicPlace(t)).toBe(false));
   it("판타지 성이어도 호러·폐성이면 고딕", () => expect(describesGothicPlace("판타지 호러 저택")).toBe(true));
 });
@@ -40,6 +40,12 @@ describe("프롬프트 줄", () => {
     expect(gothicPromptLines(p, [START])).toEqual([GOTHIC_POINTER_LINE]);
     p.maps[START]!.tilesetId = "gothic_manor";
     expect(gothicPromptLines(p, [START])).toEqual([GOTHIC_POINTER_LINE, GOTHIC_DETAIL_LINE]);
+  });
+  it("장소 빌더로 보낸다", () => {
+    expect(GOTHIC_EXPOSED_TOOLS).toContain("build_gothic_place");
+    expect(GOTHIC_EXPOSED_TOOLS).toContain("list_gothic_places");
+    for (const t of [GOTHIC_POINTER_LINE, GOTHIC_DETAIL_LINE, formatGothicNote({}, null)]) expect(t).toContain("build_gothic_place");
+    expect(GOTHIC_POINTER_LINE).not.toContain("gothic-interior-authoring");
   });
   it("PAW 게이트 낱말을 쓰지 않는다", () => {
     for (const t of [GOTHIC_POINTER_LINE, GOTHIC_DETAIL_LINE, formatGothicNote({}, null)]) expect(/현대|모던|modern/iu.test(t)).toBe(false);

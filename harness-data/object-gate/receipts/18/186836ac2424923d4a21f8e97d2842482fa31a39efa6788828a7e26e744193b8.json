@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "186836ac2424923d4a21f8e97d2842482fa31a39efa6788828a7e26e744193b8",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "돌 오벨리스크",
+ "label": "gothic_manor/gm-tomb-obelisk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone obelisk pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The obelisk shaft and its pointed cap are drawn in flat front elevation with vertical lighting split down the middle and flat horizontal lines at the cap overhang (row 11) and base (row 36), showing no foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5366
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone obelisk shaft and cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The obelisk shaft and arrowhead-shaped pyramidion cap are drawn in flat front elevation. The horizontal grooves across the shaft (rows 18, 22, 26, 30) and the shaft base (row 35) are completely straight 1-pixel horizontal lines with no 3/4 downward curvature, and the pointed cap has no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7673
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone obelisk shaft and pointed cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The obelisk shaft and pointed cap are drawn in pure front elevation: all horizontal markings, the cap overhang, and the bottom edge of the shaft are completely flat 1-pixel horizontal lines with zero foreshortening or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5628
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone obelisk column",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The obelisk shaft and its pointed cap are drawn in flat front elevation with no 3/4 top-down foreshortening; all horizontal bands, the cap overhang at row 11, and the base line at row 35 are perfectly straight 1-pixel horizontal lines with zero top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9839
+  }
+ ],
+ "decidedAt": "2026-10-13T16:52:42.785Z",
+ "cells": {
+  "16": [
+   "aab485d51992b9cb",
+   "ed147ef5d692e919",
+   "f0323d92328f3102"
+  ],
+  "24": [
+   "21ae2997ad23c04e",
+   "25238f6fbee5b141",
+   "2db3f970b4a37218",
+   "36571555e9114391",
+   "8c504013d900ab82",
+   "fa96fc94f7fbe322"
+  ],
+  "32": [
+   "40cb0b2889209112",
+   "4edbe7eda05a7fd5",
+   "5c9152ddcfa2cbce",
+   "641035469cb3f913",
+   "7b04e39865eafc78",
+   "8d44560abc5a65db",
+   "9b87826e2906e859",
+   "acbce29d144c522b",
+   "d8b3495e54742716",
+   "f02691565b723492",
+   "f88c156a67eed308",
+   "fb82b4df7da68899"
+  ],
+  "48": [
+   "b8efa81730300067",
+   "c98d0331d4447385",
+   "cfaef9b6490d2dd7"
+  ]
+ }
+}

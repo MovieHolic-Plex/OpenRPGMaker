@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8514950732812261d0704c3563474ed2f42c32c03db32208dc2bf975f0e44a78",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "무쇠 쌍문(열림)",
+ "label": "gothic_manor/gm-gate-iron-open",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "옆면(아이소)",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "open iron double doors (leaves)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": false,
+    "evidence": "The door leaves are drawn in isometric projection with diagonally receding sloped tops (rows 5-9 on the left, rows 6-10 on the right) rather than top-down 3/4 view, and show no top surface (0px).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "옆면(아이소)",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8410
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "open iron double doors",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cast iron door panels are drawn in front elevation with no visible top surface or thickness on the doors themselves (0 rows of top surface; only a 1px diagonal outline/highlight along the top).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7934
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "open iron double doors and stone gateway",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": false,
+    "evidence": "The open iron door leaves are drawn receding diagonally into the background with slanting tops (isometric perspective), rather than standard 3/4 top-down orthographic projection.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "옆면(아이소)",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7722
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "open iron double doors in stone gateway",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": false,
+    "evidence": "The swinging door leaves are drawn receding into depth along diagonal isometric angles (rows 5-9) rather than standard 3/4 top-down projection, while their top thickness is merely a 1px diagonal line with no foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "옆면(아이소)",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5429
+  }
+ ],
+ "decidedAt": "2026-10-13T16:33:45.368Z",
+ "cells": {
+  "16": [
+   "60e9ceda9eca54b8",
+   "64fc5030c02551f8",
+   "88993f624a8d68dd",
+   "a7c0348dc3403ea9",
+   "abe167ed3e04e5e7",
+   "de99b47d07d21c36"
+  ],
+  "24": [
+   "4349368024f6a16d",
+   "44786ba1a0fbd3d1",
+   "50354185200991fb",
+   "7255a0f27efa6f8c",
+   "bc2faa0ac04d316f",
+   "bf9ffd2e7e46f9dd",
+   "cfcb8f1fef96259b",
+   "ddc6edc3d7fafac2"
+  ],
+  "32": [
+   "0b225144e396026a",
+   "17db10549db537c6",
+   "43a09d82df932147",
+   "485352efa462a61b",
+   "902a9c68aa0769d3",
+   "b6c65e4763187674"
+  ],
+  "48": [
+   "897db182b8981683",
+   "be2261b22f132eaa"
+  ]
+ }
+}

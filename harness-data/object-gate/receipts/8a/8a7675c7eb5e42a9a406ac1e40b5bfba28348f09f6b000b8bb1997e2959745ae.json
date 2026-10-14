@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8a7675c7eb5e42a9a406ac1e40b5bfba28348f09f6b000b8bb1997e2959745ae",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "갈림길 나무 이정표(글자 없는 화살 판)",
+ "label": "gothic_manor/gm-signpost",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 1.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden signpost (vertical post with horizontal arrow boards)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The post and attached horizontal sign planks are drawn in a flat 2D side-scroller / front elevation style. The top of the post has vertical cylinder shading with no top cut surface or cross-section visible, and the horizontal planks show only 1px edge highlights rather than visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10306
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden signpost with directional signboards",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signboards (horizontal beams) are drawn entirely in front elevation with only a 1px edge highlight along their tops (rows 6, 12, 18), rather than showing foreshortened top surfaces. The vertical post also lacks a distinct 3/4 cut face, rendering the object as a flat front view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12984
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden signpost",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the vertical post is rendered at rows 1-3 (3 source pixels tall), uniformly highlighted across its full width without the vertical shaft's side shadow that begins below it at row 4. The stone base also shows a top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12862
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden post (signpost)",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the wooden post is clearly visible at rows 1-3 (3px tall) with lighter coloration than the front shaft face below it. The stone base and directional planks also display foreshortened top surfaces consistent with 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9153
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:15.455Z",
+ "cells": {
+  "16": [
+   "12cc7024b5121609",
+   "6ca9d7e8fbd52762"
+  ],
+  "24": [
+   "07f96064d16cc64d",
+   "36bc4a8867a9d4fe",
+   "62f25ad91175dbde",
+   "6cae72866063d15d",
+   "7eb5169d84d3495b",
+   "81e1951a98127223",
+   "8618b22248b59d09",
+   "9cf71489442cdde2",
+   "b5fdb21cb4cd780f",
+   "dcfd92b313ad170d",
+   "df458540681a5ef9",
+   "e9bdaae537ace4d5"
+  ],
+  "32": [
+   "28f4ef43d7f510dc",
+   "3f88ede462877dd6",
+   "6d825ce3f5b370f9"
+  ],
+  "48": [
+   "8c5f65be05fa95f2",
+   "9860c39090f42afa",
+   "afa17557d2c2c76d",
+   "c218fec5cd96d595",
+   "f9a8cf642d7bac8c",
+   "ff57568e0b5f0c01"
+  ]
+ }
+}

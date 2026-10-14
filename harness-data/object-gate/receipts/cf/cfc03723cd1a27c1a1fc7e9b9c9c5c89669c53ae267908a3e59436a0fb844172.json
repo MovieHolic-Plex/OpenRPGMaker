@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cfc03723cd1a27c1a1fc7e9b9c9c5c89669c53ae267908a3e59436a0fb844172",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "돌 오벨리스크",
+ "label": "gothic_manor/gm-tomb-obelisk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone obelisk column",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire obelisk and its stepped base are drawn in pure front elevation with straight horizontal divider lines and no visible top-down foreshortened horizontal surfaces at the steps or cap.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9389
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "obelisk shaft and cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The obelisk and its base are drawn in pure front elevation with completely flat horizontal segment lines and transitions. No top surfaces of the shaft, mid-block, or pyramidion facets are visible in 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6919
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone obelisk shaft and pyramidion",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The obelisk shaft, pointed cap, and stepped sections are drawn in pure front elevation with completely flat horizontal lines and no foreshortened top surfaces visible on the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11593
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone obelisk shaft and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Every tier, step, and transition (the tip base, shaft-to-pedestal transition, and base plinth) is drawn with perfectly flat horizontal lines with 0px of visible top surface. The object is drawn in pure 2D front elevation (side-scroller style) rather than 3/4 top-down view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9207
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:15.452Z",
+ "cells": {
+  "16": [
+   "552ec75f8fa41035",
+   "7660e534810b7a2a",
+   "8e3652d36b7e489d"
+  ],
+  "24": [
+   "76cff70d8a34e092",
+   "7b9741c78d254388",
+   "bfeb00cbdb368a1e",
+   "cabe0cde7ea1276b",
+   "dbb3beb5742cd905",
+   "eb9fb3aaca644a53"
+  ],
+  "32": [
+   "132faf797d5fb0ba",
+   "20d065c6b859b4c7",
+   "23ea267f186b3acc",
+   "31a3671decdd3fd3",
+   "4f028ae2658ce739",
+   "58d339aacea4c5a2",
+   "625b1d5c67cac1a3",
+   "73e6fa64b0a32254",
+   "9022a10e1d916727",
+   "a5b7fd710afa7d2a",
+   "b1e5098c3ae0dbe6",
+   "db50aab39a93559f"
+  ],
+  "48": [
+   "045851356e625017",
+   "0dd8815df6d77af6",
+   "c0ed53957294f0be"
+  ]
+ }
+}

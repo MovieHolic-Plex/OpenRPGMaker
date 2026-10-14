@@ -1,0 +1,138 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bb3ae4fc24f9679cf6ac351efa20e3528ea521c4f46b00bef6bda7023d8d4d99",
+ "width": 16,
+ "height": 16,
+ "kind": "figure",
+ "name": "까마귀(땅에 앉음)",
+ "label": "gothic_manor/gm-raven",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "crow body",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crow is drawn in a pure 2D side-scroller profile (side elevation) facing left. There is no visible top/dorsal surface of the head or back seen from above (0 top rows). Additionally, it is an animal sprite rather than a statue/figure with a plinth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8201
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "crow sitting/standing",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crow is drawn in pure 2D side profile/elevation facing west (profile beak, single eye, side silhouette, vertical stick legs) with 0 rows of top-down foreshortened back/top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6000
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "crow sitting on the ground facing west",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crow is drawn in a pure 2D side profile/elevation view with 0 rows of visible top surface across the head or back, typical of a side-scroller sprite rather than a 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6624
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "crow body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crow is drawn in a pure 2D side-scroller profile with no dorsal/top surface visible on the head, back, or wings (top_rows: 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5623
+  }
+ ],
+ "decidedAt": "2026-10-13T17:01:50.506Z",
+ "cells": {
+  "16": [
+   "e5ff8ded1fc35673"
+  ],
+  "24": [
+   "0804328b919584c9",
+   "0b308225bedb3f6d",
+   "992503c71f9ed339",
+   "9d55011a547c2406",
+   "b02c2e1a0e167a36",
+   "ee7b0f09c762859e"
+  ],
+  "32": [
+   "1a58eeca3e4b55ae",
+   "87452c395b4aa8d6",
+   "9b425b67a4480206",
+   "a029a15a7bd4f936",
+   "d06f3b854bb97247",
+   "f2fce1ea376d7af1"
+  ],
+  "48": [
+   "0561d08c8fb8d40c",
+   "3687aee18e6c289a",
+   "79f539801548428d",
+   "7f1bca43adf4e692",
+   "9c9862ca1925bdd9",
+   "f172bf9e089a94ab"
+  ]
+ }
+}

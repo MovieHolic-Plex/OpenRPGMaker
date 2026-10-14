@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f26dd2e363933d5e1031007eb4d6b02bb1a8f2af1415cd2105ce89249b9fad9c",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "시든 장례 화환(덧그림)",
+ "label": "gothic_manor/gm-ov-wreath",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "standing funeral wreath on an easel stand",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a standing funeral wreath with easel legs at rows 13-14 rather than a flat ground decal. It is drawn facing the viewer in pure front elevation with no visible top depth or foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 5285
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wreath on stand",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wreath is labelled as 'flat' (floor decal/rug), but it has vertical support legs at rows 13-14 and is drawn standing upright in a pure front elevation with no top surface or foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 4970
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "circular wreath on small stand legs",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a standing funeral wreath supported on easel legs at rows 13-14, not a flat floor decal. It is drawn as an un-foreshortened 9x9 circle facing purely forward with no top surface or depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 5101
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wreath on stand",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a standing funeral wreath supported on two legs (rows 13-14), not a flat floor decal. It is drawn as a 1:1 unforeshortened circle in pure front elevation with 0px of visible top depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 6835
+  }
+ ],
+ "decidedAt": "2026-10-13T17:01:50.505Z",
+ "cells": {
+  "16": [
+   "f171f34ebabb76f1"
+  ],
+  "24": [
+   "41dc5a86b883337b",
+   "893fda48268bc924",
+   "8e647ac749b1a75a",
+   "b4c33af9dece0e61",
+   "b9cf4349f753416f",
+   "c1ac751b504a0825"
+  ],
+  "32": [
+   "0def15328f8e9bd3",
+   "1819183467bc9380",
+   "77e48ebe980228a0",
+   "bd28b838282596cf",
+   "bddeef9c50763197",
+   "d2cbe41820b5d2e6"
+  ],
+  "48": [
+   "5edaa91b124328d9",
+   "66528989ac7e0580",
+   "7791d64510950d3c",
+   "82ee9266bd7225fb",
+   "83f0d0d51dda8fcb",
+   "d72b1f1ce54a08dd"
+  ]
+ }
+}
