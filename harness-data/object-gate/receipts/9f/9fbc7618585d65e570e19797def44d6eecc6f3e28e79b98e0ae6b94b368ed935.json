@@ -1,0 +1,157 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9fbc7618585d65e570e19797def44d6eecc6f3e28e79b98e0ae6b94b368ed935",
+ "width": 96,
+ "height": 80,
+ "kind": "terrain",
+ "name": "packed dirt farm lane autotile (straight edges, wheel ruts, grass verge) on grass",
+ "label": "beodeul_farm/lane_sample",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dirt farm lane terrain path",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain autotile showing dirt pathways on grass, correctly depicted as a horizontal ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4477
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dirt farm lane terrain",
+    "kind_matches": true,
+    "top_rows": 76,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain autotile representing a dirt farm lane on grass; viewed correctly from the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3859
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "packed dirt lane terrain",
+    "kind_matches": true,
+    "top_rows": 76,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain path shown directly on the ground plane in top-down 3/4 perspective with standard edge transitions.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4098
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "packed dirt farm lane",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain autotile correctly depicted as a horizontal top-down ground surface on grass with appropriate perspective and edge transitions.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4098
+  }
+ ],
+ "decidedAt": "2026-10-14T06:31:15.770Z",
+ "cells": {
+  "16": [
+   "0bc9d55fa65df430",
+   "2c90cf685d6289c1",
+   "557876dc462acd62",
+   "6b9c8b623e9dc915",
+   "91675763c1be3fa3",
+   "9a07f921166aea7f",
+   "c69e85e84cf82555",
+   "d923709a159c879b",
+   "da1deaa171a66f9e",
+   "f2cf7608b019c690"
+  ],
+  "24": [
+   "099c805062dd1a36",
+   "0e0587743c5eb847",
+   "13781e153954d53b",
+   "39565aeffbaa2e40",
+   "3f22f819a9987bfc",
+   "599480c9fe9869c8",
+   "5ce97c1fa8832862",
+   "6a6b3c73aad1cf03",
+   "6b37132782f66d8b",
+   "717868474fd4caba",
+   "858037ad838a57a5",
+   "8ef7ea931c7dbba6",
+   "8f94e56231ec0674",
+   "a269008b0de2bca4",
+   "a7b45aea12db7859",
+   "b7a3b6540458ff35",
+   "bb118f42e6674c2d",
+   "dbaa0d6261325ba1",
+   "dd89d9b7d917f89a",
+   "dee4cf5e823c0b31",
+   "e38de4ac2ddee9f0",
+   "e6cce8feb5760b58",
+   "f0127dbcbd4154e0",
+   "f06952b3669ddf12",
+   "f2e6f8cc0aa8290c",
+   "fca58f1b5f5a352a",
+   "ff12e4a1990de4a0"
+  ],
+  "32": [
+   "0bb7bc56d32f4f71",
+   "30360ee10db7448a",
+   "6257fceef54a3624",
+   "66254cb27e6686a3",
+   "826599bee99d06e2",
+   "aa80077b9c5049ea",
+   "b1b37bdbb8524c6b",
+   "b544ef240fb8d37a",
+   "c0b8a6e308ea416b",
+   "c254d0b9f38152fb",
+   "ce091b92a32dc3a9",
+   "d3a571013177c7cc",
+   "df6152a02939539d",
+   "ef1537eefbdea911",
+   "fe88e568eee4ecd3"
+  ],
+  "48": [
+   "031ecb72c0612942",
+   "3b482177b5d20cf4",
+   "8f2f2bc769ff2a2c",
+   "a7377eae7523e1ee",
+   "c52a343b8f1d486d",
+   "d0da3103da59387f",
+   "eb1041b9c3d54da8",
+   "eb1fe112e43cb42a"
+  ]
+ }
+}

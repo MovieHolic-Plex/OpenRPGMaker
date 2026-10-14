@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b1e1ad7d639dbb011153cf4ae6c3600954dbfc763210b4cf6133c5d26161655a",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece 'post' (slim posts with cap tops, two rails)",
+ "label": "beodeul_farm/fence_post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence post",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut/end-grain surface of the post is clearly visible at rows 0-3 (4 source pixels tall) with distinct lighting, showing the top face in 3/4 perspective above the south vertical face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9075
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden fence post",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the post is rendered across rows 0-3 (4 source pixels tall) with clear top-down shading before transitioning to the vertical south-facing body (rows 4-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5641
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fence post",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden post shows a 4-row foreshortened top surface (rows 0-3) in lighter end-grain tones above the darker front shaft (rows 4-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5944
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden post",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden post has a clearly visible top surface spanning rows 0 to 3 (4 pixels tall) rendered in lighter wood tones, giving it proper 3/4 perspective depth above its south-facing shaft.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4825
+  }
+ ],
+ "decidedAt": "2026-10-14T06:21:16.328Z",
+ "cells": {
+  "16": [
+   "63e790a874b8abc7"
+  ],
+  "24": [
+   "1977be3c83cc888e",
+   "30bc9711543aec9c",
+   "d0e9e9f5b3e1e028",
+   "d4cd7bea6ac343f7",
+   "e5772b6e8c312dea",
+   "f47e82e6d470f125"
+  ],
+  "32": [
+   "1977de2eae427e34",
+   "1ff32d3259106b23",
+   "26ebbc49b89cf011",
+   "4f7b2a1593ae0296",
+   "a6886f8dc6dbd262",
+   "b5ae1a6feef6c87d"
+  ],
+  "48": [
+   "076b32278ef6c0dc",
+   "47452af16543cb34",
+   "5362e3906a7ed4f5",
+   "abee17ecb67c6f8f",
+   "c67ea2710dd5811d",
+   "f5b7a3de5d4b45f5"
+  ]
+ }
+}

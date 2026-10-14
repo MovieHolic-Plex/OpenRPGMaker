@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "631954a4552ef230814f7e571631143ba5a2d1053892383e3a329c9ec617d8a6",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece 'cNW' (slim posts with cap tops, two rails)",
+ "label": "beodeul_farm/fence_cNW",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence post and connected rails",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The central fence post shows a clearly foreshortened top cap surface spanning rows 1-5 (5 rows tall), transitioning at row 6 to the darker south-facing post surface. Additionally, the horizontal rails on the right display distinct top surfaces (rows 6-7 and 11-12) above their front-facing rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7821
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden post and fence rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fence post features a clearly defined top cap surface measuring 4 pixel rows tall (rows 1-4) in a lighter tone above the darker south-facing post body. Top surfaces of the rails are also indicated.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8377
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden fence post and horizontal rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal fence rails to the right are drawn in pure front elevation with only a 1px highlight line on row 6 and row 11 rather than visible top faces. The frame definition explicitly requires horizontal beams to show top faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 20660
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fence post and rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The central post has a clearly defined 4-row top face (rows 2-5) before transitioning to the front face on row 6. The south-running rail section also displays its top surface along its length.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8298
+  }
+ ],
+ "decidedAt": "2026-10-14T06:03:18.253Z",
+ "cells": {
+  "16": [
+   "d96b50c26317704d"
+  ],
+  "24": [
+   "0e4510bca8a4bd3e",
+   "1b259e34e3bceb50",
+   "4f7b08d8399260a6",
+   "99ab44258ffe0ad0",
+   "ccecdc58b0bb94ea",
+   "e5e179ea94c756f6"
+  ],
+  "32": [
+   "141fcec77cc375ce",
+   "2c32e31693c34861",
+   "34955e1e87261b5c",
+   "42de0962d10935df",
+   "498508b4205b3d34",
+   "cbcb0c5b19bf8198"
+  ],
+  "48": [
+   "00ac9460ea7026ea",
+   "0408659962486ab0",
+   "2438c97b329da78d",
+   "3af51d6ebb89f661",
+   "5210627935c79784",
+   "d05f12347476dc7a"
+  ]
+ }
+}

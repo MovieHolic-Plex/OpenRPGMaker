@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e6ed2bbb9956486429fa0d6516ee86046b08212a5f2cdced6f4db4519a4d31d4",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece 'vS' (slim posts with cap tops, two rails)",
+ "label": "beodeul_farm/fence_vS",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence post and rail segment",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The post has a clearly defined top cap surface measuring 4 rows tall (rows 2-5) before the vertical south face begins, and the rail running north-south shows its top surface facing up.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5072
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fence post with top cap",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The post has a clearly defined 4-row top surface (rows 2-5) above its front face (rows 6-14), showing the horizontal top face in proper 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 25482
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden fence post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence piece consists of flat vertical strips with no foreshortened horizontal top surfaces. The post cap is drawn as a flat vertical block (front elevation) rather than an upward-facing top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 32465
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden fence post and vertical rail",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top face of the post is clearly visible at rows 2-5 (4 rows tall) highlighted in a lighter wood tone under overhead lighting, distinct from the darker south-facing post shaft (rows 6-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10711
+  }
+ ],
+ "decidedAt": "2026-10-14T06:02:03.036Z",
+ "cells": {
+  "16": [
+   "4278c69a3416e55f"
+  ],
+  "24": [
+   "2465055b62eebdad",
+   "68b28eea750d893d",
+   "71ba144289b4ae9d",
+   "c6d839600b3f1d3b",
+   "e94a30b763e010fa",
+   "f36c12fb8c497598"
+  ],
+  "32": [
+   "03de2008d2d78a73",
+   "100a6f24f2ff5997",
+   "1becad10c53a4f94",
+   "40a4b839e99b7c50",
+   "75453c8592506c4d",
+   "cffe84b7d7d39804"
+  ],
+  "48": [
+   "1f44742b63bfb340",
+   "8c495ad169847d98",
+   "99c5f13d6ed30529",
+   "a6fd3f2e0a2a8ef3",
+   "d903b8055e5f4d1e",
+   "f8ae53e74439e19f"
+  ]
+ }
+}

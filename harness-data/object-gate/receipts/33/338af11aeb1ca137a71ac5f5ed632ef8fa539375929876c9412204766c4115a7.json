@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "338af11aeb1ca137a71ac5f5ed632ef8fa539375929876c9412204766c4115a7",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece 'post' (slim posts with cap tops, two rails)",
+ "label": "beodeul_farm/fence_post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical wooden fence post",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut/cap of the post is clearly visible on rows 0-3 (4 rows tall) in a lighter wood tone above the darker front face on rows 4-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6329
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fence post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The post is drawn in pure front elevation as a flat vertical column with no visible top surface. The lighter section at rows 0-3 represents a cap viewed straight-on (shaded with identical vertical column shading as the shaft) and is cut off flat at row 0 without any top face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 16233
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden fence post",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the post (cap) is visible from row 0 to row 3 (4 rows tall) in a lighter wood tone above the south-facing vertical shaft (rows 4-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6534
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden fence post",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the post is drawn foreshortened at rows 0-3 (4 rows tall) matching the post's 4px interior width, rendered in a lighter end-grain wood tone with a highlight, atop the darker front-facing vertical shaft (rows 4-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11704
+  }
+ ],
+ "decidedAt": "2026-10-14T06:14:16.467Z",
+ "cells": {
+  "16": [
+   "069a327800613afc"
+  ],
+  "24": [
+   "14f23fc612a7731e",
+   "75fc2241c1e426e1",
+   "8077cc863c79c510",
+   "bdffc90d2beb1a05",
+   "c45d82203df0cf54",
+   "d8f5425f790111a0"
+  ],
+  "32": [
+   "0123f14f2494c7d9",
+   "3d5396231f50cae3",
+   "59d529f0cb4814be",
+   "6abc06639dbda634",
+   "a33e19b5f55b5483",
+   "e6ecb6152c69a169"
+  ],
+  "48": [
+   "2900e02032b3f086",
+   "3dfc074975d484c3",
+   "5b1df922cde3cba5",
+   "6d84c677dfbad138",
+   "a97e544015adc6ab",
+   "dc122c97c4f1b53c"
+  ]
+ }
+}

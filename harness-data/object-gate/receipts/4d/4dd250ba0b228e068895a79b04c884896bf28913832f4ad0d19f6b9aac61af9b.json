@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4dd250ba0b228e068895a79b04c884896bf28913832f4ad0d19f6b9aac61af9b",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece 'cSE' (slim posts with cap tops, two rails)",
+ "label": "beodeul_farm/fence_cSE",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence rails and posts",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal fence rails clearly display foreshortened top surfaces measuring 3 pixel rows tall (e.g. rows 3-5 and rows 10-12) above their front-facing vertical drop of 2 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7013
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden fence post and rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence rails and posts are drawn entirely in flat front elevation. The horizontal rails only have 1-2px edge highlight bands rather than true foreshortened top surfaces, and the vertical post ends flatly without any 3/4 depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10411
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden fence rails and posts",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal rails show distinct light-toned top surfaces (approx. 2-3 rows each) above shaded front faces, consistent with 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4209
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden fence piece",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal fence rails show distinct top faces measuring 3 pixel rows (rows 3-5 and rows 10-12) in lighter wood above their darker 2-row south faces, consistent with 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6534
+  }
+ ],
+ "decidedAt": "2026-10-14T06:23:32.649Z",
+ "cells": {
+  "16": [
+   "ed317f1198974bed"
+  ],
+  "24": [
+   "2ad831b744736a65",
+   "44c2c91890d5cbe7",
+   "850d407ec88abcc0",
+   "93662f134fb4c7a8",
+   "9eefa3331a5c748d",
+   "b21fb96bcdde53c4"
+  ],
+  "32": [
+   "4578dfc9c5fb43ae",
+   "4de747afb3d5b46b",
+   "83113b15b02348f1",
+   "99a9e994de0605ab",
+   "a61ab500c1d28e7c",
+   "b0f565ed8738092e"
+  ],
+  "48": [
+   "050a7ab561d1bc9c",
+   "395f2f2088b74fc1",
+   "4c2272fd808cde6b",
+   "597773ad8ff26c20",
+   "9da778b5dc715dfd",
+   "e5ba58e91cf8196a"
+  ]
+ }
+}

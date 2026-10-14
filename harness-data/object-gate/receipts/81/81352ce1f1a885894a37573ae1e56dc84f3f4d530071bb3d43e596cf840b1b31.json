@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "81352ce1f1a885894a37573ae1e56dc84f3f4d530071bb3d43e596cf840b1b31",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece 'h' (slim posts with cap tops, two rails)",
+ "label": "beodeul_farm/fence_h",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence post and horizontal rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "While the central post cap has a small top face (rows 1-3), the horizontal rails are drawn in pure front elevation with only a 1px outline at the top (row 4) and no visible top surfaces, violating the requirement that horizontal beams of frames must show top faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13095
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal rails and central post of farm fence",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal fence rails are drawn in pure front elevation with a 1px dark outline at row 4 and row 10 and no top surface shown. While the small central post cap has visible rows at 1-3, credit cannot be given to a small detail when the main horizontal beams of the frame lack any foreshortened top face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11270
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal fence rails and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence rails comprise the majority of the object and are drawn in flat front elevation with vertical wood grain spanning the entire height of each rail and no horizontal top surface. The small post cap (rows 1-3) does not redeem the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13702
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden post and horizontal fence rails",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The central post has a 3-row foreshortened top cap (rows 1-3), and both horizontal rails clearly show 3-row top surfaces (rows 5-7 and 11-13) above their darker front faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7201
+  }
+ ],
+ "decidedAt": "2026-10-14T06:04:54.993Z",
+ "cells": {
+  "16": [
+   "66927d48d7d1b290"
+  ],
+  "24": [
+   "11da4cf290befe49",
+   "2e12f5d480087ea8",
+   "3d4b770196951821",
+   "5663ef8ef7329d04",
+   "89df44c3ce6bdbc8",
+   "ac6975f4885ef1ef"
+  ],
+  "32": [
+   "30a29c7af70528a1",
+   "4a4a8bb93a930b4c",
+   "873a64cfe2aab5a5",
+   "a65b43bb30563604",
+   "bdc09a72c7010d87",
+   "f82feef30e50bed7"
+  ],
+  "48": [
+   "1ffefec717238cf3",
+   "24c8837671c70adc",
+   "54c9ff30431d0e36",
+   "5d1e01caf9e9e2b4",
+   "b73ff6724dda6ac7",
+   "bc3fad095aec9834"
+  ]
+ }
+}

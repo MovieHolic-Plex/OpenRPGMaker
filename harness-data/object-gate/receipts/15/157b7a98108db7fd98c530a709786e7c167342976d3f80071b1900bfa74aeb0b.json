@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "157b7a98108db7fd98c530a709786e7c167342976d3f80071b1900bfa74aeb0b",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece 'vE' (slim posts with cap tops, two rails)",
+ "label": "beodeul_farm/fence_vE",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence post and rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": false,
+    "evidence": "The fence frame shows no foreshortened top surfaces on its horizontal rails, and an isometric receding side face is drawn on the right (cols 12-15) instead of the standard 3/4 south-facing perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "옆면(아이소)",
+    "윗면 0행 < 3"
+   ],
+   "ms": 48033
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fence post and rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence components are drawn entirely flat in elevation without any visible top horizontal faces (0 top rows) for either the post or the rails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5246
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden fence piece with vertical post and rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence components are drawn entirely as flat 2D vertical strips and rectangles with horizontal dividing lines at rows 4 and 11. No horizontal top surfaces or foreshortened caps/rails are visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9499
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical fence post and rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence piece consists entirely of vertical rectangular strips with flat horizontal dividers; it bleeds off the top edge with no top surface or cap visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5414
+  }
+ ],
+ "decidedAt": "2026-10-14T06:14:16.467Z",
+ "cells": {
+  "16": [
+   "045414bbaa034c40"
+  ],
+  "24": [
+   "2aeddfaa3d78ff03",
+   "38179c6a10d4a43b",
+   "73e5912c93de8b9f",
+   "97381cc1d1252772",
+   "b48dd9df02250f79",
+   "ea3773d5132909e7"
+  ],
+  "32": [
+   "0b566218c9fa3b23",
+   "5fd346c79f5de354",
+   "7d96bbb56e2b0bcb",
+   "8f879fdbaff1f33e",
+   "cd1b9f00c8c9a1ac",
+   "ce5d16248c905a08"
+  ],
+  "48": [
+   "39fbfdceee903093",
+   "4abb0f99b1d74d3f",
+   "8750e6fa08459e3a",
+   "bc0587c1b61d7eae",
+   "c1cbcbf40c029f79",
+   "d3b76e4446749226"
+  ]
+ }
+}

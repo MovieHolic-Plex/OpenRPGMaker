@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ca3dae4513d48b3f2361186d78bab72ef0651f7741c2ffe384c30d4d4c2ea61d",
+ "width": 64,
+ "height": 48,
+ "kind": "terrain",
+ "name": "grass ground tiles with small tufts, clover, wild flowers and pebbles",
+ "label": "beodeul_farm/grass_variants",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass ground tiles with details",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground texture viewed from above with scattered tufts, flowers, and pebbles, correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4099
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass ground tiles",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ground terrain texture spanning the entire tile area with small scattered flora and pebbles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4201
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass terrain tile texture",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain surface viewed from above with scattered grass tufts, pebbles, and small flowers.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4639
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass ground terrain",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain surface viewed from above with scattered grass tufts, pebbles, and flowers.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4309
+  }
+ ],
+ "decidedAt": "2026-10-14T06:31:15.770Z",
+ "cells": {
+  "16": [
+   "0bc9d55fa65df430",
+   "0bdaefd51dc2da62",
+   "13280124368cb7cc",
+   "83c5f8e42f7e6b68",
+   "8cb69d1bd545af8a",
+   "bff06583bdfb6898",
+   "eb7062a5a2fbedc0"
+  ],
+  "24": [
+   "0d8cbee5c5ff05e0",
+   "21eae3d44c47c980",
+   "263ceaa017a020d9",
+   "2940f72437200ce0",
+   "54655e5c1d37e1a6",
+   "6ed210195c798f11",
+   "74deb78ec9706eac",
+   "839be2ffcb6e9446",
+   "87e7c403817e285f",
+   "8922323c604fda4b",
+   "b24d11eecb724ace",
+   "b9ac3d678085134e",
+   "b9f2b53ae38e9e88",
+   "c9a5e738a97410f6",
+   "ce21fb9c959b5d28",
+   "cfa8b5cc719447f8",
+   "d77c53c7168da8fd",
+   "f8cdec4ff0715a96"
+  ],
+  "32": [
+   "246a31807027acd6",
+   "398afcadc410501a",
+   "5c669ead0e004c4f",
+   "7d0125fe8234566c",
+   "8e881e1465ce7a92",
+   "aec56d5fa337bb37",
+   "af351fd2c5452781",
+   "edc50f96e00b34d5"
+  ],
+  "48": [
+   "01aa7249911215e6",
+   "0efb0b8c838af9b3",
+   "6014d0ed7c499741",
+   "a4a88bdffea6bf3a",
+   "b1aca8fcd6dcbd8e",
+   "bff66861ec55fa7c"
+  ]
+ }
+}

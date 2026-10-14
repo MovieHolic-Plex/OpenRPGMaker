@@ -1,0 +1,158 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8d5f180d67767c367295ca63ab4b5f98d26a4f4583d8c2ef73f63517ead19b8f",
+ "width": 96,
+ "height": 96,
+ "kind": "structure",
+ "name": "farm barn building (terracotta tiled gable roof with hayloft dormer, half-timbered plaster walls, big plank double door, stone footing)",
+ "label": "beodeul_farm/object_barn",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "farm barn building with tiled roof slope and ground floor wall",
+    "kind_matches": true,
+    "top_rows": 52,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The southern slope of the terracotta tiled roof is viewed from above across rows 6-58 (approx. 52 px tall), typical of JRPG 3/4-view building tiles, set above a vertical front facade (rows 59-93).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4075
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "farm barn building with terracotta tiled roof and half-timbered walls",
+    "kind_matches": true,
+    "top_rows": 54,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The south-facing roof slope is extensively visible from row 4 to row 57 (approx. 54 pixel rows) above the vertical ground-floor wall (rows 58-93), correctly rendering the classic 3/4 perspective for JRPG buildings.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3880
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "barn building with terracotta tiled roof and half-timbered wall",
+    "kind_matches": true,
+    "top_rows": 52,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building prominently shows the top downward-facing slope of the tiled roof spanning over 50 pixel rows (rows 7 to 58) above the front wall, perfectly matching the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3786
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "farm barn building with pitched tiled roof and half-timbered south wall",
+    "kind_matches": true,
+    "top_rows": 56,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The southward-facing roof slope covers rows 4 to 59 (56 rows), properly presenting the top/sloped plane of the building in 3/4 top-down perspective above the vertical wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3416
+  }
+ ],
+ "decidedAt": "2026-10-14T05:55:32.806Z",
+ "cells": {
+  "16": [
+   "02a110c040c2215e",
+   "102d1e41a25967f6",
+   "1033c3d8e53a7a01",
+   "177663bb10fb5b02",
+   "1b4cd48cf53cd268",
+   "27d817af9e1d7d2f",
+   "2ac19c326133041a",
+   "4496d80531e602f6",
+   "4ba7291a1ce0c56e",
+   "57e47c6033c98df1",
+   "5aa4a3e4ad570c39",
+   "5bf220588f755de8",
+   "625c6bdafd4a2be2",
+   "673e68156a538ab3",
+   "6d0aeb0b75647f6a",
+   "7da5ed9812fb856a",
+   "7f78395225e08882",
+   "9139b989def0e782",
+   "95c3875dc3cbdfa3",
+   "9bb3e6a7d80d59ed",
+   "9f2fb9b4a121d6bc",
+   "a0cfa1c76a28d369",
+   "a5e11ed55340f4d4",
+   "aaae4bd83e99cc97",
+   "ac86c97e22bebadb",
+   "b918c7f1aa0f0035",
+   "c227e3d71aeef8f0",
+   "c264271684f53ddf",
+   "c79552656d15d5bf",
+   "ce1a2ae865cbebb0",
+   "e7ab57a9fc2dd471",
+   "e98f82c5baaad832"
+  ],
+  "24": [
+   "0b3b020b8a842a89",
+   "1070bf9063eafcf3",
+   "193f46e10c022a33",
+   "1fcef8449687bddb",
+   "277464f664345d1d",
+   "31c5958347f3cbf7",
+   "388b3325a77661e1",
+   "48551cc88e38d43f",
+   "4c8648ec014fa025",
+   "4fdf4ed5947fdce6",
+   "5ca6d387ba46eadb",
+   "5eceed974a2a88c7",
+   "a230656e342a95e1",
+   "b385ee23557bdef2",
+   "eb8f1625251ce256",
+   "efd2e7dd1b777222"
+  ],
+  "32": [
+   "1968e0d439862c24",
+   "2e501f1f49dcc256",
+   "9d61a5e5cf068b8e",
+   "cbcee8de45baa157",
+   "d97b622bde295713",
+   "dee414c534bc6d61",
+   "edf3d1a044f14529",
+   "f55c0757be891ab6",
+   "f6a50cc4dcf904bc"
+  ],
+  "48": [
+   "2b8ee5d2623adacf",
+   "437f802bae5b2a56",
+   "6b06168ff6372e65",
+   "8559cf4cfb395b4c"
+  ]
+ }
+}

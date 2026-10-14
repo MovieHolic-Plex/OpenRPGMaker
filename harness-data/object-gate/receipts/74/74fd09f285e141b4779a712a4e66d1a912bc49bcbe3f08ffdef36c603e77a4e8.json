@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "74fd09f285e141b4779a712a4e66d1a912bc49bcbe3f08ffdef36c603e77a4e8",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece 'cSE' (slim posts with cap tops, two rails)",
+ "label": "beodeul_farm/fence_cSE",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "corner post and horizontal rails of wooden fence",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence post and rails are drawn in pure front elevation; the post terminates at row 3 with a flat 1px outline with no visible top surface, and the horizontal rails only have 1px edge highlights rather than visible top faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8507
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden fence corner post and rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence post top cap is only 1-2px tall (rows 4-5) and the horizontal rails only have a 1px edge highlight (rows 6 and 10), lacking a distinct foreshortened top surface for the 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5969
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden fence corner post and rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence post and horizontal rails are drawn in pure front elevation. The post has only a 2px cap highlight at rows 4-5 with no distinct top face, and the horizontal rails are drawn completely flat (1px highlight on row 6/10) with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7715
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden fence post and rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence post ends with a flat 1px horizontal outline at row 3 with no top surface visible from above. The horizontal rails and post are drawn in pure front elevation with only 1px edge highlights instead of foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10313
+  }
+ ],
+ "decidedAt": "2026-10-14T05:55:32.805Z",
+ "cells": {
+  "16": [
+   "0ae90a497f2a0c24"
+  ],
+  "24": [
+   "3350ac0688c29ee0",
+   "749b3ef8d7ace7f5",
+   "9f647bc10800ba69",
+   "bb9f997dc2c67e4b",
+   "c9528a6f4e8ddab0",
+   "e70ec3a239900243"
+  ],
+  "32": [
+   "5927e7ce9a22e550",
+   "6ef6d48247a71c03",
+   "883cd2d53049be19",
+   "9e5e0116ecffb349",
+   "c8f9e21dfbdbb945",
+   "fae89c13dba26efe"
+  ],
+  "48": [
+   "40773d3b3419e244",
+   "533830a1bfb40216",
+   "56c5d676fa6af5e4",
+   "c338f2fae66845d9",
+   "ceaa112e87efdf1a",
+   "fd7eb4a45cb735a0"
+  ]
+ }
+}

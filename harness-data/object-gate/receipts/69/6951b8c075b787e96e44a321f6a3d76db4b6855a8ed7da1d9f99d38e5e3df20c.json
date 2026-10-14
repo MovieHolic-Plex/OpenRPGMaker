@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6951b8c075b787e96e44a321f6a3d76db4b6855a8ed7da1d9f99d38e5e3df20c",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece 'v' (slim posts with cap tops, two rails)",
+ "label": "beodeul_farm/fence_v",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical fence segment (post and rails/planks)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence segment runs vertically with no foreshortened top surfaces. The top of the post/rails bleeds directly off the top edge (row 0) without any visible top face, and the cross-segments are marked only by 1px horizontal division lines, showing a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7842
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical fence section with post and cross rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence section is drawn in pure elevation with no visible top faces on any horizontal elements or rails; horizontal divisions are only 1px dark lines with 0px of top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6491
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vertical fence post and rail segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence piece extends vertically with flat vertical banding and cross-bars, showing zero rows of a top surface for posts or rails (top_rows=0). It is drawn entirely in flat front/side elevation without 3/4-view top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6011
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical fence section",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence piece is drawn as a flat elevation with no visible horizontal top surfaces on the posts, rails, or caps. The pixels run strictly vertically without any foreshortened top planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5698
+  }
+ ],
+ "decidedAt": "2026-10-14T06:19:08.573Z",
+ "cells": {
+  "16": [
+   "427dc09a87f83e7a"
+  ],
+  "24": [
+   "0fb859b8d23cf81e",
+   "2beed3060343695b",
+   "5a0993d7744b9e7e",
+   "c167c0028d3ff5fb",
+   "d1167b10a7369df7",
+   "edc0f389151bb8c0"
+  ],
+  "32": [
+   "1ee74d29e8763647",
+   "669d4060c337d706",
+   "8f0e73fa62b8b253",
+   "932390e8809e2964",
+   "ccd5fac5c0bedd70",
+   "f1e76525b0a2ab14"
+  ],
+  "48": [
+   "4d50169b4e36af57",
+   "5148363c96f6d07a",
+   "6c85bdd619bff299",
+   "8f5018416af1fa7d",
+   "a95ef8a990ef1ec7",
+   "b4b68637c9667e1e"
+  ]
+ }
+}

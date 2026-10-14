@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e7fc38f44a59f1b2926228de916714dbd557b93b43f5ca8868c0de86cd354367",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece 'vS' (slim posts with cap tops, two rails)",
+ "label": "beodeul_farm/fence_vS",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical fence post and rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The south fence post displays a distinct 4-row top cap (rows 0–3) in lighter wood above its south-facing body (rows 4–14), fully consistent with 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 28278
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden farm fence (post and rails)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence post and horizontal rails are drawn in pure front elevation. The horizontal rails show no top surfaces seen from above, and the 4px tall tan segment at the top of the post is drawn as a flat front-facing cap block rather than a foreshortened horizontal top face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 33619
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fence post and rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The vertical fence post features a distinct 4-row tall top cap (rows 0-3) showing the cut end grain from above before transitioning to the vertical south face (rows 4-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7314
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical fence post and attached rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The post has a distinct 4-pixel-tall top cap (rows 0-3) showing its horizontal top surface in 3/4 view, with the vertical front face extending down to row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10550
+  }
+ ],
+ "decidedAt": "2026-10-14T06:19:08.575Z",
+ "cells": {
+  "16": [
+   "b2a6c5574522581b"
+  ],
+  "24": [
+   "0a2ffeee33b81f30",
+   "0fc7c7271fb5d7b8",
+   "5178e5008c3b8e4b",
+   "64243c1e8059ac65",
+   "a918158131eaf6f3",
+   "f5a25c79d9588eaf"
+  ],
+  "32": [
+   "366493192d414b9c",
+   "4887589bf3f1241b",
+   "859b472c2488ecd9",
+   "8678a5e8dee53a5d",
+   "cd46db8126d8c215",
+   "d08d9cf667e8e16d"
+  ],
+  "48": [
+   "0438fa41382fe394",
+   "06448480573b0062",
+   "40c8fb9591179fa8",
+   "9524192518a26cd0",
+   "97f2184e280a2a89",
+   "b3194605db3618fe"
+  ]
+ }
+}

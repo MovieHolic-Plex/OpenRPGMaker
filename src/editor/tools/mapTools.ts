@@ -2243,8 +2243,10 @@ const createFarmPlot: ToolDefinition = {
   description: "맵의 경작 가능 영역(farmableArea, 플레이어가 괭이로 갈 수 있는 칸)을 선언한다. 밭·농장 요청의 정본 툴. 타일·울타리·흙 그림은 바꾸지 않는다 — " +
     "버들항(beodeul_city) 맵은 플레이 중 간 칸을 번들 경작지 오토타일 `farmland`(물 준 칸 `farmland_watered`)로 그리므로 영역은 풀·흙 위에 두면 된다. " +
     "밭은 쓰임 단위로 나눠 선언한다: 밭 하나 = 4×3~8×5 직사각형 하나(필요하면 여러 번 호출). 들판 한 띠·맵 절반을 한 영역으로 덮지 않는다. " +
-    "영역 한 칸 바깥을 울타리로 빈틈 없이 두르고(버들항: 키트 bd-farm-fenced-plot 또는 울타리 조각 모서리 cNW·cNE·cSW·cSE + 가로·세로 + 문 한 칸) 문 아래에서 폭 2칸 흙길로 집·헛간(bd-farm-barn)에 잇는다. " +
-    "플레이로 갈지 않는 장식 밭(작물이 이미 자란 그림)은 이 도구가 아니라 stamp_object(kit:beodeul_city/bd-farm-plot-*). 칸 사전·조립 순서는 참고문서 용도 beodeul-farm.",
+    "영역 한 칸 바깥을 울타리로 빈틈 없이 두르고(버들항: 키트 bd-farm-fenced-plot 또는 울타리 조각 모서리 cNW·cNE·cSW·cSE + 가로·세로 + 문 한 칸) 문 아래에서 폭 2칸 흙길(버들항: fill_region 재료 「버들항 농장 흙길」 — 반듯한 가장자리, 들쭉날쭉한 모랫길 말고)로 집·헛간(bd-farm-barn)에 잇는다. " +
+    "플레이로 갈지 않는 장식 밭(작물이 이미 자란 그림)은 이 도구가 아니라 stamp_object(kit:beodeul_city/bd-farm-plot-*). 칸 사전·조립 순서는 참고문서 용도 beodeul-farm. " +
+    "흔한 실수(2026-10-14 조수 실행 실측): 흙길을 넓은 사각 덩어리·막다른 토막으로 깔기(폭 2칸 곧은 줄과 직각 꺾임만, 끝은 문 앞 칸이나 다른 길에 닿게) · 닭장·헛간 문 앞에 길을 안 잇기 · " +
+    "한 마을에 울타리 두 화풍 섞기(마을 생성기가 둘레를 친 밭 곁에 bd-farm 울타리 밭을 더할 땐 그 밭 하나는 같은 울타리로 끝까지 두르고, 둘레가 끊긴 채 두지 않는다) · 찍은 건물 키트 칸을 tile_erase 로 지워 지붕이 잘리게 두기.",
   mode: "write",
   domains: ["database", "map"],
   parameters: {

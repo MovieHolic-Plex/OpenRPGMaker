@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cf21304c6386be5f91e40e5ea8fae3e644b8d86ba3b0224a6831d5452dcbaab6",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece 'vE' (slim posts with cap tops, two rails)",
+ "label": "beodeul_farm/fence_vE",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence post and rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence elements are drawn as flat vertical and horizontal bands with 1px outline dividers and no foreshortened top surfaces visible on the rails or posts.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9317
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden fence piece",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence elements are drawn as flat vertical and horizontal rectangles with no visible top surfaces (top_rows = 0), bleeding off the top edge with flat profiles.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9918
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vertical fence section (east half)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence components are drawn flat with 1px horizontal divider lines at rows 4 and 11, lacking distinct foreshortened top surfaces (top_rows=0) for horizontal rails or post caps.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9202
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical fence section",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence elements run straight down without any visible top surface (0 top rows); horizontal dividers are mere 1px lines rather than foreshortened top faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12904
+  }
+ ],
+ "decidedAt": "2026-10-14T06:21:16.328Z",
+ "cells": {
+  "16": [
+   "ce0fe7321cf5706b"
+  ],
+  "24": [
+   "2f529e7482703883",
+   "5006777035b40273",
+   "5fe6fd5b2cf6e2db",
+   "6151a25d9fe522b5",
+   "bfe1517616ee2a00",
+   "f336a20eac8749e8"
+  ],
+  "32": [
+   "037798633ba5f162",
+   "1b5592e9761cc810",
+   "28575cedc7834798",
+   "3a0e83c481c93eea",
+   "d26b143a4a383ae4",
+   "ff45aaa2a72bbf92"
+  ],
+  "48": [
+   "02c84fd3e39809af",
+   "34bea9fa368554f8",
+   "79918ea23d28314a",
+   "8a8b3378d5e381ac",
+   "baa6df987cf930ef",
+   "d071d3f1176cdee6"
+  ]
+ }
+}
