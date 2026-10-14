@@ -30,11 +30,13 @@ for (const f of readdirSync(EX).filter((x) => x.endsWith(".json")).sort()) {
       const r = BUILD_HAND_INTERIOR_ROOM_TOOL.run(project, args as never);
       const w = [...(r.warnings ?? [])].filter((m) => !String(m).startsWith("평면이 참고 예제"));
       const rr = reach(mapId);
-      out[mapId] = { warnings: w, ...rr, size: `${project.maps[mapId]!.width}x${project.maps[mapId]!.height}` };
+      const m = project.maps[mapId]!;
+      out[mapId] = { warnings: w, ...rr, size: `${m.width}x${m.height}`, width: m.width, height: m.height, lower: m.lowerTiles, lower2: m.lowerOverlayTiles ?? [], upper: m.upperTiles, upper2: m.upperOverlayTiles ?? [],
+        events: m.events.map((e) => ({ name: e.name, x: e.x, y: e.y })), layout: (r as { data?: { layout?: unknown } }).data?.layout ?? null, args };
       if (w.length || rr.reached < rr.walk) bad++;
       console.log(`${w.length || rr.reached < rr.walk ? "WARN" : "OK  "} ${mapId} ${project.maps[mapId]!.width}x${project.maps[mapId]!.height} 걸음 ${rr.reached}/${rr.walk}${w.length ? "\n   " + w.join("\n   ") : ""}`);
     } catch (e) { bad++; console.log(`FAIL ${mapId} ${(e as Error).message}`); out[mapId] = { error: (e as Error).message }; }
   }
 }
-const j = process.argv.indexOf("--json"); if (j > 0) writeFileSync(process.argv[j + 1]!, JSON.stringify({ maps: out, project: { tilesets: { modern_city: undefined } } }, null, 1));
+const j = process.argv.indexOf("--json"); if (j > 0) writeFileSync(process.argv[j + 1]!, JSON.stringify({ maps: out }));
 process.exitCode = bad;
