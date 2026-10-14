@@ -520,7 +520,17 @@
 "out/si-windsock/0.0": 622,
 "out/si-windsock/0.1": 623,
 "out/si-lantern-floor/0.0": 624,
-"out/si-lantern-floor/0.1": 625
+"out/si-lantern-floor/0.1": 625,
+"out/si-grass-shade-a/0.0": 626,
+"out/si-grass-shade-b/0.0": 627,
+"out/si-grass-tuft-a/0.0": 628,
+"out/si-grass-tuft-b/0.0": 629,
+"out/si-face-mid-ol/0.0": 630,
+"out/si-face-mid-or/0.0": 631,
+"out/si-face-mid-olr/0.0": 632,
+"out/si-tip-ol/0.0": 633,
+"out/si-tip-or/0.0": 634,
+"out/si-tip-olr/0.0": 635
 },
 "strips": {
 "out/si-stream/0.0": [

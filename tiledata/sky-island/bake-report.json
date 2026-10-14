@@ -1,11 +1,11 @@
 {
  "gate": {
-  "provisional_profile_uncalibrated": 233,
+  "provisional_profile_uncalibrated": 243,
   "blocked": [],
-  "pieces": 219
+  "pieces": 229
  },
  "tiles": {
-  "count": 626,
+  "count": 636,
   "rows": 14,
   "sheetPx": [
    768,
@@ -13,16 +13,16 @@
   ],
   "strips": 35,
   "kits": 85,
-  "groups": 137,
-  "pieces": 219
+  "groups": 147,
+  "pieces": 229
  },
  "definition": {
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 626,
+  "tiles_checked": 636,
   "kits_checked": 85,
-  "groups_checked": 137,
+  "groups_checked": 147,
   "autotiles_checked": 0
  },
  "reassembly": {

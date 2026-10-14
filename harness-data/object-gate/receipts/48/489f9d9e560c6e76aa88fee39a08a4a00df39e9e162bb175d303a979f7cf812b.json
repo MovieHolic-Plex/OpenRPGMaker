@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "489f9d9e560c6e76aa88fee39a08a4a00df39e9e162bb175d303a979f7cf812b",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "tilled farm soil edge on grass (terrain)",
+ "label": "sky-island/si-field-e",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tilled soil ground edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting horizontal tilled earth ridges bordering green grass on the right edge. Ground plane viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4138
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tilled soil ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile showing rows of tilled earth bordering grass on the right edge, properly viewed as top-down ground.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3903
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tilled soil ground tile bordering grass",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing tilled soil furrows transitioning to grass on the east edge; flat ground surface visible from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3535
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tilled soil ground tile with grass edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting horizontal furrows of tilled soil bordering green grass on the right; correctly rendered as a top-down ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4363
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.890Z",
+ "cells": {
+  "16": [
+   "963028b1424d2670"
+  ],
+  "24": [
+   "0ffb06302fbfc202",
+   "1509c54a8a5d6d7c",
+   "44d5d2dba27e800e",
+   "5b42cf0984805591",
+   "b2a013c04660777a",
+   "c645a434547504e2"
+  ],
+  "32": [
+   "0b8fbb416f78ff8c",
+   "273bf44fc2ebafa5",
+   "51362079cbf422d0",
+   "587d6aef74f51490",
+   "a2c4fe29fda696ac",
+   "cd5686c199024427"
+  ],
+  "48": [
+   "815fbced0b54f1da",
+   "aad56f7456b12ecf",
+   "ad28829cc49ca5ff",
+   "bbe48785b465c061",
+   "c6fa9b44ce403710",
+   "fbdc208cde58c244"
+  ]
+ }
+}

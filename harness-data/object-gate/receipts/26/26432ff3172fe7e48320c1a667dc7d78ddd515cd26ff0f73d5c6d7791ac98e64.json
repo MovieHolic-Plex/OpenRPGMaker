@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "26432ff3172fe7e48320c1a667dc7d78ddd515cd26ff0f73d5c6d7791ac98e64",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass ground tile",
+ "label": "sky-island/si-grass-flower",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass ground surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 terrain ground tile depicting grass with small flower accents, fully seen from top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3196
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass ground surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing top-down grass surface with small flower details across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4477
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass ground surface with small flowers",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing top-down grass surface across all 16 rows with pixel variations and small flower petals.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5355
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flat grass ground tile with small flowers",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "16x16 flat terrain ground tile depicting grass with tiny flowers, fully visible as ground surface from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5776
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.877Z",
+ "cells": {
+  "16": [
+   "7c13e76f3106e9dc"
+  ],
+  "24": [
+   "2a8e2a8c6eb4da15",
+   "38bc74b58c81f334",
+   "65a6c29f1a105f06",
+   "d583080f22206c92",
+   "d9e243ad68c457f9",
+   "f1c7e65641d91173"
+  ],
+  "32": [
+   "29786522e3017575",
+   "30d0518b30c9b5be",
+   "a1cbfa933e3a6693",
+   "aa857aef2d9e206c",
+   "d58df05c661a6bfb",
+   "e198345699b28c40"
+  ],
+  "48": [
+   "05ad00ca6ec5af9e",
+   "2187d0cca7a7b25b",
+   "4f3dcb23caeb2088",
+   "5f625705ba626cea",
+   "a8d42114344aed99",
+   "ca0985d8974110cd"
+  ]
+ }
+}

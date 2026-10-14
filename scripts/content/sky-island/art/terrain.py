@@ -41,13 +41,13 @@ def tnoise(x, y, g, s):
 
 
 def tuft_at(x, y, s):
-    """풀잎 다발(ʌ 모양 3화소) 자리 — 칸마다 5~6개, 16px 주기."""
-    for k in range(6):
+    """풀잎(세로 2화소: 밝은 끝 위 + 그늘 밑동) 자리 — 칸마다 4개, 16px 주기."""
+    for k in range(3):
         tx = int(rnd(k, 1, s + 50) * 16); ty = int(rnd(k, 2, s + 50) * 16)
         dx, dy = (x - tx) % 16, (y - ty) % 16
-        if (dx, dy) == (0, 0): return 2          # 가운데 잎 끝(밝음)
-        if (dx, dy) in ((15, 1), (1, 1)): return 1
-        if (dx, dy) == (0, 2): return -1          # 다발 밑동 그늘
+        if (dx, dy) == (0, 0): return 2          # 잎 끝(밝음)
+        if (dx, dy) == (0, 1): return -1         # 밑동 그늘
+        if (dx, dy) == (1, 1) and k % 2: return 1
     return 0
 
 
@@ -55,17 +55,19 @@ GRASS_BASE_SEED = 1
 
 
 def grass_px(x, y, s=1, base=4):
-    """풀밭 한 화소(칸 안 좌표). 바탕 덩이(8px·4px 잡음)는 모든 풀 칸이 같은 씨앗이라 어떤 풀 칸끼리 붙어도 이음매가 없다.
-    칸마다 다른 것은 풀잎 다발 자리(s)뿐이다."""
-    n = tnoise(x, y, 8, GRASS_BASE_SEED) * 0.6 + tnoise(x, y, 4, GRASS_BASE_SEED + 3) * 0.4
-    t = base - 1 if n < 0.30 else base + 1 if n > 0.74 else base
+    """풀밭 한 화소(칸 안 좌표). 화풍 정렬 2026-10-14: 버들항 풀처럼 넓은 얼룩 3단(짙은·보통·밝은) + 경계 디더 + 드문 짙은 점·풀잎.
+    바탕 얼룩은 모든 풀 칸이 같은 씨앗이라 어떤 풀 칸끼리 붙어도 이음매가 없다. 칸마다 다른 것은 풀잎·점 자리(s)뿐이다."""
+    # 바탕은 고른 풀(4단) + 2px 알갱이 얼룩(짙은·밝은, 반은 디더). 넓은 명암 덩이는 변형 칸(grass-b 밝은 얼룩·grass-shade 짙은 덩이)이 맡는다.
+    t = base
+    cv = rnd(x, y, GRASS_BASE_SEED + 5)
+    if cv < 0.075: t = base - 1                           # 짙은 풀 알갱이
+    elif cv > 0.955: t = base + 1                         # 밝은 풀 알갱이
     q = rnd(x, y, s + 11)
-    if q < 0.03: t = base - 1
-    elif q > 0.98: t = base + 1
+    if q < 0.012: t = base - 2                            # 짙은 점(흙·그늘 알갱이)
     tf = tuft_at(x, y, s)
-    if tf == 2: t = base + 2
+    if tf == 2: t = base + 2 if t >= base else base + 1
     elif tf == 1: t = base + 1
-    elif tf == -1: t = base - 1
+    elif tf == -1: t = base - 1 if t >= base else base - 2
     return ('grass', clamp(t, 0, 6))
 
 
@@ -75,6 +77,72 @@ def grass_fill(c, s=1, flowers=0, base=4):
         x = 2 + int(rnd(k, 1, s + 40) * 12); y = 2 + int(rnd(k, 2, s + 40) * 12)
         col = ('flower', 3) if k % 3 == 0 else ('gold', 4) if k % 3 == 1 else ('cream', 6)
         c.P(x, y, *col); c.P(x, y + 1, 'grass', 2); c.P(x - 1, y, col[0], col[1] - 1)
+
+
+def grass_light(c, s=1, clumps=()):
+    """밝은 풀 얼룩(햇빛 받은 풀): 바탕 위에 밝은 풀(5단, 속은 6단 점) 덩이 — 가장자리는 디더로 바탕에 녹는다. 칸 끝 1화소는 바탕 그대로."""
+    grass_fill(c, s)
+    for y in range(1, 15):
+        for x in range(1, 15):
+            v = 0.0
+            for (cx, cy, rx, ry) in clumps:
+                dx, dy = (x + 0.5 - cx) / rx, (y + 0.5 - cy) / ry
+                v = max(v, 1 - (dx * dx + dy * dy))
+            v += (tnoise(x, y, 4, s + 41) - 0.5) * 0.22
+            if v <= 0.05: continue
+            chk = (x + y) % 2
+            g = c.get(x, y)[1]
+            if v > 0.5: t = 6 if rnd(x, y, s + 43) < 0.07 else 5
+            elif v > 0.25: t = 5 if chk or v > 0.38 else max(g, 4)
+            else: t = max(g, 5) if chk and rnd(x, y, s + 44) < 0.5 else g
+            if g <= 2: t = g                                  # 풀잎 밑동 그늘은 남긴다
+            c.P(x, y, 'grass', t)
+
+
+def grass_shade(c, s=1, clumps=()):
+    """짙은 풀 그늘 덩이(평평한 얼룩): 풀 바탕 위에 짙은 풀(2·3단) 덩이 — 가장자리는 한 단씩 디더로 바탕에 녹는다. 칸 끝 1화소는 바탕 그대로(이음매 없음)."""
+    grass_fill(c, s)
+    for y in range(1, 15):
+        for x in range(1, 15):
+            v = 0.0
+            for (cx, cy, rx, ry) in clumps:
+                dx, dy = (x + 0.5 - cx) / rx, (y + 0.5 - cy) / ry
+                v = max(v, 1 - (dx * dx + dy * dy))
+            v += (tnoise(x, y, 4, s + 31) - 0.5) * 0.22
+            if v <= 0.02: continue
+            chk = (x + y) % 2
+            g = c.get(x, y)[1]
+            if v > 0.55: t = 2 if rnd(x, y, s + 33) > 0.06 else 1
+            elif v > 0.33: t = 3 if not (v > 0.45 and chk) else 2
+            elif v > 0.15: t = min(g, 3)
+            else: t = min(g, 3) if chk else g
+            c.P(x, y, 'grass', t)
+
+
+def grass_tuft(c, s=1, spots=()):
+    """풀포기(위에서 비스듬히 본 풀잎 다발): 가운데가 높고 양옆이 낮은 잎 7~9가닥 — 잎마다 밝은 끝·몸·그늘 밑동, 밑은 짙은 그늘 띠. 칸 끝 1화소는 바탕 그대로."""
+    grass_fill(c, s)
+    for (cx, cy, r) in spots:
+        n = int(r * 2) + 1
+        x0 = int(cx - r)
+        # 밑동 그늘(타원 띠)
+        for x in range(x0 - 1, x0 + n + 1):
+            if 1 <= x <= 14:
+                for yy in (int(cy), int(cy) + 1):
+                    if 1 <= yy <= 14: c.P(x, yy, 'grass', 2 if yy == int(cy) else 3)
+        for i in range(n):
+            x = x0 + i
+            if not 1 <= x <= 14: continue
+            u = abs(i - (n - 1) / 2) / max(1, (n - 1) / 2)
+            hgt = int(round(r * 1.5 * (1 - 0.55 * u))) + (1 if rnd(i, 3, s) < 0.3 else 0)
+            lean = 0 if u < 0.3 else (-1 if i < n / 2 else 1)
+            for k in range(hgt):
+                y = int(cy) - 1 - k
+                xx = x + (lean if k >= hgt - 2 else 0)
+                if not (1 <= y <= 14 and 1 <= xx <= 14): continue
+                t = 6 if k == hgt - 1 else 5 if k >= hgt - 2 else 4 if k >= hgt // 2 else 3
+                if i % 2 and k < hgt - 1: t -= 1          # 뒤쪽 잎은 한 단 어둡다
+                c.P(xx, y, 'grass', t)
 
 
 def cloud_px(x, y, s=1):
@@ -165,9 +233,20 @@ def _(c):
     c.P(3, 12, 'sky', 5); c.P(13, 3, 'sky', 5)
 
 
-for _id, _nm, _s, _fl, _b in (('grass', '풀밭', 1, 0, 4), ('grass-b', '풀밭(다른 결)', 2, 0, 4), ('grass-flower', '풀밭(들꽃)', 3, 4, 4), ('grass-flower-b', '풀밭(들꽃 둘)', 6, 3, 4)):
+for _id, _nm, _s, _fl, _b in (('grass', '풀밭', 1, 0, 4), ('grass-flower', '풀밭(들꽃)', 3, 4, 4), ('grass-flower-b', '풀밭(들꽃 둘)', 6, 3, 4)):
     A(_id, _nm, 1, 1, 'terrain', ['풀', '섬'], '섬 윗면. grass 를 바탕으로 grass-b 를 섞고 들꽃 칸은 낱칸으로 드물게(10칸에 하나 이하). 모든 풀 칸은 서로 이음매 없이 붙는다.', pc='floor', gate_name='grass ground tile')(
         (lambda s, fl, b: (lambda c: grass_fill(c, s, fl, b)))(_s, _fl, _b))
+
+A('grass-b', '풀밭(밝은 얼룩)', 1, 1, 'terrain', ['풀', '섬'], '풀밭 얼룩. grass 사이에 몇 칸씩 몰아 깐다(햇빛 받은 풀). 모든 풀 칸은 서로 이음매 없이 붙는다.', pc='floor', gate_name='grass ground tile')(
+    lambda c: grass_light(c, 2, ((6.0, 6.5, 5.0, 4.0), (10.5, 10.0, 4.0, 3.5))))
+# 화풍 정렬 2026-10-14(D9 풀 결 단조): 짙은 풀 그늘 덩이 둘 + 풀포기 덤불 둘. 구성기가 풀 얼룩 진한 곳에 몰아 깐다.
+for _id, _nm, _s, _cl in (('grass-shade-a', '풀밭(짙은 풀 그늘)', 21, ((7.5, 8.0, 6.5, 5.5), (11.0, 11.5, 3.5, 3.0))),
+                          ('grass-shade-b', '풀밭(짙은 풀 그늘 둘)', 22, ((5.0, 6.0, 4.0, 3.5), (10.5, 9.5, 4.5, 4.5), (6.0, 12.0, 3.0, 2.0)))):
+    A(_id, _nm, 1, 1, 'terrain', ['풀', '섬'], '풀밭 얼룩. 짙은 곳에 몇 칸씩 몰아 깔면 버들항 풀처럼 명암 덩이가 생긴다(넓게 다 덮지 말 것).', pc='floor', gate_name='grass ground tile with darker grass patch')(
+        (lambda s, cl: (lambda c: grass_shade(c, s, cl)))(_s, _cl))
+for _id, _nm, _s, _sp in (('grass-tuft-a', '풀밭(풀포기)', 23, ((7.5, 11.0, 3.0),)), ('grass-tuft-b', '풀밭(풀포기 둘)', 24, ((4.5, 7.5, 2.5), (10.5, 12.5, 2.5)))):
+    A(_id, _nm, 1, 1, 'terrain', ['풀', '섬'], '풀밭 사이 낱칸(20칸에 하나쯤). 걷는다.', pc='floor', gate_name='grass ground tile with a small grass tuft')(
+        (lambda s, sp: (lambda c: grass_tuft(c, s, sp)))(_s, _sp))
 
 
 # ── 풀 ↔ 하늘 가장자리(남쪽 테는 흙 띠로 이어져 아래 줄 밑면과 만난다) ──
@@ -245,65 +324,114 @@ for _k in ('n', 's', 'w', 'e', 'nw', 'ne', 'sw', 'se', 'inw', 'ine', 'isw', 'ise
 
 
 # ═══════════════════════ 섬 밑면(바위 절벽) ═══════════════════════
-# 지층은 칸에 맞춘 16px 주기(세로)다 — 어느 줄 아래 어느 줄이 와도 칸 경계가 «층 밑선(어두움) → 층 윗선(밝음)» 이라 이음매가 지층선으로 숨는다.
-# face-top: 0~3 흙(처마 흙 띠의 연속) · 4~8 · 9~15 바위 / mid: 0~5 · 6~10 · 11~15 / 가로 흔들림은 16px 주기.
+# 화풍 정렬 2026-10-14: 세로 기둥 판(D8)을 버리고 «층리 + 바위 덩이»로 다시 그렸다.
+# 바위 면은 가로 띠(층) 셋이 16px 주기로 쌓인 것 — 층 경계는 x 에 대해 물결(16px 주기), 층마다 크기 다른 둥근 바위 덩이가 가로로 놓인다.
+# 3/4 시점 단서: 층마다 윗면 턱(밝은 1~2행)이 보이고 그 아래 층 밑은 처마 그늘(어두운 1행)이다. 덩이는 왼쪽 위가 밝고 오른쪽 아래가 어둡다.
+# x·y 모두 16px 주기라 어느 칸 옆·아래에 어느 칸이 와도 이음매가 없다(face-top 의 바위부 = face-mid 와 같은 함수).
+BANDS = [(2, 6), (8, 5), (13, 5)]          # (윗선 y, 높이) — 16px 주기로 감긴다(마지막 층은 다음 칸 맨 위 2행까지)
+BAND_BASE = [3, 4, 3]
 
 
-# 기둥 바위: 칸마다 세로 바위 기둥 셋(폭 5·6·5). 기둥 사이 틈(어둡게), 왼쪽 가장자리 빛·오른쪽 그늘, 기둥마다 다른 높이의 가로 마디.
-# 기둥 위치는 모든 바위 칸이 같다 → 위·아래 어느 칸과 이어 붙여도 기둥이 이어진다. 끝(tip)은 기둥이 저마다 다른 길이로 끝나 뾰족해진다.
-COLS = [(0, 5), (5, 11), (11, 16)]
-COL_T = [3, 4, 3]
+def band_top(b, x, var=0):
+    """층 b 윗선 y(물결). 칸 양 끝(x 0·15)은 모든 변형이 같고, 칸 안쪽 흔들림만 변형마다 다르다 — 어느 변형끼리 붙어도 이어진다."""
+    w = 0.8 * math.sin(2 * math.pi * (x + 0.5 + b * 5) / 16)
+    bump = math.sin(math.pi * (x + 0.5) / 16) ** 2 * (rnd(b, var, 401) - 0.5) * 3.0
+    return BANDS[b][0] + round(w + bump)
 
 
-def col_of(x):
-    for i, (a, b) in enumerate(COLS):
-        if a <= x < b: return i, x - a, b - a
+def band_of(x, y, var=0):
+    """화소 (x, y) 가 속한 층 번호, 층 안 행(0=윗면 턱), 층 높이."""
+    y %= 16
+    tops = [band_top(b, x, var) for b in range(3)]
+    for yy in (y, y + 16):
+        for b in (2, 1, 0):
+            top = tops[b]; nxt = tops[b + 1] if b < 2 else tops[0] + 16
+            if top <= yy < nxt: return b, yy - top, nxt - top
     return 2, 0, 5
 
 
-def rock_px(x, y, kind='mid', s=1, deep=0, joints=True):
-    """절벽 앞면 한 화소(칸 안 x,y). kind top 은 위 4px 흙 + 기둥 머리(둥근 윗면 반사)."""
-    i, lx, w = col_of(x)
-    if kind == 'top':
-        head = 1 + (i % 2) + (1 if rnd(i, 0, s) < 0.3 else 0)
-        if lx in (0, w - 1): head += 1
-        if y < head: return soil_band(x, y + 3, s)
-        if y == head: return ('rock', 6 if lx < w // 2 else 5)          # 기둥 머리 윗면
-        if y == head + 1 and lx < w - 1: return ('rock', 5)
-    base = COL_T[i] - deep
+def chunk_seeds(b, var):
+    """층 b 의 덩이 씨앗(x 중심, 반폭). 칸 끝(x=0)의 덩이는 모든 변형이 같다."""
+    cw = (3.5, 5.0, 2.5)[b]
+    out = [(0.0, cw)]
+    x = cw + 0.5
+    k = 0
+    while x < 13.0:
+        w = 2.5 + rnd(b * 9 + k, var, 403) * 2.5
+        out.append((x + w, w)); x += 2 * w; k += 1
+    return out
+
+
+def rock2(x, y, s=1, deep=0, var=0):
+    """밑면 바위 한 화소(칸 안 x, y). 층리 + 층 안 덩이(크기 제각각, 윗면 턱 빛 또는 위층 처마 그늘) + 일부만 갈라진 틈 + 큰 얼룩."""
+    b, r, h = band_of(x, y, var)
+    ds = []
+    for k, (sx, hw) in enumerate(chunk_seeds(b, var)):
+        dx = ((x + 0.5 - sx + 8) % 16) - 8
+        ds.append((abs(dx) / hw, k, dx, hw))
+    ds.sort()
+    (d1, k, dx, hw), (d2, k2, _, hw2) = ds[0], ds[1]
+    ck = k if k else -1
+    u = dx / hw
+    base = BAND_BASE[b] - deep + (1 if rnd(b * 13 + ck, var, 405) < 0.2 else 0) - (1 if rnd(b * 13 + ck, var, 406) < 0.2 else 0)
+    big = tnoise(x, y, 8, 77)
+    if big > 0.7: base += 1
+    elif big < 0.22: base -= 1
+    lit = rnd(b * 13 + ck, var, 407) < 0.65                   # 이 덩이는 윗면 턱이 보인다(아니면 위층 처마 그늘에 묻힌다)
     t = base
-    if lx == 0: t = 1                                    # 기둥 사이 틈
-    elif lx == 1: t = base + 1                           # 왼쪽 빛
-    elif lx == w - 1: t = base - 1                       # 오른쪽 그늘
-    if joints and lx != 0:
-        for k in range(1 if rnd(i, 5, s + 31) < 0.7 else 0):
-            jy = 2 + int(rnd(i, k, s + 31) * 12)
-            if y == jy: t = 1 if lx < w - 1 else 1
-            elif y == (jy + 1) % 16 and lx < w - 1: t = base + 2   # 마디 아래 턱(빛)
-    q = rnd(x, y, s + 7)
-    if lx > 1 and lx < w - 1:
-        if q < 0.08: t -= 1
-        elif q > 0.94: t += 1
+    if r == 0: t = base + (2 if u < 0.2 else 1) if lit else base - 1
+    elif r == 1: t = base + (1 if u < -0.2 else 0) if lit else base
+    elif r == h - 1: t = base - 2
+    else:
+        if u < -0.6: t = base + 1
+        elif u > 0.65: t = base - 1
+        if r == h - 2 and u > 0.0: t = min(t, base - 1)
+    gap = (d2 - d1) * min(hw, hw2)
+    cracked = rnd(b * 13 + ck + k2, var, 409) < 0.55
+    if gap < 0.9 and 0 < r < h - 1 and cracked: t = 1
+    if 1 < r < h - 1:
+        q = rnd(x, y, s + 7 + var)
+        if q < 0.06: t -= 1
+        elif q > 0.965: t += 1
     return ('rock', clamp(t, 0, 6))
 
 
-def face_tile(c, kind='mid', s=1, deep=0, xl=None, xr=None, crystal=False, roots=False):
+def rock_px(x, y, kind='mid', s=1, deep=0, joints=True, var=0):
+    """절벽 앞면 한 화소. kind top 은 위 흙 띠(처마 흙의 연속) → 그늘 1행 → 바위."""
+    if kind == 'top':
+        head = 3 + (1 if rnd(x // 3, 0, s) < 0.35 else 0)
+        if y < head: return soil_band(x, y + 3, s)
+        if y == head: return ('rock', 1)                      # 흙 밑 그늘
+        if y == head + 1: return ('rock', 2 if rnd(x, 1, s) < 0.5 else 3)
+        if y <= head + 4:                                     # 처마 밑 그늘(위 흙·풀이 가린다)
+            m, t = rock2(x, y, s, deep, var)
+            return (m, max(1, t - 1))
+    return rock2(x, y, s, deep, var)
+
+
+def face_tile(c, kind='mid', s=1, deep=0, xl=None, xr=None, crystal=False, roots=False, fissure=False, var=0):
     """밑면 몸통 칸. xl/xr = fn(y) 왼·오른쪽 경계(끝 열 둥글림) — 밖은 하늘."""
     sky_fill(c)
     for y in range(16):
         for x in range(16):
             if xl and x < xl(y): continue
             if xr and x > xr(y): continue
-            c.P(x, y, *rock_px(x, y, kind, s, deep))
+            c.P(x, y, *rock_px(x, y, kind, s, deep, var=var))
+    if fissure:
+        # 비스듬한 큰 갈라짐(어두운 틈 + 왼쪽 밝은 날)
+        x = 10
+        for y in range(1, 15):
+            if y % 3 == 0: x -= 1
+            c.P(x, y, 'rock', 0); c.P(x - 1, y, 'rock', 5 if y % 2 else 4); c.P(x + 1, y, 'rock', 2)
     for y in range(16):
-        if xl:
+        if xl and xl(y) > 0:
             x0 = max(0, int(math.ceil(xl(y))))
-            c.P(x0, y, 'rock', 0)
-            if c.get(x0 + 1, y) and c.get(x0 + 1, y)[0] == 'rock': c.P(x0 + 1, y, 'rock', 5)
-        if xr:
+            c.P(x0, y, 'rock', 1)
+            if c.get(x0 + 1, y) and c.get(x0 + 1, y)[0] == 'rock': c.P(x0 + 1, y, 'rock', 5 if y % 5 else 4)
+        if xr and xr(y) < 15:
             x1 = min(15, int(math.floor(xr(y))))
             c.P(x1, y, 'rock', 0)
-            if c.get(x1 - 1, y) and c.get(x1 - 1, y)[0] == 'rock': c.P(x1 - 1, y, 'rock', 2)
+            if c.get(x1 - 1, y) and c.get(x1 - 1, y)[0] == 'rock': c.P(x1 - 1, y, 'rock', 1)
     if crystal:
         for (x, y, h) in ((3, 13, 4), (7, 14, 6), (12, 13, 3)):
             c.HL(x - 1, y + 1, 4, 'rock', 1)
@@ -315,42 +443,63 @@ def face_tile(c, kind='mid', s=1, deep=0, xl=None, xr=None, crystal=False, roots
             for y in range(L):
                 xx = x + (1 if (y > L // 2 and x == 9) else 0)
                 c.P(xx, y, 'wood', 1 if y % 3 else 2)
+                if y % 3 == 1: c.P(xx + 1, y, 'wood', 0) if c.get(xx + 1, y) and c.get(xx + 1, y)[0] == 'rock' else None
             c.P(x, L, 'wood', 2)
 
 
-TIP_ENDS = {'a': [6, 13, 9], 'b': [11, 7, 14], 'c': [4, 10, 13], 'd': [13, 14, 6], 'l': [3, 8, 12], 'r': [12, 8, 3]}
+# 끝 칸 아랫선: 양 끝(x=0·15)은 늘 같은 높이(EDGE)라 어떤 끝 칸끼리 붙어도 이어진다. 칸 안에서만 뾰족한 바위 끝이 처진다.
+TIP_EDGE = 9
+TIP_PROFILES = {
+    'a': [(0, 9), (3, 11), (6, 15), (8, 12), (11, 10), (15, 9)],
+    'b': [(0, 9), (2, 10), (4, 13), (6, 10), (9, 11), (12, 15), (14, 10), (15, 9)],
+    'c': [(0, 9), (5, 10), (8, 11), (11, 14), (13, 10), (15, 9)],
+    'd': [(0, 9), (2, 12), (4, 10), (7, 13), (9, 16), (11, 12), (15, 9)],
+    'l': [(0, 9), (4, 9), (8, 12), (11, 14), (15, 9)],
+    'r': [(0, 9), (4, 14), (7, 12), (11, 9), (15, 9)],
+}
 
 
-def tip_tile(c, ends, s=1, xl=None, xr=None, roots=True, deep=1):
+def tip_bottom(prof, x):
+    for (x0, y0), (x1, y1) in zip(prof, prof[1:]):
+        if x0 <= x <= x1:
+            return y0 + (y1 - y0) * (x - x0) / max(1, x1 - x0)
+    return TIP_EDGE
+
+
+def tip_tile(c, prof, s=1, xl=None, xr=None, roots=True, deep=1, var=0):
     sky_fill(c)
-    for i, (a, b) in enumerate(COLS):
-        e = ends[i]; w = b - a
-        for y in range(e):
-            # 끝 3행은 좁아진다(뾰족) — full 은 다음 칸으로 이어지니 좁히지 않는다
-            cut = 0 if e >= 16 else max(0, 3 - (e - 1 - y))
-            for x in range(a + cut, b - (cut + 1) // 2 if cut else b):
-                if xl and x < xl(y): continue
-                if xr and x > xr(y): continue
-                px_ = rock_px(x, y, 'mid', s, deep)
-                if e < 16 and e - y <= 4: px_ = ('rock', max(1, px_[1] - 1))
-                c.P(x, y, *px_)
+    bot = [round(tip_bottom(prof, x)) for x in range(16)]
+    for x in range(16):
+        e = bot[x]
+        for y in range(min(e, 16)):
+            if xl and x < xl(y): continue
+            if xr and x > xr(y): continue
+            px_ = rock2(x, y, s, deep, var)
+            if e - y <= 2: px_ = ('rock', max(1, px_[1] - 1))          # 끝으로 갈수록 그늘
+            c.P(x, y, *px_)
+    # 바깥 윤곽: 하늘에 닿는 바위 — 아래·오른쪽은 가장 어두운 단, 왼쪽은 한 단 밝은 테
     for y in range(16):
         for x in range(16):
             g = c.get(x, y)
-            if g and g[0] == 'rock':
-                below = y < 15 and c.get(x, y + 1)[0] == 'sky'
-                side = (x > 0 and c.get(x - 1, y)[0] == 'sky') or (x < 15 and c.get(x + 1, y)[0] == 'sky')
-                if below or side: c.P(x, y, 'rock', 0)
+            if not g or g[0] != 'rock': continue
+            below = y < 15 and c.get(x, y + 1)[0] == 'sky'
+            lsky = x > 0 and c.get(x - 1, y)[0] == 'sky'
+            rsky = x < 15 and c.get(x + 1, y)[0] == 'sky'
+            if below or rsky: c.P(x, y, 'rock', 0 if below and y >= 12 else 1)
+            elif lsky: c.P(x, y, 'rock', 1)
+    for x in range(1, 15):                                              # 뾰족 끝 바로 위 반사 1화소
+        e = bot[x]
+        if bot[x - 1] < e > bot[x + 1] - 0 and 3 <= e <= 16 and c.get(x - 1, e - 3) and c.get(x - 1, e - 3)[0] == 'rock':
+            c.P(x - 1, e - 3, 'rock', 4)
     if roots:
-        for i, (a, b) in enumerate(COLS):
-            e = ends[i]
-            if e >= 15 or rnd(i, 21, s) < 0.45: continue
-            x = a + (b - a) // 2 - 1
-            if (xl and x <= xl(e)) or (xr and x >= xr(e)): continue
-            L = 3 + int(rnd(i, 22, s) * 4)
-            for k in range(L):
-                yy = e + k
-                if yy < 16: c.P(x + (1 if k > 2 else 0), yy, 'wood', 1 if k < L - 1 else 2)
+        for k, x in enumerate((3, 9, 13)):
+            if rnd(k, 21, s) < 0.4: continue
+            e = bot[x]
+            if (xl and x <= xl(min(e, 15))) or (xr and x >= xr(min(e, 15))): continue
+            L = 2 + int(rnd(k, 22, s) * 4)
+            for j in range(L):
+                yy = e + j
+                if yy < 16: c.P(x + (1 if j > 2 else 0), yy, 'wood', 1 if j < L - 1 else 2)
 
 
 def xl_end(row):
@@ -362,22 +511,37 @@ def xr_end(row):
     return lambda y: 15 - FACE_L0 - (row * 16 + y) * 0.3
 
 
-A('face-top', '섬 밑면 윗줄(흙→바위)', 1, 1, 'terrain', ['섬 밑면', '절벽'], '남쪽 가장자리(gs-s) 바로 아래 줄. 가로로 반복.', pc='solidfloor', gate_name='rock cliff face tile under a floating island (terrain)')(lambda c: face_tile(c, 'top', 1))
-A('face-top-b', '섬 밑면 윗줄(늘어진 뿌리)', 1, 1, 'terrain', ['섬 밑면', '절벽', '뿌리'], 'face-top 사이에 섞는다(4칸에 하나쯤).', pc='solidfloor', gate_name='rock cliff face tile with hanging roots (terrain)')(lambda c: face_tile(c, 'top', 2, roots=True))
-A('face-top-crystal', '섬 밑면 윗줄(박힌 수정)', 1, 1, 'terrain', ['섬 밑면', '절벽', '수정'], 'face-top 사이에 드물게(섬마다 0~1).', pc='solidfloor', gate_name='rock cliff face tile with small embedded crystals (terrain)')(lambda c: face_tile(c, 'top', 3, crystal=True))
-A('face-top-l', '섬 밑면 윗줄(서쪽 끝)', 1, 1, 'terrain', ['섬 밑면', '절벽'], '남서 모서리(gs-sw) 바로 아래.', pc='solidfloor', gate_name='rock cliff face end tile (terrain)')(lambda c: face_tile(c, 'top', 1, xl=xl_end(0)))
-A('face-top-r', '섬 밑면 윗줄(동쪽 끝)', 1, 1, 'terrain', ['섬 밑면', '절벽'], '남동 모서리(gs-se) 바로 아래.', pc='solidfloor', gate_name='rock cliff face end tile (terrain)')(lambda c: face_tile(c, 'top', 1, xr=xr_end(0)))
-A('face-mid', '섬 밑면 몸통', 1, 1, 'terrain', ['섬 밑면', '절벽'], 'face-top 과 끝(tip) 사이 줄.', pc='solidfloor', gate_name='rock cliff face tile (terrain)')(lambda c: face_tile(c, 'mid', 4))
-A('face-mid-b', '섬 밑면 몸통(갈라짐)', 1, 1, 'terrain', ['섬 밑면', '절벽'], 'face-mid 사이에 섞는다.', pc='solidfloor', gate_name='rock cliff face tile (terrain)')(lambda c: face_tile(c, 'mid', 5))
+A('face-top', '섬 밑면 윗줄(흙→바위)', 1, 1, 'terrain', ['섬 밑면', '절벽'], '남쪽 가장자리(gs-s) 바로 아래 줄. 가로로 반복.', pc='solidfloor', gate_name='rock cliff face tile under a floating island (terrain)')(lambda c: face_tile(c, 'top', 1, var=0))
+A('face-top-b', '섬 밑면 윗줄(늘어진 뿌리)', 1, 1, 'terrain', ['섬 밑면', '절벽', '뿌리'], 'face-top 사이에 섞는다(4칸에 하나쯤).', pc='solidfloor', gate_name='rock cliff face tile with hanging roots (terrain)')(lambda c: face_tile(c, 'top', 2, roots=True, var=1))
+A('face-top-crystal', '섬 밑면 윗줄(박힌 수정)', 1, 1, 'terrain', ['섬 밑면', '절벽', '수정'], 'face-top 사이에 드물게(섬마다 0~1).', pc='solidfloor', gate_name='rock cliff face tile with small embedded crystals (terrain)')(lambda c: face_tile(c, 'top', 3, crystal=True, var=2))
+A('face-top-l', '섬 밑면 윗줄(서쪽 끝)', 1, 1, 'terrain', ['섬 밑면', '절벽'], '남서 모서리(gs-sw) 바로 아래.', pc='solidfloor', gate_name='rock cliff face end tile (terrain)')(lambda c: face_tile(c, 'top', 1, xl=xl_end(0), var=3))
+A('face-top-r', '섬 밑면 윗줄(동쪽 끝)', 1, 1, 'terrain', ['섬 밑면', '절벽'], '남동 모서리(gs-se) 바로 아래.', pc='solidfloor', gate_name='rock cliff face end tile (terrain)')(lambda c: face_tile(c, 'top', 1, xr=xr_end(0), var=4))
+A('face-mid', '섬 밑면 몸통', 1, 1, 'terrain', ['섬 밑면', '절벽'], 'face-top 과 끝(tip) 사이 줄.', pc='solidfloor', gate_name='rock cliff face tile (terrain)')(lambda c: face_tile(c, 'mid', 4, var=5))
+A('face-mid-b', '섬 밑면 몸통(갈라짐)', 1, 1, 'terrain', ['섬 밑면', '절벽'], 'face-mid 사이에 섞는다.', pc='solidfloor', gate_name='rock cliff face tile (terrain)')(lambda c: face_tile(c, 'mid', 5, var=6))
 
 for _k in ('a', 'b', 'c', 'd'):
-    A(f'tip-{_k}', f'섬 밑면 끝(기둥 끝 {_k})', 1, 1, 'terrain', ['섬 밑면', '종유석'],
-      '열의 마지막 줄. 기둥 셋이 저마다 다른 길이로 끝난다(아래는 하늘). 구성기가 열마다 a~d 를 섞는다.', pc='solidfloor',
-      gate_name='bottom tip of a floating island rock underside (terrain)')((lambda k: (lambda c: tip_tile(c, TIP_ENDS[k], 7 + ord(k))))(_k))
+    A(f'tip-{_k}', f'섬 밑면 끝(바위 끝 {_k})', 1, 1, 'terrain', ['섬 밑면', '종유석'],
+      '열의 마지막 줄. 칸 양 끝은 같은 높이, 칸 안에서 뾰족한 바위 끝이 처진다(아래는 하늘). 구성기가 열마다 a~d 를 섞는다.', pc='solidfloor',
+      gate_name='bottom tip of a floating island rock underside (terrain)')((lambda k: (lambda c: tip_tile(c, TIP_PROFILES[k], 7 + ord(k), var=ord(k) - 90)))(_k))
 A('tip-l', '섬 밑면 끝(서쪽 끝 열)', 1, 1, 'terrain', ['섬 밑면'], '서쪽 끝 열 face-top-l 바로 아래(끝 열 깊이는 2).', pc='solidfloor', gate_name='bottom tip of a floating island rock underside (terrain)')(
-    lambda c: tip_tile(c, TIP_ENDS['l'], 31, xl=xl_end(1)))
+    lambda c: tip_tile(c, TIP_PROFILES['l'], 31, xl=xl_end(1), var=11))
 A('tip-r', '섬 밑면 끝(동쪽 끝 열)', 1, 1, 'terrain', ['섬 밑면'], '동쪽 끝 열 face-top-r 바로 아래(끝 열 깊이는 2).', pc='solidfloor', gate_name='bottom tip of a floating island rock underside (terrain)')(
-    lambda c: tip_tile(c, TIP_ENDS['r'], 37, xr=xr_end(1)))
+    lambda c: tip_tile(c, TIP_PROFILES['r'], 37, xr=xr_end(1), var=12))
+
+
+# 이웃 열이 이 줄에서 끝나면(이웃은 끝 칸, 양 끝 높이 TIP_EDGE) 이 열의 그 쪽 옆면이 하늘에 드러난다 — 옆면을 비스듬히 깎아 윤곽을 준다(화풍 정렬 2026-10-14).
+OPEN_L = lambda y: (y - TIP_EDGE + 1) * 0.75 if y >= TIP_EDGE else -1
+OPEN_R = lambda y: 15 - (y - TIP_EDGE + 1) * 0.75 if y >= TIP_EDGE else 16
+TIP_OPEN_L = lambda y: 4.0 + y * 0.45
+TIP_OPEN_R = lambda y: 11.0 - y * 0.45
+for _k, _nm, _xl, _xr in (('ol', '서쪽 열린', OPEN_L, None), ('or', '동쪽 열린', None, OPEN_R), ('olr', '양쪽 열린', OPEN_L, OPEN_R)):
+    A(f'face-mid-{_k}', f'섬 밑면 몸통({_nm} 옆면)', 1, 1, 'terrain', ['섬 밑면', '절벽'],
+      '이웃 열이 이 줄에서 끝날 때(이웃이 tip) 그 쪽 아래 귀퉁이를 깎은 몸통. 구성기가 고른다.', pc='solidfloor',
+      gate_name='rock cliff face tile with a tapered side (terrain)')((lambda xl, xr, k: (lambda c: face_tile(c, 'mid', 4, xl=xl, xr=xr, var=13 + len(k))))(_xl, _xr, _k))
+for _k, _nm, _xl, _xr, _p in (('ol', '서쪽 열린', TIP_OPEN_L, None, 'c'), ('or', '동쪽 열린', None, TIP_OPEN_R, 'a'), ('olr', '양쪽 열린', TIP_OPEN_L, TIP_OPEN_R, 'd')):
+    A(f'tip-{_k}', f'섬 밑면 끝({_nm})', 1, 1, 'terrain', ['섬 밑면', '종유석'],
+      '이웃 열이 한 줄 위에서 끝나 옆이 하늘일 때의 끝 칸. 구성기가 고른다.', pc='solidfloor',
+      gate_name='bottom tip of a floating island rock underside (terrain)')((lambda xl, xr, p, k: (lambda c: tip_tile(c, TIP_PROFILES[p], 41 + len(k), xl=xl, xr=xr, var=17 + len(k))))(_xl, _xr, _p, _k))
 
 
 # ═══════════════════════ 구름 바닥 ═══════════════════════

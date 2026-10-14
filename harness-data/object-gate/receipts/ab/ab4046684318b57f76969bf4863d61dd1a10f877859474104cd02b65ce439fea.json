@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ab4046684318b57f76969bf4863d61dd1a10f877859474104cd02b65ce439fea",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass island edge tile against sky (terrain)",
+ "label": "sky-island/si-gs-ise",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass ground tile with corner edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ground terrain tile viewed from above, with bottom-right corner showing edge against sky/void; properly textured horizontal surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5345
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass island terrain tile with edge bordering blue sky/water in bottom-right corner",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing a grass surface viewed from above with a corner edge cut revealing sky/water at rows 12-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3872
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass ground tile with corner edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a top-down grass surface with a small edge/sky corner at the bottom right.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5487
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass island terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing a top-down grass surface with a curved edge at the bottom-right corner revealing sky/water.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5198
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.881Z",
+ "cells": {
+  "16": [
+   "35901682e1638c54"
+  ],
+  "24": [
+   "0e30faf636f511cd",
+   "69088d9d8f583673",
+   "76d0459f08a14f89",
+   "848c8d4df7475de9",
+   "b219f54d1f8db1b8",
+   "d8385a267bda2689"
+  ],
+  "32": [
+   "01bd8e02d6ed71bb",
+   "30d95604ed8880f4",
+   "46babf37638ae68b",
+   "9f18098f1858d42b",
+   "ec3e0addc27a4a6f",
+   "f95c94b529a2740b"
+  ],
+  "48": [
+   "4be9feff237a8050",
+   "4df3579ecff3f822",
+   "77ead874c82456f9",
+   "bbb6cb23e4391129",
+   "c3d0c6d877b8ec17",
+   "e7d9ab20127f0c7c"
+  ]
+ }
+}

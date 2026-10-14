@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b9030263d6ed5793883a4d77d2c35c02c89ef4b7f1e56437b9f420a1978cfbff",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass island edge tile against sky (terrain)",
+ "label": "sky-island/si-gs-nw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grassy island terrain surface",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Top-down grass terrain edge against a blue backdrop, occupying rows 2-15 as ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5919
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass island terrain surface",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing a top-down grass island edge against a blue background.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3901
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass island terrain surface",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Green grass ground surface seen from above, bordering blue background (sky/water) along the northwest edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6044
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass island terrain surface",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Top-down view of a floating grass island edge against a blue sky background; the grass surface forms the visible ground plane covering rows 2-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4375
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.880Z",
+ "cells": {
+  "16": [
+   "0585598fa5fd13a5"
+  ],
+  "24": [
+   "6b229ed35bb31c25",
+   "6bb0af8bd2ec9b2e",
+   "8adbaac994e219e4",
+   "9eb5926a6a57f0ae",
+   "bcd003c5221d3198",
+   "ea38c7209dcc36c8"
+  ],
+  "32": [
+   "1a3069f99237bbd7",
+   "45cceb5f9c225aab",
+   "4d589168db5d906a",
+   "5d2bb9eaf771dfdd",
+   "a6e9b49e1bebfff7",
+   "f88a91956c3bf9bd"
+  ],
+  "48": [
+   "28c8587051477919",
+   "2e8394ba8d7d4070",
+   "751f298d6a2773c6",
+   "78edf9f2a979da34",
+   "85a3999c10f3eacd",
+   "e05531b62fbab540"
+  ]
+ }
+}

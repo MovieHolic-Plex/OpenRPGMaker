@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "35fc4f670610e5e029c38dc7b921d7192ac37f0e7771227ba69581edd402b24a",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "tilled farm soil edge on grass (terrain)",
+ "label": "sky-island/si-field-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tilled soil and grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tile showing horizontal tilled soil furrows transitioning to grass at the bottom edge, viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 38079
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tilled soil ground terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting horizontal furrows of tilled soil meeting grass at the bottom edge, viewed from above as a top-down ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4316
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tilled soil and grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tile showing horizontal tilled soil furrows meeting green grass at the bottom, drawn as a top-down ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5244
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tilled soil and grass ground terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing horizontal ground with tilled soil ridges transitioning to grass at the southern edge, viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4273
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.890Z",
+ "cells": {
+  "16": [
+   "f15e310f92c6ea43"
+  ],
+  "24": [
+   "029036b3c280b844",
+   "6457edd8f8d32eea",
+   "931c3c825ee4164b",
+   "c5c2f98e6a6400a6",
+   "e52eab653cf8005f",
+   "e8eb2183af8117d8"
+  ],
+  "32": [
+   "3c949baf9b5cddcd",
+   "3e7478e0e8bccbde",
+   "5af68b7bf092bff4",
+   "962de929f40ed841",
+   "ab73b39aa43afed1",
+   "f1bf65ea5c2f02b8"
+  ],
+  "48": [
+   "269cf96fd4cb578d",
+   "405457b9e97829be",
+   "58fccf03f93bb6ae",
+   "7572ff1e8e50e84f",
+   "a2043693981785b9",
+   "f6ed63d182e7cb7c"
+  ]
+ }
+}

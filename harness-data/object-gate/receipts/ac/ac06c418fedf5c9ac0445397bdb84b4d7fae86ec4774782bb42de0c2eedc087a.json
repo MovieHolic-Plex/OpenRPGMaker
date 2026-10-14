@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ac06c418fedf5c9ac0445397bdb84b4d7fae86ec4774782bb42de0c2eedc087a",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "cobblestone plaza edge on grass (terrain)",
+ "label": "sky-island/si-plaza-w",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ground terrain tile transition from grass to cobblestone",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tile showing a transition from a vertical grass edge on the left to cobblestone paving across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4468
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ground terrain (cobblestone edge on grass)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile showing cobblestone plaza surface bordering a grass strip along the west edge, viewed top-down across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3484
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cobblestone pavement edge meeting grass",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting flat ground: cobblestone plaza edge bordered by grass strip on the left, viewed entirely from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4057
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cobblestone and grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting cobblestone pavement bordering a strip of grass seen top-down across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7389
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.888Z",
+ "cells": {
+  "16": [
+   "0cd6a78e8d904cfa"
+  ],
+  "24": [
+   "3385c266f9a74d86",
+   "6b755624e9552d22",
+   "a81215de76f36998",
+   "b3ddfb5d1eef8ab4",
+   "eb6c1aa69fa67172",
+   "faa7549ea95b3791"
+  ],
+  "32": [
+   "21ef98d640015c48",
+   "3088da50f7b31051",
+   "62cad9b79405e9ae",
+   "8896e98b103881dd",
+   "cdbc98009fe6fcbf",
+   "ff284f90a5cd2164"
+  ],
+  "48": [
+   "29166fdf0aef0b6d",
+   "50a3ed23223276e2",
+   "5a56d0aff27d0589",
+   "5f1fd5f6f4c88565",
+   "af9b8e1058693437",
+   "dc4d486948727021"
+  ]
+ }
+}

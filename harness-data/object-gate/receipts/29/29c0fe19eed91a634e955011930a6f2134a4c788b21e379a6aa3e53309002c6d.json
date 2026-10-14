@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "29c0fe19eed91a634e955011930a6f2134a4c788b21e379a6aa3e53309002c6d",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "tilled farm soil edge on grass (terrain)",
+ "label": "sky-island/si-field-nw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tilled farm soil terrain tile with grass border",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing tilled soil adjacent to a grass edge, viewed correctly from above as a top-down ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7546
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tilled soil terrain tile with grass border",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile showing the corner edge between grass and tilled farmland rows viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6675
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tilled soil terrain tile with grass border",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile showing the edge of tilled farmland bordered by grass on the top and left, viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5715
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tilled soil ground edge on grass",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile showing the corner/edge of tilled farm soil bordered by grass. As flat ground terrain, it is correctly rendered in top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5004
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.891Z",
+ "cells": {
+  "16": [
+   "61080d15154502f4"
+  ],
+  "24": [
+   "11a1e766fe673c2c",
+   "23f64e6035f42a2f",
+   "2742c487ceaa69d8",
+   "2e23bc9bba6dbffd",
+   "3099ccd21fb5383d",
+   "ffe84ed4298f5b67"
+  ],
+  "32": [
+   "2d0225648b7e64f0",
+   "77d3efb743898ca3",
+   "7ac517be44a1346f",
+   "818c0122938775fd",
+   "c3b00c8f5978aab1",
+   "f55fdf4885869c77"
+  ],
+  "48": [
+   "2dab0faed084c88c",
+   "617f02a9b7434541",
+   "a722d9340b6aca9f",
+   "c9179109930e5e69",
+   "fd11d2aff8665b13",
+   "fe7aed092f916ecb"
+  ]
+ }
+}

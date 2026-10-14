@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c98a4e487f41d39a3a9c8c63feb5785834d0716cd9d175f239fea494779153a7",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "rock cliff face tile (terrain)",
+ "label": "sky-island/si-face-mid-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rock cliff face tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 rock cliff wall face terrain texture with horizontal rock strata and shading, correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3801
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rock cliff face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a vertical rock cliff face; designed as a tiling wall texture in JRPG autotile systems rather than an individual standing prop.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3941
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rock cliff face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a vertical rock cliff face terrain texture designed for autotiling or cliff walls, correctly matching the terrain category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4271
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rock cliff face tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 rock cliff wall texture tile. As a terrain wall/cliff face tile meant for stacking below a cliff-top tile, it correctly represents a vertical terrain surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6472
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.882Z",
+ "cells": {
+  "16": [
+   "1f51a75e9dafc19e"
+  ],
+  "24": [
+   "059d82518f762879",
+   "26f8ac0e695b902d",
+   "637c687a3875922e",
+   "803bc7340f8a7360",
+   "a86bc78b7f63f4fc",
+   "c54ae62023f713bc"
+  ],
+  "32": [
+   "341c4e56b54b0fe7",
+   "7dbf714c66218495",
+   "a5dcf69d9719daec",
+   "bbfe157d7d7ba6ba",
+   "c252b3f9406adc58",
+   "efd8bd416d650639"
+  ],
+  "48": [
+   "3ac29d5e923bbee4",
+   "3fc7d116b7262aa2",
+   "4b230b9ce6239e2f",
+   "5f764bf75e8ec44d",
+   "ae409983bf54bf07",
+   "e51858402f7cc647"
+  ]
+ }
+}

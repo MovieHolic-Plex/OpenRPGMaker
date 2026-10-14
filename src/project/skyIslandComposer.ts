@@ -177,8 +177,16 @@ class Board {
         for (let r = 0; r < d[i]!; r++) {
           let id: string;
           if (r === 0) id = endL ? "face-top-l" : endR ? "face-top-r" : hash2(c.x, 5, this.seed) < 0.25 ? "face-top-b" : hash2(c.x, 6, this.seed) < 0.06 ? "face-top-crystal" : "face-top";
-          else if (r < d[i]! - 1) id = hash2(c.x, r, this.seed) < 0.3 ? "face-mid-b" : "face-mid";
-          else id = endL ? "tip-l" : endR ? "tip-r" : `tip-${"abcd"[Math.floor(hash2(c.x, y0, this.seed + 3) * 4)]}`;
+          else if (r < d[i]! - 1) {
+            // 이웃 열이 이 줄에서 끝나면(이웃이 tip) 그 쪽 아래 귀퉁이를 깎은 몸통(화풍 정렬 2026-10-14 — 옆면이 하늘에 칼로 자른 듯 드러나던 것)
+            const ol = !endL && d[i - 1] === r + 1, or = !endR && d[i + 1] === r + 1;
+            const side = ol && or ? "face-mid-olr" : ol ? "face-mid-ol" : or ? "face-mid-or" : null;
+            id = side && this.pal.tile(side) >= 0 ? side : hash2(c.x, r, this.seed) < 0.3 ? "face-mid-b" : "face-mid";
+          } else {
+            const ol = !endL && d[i - 1]! <= r, or = !endR && d[i + 1]! <= r;
+            const side = ol && or ? "tip-olr" : ol ? "tip-ol" : or ? "tip-or" : null;
+            id = endL ? "tip-l" : endR ? "tip-r" : side && this.pal.tile(side) >= 0 ? side : `tip-${"abcd"[Math.floor(hash2(c.x, y0, this.seed + 3) * 4)]}`;
+          }
           this.underCell(c.x, y0 + r, id);
         }
       });
@@ -360,13 +368,20 @@ class Board {
   // ───────────── 바닥 변주·빈 땅 쓰임·하늘 ─────────────
   groundVariety(): void {
     const grass = this.t("grass"), gb = this.pal.tile("grass-b"), gf = this.pal.tile("grass-flower"), gfb = this.pal.tile("grass-flower-b");
+    // 화풍 정렬(2026-10-14): 짙은 풀 그늘 덩이는 얼룩 진한 곳에 몰아서, 풀포기는 낱칸으로 드물게. 구운 정의에 없으면(-1) 예전 그대로.
+    const shade = [this.pal.tile("grass-shade-a"), this.pal.tile("grass-shade-b")].filter((t) => t >= 0);
+    const tuft = [this.pal.tile("grass-tuft-a"), this.pal.tile("grass-tuft-b")].filter((t) => t >= 0);
     const sky = this.t("sky"), glint = this.pal.tile("sky-glint");
     for (let y = 0; y < this.H; y++) for (let x = 0; x < this.W; x++) {
       const k = this.k(x, y);
       if (this.use[k] === "grass" && this.lower[k] === grass) {
         const n = vnoise(x + 1000, y + 1000, 6, this.seed) * 0.8 + vnoise(x + 1000, y + 1000, 3, this.seed + 7) * 0.2;
+        const dn = vnoise(x + 2000, y + 2000, 5, this.seed + 17) * 0.75 + vnoise(x + 2000, y + 2000, 2, this.seed + 19) * 0.25;
         const f = vnoise(x + 500, y + 500, 5, this.seed + 13);
-        if (gb >= 0 && n > 0.62) this.lower[k] = gb;
+        const h = hash2(x, y, this.seed + 23);
+        if (shade.length && dn > 0.64 && h < 0.7) this.lower[k] = shade[Math.floor(hash2(x, y, this.seed + 24) * shade.length)]!;
+        else if (gb >= 0 && n > 0.62 && h < 0.75) this.lower[k] = gb;
+        else if (tuft.length && h > 0.955) this.lower[k] = tuft[Math.floor(hash2(x, y, this.seed + 25) * tuft.length)]!;
         else if (gf >= 0 && f < 0.17 && hash2(x, y, this.seed + 3) < 0.5) this.lower[k] = hash2(x, y, this.seed + 4) < 0.5 || gfb < 0 ? gf : gfb;
       } else if (this.use[k] === "sky" && this.lower[k] === sky && glint >= 0 && hash2(x, y, this.seed + 21) < 0.025) this.lower[k] = glint;
     }

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9a1060b4cfe4bd4efec9e6715927543d88a214c6cb77bb9440381f3eca8755f0",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "bottom tip of a floating island rock underside (terrain)",
+ "label": "sky-island/si-tip-d",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floating island rock underside",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing the underside/rocky bottom tip of a floating island with hanging roots against sky; functions as cliff/terrain face so no top surface is expected.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6498
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "floating island underside rock tip",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Underneath terrain tile showing the rocky bottom tip and hanging roots of a floating landmass against open sky, suitable for cliff/underside terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5620
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rock underside of floating island with hanging roots",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rocky underside and bottom tip of a floating island terrain formation in the sky with hanging vines/roots.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7431
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "floating rock underside with hanging roots",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing the underside/tip of a floating landmass with hanging roots against the sky; as a terrain underside/cliff element, top surfaces do not apply.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3157
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.883Z",
+ "cells": {
+  "16": [
+   "86d107f55e36703f"
+  ],
+  "24": [
+   "25f6b9366883bee6",
+   "2f5e449efddccacc",
+   "342013321c32068e",
+   "590128e4cb8606b6",
+   "9ecb115751b30a7f",
+   "d67823013c10e367"
+  ],
+  "32": [
+   "49c0824ccc137df0",
+   "58a4abd430a80d43",
+   "6e38498986a88746",
+   "74e4f6287d3e913d",
+   "8b0425d7aea6c650",
+   "e0c8fcbf3267d8a9"
+  ],
+  "48": [
+   "1c17098957447fe2",
+   "846feefd0d77bd72",
+   "99a3556c4e36c7f0",
+   "cd4fa4146e3e40d2",
+   "d263b04aafd9b5c2",
+   "d9add71782d74d2c"
+  ]
+ }
+}

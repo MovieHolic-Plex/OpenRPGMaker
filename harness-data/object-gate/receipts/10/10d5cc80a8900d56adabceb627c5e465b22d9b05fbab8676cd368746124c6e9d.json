@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "10d5cc80a8900d56adabceb627c5e465b22d9b05fbab8676cd368746124c6e9d",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "flowing stream channel on grass (terrain)",
+ "label": "sky-island/si-stream-lip-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water channel and grass terrain",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing a top-down water channel between grass banks across rows 0-10 (11 rows) dropping off a cliff edge down to rows 11-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4543
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stream channel and waterfall on grass",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile showing horizontal stream and grass ground on the upper level (rows 0-10, 11 rows deep) cascading into a south-facing waterfall step (rows 11-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5940
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stream channel and waterfall ledge",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing a top-down stream surface (rows 0-10) dropping off a small vertical ledge/waterfall (rows 11-15), standard 3/4 RPG Maker terrain perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4198
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water channel with drop/step",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Upper horizontal stream channel occupies rows 0-10 (11 rows) before dropping down a vertical step face on rows 11-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4660
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.894Z",
+ "cells": {
+  "16": [
+   "7919d0ca76b3ee5a"
+  ],
+  "24": [
+   "005db351e887fe15",
+   "342a5abc45df29b5",
+   "5d1979562e48b249",
+   "976dcf77666146af",
+   "df4de598de8a6650",
+   "e787982d920ab57f"
+  ],
+  "32": [
+   "1a0c743ff9999b04",
+   "2779bb0373d55975",
+   "3d3d8bce886fe45c",
+   "9f3098c3e96bacf4",
+   "bd854af56b33ed1b",
+   "fb2ebba2236d7a0f"
+  ],
+  "48": [
+   "0bf07321a0f159bd",
+   "3f6b24987991bdf8",
+   "55ca3edd0e16f3f8",
+   "6ed8e0551f1a7b2e",
+   "784acefa685f58c5",
+   "b779fdf52042cb04"
+  ]
+ }
+}

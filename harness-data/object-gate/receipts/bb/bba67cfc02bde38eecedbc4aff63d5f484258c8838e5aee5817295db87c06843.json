@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bba67cfc02bde38eecedbc4aff63d5f484258c8838e5aee5817295db87c06843",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "flowing stream channel on grass (terrain)",
+ "label": "sky-island/si-stream-lip-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flowing stream channel terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Water stream tile flanked by grass and stone banks; valid 2D top-down terrain surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3811
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water stream channel cut through grass terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat terrain tile depicting a stream channel with grass banks viewed from above, matching the terrain category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5263
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stream channel and grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile showing a top-down stream channel cut into grass, dropping over a small 4-5px southern ledge/cliff at rows 11-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4559
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flowing stream channel between grass banks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a vertical stream flowing between grass banks with a small drop/riffle at rows 11-15. The horizontal surface of the ground/water is seen from above in top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4443
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.894Z",
+ "cells": {
+  "16": [
+   "4b2698884c9e5720"
+  ],
+  "24": [
+   "1c0c7102abc5b54c",
+   "531bc776ffd24c5c",
+   "5ef3aa484fb60e03",
+   "60671f32815e0551",
+   "b98b666a5db973d4",
+   "e8491ad15fe54354"
+  ],
+  "32": [
+   "4e043d960628aad0",
+   "67157648d09c5fcd",
+   "6c2fd06c2774ce15",
+   "6ce193d669719f77",
+   "6f1187c3c0cfcc82",
+   "b77e52ed65cdde39"
+  ],
+  "48": [
+   "07da9fbb49a058a2",
+   "150c555e3d5ed648",
+   "d2b036c4319a5307",
+   "eb2e083450b03c36",
+   "ed636a64d4189b28",
+   "f5dea4f0b479b8e8"
+  ]
+ }
+}

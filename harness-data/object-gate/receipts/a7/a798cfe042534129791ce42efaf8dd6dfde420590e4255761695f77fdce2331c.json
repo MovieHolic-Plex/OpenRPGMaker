@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a798cfe042534129791ce42efaf8dd6dfde420590e4255761695f77fdce2331c",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass island edge tile against sky (terrain)",
+ "label": "sky-island/si-gs-ine",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass terrain tile with corner edge against sky",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing flat ground surface seen from above; correctly categorized as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5678
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass island terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a flat grass ground surface viewed from above with a corner edge, occupying the full tile height.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5111
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile viewed top-down with an edge overlooking sky/water in the top right corner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3573
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting grass ground seen from above, with a corner edge showing sky/water.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5303
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.881Z",
+ "cells": {
+  "16": [
+   "e28999bb9bf84125"
+  ],
+  "24": [
+   "039722c5c6c7d2d2",
+   "2251c1b33fe27b1b",
+   "3fe1b99f6b648862",
+   "8df8bb303debad8c",
+   "8e08f1f82bd01d27",
+   "a9681bf19a6a0453"
+  ],
+  "32": [
+   "08e3e030f32fd93e",
+   "2e483e1d1d5fa111",
+   "8b83f6e8d28300b7",
+   "93a1678e175211ba",
+   "e50a78c3acff6586",
+   "ed648cb84527a31d"
+  ],
+  "48": [
+   "047870542c3ecf04",
+   "1235730246d48265",
+   "3d9723a0487f0f70",
+   "5b52fc227e03b12f",
+   "a2fea2d6f446211c",
+   "cf8d8c3360faab39"
+  ]
+ }
+}
