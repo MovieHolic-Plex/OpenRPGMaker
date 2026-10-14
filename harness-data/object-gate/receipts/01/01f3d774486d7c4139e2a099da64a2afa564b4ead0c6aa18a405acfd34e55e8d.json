@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "01f3d774486d7c4139e2a099da64a2afa564b4ead0c6aa18a405acfd34e55e8d",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "풀밭 모서리(남서쪽 흙길)",
+ "label": "sengoku-edo/se-grass-edge-sw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass and dirt path terrain edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain transition tile showing grass bordering a dirt path to the west and south, viewed from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3988
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass terrain edge on dirt ground",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile depicting a grass border meeting a dirt path on the south and west edges. As ground terrain, it correctly represents a horizontal surface seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3267
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass corner tile transition to dirt ground",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile showing a transition between grass and dirt path from top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5465
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass to dirt path terrain edge tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting grass bordering dirt ground on the west and south; standard ground autotile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3585
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:28.012Z",
+ "cells": {
+  "16": [
+   "2f76415586fcf097"
+  ],
+  "24": [
+   "0db86aa4ebb77781",
+   "12ffcb13a37a0206",
+   "9597dc74d9c3feb1",
+   "9e47f58cf7e75ee8",
+   "dd4d68cb1ccd7451",
+   "e3d6e23ba5ac713a"
+  ],
+  "32": [
+   "363523e97445c9c9",
+   "39911eaed100ae88",
+   "51338b520c16424f",
+   "b65959ebfa9d00fb",
+   "c59cc524c8d1feb7",
+   "f20daed84b6c3096"
+  ],
+  "48": [
+   "078a70d1a1e53a8b",
+   "1546ebebf804ede5",
+   "26d41f2ff2f0031e",
+   "7a72144cf0f3f34f",
+   "983326234cba1539",
+   "e9d86d3cbaa29065"
+  ]
+ }
+}

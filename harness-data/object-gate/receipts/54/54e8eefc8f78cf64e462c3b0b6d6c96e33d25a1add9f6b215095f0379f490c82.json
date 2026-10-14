@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "54e8eefc8f78cf64e462c3b0b6d6c96e33d25a1add9f6b215095f0379f490c82",
+ "width": 48,
+ "height": 64,
+ "kind": "organic",
+ "name": "느티나무 가로수(큰 수관, 변형)",
+ "label": "modern_city/street-green/mc-prop-keyaki-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "canopy and trunk of tree",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The foliage is constructed of rounded clusters with top-facing surfaces rendered with foreshortened highlights across rows 1–10. The ground contact features an elliptical shadow consistent with a 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6809
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tree crown and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn entirely in a flat front elevation suitable for a 2D side-scroller. The trunk is a straight vertical column flaring only horizontally at the base with a completely flat bottom edge at row 58 (no elliptical grounding or visible base surface from above), and the canopy consists of flat circular foliage clumps viewed from the side with 0 rows of visible top-down surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10343
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn entirely in flat side elevation (side-scroller platformer style). The trunk has a straight horizontal base at row 59 without the downward curve required for a cylindrical base in 3/4 top-down view, and the foliage canopy lacks foreshortened downward perspective, displaying a front-facing silhouette and flat bottom rim at row 40.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8644
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn in a pure front elevation, typical of a side-scrolling game or architectural elevation. The trunk is a flat vertical cylinder with a straight cut base at row 58, and the canopy shows no downward 45-degree top surface foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10099
+  }
+ ],
+ "decidedAt": "2026-10-14T08:05:10.637Z",
+ "cells": {
+  "16": [
+   "13ed595330cc3fa7",
+   "2aff2d3423a1fb08",
+   "3ed2a6dc48492816",
+   "6263447c30e0108d",
+   "76d0b333d38ae92c",
+   "7c63b821e36880e1",
+   "89d6f6d7889fd496",
+   "8a1413f130b844ee",
+   "9ad5c1b2db4385d8",
+   "a1d636747ab68f32",
+   "d03339c6eaa18113",
+   "d705a2c15997564f"
+  ],
+  "24": [
+   "1648eab07c8d46fb",
+   "3119663a2655e264",
+   "48a79be14d1e0b81",
+   "4f2027e28e7388ab",
+   "6fb2ce1cd2eb854b",
+   "95771772ff6490a9",
+   "a4001c6f81792aff",
+   "a890d87a52b35359",
+   "b28abace93d777ab",
+   "deb008e1feef8771",
+   "f02f97db83a8648c",
+   "fabb726d7b86c67f"
+  ],
+  "32": [
+   "2243990617c6e7ac",
+   "27d44c139afbbfb3",
+   "2ec040be3527ea75",
+   "34a13ccc253a1289",
+   "593d92cb8395bd65",
+   "61764072edb1e898",
+   "61f9566654fa43a3",
+   "675fe43d91506a56",
+   "818ac0d83a3cba15",
+   "c027de7c5bdadef7",
+   "f4b7b4d886aaf1d4",
+   "f5d446fa760ee3c1"
+  ],
+  "48": [
+   "2f6f0ad058d335bf",
+   "476c07b33ca8d639",
+   "755c13c654fe0a17",
+   "f7cff2a17986448a"
+  ]
+ }
+}

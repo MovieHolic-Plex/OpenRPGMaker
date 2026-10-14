@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "09847eed1af5c611802afa34738dc87107e6443a2e42fdec798da6a16844b8df",
+ "width": 48,
+ "height": 48,
+ "kind": "terrain",
+ "name": "젖은 자갈 포장(돌 연석)",
+ "label": "gothic_manor/gm-cobble",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wet cobblestone pavement terrain",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile showing cobblestone paving with a stone curb edge seen from above in top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4504
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wet cobblestone pavement terrain tile with curb",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile depicting wet cobblestone pavement with a border curb viewed from top-down 3/4 perspective, occupying rows 4 to 43.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3406
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wet cobblestone pavement terrain patch with border curb",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground patch showing top-down cobblestone paving with border curb, appropriately classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2420
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cobblestone pavement tile",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a ground terrain tile showing wet cobblestone paving bordered by a curb and grass, correctly depicted as a horizontal top-down ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3475
+  }
+ ],
+ "decidedAt": "2026-10-14T07:55:00.836Z",
+ "cells": {
+  "16": [
+   "024a28a28a071d03",
+   "12e6dde6c8aaf471",
+   "20b7888fff1f1d6c",
+   "2a2d02fb04ff74da",
+   "340f81c979386b14",
+   "8713e0dac487aeee",
+   "8d792ffd034ff730",
+   "cc56980fb994a6c5",
+   "eb24f9aa54382a29"
+  ],
+  "24": [
+   "154a06933736d164",
+   "78c4db3fdc2b1ca6",
+   "7e0a3fa89c0b2f31",
+   "f3089e726213fb32"
+  ],
+  "32": [
+   "002f88d0e5e21774",
+   "02a262ba91e0d3c6",
+   "0a62d14104d04174",
+   "14edb3b4281d34fa",
+   "1b13164ee6d58bb0",
+   "1e44951adf2a18b1",
+   "1fab6bbd602b7670",
+   "2f6f8cabc730a306",
+   "56971add9b01d2b8",
+   "599edb0dc782de55",
+   "707bd2e350761004",
+   "77b3868a467db20d",
+   "895c13100c33c197",
+   "8d8fa7c47b75ae6e",
+   "8dfa65e53b6c3add",
+   "941caef56b817301",
+   "94a42278012abf7d",
+   "9b8d3c28d60a9f2f",
+   "a3e594ee05d36030",
+   "d268a0b5fd0c5be9",
+   "d6274c3409628aed",
+   "e015fa24dbc3d185",
+   "e1ded6cef59d77b4",
+   "f71e0f7c1eee3112"
+  ],
+  "48": [
+   "0e729bbe4312e647"
+  ]
+ }
+}

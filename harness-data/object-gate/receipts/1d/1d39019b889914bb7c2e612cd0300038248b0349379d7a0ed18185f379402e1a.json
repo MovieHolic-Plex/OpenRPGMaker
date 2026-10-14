@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1d39019b889914bb7c2e612cd0300038248b0349379d7a0ed18185f379402e1a",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "눈 덮인 덤불",
+ "label": "snow-north/sn-bush",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "snow-covered bush",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush is viewed from a top-down angle, showing a broad snow-covered top surface across rows 2-8 resting above the visible front foliage (rows 9-12).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4503
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "snow-covered bush",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow accumulation across rows 2–8 clearly depicts the top surface of the bush seen from above at a 3/4 angle, with the south foliage face visible below in rows 9–12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5049
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "snow-covered bush",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush features a well-defined snow cap spanning rows 2-8 that covers its upper curved surface, viewed in 3/4 top-down projection above the front foliage (rows 9-12) and ground snow base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3436
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "snow-covered bush",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow cap covering the top surface of the bush occupies rows 2-8 (~6-7 rows), viewing the dome-like top from above, with the south foliage face visible below at rows 9-12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4233
+  }
+ ],
+ "decidedAt": "2026-10-14T08:02:24.502Z",
+ "cells": {
+  "16": [
+   "5c9d98295526a6d8"
+  ],
+  "24": [
+   "108b40f820835b67",
+   "37f6b0a606bb6299",
+   "44af9b814553a030",
+   "841a38c08136951e",
+   "d0667ef6a4f4c9dc",
+   "e8c5902f30d1d781"
+  ],
+  "32": [
+   "2fe69605a08485cc",
+   "49df853db4d9d876",
+   "ac1a154a68a05628",
+   "d87f2d69851bca6b",
+   "e2c11eb84374049b",
+   "fe1dc58d10b653f5"
+  ],
+  "48": [
+   "0928e136999c9097",
+   "3187a9ef276172a3",
+   "68233570685e1532",
+   "7a2e4b78a616bfb5",
+   "c7584e5e0d90b7ff",
+   "eca48f5d24148f3b"
+  ]
+ }
+}

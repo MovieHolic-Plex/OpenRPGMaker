@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "675e4aba8e43648193fce5ab72738eaa8629503e0965d45871feca8c4fcd9cdf",
+ "width": 48,
+ "height": 64,
+ "kind": "organic",
+ "name": "가문비 두 그루(겹침)",
+ "label": "snow-north/sn-pine-pair",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "two overlapping spruce trees with snow",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The spruce trees are drawn in a flat 2D side-scroller / front elevation perspective rather than a 3/4 top-down angle. The tiers of branches and snow form horizontal 2D silhouettes without foreshortening or downward curvature to show their upper surfaces from above (0 top rows visible on the conical forms).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10325
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "overlapping conifer / spruce trees with snow",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The trees are drawn in a flat 2D side-scroller elevation style: each conical foliage tier has horizontal, straight-across bottom edges (e.g. rows 34, 45, 56) rather than downward-curving ellipses characteristic of 3/4 top-down perspective. The main body has no foreshortened top surface visible (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15489
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two overlapping snow-covered spruce trees",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The spruce foliage tiers display snow-covered upward/top-facing slopes measuring 4-5 source pixel rows per tier (e.g. rows 35-39, rows 46-50), and the base rests on a foreshortened snow ground patch (rows 58-63, ~5-6 rows deep), consistent with 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7822
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "overlapping snow-covered spruce trees",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The spruce trees are drawn in a flat 2D side/front elevation typical of platformers rather than top-down 3/4 view; the conical tiers and trunks show no downward foreshortening or visible top surfaces (top_rows: 0).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 16213
+  }
+ ],
+ "decidedAt": "2026-10-14T08:02:24.501Z",
+ "cells": {
+  "16": [
+   "0049ebd4f1453e31",
+   "03a1f83e2cabb1ab",
+   "0834934c4a411fe8",
+   "190a68fa51e69a70",
+   "1d7e6422109a7b70",
+   "3860bd86174e3ac9",
+   "62864bb1332acdd2",
+   "8f7648e8dfcdba27",
+   "9ef5af7959c2f483",
+   "a7fe172bd111facc",
+   "f4ac2f0d2aa00c26",
+   "fbf020ce1bdb6eac"
+  ],
+  "24": [
+   "0163b059a724d5d8",
+   "485fe452aeda6e51",
+   "4a7fa2f3cb8270d8",
+   "4f28fc028851e5e4",
+   "5fd3db67fd7ec9a8",
+   "88eb842fc8574d21",
+   "988a7bd67157de03",
+   "a53894d25b2685fc",
+   "ae5f57c49c4c6602",
+   "b67b40a063cdfefb",
+   "e0bf036be747554d",
+   "f09b80143a6a3761"
+  ],
+  "32": [
+   "028a13eb97d26efb",
+   "1e13c16a8812a316",
+   "1fe69a3036c0f4a2",
+   "294c72aa197fbd2c",
+   "3fa1f0d2786eafd5",
+   "4aaa31ba9bfeed0d",
+   "5294da2218aef4bf",
+   "5c6aaa95c858bc43",
+   "63958a01b29bd743",
+   "65c65b22185b7075",
+   "cce78a2f30605e53",
+   "ecf9902729ce765c"
+  ],
+  "48": [
+   "0de9744276970c3e",
+   "3b5fa50102643a4a",
+   "c6312b6ad746cfa5",
+   "ced49e154623e9df"
+  ]
+ }
+}

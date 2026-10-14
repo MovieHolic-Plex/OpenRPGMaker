@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "be39588a64dd8ccca182130266c70532a31f7981cef0fcc98825e5d47f51645d",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "마른 풀밭 C (돌멩이)",
+ "label": "gothic_manor/gm-ground-grass-c",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ground tile with grass and small pebbles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting ground/grass texture with small 2x2 embedded pebbles, appropriate for top-down ground representation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3607
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ground terrain tile with small embedded stones",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting patchy grass with two small 2x2 pixel pebbles; functions correctly as ground surface in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3220
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ground terrain tile with small stones",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat grassy ground terrain tile viewed from above with tiny embedded pebbles; correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3754
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass ground terrain with embedded small pebbles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ground terrain tile showing a patch of dry grass with tiny 2x2 pixel pebbles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2523
+  }
+ ],
+ "decidedAt": "2026-10-14T07:55:00.835Z",
+ "cells": {
+  "16": [
+   "63d749d5a4fb17d7"
+  ],
+  "24": [
+   "09441ae26d00ba40",
+   "0b116d284c5bfacd",
+   "13f458768d2d09e6",
+   "1ac0a090bf81877e",
+   "1c5073656ae94640",
+   "4bfd25c46efac46d"
+  ],
+  "32": [
+   "0582062fdf1a7cea",
+   "4ebca438914de54b",
+   "9a9fa2d11e9b92e0",
+   "c832e3353ba11b4f",
+   "c984186dcb303639",
+   "e4c6658527e4a7e9"
+  ],
+  "48": [
+   "138f77b170d359e3",
+   "5556fbb7ca0d9bd5",
+   "5b8cbd08529efaf3",
+   "6645fe28ee33e80e",
+   "6cfb4c0839545b33",
+   "b5f2febed2a953d8"
+  ]
+ }
+}

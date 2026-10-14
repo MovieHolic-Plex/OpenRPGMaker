@@ -1,6 +1,6 @@
-{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/bld_manor/gm-bld-manor3.png", "kind": "structure", "name": "대저택(2층 본채·둥근 탑·정면 박공·사각 탑)", "label": "gothic_manor/gm-bld-manor3"}
-{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/bld_manor/gm-bld-manor2.png", "kind": "structure", "name": "작은 저택(2층·왼 박공 현관·굴뚝)", "label": "gothic_manor/gm-bld-manor2"}
-{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/bld_manor/gm-bld-manor-ruin.png", "kind": "structure", "name": "폐저택(무너진 지붕·판자 창)", "label": "gothic_manor/gm-bld-manor-ruin"}
-{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/bld_manor/gm-bld-gallery.png", "kind": "structure", "name": "고딕 미술관·박물관(현관 세 아치·유리 채광창·걸개)", "label": "gothic_manor/gm-bld-gallery"}
-{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/bld_manor/gm-bld-asylum.png", "kind": "structure", "name": "요양원·정신병원(3층 벽돌·시계탑·쇠창살 창)", "label": "gothic_manor/gm-bld-asylum"}
-{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/bld_manor/gm-bld-orphanage.png", "kind": "structure", "name": "고아원(2층 벽돌·종 지붕·박공 둘)", "label": "gothic_manor/gm-bld-orphanage"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/bld_manor/gm-bld-manor3.png", "kind": "structure", "name": "대저택(2층 본채·둥근 탑·정면 박공·사각 탑)", "label": "gothic_manor/gm-bld-manor3"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/bld_manor/gm-bld-manor2.png", "kind": "structure", "name": "작은 저택(2층·왼 박공 현관·굴뚝)", "label": "gothic_manor/gm-bld-manor2"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/bld_manor/gm-bld-manor-ruin.png", "kind": "structure", "name": "폐저택(무너진 지붕·판자 창)", "label": "gothic_manor/gm-bld-manor-ruin"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/bld_manor/gm-bld-gallery.png", "kind": "structure", "name": "고딕 미술관·박물관(현관 세 아치·유리 채광창·걸개)", "label": "gothic_manor/gm-bld-gallery"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/bld_manor/gm-bld-asylum.png", "kind": "structure", "name": "요양원·정신병원(3층 벽돌·시계탑·쇠창살 창)", "label": "gothic_manor/gm-bld-asylum"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/bld_manor/gm-bld-orphanage.png", "kind": "structure", "name": "고아원(2층 벽돌·종 지붕·박공 둘)", "label": "gothic_manor/gm-bld-orphanage"}

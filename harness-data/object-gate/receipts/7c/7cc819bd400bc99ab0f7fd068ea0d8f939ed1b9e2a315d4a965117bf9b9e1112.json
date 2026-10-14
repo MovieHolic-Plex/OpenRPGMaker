@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7cc819bd400bc99ab0f7fd068ea0d8f939ed1b9e2a315d4a965117bf9b9e1112",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "흙 운동장 흰 선(가로, 석회)",
+ "label": "modern-campus/mc-dirt-line",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dirt sports ground with chalk line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tile depicting a dirt surface with a horizontal white chalk line. Fits standard top-down RPG Maker terrain specifications.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6014
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dirt ground with chalk line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting dirt ground with a horizontal chalk line, viewed top-down across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2895
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dirt ground with horizontal chalk line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a flat terrain ground tile representing dirt ground with a horizontal chalk line painted across it; the entire surface is a horizontal ground plane viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5185
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dirt sports ground with chalk line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a dirt ground surface with pebbles and a horizontal white chalk line across rows 7-8; flat ground plane covers the entire tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7329
+  }
+ ],
+ "decidedAt": "2026-10-14T08:06:14.286Z",
+ "cells": {
+  "16": [
+   "9aeb4c5d13af7256"
+  ],
+  "24": [
+   "24432d1a61159003",
+   "3e6a053250da1a22",
+   "3f028c7d5286487e",
+   "784640996e0b06b9",
+   "87cba6f4c7c39baa",
+   "c4204fd0ad5b7607"
+  ],
+  "32": [
+   "5ed28e7597bc2608",
+   "6557acced92276a8",
+   "8b3914cadb90d35b",
+   "ac3e8dbfd80b75b8",
+   "cccd55b5bf0f1c44",
+   "f71312fc93a02a5d"
+  ],
+  "48": [
+   "02c7d1a1ab7ed6e0",
+   "5c3a9f6b67d4d1c4",
+   "71902758276bee15",
+   "bde18c51ad6268e7",
+   "cecf2afb29f0a9fa",
+   "dd00641e97a4a76c"
+  ]
+ }
+}

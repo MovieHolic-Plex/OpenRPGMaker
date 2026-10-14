@@ -6,7 +6,7 @@ import { isSengokuTilesetDef } from "@/ai/sengokuEdoPolicy";
 import { isPassable } from "@/project/collision";
 import { cropExtraLayers, setLayerTileAt } from "@/project/mapLayers";
 import { clearTileStack } from "@/project/mapOverlayTiles";
-import { addMapLocation } from "@/project/mapNamedLocations";
+import { addMapLocation, COMPOSED_LAYOUT_TAG } from "@/project/mapNamedLocations";
 import { extractTreeNode, insertTreeNode } from "@/project/mapTree";
 import { SENGOKU_DEFAULT_SIZE, SENGOKU_MIN_SIZE, SENGOKU_STYLES, SENGOKU_STYLE_KO, composeSengokuEdo, sengokuPaletteFromTileset, type SengokuResult, type SengokuStyle } from "@/project/sengokuEdoComposer";
 import type { GameEvent, GameMap, MapId, Project } from "@/project/types";
@@ -119,7 +119,7 @@ export const COMPOSE_SENGOKU_EDO_MAP_TOOL: ToolDefinition = {
     target.locations = (target.locations ?? []).filter((l) => !(l.tags ?? []).includes("sengoku-building"));
     for (const d of r.buildings) {
       const door = d.doors[0]!;
-      addMapLocation(target, { name: `${d.name}`, x: d.rect.x, y: d.rect.y, w: d.rect.w, h: d.rect.h, note: `문 (${door.x},${door.y}) · 접근칸 (${d.access[0]!.x},${d.access[0]!.y}) — 이 문에 실내를 build_hand_interior_room(tileset:sengoku_edo) 으로 지어 link_sengoku_edo_interior 로 잇는다`, tags: ["sengoku-building", d.kit] });
+      addMapLocation(target, { name: `${d.name}`, x: d.rect.x, y: d.rect.y, w: d.rect.w, h: d.rect.h, note: `문 (${door.x},${door.y}) · 접근칸 (${d.access[0]!.x},${d.access[0]!.y}) — 이 문에 실내를 build_hand_interior_room(tileset:sengoku_edo) 으로 지어 link_sengoku_edo_interior 로 잇는다`, tags: ["sengoku-building", COMPOSED_LAYOUT_TAG, d.kit] });
     }
     const blocked = (target.events ?? []).filter((e) => !walkable(next, target, e.x, e.y)).map((e) => `${e.name ?? e.id}(${e.x},${e.y})`);
     draft.maps[mapId] = target;

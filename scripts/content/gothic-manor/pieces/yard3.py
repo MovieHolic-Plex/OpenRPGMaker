@@ -107,7 +107,7 @@ def _tree_crows(c):
     for (x, y) in ((9, 14), (33, 10), (24, 6)):
         c.ellipse(x, y, 2.6, 1.8, K('ink', 1)); c.P(x - 2, y - 2, K('ink', 2)); c.P(x - 3, y - 2, K('gold', 4)); c.P(x - 2, y - 3, K('ink', 2))
         c.P(x + 2, y + 1, K('ink', 0)); c.P(x - 1, y - 1, K('iron', 3))
-    finish(c, tex=True)
+    finish(c, tex=True, soft=True)
 
 
 @REG.piece('gm-dead-tree-swing', '그네 매달린 고목', 3, 4, 'auto', 'nature', SP, role='prop', kind='organic',
@@ -120,7 +120,7 @@ def _tree_swing(c):
     for x in (31, 39):
         c.VL(x, 20, 26, K('paper', 3)); c.VL(x + 1, 22, 23, K('paper', 2))
     c.R(29, 45, 13, 3, K('wood', 5)); c.HL(29, 45, 13, K('wood', 6)); c.R(29, 48, 13, 2, K('wood', 2))
-    finish(c, tex=True)
+    finish(c, tex=True, soft=True)
 
 
 @REG.piece('gm-fallen-log', '쓰러진 고목 통나무(버섯)', 3, 1, 'auto', 'nature', SP, role='prop', kind='organic',

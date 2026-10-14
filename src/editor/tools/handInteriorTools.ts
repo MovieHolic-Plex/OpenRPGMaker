@@ -19,8 +19,7 @@ import { handInteriorPlanExits } from '@/editor/handInterior/exits';
 import { withComposedRooms } from '@/editor/handInterior/rooms';
 import { layoutAscii, layoutCandidates, LayoutError, type LayoutCandidate, type LayoutRequest } from '@/editor/handInterior/layout';
 import { furnishRooms } from '@/editor/handInterior/furnish';
-import { addMapLocation } from '@/project/mapNamedLocations';
-import { COMPOSED_LAYOUT_TAG } from '@/ai/piAgent/layoutQuality';
+import { addMapLocation, COMPOSED_LAYOUT_TAG } from '@/project/mapNamedLocations';
 
 /** layout 으로 짠 방의 이름표 — 다시 지을 때 이 이름표만 갈아 끼운다. */
 const HAND_LAYOUT_ROOM_TAG = 'hand-layout-room';

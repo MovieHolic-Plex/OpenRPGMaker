@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "abf630b9e38b7eb54bbd3e449ecde16fd223c69d428ca46055f9707d99baf9a2",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "훈제막(회색 판자, 연기 새는 지붕 틈)",
+ "label": "snow-north/sn-smokehouse",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "smokehouse with snow-covered roof",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered roof slope occupies rows 8 to 22 (~15 rows tall), clearly presenting the top/sloped surface viewed from above in standard 3/4 RPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4666
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "smokehouse shack with snow-covered roof",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered roof slope is clearly visible from rows 7 to 23 (~16 rows tall) above the vertical front wooden wall (rows 24 to 47), matching standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3845
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "snow-covered smokehouse shed",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features a prominent snow-covered roof slope facing the camera from rows 8 to 22 (15 rows tall), clearly presenting the top surface above the south wall face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14613
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "smokehouse with snow-covered roof",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered roof slope is viewed from above across rows 8 to 23 (~16 source pixels tall), properly foreshortened above the front wooden wall (rows 24 to 47).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4887
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:35.383Z",
+ "cells": {
+  "16": [
+   "11821fecfe60cb10",
+   "1253229cd306775e",
+   "380086be534f6b81",
+   "989a7f942d6cb05b",
+   "bba5e2e6ae01e599",
+   "bccfcf6ce327722f"
+  ],
+  "24": [
+   "1a45aa71082e56fe",
+   "1c8d54193e3b8c73",
+   "23288df702b8a6e1",
+   "3949092ed4b62254",
+   "79b56e13496e9932",
+   "7f36c980f0d37d61",
+   "91d35c60b5e8e126",
+   "9dbbd537ce444b13",
+   "a7c325609bf58cfa",
+   "aca814e890c9428e",
+   "c6cdd826de6befa9",
+   "d00099f3f4d800e0"
+  ],
+  "32": [
+   "3bf47266dbeb8375",
+   "557fb1d3c8f17609",
+   "c7da040564d0975b",
+   "d8cfdc99054dad26"
+  ],
+  "48": [
+   "b1f08592df4b146b",
+   "cab6fe337db2d300",
+   "f430fc653a25bbf6"
+  ]
+ }
+}

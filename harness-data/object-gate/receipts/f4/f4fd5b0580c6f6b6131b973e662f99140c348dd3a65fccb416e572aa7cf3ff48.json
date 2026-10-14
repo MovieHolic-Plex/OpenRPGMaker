@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f4fd5b0580c6f6b6131b973e662f99140c348dd3a65fccb416e572aa7cf3ff48",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "잔잔한 모래(변주 3)",
+ "label": "desert-east/de-sand-d",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sand ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile depicting sand texture across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5647
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "calm sand terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground sand texture filling the entire 16x16 tile, valid terrain kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12927
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sand terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Entire 16x16 tile is a seamless flat ground sand texture viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8596
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sand terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground sand texture seamlessly covering the 16x16 tile surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7833
+  }
+ ],
+ "decidedAt": "2026-10-14T08:01:48.456Z",
+ "cells": {
+  "16": [
+   "1c9e9ef9e397c0fb"
+  ],
+  "24": [
+   "11c4c4e14878cfa2",
+   "1a31050d42442319",
+   "6d20ab4eabf650db",
+   "9121760e095eb599",
+   "93083ae0508077d4",
+   "a3ddb56261944f4e"
+  ],
+  "32": [
+   "13742315b4768f4c",
+   "1c9de69b3839768c",
+   "5901ed88a20488b4",
+   "9349f25ae4dd0501",
+   "9e5a22e3d84da2da",
+   "a0f388eedda22337"
+  ],
+  "48": [
+   "44c4b36a1f30a42b",
+   "55b52c36b92a2818",
+   "8d2b7dbabba429da",
+   "900dc9c3306c5477",
+   "b21f55d3ebe35b5b",
+   "c68f873c8f53b303"
+  ]
+ }
+}

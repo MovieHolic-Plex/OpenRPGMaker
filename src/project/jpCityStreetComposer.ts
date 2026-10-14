@@ -10,9 +10,9 @@
 // 건물은 부품 사전에서 무작위로 조립하되 조립기(buildJpCityBuilding)가 거절하면(층 쌍·간판 충돌·문 막힘…) 다른 조합으로 다시 시도한다.
 // 순수 계획 → 도구 호출 목록으로 만든다: 호출 쪽(뼈대 · compose_jp_city_street 도구)이 실제로 실행한다.
 
-import { addMapLocation } from "@/project/mapNamedLocations";
+import { addMapLocation, COMPOSED_LAYOUT_TAG } from "@/project/mapNamedLocations";
 import type { GameMap } from "@/project/types";
-import { fillLotUses, type LotUsePlaced, type LotUseView } from "@/project/jpCityLotUse";
+import { EDGE_MATERIAL_AUTOTILE, fillLotUses, stampEdgeRect, type LotUsePlaced, type LotUseView } from "@/project/jpCityLotUse";
 
 export type JpStreetStyle = "shopping" | "residential";
 
@@ -792,6 +792,9 @@ export function runJpStreetPlan(plan: JpStreetPlan, call: (tool: string, args: R
     const tryKey = step.note?.startsWith("try:") ? step.note : undefined;
     if (tryKey && done.has(tryKey)) continue;
     try {
+      // 생울타리·블록담·철망은 fill_region 이 받지 않는 선형 위층 오토타일이다 — 그대로 부르면 거절돼 optional 단계가 조용히 사라졌다. 오토타일 모양으로 3층에 직접 찍는다.
+      const edge = step.tool === "fill_region" && view ? EDGE_MATERIAL_AUTOTILE[String(step.args.material)] : undefined;
+      if (edge) { stampEdgeRect(call as never, view!(), plan.mapId, step.args.rect as { x: number; y: number; w: number; h: number }, edge); continue; }
       const result = call(step.tool, step.args);
       if (tryKey) {
         done.add(tryKey); built++;
@@ -824,7 +827,7 @@ export function runJpStreetPlan(plan: JpStreetPlan, call: (tool: string, args: R
   for (const b of buildings) {
     if (!b.rect || b.top === undefined) continue;
     const wy = b.rect.y0 - 1;
-    if (wy - b.top >= 2) { try { call("fill_region", { mapId: plan.mapId, rect: { x: b.rect.x0, y: wy, w: b.rect.w, h: 1 }, material: "블록담" }); } catch { /* 건너뜀 */ } }
+    if (wy - b.top >= 2) { try { if (view) stampEdgeRect(call as never, view(), plan.mapId, { x: b.rect.x0, y: wy, w: b.rect.w, h: 1 }, EDGE_MATERIAL_AUTOTILE["블록담"]!); } catch { /* 건너뜀 */ } }
   }
   // 현관 꾸밈: 실제로 지어진 문 양옆 보도 칸에 종류별 소품(화분·우편함·입간판·자전거…). 문 바로 앞 접근칸은 비운다.
   const taken: { x: number; y: number; w: number; h: number }[] = [...(plan.propRects ?? [])];
@@ -872,7 +875,7 @@ export function labelStreetBuildings(map: GameMap, buildings: readonly JpStreetB
     const door = b.doors[0];
     const label = ROLE_KO[b.role] ?? b.role;
     const note = door ? `종류 ${b.role} · 문 (${door.x},${door.y}) · 문 앞 접근칸 (${door.x},${door.y + 1}) — 이 문에 ${label} 실내를 link_jp_city_interior 로 잇는다` : `종류 ${b.role}`;
-    const added = addMapLocation(map, { name: `${label} 건물`, x: b.rect.x0, y: b.rect.y0, w: b.rect.w, h: b.rect.h, note, tags: ["jp-building", b.role] });
+    const added = addMapLocation(map, { name: `${label} 건물`, x: b.rect.x0, y: b.rect.y0, w: b.rect.w, h: b.rect.h, note, tags: ["jp-building", COMPOSED_LAYOUT_TAG, b.role] });
     if (added.ok) lines.push(`${label} 문 (${door ? `${door.x},${door.y}` : "?"})`);
   }
   return lines;
