@@ -51,6 +51,7 @@ import { IMPACT_CUTSCENE_TOOLS } from "./impactCutsceneTools";
 import { CUTSCENE_PREVIEW_TOOLS } from "./cutscenePreviewTools";
 import { CUTSCENE_STAGE_TOOLS } from "./cutsceneStageTools";
 import { MECH_CHARSET_TOOLS } from "./mechCharsetTools";
+import { PIXEL_ART_TOOLS } from "./pixelArtTools";
 import { LIFE_FLOWER_TOOLS } from "./lifeFlowerTools";
 import { LIGHTING_TOOLS } from "./lightingTools";
 import { ACTION_TOOLS } from "./actionTools";
@@ -263,6 +264,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(IMPACT_CUTSCENE_TOOLS, "event").map((tool) => ({ ...tool, deprecated: true, supersededBy: "script_cutscene_staged" })),
   ...withDomain(CUTSCENE_STAGE_TOOLS, "event"),
   ...withDomain(MECH_CHARSET_TOOLS, "event"),
+  ...withDomain(PIXEL_ART_TOOLS, "event"),
   ...withDomain(CUTSCENE_PREVIEW_TOOLS, "event"),
   ...withDomain(DIRECTING_GUIDE_TOOLS, "event"),
   ...withDomain(LIFE_FLOWER_TOOLS, "event"),
