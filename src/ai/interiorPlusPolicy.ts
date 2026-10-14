@@ -99,6 +99,8 @@ export function formatInteriorPlusNote(target: InteriorPlusTarget, targetMap: { 
     SUBSET_GUIDE,
     READ_GUIDE,
     "순서: build_hand_interior_room 한 번(layout 이 방 크기·칸막이·문·방마다 예제 가구 한 벌을 정한다) → show_map_region 으로 원본 크기 확인 → check_reachability. 가구를 바꾸고 싶을 때만 list_hand_interior_parts({room:\"museum\"|\"ship\"|\"ship_hold\"|\"arena\"}) 로 방마다 쓰인 가구를 보고 data.rebuild 를 고쳐 replace:true.",
+    "다시 짓기는 한 번까지: 방이 너무 크면 layout.rooms 의 w·h 만 줄여 replace:true 로 한 번 더 짓는다 — layout 결과의 rooms·connect 좌표를 손으로 옮겨 적어 다시 짓지 않는다(2026-10-14 시험: 투기장을 손 좌표로 네 번 다시 지었다). "
+      + "두 방 사이 1칸·3칸 통로가 아래 방 벽면을 끊고 지나가는 것은 이 칩셋의 정상 문 모양이다 — 검수 문장이 그것을 지적해도 고치려고 다시 짓지 않는다. 관중석↔모래 마당 사이 가운데 3칸 트임도 정상(벽면 = 경기장 둘레 벽).",
     "평면 문자열이나 큰 네모 한 칸으로 직접 그리지 않는다. 바닥이 비어 보여도 가구를 흩뿌리지 않는다 — 관람 통로·배 안 통로·모래 마당은 비어 있는 것이 쓰임이다. 그림·명판에는 글자가 없다.",
   ].join("\n");
 }
