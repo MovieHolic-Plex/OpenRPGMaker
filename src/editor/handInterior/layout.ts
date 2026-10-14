@@ -45,6 +45,8 @@ const ENTRANCE_ORDER = [/^genkan$/u, /^entrance$/u, /_shop$|^shop$|^tavern$|^gre
   /^museum_lobby$|^ship_crew$|^ship_cargo$|^arena_armory$/u, /^hall$/u, /^corridor$/u, HUB];
 /** 기본으로 트는 쌍(종류). */
 const OPEN_DEFAULT: [string, string][] = [["genkan", "hall"], ["genkan", "ldk"], ["genkan", "entrance"], ["kitchen", "ldk"], ["kitchen", "dining"], ["arena_stands", "arena_floor"]];
+/** 위·아래가 정해진 쌍(종류) — 앞 방이 뒷 방 바로 위(북쪽)에 붙어야 한다. 관중석은 모래 마당을 내려다본다(2026-10-14 조수 시험: 관중석이 마당 아래 딴 방으로 떨어졌다). */
+const ABOVE_DEFAULT: [string, string][] = [["arena_stands", "arena_floor"]];
 /** 일본 집 문 기물(사양에 있을 때만). */
 const DOOR_OF: Record<string, { h?: string; v?: string }> = {
   toilet: { h: "door-open-toilet", v: "door-side-western" }, washitsu: { h: "fusuma-open", v: "door-side-sliding" },
@@ -296,6 +298,10 @@ export function layoutCandidates(tilesetId: string, req: LayoutRequest, S: HandI
     }
     for (const [p, q] of prefer) if (!edges.some((e) => (e.a === p && e.b === q) || (e.a === q && e.b === p))) { score += 3; notes.push(`${p}–${q} 이 이웃이 아니다`); }
     for (const [p, q] of openPairs) if (!edges.some((e) => (e.a === p && e.b === q) || (e.a === q && e.b === p))) score += 1.5;   // 트는 쌍(부엌↔거실…)은 붙어 있는 편이 좋다
+    for (const [p, q] of pairOf(ABOVE_DEFAULT as Pair[])) {
+      const up = rects.get(p)!, dn = rects.get(q)!;
+      if (!edges.some((e) => e.kind === "h" && ((e.a === p && e.b === q) || (e.a === q && e.b === p))) || up.y > dn.y) { score += 6; notes.push(`${p} 가 ${q} 바로 위가 아니다`); }
+    }
     // 끝방(화장실·욕실·침실…)을 지나가야 하면 감점
     const deg = new Map<string, number>(); for (const e of tree) { deg.set(e.a, (deg.get(e.a) ?? 0) + 1); deg.set(e.b, (deg.get(e.b) ?? 0) + 1); }
     for (const w of wants) if (!HUB.test(w.kind) && w.id !== entrance && (deg.get(w.id) ?? 0) > 1) { score += 2.5; notes.push(`${w.id} 를 지나가야 다른 방에 간다`); }

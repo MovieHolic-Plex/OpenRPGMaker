@@ -72,10 +72,18 @@ export const INTERIOR_PLUS_EXPOSED_TOOLS: readonly string[] = [
   "list_hand_interior_parts", "build_hand_interior_room", "list_tileset_references", "read_tileset_reference", "show_map_region", "check_reachability", "create_transfer_pair",
 ];
 
+/** 말한 방만 짓는다 — 건물 전체(program)는 «박물관»·«배 안 전체»처럼 건물을 말할 때만(2026-10-14 시험: «배 안 주방과 선실» 이 위 갑판 네 방 전체가 됐다). */
+const SUBSET_GUIDE =
+  "말한 방만 짓는다: «선장실과 화물칸» → layout:{rooms:[{kind:\"ship_cabin\"},{kind:\"ship_cargo\"}]} · «주방과 선실» → rooms:[{kind:\"ship_galley\"},{kind:\"ship_crew\"}](선실 = 선원 숙소, «선장 선실»이면 ship_cabin) · "
+  + "«전시실» 한 곳 → rooms:[{kind:\"museum_lobby\"},{kind:\"museum_gallery\"}] · «투기장» → program:\"arena\". program(건물 전체)은 «박물관»·«배 안 전체»·«갑판 아래»처럼 건물을 통째로 말할 때만 쓴다.";
+/** 읽을 것 — 이 노트와 도구 결과면 충분하다(2026-10-14 시험: 참고문서 8~20장·프리셋·공용 기물 검색을 돌다 한 판에 8~11분). */
+const READ_GUIDE =
+  "읽을 것은 이 노트로 충분하다 — list_authoring_presets·list_spatial_designs·find_tools·read_project_wiki 와 참고문서 여러 장을 돌지 않는다. 필요하면 read_tileset_reference({documentId:\"hand-interior-v5-plus\"}) 한 장만. 첫 시공 도구는 build_hand_interior_room 이다.";
+
 const PROGRAM_GUIDE: Record<InteriorPlusTheme, string> = {
   museum: "박물관·미술관 → layout:{program:\"museum\"}(입구 홀 museum_lobby · 미술 전시실 museum_gallery · 유물실 museum_relics · 조각실 museum_sculpture · 자연사실 museum_natural). 전시실 하나만이면 layout:{rooms:[{kind:\"museum_lobby\"},{kind:\"museum_gallery\"}]}.",
   ship: "배 안 → 위 갑판 layout:{program:\"ship\"}(선장실 ship_cabin · 조타실 ship_helm · 배 주방 ship_galley · 선원 숙소 ship_crew), 아래 갑판 layout:{program:\"ship_hold\"}(포 갑판 ship_gundeck · 화물칸 ship_cargo · 배 감방 ship_brig). 말한 방만 고르려면 rooms:[{kind:\"ship_cabin\"},{kind:\"ship_cargo\"}] — 출입 방(ship_crew 또는 ship_cargo)을 하나 넣는다.",
-  arena: "투기장·콜로세움 → layout:{program:\"arena\"}(관중석 arena_stands · 모래 마당 arena_floor · 검투사 방 gladiator_cell×2 · 무기고 arena_armory). 관중석과 모래 마당은 칸막이 없이 트인다.",
+  arena: "투기장·콜로세움 → layout:{program:\"arena\"}(관중석 arena_stands · 모래 마당 arena_floor · 검투사 방 gladiator_cell×2 · 무기고 arena_armory). 관중석은 모래 마당 바로 위(북쪽)에 붙고 칸막이 없이 트인다 — 도구가 맞춘다.",
 };
 
 export function formatInteriorPlusNote(target: InteriorPlusTarget, targetMap: { id: string; width: number; height: number } | null): string {
@@ -88,7 +96,9 @@ export function formatInteriorPlusNote(target: InteriorPlusTarget, targetMap: { 
     `[박물관·배 안·투기장 실내 — atlas_biome_interior] 이 요청은 손 도트 실내 칩셋의 ${target.themes.map((t) => ({ museum: "박물관·미술관", ship: "배 안", arena: "투기장" })[t]).join("·")} 방 종류로 짓는다. 고딕 저택(build_gothic_place)·해적 군도(compose_pirate_isles_map)·버들항 도구는 쓰지 않는다.`,
     where,
     ...target.themes.map((t) => PROGRAM_GUIDE[t]),
-    "순서: (필요하면) list_hand_interior_parts({room:\"museum\"|\"ship\"|\"ship_hold\"|\"arena\"}) 로 방마다 쓰인 가구 확인 → build_hand_interior_room 한 번(layout 이 방 크기·칸막이·문·방마다 예제 가구 한 벌을 정한다) → show_map_region 으로 원본 크기 확인 → check_reachability.",
+    SUBSET_GUIDE,
+    READ_GUIDE,
+    "순서: build_hand_interior_room 한 번(layout 이 방 크기·칸막이·문·방마다 예제 가구 한 벌을 정한다) → show_map_region 으로 원본 크기 확인 → check_reachability. 가구를 바꾸고 싶을 때만 list_hand_interior_parts({room:\"museum\"|\"ship\"|\"ship_hold\"|\"arena\"}) 로 방마다 쓰인 가구를 보고 data.rebuild 를 고쳐 replace:true.",
     "평면 문자열이나 큰 네모 한 칸으로 직접 그리지 않는다. 바닥이 비어 보여도 가구를 흩뿌리지 않는다 — 관람 통로·배 안 통로·모래 마당은 비어 있는 것이 쓰임이다. 그림·명판에는 글자가 없다.",
   ].join("\n");
 }
