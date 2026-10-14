@@ -54,6 +54,15 @@ modern-chipset 하네스가 합성한 도시(건물·도로·소품·차량)를 
 - 엔진 검사 `qa/check-rooms.mts`(평면·program 두 경로 18장, 엔진 BFS) · 변조 `qa/tamper.mts`(6종 코드+좌표) · 참고문서 `refs_interior.py` → 용도 `mc-interior`(문서 10·그림 20, `public/assets/modern-city-interior-references/`). `bake_refs.py` 가 끝에서 저장본(`tiledata/modern-city/interior/refs/category.json`)을 다시 붙인다.
 - 문 이음 `link_modern_city_interior`(거리 문 ↔ 실내 출입구 틈 왕복, 막힌 문 칸에는 이벤트 없음).
 
+## 실조수 시험에서 나온 결함 (2026-10-14, gpt-6.1-sol — gemini-3.8-flash 는 할당량 429)
+
+- **거리를 로비로 덮음:** 배치 품질 권고(`src/ai/piAgent/layoutQuality.ts`)가 도로·교차로를 «빈 바닥 66%·빈 정사각형 12»로 세고, 칩셋에 방 사양이 있어 그 맵을 «실내»로 보고 `build_hand_interior_room replace:true` 를 시켰다 → 60×48 거리가 10×8 로비가 됐다.
+  고침: 구성기 건물 이름표에 `composed-layout` 태그(권고에서 빠진다, `qa/compose-street.mts` 가 확인), 실내 권고 문장에 «거리·야외 맵이면 부르지 마라».
+- **이은 실내를 다시 지으면 커밋 거부:** 문 맞춤(`fitDoorsToPlan`)이 v5 판타지 시트에서만 돌아, 거리와 이은 병동을 작게 다시 지으면 «transfer 목적지가 맵 경계 밖/벽»으로 두 번 거부 → 조수가 연결 이벤트를 지우다 멈췄다. 이제 모든 방 사양 칩셋에서 돈다(`qa/rebuild-linked.mts`).
+- **빈 기본값 경고:** 스키마 빈 값(`plan:[]`·`exit:{room:""}`)만 보낸 호출에 «layout 이 plan·rooms 를 버렸다» 경고가 떠서 조수가 편의점을 다시 지으려 했다 — 빈 값은 알리지 않는다.
+- 그 밖: 회의실 의자를 탁자 양옆에도, `mci-desk-pc` 의 짝이 빠진 `mci-chair-office-n` 을 가리키던 것 제거, 같은 종류 건물 이름에 번호(«편의점 2»).
+- 남은 것: program 9개 중 6개가 배치 품질 기준(빈 바닥 ≤30%·대칭 ≤2.2)을 넘는다(병동 41%·편의점 41%·아파트 43%…) — 권고가 한 번 «방을 줄여라»를 시킨다. 예제 방을 더 촘촘히(또는 작게) 다시 짜는 일이 다음 순서.
+
 ## 예제 도시 맵 (60×60, 시드 1)
 
 - 굽기: `python3 src/harnesses/modern-chipset/bake_map.py [--seed 1] [--publish]`. `compose_town.build()`의 합성 결과(건물 23·소품 257·차량)를 **키트 id + 원점**으로 바꿔 4층에 찍는다(땅 1층 · 도로 표시와 접지 그림자 2층 · 키트 3층 · 겹침 4층). compose_town·`town_lib.py` 는 고치지 않고, 굽는 동안 런타임 후킹(`ExactBuildings`)으로 시트에 구워진 벽/지붕 조합만 쓰게 한다(안 하면 건물 약 19/23 이 이름이 가까운 다른 키트로 대체된다 — 시트에 벽×지붕 조합이 없다).
