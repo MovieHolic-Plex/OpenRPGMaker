@@ -9,6 +9,7 @@
 
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "./oauth/credentials";
 import type { RoleModel, SpecialistRole } from "./modelRoles";
+import { getKnownOpenAiCompatEndpoint, isOpenAiCompatProviderId } from "./openAiCompat";
 
 /** 빠른 모델(비용·지연 우선)과 최상위 모델(품질 우선) 두 티어. */
 export type ModelTier = "fast" | "strong";
@@ -41,6 +42,11 @@ const PROVIDER_TIER_MODELS: Readonly<Record<string, Readonly<Record<ModelTier, s
 
 /** 티어의 실제 모델 ID. 매핑이 없는 제공자면 null — 호출부는 그 역할의 모델을 건드리지 않는다. */
 export function tierModelFor(providerId: string, tier: ModelTier): string | null {
+  if (isOpenAiCompatProviderId(providerId)) {
+    // 사용자 지정 엔드포인트에는 「빠른/강한」 구분이 없다 — 사용자가 고른 기본 모델(없으면 시험에서 받은 첫 모델)을 쓴다.
+    const known = getKnownOpenAiCompatEndpoint(providerId);
+    return known?.defaultModel || known?.models[0] || null;
+  }
   return PROVIDER_TIER_MODELS[providerId]?.[tier] ?? null;
 }
 

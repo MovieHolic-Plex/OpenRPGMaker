@@ -1,5 +1,7 @@
 import { getBundledModel } from "@oh-my-pi/pi-catalog";
 import { getOhMyPiProvider } from "../../src/ai/ohMyPiProviders.ts";
+import { isOpenAiCompatProviderId } from "../../src/ai/openAiCompat.ts";
+import { resolveOpenAiCompatModel } from "./openAiCompatModel.ts";
 
 /**
  * GPT-6 계열은 설치된 pi-catalog 17.4.0 보다 나중에 나왔다. pi-catalog 18.3.2 의 openai-codex 항목이
@@ -22,6 +24,8 @@ const CODEX_GPT6_EXTENSION: Readonly<Record<string, {
 
 /** Exact selection only. Missing catalog entries must never change the user's model. */
 export function resolveOhMyPiModel(provider: string, requested?: string) {
+  // 사용자 지정(OpenAI 호환) 엔드포인트는 번들 카탈로그에 없다 — 호스트가 실어 보낸 정의로 모델을 만든다.
+  if (isOpenAiCompatProviderId(provider)) return resolveOpenAiCompatModel(provider, requested) as ReturnType<typeof getBundledModel>;
   const id = requested?.trim() || getOhMyPiProvider(provider)?.defaultModel || "";
   const exact = getBundledModel(provider as never, id);
   if (exact && typeof exact === "object" && "id" in exact) return exact;

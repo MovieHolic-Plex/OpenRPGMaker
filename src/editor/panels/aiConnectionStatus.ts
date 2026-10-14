@@ -14,7 +14,8 @@
 // 환경 변수 키는 사용자가 동의한 뒤에만 서버가 env:true 로 알린다. 그때는 연결로 센다.
 // 연결 해제는 저장 로그인만 지울 수 있어서, env 자격에는 해제 버튼을 붙이지 않는다.
 import { HOST_AI_DISABLED_GUIDANCE, isHostAiDisabledMessage } from "@/ai/hostAiDisabled";
-import { fetchChatGptAuthStatus } from "@/ai/chatgptOAuthClient";
+import { ensureOpenAiCompatEndpointsKnown, fetchChatGptAuthStatus } from "@/ai/chatgptOAuthClient";
+import { isOpenAiCompatProviderId } from "@/ai/openAiCompat";
 // 값 임포트는 피한다 — 테스트가 이 모듈을 vi.mock 으로 통째 교체하므로(값이 사라짐)
 // 타입 가드는 타입 전용으로 가져와 이름 기반 판별에 쓴다.
 import type { ChatGptCompanionResponseError } from "@/ai/chatgptOAuthClient";
@@ -305,6 +306,8 @@ export async function refreshAiConnectionStatus(onChange?: () => void): Promise<
 async function runRefresh(providerId: string, key: string, config: AiConfig, onChange?: () => void): Promise<void> {
   const generation = refreshGeneration;
   try {
+    // 역할이 사용자 지정 엔드포인트를 쓰면 그 이름·모델 사본을 먼저 받아 둔다(칩 라벨·역할 표가 슬러그 대신 이름을 보이게).
+    if (workProviderIds(config).some(isOpenAiCompatProviderId)) await ensureOpenAiCompatEndpointsKnown();
     const auth = await fetchChatGptAuthStatus(providerId);
     if (generation !== refreshGeneration || connectionKey(loadAiConfig()) !== key) return;
     const otherStatuses = auth.connected && !auth.expired

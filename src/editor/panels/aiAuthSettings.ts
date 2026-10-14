@@ -41,6 +41,7 @@ import {
   parseOhMyPiProvider,
 } from "@/ai/ohMyPiProviders";
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
+import { isOpenAiCompatProviderId } from "@/ai/openAiCompat";
 import { HOST_AI_DISABLED_GUIDANCE, isHostAiDisabledMessage } from "@/ai/hostAiDisabled";
 import {
   refreshAiConnectionStatus,
@@ -67,6 +68,8 @@ export interface AiAuthSettingsView {
   readonly focus: () => void;
   /** 헤더 「연결 확인」 — 패널의 같은 상태 경로로 다시 조회한다(로그인 대기 중이면 끊지 않는다). */
   readonly recheck: () => void;
+  /** 사용자 지정(OpenAI 호환) 연결 카드가 「기본 연결로 사용」 을 누를 때 — 카드 선택과 같은 경로로 제공자를 바꾼다. */
+  readonly selectProvider: (id: string) => void;
   /** 폴링 타이머·진행 중 요청을 정리한다. 모달을 닫을 때 반드시 부른다. */
   readonly dispose: () => void;
 }
@@ -480,7 +483,12 @@ export function renderAiAuthSettings(
     // 레지스트리 authKind 를 따라가 새 제공자를 추가할 때 잘못된 키 안내가 생기지 않게 한다.
     // 카드 설명을 그대로 되풀이하지 않는다 — 패널 안내는 **다음에 무슨 일이 일어나는지**를 말한다.
     const label = meta?.label ?? providerId;
-    providerHelp.textContent = providerKind !== "oauth"
+    const custom = isOpenAiCompatProviderId(providerId);
+    // 사용자 지정 엔드포인트는 로그인이 없다 — 주소·키 관리는 아래 「사용자 지정 연결」 카드가 맡는다.
+    actionsRow.hidden = custom;
+    providerHelp.textContent = custom
+      ? `${label} (사용자 지정 연결)을 기본 연결로 쓰고 있어요. 주소·키·모델은 아래 「사용자 지정 연결」에서 바꾸고, Google·ChatGPT 로 돌아가려면 위 카드를 고르세요.`
+      : providerKind !== "oauth"
       ? `${label} 는 이 에디터에서 지원하지 않는 자격 종류입니다.`
       : stored
         ? `${label} 계정으로 연결되어 있어요. 다른 계정을 쓰려면 연결 해제 후 다시 로그인하세요.`
@@ -488,7 +496,7 @@ export function renderAiAuthSettings(
     loginButton.textContent = stored
       ? "다시 확인"
       : providerKind === "oauth" ? "로그인" : "연결 확인";
-    disconnectButton.hidden = !stored;
+    disconnectButton.hidden = !stored || custom;
     // 로그인 전에는 「로그인」 이 이 화면의 유일한 다음 단계다 — 다른 회색 버튼과 같은 무게로 두지 않는다.
     loginButton.classList.toggle("is-primary", !stored && providerKind === "oauth");
     // 퀵 카드의 보이기/체크·탭 순서도 같은 크롬 갱신 경로에서 맞춘다.
@@ -627,7 +635,10 @@ export function renderAiAuthSettings(
       return;
     }
     if (usable) stopPolling();
-    if (usable && auth.env === true) {
+    if (usable && isOpenAiCompatProviderId(providerId)) {
+      // 키는 선택이라 「연결됨」 은 엔드포인트가 저장돼 있다는 뜻이다. 실제 도달은 「연결 시험」 이 말한다.
+      setStatus(`사용자 지정 연결 · ${auth.planType ?? accountName(providerId)}`, "connected");
+    } else if (usable && auth.env === true) {
       setStatus("연결됨 · 환경 변수", "connected");
     } else if (stored) {
       setStatus(`연결됨${auth.planType ? ` · ${auth.planType.toUpperCase()}` : ""}`, "connected");
@@ -1116,6 +1127,7 @@ export function renderAiAuthSettings(
         providerSelect,
       ],
     }),
+    selectProvider: (id: string) => selectQuickProvider(id),
     focus: () => {
       // 폼의 첫 컨트롤로 보낸다 — 로그인 버튼에 포커스를 주면 Enter 한 번에 로그인이 발사된다.
       // API 키 입력은 두 제공자 모두에게 존재하지 않는다.

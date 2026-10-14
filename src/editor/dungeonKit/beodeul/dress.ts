@@ -84,14 +84,14 @@ function sprinkle(c: DressCtx, rs: () => number, r: PlacedRoom, p: number, pick:
 
 // ---------------------------------------------------------------------------------------------
 
-export function dressTyped(c: DressCtx, type: DungeonType, r: PlacedRoom, i: number, rs: () => number, stairs: Slot | null, slots: Slot[], centerFirst: Slot[]): boolean {
+export function dressTyped(c: DressCtx, type: DungeonType, r: PlacedRoom, rs: () => number, stairs: Slot | null, slots: Slot[], centerFirst: Slot[]): boolean {
   switch (type) {
     case "sewer": return dressSewer(c, r, rs, stairs, slots, centerFirst);
     case "temple": return dressTemple(c, r, rs, stairs, slots, centerFirst);
     case "mine": return dressMine(c, r, rs, stairs, slots, centerFirst);
     case "cave": return dressCave(c, r, rs, stairs, slots);
     case "volcano": return dressVolcano(c, r, rs, stairs, slots);
-    case "labyrinth": return dressMaze(c, r, i, rs, stairs);
+    case "labyrinth": return dressMaze(c, r, rs, stairs);
     default: return false;
   }
 }
@@ -100,7 +100,7 @@ export function dressTyped(c: DressCtx, type: DungeonType, r: PlacedRoom, i: num
  * 통로 장식(2026-10-15). true 면 이 파일이 다 꾸민 통로(공통 규칙의 배수 창살·뼈 흩뿌림을 건너뛴다).
  * 광산: 선로 줄 위에 광차 한두 대, 갱목 틀(선반 조각)을 양 벽 쪽에 쌍으로 세우고 램프. 동굴·화산: 창살(하수구 그림) 대신 잔돌만.
  */
-export function dressCorridor(c: DressCtx, type: DungeonType, cor: PlacedCorridor, i: number, rs: () => number): boolean {
+export function dressCorridor(c: DressCtx, type: DungeonType, cor: PlacedCorridor, rs: () => number): boolean {
   const r = cor.rect;
   if (type === "cave" || type === "volcano") {
     for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) {
@@ -124,7 +124,6 @@ export function dressCorridor(c: DressCtx, type: DungeonType, cor: PlacedCorrido
   }
   // 램프: 가로 통로 위쪽 벽 앞 줄에
   if (r.w >= 6 && rs() < 0.6) stand(c, MV("lamp"), r.x + 1 + Math.floor(rs() * (r.w - 2)), r.y);
-  void i;
   return true;
 }
 const hashDoor = (c: DressCtx, x: number, y: number) => c.doorstep[c.idx(x, y)] === 1;
@@ -501,7 +500,7 @@ function dressVolcano(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | nu
 
 // ---------------------------------------------------------------- 미궁
 
-function dressMaze(c: DressCtx, r: PlacedRoom, _i: number, rs: () => number, s: Slot | null): boolean {
+function dressMaze(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null): boolean {
   if (r.kind !== "entrance") return false;      // 보스·보물 방은 공통 방 규칙
   if (s) { c.put(TORCH, s.x - 2, s.y); c.put(TORCH, s.x + 2, s.y); }
   // 미궁 전체: 벽 횃불은 드문드문, 길바닥에 뼈·잔해·격자, 막다른 길목에 상자 모둠

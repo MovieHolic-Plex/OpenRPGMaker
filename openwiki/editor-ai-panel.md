@@ -4275,3 +4275,72 @@ Pi가 error 뒤 done을 보내도 성공 완료로 승격하지 않는다. 최�
 인식하고 refresh 를 건너뛴다 — 다음 저장의 `expectedSha` 도 호스트 행과 맞는다. `AssistantHumanEdits` 의 사람 편집 보호는
 그대로다(진짜 팀 변경·프로젝트 전환은 여전히 `valid=false`). 디버깅 힌트: `valid` 가 꺼진 순간 `change.projectSwitch`·`origin`·호출 스택을
 `globalThis` 에 남겨 두면 어느 방송인지 바로 보인다(이번 진단법).
+
+## 사용자 지정(OpenAI 호환) 연결 (2026-10-14)
+
+내부 AI 가 OpenAI 호환 Chat Completions 서버(CLIProxyAPI·LiteLLM·Ollama·LM Studio·vLLM·OpenRouter·OpenAI)를 일급 제공자로 쓴다. 기본 연결(Google/ChatGPT)은 **바뀌지 않는다** — 사용자가 설정 → 연결 → 「사용자 지정 연결」에서 직접 골라야 쓴다. PR #2453(apiKey authKind·`/auth/key`)과는 별개 경로다: 거기는 정적 제공자에 키를 얹는 길이고, 여기는 사용자가 주소를 정하는 **동적 제공자 id `openai-compat:<slug>`** 이며 정적 레지스트리(`OH_MY_PI_PROVIDERS`)는 건드리지 않는다. 겹치는 파일은 `aiAuthRuntime.ts`·`ohMyPiHttp.mjs`·`aiAuthSettings.ts` 뿐이므로 두 PR 을 합칠 때 그 셋만 본다.
+
+### 구성
+
+| 층 | 파일 | 하는 일 |
+|---|---|---|
+| 순수 규칙 | `src/ai/openAiCompat.ts` | URL 검증(`checkOpenAiCompatBaseUrl`), 허용/차단 패턴 판정(`openAiCompatModelVerdict` — **모든 층이 같은 함수**), 프리셋, 오류 문장화, 알려진 엔드포인트 레지스트리 |
+| 저장 | `scripts/lib/openAiCompatStore.ts` | `~/.oprn/openai-compat-endpoints.json`(`OPRN_OPENAI_COMPAT_PATH`), 디렉터리 0700·파일 0600, 임시 파일+rename 원자 쓰기 |
+| 동반 서비스 | `scripts/lib/openAiCompatRuntime.ts` | 목록·저장·삭제·「연결 시험」, 요청 자격 해석, 호스트 사전 검사(`assertOpenAiCompatModelsAllowed`) |
+| 워커 | `scripts/lib/openAiCompatModel.ts` | `buildModel({api:"openai-completions"})` 로 pi-ai 기존 전송 재사용, 추론 강도 모양 잡기, 안전 fetch |
+| 화면 | `src/editor/panels/aiCompatSettings.ts` | 엔드포인트 카드·폼·역할별 모델 지정 |
+
+전송을 새로 짜지 않았다. oh-my-pi 의 `openai-completions` 전송이 이미 SSE·스트리밍 도구 호출·이미지 content part·`reasoning_effort` 를 처리한다. Responses API 변형은 oh-my-pi 가 이 경로에서 쓰지 않아 넣지 않았다.
+
+### 비밀 처리
+
+- API 키·헤더 **값**은 동반 서비스 파일에만 있다. 브라우저에는 공개 보기(`hasKey`, `headerNames`)만 가고, 입력칸은 password 형이며 카드에는 마스크(`••••••••`)만 보인다. localStorage(`oprn:ai-config`)의 `apiKey` 는 비어 있다(실측 길이 0). 내보내기·로그·모의 서버 로그에도 키 값은 없다(오류 문자열은 키를 `***` 로 가린다).
+- 키 없는 서버(Ollama·LM Studio)는 빈 키로 저장되고, 요청에는 자리표시 키 `oprn-no-key` 가 간다(pi-ai 가 `$OPENAI_API_KEY` 로 새지 않게).
+- 공유 호스트에서는 기존 `OPRN_HOST_OWNER_AI` 게이트가 이 경로에도 적용된다.
+
+### 주소 안전
+
+- http 는 localhost·사설망(LAN)·Tailscale 이름이면 그대로 되고, **공개 호스트에 http** 면 저장이 거절된다 — 폼의 「그래도 사용」 확인이 있어야 한다.
+- 클라우드 메타데이터(169.254.169.254 등)·링크로컬은 항상 거절. 이름이 그쪽으로 풀리는지도 요청 직전 한 번 더 본다(DNS 재바인딩은 **완전히 막지 못한다** — 검사와 연결 사이 TOCTOU 한계가 있다).
+- 리다이렉트는 따라가지 않는다(`redirect:"manual"`, 3xx 는 오류) — 검증한 주소 밖으로 자격이 새지 않게.
+- 워커에는 호스트 저장소 값만 온다. 브라우저가 보낸 주소는 워커에 닿지 않는다.
+
+### 모델 허용/차단 패턴 (비싼 모델 실수 호출 방지)
+
+엔드포인트마다 허용 패턴(`allowModels`)과 차단 패턴(`blockModels`)을 둔다. `*`·`?` 와일드카드, 대소문자 무시, **차단이 허용을 이긴다**, 허용이 비어 있으면 차단만 아니면 전부 허용. 같은 판정이 아래 여섯 곳에서 쓰인다 — 폴백 없이 거절한다.
+
+1. 목록 숨김(연결 시험 응답과 카드·선택 상자) — 막힌 모델은 사용자에게 아예 보이지 않고 「N개 숨김」만 알린다.
+2. 폼의 직접 입력 — 이유를 바로 보여 주고 시험·저장을 막는다.
+3. 역할별 지정(계획·실행·시각·작문·시공) — 「적용하지 않았어요」 + 이유.
+4. 호스트 사전 검사 — 모델 호출 전 403.
+5. 워커 모델 구성(`resolveOpenAiCompatModel`) — 403.
+6. 호출 직전 모양 잡기(`shapeOpenAiCompatCall`) — 접미사가 붙은 최종 ID 도 같은 패턴을 지켜야 한다. `completeProvider`(작문 등)와 `piAgentRuntime`(조수) 둘 다 이 함수를 지난다.
+
+프리셋 「CLIProxyAPI · mdc-server (Argon 만)」은 `http://mdc-server:8318/v1`, 허용 `gemini-4-argon*`, 차단 `claude-*` 를 채운다(프리셋은 출발값일 뿐 바꿀 수 있다). 다른 프리셋: CLIProxyAPI(로컬 8317)·LiteLLM(4000)·Ollama(11434)·LM Studio(1234)·vLLM(8000)·OpenRouter·OpenAI.
+
+### 추론 강도 세 방식 (엔드포인트별 `reasoningMode`)
+
+| 값 | 동작 | 언제 |
+|---|---|---|
+| `none`(기본) | 역할의 추론 강도를 보내지 않는다 | 모르는 인자를 400 으로 거절하는 서버, 강도가 이름에 박힌 모델 |
+| `field` | `reasoning_effort` 필드로 보낸다(역할 강도가 「끔」이면 생략) | OpenAI·LiteLLM·OpenRouter |
+| `suffix` | 모델 ID 뒤에 `-low/-medium/-high` 를 붙인다(이미 붙어 있으면 그대로) | `gemini-4-argon-high` 처럼 강도가 ID 에 있는 CLIProxyAPI 별칭 |
+
+서버가 어느 방식을 받는지는 `scripts/qa/openai-compat-live.mjs --items effort` 가 세 방식 모두 실측한다.
+
+### 연결 시험과 오류
+
+「연결 시험」은 동반 서비스가 `GET {base}/models` 를 부른다(30초, 모델을 골랐으면 짧은 채팅+도구 시험 130초). 401(인증 거절)·404(경로/모델 없음)·429·연결 거부·DNS·시간 초과·5xx·도구 미지원·이미지 미지원을 「무엇을 고치면 되는지」 문장으로 바꾸고 원문을 뒤에 붙인다. `/models` 가 없는 서버(404)도 모델 ID 를 직접 입력해 쓸 수 있다. 출력 상한(`maxOutputTokens`, 기본 16384)·컨텍스트 창·첫 응답 시간 제한은 카드의 「고급」에서 바꾼다.
+
+### 초기 설정 메모
+
+- **CLIProxyAPI**(mdc-server:8318 또는 로컬 8317): 프리셋을 고르고 서버 설정의 access 키를 넣는다. 허용 `gemini-4-argon*` 를 유지하면 `claude-*` 는 목록·호출 모두에서 막힌다. 강도를 쓰려면 추론 방식 「모델 ID 접미사」 또는 `gemini-4-argon-high` 를 직접 고른다.
+- **LiteLLM**: `http://127.0.0.1:4000/v1`, 마스터 키가 있으면 API 키에. `field` 방식이 보통 맞다.
+- **Ollama**: 키 없음, `http://127.0.0.1:11434/v1`. 도구 호출을 지원하는 모델이어야 조수가 돈다(미지원이면 연결 시험에서 「도구 호출 불가」).
+- **LM Studio**: 키 없음, `http://127.0.0.1:1234/v1`. **vLLM**: `--enable-auto-tool-choice` 로 띄워야 도구 호출이 된다.
+
+### 검증 (2026-10-14)
+
+- 모의 서버 `scripts/qa/openai-compat-mock-server.mjs`(401·404·429·도구 미지원·강도 인자 거절·`--models`) + 실제 설정 화면 Playwright: 카드·프리셋·401/404·모델 목록·마스킹된 키·역할 지정 거절·차단 모델 숨김·4개 언어. 실제 프로젝트 저장소 호스트(`scripts/oprn-serve.mjs`)에서 조수 한 턴(분류 호출 → 도구 25개 → `set_map_properties` 도구 호출 → 결과 왕복)으로 맵 이름을 바꾸고 `project.sqlite` 저장·새 브라우저 재로드로 확인.
+- 실서버 시험: `OPRN_LIVE_KEY=*** bun scripts/qa/openai-compat-live.mjs --base http://mdc-server:8318/v1 --models gemini-4-argon-high --items models,turn,effort,image --allow 'gemini-4-argon*' --block 'claude-*'` — 키는 환경변수로만 받고 출력은 마스킹되며, 패턴에 막힌 모델(claude-*)은 호출하지 않는다.
+- 안 돌린 것: vitest·게이트·typecheck(번들 확인은 esbuild·bun 으로 함). 이 PR 에 새 단위 테스트는 없다.

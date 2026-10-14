@@ -362,7 +362,7 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
         counts["stairs-up"] = 1;
       } else warnings.push("입구 방 북쪽 벽에 올라가는 계단을 놓을 평평한 벽이 없다.");
     }
-    if (type !== "catacomb" && type !== "castle" && dressTyped(ctx, type, r, i, rs, s, slots, centerFirst)) return;
+    if (type !== "catacomb" && type !== "castle" && dressTyped(ctx, type, r, rs, s, slots, centerFirst)) return;
     switch (r.kind) {
       case "entrance": {
         const rest = slots.filter((q) => !s || Math.abs(q.x - s.x) > 1);
@@ -484,7 +484,7 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
   (layout.grid ? [] : corridors).forEach((c, i) => {
     const rs = rng(seed * 13 + i * 71 + 9);
     const r = c.rect;
-    if (dressCorridor(ctx, type, c, i, rs)) return;
+    if (dressCorridor(ctx, type, c, rs)) return;
     if ((c.dir === "E" || c.dir === "W") && r.w >= 4 && rs() < 0.6) {
       const x = r.x + 1 + Math.floor(rs() * (r.w - 2));
       if (wallB[idx(x, r.y - 2)] === 1 && wallB[idx(x - 1, r.y - 2)] === 1 && wallB[idx(x + 1, r.y - 2)] === 1) put(K.torch, x, r.y - 2);
