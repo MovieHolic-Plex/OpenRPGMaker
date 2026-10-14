@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "57b7096579568ef56d53fa5360027bd1cd11cf6be1ca148e3e3329c8404bb612",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "옛 지도 진열대(2칸) (map case)",
+ "label": "atlas_biome_interior/plus/map case",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal map display case / table",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the display case spans rows 1 to 9 (about 8 rows including frame) showing the map laid out horizontally under glass, with a 4-row front south panel at rows 10-13 and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4309
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal map display case / table",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top display surface containing the map spans rows 1 to 9 (approx. 7-8 pixel rows), followed by the front south face on rows 10 to 13 and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4387
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "map display case",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top display surface containing the map spans rows 2 to 8 (enclosed in a top frame from rows 1 to 9, ~8 rows deep), with the south front face/apron clearly visible below on rows 10 to 12 supported by legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5509
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "display table / map case",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the display case features a map framed in wood spanning rows 1-9 (approx 7 rows for the map, plus frame rims), atop a 3-row front skirt (rows 10-12) and legs (rows 13-15), properly foreshortened in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4498
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.625Z",
+ "cells": {
+  "16": [
+   "2e977dc86070b552",
+   "42cb305c3b9c7964"
+  ],
+  "24": [
+   "0b4b33bb4da20a41",
+   "159e28a4ce8306d9",
+   "4e10e7caefca5431",
+   "559ce1296bdf6518",
+   "756fab279044af5e",
+   "79a0354c521bd142",
+   "84a9390072cfb3b0",
+   "b25c8edac36cea37",
+   "c82ec802091bb6b0",
+   "d5dbcba691fb2bac",
+   "d9107a8b0a83a9d6",
+   "f695c60451e97766"
+  ],
+  "32": [
+   "2ddf681523065492",
+   "4a6304468f247e30"
+  ],
+  "48": [
+   "5f76a130bb14244b",
+   "60ff9f0051d35de7",
+   "659579379a6feb0d",
+   "67ce76d719d2a681",
+   "77c935a78a3aafbf",
+   "87f821fdf75657fe"
+  ]
+ }
+}

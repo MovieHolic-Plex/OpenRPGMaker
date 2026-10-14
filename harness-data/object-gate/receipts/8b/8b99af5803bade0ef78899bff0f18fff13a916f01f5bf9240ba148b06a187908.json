@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8b99af5803bade0ef78899bff0f18fff13a916f01f5bf9240ba148b06a187908",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "물동이와 국자 (water bucket)",
+ "label": "atlas_biome_interior/plus/water bucket",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water bucket",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The container opening is clearly visible from above across rows 3-7, showing an elliptical water surface and the head of a ladle, with the front wall of the bucket visible below it from row 8 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5853
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water bucket/basin with ladle",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The opening of the bucket is clearly visible from above as an ellipse (rows 3 to 7) showing blue water and a submerged ladle inside, with the south exterior wall of the bucket visible below it (rows 8 to 14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7694
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water bucket with ladle",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The container opening is clearly visible from above across rows 3-7, showing water and the submerged bowl of a ladle, with the front wall of the bucket extending downward from row 8 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4131
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water bucket",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bucket opening is shown as an ellipse spanning rows 3 to 7, revealing water and a ladle resting inside, with the cylindrical front face extending below down to row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3574
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.630Z",
+ "cells": {
+  "16": [
+   "7d06dbbac3c2b68c"
+  ],
+  "24": [
+   "0322e4ed267c8d7f",
+   "17f6d539730131f7",
+   "2b3ad9ccbf4cc0ec",
+   "4447b9df956d858b",
+   "5bf840832e6cb33b",
+   "9130ec8f53753b47"
+  ],
+  "32": [
+   "49d05b43300e5653",
+   "592ce9522ad03163",
+   "7b60c74c931428d4",
+   "a5727871e904d336",
+   "a640fa9946251c97",
+   "b9f259ad04dc3759"
+  ],
+  "48": [
+   "1b7e984ea44c63ef",
+   "638e9e2b9320dd4c",
+   "6f59b9582dfa9ab1",
+   "72ab24742186e1cf",
+   "af419825436aaecd",
+   "c45d56fa12270d40"
+  ]
+ }
+}

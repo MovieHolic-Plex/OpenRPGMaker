@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1749403414e784afd9093ce23fd05fda44485f560ddde19a8132c997082b9e08",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "귀빈 접이 의자 (curule seat)",
+ "label": "atlas_biome_interior/plus/curule seat",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "curule seat cushion and folding X-frame",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The purple cushion surface of the folding seat is viewed from above across rows 4–10 (approx. 7 rows deep) resting on the wooden X-frame base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5110
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "curule seat cushion and folding X-frame",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The purple cushion seat shows a foreshortened top surface 7 pixel rows tall (rows 4-10) above the front frame bar and X-legs, correctly angled for 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5381
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "curule folding stool with purple cushion",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The purple cushion seat surface is clearly viewed from above across rows 4 to 10 (7 pixel rows), supported by front frame rails and X-shaped legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4379
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "curule folding stool cushion",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cushion is clearly visible from above, spanning rows 4 to 10 (7 rows tall) with an indented tufting detail in the center, resting on the south-facing wooden crossbar and X-frame legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5889
+  }
+ ],
+ "decidedAt": "2026-10-14T05:20:35.072Z",
+ "cells": {
+  "16": [
+   "4d63446c6a091b19",
+   "9463fcf2e740e255"
+  ],
+  "24": [
+   "05d44582098363ad",
+   "081d42e643d21f8e",
+   "162a192a47392a7d",
+   "31a84297ea051dc8",
+   "4d7f6a3f55d81b8a",
+   "513be6eb570d2843",
+   "b546d65f7433567e",
+   "bfa579b2423865b8",
+   "e59cc82876888097"
+  ],
+  "32": [
+   "12b43877ddf550db",
+   "142e212933cf496f",
+   "3f0c88ac50ce9b5f"
+  ],
+  "48": [
+   "3c777c1c6fd8ad41",
+   "40649632a41e6f71",
+   "420d74bf324e22ac",
+   "48f99fea7dc5e75a",
+   "5b04ed7512d1df52",
+   "6a3f26f3c465b94f"
+  ]
+ }
+}

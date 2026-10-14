@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fc98d47d6296ac5f3a4c283b94e8e7c3fe782424636734d28f71665a953c6f4e",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "검투사 무기 걸이(2칸) (gladiator rack)",
+ "label": "atlas_biome_interior/plus/gladiator rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "weapon rack frame with shelf base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lower shelf/base of the rack shows a substantial 6-row deep horizontal top surface (rows 21-26) with a 4-row south front face (rows 27-30), consistent with 3/4 top-down projection.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5031
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "weapon rack frame and base shelf",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lower base shelf of the rack clearly displays a 5-row deep top horizontal surface (rows 22-26) with a 4-row front face (rows 27-30), correctly rendering the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4546
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden weapon rack base and frame",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lower shelf/base of the rack clearly displays a horizontal top surface spanning rows 22-27 (approx. 6 rows) viewed from above, with the vertical front lip rendered across rows 28-30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3199
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden weapon rack frame and base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base shelf shows a clear top surface spanning rows 22 to 27 (approx. 6 pixel rows deep) before transitioning to the front vertical face at rows 28-30. The rack structure correctly follows 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4119
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.629Z",
+ "cells": {
+  "16": [
+   "450b09ee7ce5774d",
+   "48f76eca938d032a",
+   "57b5372ff39ea87f",
+   "7a59a5a297e4101a"
+  ],
+  "24": [
+   "07fed988173e3c8f",
+   "082b374ec552120e",
+   "0ec41213380afd83",
+   "29b0c45303dcfb87",
+   "2be27f0569fe9e3a",
+   "3d4c13f2e0d12496",
+   "43f17741abaf4868",
+   "457e6b28e45b6c25",
+   "491308d890b66f94",
+   "52a6e7f8c548b6db",
+   "7243dcaa41942bab",
+   "763d91c531080d87",
+   "87650d7d6072e51c",
+   "8890c6cab5ee1ed5",
+   "97590e2b6c12e268",
+   "a49c87cf63044e15",
+   "cbccf15baa56ce7b",
+   "d0fbc549226e3338",
+   "e0c33135d8766715",
+   "e857300867569839",
+   "eaf50f83686b28c8",
+   "efa4f500cbf8d0bb",
+   "f034dc17c1de0c77",
+   "fbadb9e835d97c46"
+  ],
+  "32": [
+   "89e736923f0bd8a7"
+  ],
+  "48": [
+   "1e6068ca74808343",
+   "3ed0b013a6918e4d",
+   "6caa7b5a87fdcd3a",
+   "7eb0d0b4138326e1",
+   "d5ff8c699a89e67d",
+   "f0463c03271c5771"
+  ]
+ }
+}

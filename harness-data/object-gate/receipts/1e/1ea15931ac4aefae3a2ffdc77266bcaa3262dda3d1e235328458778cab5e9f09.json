@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1ea15931ac4aefae3a2ffdc77266bcaa3262dda3d1e235328458778cab5e9f09",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "검 유리 진열장(2칸) (case sword)",
+ "label": "atlas_biome_interior/plus/case sword",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sword glass display case",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The glass showcase features a clearly defined 4-row top surface (rows 6-9) separated from the 5-row front glass pane (rows 11-15) by a horizontal frame divider at row 10, properly showing the top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12376
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "glass display case on wooden base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The showcase has a distinct horizontal glass top surface spanning rows 5–9 (5 pixel rows tall) framed by brass/gold trim, meeting the vertical front pane at row 10 where the sword display is viewed.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8575
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sword display case on wooden cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire piece is drawn in pure front elevation: the wooden drawer base has no visible top surface (0px) with its front panel and knob facing straight forward, and the glass showcase above is rendered as a flat vertical window frame with zero foreshortened depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 12993
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sword glass display case on wooden cabinet",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The glass display case has a distinct top glass pane (rows 6-9, 4 rows tall) framed separately from the vertical front glass pane (rows 11-15) by a horizontal middle divider bar at row 10, correctly presenting the top surface in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5458
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.622Z",
+ "cells": {
+  "16": [
+   "3056702dee37026c",
+   "5155d76101ecb5da",
+   "81243642e3a63a32",
+   "b2283128695ff908"
+  ],
+  "24": [
+   "081d3ada26f3fd05",
+   "0f376e50660087fc",
+   "185fce4d7b2fa3a6",
+   "1ea3b54d6fd0f039",
+   "3a8f3d0d372f4aa5",
+   "3bf8061ff235b15d",
+   "55bd769e78ed2799",
+   "570839414d78972a",
+   "79536d763cc2c5ac",
+   "7a07bb99f7d50def",
+   "825b593a5f5e7d31",
+   "9f59fb857ab7fe3f",
+   "a43f6f55f32e0445",
+   "a7af0d99d3e99027",
+   "a96956d7db553cba",
+   "ac4f0183e27b6ec4",
+   "ccda1e3dbe491317",
+   "d3791ddb399fbc79",
+   "d63627c8137e4f40",
+   "dd8cbb15672374a7",
+   "ead89098146242fb",
+   "ef5e731caa95282f",
+   "f6ee2040ed6e1548",
+   "f990c335cc3397aa"
+  ],
+  "32": [
+   "7cf8394eed075572"
+  ],
+  "48": [
+   "00570ed66c0a2ec5",
+   "1f33a056ac0f649a",
+   "6ec9e34a6d78fb6c",
+   "7fd5912f239f08dc",
+   "80b49dce0546aab6",
+   "e530683e1af0784a"
+  ]
+ }
+}

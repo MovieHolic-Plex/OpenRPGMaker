@@ -13,6 +13,7 @@ import { formatWorldmapChoiceNote } from '../worldmapChoiceNote';
 import { formatBeodeulTownNote, type BeodeulTownTarget } from "./beodeulTownRoute";
 import { formatJpCityNote, type JpCityTarget } from "@/ai/jpCityPolicy";
 import { formatGothicNote, type GothicTarget } from "@/ai/gothicPolicy";
+import { formatInteriorPlusNote, type InteriorPlusTarget } from "@/ai/interiorPlusPolicy";
 import { formatPirateIslesNote, type PirateIslesTarget } from "@/ai/pirateIslesPolicy";
 import { formatSengokuNote, type SengokuTarget } from "@/ai/sengokuEdoPolicy";
 import { formatSkyIslandNote, type SkyIslandTarget } from "@/ai/skyIslandPolicy";
@@ -97,6 +98,8 @@ export interface PiIntentNoteInput {
   readonly jpCity?: JpCityTarget | null;
   /** 요청·대상 맵이 고딕 저택(gothic_manor) 칩셋이면 그 대상(gothicPolicy). jp_city 대상이 잡히면 쓰지 않는다. */
   readonly gothic?: GothicTarget | null;
+  /** 박물관·배 안·투기장 실내(손 도트 실내 interior-plus 방 종류)면 그 대상(interiorPlusPolicy). jp_city 다음, 고딕·해적 군도보다 먼저 잡힌다. */
+  readonly interiorPlus?: InteriorPlusTarget | null;
   /** 요청·대상 맵이 열대 군도·해적 항구(pirate_isles)면 그 대상(pirateIslesPolicy). 버들항 마을 노트보다 먼저 잡힌다. */
   readonly pirateIsles?: PirateIslesTarget | null;
   /** 요청·대상 맵이 전국·에도(sengoku_edo) 칩셋이고 프로젝트에 칩셋이 있으면 그 대상(sengokuEdoPolicy). jp_city 보다 먼저 잡힌다. */
@@ -149,6 +152,7 @@ export function buildPiIntentNote(input: PiIntentNoteInput): string | null {
     : input.desertEast ? formatDesertEastNote(input.desertEast, input.targetMap)
     : input.snowNorth ? formatSnowNorthNote(input.snowNorth, input.targetMap)
     : input.jpCity ? formatJpCityNote(input.jpCity, input.targetMap)
+    : input.interiorPlus ? formatInteriorPlusNote(input.interiorPlus, input.targetMap)
     : input.gothic ? formatGothicNote(input.gothic, input.targetMap)
     : input.pirateIsles ? formatPirateIslesNote(input.pirateIsles, input.targetMap)
     : input.skyIsland ? formatSkyIslandNote(input.skyIsland, input.targetMap)

@@ -1,0 +1,129 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "eb5c8333d7e9d5949b7dcb1ccb41094d3de2efd0f5036f68efdaef7c7437d52c",
+ "width": 16,
+ "height": 32,
+ "kind": "frame",
+ "name": "설명판 받침 (plaque stand)",
+ "label": "atlas_biome_interior/plus/plaque stand",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "plaque board and hood",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (plaque head at rows 5-16) is drawn in pure front elevation with no visible top surface (rows 6-7 are merely the flat border frame of the plaque). While the base plinth at the bottom has a foreshortened top, the rule strictly forbids giving credit for a base plinth when the main volume lacks a top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9320
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "slanted plaque / lectern head on a central post with base plinth",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The plaque head is angled as a lectern facing the 3/4 camera, showing an 8-row slanted top/reading surface (rows 6-13) and a 3-row south face below it (rows 14-16). The base plinth also clearly shows a 4-row top surface (rows 25-28) with a 2-row front face (rows 29-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7171
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "slanted plaque board on stand",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The plaque head is angled upward toward the viewer in a lectern style, displaying the reading surface (rows 6-13, ~8 rows) and showing an undercut below (rows 14-15). The stand base also clearly displays its top surface across rows 25-28.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7081
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "plaque board and housing",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (the plaque housing at rows 5-16) is drawn from a flat front view without any top surface visible (row 5 is only a 1px outline). While the base plinth at the bottom has a top surface, base plinths do not count for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8294
+  }
+ ],
+ "decidedAt": "2026-10-14T05:28:27.576Z",
+ "cells": {
+  "16": [
+   "43d793ab1e17bbda",
+   "e85208f4061d4c8d"
+  ],
+  "24": [
+   "08159306ee6220c2",
+   "09d0aaaa17472575",
+   "15765eef20a3f03c",
+   "29721cf14a3209ef",
+   "2d96676f99611239",
+   "643b64e8b1ba6683",
+   "6919df1697878735",
+   "81dc68d2f7249dbb",
+   "9f174b83c1b0f977",
+   "a167ec23e5e3e6d4",
+   "b47b9bc9a7e3857a",
+   "cc65afba6629e384"
+  ],
+  "32": [
+   "09c59b73cb778160",
+   "ac5b6b4128b45314",
+   "f31e3a6237a3708b"
+  ],
+  "48": [
+   "1cbb592032b12b60",
+   "2895b3f4e4c13372",
+   "5d6c5aa51c271aae",
+   "7dbbea45f409ba25",
+   "94dee44f825d9d81",
+   "9b0c9bb0dca27a1d"
+  ]
+ }
+}

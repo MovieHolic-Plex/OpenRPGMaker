@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5412ad9ac6a92d16f7e8cc606271c63bf854135452f4ee54e84ae91bbb551c2e",
+ "width": 16,
+ "height": 48,
+ "kind": "figure",
+ "name": "청동 전사 상 (bronze warrior)",
+ "label": "atlas_biome_interior/plus/bronze warrior",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "warrior statue on pedestal",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The statue is presented facing east in profile atop a plinth. The plinth clearly displays a 5-row top surface (rows 34-38) above its front face (rows 39-45), establishing the correct 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6298
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bronze warrior statue on pedestal plinth",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The plinth shows a clear 5-row top surface (rows 34-38) upon which the warrior's feet rest, with a front vertical face extending from row 39 to 46.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4399
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "warrior statue on plinth",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The plinth clearly displays a 5-pixel-tall top surface (rows 34-38) upon which the warrior statue stands, transitioning into the vertical front face below (rows 39-45).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4257
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "warrior statue on pedestal",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The statue stands on a pedestal plinth whose top horizontal surface is clearly visible from rows 34 to 38 (5 rows tall), before dropping down to the front vertical face at row 39.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3920
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.623Z",
+ "cells": {
+  "16": [
+   "8478013a8c2b3445",
+   "972b1223a66402e7",
+   "fe4125bdafcd9860"
+  ],
+  "24": [
+   "003aa3ec583d1fe4",
+   "5a6b6430d9946105",
+   "84e378f2970f95f6",
+   "d8803294353ed1c8",
+   "f33964585ab2cd71",
+   "f5adc407efbd3566"
+  ],
+  "32": [
+   "2717a94bd50941a4",
+   "2a50534cd2288776",
+   "3b11b060f18e0be4",
+   "3cfa1b6969c2ca34",
+   "468b0b278095b354",
+   "65767521a787fe23",
+   "7d42dbac3da9f8f5",
+   "89d073ada82cbebf",
+   "9f8b85025e9d94b2",
+   "eafb0644ed8b37ae",
+   "f6b33de4a0730f24",
+   "f969f0fac936fc8d"
+  ],
+  "48": [
+   "3e25a2c75a7127c1",
+   "8a960c8e3eb8ecf8",
+   "af8de6343aba7543"
+  ]
+ }
+}

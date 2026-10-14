@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "46e549174889dceaca2f24b86cc7ee4a1a4e27e3f916ff87bd2c18f1ed9f6541",
+ "width": 48,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "관중석 돌 계단(높은 뒷줄, 3칸) (tier back 3)",
+ "label": "atlas_biome_interior/plus/tier back 3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tiered spectator seating / bleacher",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bleachers clearly display horizontal step/bench surfaces (treads) seen from above at rows 1-6 (~6 rows) and rows 16-23 (~8 rows with seat cushions), alternating with vertical south-facing risers.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3862
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tiered stone spectator seating / bleachers",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bleachers feature clear horizontal step surfaces in 3/4 view: the upper tier top is ~6 rows tall (rows 1-6) and the middle tier top is ~8 rows tall (rows 16-23, with three red seat cushions resting flat on it), each alternating with a vertical riser face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3897
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tiered spectator stone bench / bleachers",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object represents tiered bleachers with clearly visible horizontal step surfaces (treads) spanning rows 1-6 (upper tread, ~6px) and rows 17-23 (lower tread with cushions, ~7px) above vertical risers, consistent with standard 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8369
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tiered spectator stone/wood steps with seat cushions",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper tier step shows 6 pixel rows of horizontal surface (rows 1-6) and the lower tier step shows 8 pixel rows of horizontal tread (rows 16-23) with red seat cushions, alternating with vertical riser faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4551
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.628Z",
+ "cells": {
+  "16": [
+   "1bab38e4d3d89612",
+   "4c9e6d9629326dcc",
+   "ba5988300f885f37",
+   "dfe624cfb5fc9697",
+   "e43aec1e269e6163",
+   "f6db88248af2e3c9"
+  ],
+  "24": [
+   "24e27b69f422af03",
+   "3150d01ffe176c44",
+   "4c67b0f7a0761202",
+   "6b5ad72108cfce3f",
+   "6d623449f336daec",
+   "9e375c9b043abe1d",
+   "ba28d2ee7e829152",
+   "f2d0ce3c7efa2b49"
+  ],
+  "32": [
+   "002f8b6454b6d2b7",
+   "1adc41c55574805b",
+   "1b6da0d1d9b85461",
+   "2f0dcaa3084b6511",
+   "a03fabbd5e839f3a",
+   "a856e42bb8f13eb7"
+  ],
+  "48": [
+   "6db233eb117eaa6f",
+   "a5b1448cda224b82"
+  ]
+ }
+}

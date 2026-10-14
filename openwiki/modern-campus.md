@@ -169,3 +169,5 @@ FAIL 둘은 **3/4 관문 미통과** — 굽지 않는다. 교훈: 윗면과 앞
 - 조수 도구 `src/editor/tools/campusTools.ts`: `compose_campus_grounds`(school/street 템플릿 + 건물 교체 + 씨앗은 들꽃 흩뿌림만) · `link_campus_interior`(문 앞 접근칸 발판 ↔ 실내 출구 발판; jp 도구는 jp_city 전용). 템플릿 구성기이며 땅 모양 자체는 씨앗으로 바뀌지 않는다.
 - 활성화: seed.json tilesetHints·`BUILDABLE_CONCEPT_TILESETS`·`startRoutePaint.ts`.
 - 시각 QA(1회): 첫 조립에서 판 한 장 잔디·소품 부족·벤치가 길 위·운동장 윗선 없음을 보고 가장자리 칸·들꽃 잔디·가로등·화단·벤치 옮김·가로수를 더했다(재검수 1회).
+
+- **실조수 검증 후 고침 (2026-10-14, argon medium):** 건물 문 중 실내에 안 이어진 것은 `link_campus_interior` 결과가 목록으로 짚어 준다(체육관·별관 죽은 문 2회 연속 발생, `unlinkedBuildingDoors`). `build_hand_interior_room` 의 「참고 예제와 N% 같다」 경고는 「요청을 충족하면 그대로 끝낸다」로 바꿨다 — 옛 문구는 같은 방을 3~6번 재시공하게 했다(361초). 1차 `PROHIBITED_CONTENT` 는 최종 답 생성 턴의 모델 안전 필터 오탐으로 추정(고등학교·긴 문맥, 2차 재현 안 됨; 코드 원인 아님).

@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f5561a2dae2d3c73886dd64f2aa95dec363386b9130455aeee3e6dcf038ef97f",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "밧줄 묶은 궤짝 더미(2칸) (crate stack)",
+ "label": "atlas_biome_interior/plus/crate stack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stacked wooden crates tied with rope",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top crate has a clear top surface visible from rows 3 to 7 (5 source pixel rows), delineated from the front face which features cross-bracing and horizontal rope. The lower crates also display visible top surfaces on either side.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14004
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "crate stack",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surfaces of the crates are clearly visible (6 pixel rows tall on the top crate, rows 2–7; 5 pixel rows on the bottom crates, rows 14–18) shown in standard 3/4 top-down perspective, with vertical ropes wrapping over the tops.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7233
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stacked wooden crates tied with rope",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top crate has a clearly visible top surface spanning rows 2–7 (6 rows tall), and the bottom crates also show their tops at rows 14–17 next to the upper crate, properly depicting standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5183
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stack of wooden crates tied with rope",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top crate has a clearly rendered top face spanning rows 2 to 7 (6 pixel rows) in lighter wood tones, distinctly separated from its darker south front face (rows 8-15). The bottom crates also show 5-row top surfaces (rows 14-18).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4811
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.626Z",
+ "cells": {
+  "16": [
+   "2841f5ec18d041a2",
+   "5ed7af566360cee0",
+   "709d8f2ef2defe39",
+   "95548afcc6295c54"
+  ],
+  "24": [
+   "090665d3c19d33a5",
+   "17206ca69bdecf58",
+   "26892694c2173a0d",
+   "28ad8887fbae31bc",
+   "29e5c90b56b40053",
+   "307b301d369f41cd",
+   "353d89cbb18222d2",
+   "51e81d4851133374",
+   "59e6675616904b36",
+   "5d4ccb22561389dc",
+   "68db9fbea39f373d",
+   "757d2284d05085ea",
+   "82efdffb8fff4c88",
+   "8bb2c8b9c84cfdb9",
+   "ae1a366f3a815d64",
+   "b57c3a138f3a44cf",
+   "b70b7aeef0000187",
+   "d4fcc658c898948e",
+   "db06987ba9a4b26e",
+   "de623c5da0af603f",
+   "e0dc590fced4bd02",
+   "e1f80a4d675d7da0",
+   "f7f0adeab5af43ca",
+   "fd74e6592da5d5e7"
+  ],
+  "32": [
+   "e738f06f135d144d"
+  ],
+  "48": [
+   "28cdafaa5f5e7385",
+   "4506855f77e3e8c6",
+   "68eb0d1c6ef631b6",
+   "6d88e618dc0bdc4a",
+   "a8deb4138c700408",
+   "ab6c00be9108ced6"
+  ]
+ }
+}

@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a82cdb6b31c4a2720f55848be72265aeeb251d4892ef392b9951726db740e2e3",
+ "width": 16,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "정물화 (painting still life)",
+ "label": "atlas_biome_interior/plus/painting still life",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "framed still-life painting",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Framed picture mounted flat on a wall; wall-mounted objects of this type are permitted to be flat front-facing.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4004
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "framed painting",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted still life painting framed and mounted flat against the wall, appropriately rendered for a vertical surface in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3916
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "framed picture",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted picture frame correctly drawn flat against the wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2907
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "framed picture",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted still life painting framed and viewed flat against the wall, permitted for wall_mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4035
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.623Z",
+ "cells": {
+  "16": [
+   "73c1b30ac4414fa0",
+   "85e5cba3e9b1308a"
+  ],
+  "24": [
+   "07cc6cb5815b039a",
+   "0efc1a9cffd739ab",
+   "21f0cb81b1462b38",
+   "318393ff34f5511c",
+   "5422d27740407a20",
+   "7a3ef6d023b009b5",
+   "c0fa5ee8d527ec22",
+   "daae88147764c828",
+   "fa67871fa2abe32d"
+  ],
+  "32": [
+   "1a8d00c62fd295de",
+   "d13d285c2ca5ea57",
+   "f5f4fd30ce06df7f"
+  ],
+  "48": [
+   "08b1ad33a70a0cf9",
+   "0d7ed0c1b9f6d7c0",
+   "1da3be32dc3dc736",
+   "2b32576de13e3006",
+   "48bf25b4059fc515",
+   "64f217bbf7a4af76"
+  ]
+ }
+}

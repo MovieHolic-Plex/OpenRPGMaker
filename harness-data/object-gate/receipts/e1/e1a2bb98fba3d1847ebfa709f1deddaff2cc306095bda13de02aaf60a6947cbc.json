@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e1a2bb98fba3d1847ebfa709f1deddaff2cc306095bda13de02aaf60a6947cbc",
+ "width": 32,
+ "height": 16,
+ "kind": "seat",
+ "name": "관람 벤치(2칸) (bench museum)",
+ "label": "atlas_biome_interior/plus/bench museum",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "upholstered bench seat",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tufted top surface of the bench cushion is clearly visible from above across rows 1-6, with the south-facing front thickness of the cushion and the wooden frame/legs below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4820
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "padded museum bench with tufted cushion and wooden frame",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tufted pink cushion seat surface is visible from above across rows 2–6 (5 rows deep) with a front vertical cushion face at rows 7–8 and a wooden base frame below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 29120
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "padded bench / ottoman seat",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is a backless tufted bench cushion. The top horizontal seating surface is clearly visible from above across rows 1-6 (about 6 rows tall) complete with tufting buttons, followed by the cushion's south front face on rows 7-8 and the wooden frame/legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4205
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "upholstered museum bench",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tufted seat cushion top surface is clearly visible from above across rows 1-6 (about 6px deep), complete with button tufts and a highlighted front edge, leading down into a south-facing front rim (rows 7-8) and wooden base frame with legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5306
+  }
+ ],
+ "decidedAt": "2026-10-14T05:25:18.788Z",
+ "cells": {
+  "16": [
+   "4860351c6452819b",
+   "798e10f4a62ae473"
+  ],
+  "24": [
+   "440c6c7ea6b7f40a",
+   "7cc8947c26a8c1a1",
+   "86421d2e85f32cbe",
+   "8d2a651086bfd138",
+   "8d60ed45e1c21955",
+   "9f7d52b0c326794d",
+   "c33af94851c44c68",
+   "d3f1c481ed49fc01",
+   "d4aa15310c36ddcb",
+   "f0b260c8aa4d2873",
+   "f4aaddd9a21ee3b1",
+   "f6a753f5b5aa0019"
+  ],
+  "32": [
+   "3c10871189edcdfd",
+   "6dcced87f3a22202"
+  ],
+  "48": [
+   "02306d4fd5fbdbad",
+   "31f84d300810067f",
+   "3255b0901f0b93ac",
+   "6374395dee490c12",
+   "9da57085d055bc7e",
+   "a4ce1490407d1059"
+  ]
+ }
+}

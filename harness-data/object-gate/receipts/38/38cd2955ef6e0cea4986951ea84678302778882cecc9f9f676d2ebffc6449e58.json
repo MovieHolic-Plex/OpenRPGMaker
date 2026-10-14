@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "38cd2955ef6e0cea4986951ea84678302778882cecc9f9f676d2ebffc6449e58",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "맹수 우리(2칸) (beast cage)",
+ "label": "atlas_biome_interior/plus/beast cage",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden cage cart with metal bars and wheels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire cage cart (roof, upper panel, bars, lower chassis, and wheels) is drawn straight-on in pure front elevation with no visible top surface (only 1px rim highlights at row 2 and row 23).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7327
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wheeled beast cage wagon",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire cage cart is drawn from a flat front view: the top compartment/roof has only a 1px outline at row 1 above its vertical front face (rows 2-9), the cage bars are drawn straight vertical, and the lower frame beam shows no top surface facing the 3/4 camera.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5146
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "beast cage wagon",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof/lid of the cage is prominently displayed from above spanning rows 2–8 (approx 7 rows) with a trapdoor latch and hasp visible on its horizontal surface, sitting above the south-facing fascia beam (rows 10–12) and barred cage area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 27396
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "beast cage wagon",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cage roof top surface is clearly visible from above across rows 2–9 with upward lighting, resting items (handle/latch), and front overhang face below it at rows 10–12. The lower chassis also shows a top ledge (rows 23–24) above its front face (rows 25–27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10116
+  }
+ ],
+ "decidedAt": "2026-10-14T05:23:00.550Z",
+ "cells": {
+  "16": [
+   "01eea2e3c083c0c7",
+   "7248e2c9fb6f6559",
+   "e61300c4003f3b4f",
+   "eacd91c5597e80c8"
+  ],
+  "24": [
+   "058394caa4f62256",
+   "07c52b2819b4716e",
+   "1772c8536b0a0274",
+   "26994f092af7d680",
+   "40c4fe99e0ec7210",
+   "43a62840636cd579",
+   "57a92d01f70150b0",
+   "5e2aeaefaa55df54",
+   "657a86560677000a",
+   "6722345e03e2364a",
+   "6a8efa22a8831324",
+   "740b31f022410faf",
+   "7d94a5de00650db0",
+   "8ce757c8b98ca855",
+   "98054c16e49b35ba",
+   "ac29e7f18d80bb3a",
+   "c3e752471ddcd92d",
+   "d0ccb5fd8dc6cc7e",
+   "d3a68b373398b452",
+   "d618d6ef893e01b8",
+   "ee50342615f1330d",
+   "efe53c07cabb0f27",
+   "f01da8d7d6b75811",
+   "f316057fb305a7f4"
+  ],
+  "32": [
+   "366d323b0fce77f9"
+  ],
+  "48": [
+   "3b5fb466fc0b951a",
+   "67e4d1ab69c1f9e9",
+   "6e281d2bd1719b8b",
+   "8a69e74e901b40f9",
+   "941b117f5049d18c",
+   "e228cf6f7dd8fb19"
+  ]
+ }
+}

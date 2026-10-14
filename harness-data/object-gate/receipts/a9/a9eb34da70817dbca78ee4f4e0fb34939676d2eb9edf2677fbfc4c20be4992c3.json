@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a9eb34da70817dbca78ee4f4e0fb34939676d2eb9edf2677fbfc4c20be4992c3",
+ "width": 32,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "냄비 걸이(2칸) (pot rack)",
+ "label": "atlas_biome_interior/plus/pot rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall-mounted pot rack with hanging cookware",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted pot rack hangs flat against the wall with hanging pots and utensils, acceptable for the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4713
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pot rack with hanging pans",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted wooden pot rack with hanging pans and ladle. As a wall_mounted object, it is mounted flat against the wall, which is valid in 3/4 view without requiring a top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 38041
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall-mounted pot rack with hanging pans and utensils",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted rack with cookware hanging flat against the wall. Wall-mounted items are exempt from requiring a 3/4 top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11803
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall-mounted wooden rack with hanging pots and pans",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted rack with cookware hanging flat against the wall, drawn in front view as permitted for wall-mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4555
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.626Z",
+ "cells": {
+  "16": [
+   "03b290d47cffaab2",
+   "69e1b8acc6e53dcc",
+   "7133d04d30e5673c",
+   "ece72d7d90e2d482"
+  ],
+  "24": [
+   "09dd6a2d2da29c7e",
+   "1b03e0d57be4c3d6",
+   "28014d3efb3d2a1c",
+   "2cc55b11a075fe4c",
+   "2f4a6119f9c384f2",
+   "32cb7d5427b275d7",
+   "6e7dc7af3d8ccd4b",
+   "701f8df7b4746fc0",
+   "7da6c4b916088052",
+   "7dfe11e6c0a92463",
+   "984dec97a8249308",
+   "98b84017b41f626e",
+   "aa39831b77ef05ac",
+   "bff1c4b4bd3e54cf",
+   "d45f58630a75443f",
+   "f168873061d1589f",
+   "fbea840bea9f33f2",
+   "fd997fe7db9478bd"
+  ],
+  "32": [
+   "e1710a9c992d03a2"
+  ],
+  "48": [
+   "13301c65b68532c6",
+   "47b1038b4eb5b512",
+   "4fe3469a224df9f0",
+   "71a871e05964eb87",
+   "b9c2b12d2d260452",
+   "e64acdc3bbb34b48"
+  ]
+ }
+}

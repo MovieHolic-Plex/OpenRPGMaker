@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9850e6775ebf6f3ad601a92092c5d386e2f308745afcbc0aaea9382d9827ab36",
+ "width": 32,
+ "height": 32,
+ "kind": "round_body",
+ "name": "물통 거치대(2칸) (cask rack)",
+ "label": "atlas_biome_interior/plus/cask rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal cask on wooden rack",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cask is mounted horizontally: its circular front head faces south (rows 14-27) with a tap, while the top curved cylindrical surface of the barrel extends back 10 source pixel rows (rows 4-14) showing barrel bands in 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5278
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal cask on rack",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cask is oriented horizontally along the north-south axis. Its cylindrical top surface extends back from the front rim (row 14) to the rear edge (row 4), spanning approximately 10 pixel rows with clearly drawn hoops and staves viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6745
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal cask on rack",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cask lies horizontally along the north-south axis; its circular south face is visible at rows 14-27 while the top curved cylindrical body clearly recedes backward by 10 pixel rows (rows 4-14) showing staves and hoops from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7153
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal cask on rack",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cask is lying horizontally on a rack; its curved top surface is visible from row 4 to row 14 (10 rows) with curved hoops, while its front circular head and spigot face south.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6214
+  }
+ ],
+ "decidedAt": "2026-10-14T05:26:38.540Z",
+ "cells": {
+  "16": [
+   "560ae479800a6ac5",
+   "9f718eff083bf30a",
+   "bdb33ee0aff4c461",
+   "dc696202ebb44dbb"
+  ],
+  "24": [
+   "14ce516502acee79",
+   "14ed857a94f9722e",
+   "20f1e84a93260896",
+   "300e23f504757cc3",
+   "495162e6e590f381",
+   "541f9f61f6ae1f95",
+   "5599d383371fbec4",
+   "7b98042c9d4ac1ea",
+   "917a1ffa24253e7b",
+   "94aa0e8a594ffbaf",
+   "a472366caff41ea9",
+   "a8f8cc12d1ac0dd6",
+   "bcfb4f0018955086",
+   "beaa05a8b59a5cb9",
+   "c916ba0f71bff240",
+   "cbf050aeaf645d01",
+   "cd8378edbc129ee9",
+   "d0dc8d4eea023dda",
+   "d1f3cf7f87342939",
+   "d685b098c298da03",
+   "de6c7d96772fdaaf",
+   "f39892d1bee715dc",
+   "f92d9ee189405d7c",
+   "fa36f4c6bda84a71"
+  ],
+  "32": [
+   "b7ab8df20fdda211"
+  ],
+  "48": [
+   "0c471e966ba0ae3f",
+   "6b8ea1524febfcdc",
+   "8ec51ad827ba45a5",
+   "90b7bf6fc5c7007e",
+   "a835a9f3f623a54f",
+   "b5a920debc5bcd05"
+  ]
+ }
+}

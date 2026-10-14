@@ -471,10 +471,11 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
   name: "build_hand_interior_room",
   mode: "write",
   domains: ["tile", "map"],
-  description: "실내(집·민가·가게·상점·여관·주막·빵집·대장간·저택·교회·성 방·지하 등)를 지어줘·만들어줘 — 한 층을 손 도트 실내 칩셋 atlas_biome_interior 로 짓는다 — 실내를 까는 유일한 도구다. "
+  description: "실내(집·민가·가게·상점·여관·주막·빵집·대장간·저택·교회·성 방·지하·박물관·미술관 전시실·배 안 선장실·화물칸·투기장 등)를 지어줘·만들어줘 — 한 층을 손 도트 실내 칩셋 atlas_biome_interior 로 짓는다 — 실내를 까는 유일한 도구다. "
     + "plan = 한 줄씩 문자열 배열, '#' = 막힌 칸(외벽·칸막이·건물 밖), 그 밖 문자('.') = 실내. 벽면(막힌 칸 바로 아래 두 줄)·천장 띠·바닥·그림자는 자동이다. "
     + "방을 네모 하나로만 그리지 않는다 — 바깥 모양을 ㄱ·ㄷ·T 자로 꺾거나 알코브(벽에서 들어간 자리)·칸막이로 공간을 나눈다. 꺾인 모서리 벽·천장도 자동이다(예: [\"################\",\"#......#########\",\"#......#########\",\"#..............#\",\"#..............#\",\"#######..#######\"] = ㄱ자 방). "
     + "★ 건물·방이 둘 이상인 실내(집·가게+뒤채·여관·대장간·저택·일본 집·편의점 등)는 layout 하나만 준다: layout:{program:\"house-1f\"} 또는 layout:{rooms:[{kind:\"genkan\"},{kind:\"hall\"},{kind:\"ldk\"},{kind:\"toilet\"},{kind:\"bath\"}]} — 도구가 방 크기·배치(칸막이·문·트인 곳·출구, ㄱ·ㄷ자 바깥 모양)를 짜고 방마다 제작자 예제 방의 가구 한 벌을 심는다. "
+    + "박물관·미술관 = program:\"museum\", 배 안 위 갑판(선장실·조타실·배 주방·선원 숙소) = \"ship\", 아래 갑판(포 갑판·화물칸·배 감방) = \"ship_hold\", 투기장·콜로세움 = \"arena\"(방 종류 museum_*·ship_*·arena_*·gladiator_cell). 호러·고딕 미술관은 build_gothic_place. "
     + "program·방 종류(roomKinds) 목록은 list_hand_interior_parts({tileset}) 인자 없이. 보고 있는 맵 크기에 맞추지 않는다 — 크기는 방 구성이 정한다. 결과 data.layout.picture 로 배치를 보고, 다른 배치는 layout.variant 1·2, 다른 견본은 layout.seed. "
     + "가구를 더하거나 빼려면 data.rebuild(rooms·connect·exit·objects…)를 고쳐 같은 mapId·replace:true 로 넘긴다. "
     + "직접 방 사각형을 정하려면 plan 대신 rooms(방 사각형) + connect(이을 방 쌍) + exit(출구 방)를 준다 — 칸막이·문 틈·남쪽 출구·방별 바닥/벽면·문 기물(일본 집)을 도구가 계산하고 결과 data.plan·openings(문 자리)를 돌려준다. "
@@ -669,7 +670,13 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
     if (!composed) warnings.push(...floatingZones(input, shape));
     // layout.program 은 도구가 예제 구성대로 짠 평면이다 — 예제를 손으로 베꼈는지 보는 경고는 모델이 plan·rooms 를 줄 때만(2026-10-14: 병원 1층 program 이 예제와 96% 같다고 경고해 조수가 다시 짜게 했다).
     const copied = picked ? undefined : copiedExample(draft, tileset, input.plan);
-    if (copied) warnings.push(`평면이 참고 예제 「${copied.name}」와 ${copied.same}% 같다 — 사용자가 그 예제를 달라고 한 게 아니면 요청(방 수·쓰임·크기)에 맞게 새로 짠다(rooms 로 방 사각형을 다시 놓는다). 예제는 문법을 배우는 자료다`);
+    if (copied) {
+      // 2026-10-14 campus 실조수(argon): 「교실 둘 + 복도」 요청에 교실 둘 + 복도 예제가 그대로 맞았는데 이 경고가 「새로 짠다」만 말해
+      // 같은 방을 3~6번 다시 지었다(361초) — 닮음 %를 낮추려는 재시공 루프. 경고의 뜻은 「요청과 안 맞는데 베꼈다」이지 「닮으면 불합격」이 아니다.
+      warnings.push(existing
+        ? `평면이 참고 예제 「${copied.name}」와 ${copied.same}% 같다 — 이미 다시 지은 방이다. 이 방이 요청(방 수·쓰임·크기)을 충족하면 그대로 두고 끝낸다: 닮은 정도를 낮추려고 같은 방을 또 짓지 않는다. 다시 지을 때는 방 수·쓰임·크기를 실제로 바꿀 때만`
+        : `평면이 참고 예제 「${copied.name}」와 ${copied.same}% 같다 — 이 방이 요청(방 수·쓰임·크기)을 이미 충족하면 그대로 두고 끝낸다(예제와 같다는 것만으로 다시 짓지 않는다). 요청과 다른데 예제를 베낀 것이면 rooms 로 방 사각형을 요청에 맞게 다시 놓는다. 예제는 문법을 배우는 자료다`);
+    }
     warnings.push(...doorNotes.map((note) => `자동 맞춤: ${note}`));
     return {
       summary: `손 도트 실내 '${name}' ${built.width}×${built.height} (${mapId}, ${tilesetId})${picked ? ` — 배치 후보 ${picked.variant + 1}/${picked.variants}(방 ${picked.c.rooms.length}개, 견본 가구 ${Object.values(furnished ?? {}).reduce((a, f) => a + f.placed, 0)}점 — data.layout.picture 로 배치를 보고, 다른 배치는 layout.variant 를 바꿔 replace:true)` : ""} — 출입구에서 닿는 칸 ${built.reachable}, 닿지 못한 빈 바닥 ${built.unreachedFloor.length}, 경고 ${warnings.length}${warnings.length ? ` — ${warnings.slice(0, 4).join(" / ")}${warnings.length > 4 ? " …" : ""}` : ""}`,
