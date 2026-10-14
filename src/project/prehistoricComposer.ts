@@ -423,6 +423,46 @@ class Board {
     }
     return n;
   }
+  /**
+   * 빈 땅 메우기(마지막 단계): 소품·집·길·물에서 minR 칸 넘게 떨어진 «빈 땅 한가운데»마다 그 바닥에 맞는 무리를 하나 놓는다.
+   * 맵을 크게 잡으면(조수가 64×40 처럼) 고정 배치 둘레가 텅 비던 것을 막는다(조수 실측 1차). 무리는 cluster 라 BFS 연결 검사를 그대로 받는다.
+   */
+  fillEmpty(themes: readonly { grounds: readonly string[]; kits: readonly string[]; zone: string }[], minR = 4, max = 8): number {
+    const { W, H } = this;
+    const skip = new Array<boolean>(W * H).fill(false);
+    let placed = 0;
+    for (let round = 0; round < max * 3 && placed < max; round++) {
+      const dist = new Array<number>(W * H).fill(Infinity), q: number[] = [];
+      for (let k = 0; k < W * H; k++) {
+        const g = this.ground[k]!, u = this.use[k]!;
+        const occ = this.reserved[k] || skip[k] || !["open", "wild", "field"].includes(u) || WET.has(g) || g === "edge:water" || g === "edge:swamp" || g === "edge:lava";
+        if (occ) { dist[k] = 0; q.push(k); }
+      }
+      for (let i = 0; i < q.length; i++) {
+        const k = q[i]!, x = k % W, y = (k - x) / W;
+        for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+          const X = x + dx, Y = y + dy;
+          if (!this.in(X, Y)) continue;
+          const nk = Y * W + X;
+          if (dist[nk]! > dist[k]! + 1) { dist[nk] = dist[k]! + 1; q.push(nk); }
+        }
+      }
+      let best = -1, bd = minR - 1;
+      for (let k = 0; k < W * H; k++) {
+        const x = k % W, y = (k - x) / W;
+        const d = Math.min(dist[k]!, x + 2, y + 2, W - x + 1, H - y + 1);   // 가장자리는 빈 땅으로 덜 친다
+        if (d > bd) { bd = d; best = k; }
+      }
+      if (best < 0) break;
+      const bx = best % W, by = (best - bx) / W, g = this.ground[best]!;
+      const th = themes.find((t) => t.grounds.includes(g) || (g.startsWith("edge:") && t.grounds.includes(g)));
+      const r = { x: bx - 3, y: by - 3, w: 7, h: 6 };
+      const n = th ? this.cluster(r, shuffle(mulberry(this.seed + best), th.kits), th.grounds, 0, ["open", "wild", "field"]) : 0;
+      if (n > 0) { placed++; this.zone(th!.zone, "빈 땅을 메운 무리", r); }
+      for (let y = by - 2; y <= by + 2; y++) for (let x = bx - 2; x <= bx + 2; x++) if (this.in(x, y)) skip[y * W + x] = true;
+    }
+    return placed;
+  }
   building(kitId: string, x: number, y: number): PrehistoricBuilding {
     const kit = this.stamp(kitId, x, y, "bld");
     const d = kit.door ?? { dx: Math.floor(kit.width / 2), w: 1 };
@@ -765,6 +805,10 @@ function composeVillage(b: Board, rng: () => number): PrehistoricCell {
     const k = y * W + x;
     if ((b.ground[k] === "grass") && b.upper[k] < 0 && b.use[k] === "open" && !b.reserved[k] && vnoise(x, y, 4, b.seed + 61) > 0.72 && hash2(x, y, b.seed + 3) < 0.4) b.upper[k] = fl;
   }
+  b.fillEmpty([{ grounds: ["grass", "grass-b", "edge:grass"], kits: ["ph-jungle-tree", "ph-araucaria", "ph-cycad", "ph-berry-bush", "ph-bush", "ph-rock-l"], zone: "풀밭 나무 덩이" },
+    { grounds: ["fern", "edge:fern"], kits: ["ph-tree-fern", "ph-jungle-tree", "ph-fern-giant", "ph-fern-s"], zone: "고사리 숲 덩이" },
+    { grounds: ["dirt", "dirt-b"], kits: ["ph-rock-l", "ph-bush", "ph-rock-s"], zone: "맨땅 바위" },
+    { grounds: ["stone", "edge:stone"], kits: ["ph-rock-outcrop", "ph-rock-mossy", "ph-rock-l"], zone: "바위 언덕" }]);
   return start;
 }
 
@@ -850,6 +894,9 @@ function composeSwamp(b: Board, rng: () => number): PrehistoricCell {
   }
   // 통나무배: 섬 가 웅덩이 둑
   b.propNear("ph-canoe", shuffle(rng, islands.flatMap(([cx, cy]) => [[cx + 6, cy + 1], [cx - 8, cy + 1], [cx - 1, cy + 5]] as [number, number][])), 0, ["edge:swamp"]);
+  b.fillEmpty([{ grounds: ["mud", "edge:mud"], kits: ["ph-swamp-tree", "ph-horsetail", "ph-rock-mossy", "ph-mushrooms"], zone: "늪 나무 덩이" },
+    { grounds: ["fern", "edge:fern"], kits: ["ph-tree-fern", "ph-fern-giant", "ph-fern-s"], zone: "고사리 덩이" },
+    { grounds: ["dirt", "dirt-b"], kits: ["ph-bush", "ph-rock-s", "ph-berry-bush"], zone: "마른 땅 덤불" }]);
   return start;
 }
 
@@ -922,6 +969,9 @@ function composeVolcano(b: Board, rng: () => number): PrehistoricCell {
   }
   // 남쪽 들머리 가장자리 바위·덤불
   b.scatter({ x: 0, y: H - 7, w: W, h: 7 }, ["ph-rock-s", "ph-bush", "ph-rock-l"], 5, ["dirt", "dirt-b", "edge:ash"], 1, 79);
+  b.fillEmpty([{ grounds: ["ash", "edge:ash", "crust", "edge:crust"], kits: ["ph-dead-tree", "ph-rock-l", "ph-basalt-columns", "ph-dead-tree", "ph-bone-pile", "ph-obsidian"], zone: "죽은 숲" },
+    { grounds: ["dirt", "dirt-b"], kits: ["ph-rock-l", "ph-bush", "ph-rock-s"], zone: "바위 덤불" },
+    { grounds: ["grass", "grass-b", "edge:grass"], kits: ["ph-bush", "ph-cycad", "ph-rock-s"], zone: "풀 덤불" }]);
   return start;
 }
 
@@ -1016,6 +1066,9 @@ function composeFossil(b: Board, rng: () => number): PrehistoricCell {
   }
   void valley;
   if (!tipi) b.notes.push("발굴 야영지 천막 자리가 없어 천막 없이 지었다");
+  b.fillEmpty([{ grounds: ["dirt", "dirt-b", "edge:mud", "mud"], kits: ["ph-bone-pile-l", "ph-rock-l", "ph-fern-s", "ph-bone-pile", "ph-bush"], zone: "뼈 무더기" },
+    { grounds: ["grass", "grass-b", "edge:grass"], kits: ["ph-araucaria", "ph-cycad", "ph-bush", "ph-tree-fern"], zone: "언덕 나무" },
+    { grounds: ["stone", "stone-b", "edge:stone"], kits: ["ph-rock-outcrop", "ph-fossil-rock", "ph-rock-l"], zone: "바위 능선" }]);
   return start;
 }
 

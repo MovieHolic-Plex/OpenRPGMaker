@@ -63,7 +63,7 @@ export const COMPOSE_PREHISTORIC_MAP_TOOL: ToolDefinition = {
     properties: {
       mapId: { type: "string", description: "대상 맵 id(생략하면 지금 보는 맵). newMap 이 있으면 새 맵의 부모" },
       style: { type: "string", enum: [...ALL_STYLES], description: "village | swamp | volcano | fossil | cave-dwelling | cave-gallery | chieftain-hut | shaman-hut" },
-      newMap: { type: "object", properties: { name: { type: "string" }, width: { type: "integer" }, height: { type: "integer" } }, required: ["name"], additionalProperties: false, description: "새 맵을 만들어 짓는다(크기 생략 = style 기본 크기)" },
+      newMap: { type: "object", properties: { name: { type: "string" }, width: { type: "integer" }, height: { type: "integer" } }, required: ["name"], additionalProperties: false, description: "새 맵을 만들어 짓는다. 크기는 생략을 권한다 — style 기본 크기가 가장 알차다(크게 잡아도 집·광장은 늘지 않고 빈 땅이 숲·바위 무리로 채워질 뿐이다)" },
       seed: { type: "integer", minimum: 0, description: "배치 씨앗(생략 0)" },
       replace: { type: "boolean", description: "이미 칠한 맵을 지우고 다시 깐다" },
     },
