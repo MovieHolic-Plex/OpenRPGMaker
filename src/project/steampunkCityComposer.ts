@@ -97,7 +97,6 @@ function shuffle<T>(rng: () => number, xs: readonly T[]): T[] {
 /** 칸 용도 — 소품은 자기 용도 바닥에만 놓는다. */
 type Use = "lane" | "walk" | "road" | "plaza" | "yard" | "park" | "rail" | "water" | "quay" | "deck" | "platform" | "pipe" | "bld" | "prop" | "fence" | "floor" | "wall" | "ceil";
 interface Rect { x: number; y: number; w: number; h: number }
-const SOLID_USES: readonly Use[] = ["bld", "prop", "fence", "wall", "ceil"];
 
 class Board {
   readonly lower: number[];
@@ -778,7 +777,6 @@ function composeRoom(b: Board, rng: () => number, style: SteampunkRoomStyle): St
   /** 북쪽 벽에 등을 대는 가구(키 큰 가구는 윗줄이 벽면 아랫줄에 겹친다). */
   const backWall = (kit: string, xs: readonly number[], margin = 0) => {
     if (!b.has(kit)) return false;
-    const s = b.kitSize(kit);
     const tall = /bookshelf|curio|wardrobe|dresser|fireplace|drill|tesla|boiler|engine|pipe-wall/.test(kit);
     const y = tall ? fy0 - 1 : fy0;
     // 키 큰 가구의 윗줄은 벽면(아랫줄) 위에 겹친다 — 그 벽 칸에 장식이 없어야 한다
