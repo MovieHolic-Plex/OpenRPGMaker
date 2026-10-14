@@ -5,6 +5,17 @@
 
 <!-- releases -->
 
+## 0.218.0 — 2026-10-14
+
+### 기능
+
+- **desktop** — window controls — minimize / maximize / fullscreen / close icons at top-right, platform-adaptive (#2572) (`2b02d6a`)
+- **monster** — free-path monster intent routing, volcano start theme, no-capture tournament/expedition builders, family batch + propagating rename tools (#2570) (`91ba50d`)
+
+### 수정
+
+- **ci** — type the expedition format and species flying flag (`5c6882e`)
+
 ## 0.217.0 — 2026-10-14
 
 ### 기능
