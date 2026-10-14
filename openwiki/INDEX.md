@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **165쪽 / 5682KB / 약 1,658,388 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **165쪽 / 5683KB / 약 1,658,726 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -2436,7 +2436,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L215` Project sound descriptions
 - `L242` Traps
 
-### `openwiki/sengoku-edo.md` — 7KB · 76줄 · ~2,153 토큰
+### `openwiki/sengoku-edo.md` — 8KB · 93줄 · ~2,491 토큰
 
 - `L8` 파일 지도
 - `L30` 3/4 관문 (object-gate)
