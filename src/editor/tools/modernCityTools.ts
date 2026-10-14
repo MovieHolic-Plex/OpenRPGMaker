@@ -215,7 +215,7 @@ export const LINK_MODERN_CITY_INTERIOR_TOOL: ToolDefinition = {
     const enter: string[] = [], leave: string[] = [];
     const tag = interiorId.replace(/[^a-z0-9]+/gi, "_");
     for (const c of fronts) { const id = uniqueEventId(draft, `ev_mci_enter_${tag}`); enter.push(id); outer.events = [...(outer.events ?? []), gateEvent(id, `${interior.name} 들어가기`, c, { mapId: interiorId, ...inLanding })]; }
-    for (const c of exit.cells) { const id = uniqueEventId(draft, `ev_mci_exit_${tag}`); leave.push(id); interior.events = [...(interior.events ?? []), gateEvent(id, `${outer.name} 로 나가기`, c, { mapId, ...outLanding })]; }
+    for (const c of exit.cells) { const id = uniqueEventId(draft, `ev_mci_exit_${tag}`); leave.push(id); interior.events = [...(interior.events ?? []), gateEvent(id, `${outer.name} 쪽으로 나가기`, c, { mapId, ...outLanding })]; }
     const node = extractTreeNode(draft.mapTree, interiorId as MapId);
     if (node && !insertTreeNode(draft.mapTree, node, mapId as MapId)) insertTreeNode(draft.mapTree, node, "");
     return {

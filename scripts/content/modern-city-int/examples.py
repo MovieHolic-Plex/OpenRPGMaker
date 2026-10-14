@@ -55,6 +55,7 @@ EX['office-floor'] = dict(
         O('plant-tall', 6, 12),
         # 회의실
         O('chair-office-s', 14, 3), O('chair-office-s', 15, 3), O('chair-office-s', 16, 3),
+        O('cafe-chair-e', 13, 5), O('cafe-chair-w', 17, 5),
         O('plant-tall', 18, 3), O('door-wood', 13, 7),
         # 복도 동쪽: 대기 소파·서류장
         O('plant-tall', 11, 10), O('filing', 15, 10), O('shelf-office', 17, 10),

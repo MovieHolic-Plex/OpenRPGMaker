@@ -547,10 +547,15 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
       // 선택 칸을 다 채우는 모델이 layout 과 plan·rooms·connect·exit 를 함께 보낸다(2026-10-12 jp_city 도그푸딩: 같은 호출 4연속 거절).
       // layout 이 방 배치를 짜므로 layout 을 따르고, 같이 온 배치 칸은 버린 채 알린다.
       if (args.plan || args.rooms || args.connect || args.exit) {
-        const dropped = ["plan", "rooms", "connect", "exit"].filter((key) => (args as Record<string, unknown>)[key] !== undefined);
+        // 스키마의 빈 기본값(plan:[]·rooms:[]·exit:{room:""})만 채워 보내는 모델도 있다(2026-10-14 modern_city 실조수: 빈 칸 경고를 보고 방을 다시 지으려다 연결을 깼다) — 빈 값은 버려도 알리지 않는다.
+        const meaningful = (value: unknown): boolean =>
+          Array.isArray(value) ? value.length > 0
+            : value && typeof value === "object" ? Object.values(value as Record<string, unknown>).some((v) => typeof v === "string" ? v.trim() !== "" : Array.isArray(v) ? v.length > 0 : false)
+              : value !== undefined && value !== null && value !== "";
+        const dropped = ["plan", "rooms", "connect", "exit"].filter((key) => meaningful((args as Record<string, unknown>)[key]));
         const { plan: _plan, rooms: _rooms, connect: _connect, exit: _exit, ...kept } = args as Record<string, unknown>;
         args = kept as typeof args;
-        fitNotes.push(`layout 이 방 배치를 짜므로 같이 온 ${dropped.join("·")} 는 버리고 layout 대로 지었다(plan·rooms 를 직접 주려면 layout 을 빼라)`);
+        if (dropped.length) fitNotes.push(`layout 이 방 배치를 짜므로 같이 온 ${dropped.join("·")} 는 버리고 layout 대로 지었다(plan·rooms 를 직접 주려면 layout 을 빼라)`);
       }
       const req = args.layout as LayoutRequest & { variant?: number; furnish?: boolean };
       const variant = Math.max(0, Math.floor(req.variant ?? 0));

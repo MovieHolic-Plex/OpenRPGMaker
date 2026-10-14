@@ -97,7 +97,7 @@ obj('mci-route-map', '노선도 판', F.route_map, w=2, kind='hang', cat='statio
 
 # ── 사무실 ──
 obj('mci-desk-pc', '사무 책상(화면 남향)', F.desk_pc, w=2, up=14, cat='office', facing='S', surface=True, use=('search',), tags=('사무실', '책상'),
-    place='남쪽에 의자 mci-chair-office-n', pair=('mci-chair-office-n',), desc='회색 상판에 켜진 모니터 둘·자판·서류. 앉는 사람은 남쪽.')
+    place='벽 쪽 1인 책상(앉는 사람은 남쪽, 의자 없이 둔다) — 사무 줄은 mci-desk-pc-back + 북쪽 mci-chair-office-s', desc='회색 상판에 켜진 모니터 둘·자판·서류. 앉는 사람은 남쪽.')
 obj('mci-desk-pc-back', '사무 책상(화면 북향)', F.desk_pc_back, w=2, up=12, cat='office', facing='N', surface=True, use=('search',), tags=('사무실', '책상'),
     place='북쪽에 의자 mci-chair-office-s', pair=('mci-chair-office-s',), desc='모니터 뒤판이 보이는 책상. 앉는 사람은 북쪽.')
 obj('mci-chair-office-s', '사무용 의자(남향)', F.chair_office_s, up=8, cat='office', gate='seat', use=('sit',), facing='S', tags=('의자', '사무실'),
