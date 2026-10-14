@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import type { GameMap, Project } from "@/project/types";
 import { inspectPiLayoutQuality, measureLayoutQuality, piLayoutRepairPrompt } from "@/ai/piAgent/layoutQuality";
+import { COMPOSED_LAYOUT_TAG, isComposedLayoutMap } from "@/project/mapNamedLocations";
 
 function fixture(): { project: Project; floor: number; wall: number } {
   const project = createBlankProject();
@@ -67,5 +68,19 @@ describe("배치 품질 검사", () => {
     const prompt = piLayoutRepairPrompt(issues);
     expect(prompt).toContain("빈 바닥 100%");
     expect(prompt).toContain("show_map_region");
+  });
+
+  it("구성기 표식(composed-layout, 옛 sf-area·pirate-area)이 있는 맵은 빈 땅 권고를 받지 않고 일반 맵은 받는다", () => {
+    const { project: base, floor } = fixture();
+    const project = structuredClone(base);
+    for (const id of ["plain", "composed", "legacy_sf", "legacy_pirate", "other_tag"]) addMap(project, id, 20, 10, floor);
+    const loc = (tags: string[]) => [{ id: "l1", name: "구역", x: 0, y: 0, w: 5, h: 5, tags }] as unknown as GameMap["locations"];
+    project.maps.composed!.locations = loc(["steampunk-zone", COMPOSED_LAYOUT_TAG]);
+    project.maps.legacy_sf!.locations = loc(["sf-area", "road"]);
+    project.maps.legacy_pirate!.locations = loc(["pirate-area"]);
+    project.maps.other_tag!.locations = loc(["village"]);
+    expect(isComposedLayoutMap(project.maps.plain!)).toBe(false);
+    expect(isComposedLayoutMap(project.maps.composed!)).toBe(true);
+    expect(inspectPiLayoutQuality(project, base, undefined).map(i => i.mapId).sort()).toEqual(["other_tag", "plain"]);
   });
 });

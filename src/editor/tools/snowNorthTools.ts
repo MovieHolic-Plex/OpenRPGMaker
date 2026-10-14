@@ -2,12 +2,11 @@
 // 배치는 구성기 src/project/snowNorthComposer.ts 가 짠다(땅 계획 → 덩이(오토타일) → 집 → 길 → 소품, 씨앗마다 다른 배치, 소품마다 BFS 연결 검사).
 // 이 도구는 그 결과를 맵에 쓰고, 문 칸은 막힘·접근칸은 걸을 수 있음·시작 칸에서 모든 접근칸(실내는 출구)에 닿는지를 엔진 통행(isPassable)으로 다시 확인한다. 실패하면 맵을 바꾸지 않는다.
 // 모양은 prehistoricTools 와 같다.
-import { COMPOSED_LAYOUT_TAG } from "@/ai/piAgent/layoutQuality";
 import { isSnowNorthTilesetDef, SNOW_NORTH_TILESET_ID } from "@/ai/snowNorthPolicy";
 import { isPassable } from "@/project/collision";
 import { setLayerTileAt } from "@/project/mapLayers";
 import { clearTileStack } from "@/project/mapOverlayTiles";
-import { addMapLocation } from "@/project/mapNamedLocations";
+import { addMapLocation, COMPOSED_LAYOUT_TAG } from "@/project/mapNamedLocations";
 import { extractTreeNode, insertTreeNode } from "@/project/mapTree";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
 import {

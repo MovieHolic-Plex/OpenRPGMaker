@@ -22,6 +22,11 @@
 **알려진 구멍:** 옛 relief 가 남은 맵에 `author_beodeul_town({mapId})` 로 다시 지으면 찍는 동안 옛 높이로 검사돼 일부 키트가 빠진다(합성 시험 stampFailed 5).
 마을 도구가 시공 시작에서 `map.relief` 를 지우면 닫힌다(그 파일은 이 변경 범위 밖). 프로브: `bun scripts/qa/stamp-relief-probe.mts [--theme --terrain --seed]`.
 
+**구성기 맵은 배치 품질 권고를 받지 않는다 — 표식 하나, 판정 하나 (2026-10-14).** `compose_*` 도구·`layout` 방 짓기는 자기 위치 이름표(구역·건물·방)에
+`COMPOSED_LAYOUT_TAG`(`composed-layout`, `src/project/mapNamedLocations.ts`)를 같이 단다. `inspectPiLayoutQuality` 는 `isComposedLayoutMap(map)` 하나로 그 맵을 통째로 건너뛴다
+(권고가 전부 «빈 땅 채우기·대칭 깨기»라서다. 문에 닿지 않는 길·겹침은 구성기 도구 자신의 검증이 따로 막는다). 새 구성기는 표식 한 줄만 달면 된다 — `layoutQuality.ts` 에 칩셋 분기를 더하지 않는다.
+옛 `sf-area`·`pirate-area` 이름표만 있는 저장본은 `isComposedLayoutMap` 이 같이 인정한다. `composedLayoutMapIds` 는 없어졌다.
+
 **트인 땅 배치 기준** (`src/ai/piAgent/layoutQuality.ts`). 바닥(통행 칸)의 절반 이상이 모래·눈 재질(칸 이름표·설명 `모래|사막|눈 바닥|고원 눈|눈밭|설원|sand|snow`,
 `road` 태그 칸 제외)이면 `OPEN_LAND_LAYOUT_LIMITS`(빈 바닥 ≤45%·빈 정사각형 ≤9·대칭 ≤2.2)로 잰다. 근거: 마을 도구 `openLand` 가 사막·설원에 빈 덩이 90칸(≈9×9)·화면당
 빈 바닥 74%까지 일부러 남긴다. 실측(시드 3·7·11 + 9개, 기본 크기·64×40): 사막·설원 54맵 중 옛 기준 54맵 미달 → 새 기준 2맵(사막 seed 12·42, 빈 정사각형 10),

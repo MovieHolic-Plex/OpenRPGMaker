@@ -5,7 +5,7 @@ import { isSkyIslandTilesetDef } from "@/ai/skyIslandPolicy";
 import { isPassable } from "@/project/collision";
 import { cropExtraLayers, setLayerTileAt } from "@/project/mapLayers";
 import { clearTileStack } from "@/project/mapOverlayTiles";
-import { addMapLocation } from "@/project/mapNamedLocations";
+import { addMapLocation, COMPOSED_LAYOUT_TAG } from "@/project/mapNamedLocations";
 import { extractTreeNode, insertTreeNode } from "@/project/mapTree";
 import { SKY_MIN_SIZE, composeSkyIsland, skyPaletteFromTileset, type SkyComposeStyle } from "@/project/skyIslandComposer";
 import type { GameEvent, GameMap, MapId, Project } from "@/project/types";
@@ -130,10 +130,10 @@ export const COMPOSE_SKY_ISLAND_MAP_TOOL: ToolDefinition = {
       addMapLocation(target, {
         name: d.name, x: d.rect.x, y: d.rect.y, w: d.rect.w, h: d.rect.h,
         note: door ? `문 (${door.x},${door.y}) · 접근칸 (${d.access[0]!.x},${d.access[0]!.y}) — 실내는 compose_sky_island_map(style:"room-…") 으로 새 맵에 짓고 link_sky_island_interior 로 잇는다` : "문 없는 건물",
-        tags: ["sky-island", "sky-building", d.kit],
+        tags: ["sky-island", "sky-building", COMPOSED_LAYOUT_TAG, d.kit],
       });
     }
-    for (const z of r.zones) addMapLocation(target, { name: z.name, x: z.rect.x, y: z.rect.y, w: z.rect.w, h: z.rect.h, note: `쓰임: ${z.use}`, tags: ["sky-island", `sky-${z.use}`] });
+    for (const z of r.zones) addMapLocation(target, { name: z.name, x: z.rect.x, y: z.rect.y, w: z.rect.w, h: z.rect.h, note: `쓰임: ${z.use}`, tags: ["sky-island", COMPOSED_LAYOUT_TAG, `sky-${z.use}`] });
     const blocked = (target.events ?? []).filter((e) => !walkable(next, target, e.x, e.y)).map((e) => `${e.name ?? e.id}(${e.x},${e.y})`);
     draft.maps[mapId] = target;
     if (resize) { draft.startPos = next.startPos; }
