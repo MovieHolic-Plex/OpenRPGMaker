@@ -554,10 +554,12 @@ def _(c):
     # 캔버스 16×32: 왼 기둥 3px, 오른쪽 기둥 3px, 위 인방
     c.R(0, 0, 3, 32, 'shiro', 3); c.VL(0, 0, 32, 'shiro', 1); c.VL(1, 0, 32, 'shiro', 4); c.VL(2, 0, 32, 'shiro', 2)
     c.R(13, 0, 3, 32, 'shiro', 2); c.VL(13, 0, 32, 'shiro', 3); c.VL(15, 0, 32, 'shiro', 0)
-    c.R(0, 0, 16, 4, 'shiro', 3); c.HL(0, 0, 16, 'shiro', 4); c.HL(0, 3, 16, 'shiro', 1); c.HL(3, 4, 10, 'yoru', 2)
+    # 인방: 윗면 3행(칸막이 두께를 위에서 — 밝게) + 앞 모서리 반사 + 아래 안쪽 천장면(soffit) 2행 어둡게 → 벽 두께가 보이는 틈
+    c.R(0, 0, 16, 3, 'conc', 5); c.HL(0, 0, 16, 'conc', 4); c.HL(0, 2, 16, 'shiro', 4); c.HL(0, 3, 16, 'shiro', 2)
+    c.HL(3, 4, 10, 'yoru', 1); c.HL(3, 5, 10, 'yoru', 3)
     c.R(0, 28, 3, 4, 'conc', 3); c.R(13, 28, 3, 4, 'conc', 2)
     # 문짝(오른쪽으로 밀림): 8px 보이고 나머지는 기둥 속
-    x0, y0, w, h = 7, 5, 6, 23
+    x0, y0, w, h = 7, 6, 6, 22
     c.R(x0, y0, w, h, 'kinari', 3); c.VL(x0, y0, h, 'kinari', 1); c.VL(x0 + 1, y0, h, 'kinari', 4); c.HL(x0, y0 + h - 1, w, 'kinari', 1)
     c.R(x0 + 2, y0 + 3, 2, 10, 'garasu', 4); c.P(x0 + 2, y0 + 3, 'garasu', 6); c.P(x0 + 3, y0 + 7, 'garasu', 5)
     c.VL(x0 + 1, y0 + 12, 6, 'tekko', 5); c.VL(x0 + 2, y0 + 13, 4, 'tekko', 3)       # 세로 손잡이

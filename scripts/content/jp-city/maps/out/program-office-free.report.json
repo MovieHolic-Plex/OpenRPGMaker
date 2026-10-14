@@ -4,7 +4,7 @@
   24,
   19
  ],
- "summary": "손 도트 실내 'program office-free' 24×19 (jp-program-office-free, jp_city) — 배치 후보 1/3(방 4개, 견본 가구 62점 — data.layout.picture 로 배치를 보고, 다른 배치는 layout.variant 를 바꿔 replace:true) — 출입구에서 닿는 칸 196, 닿지 못한 빈 바닥 0, 경고 0",
+ "summary": "손 도트 실내 'program office-free' 24×19 (jp-program-office-free, jp_city) — 배치 후보 1/3(방 4개, 견본 가구 62점 — data.layout.picture 로 배치를 보고, 다른 배치는 layout.variant 를 바꿔 replace:true) — 출입구에서 닿는 칸 197, 닿지 못한 빈 바닥 0, 경고 0",
  "warnings": [],
  "layout": {
   "variant": 0,

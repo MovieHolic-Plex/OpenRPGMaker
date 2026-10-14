@@ -1,8 +1,8 @@
 # 일본 도시 — 일본 실내 예제: 학교 본관 2층(교실) (`jp-city-school-2f`, 26×19)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **15882칸**, 16px 칸, 시트 1536×2656px, 한 줄 **96칸** — 번호 n 의 칸은 열 n%96, 행 n÷96(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **15876칸**, 16px 칸, 시트 1536×2656px, 한 줄 **96칸** — 번호 n 의 칸은 열 n%96, 행 n÷96(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
-입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-school-2f`. 도구 결과: 바깥(jp-city-school-3f)으로 나가는 문 jp-city-school-2f-link-0(21,15) 이 있는데 평면 가장자리에 출입구 틈이 없다 — plan 맨 아래 줄의 '#' 하나를 '.' 로 비워 문을 낸다(그 칸이 출구가 된다)
+입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-school-2f`. 도구 결과: 손 도트 실내 '학교 본관 2층(교실)' 26×19 (jp-city-school-2f, jp_city) — 출입구에서 닿는 칸 186, 닿지 못한 빈 바닥 0, 경고 1 — 평면이 참고 예제 「일본 도시 · 일본 학교·역·사무실 실내 예제 · 학교 본관 2층(교실)」와 100% 같다 — 사용자가 그 예제를 달라고 한 게 아니면 요청(방 수·쓰임·크기)에 맞게 새로 짠다(rooms 로 방 사각형을 다시 놓는다). 예제는 문법을 배우는 자료다
 
 ## 입력
 ```json
@@ -17,7 +17,12 @@ tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스
 | corridor | (0,13)-(25,18) |
 
 ## 이동
-(이동 이벤트 없음 — 현관 밖은 거리 맵에 붙일 때 단다)
+| 이벤트 | 칸 | 이동 |
+|---|---|---|
+| jp-city-school-2f-link-0 | (21,15) | jp-city-school-3f (22,13) |
+| jp-city-school-2f-link-1 | (22,15) | jp-city-school-3f (22,13) |
+| jp-city-school-2f-link-2 | (23,16) | jp-city-school-1f (23,13) |
+| jp-city-school-2f-link-3 | (24,16) | jp-city-school-1f (24,13) |
 
 ## 통행(엔진 `isPassable`, `X` 막힘 · `.` 걸음)
 ```

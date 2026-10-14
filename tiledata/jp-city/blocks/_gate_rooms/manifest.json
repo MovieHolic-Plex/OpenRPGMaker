@@ -1,0 +1,18 @@
+{
+ "hs-door-sliding__hospital-1f_4_10": {
+  "png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/_gate_rooms/hs-door-sliding__hospital-1f_4_10.png",
+  "part": "hs-door-sliding",
+  "block": "interior_hospital",
+  "x": 32,
+  "y": 32,
+  "source": "interior-hospital-1f-1x.png"
+ },
+ "hs-door-sliding__hospital-1f_10_10": {
+  "png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/_gate_rooms/hs-door-sliding__hospital-1f_10_10.png",
+  "part": "hs-door-sliding",
+  "block": "interior_hospital",
+  "x": 32,
+  "y": 32,
+  "source": "interior-hospital-1f-1x.png"
+ }
+}

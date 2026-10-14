@@ -110,7 +110,7 @@
    "y": 7
   },
   {
-   "id": "hs-door-sliding",
+   "id": "sc-classroom-door",
    "x": 4,
    "y": 9
   },
@@ -165,7 +165,7 @@
    "y": 7
   },
   {
-   "id": "hs-door-sliding",
+   "id": "sc-classroom-door",
    "x": 10,
    "y": 9
   },
@@ -230,7 +230,7 @@
    "y": 8
   },
   {
-   "id": "hs-door-sliding",
+   "id": "sc-classroom-door",
    "x": 16,
    "y": 9
   },
@@ -270,7 +270,7 @@
    "y": 11
   },
   {
-   "id": "hs-door-sliding",
+   "id": "sc-classroom-door",
    "x": 24,
    "y": 9
   },

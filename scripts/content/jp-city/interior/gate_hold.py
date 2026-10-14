@@ -19,4 +19,6 @@ HOLD = {
     'ox-umbrella-bagger': '판정 2회 불합격 — 정면 입면도',
     'ox-floor-guide': '판정 2회 불합격 — 누운 안내판이 정면 판으로 읽힌다',
     'ox-visitor-kiosk': '판정 2회 불합격 — 누운 태블릿이 정면 판으로 읽힌다',
+    'hs-door-sliding': '조립 방 조각 판정 2회 불합격 — 인방이 정면 입면도로 읽힌다(예제는 학교 미닫이 sc-classroom-door 로 바꿈)',
+    'hs-door-side': '예제 맵에 안 쓰여 조립 방 관문(gate_rooms.py)을 받을 그림이 없다',
 }

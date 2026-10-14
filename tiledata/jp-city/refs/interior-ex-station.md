@@ -1,8 +1,8 @@
 # 일본 도시 — 일본 실내 예제: 일본 작은 지상역 역사(駅舎) 실내 (`jp-city-station`, 16×11)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **15882칸**, 16px 칸, 시트 1536×2656px, 한 줄 **96칸** — 번호 n 의 칸은 열 n%96, 행 n÷96(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **15876칸**, 16px 칸, 시트 1536×2656px, 한 줄 **96칸** — 번호 n 의 칸은 열 n%96, 행 n÷96(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
-입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-station`. 도구 결과: 손 도트 실내 '일본 작은 지상역 역사(駅舎) 실내' 16×11 (jp-city-station, jp_city) — 출입구에서 닿는 칸 62, 닿지 못한 빈 바닥 0, 경고 1 — 자동 맞춤: 문 jp-city-station-link-0 (4,3) → 출입구 틈 (6,10)
+입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-station`. 도구 결과: 손 도트 실내 '일본 작은 지상역 역사(駅舎) 실내' 16×11 (jp-city-station, jp_city) — 출입구에서 닿는 칸 62, 닿지 못한 빈 바닥 0, 경고 0
 
 ## 입력
 ```json
@@ -19,7 +19,7 @@ tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스
 ## 이동
 | 이벤트 | 칸 | 이동 |
 |---|---|---|
-| jp-city-station-link-0 | (6,10) | jp-city-station-platform (5,7) |
+| jp-city-station-link-0 | (4,3) | jp-city-station-platform (5,7) |
 | jp-city-station-link-1 | (5,3) | jp-city-station-platform (5,7) |
 
 ## 통행(엔진 `isPassable`, `X` 막힘 · `.` 걸음)

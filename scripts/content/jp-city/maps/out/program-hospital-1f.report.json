@@ -4,7 +4,7 @@
   30,
   19
  ],
- "summary": "손 도트 실내 'program hospital-1f' 30×19 (jp-program-hospital-1f, jp_city) — 배치 후보 1/3(방 6개, 견본 가구 73점 — data.layout.picture 로 배치를 보고, 다른 배치는 layout.variant 를 바꿔 replace:true) — 출입구에서 닿는 칸 244, 닿지 못한 빈 바닥 0, 경고 0",
+ "summary": "손 도트 실내 'program hospital-1f' 30×19 (jp-program-hospital-1f, jp_city) — 배치 후보 1/3(방 6개, 견본 가구 73점 — data.layout.picture 로 배치를 보고, 다른 배치는 layout.variant 를 바꿔 replace:true) — 출입구에서 닿는 칸 245, 닿지 못한 빈 바닥 0, 경고 0",
  "warnings": [],
  "layout": {
   "variant": 0,

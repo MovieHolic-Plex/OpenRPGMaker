@@ -1,8 +1,8 @@
 # 일본 도시 — 일본 실내 예제: 일본 통근 전철 차내 (`jp-city-train-car`, 21×8)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **15882칸**, 16px 칸, 시트 1536×2656px, 한 줄 **96칸** — 번호 n 의 칸은 열 n%96, 행 n÷96(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **15876칸**, 16px 칸, 시트 1536×2656px, 한 줄 **96칸** — 번호 n 의 칸은 열 n%96, 행 n÷96(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
-입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-train-car`. 도구 결과: 바깥(jp-city-station-platform)으로 나가는 문 jp-city-train-car-link-0(5,3) 이 있는데 평면 가장자리에 출입구 틈이 없다 — plan 맨 아래 줄의 '#' 하나를 '.' 로 비워 문을 낸다(그 칸이 출구가 된다)
+입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-train-car`. 도구 결과: 손 도트 실내 '일본 통근 전철 차내' 21×8 (jp-city-train-car, jp_city) — 출입구에서 닿는 칸 42, 닿지 못한 빈 바닥 0, 경고 0
 
 ## 입력
 ```json
@@ -15,7 +15,12 @@ tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스
 | traincar | (1,1)-(19,6) |
 
 ## 이동
-(이동 이벤트 없음 — 현관 밖은 거리 맵에 붙일 때 단다)
+| 이벤트 | 칸 | 이동 |
+|---|---|---|
+| jp-city-train-car-link-0 | (5,3) | jp-city-station-platform (5,7) |
+| jp-city-train-car-link-1 | (6,3) | jp-city-station-platform (5,7) |
+| jp-city-train-car-link-2 | (14,3) | jp-city-station-platform (14,7) |
+| jp-city-train-car-link-3 | (15,3) | jp-city-station-platform (14,7) |
 
 ## 통행(엔진 `isPassable`, `X` 막힘 · `.` 걸음)
 ```

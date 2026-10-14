@@ -1,8 +1,8 @@
 # 일본 도시 — 일본 실내 예제: IT 회사 사옥 1층 로비 (`jp-city-office-tower-1f`, 16×11)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **15882칸**, 16px 칸, 시트 1536×2656px, 한 줄 **96칸** — 번호 n 의 칸은 열 n%96, 행 n÷96(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **15876칸**, 16px 칸, 시트 1536×2656px, 한 줄 **96칸** — 번호 n 의 칸은 열 n%96, 행 n÷96(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
-입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-office-tower-1f`. 도구 결과: 손 도트 실내 'IT 회사 사옥 1층 로비' 16×11 (jp-city-office-tower-1f, jp_city) — 출입구에서 닿는 칸 76, 닿지 못한 빈 바닥 0, 경고 1 — 자동 맞춤: 문 jp-city-office-tower-1f-link-0 (1,3) → 출입구 틈 (7,10)
+입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-office-tower-1f`. 도구 결과: 손 도트 실내 'IT 회사 사옥 1층 로비' 16×11 (jp-city-office-tower-1f, jp_city) — 출입구에서 닿는 칸 76, 닿지 못한 빈 바닥 0, 경고 0
 
 ## 입력
 ```json
@@ -17,7 +17,7 @@ tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스
 ## 이동
 | 이벤트 | 칸 | 이동 |
 |---|---|---|
-| jp-city-office-tower-1f-link-0 | (7,10) | jp-city-office-free (20,15) |
+| jp-city-office-tower-1f-link-0 | (1,3) | jp-city-office-free (20,15) |
 | jp-city-office-tower-1f-link-1 | (3,3) | jp-city-office-free (15,15) |
 | jp-city-office-tower-1f-link-2 | (4,3) | jp-city-office-free (16,15) |
 | jp-city-office-tower-1f-link-3 | (6,3) | jp-city-office-free (15,15) |
@@ -76,11 +76,11 @@ y=01: . 11132 11133 11066 11067 . 11066 11067 . 8813 . . . . . .
 y=02: . 11134 11135 11068 11069 . 11068 11069 . 11083 . . . . . .
 y=03: . . . . . . . . . 11084 . . 11085 . . .
 y=04: . . . . . . . . . . . . 11086 . . .
-y=05: . . 15876 15877 . 15744 . . . . 15857 15858 . . . .
-y=06: . . 15878 15879 . 15745 . . . . 15859 15860 11078 11079 . .
+y=05: . . 15870 15871 . 15744 . . . . 15851 15852 . . . .
+y=06: . . 15872 15873 . 15745 . . . . 15853 15854 11078 11079 . .
 y=07: . . 11099 . . . . . . . . . 11080 11081 11082 .
-y=08: . . . 11078 11079 15814 15815 . . 15880 . 15880 . . 11083 .
-y=09: . . . 11080 11081 15816 15817 . . 15881 . 15881 . . 11084 .
+y=08: . . . 11078 11079 15808 15809 . . 15874 . 15874 . . 11083 .
+y=09: . . . 11080 11081 15810 15811 . . 15875 . 15875 . . 11084 .
 y=10: . . . . . . . . . . . . . . . .
 ```
 
