@@ -5,6 +5,13 @@
 
 <!-- releases -->
 
+## 0.216.1 — 2026-10-14
+
+### 수정
+
+- **beodeul** — dungeon floors — ground-support rule + author_beodeul_dungeon room-list composer (#2563) (`c369e73`)
+- **ci** — record the concept feed CSS winners (`503ed03`)
+
 ## 0.216.0 — 2026-10-14
 
 ### 기능
