@@ -25,8 +25,8 @@ export async function run(argv: string[]): Promise<number> {
     const profiles = readProfiles();
     const cur = profiles.find(p => p.profileHash === current);
     console.log(`현재 규칙 프로필 ${current} — ${cur?.status ?? '보정 안 됨 (calibrate 먼저)'}`);
-    const j = OBJECT_GATE_PROFILE.judges.map(x => `${x.model}(${x.effort})`).join('+');
-    console.log(`  판정자 ${j} × ${OBJECT_GATE_PROFILE.runsPerJudge}번 중앙값·과반 · 규칙 v${OBJECT_GATE_PROFILE.rulesVersion} · 3/4 + 버들항 화풍 한 번에`);
+    const j = OBJECT_GATE_PROFILE.judges.map(x => `${x.provider}/${x.model} effort=${x.effort}`).join(' + ');
+    console.log(`  판정자 ${j} × ${OBJECT_GATE_PROFILE.runsPerJudge}번 중앙값·과반 · 규칙 v${OBJECT_GATE_PROFILE.rulesVersion} · 측정 사실(열 훑기·화풍 지표) v${OBJECT_GATE_PROFILE.factsVersion} · 3/4 + 버들항 화풍 한 번에 (판정자 신원·effort 는 프로필 해시에 들어 있다 — 바꾸면 보정부터 다시)`);
     for (const p of profiles) {
       const st = p.style ? ` 화풍 얕음 ${p.style.caught}/${p.style.badTotal} 버들 ${p.style.passed}/${p.style.goodTotal}` : '';
       console.log(`  ${p.profileHash} ${p.status} 3/4 위반 ${p.bad.caught}/${p.bad.total} 정상 ${p.good.passed}/${p.good.total}${st}${p.judge ? ` [${p.judge}]` : ''} (${p.calibratedAt.slice(0, 10)})`);

@@ -9,11 +9,11 @@
  * 계약 원문: tiledata/atlas-pick/modern-style-bible.md §10·§11, 문서 openwiki/harnesses/object-gate.md.
  *
  * 2026-10-14(규칙 v4): 판정 한 번이 두 가지를 같이 정한다 — (a) 3/4 시점, (b) 버들항 수준 화풍(같은 종류 버들항 조각과 같은 배율로 견줘
- * 명암 단계·윤곽 색·질감·칸 정보량을 읽는다). 영수증은 두 판정을 따로 적고 둘 다 통과해야 통과다. 판정자는 gemini-4-argon(medium 가정).
+ * 명암 단계·윤곽 색·질감·칸 정보량을 읽는다). 영수증은 두 판정을 따로 적고 둘 다 통과해야 통과다. 판정자는 Claude Sonnet 5.5 high(2026-10-14 사용자 결정, 이전 gemini-4-argon).
  * 숫자 지표(칸당 색 수 등)는 영수증에 보조로만 남고 통과 근거가 아니다. 테마마다 잠긴 팔레트는 그대로 — 구조와 명암만 본다.
  */
 
-export const OBJECT_GATE_RULES_VERSION = 4;
+export const OBJECT_GATE_RULES_VERSION = 5;
 
 export type ObjectGateKind =
   | "tall_furniture" | "low_furniture" | "seat" | "frame" | "container" | "round_body" | "column" | "box"
@@ -70,6 +70,10 @@ Measure strictly in source pixels, in this order:
 7. side_face_visible: an isometric receding side face is drawn (not the normal south face).
 8. pure_front_elevation: the main body is drawn as a flat front view.
 9. kind_matches: the caller-supplied kind plausibly describes this object (false if e.g. a cabinet is labelled organic or flat).
+10. Use the EXACT COLUMN SCAN that comes with the question for every number in steps 2-6. It lists, for three vertical columns, the runs of rows with similar lightness L (0-255). An OUTLINE row is a 1-row dark run (L below about 80) at the silhouette edge; it is not part of the top band. The TOP band is the run(s) directly under the outline (or under the topmost props standing on it) that read as one lighter horizontal surface: it must be separated from the front face below by a step of at least about 25 L or by a distinct 1-row edge line. A run that stays in the same lightness family as the front face below (difference under about 25 L) belongs to the front face, so it is NOT a top and top_rows excludes it. Count top_rows and opening_rows from the scan, never from a rough look at the picture.
+11. MIXED DRAWINGS: if the picture contains several distinct parts or objects (a lectern plus a staircase, a counter plus shelves, a seat plus a backrest panel), EVERY major part must satisfy the contract. If one major part is drawn in side or front elevation, the whole drawing fails even when another part is a correct 3/4 piece; say which part is wrong in "evidence".
+11b. ELLIPSE TOPS (seats, containers, basins, pots, round tables — NOT columns, pillars, stelae or rune stones, which follow rule 12): when the top is a rounded/elliptical surface (seat cushion, stool seat, barrel or pot mouth, basin, round table, water or coal surface inside a container), measure the WHOLE ellipse silhouette from its back rim row to its front rim row INCLUSIVE — the light surface rows plus the darker lip/rim row that closes the ellipse at the front belong to the top (a seat with light rows 2-4 and a darker front-rim row 5 is a 4-row top). For flat rectangular tops (cabinet, shelf, table) keep counting only the lighter horizontal band, not the front-edge line or the shadow row. For containers, a heap of contents (coal, grain, water, herbs) whose surface rises above the front rim counts as the visible inside: opening_visible is true when you can see that surface from above, and opening_rows is the height of that surface plus the rim rows around it. For open pieces (stools, racks, tables on legs) front_face_rows counts the rows of legs, stem, apron or front lip below the top.
+12. CAPS: for columns, pillars, stelae, rune stones and lantern posts count ONLY the clearly lighter top-face rows (never the darker lip, rim or shadow rows under them), and the top must be a visible top face — an ellipse or a plate whose silhouette corners are rounded or wider than the shaft, at least 4 rows tall, clearly lighter than the shaft. A straight rectangular light band of 1-3 rows, or a "cap band over a dark underside" that is no wider than the body, is the red "flat band cap" of the guide and fails.
 Be strict: when in doubt, fail.`;
 
 /** 화풍 종류 — 같은 종류의 버들항 기준 그림을 비교 대상으로 준다(지붕은 지붕끼리, 나무는 나무끼리). */
@@ -96,6 +100,7 @@ Each theme keeps its own locked palette. NEVER judge hue, never ask for Beodeul'
 2. Outline: Beodeul outlines are the DARK TONE OF THE ADJACENT MATERIAL (dark brown next to wood, dark green next to leaves, dark red-brown next to roof tiles), used selectively; forms are often separated by value alone. A uniform near-black / pure black line around every shape is the shallow "sticker" look. Decide by TINT: if the outline pixels are almost colourless (neutral black or very dark grey, no visible brown/green/red/blue lean) it is "near_black"; if they are a dark but visibly tinted version of the neighbouring material (dark brown beside wood, dark green beside leaves, dark red-brown beside roof tiles) it is "dark_material_tone", however dark. Report "dark_material_tone", "near_black", "mixed" or "none".
 3. Texture: Beodeul surfaces carry texture dots and grain — roof tile scallops with per-tile highlights, plaster speckle, leaf clumps in several greens, stones shaded one by one, grass tufts and soil grain. Large areas (about 5x5 source pixels or more) of ONE flat colour with no dot, grain or variation are flat fills.
 4. Tile information density: compare how much each 16x16 tile of the candidate carries against a reference tile of the same kind. Beodeul tiles are information-rich (median about 10 distinct colours per tile, the richest tiles 40+). Tiles that are mostly 2-4 colours are much lower.
+5. MEASURED STYLE FACTS are given with the question for the candidate and for each reference, computed exactly from the pixels: median distinct colours per full 16x16 tile (0 = the piece is smaller than one tile, then judge by eye), 5x5 flat-fill coverage (share of pixels inside some 5x5 block of one identical colour), the near-neutral share of dark edge pixels (bottom edge row excluded; colour spread 12 or less: 100% means a neutral black/grey outline line, 0% means the outline carries a colour tint), and the number of distinct colours. Use them as evidence next to the picture: a candidate that is far below every reference in colours per tile and distinct colours, or far above them in flat-fill coverage, or whose dark edge pixels are mostly neutral, is shallow; a candidate at or above the references on these facts, with tinted outlines, is not. The facts never replace your eye on structure, but you must not call something "rich" or "dark_material_tone" against the numbers without saying why.
 Compare against the reference of the same kind at the same scale. Do not fail a piece only because it is small or simple, and do not pass it only because it is cleanly drawn: pass only if a careful artist would accept it next to the reference without it looking thinner, flatter or more "sticker-like". A piece that is plainly the reference itself or equally rich passes. When in doubt, fail.
 "score" is an auxiliary 1-10 rating (reference = 8-9); it never decides anything.`;
 
@@ -201,6 +206,7 @@ export function decideObjectGateBoth(kind: ObjectGateKind, _styleKind: ObjectGat
 /** 판정 프로필 — 이 값이 바뀌면 프로필 해시가 바뀌고, 새 프로필은 보정을 다시 통과해야 쓸 수 있다. */
 export const OBJECT_GATE_PROFILE = {
   rulesVersion: OBJECT_GATE_RULES_VERSION,
+  factsVersion: 1, // node/facts.ts — 판정자에게 주는 정확한 열 훑기·화풍 측정(알고리즘을 바꾸면 올린다)
   rubric: OBJECT_GATE_RUBRIC,
   styleRubric: OBJECT_GATE_STYLE_RUBRIC,
   outputFormat: OBJECT_GATE_OUTPUT_FORMAT,
@@ -208,9 +214,10 @@ export const OBJECT_GATE_PROFILE = {
   styleMinSteps: OBJECT_GATE_STYLE_MIN_STEPS,
   minFrontRows: OBJECT_GATE_MIN_FRONT_ROWS,
   kinds: OBJECT_GATE_KINDS,
-  // 2026-10-13: gpt-6.1-sol 서버가 불안정해(답을 못 읽은 판정이 불합격 표로 샌다) 판정자는 gemini 하나만 쓴다 — 표 수는 같게 4번 반복.
+  // 2026-10-14: 사용자 결정 「argon 뻗었어 — 그냥 argon 이 하던 거 sonnet 5.5 high 가 하게 해라」. 판정자는 Claude Sonnet 5.5 high 하나(claude -p 헤드리스, 그림 첨부) × 4번.
+  // 판정자 신원(provider·model·effort)은 프로필 해시에 들어가고 `status` 가 보여 준다. 다른 모델로 몰래 넘어가지 않는다 — Sonnet 이 안 되면 멈춘다.
   judges: [
-    { id: "gemini", provider: "google-antigravity", model: "gemini-4-argon", effort: "medium" },
+    { id: "sonnet", provider: "claude-cli", model: "claude-sonnet-5-5", effort: "high" },
   ],
   runsPerJudge: 4,
   magnify: 10,

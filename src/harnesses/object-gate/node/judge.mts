@@ -2,7 +2,9 @@
  * object-gate 판정기(bun). review · calibrate · audit 단계.
  * 판정자 지시문·종류·규칙은 src/harnesses/_core/objectGate/rules.ts 하나에서 온다. 여기서 바꾸지 않는다.
  */
-import { readFileSync, existsSync, readdirSync, writeFileSync, mkdirSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync, writeFileSync, mkdirSync, mkdtempSync } from 'node:fs';
+import { spawn } from 'node:child_process';
+import { tmpdir } from 'node:os';
 import { resolve, basename, dirname } from 'node:path';
 import { PNG } from 'pngjs';
 import { completeProvider } from '../../../../scripts/lib/ohMyPiPiAiRuntime.ts';
@@ -15,6 +17,7 @@ import {
 import { GATE_DATA, gatePromptHash, gateProfileHash, readPng, readReceipt, styleRefs, writeProfile, writeReceipt } from './store';
 import { receiptCells } from './cells';
 import { auxMetrics } from './metrics';
+import { columnScan, factsLine, styleFacts } from './facts';
 import { REREVIEW_THEMES, collectPieces, loadOverrides } from './rereview';
 import { calibratedProfiles } from './store';
 
@@ -91,49 +94,86 @@ export function styleBoard(candidate: { width: number; height: number; data: Uin
   return { png: PNG.sync.write(out), scale: S };
 }
 
-function userText(item: Item, styleKind: ObjectGateStyleKind, refNames: string[]) {
+function userText(item: Item, styleKind: ObjectGateStyleKind, refNames: string[], candidate: { width: number; height: number; data: Uint8Array }, refFacts: string[]) {
   return `Object name: ${item.name}\nKind (PART A): ${item.kind} — ${OBJECT_GATE_KINDS[item.kind]?.meaning ?? 'other'}\nStyle kind (PART B): ${styleKind} — ${OBJECT_GATE_STYLE_KINDS[styleKind]}\n`
-    + `Image 1 = the candidate magnified 10x with row numbers (PART A).\nImage 2 = COMPARISON BOARD at ${BOARD_SCALE}x: left of the magenta bar = Beodeul reference(s) of the same kind (${refNames.join(', ')}), right of the bar = the candidate (used for PART B and as a clean view for PART A).\nImage 3 = the fixed 3/4 GUIDE (green frame = right, red frame = wrong).`;
+    + `Image 1 = the candidate magnified 10x with row numbers (PART A).\nImage 2 = COMPARISON BOARD at ${BOARD_SCALE}x: left of the magenta bar = Beodeul reference(s) of the same kind (${refNames.join(', ')}), right of the bar = the candidate (used for PART B and as a clean view for PART A).\nImage 3 = the fixed 3/4 GUIDE (green frame = right, red frame = wrong).\n\n`
+    + `${columnScan(candidate)}\n\nMEASURED STYLE FACTS (exact):\n${factsLine('candidate', styleFacts(candidate))}\n${refFacts.join('\n')}`;
 }
 
-/** 판정자 계정 할당량(429 「Resets in 16m48s」)에 걸리면 모든 호출이 같이 기다렸다 다시 시도한다 — 할당량 오류를 불합격 표로 세지 않는다. */
+/**
+ * 판정자 할당량·과부하(429·rate limit·overloaded·usage limit)에 걸리면 모든 호출이 같이 기다렸다 다시 시도한다 — 할당량 오류를 불합격 표로 세지 않는다.
+ * 끝내 안 되면 다른 모델로 넘어가지 않고 **멈춘다**(JudgeUnavailable → 프로세스 종료, 받아 둔 답은 캐시에 남아 이어 돌릴 수 있다).
+ */
 let quotaUntil = 0;
 const sleep = (ms: number) => new Promise(done => setTimeout(done, ms));
+class JudgeUnavailable extends Error {}
 function quotaWaitSeconds(error: unknown): number | null {
   const text = String(error);
-  if (!/\b429\b|RESOURCE_EXHAUSTED|quota/i.test(text)) return null;
-  const m = text.match(/Resets in\s+(?:(\d+)h)?\s*(?:(\d+)m)?\s*(?:(\d+)s)?/i);
+  if (!/\b429\b|RESOURCE_EXHAUSTED|quota|rate.?limit|overloaded|usage limit|\b529\b|too many requests/i.test(text)) return null;
+  const m = text.match(/(?:Resets? in|try again in|retry after)\s+(?:(\d+)\s*h)?\s*(?:(\d+)\s*m)?\s*(?:(\d+)\s*s)?/i);
   const secs = m ? (Number(m[1] ?? 0) * 3600 + Number(m[2] ?? 0) * 60 + Number(m[3] ?? 0)) : 0;
-  return secs > 0 ? secs : 120;
+  return secs > 0 ? Math.min(secs, 3600) : 90;
 }
 
-async function ask(judge: (typeof OBJECT_GATE_PROFILE.judges)[number], item: Item, styleKind: ObjectGateStyleKind, refNames: string[], png: Buffer, board: Buffer) {
+async function ask(judge: (typeof OBJECT_GATE_PROFILE.judges)[number], item: Item, styleKind: ObjectGateStyleKind, refNames: string[], png: Buffer, board: Buffer, text: string) {
   for (let quotaRetry = 0; ; quotaRetry++) {
     if (Date.now() < quotaUntil) await sleep(quotaUntil - Date.now());
-    try { return await askOnce(judge, item, styleKind, refNames, png, board); } catch (error) {
+    try { return await askOnce(judge, text, png, board); } catch (error) {
       const wait = quotaWaitSeconds(error);
-      if (wait === null || quotaRetry >= 12) throw error;
+      if (wait === null) throw error;
+      if (quotaRetry >= 12) throw new JudgeUnavailable(`판정자 ${judge.model} 를 계속 쓸 수 없다(할당량·과부하 ${quotaRetry}회 대기 후에도): ${String(error).slice(0, 300)}`);
       const until = Date.now() + (wait + 8) * 1000;
-      if (until > quotaUntil) { quotaUntil = until; console.error(`  ⏸ 판정자 할당량 소진(429) — ${wait + 8}초 쉬고 이어 간다 (${new Date(until).toISOString().slice(11, 19)}Z)`); }
+      if (until > quotaUntil) { quotaUntil = until; console.error(`  ⏸ 판정자 할당량·과부하 — ${wait + 8}초 쉬고 이어 간다 (${new Date(until).toISOString().slice(11, 19)}Z): ${String(error).slice(0, 120)}`); }
     }
   }
 }
 
-async function askOnce(judge: (typeof OBJECT_GATE_PROFILE.judges)[number], item: Item, styleKind: ObjectGateStyleKind, refNames: string[], png: Buffer, board: Buffer) {
-  const apiKey = await resolveRequestApiKey(judge.provider);
-  const { completion } = await completeProvider(judge.provider, {
-    model: judge.model, reasoning: { effort: judge.effort },
-    messages: [
-      { role: 'system', content: SYSTEM_PROMPT },
-      { role: 'user', content: [
-        { type: 'text', text: userText(item, styleKind, refNames) },
-        { type: 'image_url', image_url: { url: `data:image/png;base64,${png.toString('base64')}` } },
-        { type: 'image_url', image_url: { url: `data:image/png;base64,${board.toString('base64')}` } },
-        { type: 'image_url', image_url: { url: `data:image/png;base64,${guidePng().toString('base64')}` } },
-      ] },
-    ],
-  }, { apiKey: apiKey as string | undefined }) as { completion: { choices: Array<{ message: { content?: string } }> } };
-  const text = completion.choices[0]?.message.content ?? '';
+/** Claude 판정자: `claude -p`(헤드리스, 도구 없음, 빈 임시 폴더·--setting-sources "" 로 CLAUDE.md·훅·메모리 차단 — 실측: 지침·메모리 0)에 그림 셋을 첨부해 JSON 한 개를 받는다. 모델은 응답의 modelUsage 로 확인한다. */
+function askClaude(judge: { model: string; effort: string }, userContent: Array<Record<string, unknown>>): Promise<string> {
+  const message = { type: 'user', message: { role: 'user', content: userContent } };
+  const cwd = mkdtempSync(resolve(tmpdir(), 'oprn-gate-judge-'));
+  return new Promise((done, fail) => {
+    const child = spawn('claude', ['-p', '--input-format', 'stream-json', '--output-format', 'stream-json', '--verbose', '--model', judge.model, '--effort', judge.effort,
+      '--system-prompt', SYSTEM_PROMPT, '--tools', '', '--strict-mcp-config', '--mcp-config', '{"mcpServers":{}}', '--setting-sources', '', '--disable-slash-commands', '--no-session-persistence'],
+      { cwd, stdio: ['pipe', 'pipe', 'pipe'] });
+    let out = '', err = '';
+    const timer = setTimeout(() => { child.kill('SIGKILL'); fail(new Error('claude -p 시간 초과(600s)')); }, 600_000);
+    child.stdout.on('data', c => { out += c; }); child.stderr.on('data', c => { err += c; });
+    child.on('error', e => { clearTimeout(timer); fail(e); });
+    child.on('close', code => {
+      clearTimeout(timer);
+      const events = out.split('\n').filter(l => l.startsWith('{')).flatMap(l => { try { return [JSON.parse(l)]; } catch { return []; } });
+      const result = events.find(e => e.type === 'result');
+      if (!result || result.is_error) return fail(new Error(`claude -p 실패(code ${code}${result?.api_error_status ? `, ${result.api_error_status}` : ''}): ${String(result?.result ?? err ?? out).slice(0, 400)}`));
+      const used = Object.keys(result.modelUsage ?? {});
+      if (!used.length || used.some(m => m !== judge.model)) return fail(new JudgeUnavailable(`판정자가 ${judge.model} 가 아니다(modelUsage: ${used.join(',') || '없음'}) — 다른 모델로 판정하지 않는다`));
+      done(String(result.result ?? ''));
+    });
+    child.stdin.end(`${JSON.stringify(message)}\n`);
+  });
+}
+
+async function askOnce(judge: (typeof OBJECT_GATE_PROFILE.judges)[number], userMessage: string, png: Buffer, board: Buffer) {
+  let text: string;
+  if (judge.provider === 'claude-cli') {
+    const b64 = (b: Buffer) => ({ type: 'image', source: { type: 'base64', media_type: 'image/png', data: b.toString('base64') } });
+    text = await askClaude(judge, [{ type: 'text', text: userMessage }, b64(png), b64(board), b64(guidePng())]);
+  } else {
+    const apiKey = await resolveRequestApiKey(judge.provider);
+    const { completion } = await completeProvider(judge.provider, {
+      model: judge.model, reasoning: { effort: judge.effort },
+      messages: [
+        { role: 'system', content: SYSTEM_PROMPT },
+        { role: 'user', content: [
+          { type: 'text', text: userMessage },
+          { type: 'image_url', image_url: { url: `data:image/png;base64,${png.toString('base64')}` } },
+          { type: 'image_url', image_url: { url: `data:image/png;base64,${board.toString('base64')}` } },
+          { type: 'image_url', image_url: { url: `data:image/png;base64,${guidePng().toString('base64')}` } },
+        ] },
+      ],
+    }, { apiKey: apiKey as string | undefined }) as { completion: { choices: Array<{ message: { content?: string } }> } };
+    text = completion.choices[0]?.message.content ?? '';
+  }
   const match = text.match(/\{[\s\S]*\}/);
   try { return match ? JSON.parse(match[0]) : null; } catch { return null; }
 }
@@ -161,7 +201,7 @@ const answerCachePath = (promptHash: string, sha: string, run: number) => resolv
 async function judgeItems(items: Item[], opts: JudgeOpts): Promise<ObjectGateReceipt[]> {
   const profileHash = await gateProfileHash(), promptHash = await gatePromptHash();
   const runsPerJudge = opts.runs ?? OBJECT_GATE_PROFILE.runsPerJudge;
-  type Job = { item: Item; styleKind: ObjectGateStyleKind; sha: string; image: Buffer; board: Buffer; refNames: string[]; judge: (typeof OBJECT_GATE_PROFILE.judges)[number]; run: number };
+  type Job = { item: Item; styleKind: ObjectGateStyleKind; sha: string; image: Buffer; board: Buffer; text: string; refNames: string[]; judge: (typeof OBJECT_GATE_PROFILE.judges)[number]; run: number };
   const jobs: Job[] = [];
   const prepared: Array<{ item: Item; styleKind: ObjectGateStyleKind; sha: string; width: number; height: number; cells?: Record<string, string[]>; metrics: ReturnType<typeof auxMetrics>; refNames: string[]; scale: number; cached?: ObjectGateReceipt }> = [];
   for (const item of items) {
@@ -187,7 +227,7 @@ async function judgeItems(items: Item[], opts: JudgeOpts): Promise<ObjectGateRec
     const image = magnify(width, height, data).png;
     const board = styleBoard({ width, height, data }, refs.map(r => r.path));
     prepared.push({ item, styleKind, sha, width, height, cells: receiptCells(width, height, data), metrics, refNames, scale: board.scale });
-    for (const judge of OBJECT_GATE_PROFILE.judges) for (let run = 1; run <= runsPerJudge; run++) jobs.push({ item, styleKind, sha, image, board: board.png, refNames, judge, run });
+    for (const judge of OBJECT_GATE_PROFILE.judges) for (let run = 1; run <= runsPerJudge; run++) jobs.push({ item, styleKind, sha, image, board: board.png, text: userText(item, styleKind, refNames, { width, height, data }, refs.map(r => factsLine(`reference ${r.name}`, styleFacts(readPng(r.path))))), refNames, judge, run });
   }
   let done = 0;
   const results = await pool(jobs, opts.concurrency, async job => {
@@ -199,13 +239,14 @@ async function judgeItems(items: Item[], opts: JudgeOpts): Promise<ObjectGateRec
       else if (opts.offline) throw Error('답 캐시 없음(--offline)');
       else {
         for (let attempt = 0; attempt < 2 && !answer; attempt++) {
-          try { answer = await ask(job.judge, job.item, job.styleKind, job.refNames, job.image, job.board); } catch (error) { if (attempt === 1) throw error; }
+          try { answer = await ask(job.judge, job.item, job.styleKind, job.refNames, job.image, job.board, job.text); } catch (error) { if (attempt === 1 || error instanceof JudgeUnavailable) throw error; }
         }
         if (cachePath && answer) { mkdirSync(dirname(cachePath), { recursive: true }); writeFileSync(cachePath, JSON.stringify(answer)); }
       }
       const both = decideObjectGateRun(job.item.kind, answer, job.styleKind);
       return { sha: job.sha, run: { judge: job.judge.id, run: job.run, answer, pass: both.pass, reasons: both.reasons, view34: both.view34, style: both.style, ms: Date.now() - t } as ObjectGateRun };
     } catch (error) {
+      if (error instanceof JudgeUnavailable) { console.error(`\n판정자를 쓸 수 없어 멈춘다 — ${error.message}\n받아 둔 답은 캐시에 있어 같은 명령으로 이어 돌릴 수 있다. 영수증·프로필은 쓰지 않았다.`); process.exit(4); }
       return { sha: job.sha, run: { judge: job.judge.id, run: job.run, answer: null, pass: false, reasons: ['판정자 호출 실패'], ms: Date.now() - t, error: String(error).slice(0, 300) } as ObjectGateRun };
     } finally {
       done++; if (!opts.quiet && done % 25 === 0) console.error(`  … ${done}/${jobs.length} 호출`);
