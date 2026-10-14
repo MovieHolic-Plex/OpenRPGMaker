@@ -124,6 +124,21 @@ export function defaultTilesets(): Record<string, TilesetDef> {
   return tilesets;
 }
 
+/**
+ * 번들 타일셋 하나만 새로 만든다 — `defaultTilesets()[id]` 와 같은 값이지만 나머지를 만들지 않는다.
+ * 번들에 없는 id 면 아무것도 만들지 않고 undefined 다.
+ *
+ * 왜(2026-10-14 실측, 번들 타일셋 30+개 · 데이터 55MB): 모듈 평가 때 `defaultTilesets()[한 id]` 로 시트 하나의 모양만 읽던 곳이
+ * 전부(3~9MB 짜리 복제 수십 개, 0.6s)를 만들어 버렸다. 그 id(EasyRPG 실내)는 2026-10-07 부터 번들에도 없어 결과는 늘 undefined 였다.
+ */
+export function bundledTilesetById(id: string): TilesetDef | undefined {
+  if (id === DEFAULT_TILESET_ID) return defaultTileset();
+  for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
+    if (bundledTilesetIdForAsset(asset) === id) return bundledEasyRpgTileset(asset);
+  }
+  return undefined;
+}
+
 // 숲마을·기후 마을·선별 소품·Tibo 실내·합본 마을+레트로 월드 시트의 보강 단계는 2026-10-07 저작권 정리로 그 칩셋과 함께 지웠다.
 // 옛 프로젝트에 남은 그 타일셋 정의는 그대로 읽힌다(번들 목록에 없으니 여기서 건드리지 않는다).
 export function ensureBundledTilesets(project: { tilesets: Record<string, TilesetDef>; maps?: Readonly<Record<string, { tilesetId?: string }>> }): boolean {

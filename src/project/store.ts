@@ -25,7 +25,9 @@ import type { SaveResult } from "./persistence/types";
 import type { RemoteProjectTarget } from "./persistence/target";
 import { isSharedDemoProjectId, SHARED_DEMO_PROJECT_ID } from "./sharedDemoProject";
 import { projectViewWithoutEventDrafts, projectWithoutEventDrafts } from "./eventDrafts";
-import { forgetTrustedSharedEntries, jsonContentDigest, shareContentDigests, sharedEntryDigest } from "./persistence/core/contentDigest";
+import { forgetTrustedSharedEntries, jsonContentDigest, primeSharedEntryDigests, shareContentDigests, sharedEntryDigest } from "./persistence/core/contentDigest";
+import { afterBootSettled } from "@/util/bootSettled";
+import { yieldToTask } from "@/util/yieldToTask";
 import { applyCleanedProjection, cloneCommandContainersForMove, projectWithEventRevision, cloneProjectForUpdate, cloneProjectSharingReferenceDocuments, finishProjectUpdate } from "./projectClone";
 import { assertCanonicalReplacement, ProjectRoutingError } from "./spatial/saveRouting";
 import { SpatialPersistenceError, type MirrorStatus } from "./spatial/persistenceTypes";
@@ -1079,8 +1081,13 @@ class ProjectStore {
     // owned: 호출자가 source 를 다른 곳에 넘기지 않는 사적 사본이라고 보증한다. 초안이 없으면 복제하지 않는다.
     const baseline = options.owned && projectViewWithoutEventDrafts(source) === source ? source : projectWithoutEventDrafts(source);
     const lineage = this.contentLineage;
-    scheduleIdleWork(() => {
-      if (this.contentLineage !== lineage || this.persistedBaseline !== baseline) return;
+    const stale = (): boolean => this.contentLineage !== lineage || this.persistedBaseline !== baseline;
+    const warm = async (): Promise<void> => {
+      if (stale()) return;
+      // 요약 기억이 아직 없는 타일셋(부팅 정규화를 건너뛴 문서는 로드가 요약을 미룬다 — electronRepository)은 여기서 하나씩 양보하며 먼저 만든다.
+      // 한 번에 문서 전체를 요약하면 첫 화면 뒤에 메인 스레드가 7.8s 멈췄다(2026-10-14 실측, 타일셋 379칸 98MB).
+      await primeSharedEntryDigests(projectWireView(this.current), yieldToTask, stale);
+      if (stale()) return;
       // 로드 직후 정규화가 current 의 요약을 이미 만들었다. 복제본인 기준본은 기억이 비어 있어 같은 문서를 처음부터
       // 다시 해시했다(2026-09-28 실측, 팀 참여 창 부팅 4.4s). 기억을 먼저 넘기면 바뀐 가지만 다시 센다 — 기억은 값
       // 대조로만 채택되므로 정규화가 current 를 고친 가지는 그대로 다시 계산된다.
@@ -1092,7 +1099,9 @@ class ProjectStore {
       for (const view of [baseline, this.current]) {
         for (const [id, entry] of Object.entries(projectWireView(view).tilesets ?? {})) sharedEntryDigest(entry, id);
       }
-    });
+    };
+    // 첫 화면 뒤에 시작한다 — requestIdleCallback 의 3초 상한이 부팅 중에도 이 일을 끼워 넣어 첫 화면을 3~5초 늦췄다(src/util/bootSettled.ts).
+    afterBootSettled(() => scheduleIdleWork(() => { void warm(); }));
     return baseline;
   }
 
