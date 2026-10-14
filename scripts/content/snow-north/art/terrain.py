@@ -152,26 +152,59 @@ def tundra_px(wx, wy, s=0):
     return ('tundra', 1) if v > 0.6 else ('slush', 2) if v < -0.9 else ('tundra', 0) if (lx * 3 + ly) % 11 == 0 else ('slush', 1)
 
 
+def pn(lx, ly, s=0, cell=4):
+    """16 주기 값 잡음 0..1(격자 cell px, 둘레가 이어진다)."""
+    n = 16 // cell
+    fx, fy = lx / cell, ly / cell
+    x0, y0 = int(math.floor(fx)), int(math.floor(fy)); tx, ty = fx - x0, fy - y0
+    tx = tx * tx * (3 - 2 * tx); ty = ty * ty * (3 - 2 * ty)
+    v = lambda i, j: rnd(i % n, j % n, s * 7 + cell)
+    a = v(x0, y0) + (v(x0 + 1, y0) - v(x0, y0)) * tx
+    b = v(x0, y0 + 1) + (v(x0 + 1, y0 + 1) - v(x0, y0 + 1)) * tx
+    return a + (b - a) * ty
+
+
 def frost_px(wx, wy, s=0):
-    """서리 풀: 얇게 깔린 눈 바탕 위 청회 풀포기, 잎 끝마다 흰 서리."""
+    """서리 풀: 큰 덩이로 번갈아 드러난 청회 풀밭과 얇은 눈(3~4단 그늘), 풀포기 잎은 밑 짙고 끝 밝게, 서리는 일부 잎 끝에만."""
     lx, ly = wx % 16, wy % 16
+    n = pn(lx, ly, s + 1, 8) * 0.85 + pn(lx, ly, s + 2, 4) * 0.15
     t = tuft_at(lx, ly, s + 1)
-    if t == 0: return ('frost', 1)
-    if t == 1: return ('frost', 3)
-    if t == 2: return ('snow', 6)
-    if t == 3: return ('frost', 0)
-    v = math.sin(TAU * (lx / 16.0)) + math.sin(TAU * (ly / 16.0 + 0.4))
-    return ('snow', 3) if v > 0.9 else ('frost', 2) if v < -0.5 else ('snow', 2) if (lx + ly) % 7 == 0 else ('frost', 2)
+    if t is not None:
+        if t == 0: return ('frost', 1)
+        if t == 1: return ('frost', 3)
+        if t == 2: return ('snow', 6) if (lx + ly + s) % 5 == 0 else ('frost', 4)
+        if t == 3: return ('frost', 1) if lx % 2 else ('frost', 2)
+    if n > 0.62:                                               # 얇은 눈 덩이(왼쪽 위 밝게)
+        e = pn(lx - 1, ly - 1, s + 1, 8) * 0.85 + pn(lx - 1, ly - 1, s + 2, 4) * 0.15
+        if n < 0.66: return ('snow', 3)
+        return ('snow', 5 if e < n - 0.02 else 4)
+    r = rnd(lx, ly, s + 41)
+    if r < 0.07: return ('frost', 3)
+    if r > 0.93: return ('frost', 1)
+    return ('frost', 2) if n > 0.28 else ('frost', 1) if (lx + ly) % 2 else ('frost', 2)
 
 
 def slush_px(wx, wy, s=0):
-    """진창: 젖은 흙 + 녹다 만 눈 덩이 + 물웅덩이 반짝."""
+    """진창: 젖은 흙(3단 얼룩 + 지푸라기) 위로 녹다 만 눈 덩이(불규칙, 왼쪽 위 밝은 테·오른쪽 아래 그늘)와 고인 물(가장자리 짙게, 하늘 반사 점)."""
     lx, ly = wx % 16, wy % 16
-    v = math.sin(TAU * (lx / 16.0)) * math.cos(TAU * (ly / 16.0 + 0.25))
-    if v > 0.55: return ('snow', 3 if (lx + ly) % 4 else 4)
-    if v < -0.6: return ('water', 3 if (lx + 2 * ly) % 5 == 0 else 2)
-    t = 2 if rnd(lx // 2, ly, s) < 0.6 else 3
-    if rnd(lx, ly, s + 3) < 0.05: t = 1
+    nsn = pn(lx, ly, s + 3, 4) * 0.6 + pn(lx, ly, s + 4, 8) * 0.4
+    nw = pn(lx, ly, s + 5, 8) * 0.65 + pn(lx, ly, s + 6, 4) * 0.35
+    if nsn > 0.72:
+        up = pn(lx - 1, ly - 1, s + 3, 4) * 0.6 + pn(lx - 1, ly - 1, s + 4, 8) * 0.4
+        dn = pn(lx + 1, ly + 1, s + 3, 4) * 0.6 + pn(lx + 1, ly + 1, s + 4, 8) * 0.4
+        if up < 0.72: return ('snow', 5)
+        if dn < 0.72: return ('snow', 3)
+        return ('snow', 4)
+    if s % 3 == 2 and nw < 0.27:
+        if nw > 0.24: return ('slush', 0)
+        if pn(lx, ly - 1, s + 5, 8) * 0.65 + pn(lx, ly - 1, s + 6, 4) * 0.35 >= 0.24: return ('water', 1)
+        return ('ice', 4) if (lx * 7 + ly * 3 + s) % 11 == 0 else ('water', 3 if (lx + ly) % 3 else 2)
+    m = pn(lx, ly, s + 7, 2)
+    t = 2 if m < 0.45 else 3 if m < 0.78 else 1
+    if nsn > 0.66: t = 1                                      # 눈 덩이 둘레 젖은 그늘
+    r = rnd(lx, ly, s + 43)
+    if r < 0.03: return ('straw', 1)
+    if r > 0.96 and t > 1: return ('slush', 4)
     return ('slush', t)
 
 

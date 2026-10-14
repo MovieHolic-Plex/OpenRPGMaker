@@ -345,19 +345,51 @@ HEARTH_SLABS = [  # 윗면 판석(위에서 본 큰 돌판): (x0, y0, x1, y1)
     (7, 9, 15, 12), (15, 8, 24, 12)]
 
 
+def fieldstone(c, x0, y0, w, h, s=0, cw=6, ch=4, base=3, warm=None):
+    """막돌 쌓기: 엇갈린 격자 씨앗마다 둥근 돌 하나(왼쪽 위 밝고 오른쪽 아래 그늘, 5단), 돌 사이 짙은 줄눈.
+    warm = (cx, cy, r) 이면 그 둘레 돌 모서리에 불빛(fire) 반사."""
+    seeds = []
+    for gy in range(-1, h // ch + 2):
+        for gx in range(-1, w // cw + 2):
+            ox = (cw // 2 if gy % 2 else 0) + (h32(gx, gy, s) % 3) - 1
+            oy = (h32(gx, gy, s + 1) % 3) - 1
+            sz = 0.85 + (h32(gx, gy, s + 2) % 4) * 0.1
+            seeds.append((gx * cw + ox + cw / 2, gy * ch + oy + ch / 2, sz, (h32(gx, gy, s + 3) % 3) - 1))
+    for j in range(h):
+        for i in range(w):
+            ds = sorted((((i + 0.5 - sx) / (cw * 0.5 * sz)) ** 2 + ((j + 0.5 - sy) / (ch * 0.5 * sz)) ** 2, sx, sy, sz, dv) for sx, sy, sz, dv in seeds)
+            d0, sx, sy, sz, dv = ds[0]; d1 = ds[1][0]
+            if d1 - d0 < 0.35 or d0 > 1.35:
+                c.P(x0 + i, y0 + j, 'stone', 0 if (i + j) % 3 else 1); continue
+            ux = (i + 0.5 - sx) / (cw * 0.5); uy = (j + 0.5 - sy) / (ch * 0.5)
+            t = base + dv + (1 if ux + uy < -0.6 else 0) + (2 if ux + uy < -1.1 else 0) - (1 if ux + uy > 0.5 else 0) - (1 if uy > 0.7 else 0)
+            if rnd(i, j, s + 4) < 0.07: t -= 1
+            if warm:
+                wx_, wy_, r = warm
+                dd = math.hypot(x0 + i - wx_, (y0 + j - wy_) * 1.3)
+                if dd < r and (ux > 0.3 or uy < -0.3) and (i + j) % 2 == 0 and d1 - d0 < 0.9:
+                    c.P(x0 + i, y0 + j, 'fire', 1 if dd > r * 0.6 else 2); continue
+            c.P(x0 + i, y0 + j, 'stone', max(1, min(6, t)))
+
+
 @anim('hearth', '돌 벽난로(넓은 선반 + 화덕 석판 + 장작불)', 3, 2, 2, 'tall_furniture', tags=['오두막', '선술집', '벽난로', '불'], rules='벽면 아랫줄에 등을 대고 바닥 첫 줄부터 선다(왼쪽 위 칸 = 벽면 아랫줄). 앞 1칸 비움(깔개·걸상은 그 앞).', fps=6)
 def hearth(c, f):
     W = 32
-    # 윗면(넓고 매끈한 판석 선반, 12행): 뒤 벽과 맞닿는 곳은 짙게 → 앞으로 밝게, 이음 몇 줄, 앞 모서리 반사
+    # 윗면(넓고 매끈한 판석 선반, 12행): 뒤 벽과 맞닿는 곳은 짙게 → 앞으로 밝게, 판석 이음, 판석마다 결 점, 앞 모서리 반사
     for y in range(0, 12):
         t = 3 if y < 2 else 4 if y < 5 else 5
-        c.HL(0, y, W, 'stone', t)
+        for x in range(W):
+            tt = t
+            if rnd(x, y, 61) < 0.08: tt -= 1
+            elif rnd(x, y, 62) < 0.05 and y > 3: tt += 1
+            c.P(x, y, 'stone', tt)
     c.HL(0, 0, W, 'stone', 1)
-    for (x, y0, y1) in ((11, 2, 6), (22, 5, 11), (6, 7, 11)): c.VL(x, y0, y1 - y0, 'stone', 3)
+    for (x, y0, y1) in ((11, 2, 6), (22, 5, 11), (6, 7, 11)): c.VL(x, y0, y1 - y0, 'stone', 3); c.VL(x + 1, y0, y1 - y0, 'stone', 5)
     c.HL(0, 5, 11, 'stone', 3); c.HL(22, 5, 10, 'stone', 3)
     for (x, y) in ((3, 8), (15, 3), (27, 9), (17, 9)): c.P(x, y, 'stone', 6)
     c.HL(0, 11, W, 'stone', 6)
-    c.HL(0, 12, W, 'stone', 3)
+    c.HL(0, 12, W, 'log', 4); c.HL(0, 13, W, 'log', 2)                    # 선반 앞 통나무 테
+    for x in range(2, W, 6): c.P(x, 12, 'log', 5)
     # 선반 위 물건(위에서 본 입 + 오른쪽 아래 그늘)
     c.ell(7, 8.5, 3, 1.5, lambda X, Y, dx, dy, d: ('stone', 3))
     c.R(4, 4, 5, 4, 'red', 2); c.VL(4, 4, 4, 'red', 3); c.VL(8, 4, 4, 'red', 1)
@@ -366,24 +398,32 @@ def hearth(c, f):
     c.R(24, 3, 1, 4, 'hide', 3); c.P(24, 2, 'lit', 4); c.P(24, 1, 'fire', 3); c.P(25, 7, 'iron', 2)
     c.ell(16, 8, 2.6, 1.4, lambda X, Y, dx, dy, d: ('log', 2) if d > 0.55 else ('log', 4))
     c.P(18, 9, 'stone', 3)
-    # 선반 밑 그늘(앞면이 안쪽으로 들어가 있다)
-    c.HL(1, 13, W - 2, 'ink', 1)
-    # 앞면(짙은 돌덩이) + 아궁이
-    c.F(2, 14, 28, 12, lambda wx, wy, i, j: tex_brick(i, j, base=2, mat='stone', mortar=('stone', 0), s=19, course=5, blen=8, var=0))
-    c.R(7, 15, 18, 11, 'ink', 0)
-    c.poly([(7, 15), (9, 17), (9, 25), (7, 25)], lambda X, Y: ('stone', 3))
-    c.poly([(24, 15), (22, 17), (22, 25), (24, 25)], lambda X, Y: ('stone', 1))
-    c.R(9, 17, 13, 4, 'ink', 1)
-    c.R(9, 22, 13, 4, 'stone', 2); c.HL(9, 22, 13, 'stone', 1)
-    c.HL(6, 14, 20, 'stone', 3); c.HL(7, 15, 18, 'stone', 1)
-    c.R(10, 21, 12, 2, 'log', 2); c.HL(10, 21, 12, 'log', 3); c.line(11, 23, 20, 20, 'log', 1)
-    flames(c, 10, 21, 12, f, hmax=6)
-    for x in range(9, 22): c.P(x, 24, 'fire', 2 + (x + f) % 2)
-    # 화덕 석판(앞으로 나온 윗면 4행 + 앞면 1행) + 불빛 반사
-    c.R(0, 26, W, 4, 'stone', 5); c.HL(0, 26, W, 'stone', 3); c.HL(0, 29, W, 'stone', 6)
-    for x in (8, 16, 24): c.VL(x, 27, 2, 'stone', 3)
-    for x in range(10, 22): c.P(x, 27, 'fire', 1 if (x + f) % 3 else 2)
-    c.HL(0, 30, W, 'stone', 2); c.HL(0, 31, W, 'ink', 1)
+    # 앞면: 막돌 + 둥근 아치 아궁이(그을음·안쪽 불빛)
+    fieldstone(c, 1, 14, 30, 12, s=37, cw=6, ch=4, base=4, warm=(16, 23, 10))
+    c.VL(1, 14, 12, 'stone', 1); c.VL(30, 14, 12, 'stone', 0)
+    ax0, ax1, atop, abot = 8, 24, 16, 25
+    for X in range(ax0, ax1):
+        u = (X - ax0 + 0.5) / (ax1 - ax0)
+        yt = atop + int(round(3.2 * (1 - math.sin(math.pi * u))))
+        for Y in range(yt, abot + 1):
+            c.P(X, Y, 'ink', 0 if Y < yt + 3 else 1)
+        c.P(X, yt - 1, 'stone', 5 if u < 0.5 else 4)                      # 아치 돌 테(쐐기돌)
+        if u < 0.08 or u > 0.92:
+            for Y in range(yt, abot + 1): c.P(X, Y, 'stone', 2 if u < 0.5 else 1)
+    for X in range(ax0 + 1, ax1 - 1):                                     # 그을음
+        if (X * 3) % 5: c.P(X, atop - 2 + (X % 2), 'stone', 1)
+    c.R(10, 22, 12, 2, 'log', 2); c.HL(10, 22, 12, 'log', 4); c.line(11, 24, 20, 21, 'log', 1)
+    c.line(12, 21, 19, 24, 'log', 3)
+    flames(c, 10, 22, 12, f, hmax=6)
+    for x in range(10, 22): c.P(x, 24, 'fire', 2 + (x + f) % 2); c.P(x, 25, 'fire', 1 if (x + f) % 3 else 3)
+    # 화덕 석판(앞으로 나온 넓은 판석 윗면 4행 + 앞면) + 불빛 반사
+    c.R(0, 26, W, 4, 'stone', 4); c.HL(0, 26, W, 'stone', 2)
+    for (x, ln) in ((0, 9), (9, 8), (17, 7), (24, 8)):
+        c.HL(x + 1, 27, ln - 2, 'stone', 5); c.VL(x, 27, 3, 'stone', 2); c.P(x + ln - 1, 29, 'stone', 3)
+    c.HL(0, 29, W, 'stone', 5)
+    for x in range(9, 23): c.P(x, 27, 'fire', 1 if (x + f) % 3 else 2)
+    for x in range(11, 21, 2): c.P(x, 28, 'fire', 1)
+    c.HL(0, 30, W, 'stone', 2); c.HL(0, 31, W, 'stone', 0)
 
 
 @R.add('bed-fur', '통나무 침대(모피 이불, 머리판 북쪽)', 2, 3, 'low_furniture', tags=['오두막', '침실', '침대'], rules='방 북쪽(벽면 아랫줄 바로 아래 바닥 첫 줄)에 머리를 댄다. 옆 1칸 비움.')

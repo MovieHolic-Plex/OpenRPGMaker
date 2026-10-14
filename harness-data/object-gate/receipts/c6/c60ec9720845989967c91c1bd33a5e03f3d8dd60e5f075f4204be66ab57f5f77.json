@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c60ec9720845989967c91c1bd33a5e03f3d8dd60e5f075f4204be66ab57f5f77",
+ "width": 16,
+ "height": 32,
+ "kind": "organic",
+ "name": "어린 가문비(눈 덮임)",
+ "label": "snow-north/sn-pine-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "snow-covered young spruce tree",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The spruce tree has visible upward-facing foliage shelves holding patches of snow (rows 10-13 and 19-22, each 3-4 rows deep) and snow at its base, consistent with a top-down 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6233
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "snow-covered young spruce tree",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The spruce tree is depicted in tiered layers with horizontal upward-facing surfaces delineated by thick snow caps (rows 10-13 and 19-22, measuring 3-4px vertically) resting on the branch tiers, characteristic of top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6185
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "snow-covered young spruce tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The spruce tree is drawn as a flat 2D front elevation (side-scroller style) with horizontal branch tiers and straight front-facing trunk, lacking any downward 3/4 perspective foreshortening or rounded overhead canopy depth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 38010
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "snow-covered young spruce tree",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The conifer's branch tiers display 3–4 pixel rows of snow foreshortened from above on their upward-facing surfaces, consistent with a 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11236
+  }
+ ],
+ "decidedAt": "2026-10-14T08:02:24.501Z",
+ "cells": {
+  "16": [
+   "6f35b9c0daf775ee",
+   "7bb941f309062c0e"
+  ],
+  "24": [
+   "2f3b4560d1f30b52",
+   "30f9f471cf303d8c",
+   "4da79d285c9e8569",
+   "5ee54b3ae68d6880",
+   "8229f194a7031e06",
+   "84aa1fd815a1af38",
+   "97b5fea32fc318e9",
+   "a7a021543c62a2f9",
+   "cf4126c4a3c5823b",
+   "d44e7f0c48bcd2ad",
+   "df00b22af9a2edaf",
+   "f9928b4133b5bf53"
+  ],
+  "32": [
+   "3c7758585e2d2523",
+   "c1e2e86c3fcf2272",
+   "ef5ad722aaae0194"
+  ],
+  "48": [
+   "1002c9ec0457d479",
+   "115b6165875f53c6",
+   "237e1eb190cd2c67",
+   "30db8fd4e7dadf0d",
+   "7da57a3605cfd0dc",
+   "a793ca549189c861"
+  ]
+ }
+}

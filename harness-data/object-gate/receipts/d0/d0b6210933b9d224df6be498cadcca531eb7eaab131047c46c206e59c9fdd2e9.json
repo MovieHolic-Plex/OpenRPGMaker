@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d0b6210933b9d224df6be498cadcca531eb7eaab131047c46c206e59c9fdd2e9",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "돌 벽난로(넓은 선반 + 화덕 석판 + 장작불)",
+ "label": "snow-north/sn-hearth",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone fireplace with mantel shelf and hearth",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fireplace features a prominent top shelf/mantel surface visible from above (rows 6-11, about 5-6 rows deep) upon which items (mug, candle, block) sit, as well as a visible hearth slab at the base (rows 26-29). Both the shelf and hearth correctly display top horizontal planes consistent with 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 22762
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone fireplace with wide top shelf and hearth slab",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fireplace is designed with a wide top mantel shelf (rows 1-10, 10px deep) seen from above upon which items (pot, box, candle) rest and cast shadows, followed by the shelf's wooden front rim (rows 11-13), the cobblestone front face with firebox opening (rows 14-25), and a projecting floor hearth slab (rows 26-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14800
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone fireplace with wide mantel shelf and hearth",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the fireplace features a wide mantel shelf (rows 1-11, ~10px deep) on which objects (cup, candle, block) sit with cast shadows, clearly presenting a horizontal top surface above the firebox front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10912
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone fireplace with wide mantel shelf",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A wide horizontal mantel top surface spans rows 1–10 (10px deep) with objects (pot, candle, block) resting on it and casting shadows, above the wooden mantel beam front edge (rows 11–13) and stone firebox.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10658
+  }
+ ],
+ "decidedAt": "2026-10-14T08:06:43.444Z",
+ "cells": {
+  "16": [
+   "32af5476a44c3a7a",
+   "5961161b11c8010b",
+   "7c939201c18449ee",
+   "dada5b9bb7f11527"
+  ],
+  "24": [
+   "016a14c4ec2eaf7e",
+   "09145ba65b3467be",
+   "0d0a44fa49963df8",
+   "10fb7f795e7089e6",
+   "2c713c0c30a47800",
+   "340b8b89b4a390ed",
+   "3577e6ad7a32949b",
+   "4eb2b00294100da1",
+   "5064893a70a02c53",
+   "5bf6a235ec2b9348",
+   "6efa49e4fef0e334",
+   "7e27343ccce30e77",
+   "8525580e31e0abb0",
+   "95b145f9faa7fd41",
+   "98220ae861ad09db",
+   "a79fe9bdd7c74494",
+   "abb243c9428cdbf3",
+   "bcffb63fd179bc07",
+   "be945da20b9c9481",
+   "bf66ebe739e1cb44",
+   "c32dc62092fa4b15",
+   "cb0bac927b17e58a",
+   "cc12971497316995",
+   "fb4a516f2e9eb71c"
+  ],
+  "32": [
+   "042ce37ccb9620b5"
+  ],
+  "48": [
+   "38997c8d7d47c7e7",
+   "5b1e9f33a18d6234",
+   "66c570eb11d20bfe",
+   "7dadb941fd4b2576",
+   "9fca5da1c327b3c6",
+   "e645e45a016dfce1"
+  ]
+ }
+}
