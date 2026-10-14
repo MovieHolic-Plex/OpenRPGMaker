@@ -1115,7 +1115,8 @@ function checkSystemOptInConsistency(project: Project, issues: LintIssue[]): voi
   if (system.genre === "action-rpg" && system.actionCombat?.enabled !== true) {
     issues.push({ severity: "warning", code: "opt-in:genre-action-no-system", message: "장르가 2D 액션 RPG이나 액션 전투 시스템이 꺼져 있습니다." });
   }
-  if (system.genre === "monster-collect" && system.monsterCollection !== true) {
+  // monsterCollection:false 는 「포획 없음」 선언(configure_monster_system capture:false)이다 — 꺼두고 잊은 것(undefined)만 경고한다.
+  if (system.genre === "monster-collect" && system.monsterCollection === undefined) {
     issues.push({ severity: "warning", code: "opt-in:genre-monster-collect-no-collection", message: "장르가 몬스터 수집이나 포획(monsterCollection)이 꺼져 있습니다." });
   }
   if (system.genre === "farm-life") {

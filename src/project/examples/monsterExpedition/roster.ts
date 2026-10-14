@@ -105,7 +105,7 @@ const DEBUFF: Readonly<Record<string, string>> = {
   fire: "state_burn", water: "state_agility_down", grass: "state_sleep", electric: "state_paralysis", psychic: "state_sleep", ice: "state_freeze", poison: "state_poison", ghost: "state_attack_down", ground: "state_agility_down", rock: "state_defense_down", bug: "state_defense_down", normal: "state_attack_down", flying: "state_agility_down", fighting: "state_defense_down", dragon: "state_attack_down",
 };
 
-function buildMoves(project: Project): SkillRecord[] {
+export function buildMoves(project: Project): SkillRecord[] {
   const availableStates = new Set(project.database.states.map(state => state.id));
   const availableAnimations = new Set(project.database.battleAnimations.map(animation => animation.id));
   const stateEffect = (stateId: string, chance: number, operation: "add" | "remove" = "add") => availableStates.has(stateId) ? [{ stateId, chance, operation }] : [];
@@ -169,13 +169,13 @@ function buildMoves(project: Project): SkillRecord[] {
   }));
 }
 
-function bases(values: readonly number[], stage: number): EnemyStats {
+export function bases(values: readonly number[], stage: number): EnemyStats {
   const factor = stage === 1 ? 0.54 : stage === 2 ? 0.77 : 1;
   const [maxHp, attack, defense, mind, agility] = values.map(value => Math.round(value * factor));
   return { maxHp: maxHp!, maxMp: 12, attack: attack!, defense: defense!, mind: mind!, agility: agility! };
 }
 
-function learnset(primary: string, secondary: string) {
+export function learnset(primary: string, secondary: string) {
   const schedule: [number, string, number][] = [
     [1, "normal", 1], [3, primary, 1], [7, primary, 6], [11, primary, 2],
     [16, secondary, 1], [20, primary, 3], [23, secondary, 6], [27, secondary, 2],

@@ -17,7 +17,7 @@ import { runtimeMap } from "@/project/runtimeMap";
 import { eligibleEncounterEntries } from "@/player/encounters";
 import { slideRuleAt } from "@/project/slideTiles";
 import { getSessionCheckpoint, setSessionCheckpoint } from "@/player/checkpoints";
-import { monsterCurrentHp, monsterMaxHp, rejectPendingMonsterSkill, replacePendingMonsterSkill } from "@/project/monsterCollection";
+import { isMonsterPartyGame, monsterCurrentHp, monsterMaxHp, rejectPendingMonsterSkill, replacePendingMonsterSkill } from "@/project/monsterCollection";
 import { allPages, childLists, conditionLeaves, visitPageCommands, type CommandVisit, type PageRef, type RawCommand } from "./walk";
 import type { AutoPlayReport, AutoPlayRun, AutoPlayStepTrace, CommandWhere } from "./types";
 
@@ -534,7 +534,7 @@ function quietScene(project: Project, steps: SceneStep[], base?: PlaySession, re
     return runSceneTest(project, { ...start, steps }, undefined,
       { recoverBeforeRandomEncounters: recover ?? RECOVERING_PROJECTS.has(project), ...(base ? { initialSession: base } : {}),
         // 몬스터 게임의 자동 플레이어는 동료를 잡고 상성에 맞춰 교체한다(실제 플레이어처럼).
-        ...(project.system?.monsterCollection === true ? { monsterTactics: true } : {}) });
+        ...(isMonsterPartyGame(project) ? { monsterTactics: true } : {}) });
   } finally {
     console.warn = warn;
   }
@@ -590,7 +590,7 @@ function learnPendingMoves(project: Project, session: PlaySession): PlaySession 
  * 실제 불러오기처럼 맵 기본값으로 돌아간다.
  */
 function checkpoint(driver: Driver): void {
-  const learned = driver.project.system?.monsterCollection === true ? learnPendingMoves(driver.project, driver.last.session) : null;
+  const learned = isMonsterPartyGame(driver.project) ? learnPendingMoves(driver.project, driver.last.session) : null;
   if (driver.steps.length === 0 && driver.base && !learned) return;
   driver.base = learned ?? structuredClone(driver.last.session);
   // 복제하면 세션에 붙은 체크포인트(마지막 회복 센터)가 사라진다 — 함께 옮긴다.
@@ -1122,14 +1122,14 @@ function executeGoal(driver: Driver, goal: Goal, escaped = false, trained = 0, h
     const failure = fireEvent(driver, hop.event, hop.visit);
     const moved = !failure && driver.last.session.currentMapId === hop.to;
     // 가는 길에 야생에게 져 회복 센터에서 깨어났으면(게임 오버 outcome recover) 수련하고 다시 간다.
-    if (!moved && project.system?.monsterCollection === true && trained < MAX_TRAINING_ROUNDS
+    if (!moved && isMonsterPartyGame(project) && trained < MAX_TRAINING_ROUNDS
       && driver.last.log.slice(logStart).some((line) => line.startsWith("defeat recovery"))) {
       const problem = train(driver, leadLevel(driver.last.session) + 2);
       if (problem) return trace(goal.label, false, `가는 길에 쓰러진 뒤 수련 실패: ${problem}`, driver, hop.visit.where);
       return executeGoal(driver, goal, escaped, trained + 1);
     }
     // 수련 횟수를 다 쓴 뒤에도 길에서 쓰러졌으면 센터에서 깨어난 그대로(회복됨) 다시 걸어 본다 — 레벨이 아니라 도망 운이다.
-    if (!moved && project.system?.monsterCollection === true && walkRetries < 3
+    if (!moved && isMonsterPartyGame(project) && walkRetries < 3
       && driver.last.log.slice(logStart).some((line) => line.startsWith("defeat recovery"))) {
       checkpoint(driver);
       return executeGoal(driver, goal, escaped, trained, healed, walkRetries + 1);
@@ -1143,7 +1143,7 @@ function executeGoal(driver: Driver, goal: Goal, escaped = false, trained = 0, h
   // 관장·트레이너 앞에 닿았는데 지쳤으면 실제 플레이어처럼 그 맵에서 가장 가까운 센터에 들렀다 다시 온다 — 사천왕 넷을
   // 연달아 치르거나 수련터에서 야생 길을 거슬러 오느라 기술 횟수가 바닥난 채 챔피언에게 Lv97 로 졌다(2026-10-06).
   // 무작위 인카운터 전 회복(소모전 판정)과는 별개다. 한 목표에 한 번만(회복이 안 되는 게임에서 맴돌지 않게).
-  if (!healed && project.system?.monsterCollection === true && wornOut(project, driver.last.session)
+  if (!healed && isMonsterPartyGame(project) && wornOut(project, driver.last.session)
     && JSON.stringify(visit.page.commands ?? []).includes('"battleProcessing"')) {
     healAtCenter(driver, targetMap);
     checkpoint(driver);
@@ -1163,7 +1163,7 @@ function executeGoal(driver: Driver, goal: Goal, escaped = false, trained = 0, h
   const woke = driver.last.log.slice(logBefore).some((line) => line.startsWith("defeat recovery"));
   const wildLoss = woke ? driver.last.log.slice(logBefore).map((line) => /^random encounter (\S+): defeat$/u.exec(line)).find(Boolean) : undefined;
   const lostTo = lost ?? wildLoss;
-  if (lostTo && project.system?.monsterCollection === true && trained < MAX_TRAINING_ROUNDS && (failure || !goal.done?.(driver.last.session, driver.last))) {
+  if (lostTo && isMonsterPartyGame(project) && trained < MAX_TRAINING_ROUNDS && (failure || !goal.done?.(driver.last.session, driver.last))) {
     const needed = troopLevel(project, lostTo[1]!);
     // 리더가 이미 상대보다 넉넉히 높으면 레벨이 아니라 지친 채 도전한 것이다(회복 없이 습지를 건너 7관에 Lv49 로 졌다) —
     // 센터에서 회복하고 다시 도전한다. 높은 레벨에서는 풀숲 수련으로 레벨이 거의 오르지 않아 「수련 실패」로 끝났다.
@@ -1179,7 +1179,7 @@ function executeGoal(driver: Driver, goal: Goal, escaped = false, trained = 0, h
     return executeGoal(driver, goal, escaped, trained + 1);
   }
   if (failure) return trace(goal.label, false, failure, driver, visit.where);
-  if (lostTo && project.system?.monsterCollection === true && !goal.done?.(driver.last.session, driver.last)) {
+  if (lostTo && isMonsterPartyGame(project) && !goal.done?.(driver.last.session, driver.last)) {
     return trace(goal.label, false, `이벤트 전투 패배 — 수련 ${trained}번 뒤에도 ${lostTo[1]} 을 넘지 못했습니다(파티 ${partySummary(project, driver.last.session)}).`, driver, visit.where);
   }
   const verdict = goal.verify?.(driver.last.session, driver.last);
@@ -1278,7 +1278,7 @@ function runPlan(project: Project, label: string, goals: readonly Goal[], deadli
     }
     steps.push(step);
     // 긴 몬스터 캠페인은 목표마다 저장 지점을 옮긴다(처음부터 다시 돌리면 시간 상한에 걸린다).
-    if (step.ok && project.system?.monsterCollection === true) checkpoint(driver);
+    if (step.ok && isMonsterPartyGame(project)) checkpoint(driver);
     if (!step.ok && step.soft) { firstFailure ??= step; continue; }
     if (!step.ok) {
       return { label, ok: false, steps, failure: firstFailure ?? step, sceneSteps: driver.committed + driver.steps.length, runs: driver.runs, ms: Date.now() - started, partyAtEnd: driver.last.session.partyActorIds.map((id) => (typeof id === "string" ? id : null)) };
@@ -1317,7 +1317,7 @@ export function runAutoPlay(
   const preamble = plan.unresolved.map((u) => `선행 조건 ${u.req} 을 채울 이벤트를 찾지 못했습니다 (${u.for.mapId ?? ""} ${u.for.eventId ?? ""})`);
   // 몬스터 수집: 실제 플레이어는 먼저 박사에게 파트너를 받는다 — 영웅 혼자 야생·관장과 싸우는 경로는 거짓 막힘을 낸다.
   let give: CommandVisit | undefined;
-  if (project.system?.monsterCollection === true) {
+  if (isMonsterPartyGame(project)) {
     for (const page of allPages(project)) {
       if (give || !page.map || !page.event) continue;
       visitPageCommands(page, (visit) => { if (!give && visit.command.kind === "giveMonster") give = visit; });

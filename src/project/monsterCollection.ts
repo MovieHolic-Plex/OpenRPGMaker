@@ -182,6 +182,22 @@ export function monsterSpeciesForEnemy(project: Project, enemy: EnemyRecord | un
 }
 
 /**
+ * 몬스터로 싸우는 게임인가 — 포획이 켜진 수집 게임이거나, 포획 없이 몬스터 파티로만 싸우는 게임(대회형).
+ * 포획(`monsterCollection`)과 파티 전투(`monsterBattleParty`/`battleParty:"monsters"`)는 별개 축이라, 둘 중 하나면 몬스터 게임이다.
+ * QA 자동 플레이어의 몬스터 전술·수련·회복은 이 판정을 쓴다(포획 켜짐만 보면 대회형 게임이 영웅 혼자 싸우는 경로로 간다).
+ */
+export function isMonsterPartyGame(project: Pick<Project, "system">): boolean {
+  const system = project.system;
+  return system?.monsterCollection === true || system?.monsterBattleParty === true || system?.battleParty === "monsters";
+}
+
+/** 포획 없음을 명시한 몬스터 게임(`monsterCollection:false` + 몬스터 파티 전투). 「포획을 켜는 걸 잊음」(undefined)과 다르다. */
+export function isMonsterNoCaptureGame(project: Pick<Project, "system">): boolean {
+  const system = project.system;
+  return system?.monsterCollection === false && (system.monsterBattleParty === true || system.battleParty === "monsters");
+}
+
+/**
  * 몬스터 파티 전투 설정과 지금 파티 몬스터 — 실제 전투(playSceneBattle)·헤드리스 러너·랜덤 조우가 같은 판정을 쓴다.
  * requested 인데 party 가 비면(스타터를 아직 안 받음) 전투를 열 수 없다.
  */

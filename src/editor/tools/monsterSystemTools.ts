@@ -1,5 +1,6 @@
 import type { ToolDefinition, ToolExecResult } from "./types";
 import { configureMonsterPresentation } from "@/project/monsterPresentation";
+import { openBlankStartOnMonsterKit } from "@/project/genrePresets";
 
 // 몬스터 수집/포획 + 몬스터 전투 파티 모드를 켜고 끄는 저작 도구.
 // 두 플래그는 별개 축이다:
@@ -10,12 +11,13 @@ import { configureMonsterPresentation } from "@/project/monsterPresentation";
 const configureMonsterSystem: ToolDefinition = {
   name: "configure_monster_system",
   description:
-    "몬스터 수집/포획 시스템을 켠다. enabled:true면 전투에 '포획' 커맨드가 뜬다. battleParty:true면 전투와 필드 메뉴·기술·회복약·저장 레벨이 실제 몬스터 파티를 사용한다. presentation:'collector'는 수집 게임 메뉴/HUD를 설정하고 미수정 기본 왕국 오프닝만 비활성화한다(저작한 오프닝은 보존). 설정 성공은 플레이 검증이 아니다. 동료 지급과 퍼즐 조작 뒤 run_scene_test의 playerCanMove/실제 이동을 검사하고 출하 플레이어도 확인한다. enabled:false면 포획/몬스터 전투 플래그를 제거한다.",
+    "몬스터 수집/포획 시스템을 켠다. enabled:true면 전투에 '포획' 커맨드가 뜬다. 포획 없는 몬스터 게임(대회형·트레이너 대전 중심)은 enabled:true + capture:false — 포획 커맨드는 끄고 몬스터 파티 전투만 켠다(「포획 없음」을 선언한 게임이라 검사기도 야생 조우·포획 도구를 요구하지 않는다). battleParty:true면 전투와 필드 메뉴·기술·회복약·저장 레벨이 실제 몬스터 파티를 사용한다. presentation:'collector'는 수집 게임 메뉴/HUD를 설정하고 미수정 기본 왕국 오프닝만 비활성화한다(저작한 오프닝은 보존). 설정 성공은 플레이 검증이 아니다. 동료 지급과 퍼즐 조작 뒤 run_scene_test의 playerCanMove/실제 이동을 검사하고 출하 플레이어도 확인한다. enabled:false면 포획/몬스터 전투 플래그를 제거한다.",
   mode: "write",
   parameters: {
     type: "object",
     properties: {
       enabled: { type: "boolean", description: "몬스터 수집/포획 게이트를 켤지 여부" },
+      capture: { type: "boolean", description: "생략/true 면 포획 커맨드가 뜨는 수집 게임. false 면 포획 없는 몬스터 게임(대회형·대전 중심) — monsterCollection=false 를 명시하고 battleParty 를 생략하면 몬스터 파티 전투를 켠다." },
       battleParty: { type: "boolean", description: "전투를 몬스터 파티로 진행할지(포켓몬식). 생략하면 현재 설정 유지, false 면 영웅이 싸운다." },
       presentation: { type: "string", enum: ["preserve", "collector"], description: "생략/preserve는 기존 화면 설정 유지. collector는 몬스터 수집용 메뉴/HUD를 설정하고 미수정 기본 오프닝만 끈다." },
       rules: { type:'string', enum:['preserve','gen1'], description:'gen1은 몬스터 대치 전투 규칙과 화면을 함께 설정. 생략/preserve는 기존 규칙 유지.' },
@@ -30,12 +32,14 @@ const configureMonsterSystem: ToolDefinition = {
       if (draft.system.battleParty === "monsters") delete draft.system.battleParty;
       return { summary: "몬스터 수집 비활성화 — 포획/몬스터 전투 플래그를 모두 제거했습니다.", data: { enabled: false, battleParty: false } };
     }
-    draft.system.monsterCollection = true;
+    // 포획 없음은 「꺼짐(undefined)」이 아니라 명시한 false 다 — 검사기가 「포획을 켜는 걸 잊음」과 「포획 없는 게임」을 구분한다.
+    const capture = args.capture !== false;
+    draft.system.monsterCollection = capture;
     if(args.rules==='gen1'){draft.system.battleModel='gen1';draft.system.battleUiStyle='pokemon';}
     // battleParty 를 생략하면 지금 설정을 지킨다. 몬스터 수집 프리셋은 이미 몬스터 파티 전투로 시작하는데,
     // 조수가 {enabled:true} 만 보내면 조용히 영웅 전투로 떨어뜨렸다(잡은 몬스터가 싸우지 않는 포켓몬풍).
     const current = draft.system.monsterBattleParty === true || draft.system.battleParty === "monsters";
-    const battleParty = args.battleParty === undefined ? current : args.battleParty === true;
+    const battleParty = args.battleParty === undefined ? (capture ? current : true) : args.battleParty === true;
     if (battleParty) {
       draft.system.monsterBattleParty = true;
       draft.system.battleParty = "monsters";
@@ -43,13 +47,17 @@ const configureMonsterSystem: ToolDefinition = {
       delete draft.system.monsterBattleParty;
       if (draft.system.battleParty === "monsters") delete draft.system.battleParty;
     }
+    // 칩셋 계열은 첫 맵에서 정해진다 — 빈 시작 맵이 버들항이면 몬스터 게임 전체가 버들항으로 깔린다(손댄 맵은 건드리지 않는다).
+    openBlankStartOnMonsterKit(draft);
     const presentation = args.presentation === "collector" ? configureMonsterPresentation(draft) : undefined;
     return {
-      summary: battleParty
+      summary: !capture
+        ? "포획 없는 몬스터 게임 — 몬스터 파티 전투만 켰습니다(포획 커맨드 없음, monsterCollection=false 선언). 포획구슬·야생 조우를 만들지 마세요."
+        : battleParty
         ? "몬스터 수집 활성화 + 전투를 몬스터 파티로 진행합니다(포획 커맨드 노출)."
         : "몬스터 수집 활성화 — 전투에 포획 커맨드가 뜹니다(전투 출전은 battleParty:true 필요).",
       data: {
-        enabled: true, battleParty,
+        enabled: true, capture, battleParty,
         partyPresentation: battleParty ? "monster-party" : "actor-party",
         ...(presentation ? { presentation: "collector", ...presentation } : {}),
         verificationScope: "configuration-only",

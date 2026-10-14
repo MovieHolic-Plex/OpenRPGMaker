@@ -422,7 +422,7 @@ function requirementConfigured(project: Project, kind: GenrePackRequirementKind)
         const enemyId = troop?.members?.[0]?.enemyId ?? troop?.enemyIds[0];
         return project.database.enemies.some((enemy) => enemy.id === enemyId && enemy.actionProfile !== undefined);
       }));
-    case "system-monster-collection": return project.system.monsterCollection === true;
+    case "system-monster-collection": return project.system.monsterCollection === true || (project.system.monsterCollection === false && (project.system.monsterBattleParty === true || project.system.battleParty === "monsters"));
   }
 }
 

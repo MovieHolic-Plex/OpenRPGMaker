@@ -215,3 +215,35 @@ It requires an existing catalog; full generation without the option remains supp
 - 테마 주민 칩: `src/project/emeraldMonsterCast.ts` `THEME_CASTS` 는 비어 있다(원작 판형 theme-cast-v1 은 저작권 정리로 삭제).
   사용자가 독자 도트 후보를 Allow 하고 설치한 칩만 항목으로 더한다. 없으면 기본 People1 칩(조용한 대체).
 - 산호 해변 오두막: 템플릿 집에 문 이벤트가 없었다 → 문에서 「바닷가 쉼터」 주인이 회복(recoverAll). 방 맵은 늘리지 않았다.
+
+
+## 자유 경로 · 대회형/탐험형 · 계통 일괄 도구 (monster-free-b, 2026-10-14)
+
+감사 구멍 #3(시작 테마·자유 경로)·#4(일괄·이름 바꾸기)·#5(포획 없음·대회)를 메운 변경이다.
+
+- **화산 시작 테마** — `StartTheme` 에 `volcano`. `townLayouts.ts` 의 `VOLCANO` 도면(재 바닥·온천 못·김 구멍·화산암)은 몬스터 키트
+  `monster_climate` 시트의 기존 재·용암 조각만 쓴다(`climate/ash_town` 템플릿). **새 그림을 그리지 않았으므로 object-gate 대상이 아니다.**
+  `world.ts` 는 화산에서 첫 관을 불 타입으로, 야생 풀에 불 타입 토착종을 더하고 뒤쪽 마을 `ember` 와 판을 맞바꾼다.
+- **포획 없음은 선언된 모드다** — `system.monsterCollection === false` + 몬스터 파티 전투(`monsterBattleParty`/`battleParty:"monsters"`)이다.
+  `undefined` 는 「켜는 걸 잊음」이라 그대로 막힘이다. 판정은 `src/project/monsterCollection.ts` 의 `isMonsterPartyGame`·`isMonsterNoCaptureGame`.
+  `configure_monster_system(enabled:true, capture:false)` 가 이 모드를 켠다(없이 `enabled:true` 만 부르면 포획 게임).
+  `src/qa/gameCheck/monster.ts` 는 포획 관련 막힘만 이 모드에서 건너뛴다. 대신 상대(적 조련사) 0은 막힘 `monster-no-opponents`,
+  너무 적으면 경고 `monster-few-opponents`, 포획 도구가 남아 있으면 경고 `monster-no-capture-has-ball` — 진짜 결함은 가리지 않는다.
+- **대회형** — `build_monster_tournament`(`monsterTournamentTools.ts`, 생성기 `tournament.ts`·`tournamentGame.ts`): 접수 마을 → 연습 길 →
+  본선 회전 방(`mx_round_i` 스위치로 사슬) → 결승 → `mx_ending_tournament`. rounds 2~8, 회전마다 레벨·팀 수가 오른다.
+- **탐험형(체육관 없음)** — `build_monster_expedition`(같은 파일, `format:"expedition"`): 허브 → 사냥터 N(rounds 2~5), 라이벌(연구소+마지막 앞),
+  마지막 사냥터 보스, 엔딩 `mx_ending_hunt`. 포획 구슬 판매.
+- **계통 일괄** — `define_monster_families`(`monsterBatchTools.ts`): 한 호출 최대 40계통, 계통마다 원자적(스냅숏 되돌림), 일부 실패는
+  `data.failed` 로 보고하고 전부 실패면 오류. `autoGraphics`·`spawn{mapIds,minLevel,includeEvolved}`. 도감은 `monsterCampaign.speciesIds`/`speciesNotes` 를
+  돌기 때문에 종 레코드만으로는 도감에 안 나타난다 — 도구가 둘 다 덧붙인다.
+  `rename_monster_species`: 최대 60개, 종·적·무리·맵 이벤트 대사·도감 설명·공용 이벤트·엔딩·세션까지 같은 `replacer` 로 전파.
+  다른 종 이름의 부분 문자열(모호)·중복·미존재·동일 이름은 건너뛰고 `data.replaced` 로 건수를 돌려준다.
+- **자유 경로 의도 판정** — `src/ai/piAgent/monsterGameRequest.ts` `classifyMonsterGameRequest(task, blank)` → `campaign|tournament|expedition|null`.
+  「포켓몬」 낱말이 없어도 몬스터 주체 + 시스템 신호(포획·도감·체육관·진화·트레이너·종 정의·대전) 가 있으면 몬스터 수집 의도다.
+  사냥꾼·좀비·공포·디펜스·생존·액션 RPG 같은 신호는 제외한다. `plainTurn.ts` 가 이 판정으로 도구 목록·프롬프트를 고정하고,
+  작은 요청(마을·종 하나)이면 `monsterKit` 의도로 `MONSTER_FREE_KIT_NOTE` 를 붙인다. `aiChatPanel.ts` 는 손 안 댄 빈 시작 맵을
+  `openBlankStartOnMonsterKit`(`genrePresets.ts`)으로 `monster_overworld` 키트로 옮긴다 — 칩셋 계열은 첫 맵이 정한다.
+  비몬스터 요청은 건드리지 않는다.
+- **알려진 한계** — `review_monster_game`(monster-free-a 소유)은 72맵·8체육관 기준이라 대회형·탐험형에 맞지 않아 프롬프트가 쓰지 말라고 한다.
+  체육관 개수 파라미터(0~8)는 monster-free-a 의 `campaignPlan.ts` 가 합쳐져야 「체육관 세 개」가 지켜진다. 탐험형은 「전투마다 회복」 자동 플레이에서만
+  통과하는 소모 경고가 남는다. 도감 메뉴 첫 줄은 포획 없는 게임에서도 「포획」 수를 센다(표시만).
