@@ -1,0 +1,123 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b016d50ea1c549b930b72ca3720602e2ff067e4666fd92830489291370ccf9c7",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "장작 실은 썰매",
+ "label": "snow-north/sn-sled-wood",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sled bed loaded with firewood logs",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the sled bed is clearly visible from above (rows 4-10, visible around the logs and curving at the front right), while the front face and runners are shown below it (rows 11-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6589
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wood sled loaded with firewood",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sled platform is viewed from above in 3/4 perspective across rows 4 to 10 (about 7 rows tall) showing the top surface of the bed and the rounded front nose, with south-facing runners underneath at rows 11-13. The firewood bundle sits on top and casts a shadow onto the bed.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10847
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flatbed sled loaded with firewood",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sled deck is drawn in 3/4 top-down view showing its foreshortened horizontal plank surface (rows 4–10, ~7 rows tall) beneath and around the logs, with the south runner visible along the bottom edge (rows 11–13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11708
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden sled loaded with logs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sled and its stacked cargo are drawn in a flat side-profile elevation facing east, with the runner, frame, and bundled logs depicted purely from the side without any foreshortened top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7060
+  }
+ ],
+ "decidedAt": "2026-10-14T01:19:07.397Z",
+ "cells": {
+  "16": [
+   "b4ebb178e18accfa",
+   "ddb61351bd52953c"
+  ],
+  "24": [
+   "0216615854d94010",
+   "14686ad2c8bc15e3",
+   "4efd81e43f52abc8",
+   "7bef164dfb5ece14",
+   "8fbedda1074d8878",
+   "a4bd7096a9a60558",
+   "aacaeded95b8cc90",
+   "d53ab54f7d980bfc",
+   "db0e9d7ab71f8147",
+   "deadc29a5a51851d",
+   "defaea6117efb606",
+   "fcc5f80e69e550be"
+  ],
+  "32": [
+   "20a4e19ffa3d7f00",
+   "d36324b7b7917357"
+  ],
+  "48": [
+   "09ed36a6ca8a3ca6",
+   "5adac468cb880701",
+   "a9f9ee96bfec4ed8",
+   "ac8b15599a4781a1",
+   "d9c663115ee3767e",
+   "f9fa25771c31c7af"
+  ]
+ }
+}

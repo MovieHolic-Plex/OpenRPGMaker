@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "16a1d4c4f8dc4825272f5f955326e44b17445ed5e7b1c1f5ba6dc7c7e5a7aebe",
+ "width": 64,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "선술집 바(통나무 상판 + 잔·뿔잔·꼭지)",
+ "label": "snow-north/sn-bar-counter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tavern bar counter",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bar counter displays a wide horizontal wooden top surface spanning rows 3-13 (approx. 11 rows) populated with drinks and a keg tap, with the vertical front face visible below from row 14 to 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5937
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tavern bar counter",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden counter top surface clearly occupies rows 3 to 13 (11 pixels tall) viewed from above with various drinks and objects resting on it, leading down to the front vertical paneling from row 14 to 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6107
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tavern bar counter",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden countertop has an ample top surface visible from row 3 to row 13 (approx 11 rows) upon which mugs and horns rest, above a vertical south-facing wooden panel front from row 14 to row 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5711
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tavern bar counter",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden bar counter has a clearly visible horizontal top surface measuring about 11 rows (rows 3 to 13) holding mugs, horns, and a keg tap, with a vertical front face extending from row 14 to row 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5645
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.164Z",
+ "cells": {
+  "16": [
+   "09484fc59f5297a9",
+   "38f110533fbf529d",
+   "3f57f10d58436e35",
+   "7f63371b1766a5ef",
+   "af9624e837092fcf",
+   "b37efe0e0cf593b4",
+   "fcfe7e7ceec53335",
+   "fea226cafd89eb43"
+  ],
+  "24": [
+   "213b9d6aa844a7dd",
+   "22aa9124791a753a",
+   "24c86b747832ea2c",
+   "2520e4fcb12b9adf",
+   "30426fbac7ed6940",
+   "341e6cb7fa77d1ff",
+   "37f014c14ec29c24",
+   "3ba6c78a7e90bc5b",
+   "44a49c7eda911e62",
+   "464fa384553db4c8",
+   "48b4d424d20acc10",
+   "49f22efcc063214b",
+   "4cd4d2bb6104bb91",
+   "4e79b703dd47145d",
+   "50048d4035f418c1",
+   "564cd000feff4c2d",
+   "660a6fa536db5416",
+   "66605f467e078ed0",
+   "68d03b85aa583031",
+   "740998255814016d",
+   "79699c3a73542600",
+   "7a0e7213aded2088",
+   "7b6b9600ff73b6b9",
+   "821a605ee18e021f",
+   "89d5eb5759e70e34",
+   "8bdb5c4110edcd47",
+   "94a076685d9602fd",
+   "a7e98e38c467e5e1",
+   "b298b4ed6f308114",
+   "bf40ff30dce1397a",
+   "c88af8501c156046",
+   "d5ae4dc78f985d09",
+   "d97c438e5ce869b8",
+   "dfe72f27447c30f4",
+   "e5ecf20023b6bb54",
+   "ec4fd838ec9b27e2"
+  ],
+  "32": [
+   "bb1317aecbb7e3e4",
+   "e07f38489fd40d5e"
+  ],
+  "48": [
+   "0479f26de29c38db",
+   "07af91be7ff9323a",
+   "304099d749234ba0",
+   "33828d3f1bcff2cc",
+   "7950ec6e2927c52f",
+   "88105235d58d28ad",
+   "99e687bda7c72d08",
+   "b920a256d31eaf58",
+   "ccdbb7caca1786b4",
+   "dc89ab9780963eac",
+   "e817b1058a5b8ea6",
+   "eff0d52282887483"
+  ]
+ }
+}

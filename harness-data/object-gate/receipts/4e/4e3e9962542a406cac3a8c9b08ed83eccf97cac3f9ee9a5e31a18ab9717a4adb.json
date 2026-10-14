@@ -1,0 +1,145 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4e3e9962542a406cac3a8c9b08ed83eccf97cac3f9ee9a5e31a18ab9717a4adb",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "쇠 화로(타오름) 프레임 3",
+ "label": "snow-north/sn-brazier-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron brazier bowl with flames on tripod legs",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brazier basin (rows 13-16) and base bar (rows 29-30) are drawn completely flat in pure front elevation with no visible top surface or elliptical rim opening to show depth from a 3/4 top-down angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4045
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brazier bowl on tall tripod legs",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is an iron brazier, not a large structure. The metal brazier bowl (rows 13-16) and legs are drawn in pure front elevation with a straight horizontal top edge and no visible elliptical opening or depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6548
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brazier basin on tripod legs",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The basin of the brazier is drawn as a completely flat horizontal rectangle (rows 13-16) with no elliptical opening or top rim visible from above. The fire rests directly on a flat edge in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3576
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron brazier bowl and stand",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is an iron brazier (misclassified as structure). The bowl, stand, and base are drawn in flat front elevation with a straight horizontal rim and no visible top surface or elliptical opening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4600
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.505Z",
+ "cells": {
+  "16": [
+   "471b1a0ffebb216c",
+   "d9cbe42e9ccca960"
+  ],
+  "24": [
+   "0c09589dd64d9327",
+   "1f253e7e03f9275c",
+   "2507e6fc7953206c",
+   "2dd38c88a39db633",
+   "380b8abb03ea4d7b",
+   "3f2f57b48bda8e24",
+   "5aaefde2b8554718",
+   "6ae0d294fb2b3f65",
+   "6cd87b8030e90a57",
+   "6eb4cbb2dbb47143",
+   "76bdc7350be1e52a",
+   "cd08f1f55c01f7cf"
+  ],
+  "32": [
+   "0e3846f52f67b942",
+   "1b10db577345aa49",
+   "a81e99f879e0cdd9"
+  ],
+  "48": [
+   "7385fcd496b1cfe9",
+   "79efbfad7bf99284",
+   "7bcb49ad63a7f1b8",
+   "b50b807aed978fc3",
+   "fc2f0242ac032811",
+   "fc3993aa38dcc3a4"
+  ]
+ }
+}

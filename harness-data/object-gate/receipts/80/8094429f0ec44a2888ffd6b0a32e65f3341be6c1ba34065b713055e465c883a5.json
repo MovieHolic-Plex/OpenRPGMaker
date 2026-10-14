@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8094429f0ec44a2888ffd6b0a32e65f3341be6c1ba34065b713055e465c883a5",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "목책(남북 줄 — 단면 머리가 보인다)",
+ "label": "snow-north/sn-palisade-v",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stacked log fence south end",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object depicts the south cut ends of three stacked logs for a north-south palisade/fence, drawn in a pure front elevation. The top surface of the uppermost log extending north is completely absent (at most 1px visible at row 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 17024
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden palisade line",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence line running north-south shows flattened circular log cross-sections with no proper 3/4 perspective: if viewed as standing posts, they completely lack front/south vertical faces (flat 90-degree bird's-eye view); if viewed from the south, there are no visible top horizontal surfaces extending along the fence.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14619
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden fence rails / palisade segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object depicts three cut log ends stacked vertically between side supports. Drawn as a pure front elevation of the southern cross-sections, it shows 0 rows of the horizontal top surfaces of the rails receding north (or if interpreted as posts seen from directly above, it lacks front vertical faces in 3/4 view).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 24235
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stacked log palisade / fence segment (north-south line)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sprite depicts three log ends stacked vertically between two side posts, drawn straight-on as front-facing cross-sections with no visible top surface receding northwards (top_rows = 0). It is a pure front elevation view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12015
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.508Z",
+ "cells": {
+  "16": [
+   "9d85b38faf25d79d"
+  ],
+  "24": [
+   "1750d815a8bbc11c",
+   "1efd9ada97850851",
+   "43d85bd7cc8b5cf4",
+   "83276e202fc3fe3a",
+   "9c788ef76556cc8d",
+   "cd51f43c25fb4a63"
+  ],
+  "32": [
+   "207fc19e86781a14",
+   "45efbad079b7d6a6",
+   "9c169c8cdcb70f9e",
+   "9e40e70bb4e10414",
+   "a0a35b27c9e0cd2b",
+   "c3e45de5a4ddc165"
+  ],
+  "48": [
+   "3e44aafd793d9263",
+   "4740d63c8c90dc69",
+   "6724bea5ce7f5544",
+   "a13c43362e0547cf",
+   "b8e3a20c75634384",
+   "b94362bd6655beec"
+  ]
+ }
+}

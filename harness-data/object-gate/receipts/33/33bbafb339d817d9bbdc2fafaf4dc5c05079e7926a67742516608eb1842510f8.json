@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "33bbafb339d817d9bbdc2fafaf4dc5c05079e7926a67742516608eb1842510f8",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "서리 풀",
+ "label": "snow-north/sn-frost",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "frost grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting frosty grass/ground covering the full 16x16 pixel area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3443
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "frost grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The 16x16 tile depicts flat ground terrain showing frosty grass, ice patches, and frost specks seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6092
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "frost grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full-tile textured ground surface depicting frost/snow-dusted grass or terrain viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2852
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "frost-covered grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a seamless/flat top-down ground terrain texture showing frosty grass and frozen patches with no vertical standing structure.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5472
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:23.951Z",
+ "cells": {
+  "16": [
+   "ecd97802f7d9ac6a"
+  ],
+  "24": [
+   "3eeca866a781c999",
+   "6ddbfaf2fb735230",
+   "c780b646ecb16ce6",
+   "cfab8b8280ac7980",
+   "df5c8e0bea8b4462",
+   "f88f7809aed44097"
+  ],
+  "32": [
+   "0a04d83ac0246abf",
+   "0fc88048cfbacb46",
+   "766d1f316acc8c75",
+   "89f07e5b1be28ab0",
+   "dc0f87231e49fac6",
+   "ef72191925ebae8d"
+  ],
+  "48": [
+   "0608026aab61b95d",
+   "0e0eef66dd0f6c8e",
+   "20ffdbcd66841473",
+   "6cd681328e6b5c3c",
+   "b04f5858f1bf52b4",
+   "d5960d1957e0db67"
+  ]
+ }
+}

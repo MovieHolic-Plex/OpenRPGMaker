@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bdd2739020621bb6a41eaf9851da5b046a05b3f7dcf7ad5fb7d4f0310e160047",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "삼발이 가마솥(김 오름)",
+ "label": "snow-north/sn-cauldron",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail",
+  "옆면(아이소)",
+  "윗면 2.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tripod cauldron with rising steam",
+    "kind_matches": false,
+    "top_rows": 5,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": false,
+    "evidence": "The kind is specified as a large structure (gate, pavilion, building) but the object is a cooking tripod cauldron. Furthermore, the cauldron surface/opening around rows 20-25 is skewed diagonally rather than horizontally aligned for 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "옆면(아이소)"
+   ],
+   "ms": 5446
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tripod cauldron with fire",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": true,
+    "pure_front_elevation": false,
+    "evidence": "The object is a tripod cauldron with steam, not a large structure (kind_matches: false). Furthermore, the cauldron body (rows 20-25) is drawn with an isometric/sheared diagonal slant rather than a horizontally symmetric top-down ellipse or top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "옆면(아이소)",
+    "윗면 0행 < 3"
+   ],
+   "ms": 17952
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tripod cauldron",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": false,
+    "evidence": "The cauldron/tripod is misclassified as a large structure. Furthermore, the cauldron body (rows 20-25) is rendered as a skewed isometric block without a coherent top opening or 3/4 view horizontal surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "옆면(아이소)",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10764
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tripod cauldron with fire",
+    "kind_matches": false,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a cooking tripod cauldron with fire and rising steam, not a large architectural structure (gate, pavilion, building).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail"
+   ],
+   "ms": 5912
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.509Z",
+ "cells": {
+  "16": [
+   "a6bcbac74a4aabf0",
+   "e6b721185dde70bd"
+  ],
+  "24": [
+   "0a514f36071d7c4f",
+   "44fb943b8ec4ed3d",
+   "49e9788475ed3c4a",
+   "5a6fe4dd643e150e",
+   "617a357fc80417b0",
+   "7969f51c7328b08a",
+   "85992e8046624853",
+   "97b75bc672ba2da2",
+   "b050d5fa88fc9302",
+   "b390957278c27e17",
+   "e3781b5006ffaece",
+   "fe037898218465ce"
+  ],
+  "32": [
+   "4bb48605f554415c",
+   "712d0239510e2766",
+   "a3c27ca4d9fb4b3e"
+  ],
+  "48": [
+   "29f0ce5159e64793",
+   "41d21d3471187295",
+   "53c6ab405f1dd9e8",
+   "704fc496852b294d",
+   "aa72ca92922075de",
+   "c05f6444218033a6"
+  ]
+ }
+}

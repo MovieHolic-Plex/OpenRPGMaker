@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "be1592af3a3753d95a8b2e067ebb21932ca9d06957b448676a0f191a8a55048a",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "얼어붙은 갈대(호숫가)",
+ "label": "snow-north/sn-reeds",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cluster of reed stalks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The reeds are drawn as purely vertical 1px columns with flat 2D side leaves and 1px white cap pixels, showing a pure side/front elevation with no top-down perspective, depth, or foreshortened base cluster.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 22630
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cluster of reed stalks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The reeds are depicted as flat vertical 1px lines with 1-pixel snow caps, showing zero top-down foreshortening or depth, drawn as a pure side/front elevation.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4330
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "reeds / reed stalks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The reeds are drawn as completely flat 1-pixel vertical stalks originating from a single horizontal baseline at row 15, with no top-down depth, volume, or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4867
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "frozen reed stalks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The reeds are drawn as completely straight, 1-pixel-wide vertical lines with no depth, base footprint, or top-down angle, rendering them in pure 2D side/front elevation.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3685
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.504Z",
+ "cells": {
+  "16": [
+   "4b999a3e82eb679d"
+  ],
+  "24": [
+   "0c4556ec9a42f0db",
+   "7641840331a524e3",
+   "865f8bba3b2e05d6",
+   "87af47d224bf4c90",
+   "b62b0d12a44ffc9b",
+   "f009717d6401c84c"
+  ],
+  "32": [
+   "1da18d379e681f93",
+   "4de8fd4b55e1e797",
+   "67b4ad66e8bbbeeb",
+   "7941ec624eb051cb",
+   "eacd5fe77c3be9e8",
+   "fa64af231293bad9"
+  ],
+  "48": [
+   "11dee42b6d2f3d99",
+   "944347c191304927",
+   "b898ef7a7b4b68a0",
+   "bee1e373f6242a7f",
+   "d7860b1c4fcb7412",
+   "d8b981136a09d82d"
+  ]
+ }
+}

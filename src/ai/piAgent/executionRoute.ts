@@ -21,6 +21,7 @@ import { formatCampusNote, type CampusTarget } from "@/ai/campusPolicy";
 import { formatSfStationNote, type SfStationTarget } from "@/ai/sfStationPolicy";
 import { formatPrehistoricNote, type PrehistoricTarget } from "@/ai/prehistoricPolicy";
 import { formatDesertEastNote, type DesertEastTarget } from "@/ai/desertEastPolicy";
+import { formatSnowNorthNote, type SnowNorthTarget } from "@/ai/snowNorthPolicy";
 import type { AutonomyResolution } from "@/ai/autonomyLevels";
 import {
   formatIntentNote,
@@ -111,6 +112,8 @@ export interface PiIntentNoteInput {
   readonly prehistoric?: PrehistoricTarget | null;
   /** 요청·대상 맵이 사막·동양풍(desert_east) 칩셋이면 그 대상(desertEastPolicy). jp_city·고딕이 잡으면 쓰지 않는다. */
   readonly desertEast?: DesertEastTarget | null;
+  /** 요청·대상 맵이 북방 설원(snow_north) 칩셋이고 프로젝트에 칩셋이 있으면 그 대상(snowNorthPolicy). 선사 다음, jp_city 보다 먼저 판정한다. */
+  readonly snowNorth?: SnowNorthTarget | null;
   /**
    * 사용자 문장. 있으면 숲마을 노트에 요청에 가까운 완성 마을 사례([참고 마을])를 붙인다.
    * 2026-09-28: 사례 약 70곳이 Pi 프롬프트·노트·도구 결과 어디에도 없어 모델이 기본값(12채·강변촌)만 썼다.
@@ -141,6 +144,7 @@ export function buildPiIntentNote(input: PiIntentNoteInput): string | null {
     : input.sfStation ? formatSfStationNote(input.sfStation, input.targetMap)
     : input.prehistoric ? formatPrehistoricNote(input.prehistoric, input.targetMap)
     : input.desertEast ? formatDesertEastNote(input.desertEast, input.targetMap)
+    : input.snowNorth ? formatSnowNorthNote(input.snowNorth, input.targetMap)
     : input.jpCity ? formatJpCityNote(input.jpCity, input.targetMap)
     : input.gothic ? formatGothicNote(input.gothic, input.targetMap)
     : input.pirateIsles ? formatPirateIslesNote(input.pirateIsles, input.targetMap)

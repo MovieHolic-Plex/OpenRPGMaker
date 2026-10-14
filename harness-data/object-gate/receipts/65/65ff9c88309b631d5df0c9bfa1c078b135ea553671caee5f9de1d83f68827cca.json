@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "65ff9c88309b631d5df0c9bfa1c078b135ea553671caee5f9de1d83f68827cca",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "건초 더미(눈 모자)",
+ "label": "snow-north/sn-hay",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "haystack with snow cap",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The haystack is capped with snow that covers the top surface across rows 2–7 (approx 5 rows tall), leaving the front face visible below from row 7 to row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5188
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "haystack with snow cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The haystack is drawn as a flat circular shape in pure front elevation with no visible top surface or 3/4 perspective foreshortening; the snow cap is rendered as a front-facing patch rather than a top plane seen from above.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11349
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "snow-capped haystack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The haystack is drawn in straight side/front elevation as a flat circular silhouette with a snow cap on top and a flat cut base at row 14. There is no foreshortened top surface or 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6964
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "snow-capped haystack",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow cap resting on the upper/top surface of the mound spans rows 2 to 7 (5-6 source pixel rows), providing ample foreshortened top coverage consistent with a 3/4 top-down angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6875
+  }
+ ],
+ "decidedAt": "2026-10-14T01:15:54.503Z",
+ "cells": {
+  "16": [
+   "419c0ca0e2b9bb36"
+  ],
+  "24": [
+   "7ef471e95617a022",
+   "9c889663a38d6069",
+   "c4c74fd344fbf9ad",
+   "c563c53150269f7b",
+   "f5b5f236969f7e22",
+   "fbca225b39c1f3bc"
+  ],
+  "32": [
+   "11a0d7b0bab997b1",
+   "4a15d8f60efdde11",
+   "89049e594ae985b2",
+   "be99ae8c4e0c2dc8",
+   "ea4c9727636d8c0a",
+   "f9eb4c74db1640b9"
+  ],
+  "48": [
+   "0894f39a6a53a9d9",
+   "27097d28b2866c14",
+   "3ec49e5f8898f727",
+   "697f2dd80f5ae676",
+   "8052491ff971a6cb",
+   "9882f3c6aa2058b7"
+  ]
+ }
+}

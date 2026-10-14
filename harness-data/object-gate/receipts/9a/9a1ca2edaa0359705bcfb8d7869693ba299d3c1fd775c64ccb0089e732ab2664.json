@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9a1ca2edaa0359705bcfb8d7869693ba299d3c1fd775c64ccb0089e732ab2664",
+ "width": 16,
+ "height": 32,
+ "kind": "debris",
+ "name": "굴뚝 연기 프레임 2",
+ "label": "snow-north/sn-smoke-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "chimney smoke plume",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is an airborne chimney smoke plume (rising puffs of smoke), not scattered floor debris; kind does not match.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 5761
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "chimney smoke puffs",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is an animated chimney smoke column ('굴뚝 연기 프레임 2'), not scattered floor debris.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 3731
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "chimney smoke puffs",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is an animated chimney smoke plume, not floor debris. kind_matches fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 5225
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "chimney smoke puffs",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a rising column of smoke puffs (chimney smoke animation frame), not debris lying on the floor. The kind classification completely mismatches.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 4865
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.506Z",
+ "cells": {
+  "16": [
+   "d3c27a0226686828",
+   "e7277fae243d0b94"
+  ],
+  "24": [
+   "32fc78fa5444d1c6",
+   "3f9cae86c91866bf",
+   "43ecf038093fd7dd",
+   "498491b803e1d823",
+   "4a2ef35b571f900a",
+   "65fa8d2cc0b705a9",
+   "6c4a2f31ce7eeef0",
+   "943f30774da8d614",
+   "a57743f5d28a9f82",
+   "c2a25d16503e9c12",
+   "cbd3793d0fde681e",
+   "f5a7c02137f003cb"
+  ],
+  "32": [
+   "0954534389d4f79c",
+   "b4ccdcec5fb35243",
+   "f351c6c56417ffc3"
+  ],
+  "48": [
+   "044d405619342d31",
+   "22de0f0b683cdeac",
+   "24f8b4c741219dea",
+   "3c5d990513a7723f",
+   "6f2d41aaa306a2e3",
+   "cbeac8420f97ad4d"
+  ]
+ }
+}

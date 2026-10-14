@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "19b007900f7fd0436c079130be99b1cbbfc4980f4ad2b3388cb71d8e245eb3d2",
+ "width": 16,
+ "height": 48,
+ "kind": "frame",
+ "name": "오로라 깃발 틀(청록·보라 물결)",
+ "label": "snow-north/sn-banner-aurora",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flag frame / banner stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden frame and its horizontal crossbeams are drawn in flat front elevation. Neither the top horizontal beam nor the side posts show a foreshortened top surface viewed from above; the upper beam is drawn identically to the lower beam with a simple 1px outline/highlight on its front face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6725
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden banner frame with fabric scroll",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden frame and top crossbeam are drawn in pure front elevation with no visible top surface (only a 1px outline along row 4 and flat front faces with horizontal specular highlights on rows 6 and 42).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5301
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden banner frame with fabric banner",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top and bottom horizontal wooden beams are drawn as flat front-facing rectangles with edge highlights; there is no foreshortened top surface visible on the beams or base (top_rows = 0). The entire frame is rendered in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5292
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden banner frame with top and bottom crossbeams",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The frame is rendered in pure front elevation. Both the top crossbeam (rows 4–8) and bottom crossbeam (rows 41–45) are shaded as flat vertical boards with front-facing specular highlights and 1px top outline edges, showing 0 rows of foreshortened horizontal top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7867
+  }
+ ],
+ "decidedAt": "2026-10-14T01:22:35.702Z",
+ "cells": {
+  "16": [
+   "15308c0c3b0b5932",
+   "917e4db0e908ce8f",
+   "ed1ac1dbfb1609b9"
+  ],
+  "24": [
+   "32855afe09f9c4aa",
+   "4410c8b73ad6bee9",
+   "47be0889b5e06fa8",
+   "595266eda02c2e69",
+   "77697b07544e8ae1",
+   "79b8a8a64cc74e8f"
+  ],
+  "32": [
+   "299398d1317cefe1",
+   "343018ca4d18372f",
+   "39dfd7e1998094a4",
+   "48e71546c7a3a72a",
+   "5627baa1fe682ec9",
+   "5e011334fa6af837",
+   "7c71d170b84e06fe",
+   "8f73cf5e39250a1f",
+   "a8473c9b7012c355",
+   "ab68309fff9abb68",
+   "d4b8fa27136d3854",
+   "ed3a4d23e7ab4934"
+  ],
+  "48": [
+   "184954c11a0b40a0",
+   "6165c22e51afd192",
+   "efb8466ad81a3d68"
+  ]
+ }
+}

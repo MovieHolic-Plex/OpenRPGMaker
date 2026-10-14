@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0571bef977e5039cddf36e8d129b0d6b7e2737ee10dda25279568d60a0e9de10",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "사우나 돌 난로(둥근 무쇠 통 + 위가 트인 돌 바구니 + 숯불 문) (프레임 2)",
+ "label": "snow-north/sn-sauna-stove-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical sauna stone stove",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": true,
+    "opening_rows": 10,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening is rendered as a foreshortened ellipse spanning rows 3 to 12 (approx 10 rows tall) packed with sauna stones, framed by a curved rim around rows 13-14 above the front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6934
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cylindrical sauna stone stove with top basket filled with stones and lower fire chamber",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": true,
+    "opening_rows": 11,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening spans rows 3 to 13 showing a deep elliptical bed of sauna stones foreshortened from above, with the south front face featuring a glowing fire hatch from row 15 downwards.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6340
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cylindrical sauna stone stove",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": true,
+    "opening_rows": 10,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening of the cylindrical stove is drawn as an elliptical rim containing sauna stones, visible from row 3 to row 13 (around 10 rows tall), clearly demonstrating the top-down 3/4 perspective above the south face with the fire grate.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6431
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round sauna stone stove",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": true,
+    "opening_rows": 10,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening of the cylindrical stove forms an ellipse from row 3 to row 13 (approx 10 rows) filled with sauna stones seen from above, resting on top of the vertical front face with the fire grate.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5738
+  }
+ ],
+ "decidedAt": "2026-10-14T01:22:34.203Z",
+ "cells": {
+  "16": [
+   "51453e70393d2957",
+   "6e07674e71871e24",
+   "a2486a0301139982",
+   "f6d425d41fdda980"
+  ],
+  "24": [
+   "00f590e45aa6aac4",
+   "130d5a12e39796d1",
+   "1589454ed4888888",
+   "1710693890d3cdd0",
+   "1b8f40b360a2451b",
+   "267b2d03ed49450d",
+   "488fd719f12b22f9",
+   "4ee5ae916e2af24c",
+   "5b86e17dae30a614",
+   "5cf50d6c949d07c4",
+   "606aa012f714f363",
+   "6449e3c72e5e395d",
+   "718865ce5f2e26a3",
+   "75a3085082f43ffb",
+   "792fc0e06102e816",
+   "80b24b0278dad423",
+   "81dfbf8ea076053e",
+   "8cb68eee75c58e22",
+   "8ecedb40a1c4e458",
+   "bd652799d8cf02c4",
+   "ca30b5abe38af3e7",
+   "d2dcda20272514f3",
+   "d3a5d623cbe8fbe3",
+   "f558563ad5104bb8"
+  ],
+  "32": [
+   "e6ba91d242f6e94e"
+  ],
+  "48": [
+   "0ec460f00666abd7",
+   "5624f3f57eb66fa3",
+   "9fdb58bc239a29f5",
+   "b67a2225fc72ffdd",
+   "b760a38fa9a80ae1",
+   "ec63d75b2bfd67f9"
+  ]
+ }
+}

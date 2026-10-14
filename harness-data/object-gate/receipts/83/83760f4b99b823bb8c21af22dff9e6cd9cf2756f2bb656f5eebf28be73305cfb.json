@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "83760f4b99b823bb8c21af22dff9e6cd9cf2756f2bb656f5eebf28be73305cfb",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "열린 물(얼음 구멍·여울) (프레임 2)",
+ "label": "snow-north/sn-water-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water surface tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat water surface terrain tile showing top-down horizontal water ripples across the full 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3567
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water surface tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 water terrain surface with horizontal ripple highlights viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3188
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat water terrain tile with horizontal wave highlights across the full 16x16 tile area viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3833
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water surface tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat water terrain tile representing open water/ice hole surface seen from top-down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2258
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:23.952Z",
+ "cells": {
+  "16": [
+   "a5a4079962d40b1a"
+  ],
+  "24": [
+   "0a2221b42608f2cf",
+   "2082a86d21e2858a",
+   "301bd741bba9b841",
+   "a809d57968ec04d4",
+   "eeabff49be26a5c4",
+   "fd9a2e8063fa4e2a"
+  ],
+  "32": [
+   "59fdc67ee33da25c",
+   "5a8100f32991d235",
+   "6a0e183aa1fb8ec2",
+   "7fa3d0797b542f29",
+   "a3d61b1d2c7c2f6f",
+   "f256b0662506fed7"
+  ],
+  "48": [
+   "2dee2b4ada416076",
+   "4f8ee0a70e035d2a",
+   "6ce30ed62f6427b0",
+   "9b49cf5ca43f2636",
+   "bfdf515a9d935896",
+   "e4381a8ff72ceb6b"
+  ]
+ }
+}

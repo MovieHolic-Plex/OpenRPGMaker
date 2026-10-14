@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "90a6511e1592c88ee828e8c89e6706aaa34167624037112d1130fc406f719514",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "도끼 박힌 장작 받침",
+ "label": "snow-north/sn-chopping-block",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "chopping block (log stump)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cross-section of the wooden stump forms an ellipse spanning rows 5 through 9 (about 5 rows deep), into which the axe head is embedded, before the vertical front trunk face descends from row 10 downwards.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5632
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "log stump / chopping block",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the log stump is drawn as a foreshortened ellipse spanning rows 5 to 9 (approx. 5 rows tall), into which the axe head is embedded, above a 5-row tall front cylindrical face (rows 10-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5673
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "chopping block (log)",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chopping block's top elliptical surface spans roughly rows 6 to 9 (about 4 rows deep) with an axe embedded in it, clearly visible above the vertical bark front face (rows 10-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3958
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "chopping block (log stump)",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The log's top surface spans rows 5-9 (around 4-5 rows tall) forming a clear foreshortened elliptical cap in which the axe head is embedded, above a cylindrical south face on rows 10-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4556
+  }
+ ],
+ "decidedAt": "2026-10-14T01:15:54.501Z",
+ "cells": {
+  "16": [
+   "589eaecbd69f58b3"
+  ],
+  "24": [
+   "10f88ceb47d560e4",
+   "46b01c68866fa5b2",
+   "a7b6ef954effa94c",
+   "a81a3d4f7c5cc810",
+   "ad2f44930640ad9b",
+   "e4187046c5e08734"
+  ],
+  "32": [
+   "5c295e8e4cfde003",
+   "62109710611c48c1",
+   "6351b44149710606",
+   "8c63dd1ffdd1d7c4",
+   "ba58de9e016b2b81",
+   "c20c3a3956e6000a"
+  ],
+  "48": [
+   "050676e9592bf0cb",
+   "5a41cc5768a7e8a3",
+   "8e869c05906e832a",
+   "d31379f18335e5e8",
+   "dbf7d1f455098905",
+   "e36f61b7503efa46"
+  ]
+ }
+}

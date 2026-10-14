@@ -1,0 +1,151 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "aad366d37bc5a423300228de430451524798a0586d3a0f33a929b5f0003a8aea",
+ "width": 32,
+ "height": 64,
+ "kind": "organic",
+ "name": "큰 가문비(눈 덮임)",
+ "label": "snow-north/sn-pine-l",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "snow-covered conical spruce tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn as a flat 2D front elevation. The snow tiers and bottom foliage edge (row 58) run straight horizontally across with no curved or foreshortened top surfaces visible from a top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4461
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "spruce tree foliage cone",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The spruce tree is drawn entirely in pure front elevation as if for a side-scroller: every foliage tier ledge (rows 15, 27, 37, 47) and the bottom skirt (row 58) are straight horizontal lines rather than downward-curving ellipses, showing 0 rows of top foliage surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5252
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "large snow-covered spruce tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn from a flat side-scroller/front perspective: the bottom edge of the foliage (rows 57-58) forms a straight horizontal line across, and the conical tiers lack downward foreshortening or visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6196
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "snow-covered spruce tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is rendered in pure front elevation with straight horizontal tier divisions and flat vertical profiles. None of the foliage tiers show a foreshortened top surface visible from the 3/4 overhead camera angle.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6388
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.502Z",
+ "cells": {
+  "16": [
+   "256785b85c2dd4ba",
+   "8f6f65dd2b12a9d3",
+   "b7368670e8c5d464",
+   "c2228d74b11adbd7",
+   "d70a9ca3c9e99a62",
+   "e1907a0cb6393cd0",
+   "e99747866307e91c",
+   "f84da745c0f84be6"
+  ],
+  "24": [
+   "098458e7ce4cde9d",
+   "112262e5f92ec1de",
+   "1c5fed2755523b42",
+   "23a48cc5062fb5ef",
+   "2717362b59fcec1c",
+   "4278788f88fca3dd",
+   "44316003cb3eb918",
+   "497174f240e7d73b",
+   "4d47b5c6e6bb6ce4",
+   "51b5493c1e386a46",
+   "55ae029044a8a42b",
+   "5e1ef8e0a546c513",
+   "623d66b2455b977d",
+   "7e08a08f314213f4",
+   "8219ba553c190ec9",
+   "843a130ee53ee50f",
+   "8fed0a4f86c57517",
+   "9cbec7b95ee4ff6e",
+   "a81fe322966a27c8",
+   "ad83808282f7fdad",
+   "ae595e2f5d333c1d",
+   "ba6acd1b5717240b",
+   "c2ad4ae2b1cb9780",
+   "c6747e87a20d68c7",
+   "c77c6f1beb1ab011",
+   "cae696a0b9a6ef51",
+   "d243c5d5e2282cef",
+   "d8f2a37108c53643",
+   "ebde3f438922cc74",
+   "ed7c905c39f1462c",
+   "f58baf53a0961e52",
+   "fc7640cf90b5a3c0"
+  ],
+  "32": [
+   "987ddc7bfbe512b3",
+   "a90af7aa1d474d10"
+  ],
+  "48": [
+   "1564a322e46da559",
+   "341a1b43401a46a2",
+   "45b6066ac15eb9e7",
+   "6e27bd3e90c05024",
+   "6f0ae03d9e00b75a",
+   "86d78013620f13a8",
+   "9116fa22b2ef4326",
+   "954df57567e7f718",
+   "acbeabfc7c116b54",
+   "b1b18e56806ad569",
+   "c4ac60a68064d6ac",
+   "cb3ca9345967f675"
+  ]
+ }
+}

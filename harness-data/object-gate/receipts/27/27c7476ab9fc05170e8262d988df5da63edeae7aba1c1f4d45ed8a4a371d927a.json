@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "27c7476ab9fc05170e8262d988df5da63edeae7aba1c1f4d45ed8a4a371d927a",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "눈 덮인 그루터기",
+ "label": "snow-north/sn-stump",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "snow-covered tree stump",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut surface of the stump (partially covered in white snow) is visible across rows 6-9 (approx 4 pixel rows tall) above the vertical bark front face (rows 10-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4159
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "snow-covered tree stump",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut surface of the stump (partially covered with a patch of snow) forms an elliptical top plane spanning rows 5 to 9 (approx. 5 pixel rows), leading into the vertical trunk face from row 10 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5953
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "snow-covered tree stump",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cut top surface of the stump (partially covered in snow) forms a clear 5-row foreshortened elliptical top from row 5 to row 9, with the vertical trunk extending below from row 10 to row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4716
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "snow-covered tree stump",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut surface of the stump (covered partially with snow) is clearly shown from row 6 to row 9 (4 rows tall) with the south trunk face extending down from row 10 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4615
+  }
+ ],
+ "decidedAt": "2026-10-14T01:15:54.500Z",
+ "cells": {
+  "16": [
+   "cb5f1c1c257e1c70"
+  ],
+  "24": [
+   "89f30183a7179361",
+   "a32304cb940a9ec4",
+   "ad0ebb36375f19a1",
+   "b162c9d49e6f222c",
+   "cb66df7c053fe296",
+   "efec3da3d3b78fb1"
+  ],
+  "32": [
+   "b39fe4ff2255a0ca",
+   "cf9ad01b81579fa2",
+   "d29b4f7779a49df6",
+   "d98ab0a3def83edb",
+   "e76be60b293126c3",
+   "e7a3a354b34993b1"
+  ],
+  "48": [
+   "0c84b34a71b21897",
+   "7392372b777292e0",
+   "904c7f706b3dcfb6",
+   "d24baa11d32358a5",
+   "d85dedd5bd1faad0",
+   "fefc7edb5abff308"
+  ]
+ }
+}

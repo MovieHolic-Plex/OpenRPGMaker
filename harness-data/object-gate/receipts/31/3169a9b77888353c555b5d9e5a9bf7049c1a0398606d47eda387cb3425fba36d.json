@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3169a9b77888353c555b5d9e5a9bf7049c1a0398606d47eda387cb3425fba36d",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "오로라 깃발(청록·보라 물결)",
+ "label": "snow-north/sn-banner-aurora",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "banner pole and hanging flag",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The banner and pole are rendered in a pure front elevation. The pole top shows no top surface/cut face (0px), and the horizontal crossbeam only has a 1px highlight line at row 4. While the base plinth shows foreshortened top surfaces, base plinths do not count for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6924
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "banner pole and hanging fabric",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (banner cloth, pole, and crossbeam) is drawn in pure 2D front elevation. The top of the pole has at most a 1px cap/highlight, and the crossbeam has a 1-2px snow/edge line. The only foreshortened top plane is on the bottom plinth, but per instructions, plinths cannot be credited for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6335
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pole and hanging banner",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (vertical pole, crossbeam, and banner cloth) is drawn in pure flat front elevation with 0px top surface. The only foreshortened top surface is on the small stone base plinth at the bottom, which cannot substitute for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8093
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "banner cloth and pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body of the object is the hanging cloth banner and vertical pole. The banner hangs completely flat in pure front elevation without any visible top surface, and the pole top does not show a horizontal cut face or top surface (it touches the canvas border with snow cap/highlight). While the base plinth shows a top surface, base plinths are explicitly excluded from qualifying the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8334
+  }
+ ],
+ "decidedAt": "2026-10-14T01:15:54.502Z",
+ "cells": {
+  "16": [
+   "026c206771bed1a8",
+   "307413d60c22f154",
+   "728ad3d64d5c48de"
+  ],
+  "24": [
+   "4298d8820aaaa207",
+   "962ea81a561a732d",
+   "cc1244a444105d7b",
+   "d0834cba8c4eab8a",
+   "e0a1ab5fb3f8a533",
+   "eb817d039c696bfc"
+  ],
+  "32": [
+   "01b4c70a8f3974ad",
+   "0f788b454229f692",
+   "1a142c044118805c",
+   "20fb6cbf0350e1e8",
+   "2f3f44fef354dec0",
+   "324542008328d07d",
+   "360677f880cf8b11",
+   "804fda91a08b1d86",
+   "c5ff3bbf1e602458",
+   "d068342aa88251eb",
+   "d44d444024f5681b",
+   "d8440c1a4ee8be63"
+  ],
+  "48": [
+   "2a63ffe665f85bd7",
+   "cb4e5d1022313ee9",
+   "e64bd9a750b5bd38"
+  ]
+ }
+}

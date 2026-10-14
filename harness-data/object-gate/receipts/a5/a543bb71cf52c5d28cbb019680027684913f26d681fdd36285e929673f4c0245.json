@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a543bb71cf52c5d28cbb019680027684913f26d681fdd36285e929673f4c0245",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "회관 가운데 화덕(돌 둘레 + 장작불)",
+ "label": "snow-north/sn-firepit",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone fire pit with burning logs",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 10,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fire pit is drawn in 3/4 top-down perspective with a wide elliptical opening (~10 rows tall inside) showing the firewood and flames, along with clear top surfaces of the surrounding stones and a front south-facing rim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3984
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "circular stone hearth ring with central fire pit",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 11,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone fire pit is drawn in clear 3/4 perspective: the inner cavity is an ellipse roughly 11 pixel rows tall (rows 7-17) filled with firewood and fire, surrounded by a clearly foreshortened stone rim and a south-facing front wall (rows 24-28).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4636
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "circular stone hearth ring with fire pit inside",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 11,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hearth is drawn in clear 3/4 perspective with an elliptical stone ring whose top surfaces are visible around the rim, a large 11-row interior opening containing the fire and logs, and a south-facing exterior stone front.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3615
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "circular stone hearth / fire pit with burning logs inside",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 11,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fire pit is shown in proper 3/4 top-down perspective with a wide elliptical opening (about 11 rows high from row 8 to 18) clearly revealing the interior logs and fire, surrounded by foreshortened stone blocks.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3081
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.166Z",
+ "cells": {
+  "16": [
+   "5c83a26f0a0f789e",
+   "a994d37289e5330d",
+   "ee72934b6d219db7",
+   "f85924b0f8482426"
+  ],
+  "24": [
+   "0beddb95cf957b36",
+   "13f168c9c1e5affe",
+   "1bdfc2b1226257e9",
+   "3cfbbece4a0bc5b3",
+   "3d7ca8b635e20345",
+   "41460e2b6a62dc24",
+   "503b828dff5b6de0",
+   "553231469c7a90d4",
+   "5ab48e1d6bca1dec",
+   "5b923bcb1bae3637",
+   "69643dd8f3596346",
+   "698371adf83c1d4b",
+   "92603696b3d5ff0a",
+   "9d98014527529547",
+   "bfaf140ff73ff3fa",
+   "cecc403b9996aaa6",
+   "cedd8d068fc82d1c",
+   "d2686949f8fed172",
+   "e3b7bb7b33030561",
+   "e9e9c62d4cb582e0",
+   "eb7ed2fcb0d0763f",
+   "ef73242e17fc5c92",
+   "f044e29ae8328b97",
+   "f0ee3775e57493b9"
+  ],
+  "32": [
+   "9c141e3786c25c38"
+  ],
+  "48": [
+   "54cacbbf25681d06",
+   "89ed8510467b8364",
+   "a77a2495dfc0f7bd",
+   "bb9127272820a957",
+   "c99411307f53b2c3",
+   "e34214f24860a9e6"
+  ]
+ }
+}

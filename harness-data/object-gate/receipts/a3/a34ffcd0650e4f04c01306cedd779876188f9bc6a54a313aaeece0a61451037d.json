@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a34ffcd0650e4f04c01306cedd779876188f9bc6a54a313aaeece0a61451037d",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "통나무 벽 작은 창(윗줄, 밤 하늘)",
+ "label": "snow-north/sn-wall-window-u",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "log wall with window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting a south-facing log cabin wall face with a window looking out to the night sky. As a vertical wall terrain element, it correctly represents a wall surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6484
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "log wall with window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain wall tile showing vertical log wall surface with a framed window showing the night sky.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4393
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "log wall with window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile showing a log cabin wall with a window onto a night sky; correctly rendered as a vertical wall surface in standard JRPG style.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6982
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "log wall with window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile showing a log wall with an inset window looking onto the night sky; vertical wall terrain is correctly represented without perspective top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7651
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.162Z",
+ "cells": {
+  "16": [
+   "f358bd23a22cd191"
+  ],
+  "24": [
+   "063707ec99f18fc1",
+   "133e8819a8d9abb1",
+   "332209ca9d1fe911",
+   "39f244c2a3d2234e",
+   "ae67af9e9a33d7d4",
+   "ee2abd15fb927951"
+  ],
+  "32": [
+   "1d670ca06c248d66",
+   "30029ffb5e325fde",
+   "4a334224a9a3a145",
+   "e8a4b3426d87a20c",
+   "eb2bd0811ac600fc",
+   "fb238682f799130d"
+  ],
+  "48": [
+   "0cf6a7052d96a2f9",
+   "b39164ea9d2c922a",
+   "df7fca09ccd947eb",
+   "e15ad616841a9fe3",
+   "e906fc56d89d1def",
+   "ea155fce6086f8a0"
+  ]
+ }
+}

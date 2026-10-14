@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1a550e0c03ce89c47a7495111ef7405e3a74590d8ba36dab3b2adef678bb8c38",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "모닥불(돌 고리 속 타는 장작) 프레임 2",
+ "label": "snow-north/sn-bonfire-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone ring campfire with burning logs",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The campfire is arranged in a clear foreshortened elliptical stone ring spanning rows 14 to 30, with individual stones showing illuminated top surfaces and south-facing shaded fronts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3864
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone ring with campfire and firewood",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 9,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The campfire pit is depicted as a foreshortened ellipse in 3/4 top-down view, with the stone ring clearly showing its circular layout in depth, visible interior pit area, and individual stones displaying top highlights and south-facing shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3673
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone ring campfire",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fire pit is enclosed by a clear foreshortened elliptical ring of stones spanning rows 14 to 29. Individual stones show distinct top faces and front shadows, and the interior floor/firewood is clearly viewed from above at a ~45-degree angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3877
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone ring fire pit with burning firewood",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 9,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stones are arranged in a foreshortened ellipse showing top and front faces on the south rim (rows 24-27) with the interior fire pit clearly visible from above (rows 16-25) in classic 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6005
+  }
+ ],
+ "decidedAt": "2026-10-14T01:15:54.501Z",
+ "cells": {
+  "16": [
+   "116377122ec2eeb6",
+   "4dd91117139d05a5",
+   "ee012f49704b2674",
+   "f18d963f6cf2f642"
+  ],
+  "24": [
+   "1a60b283999cc571",
+   "23f4c1d348b5830e",
+   "3c665d6c9f8be778",
+   "453612c136a2f4b7",
+   "54accea8bba5418c",
+   "68818c4cde30f464",
+   "8912c9163688303c",
+   "9484fd321091e9ec",
+   "9c40e5087d4fcc0e",
+   "a8d7fdad0a96eb98",
+   "b74f466d06a5d0fb",
+   "b90b6a5f66af0cb0",
+   "c0dbd2c810bf4226",
+   "c3072e3d3e3e6dc8",
+   "c9666d651126120f",
+   "cc92e00e64baeaad",
+   "d12bfdaecee9f220",
+   "d273cf3b64f0cf35",
+   "db5d3e7145759d66",
+   "e3cc24f961b5f442",
+   "ea60c3049bd10710",
+   "ff585e193ea026c5"
+  ],
+  "32": [
+   "d708b405418b8c38"
+  ],
+  "48": [
+   "5fa0681d7a9cda34",
+   "73c44e27de775a48",
+   "9356944050cc85d0",
+   "a640d6bc3df1a231",
+   "ee24460d446a5c6a",
+   "f0136b294e083d01"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3af41c788f4ae3912ef779e1af033c802ccdd0267fa95d9b9bfb076ae03d7c30",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "툰드라(마른 풀)",
+ "label": "snow-north/sn-tundra",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tundra ground tile with dry grass and stony soil",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a seamless flat ground terrain texture showing tundra rocks and dry grass from a top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4191
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tundra ground tile with patches of dry grass and rock",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 ground terrain tile representing dry tundra grass and rock surface seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4068
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tundra dry grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless terrain ground tile depicting tundra soil and dry grass across the entire 16x16 surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2805
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tundra dry grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting patches of dry tundra grass and rock/soil seen from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3589
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:23.951Z",
+ "cells": {
+  "16": [
+   "f13d7b95da8bf6fe"
+  ],
+  "24": [
+   "1d694399d89273c4",
+   "2a671083f627b376",
+   "71234c83c236d0e1",
+   "8faf5ae7e84a5cc6",
+   "ad303f2d0fe099ae",
+   "e95d0899d03397ae"
+  ],
+  "32": [
+   "1be0c586d6bd1de7",
+   "1bef0c19a76c6a91",
+   "5d78fe2f1a0f1dcd",
+   "7f30edd04f988ce0",
+   "e5fd97cfdc3da652",
+   "ffe4ed43dad3f0ec"
+  ],
+  "48": [
+   "0278800b42e02cab",
+   "069a1045fd3973ea",
+   "1722968a59efd1bf",
+   "21fee8273ad4398d",
+   "5562a663d7614a3f",
+   "ab00aaca9fffca67"
+  ]
+ }
+}

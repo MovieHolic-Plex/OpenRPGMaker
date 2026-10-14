@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "acd9aa320b76610e5902e9ad6fe75058027a3ba05767a02ff4a7a7af0963c13b",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "장작더미(처마 지붕 밑, 단면 나이테)",
+ "label": "snow-north/sn-woodpile",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "roofed woodpile shelter",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The eave/roof shows a clear top slope spanning rows 2-8 (approx 7 rows) looking down onto it, with the stacked wood structure visible beneath the eaves.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5545
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wood shed with eave roof",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered roof shows a foreshortened top slope of roughly 7 pixel rows (rows 1-7) above the roof overhang and sheltered wood stacks.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5324
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "firewood shelter with eaves roof",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure roof shows a clear forward-sloping top surface spanning rows 1 to 8, correctly foreshortened in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4370
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "firewood shelter under eaves",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof of the shelter clearly shows its top slope from row 1 to row 8 (around 8 rows tall) in proper 3/4 perspective with eaves hanging over the stacked firewood beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5717
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.504Z",
+ "cells": {
+  "16": [
+   "3e1be454edc9122b",
+   "cc2ab1832337185d",
+   "e78b86280cd8249b",
+   "fa2f63d73f90d368"
+  ],
+  "24": [
+   "09cbf5661768f13f",
+   "12934abc5ab46add",
+   "1592908c22c7ee56",
+   "2392810799be05a2",
+   "4598c50d663ab341",
+   "49ce5a2cffe9bb82",
+   "4c1cc66678e922b6",
+   "52dc944c094aed2e",
+   "53f902926ae6ce2a",
+   "5bd510f6195d542e",
+   "627d0bb71db4e5ee",
+   "68b25c4b1252558c",
+   "6ac205807e296d08",
+   "6ca35ac4f7606588",
+   "964dcd848dab297f",
+   "96707e33a4e03742",
+   "ca60384fe4005ae2",
+   "daa3e5c5244a0d10",
+   "dde6c9a20d8a2207",
+   "e7ed19f8ef3fa0b5",
+   "eba3c01ecd7ed91a",
+   "eea9e70ce60420de",
+   "f23a6f60d6d4ab42",
+   "fd128faeb56816e8"
+  ],
+  "32": [
+   "b437f91909881393"
+  ],
+  "48": [
+   "0f20e83fc2760065",
+   "24648b4bab017426",
+   "624ffcd8c0c2f637",
+   "935e19f56e1b89fd",
+   "b65a0a42656f67be",
+   "e5379e4ee1aab51b"
+  ]
+ }
+}

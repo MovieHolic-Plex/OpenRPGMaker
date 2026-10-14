@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7f02c4d34d14da133daa556da6f439b1e243c36c6264a0e5ffdf724f81525ec5",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "돌무더기 이정표(눈 얹힘)",
+ "label": "snow-north/sn-cairn",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stacked stone cairn",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each stone tier in the cairn shows a clearly foreshortened top surface covered in snow (the lowest/largest boulder has 4 rows of snowy top surface from row 20 to 23), viewed correctly from a 3/4 top-down angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5722
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stacked stone cairn milestone with snow caps",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The largest base stone clearly displays a 4-pixel tall snow-covered top surface (rows 20-23) foreshortened above the front stone face (rows 22-28), correctly matching the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5421
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stacked stone cairn with snow caps",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main base rock (rows 20-28) clearly shows a foreshortened top surface covered in snow measuring 4 pixel rows (rows 20-23) above its vertical front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5126
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stacked stone cairn (bottom stone)",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main bottom stone clearly shows its horizontal top surface covered in snow spanning rows 20-23 (4 rows tall) viewed from above, with the south stone face visible beneath it in rows 24-28.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5339
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.504Z",
+ "cells": {
+  "16": [
+   "1b155d9c8afb8960",
+   "8e093086bac9a5a1"
+  ],
+  "24": [
+   "2c1c9124508c5daa",
+   "46b34dc1ec8b31a6",
+   "481bfe0d600dd680",
+   "6da15e79b88d8506",
+   "a16a6a1debc39de2",
+   "a56604c5870e9860",
+   "aea3a238d469e5ad",
+   "b63dbeaf9aafd11d",
+   "bf329f79456c3ec5",
+   "db2d2f15b1860706",
+   "ef718cb5eeb7952d",
+   "f1fbad2d8504992f"
+  ],
+  "32": [
+   "48bc65df02a65ce6",
+   "7a1317add4ad1eed",
+   "9652213c031390fd"
+  ],
+  "48": [
+   "02bd411b303d64be",
+   "31cc57b7c412b622",
+   "83fa95bd083a120e",
+   "9df3853cfaea8eb1",
+   "b06f05c1e8bc61ae",
+   "ba87ef998b146e41"
+  ]
+ }
+}

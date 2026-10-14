@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "746c7c21cdec655c030b49547c1557d126adb96670ece8a9a191d167ad3126fe",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "뗏장 지붕 오두막(폭 3, 회색 판자 벽)",
+ "label": "snow-north/sn-cabin-turf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "snow-covered cabin with timber walls",
+    "kind_matches": true,
+    "top_rows": 27,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered roof slope facing the viewer spans rows 9 to 35 (about 27 source pixel rows) above the south-facing front wall and doorway, showing standard RPG 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6482
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cabin with snow-covered pitched roof and wooden plank wall",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The southward sloping roof surface is prominently foreshortened and visible from row 8 to row 36 (~28 px), showing a clear 3/4 top-down perspective over the front wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5878
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "snow-covered cabin with wooden plank walls",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The southward-sloping snow roof occupies rows 8 to 36 (approx 28 pixel rows), fully showing its foreshortened upper surface above the front wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7092
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "snow-covered cabin with wooden plank walls",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The forward roof pitch is visible from row 9 down to row 36 (approx 28 pixel rows), showing the snow-covered slope in proper 3/4 top-down perspective over the front wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6767
+  }
+ ],
+ "decidedAt": "2026-10-14T01:02:41.798Z",
+ "cells": {
+  "16": [
+   "207716fed1260efa",
+   "288be50c652b34ee",
+   "37e7bd2ddca552f3",
+   "528f48e765666981",
+   "6172305377bc2e33",
+   "6c4a677b90899e44",
+   "823d34d5319b985e",
+   "995579827d5aedc3",
+   "9c0f8d5fbd880e20",
+   "9dc5e47c6a0d613b",
+   "9f944aa02c94032b",
+   "b097ed892594c23c"
+  ],
+  "24": [
+   "14f1dc4e659e42c2",
+   "46fcbd3139436f8a",
+   "52ee1bcb7f0d4f65",
+   "71ca7c3733011a99",
+   "91697ca19e7e0865",
+   "9b63bf8a9408f34b",
+   "a05ac3d478f4cac9",
+   "b97a8a3c220157c5",
+   "be61e0175380d495",
+   "d9fcb6a67889f40a",
+   "da0bb011aaa84413",
+   "e1860efed7a4a597"
+  ],
+  "32": [
+   "04ca6e3135793ea5",
+   "088f7bca55281d08",
+   "2590954ecec24d95",
+   "2746ef8a93f58d53",
+   "66ea36475ae9b505",
+   "6df1f824239cc73b",
+   "b73818501134e05b",
+   "c0db7032f3e6d5eb",
+   "c70aaa0517143aee",
+   "d8432155885ac71d",
+   "fb5620f8e84027f2",
+   "fc4741a90b83c943"
+  ],
+  "48": [
+   "11d9b0f22d31161d",
+   "4143813750f4bead",
+   "61dd35e4654394b0",
+   "876ea11583785380"
+  ]
+ }
+}

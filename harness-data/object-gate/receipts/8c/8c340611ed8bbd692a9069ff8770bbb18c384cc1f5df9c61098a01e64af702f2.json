@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8c340611ed8bbd692a9069ff8770bbb18c384cc1f5df9c61098a01e64af702f2",
+ "width": 32,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "벽 무기 걸이(둥근 방패 + 엇건 도끼 둘)",
+ "label": "snow-north/sn-weapon-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round shield and crossed axes mounted on wall rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted display plaque featuring a circular shield and crossed axes, drawn flat against the wall as appropriate for wall-mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6448
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall weapon rack with round shield and crossed axes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted plaque/rack displaying a round shield and crossed axes, drawn flat against the wall as permitted for wall-mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6524
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall weapon rack with round shield",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted weapon display with a round shield and crossed axes mounted flat against the wall, which is appropriate for the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4593
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round shield with crossed axes mounted on wall rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted weapon plaque correctly rendered flat against the vertical wall plane in 3/4 perspective without inappropriate isometric projection.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4016
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.164Z",
+ "cells": {
+  "16": [
+   "01114065acaca356",
+   "52d86ba71b811be2",
+   "919302e03c5189f8",
+   "f42720f6fb1d6082"
+  ],
+  "24": [
+   "026c5f8dba3107d5",
+   "08fe63ec4d335ae0",
+   "104ac5f70a04fd82",
+   "1164cbc7c494e240",
+   "1cf7232d24ae6c15",
+   "2fec0906f095ff62",
+   "3795bc46b38b2623",
+   "44503a0ed2c84939",
+   "4585b7a8de843c13",
+   "5242a5328d431f4f",
+   "69f04a956f985cba",
+   "812b6b0df33ba469",
+   "8abcf2eaefa62827",
+   "925872f58d1986ce",
+   "97fe1050c37f547f",
+   "a04221583e78a56a",
+   "acb8b103406f6f7d",
+   "b1000b52aa3a7daf",
+   "b9cfb024411258e1",
+   "bb331db1be9cdcc5",
+   "c37116f2de526cdf",
+   "cc9d4e1266d702ed",
+   "e4ca41dc6878b5e8",
+   "fa30bdd83e7ef5e3"
+  ],
+  "32": [
+   "9ac3060ea6513c48"
+  ],
+  "48": [
+   "11cae28eaddf313e",
+   "1c26c1f598b91212",
+   "53457b053bebe403",
+   "798b5dc1c2c0bb3b",
+   "b0bdf7a075132155",
+   "fd731380bf0f846f"
+  ]
+ }
+}

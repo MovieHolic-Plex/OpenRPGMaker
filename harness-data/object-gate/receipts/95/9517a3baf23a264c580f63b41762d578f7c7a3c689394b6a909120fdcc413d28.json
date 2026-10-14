@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9517a3baf23a264c580f63b41762d578f7c7a3c689394b6a909120fdcc413d28",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "쇠띠 두른 나무 궤짝",
+ "label": "snow-north/sn-chest",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden chest with iron bands",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-8 represent the brightly lit top surface of the chest (both wood and iron bands are in light tones), while rows 9-14 form the shaded south/front face with the lock clasp. The top surface spans 8 source pixel rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10123
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden chest with iron bands",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid is clearly visible from above, occupying rows 2-8 (7px tall, illuminated brighter in 3/4 perspective), with the south front face below it on rows 9-14 with the latch.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9551
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden chest with iron bands",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chest is clearly divided into a brightly illuminated top lid surface (rows 2-8, 7px tall) and a darker south-facing front face (rows 9-14, 6px tall) with a golden latch hanging down across the front.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13263
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden chest with iron bands",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the chest lid spans rows 2-8 (7 source pixels tall) with upward-facing illumination, while the south-facing front body spans rows 9-14 with darker shading and a hanging clasp.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10071
+  }
+ ],
+ "decidedAt": "2026-10-14T01:17:43.844Z",
+ "cells": {
+  "16": [
+   "b684a51bb864f041"
+  ],
+  "24": [
+   "118afd0308ae2200",
+   "26ff75aa1189ad79",
+   "31004aaa46d0f172",
+   "6f0e828a00b01181",
+   "d16c49db01e632de",
+   "d92e543a8e00b419"
+  ],
+  "32": [
+   "3edeaa47732fb622",
+   "49b6a9c255f3c3b8",
+   "4bb55b1e5aff449c",
+   "aaae64abf953c7ef",
+   "e815b3a4979a95e4",
+   "f2629a6434f2b369"
+  ],
+  "48": [
+   "22aaaa9cc5e0adbb",
+   "2c18f411aab09b73",
+   "31879b57a9ff05d3",
+   "6fd6e0387627d275",
+   "befb60871bb077c7",
+   "da8d8ffd37b3a097"
+  ]
+ }
+}

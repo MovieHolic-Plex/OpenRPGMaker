@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a839f0ace1c2a6e019f47c5b86389729c37ac8f14de8ce024d82efc62713609f",
+ "width": 16,
+ "height": 32,
+ "kind": "frame",
+ "name": "스키 걸이(가로대에 기대 세운 스키 넷)",
+ "label": "snow-north/sn-ski-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ski rack frame with skis leaning on horizontal beam",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire rack and leaning skis are drawn in a flat front elevation. Both horizontal crossbeams (rows 8-9 and 27-28) and posts show only their vertical front faces without any visible top horizontal surfaces receding in 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6142
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ski rack frame with upright skis",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ski rack is drawn as a flat architectural front elevation. Neither the horizontal crossbars (rows 7-9, 10-12, 25-26) nor the bottom base beam (rows 27-29) show any foreshortened top surfaces. The vertical posts and skis are also drawn purely straight-on with no top faces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6320
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ski rack with leaning skis",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ski rack and upright skis are drawn entirely in flat front elevation. Neither the horizontal crossbars, base beam, nor ski tops show a foreshortened top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4844
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ski rack with upright skis",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ski rack frame and upright skis are drawn straight-on in pure front elevation; the horizontal crossbars and bottom base beam show no foreshortened top surfaces from a 3/4 perspective, consisting only of flat horizontal bands.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5343
+  }
+ ],
+ "decidedAt": "2026-10-14T01:15:54.502Z",
+ "cells": {
+  "16": [
+   "00a806bdf5288242",
+   "8d8c06d31ce09b56"
+  ],
+  "24": [
+   "006d5f43140638c9",
+   "4df0e835701b3f56",
+   "557b6be0a353e587",
+   "67abab5595a5836c",
+   "6ad027ba80be1db6",
+   "6d25983cb08ba519",
+   "93c4e58551b15945",
+   "9eb31922ee60cf52",
+   "b0824a18848ec798",
+   "d954cf0ab2e913f9",
+   "e102ea704c33d724",
+   "f2f5f014d98700bc"
+  ],
+  "32": [
+   "12d6a5690e54c410",
+   "1e31a60ad6806b01",
+   "b3936def9fe1daa7"
+  ],
+  "48": [
+   "2223cb3e10c7e8e5",
+   "65abd06c5157c874",
+   "72faac71b48ef748",
+   "d747655a2d8ac5c2",
+   "e7d074bd3f2131cd",
+   "eb8345ac7230a886"
+  ]
+ }
+}

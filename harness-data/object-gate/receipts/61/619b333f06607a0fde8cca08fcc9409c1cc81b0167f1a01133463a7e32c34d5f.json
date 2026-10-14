@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "619b333f06607a0fde8cca08fcc9409c1cc81b0167f1a01133463a7e32c34d5f",
+ "width": 32,
+ "height": 32,
+ "kind": "other",
+ "name": "사우나 돌 난로(무쇠 통 위 돌 무더기 + 숯불 문)",
+ "label": "snow-north/sn-sauna-stove",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sauna stone stove with rock compartment on top and fire chamber below",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stove and rock cage are drawn in pure front elevation with a 1px frame bar across row 4, vertical front-facing rock display (rows 5-15), and vertical furnace front face (rows 17-29) with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4829
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sauna stone stove with stone basket and firebox",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire stove is drawn in flat front elevation with a 1px horizontal top frame line at row 4 and a flat rectangular firebox body beneath. There is no visible top surface or 3/4 depth showing into the stone basket, onto the stove top, or atop the chimney.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6112
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sauna stone stove with upper stone cage and lower firebox",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire stove is drawn as a flat front architectural elevation. The top horizontal bar of the cage is only a 1px boundary line at row 4, with no top surface or depth visible for either the stone basket or the lower firebox.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3787
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sauna stone stove with lower fire chamber and upper rock basket",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire stove is drawn as a flat front architectural elevation with perfectly horizontal top frame lines at row 5 and divider at row 16; there is no visible top surface foreshortened from above (0 rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3991
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.165Z",
+ "cells": {
+  "16": [
+   "92d3f69040099b2e",
+   "9c4417fa318abf9e",
+   "daf4fa145c50ccda",
+   "e938c714511225e6"
+  ],
+  "24": [
+   "02f12b87c1d1ac5b",
+   "1e02cd69055c704d",
+   "2a8f2c40b84d9a07",
+   "2bd0eabd46d21b5f",
+   "2c03f62e19870791",
+   "376a02270b4f14c0",
+   "3da96120bd9d33d4",
+   "3fea58755b759a95",
+   "6478d33284e45ea3",
+   "649297273a30577b",
+   "7131fea80b1d6c32",
+   "72868532ae2decd5",
+   "74ec8b81cb61c0ee",
+   "7c58ffc1e807413d",
+   "8125ce56f0aa0251",
+   "83b745602fdace58",
+   "8601fbf5de1c8be9",
+   "87ec9e6e7ddd3aa1",
+   "ae3707fa2de7df9f",
+   "b2655ca54ee44c1e",
+   "beefaa7d43640bff",
+   "bf8d999a1407d8d9",
+   "e4741689fe77ab1b",
+   "eb9ca318d040072c"
+  ],
+  "32": [
+   "c31ca8c04a21355c"
+  ],
+  "48": [
+   "09d778bb68d557c6",
+   "5dadfc06a61bbca6",
+   "5eceb6e0f71e5c33",
+   "77b8d416fa3de3b3",
+   "95ce7d1d1d99204b",
+   "d2d942aff46d4ebf"
+  ]
+ }
+}

@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5f90565109a44dc78df6f9b37c952a8a6af22af8a415cd6639dbbd6a8b894f44",
+ "width": 32,
+ "height": 16,
+ "kind": "other",
+ "name": "얼음 낚시 자리(구멍·낚싯대·통 의자·물고기)",
+ "label": "snow-north/sn-fishing-spot",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden barrel stool and ice fishing hole",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The barrel stool on the right has a clearly visible top seat surface spanning rows 4-7 (4 pixels tall) above a vertical front face spanning rows 8-13. The ice hole on the left is also properly rendered as an elliptical opening seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3185
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cylindrical stool and ice fishing hole",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylindrical wooden stool shows a clearly foreshortened top surface spanning rows 4 to 7 (4 rows tall) above its front face (rows 8-13). The ice hole on the left shows an elliptical opening into the water (approx 5 rows tall). Both components respect the top-down 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3429
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "barrel stool and ice fishing hole",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The barrel stool shows a 4-row circular top seat surface (rows 4-7) above its front vertical body (rows 8-14). The ice hole on the left is drawn as an elliptical opening roughly 6 rows tall with foreshortening consistent with the 3/4 top-down angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3096
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical stool / bucket and ice fishing hole",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylindrical wooden stool/bucket shows a clear top surface spanning rows 5 to 7 (3 pixel rows) with its vertical front body spanning rows 8 to 13. The ice hole also displays a foreshortened elliptical opening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3395
+  }
+ ],
+ "decidedAt": "2026-10-14T01:15:54.503Z",
+ "cells": {
+  "16": [
+   "d7d39d334aeaf15f",
+   "fef1cab50bdb10ff"
+  ],
+  "24": [
+   "0ca0d3e65597876d",
+   "0e56175535a6d75d",
+   "10619a9010e830fe",
+   "148aee965be11397",
+   "2ba48878c8710c23",
+   "4623b34e8a149a14",
+   "490e4529cac383d7",
+   "5bc344a8de0b1797",
+   "b4e87f23b7b79dab",
+   "cc66d445dddaabd9",
+   "cd87ba5327a256a5",
+   "d42de979c425beaf"
+  ],
+  "32": [
+   "37adfa2cca3f7960",
+   "cf74314fcb7e1c08"
+  ],
+  "48": [
+   "077d0e9aa9a48147",
+   "31e3483f6a46dddd",
+   "4e3263eb5a838ab5",
+   "8d5dece4e28c862b",
+   "adaa9f2546e1be99",
+   "e20a0aacc8d320e2"
+  ]
+ }
+}

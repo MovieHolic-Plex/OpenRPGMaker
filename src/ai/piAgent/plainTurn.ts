@@ -33,6 +33,7 @@ import { CAMPUS_EXPOSED_TOOLS, campusTargetFor } from '../campusPolicy';
 import { SF_STATION_EXPOSED_TOOLS, sfStationTargetFor } from '../sfStationPolicy';
 import { PREHISTORIC_EXPOSED_TOOLS, prehistoricTargetFor } from '../prehistoricPolicy';
 import { DESERT_EAST_EXPOSED_TOOLS, desertEastTargetFor } from '../desertEastPolicy';
+import { SNOW_NORTH_EXPOSED_TOOLS, snowNorthTargetFor } from '../snowNorthPolicy';
 import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
 import { KIT_AREA_EXPOSED_TOOLS, kitAreaNote } from "@/editor/tools/kitAreaTools";
 import { PLAN_EXECUTION_PREAMBLE, ULTRABRAIN_PLAN_HEADING } from "./planExecution";
@@ -181,7 +182,10 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     const prehistoric = sengoku || steampunk || sfStation ? null : prehistoricTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
     // 사막·동양풍(desert_east) — 사막·오아시스·바자르·피라미드·아라비안·실크로드 낱말이나 대상 맵이 사막 칩셋(desertEastPolicy). «로마풍·버들항 사막»은 버들항.
     const desertEast = sengoku || steampunk || sfStation || prehistoric ? null : desertEastTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
-    const eraTheme = sengoku || steampunk || sfStation || prehistoric || desertEast;
+    // 북방 설원(snow_north) — 북방·바이킹·설원 마을·얼어붙은 호수·얼음 동굴 입구 낱말이나 대상 맵이 snow_north(snowNorthPolicy).
+    // 버들항 문맥(문장이 버들항을 말하거나 지금 맵이 버들항)의 일반 눈 낱말은 잡지 않는다 — 그건 아래 버들항 마을(theme:"snow") 몫이다.
+    const snowNorth = sengoku || steampunk || sfStation || prehistoric || desertEast ? null : snowNorthTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
+    const eraTheme = sengoku || steampunk || sfStation || prehistoric || desertEast || snowNorth;
     const jpCity = eraTheme ? null : jpCityTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
     // 고딕 저택(gothic_manor) — gothicPolicy.
     const gothic = eraTheme || jpCity ? null : gothicTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
@@ -206,6 +210,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
       sfStation,
       prehistoric,
       desertEast,
+      snowNorth,
       requestText: text,
       intent: declared.intent,
       targetMap: noteTargetMap
@@ -220,7 +225,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
       && declared.intent.clarify === null };
     // 숲마을 author_village 의 「마을 계약」은 2026-10-07 저작권 정리로 시공기와 함께 지웠다 — 마을은 author_beodeul_town 이 짓는다.
     routingAudit = `${formatIntentAudit(declared.intent, declared.elapsedMs)}${declared.error ? ` — 선언 오류: ${declared.error}` : ""}`
-      + (sengoku ? " → 전국·에도 맵" : steampunk ? " → 스팀펑크 도시 맵" : sfStation ? " → SF 맵" : prehistoric ? " → 선사 원시 세계 맵" : desertEast ? " → 사막·동양풍 맵"
+      + (sengoku ? " → 전국·에도 맵" : steampunk ? " → 스팀펑크 도시 맵" : sfStation ? " → SF 맵" : prehistoric ? " → 선사 원시 세계 맵" : desertEast ? " → 사막·동양풍 맵" : snowNorth ? ` → 북방 설원 맵(${snowNorth.room ?? snowNorth.outdoor})`
         : jpCity ? " → 일본 도시 맵" : gothic ? " → 고딕 저택 맵" : pirateIsles ? " → 해적 군도 맵" : skyIsland ? ` → 하늘섬 맵(${skyIsland.style})`
         : campus ? " → 캠퍼스 맵" : beodeulTown ? " → 버들항 마을" : "");
     if (declared.intent.mode === "question") {
@@ -242,6 +247,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
         ...(sfStation ? SF_STATION_EXPOSED_TOOLS : []),
         ...(prehistoric ? PREHISTORIC_EXPOSED_TOOLS : []),
         ...(desertEast ? DESERT_EAST_EXPOSED_TOOLS : []),
+        ...(snowNorth ? SNOW_NORTH_EXPOSED_TOOLS : []),
       ])];
       // 개념 카드 노트가 붙는 요청이면 예제를 짓는 도구를 처음부터 쥐여 준다 — 노트가 이 도구 이름을 부른다.
       if (conceptCardsForText(text).length && !initialToolNames.includes("build_concept_example")) initialToolNames = [...initialToolNames, "build_concept_example"];

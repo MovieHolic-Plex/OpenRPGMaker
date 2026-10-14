@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f9ad408c5234a81f2268aafe864f891ad3e9b5397595835b52dbfffd9dfbca07",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "모루(돌 받침)",
+ "label": "snow-north/sn-anvil",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "anvil on wooden stump/stand",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The anvil's working face is drawn as a flat horizontal band with only a 1px highlight along row 4, representing a pure side elevation with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5003
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "anvil",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The anvil is drawn in a pure front elevation view; its horizontal top working face is only a 1-pixel highlight at row 4 with no visible depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4226
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "anvil on wooden/stone base",
+    "kind_matches": false,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The anvil's flat top surface is drawn as a single 1px highlight line at row 4 above the front face (rows 5-6), showing pure front elevation without the top face foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 3540
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "anvil on block",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The anvil's top working face is rendered as only a single 1px highlight line at row 4 rather than a foreshortened horizontal top surface. The anvil is drawn in pure side/front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4884
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.509Z",
+ "cells": {
+  "16": [
+   "ab3a89c15cb24515"
+  ],
+  "24": [
+   "32642bc7d2265853",
+   "36d5bc0c8817ccda",
+   "5067a4c2d9a42a39",
+   "598520dcda95f41f",
+   "9a247c99196515c4",
+   "b50e792a1ccbbf48"
+  ],
+  "32": [
+   "077e7888152a80f0",
+   "375320ff4eefb316",
+   "706e83ed4efcc82c",
+   "72b6b3499e328ee8",
+   "b6d091244c594397",
+   "ca2a1b0ad5f99ecb"
+  ],
+  "48": [
+   "1837037353bdef69",
+   "1f636356cdf4d0cf",
+   "a3ec0665299b6573",
+   "e0d2e6a27d323d45",
+   "e660eab9c362180c",
+   "ec9fbe9c544c516b"
+  ]
+ }
+}

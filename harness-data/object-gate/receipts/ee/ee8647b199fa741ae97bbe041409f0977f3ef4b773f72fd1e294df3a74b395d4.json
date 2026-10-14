@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ee8647b199fa741ae97bbe041409f0977f3ef4b773f72fd1e294df3a74b395d4",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "모루(그루터기 받침)",
+ "label": "snow-north/sn-anvil",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "anvil on a stump base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The anvil's top working surface is foreshortened and clearly shown across rows 3-6 (4 source pixel rows tall), with a distinct edge highlight on row 6 leading into the shadowed front south face on rows 7-9.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10258
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "anvil on stump",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The anvil's top working face is rendered with 5 rows of foreshortened top surface (rows 2-6) complete with front-edge highlighting, above the dark south-facing front edge (rows 7-9) resting on the wooden stump base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11822
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "anvil on tree stump",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the anvil is clearly visible across rows 3-6 (4 rows tall) with an edge highlight along row 6, followed by the shaded south-facing front face on rows 7-9 and the stump base below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9395
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "anvil on stump",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The anvil's top working surface is clearly visible from rows 2 to 6 (5 source pixel rows tall with top lighting and a front-edge highlight on row 6), above the south-facing front face spanning rows 7 to 9.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7230
+  }
+ ],
+ "decidedAt": "2026-10-14T01:15:54.503Z",
+ "cells": {
+  "16": [
+   "5cc60637d3a38f2f"
+  ],
+  "24": [
+   "0f38f8487921ede8",
+   "5394f97b4f889b99",
+   "60783a5381599704",
+   "82854fd2f7708ea3",
+   "95e041cdac5b1b16",
+   "b909eefad2ec0e71"
+  ],
+  "32": [
+   "0e7ae38c8e92d1a3",
+   "1253ff639229ee66",
+   "4171645e4d534ad7",
+   "8fd928aec8c36ea4",
+   "92c8ec81ea6f486b",
+   "f68d89bca400a10b"
+  ],
+  "48": [
+   "021b7889ad869371",
+   "600ef2493a355c3d",
+   "dd3e55d7365eb3a2",
+   "e1d2bb13b11880ba",
+   "e2df302783a68c00",
+   "ea4c4c4f3452ce5c"
+  ]
+ }
+}

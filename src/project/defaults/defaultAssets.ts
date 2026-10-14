@@ -23,6 +23,7 @@ import { SF_STATION_TEXTURE, createSfStationTileset, ensureSfStationReferences, 
 import { GOTHIC_MANOR_TEXTURE, createGothicManorTileset, ensureGothicManorReferences, ensureGothicManorTileset } from "./gothicManor";
 import { PREHISTORIC_TEXTURE, createPrehistoricTileset, ensurePrehistoricReferences, ensurePrehistoricTileset } from "./prehistoric";
 import { DESERT_EAST_TEXTURE, createDesertEastTileset, ensureDesertEastReferences, ensureDesertEastTileset } from "./desertEast";
+import { SNOW_NORTH_TEXTURE, createSnowNorthTileset, ensureSnowNorthReferences, ensureSnowNorthTileset } from "./snowNorth";
 import { createEmeraldMonsterKitTileset, ensureEmeraldMonsterKitTileset, isEmeraldMonsterKitTexture } from "./emeraldMonsterKit";
 import { createMonsterKitTileset, ensureMonsterKitTileset, isMonsterKitTexture } from "./monsterKit";
 import { ATLAS_VEHICLES_TEXTURE, createAtlasVehiclesTileset, ensureAtlasVehiclesReferences } from "./atlasVehicles";
@@ -217,6 +218,11 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
         changed = ensureDesertEastTileset(project.tilesets[id]) || changed;
         changed = ensureDesertEastReferences(project.tilesets[id]) || changed;
       }
+      // 북방 설원 (snow_north 굽기): 번들 칸 표·`sn-` 부품·참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
+      if (asset.textureKey === SNOW_NORTH_TEXTURE) {
+        changed = ensureSnowNorthTileset(project.tilesets[id]) || changed;
+        changed = ensureSnowNorthReferences(project.tilesets[id]) || changed;
+      }
       if (asset.textureKey === ATLAS_VEHICLES_TEXTURE) changed = ensureAtlasVehiclesReferences(project.tilesets[id]) || changed;
       // 몬스터 수집 손 도트 시트(지역별): 다시 구운 시트면 칸 표를 번들 것으로, 아니면 빠진 번들 킷만 더한다.
       if (isMonsterKitTexture(asset.textureKey)) changed = ensureMonsterKitTileset(project.tilesets[id]) || changed;
@@ -390,6 +396,7 @@ function bundledEasyRpgTilesetBase(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS
   if (asset.textureKey === GOTHIC_MANOR_TEXTURE) return createGothicManorTileset();
   if (asset.textureKey === PREHISTORIC_TEXTURE) return createPrehistoricTileset();
   if (asset.textureKey === DESERT_EAST_TEXTURE) return createDesertEastTileset();
+  if (asset.textureKey === SNOW_NORTH_TEXTURE) return createSnowNorthTileset();
   if (isMonsterKitTexture(asset.textureKey)) return createMonsterKitTileset(asset.textureKey);
   if (isEmeraldMonsterKitTexture(asset.textureKey)) return createEmeraldMonsterKitTileset(asset.textureKey);
   if (asset.textureKey === ATLAS_VEHICLES_TEXTURE) return createAtlasVehiclesTileset();

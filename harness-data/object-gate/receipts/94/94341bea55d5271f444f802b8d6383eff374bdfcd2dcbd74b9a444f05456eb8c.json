@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "94341bea55d5271f444f802b8d6383eff374bdfcd2dcbd74b9a444f05456eb8c",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "열린 물(얼음 구멍·여울) (프레임 3)",
+ "label": "snow-north/sn-water-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water surface terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat water surface terrain tile filling the 16x16 area with horizontal wave ripples; correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4644
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water surface terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 tile showing open water with horizontal ripple highlights, correctly categorized as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3076
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "open water terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Water surface terrain tile with ripples, seamlessly viewed from above across the entire 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4047
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water surface tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down water terrain texture filling the 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2926
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:23.952Z",
+ "cells": {
+  "16": [
+   "f51c7285fb3f79aa"
+  ],
+  "24": [
+   "03453c89d2dfbb7e",
+   "2398263fdab10aa5",
+   "3c75eecd1e0209fd",
+   "9c2f35af5838b16e",
+   "bea521c63260b10a",
+   "d1bf34f4d02e4be0"
+  ],
+  "32": [
+   "06940cfe2df4d10e",
+   "1c38f080186173fa",
+   "288c4f66a3806382",
+   "98db57312a279eb9",
+   "9fb280d0acc295c7",
+   "a3e1734177699f0b"
+  ],
+  "48": [
+   "3c4d58f6e6200721",
+   "6d2ad9b0a9b15151",
+   "aa3af57eba6f834b",
+   "c867e2f0a22b3fef",
+   "eb6f2141071f62af",
+   "fa83b699202290b2"
+  ]
+ }
+}
