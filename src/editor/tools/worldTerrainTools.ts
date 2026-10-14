@@ -232,7 +232,7 @@ function townArtHint(theme: string): string {
     + (isRetiredEasyRpgTileset({ tilesets: {} }, tilesets[0]!)
       ? `${tilesets[0]} 은 폐기된 EasyRPG 계열이라 새 맵을 만들 수 없다 — 완성 마을을 가져오거나, 없으면 기본 마을 도구로 깔고 이름·NPC·대사로 문화권을 살려라. `
       : tilesets[0] === "sengoku_edo"
-        ? "새로 지으려면 create_map(tilesetId=sengoku_edo) 뒤 compose_sengoku_edo_map({style:\"castle_town\"|\"inn_street\"|\"samurai\"|\"castle\"|\"temple\"|\"village\"}) 한 번으로 깐다(장소 역할에 맞는 style). 건물 안은 build_hand_interior_room({tileset:\"sengoku_edo\"}) + link_sengoku_edo_interior. "
+        ? "새로 지으려면 create_map(tilesetId=sengoku_edo) 뒤 compose_sengoku_edo_map({style:\"castle_town\"|\"inn_street\"|\"samurai\"|\"castle\"|\"temple\"|\"village\"}) 한 번으로 깐다(장소 역할에 맞는 style). 건물 안은 build_hand_interior_room({tileset:\"sengoku_edo\", floor:\"se-floor-tatami\", wall:\"se-wall-fusuma\", layout:{program}}) + link_sengoku_edo_interior. "
         : `새로 지으려면 create_map(tilesetId=${tilesets[0]}) 뒤 그 타일셋 참고문서(list_tileset_references)를 읽고 깐다. `)
     + `세계 지도 장소와는 places 의 「입구 x,y」에 create_transfer_pair 로 잇는다. ${interior}`;
 }

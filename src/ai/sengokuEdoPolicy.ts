@@ -115,14 +115,14 @@ const STYLE_LIST = (Object.keys(SENGOKU_STYLE_KO) as SengokuStyle[]).map((s) => 
 
 export const SENGOKU_POINTER_LINE =
   "전국시대·에도·사무라이·성하마을·일본 전통 마을·신사·절·여관 거리·다실 풍경은 번들 칩셋 sengoku_edo 로 짓는다(현대 일본 거리는 jp_city, 조선은 joseon_baram): "
-  + "새 맵 create_map tilesetId:\"sengoku_edo\"(보는 맵이 다른 계열이면 ask_tileset_change). 야외는 compose_sengoku_edo_map({style, seed}) 한 번으로 깐다 — style: " + STYLE_LIST + ". "
+  + "새 맵 create_map tilesetId:\"sengoku_edo\"(새 프로젝트의 빈 시작 맵은 그림체 기준이 아니니 묻지 말고 바로 만든다 — 이미 칠한 다른 계열 맵을 보고 있을 때만 ask_tileset_change). 야외는 compose_sengoku_edo_map({style, seed}) 한 번으로 깐다 — style: " + STYLE_LIST + ". "
   + "도구가 건물·길·물·논·소품 배치와 문 접근칸·통행을 맞추고, 맵이 비었는데 작으면 알맞게 키운다. 낱칸 번호로 건물·나무를 칠하지 않는다. "
-  + "건물 안(다다미 방·다실·여관 손님방·성 알현실·가게·농가·도장)은 build_hand_interior_room({tileset:\"sengoku_edo\", layout:{program:\"samurai-house\"} 또는 {rooms:[{kind:\"tea\"}]}}) 로 짓고 link_sengoku_edo_interior 로 문과 잇는다. 사람은 Actor1 캐릭터 이벤트.";
+  + "건물 안(다다미 방·다실·여관 손님방·성 알현실·가게·농가·도장)은 build_hand_interior_room({tileset:\"sengoku_edo\", name, floor:\"se-floor-tatami\", wall:\"se-wall-fusuma\", layout:{program:\"samurai-house\"} 또는 {rooms:[{kind:\"tea\"}]}}) — floor·wall 은 필수 로 짓고 link_sengoku_edo_interior 로 문과 잇는다. 사람은 Actor1 캐릭터 이벤트.";
 
 export const SENGOKU_DETAIL_LINE =
   "이 작업의 맵은 전국·에도 칩셋(sengoku_edo)이다. ⓪ 야외는 compose_sengoku_edo_map 으로 한 번에 깔고(손댄 맵은 replace:true, 다른 배치는 seed 를 바꾼다) 결과 data.buildings 의 문 칸을 실내 이음에 쓴다. "
   + "① 건물은 모두 남향이고 문 칸은 막힘, 바로 아래 접근칸은 길이다 — 소품을 더할 때 문 앞 두 칸과 길을 막지 않는다. ② 물(해자·강)·논은 걸을 수 없고 다리(se-bridge-*) 상판만 건넌다. "
-  + "③ 소품은 list_tileset_objects({tilesetId:\"sengoku_edo\"}) → stamp_tileset_object 로 키트째, 맞는 바닥 위에만(석등·고마이누는 참배길 옆 풀밭, 노점·길등은 길가, 볏단·우물은 마당). "
+  + "③ 구성 도구가 소품·나무까지 놓는다 — 덧찍지 않는다. 문장이 특정 물건을 요구할 때만 read_tileset_reference({tilesetId:\"sengoku_edo\", categoryId:\"se-outdoor\"}) 를 읽은 다음 응답에서 stamp_tileset_object({…, referencePurpose:\"se-outdoor\"}) 로, 빈 풀밭에 3칸 이상 띄워 한두 개만(석등·고마이누는 참배길 옆, 노점·길등은 길가, 볏단·우물은 마당). 맵 크기는 줄이지 않는다. "
   + "④ 실내 방 종류 " + SENGOKU_ROOM_KINDS.join("·") + " · 방 구성 " + SENGOKU_PROGRAMS.join("·") + ". ⑤ check_reachability 로 시작 칸 → 문까지 확인한다.";
 
 export function sengokuPromptLines(project: Pick<Project, "tilesets" | "maps">, mapIds: readonly string[]): string[] {
@@ -145,15 +145,15 @@ export function formatSengokuNote(target: SengokuTarget, targetMap: { id: string
     ? `지금 맵 '${target.mapId}'(${targetMap?.width ?? "?"}×${targetMap?.height ?? "?"})은 sengoku_edo 이고 비어 있다 → 이 맵에 compose_sengoku_edo_map 을 부른다(작으면 도구가 ${size.w}×${size.h} 로 키운다).`
     : target.mapId
       ? `지금 맵 '${target.mapId}' 는 sengoku_edo 이고 이미 내용이 있다 → 다시 깔려면 replace:true(사용자가 갈아엎기를 원할 때만), 아니면 stamp_tileset_object 로 빈 땅에 더한다.`
-      : `sengoku_edo 맵이 아직 없다 → create_map({name, width:${size.w}, height:${size.h}, tilesetId:"sengoku_edo"}) 로 새 맵을 만든다. 지금 보는 맵이 다른 계열이면 ask_tileset_change(toTilesetId:"sengoku_edo") 로 묻고 턴을 끝낸다.`;
+      : `sengoku_edo 맵이 아직 없다 → 바로 create_map({name, width:${size.w}, height:${size.h}, tilesetId:"sengoku_edo"}) 로 새 맵을 만든다(새 프로젝트의 빈 시작 맵은 그림체 기준이 아니라 ask_tileset_change 가 필요 없다 — 이미 칠한 다른 계열 맵을 보고 있을 때만 묻는다). 크기를 이보다 줄이지 않는다.`;
   const rooms = target.alsoRooms?.length
-    ? ` 문장이 실내(${target.alsoRooms.join("·")})도 말했다 — 야외를 깐 뒤 그 건물 문에 build_hand_interior_room({tileset:"sengoku_edo", layout:{rooms:[${target.alsoRooms.map((k) => `{kind:"${k}"}`).join(",")}]}}) 로 짓고 link_sengoku_edo_interior 로 잇는다.`
+    ? ` 문장이 실내(${target.alsoRooms.join("·")})도 말했다 — 야외를 깐 뒤 그 건물 문에 build_hand_interior_room({tileset:"sengoku_edo", name, floor:"se-floor-tatami", wall:"${target.alsoRooms.includes("guest") ? "se-wall-shoji" : "se-wall-fusuma"}", layout:{rooms:[${target.alsoRooms.map((k) => `{kind:"${k}"}`).join(",")}]}}) 로 짓고(floor·wall 필수) link_sengoku_edo_interior({mapId, door: compose 결과 data.buildings[].doors[0], interiorMapId}) 로 잇는다. 다실(tea)은 compose 결과의 se-chashitsu 문에 잇는다.`
     : "";
   return [
     "[전국·에도 시공 — sengoku_edo 칩셋] 이 요청의 칩셋은 번들 sengoku_edo(전국·에도 일본 손 도트)다. author_beodeul_town·jp_city 조립 도구·조선 장소는 쓰지 않는다.",
     where,
     `순서: create_map(필요하면) → compose_sengoku_edo_map({mapId, style:"${style}", seed}) — 이 요청에 맞는 용도는 ${style}(${SENGOKU_STYLE_KO[style]}). 다른 용도: ${STYLE_LIST}. `
-      + "결과 summary 의 건물·문 목록을 사용자에게 알리고, 손으로 다시 칠하지 않는다." + rooms,
+      + "결과 summary 의 건물·문 목록을 사용자에게 알리고, 손으로 다시 칠하거나 소품을 덧찍지 않는다(구성 도구가 소품·나무까지 놓는다). 한 번 깐 맵을 다시 깔지 않는다." + rooms,
   ].join("\n");
 }
 
