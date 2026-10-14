@@ -97,7 +97,7 @@ export const PROFILES: Record<DungeonType, TypeProfile> = {
     id: "mine", label: "광산 갱도", words: ["광산", "갱도", "갱", "탄광", "채굴", "mine", "mining"],
     grammar: "rooms", roomKinds: ["entrance", "junction", "stope", "depot", "boss", "vault", "storage"],
     face: { h3: C("face-cave-3h"), h2: C("face-cave-2h") },
-    floor: { base: M("ground-rock"), patches: [{ kit: M("ground-slagg"), at: 0.76, scale: 5 }, { kit: C("floor-cave"), at: 0.84, scale: 3 }], scatter: [{ kit: C("floor-wetsand"), p: 0.02 }] },
+    floor: { base: C("floor-cave"), patches: [{ kit: M("ground-rock"), at: 0.7, scale: 4 }, { kit: C("floor-wetsand"), at: 0.86, scale: 3 }], scatter: [{ kit: M("ground-rock"), p: 0.02 }] },
     blurb: "수평 주 갱도(한 줄 대로) + 갈래 갱 + 채굴장(광석 덩이·광차·램프). 입구는 갱구.",
   },
   volcano: {
