@@ -23,6 +23,21 @@ export const MIN_LOCATION_SIZE = 1;
 /** 표시명 길이 상한 — 프롬프트·라벨 렌더가 폭주하지 않게 막는다. */
 export const MAX_LOCATION_NAME_LENGTH = 64;
 
+/**
+ * 구성기(compose_* 도구·layout 방 짓기)가 «구역마다 쓰임»을 정해 깐 맵의 표식 — 단일 정의.
+ * 구성기는 자기 위치 이름표(구역·건물·방) 한 개 이상에 이 태그를 같이 단다(`tags: ["xxx-zone", COMPOSED_LAYOUT_TAG]`). 그 밖의 일은 없다.
+ * 조수 실행기의 배치 품질 권고(src/ai/piAgent/layoutQuality.ts 의 «빈 바닥 N%»)는 이 표식이 있는 맵에서 빈 땅 채우기 권고를 끈다 —
+ * 차도·선로·승강장·광장 동선·복도의 빈칸은 용도로 비운 칸인데, 그 권고가 소품을 흩뿌리게 하고 거리를 로비로 덮게 했다(2026-10-14 실조수).
+ */
+export const COMPOSED_LAYOUT_TAG = "composed-layout";
+/** 이 표식이 생기기 전에 저장된 구성기 맵 — 옛 구역 이름표만 있어도 구성기 맵으로 본다(sf-area: compose_sf_station_map, pirate-area: compose_pirate_isles_map). */
+const LEGACY_COMPOSED_LAYOUT_TAGS: readonly string[] = ["sf-area", "pirate-area"];
+
+/** 구성기가 깐 맵인가 — 배치 품질 권고 억제의 유일한 판정. */
+export function isComposedLayoutMap(map: Pick<GameMap, "locations">): boolean {
+  return (map.locations ?? []).some((l) => (l.tags ?? []).some((t) => t === COMPOSED_LAYOUT_TAG || LEGACY_COMPOSED_LAYOUT_TAGS.includes(t)));
+}
+
 export type LocationPoint = { readonly x: number; readonly y: number };
 
 export function mapLocations(map: GameMap): readonly MapNamedLocation[] {
