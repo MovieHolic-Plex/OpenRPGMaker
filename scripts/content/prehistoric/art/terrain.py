@@ -287,7 +287,8 @@ def p_path(lx, ly, s=2):
 
 
 GTUFT = [['.5.5.', '54545', '43434', '.212.'], ['5.5', '444', '323', '.1.'], ['.55', '545', '434', '21.']]   # 풀 포기: 잎끝 빛·밑동 그늘
-GDARK = [['.22.', '2112', '2112', '.22.'], ['.222.', '21112', '.212.'], ['22.', '212', '.22']]              # 짙은 풀 덩이(그늘 고인 곳)
+GDARK = [['..222..', '.22222.', '2222122', '.22222.', '..2.2..'], ['.2222..', '2222222', '2212222', '.22222.', '...22..'],
+         ['..22...', '.22222.', '2221222', '.22222.', '..222..']]              # 짙은 풀 덩이(그늘 고인 곳) — 3판: 크게(7×5)
 
 
 def _grass_grid(s):
@@ -296,15 +297,21 @@ def _grass_grid(s):
     g = [[None] * 16 for _ in range(16)]
     for y in range(16):
         for x in range(16):
-            g[y][x] = p_grass0(x, y, s)
-            if g[y][x][0] == 'grass' and rnd(x, y, s + 47) < 0.12: g[y][x] = ('grass', max(1, g[y][x][1] - 1))
-    _stamp(g, r.randrange(16), r.randrange(16), GDARK[s % 3], 'grass')
-    for k in range(3): _stamp(g, r.randrange(16), r.randrange(16), GTUFT[(k + s) % 3], 'grass')
+            # 3판: 1판 풀잎 쌍(9%)이 2배에서 시끄러웠다 — 잎 쌍을 5%로, 얼룩은 한 단만
+            n = sm(x, y, s)
+            t = 3 + (1 if n > 0.7 else 0) - (1 if n < 0.28 else 0)
+            if rnd(x, y, s + 7) < 0.05: t = min(5, t + 2)
+            elif rnd(x, (y - 1) % 16, s + 7) < 0.05: t = max(1, t - 1)
+            g[y][x] = ('grass', t)
+            if rnd(x, y, s + 21) < 0.004: g[y][x] = ('bloom', 2)
+    gx, gy = r.randrange(16), r.randrange(16)
+    _stamp(g, gx, gy, GDARK[s % 3], 'grass')
+    for k in range(2): _stamp(g, (gx + 8 + 3 * k) % 16, (gy + 7 + 4 * k) % 16, GTUFT[(k + s) % 3], 'grass')
     return g
 
 
 def p_grass(lx, ly, s=3):
-    """2판 풀밭: 1판 풀잎 결 + 짙은 풀 덩이 1 + 풀 포기 3(잎끝 빛 · 밑동 그늘)."""
+    """2판 풀밭: 1판 풀잎 결 + 큰 짙은 풀 덩이 1 + 풀 포기 2(잎끝 빛 · 밑동 그늘)."""
     return _grid(('grass', s), lambda: _grass_grid(s))[ly % 16][lx % 16]
 
 

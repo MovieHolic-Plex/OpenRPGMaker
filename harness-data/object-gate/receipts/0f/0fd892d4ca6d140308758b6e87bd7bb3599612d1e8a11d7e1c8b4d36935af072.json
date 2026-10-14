@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0fd892d4ca6d140308758b6e87bd7bb3599612d1e8a11d7e1c8b4d36935af072",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "prehistoric stone-age lamp",
+ "label": "prehistoric/ph-lamp",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone lamp basin",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hollow stone basin shows its interior oil/fuel pool across rows 9-12 (4 rows tall) viewed from above, enclosed by a back rim at row 8, stone side rims, and a front face/base at rows 13-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6340
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "carved stone lamp dish",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hollow interior opening of the stone dish containing burning oil spans rows 9-12 (4 rows tall) as a clear ellipse seen from above, atop a 2-row front face (rows 13-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3488
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone lamp bowl",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone lamp is viewed from a 3/4 top-down angle; the open bowl interior holding fuel and flame spans rows 9-12 (4 rows) above the front stone rim and south face at rows 13-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5197
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone lamp bowl with burning oil",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bowl's interior opening with burning fuel is clearly foreshortened and visible from above across rows 9-12 (4 rows high), while the south wall/base is shown at rows 13-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2854
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.709Z",
+ "cells": {
+  "16": [
+   "d5b61d6051e20ec2"
+  ],
+  "24": [
+   "0905a887dcf7bd4a",
+   "1bf17870078a1076",
+   "3e40464061b5dcee",
+   "7a75eeb1f9716d9f",
+   "a68daee2c4a9582c",
+   "cae77039a46e8176"
+  ],
+  "32": [
+   "0e712a21a60e5e8e",
+   "27bd72fb98494ec3",
+   "28371596d2d63f61",
+   "9011f0fbcd05d958",
+   "95779a2bc1ef916a",
+   "a2420514065f11d0"
+  ],
+  "48": [
+   "36d76281092a2bf4",
+   "3ccc1d8137bc4792",
+   "5827ca3967ce6702",
+   "629a0d03969bd410",
+   "931ed12dc9b20ae5",
+   "b3b3a44a722b900e"
+  ]
+ }
+}

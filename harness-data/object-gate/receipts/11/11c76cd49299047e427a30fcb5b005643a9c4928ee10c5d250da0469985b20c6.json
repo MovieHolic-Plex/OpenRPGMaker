@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "11c76cd49299047e427a30fcb5b005643a9c4928ee10c5d250da0469985b20c6",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "prehistoric stone-age cycad",
+ "label": "prehistoric/ph-cycad",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cycad palm trunk and frond crown",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cycad is drawn in pure side-scroller front elevation: the trunk base ends in perfectly flat horizontal pixel lines at rows 44-46 without any ground footprint curve, and the frond rosette is arranged vertically (upright back fronds, forward-facing central cone, and downward-hanging front fronds) with no top-down foreshortening or visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6327
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cycad foliage crown",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cycad crown is viewed from an elevated angle, showing fronds radiating in full depth: rear fronds rise from rows 12-18 behind the central cone/core, while foreground fronds droop down to row 34, giving ~13 rows of foreshortened top surface before reaching the south-facing overhang.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7310
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cycad palm crown and trunk",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cycad canopy is rendered in 3/4 perspective with clear depth layering: rear fronds rise higher (rows 12-16), a central cone/growing center is angled toward the viewer (rows 14-25), and foreground fronds hang down overlapping the upper trunk (rows 26-34).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4096
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cycad trunk and crown of fronds",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cycad is drawn in flat front elevation: fronds fan out entirely in the 2D vertical plane with no south-facing foreshortened fronds or view into the top of the crown from above. The central cone and shoot are seen straight-on, and the trunk base terminates in a completely flat horizontal line.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6074
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.701Z",
+ "cells": {
+  "16": [
+   "2b3d9744ab4fc1e4",
+   "59c1530545f6b039",
+   "6ef469e10b1d20e9",
+   "7be45bd74c05b71e",
+   "98adbc6bd9e633d9",
+   "ff4f513f87ae5064"
+  ],
+  "24": [
+   "040d0a77545cf633",
+   "12eb3b72e3d063ee",
+   "2166549dcf81ffa4",
+   "9d99ac5ef3cb8669",
+   "a152459e3edcf97d",
+   "a7f7a1748e879299",
+   "b0c17980030b21f1",
+   "c86e92229803d26f",
+   "dabbecd7a7bb804b",
+   "db543e31a697347a",
+   "f17bae74c22415be",
+   "f81ed6c32bcd8fa1"
+  ],
+  "32": [
+   "2f1be6b6b51f785c",
+   "5a3302903637952b",
+   "c0476a435d8874c3",
+   "ccc196a718cabfbe"
+  ],
+  "48": [
+   "22ffefc4bd777b37",
+   "b7d7637ed12a03d0",
+   "e87b87b33d976fa5"
+  ]
+ }
+}

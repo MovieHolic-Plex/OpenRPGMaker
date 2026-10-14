@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "60d4f873d98db4cfa84c640a25386c5bfc4434cbba650c28f6e38c4c401bec5c",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "prehistoric stone-age torch",
+ "label": "prehistoric/ph-torch-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "torch bowl on wooden post",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The torch bowl top opening is clearly drawn as a foreshortened ellipse spanning rows 9-13 filled with fire/fuel, with the front rim and bowl wall extending down to row 17 above the shaft.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6452
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brazier bowl on a wooden pole",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top basin/bowl clearly shows an elliptical opening/top surface (rows 9-14, ~5-6 rows tall) containing the fire, viewed from a 3/4 perspective atop the pole.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5474
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "torch bowl on wooden post",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The torch bowl opening is drawn as a wide ellipse (rows 9-14, 5-6 rows tall) filled with glowing fire, showing clear 3/4 perspective down into the bowl above its front face (rows 14-17).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5452
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "torch bowl with burning coals on a wooden post",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The torch bowl opening is drawn as an ellipse from rows 9 to 14 (approx. 5-6 rows tall) displaying the fire/coals inside viewed from a 3/4 top-down angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6010
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.704Z",
+ "cells": {
+  "16": [
+   "3c92e83619a5aa26",
+   "b497da4f6a011d36"
+  ],
+  "24": [
+   "0a65a55e9a9beac2",
+   "14d08eedfadfc358",
+   "1f882669f62b991e",
+   "258b09e7d61dd972",
+   "2c1d51b7ac28978c",
+   "31d0d73af71188e0",
+   "78af9a2b1f416655",
+   "a3bc3d1bb06b7c21",
+   "a545eeeea29f83fc",
+   "de897fe7c2857781",
+   "e13ee7e3bff824ba",
+   "f46334d043c899e2"
+  ],
+  "32": [
+   "7a4ee1346b07ea53",
+   "8988f8a594e7e11b",
+   "9510d8978c139c29"
+  ],
+  "48": [
+   "5feeec57072ed506",
+   "647ef6ff866026dc",
+   "8562fe10952fbfdf",
+   "d69257f86ea71014",
+   "d8de8e263c14c079",
+   "ffeaa02088295ef9"
+  ]
+ }
+}

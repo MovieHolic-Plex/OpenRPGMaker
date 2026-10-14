@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0dfc1aabe786447acedf37730eb047f0809153f11e6d593c06f3ff40ebf70521",
+ "width": 32,
+ "height": 16,
+ "kind": "organic",
+ "name": "prehistoric stone-age berry bush",
+ "label": "prehistoric/ph-berry-bush",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bush foliage cluster",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The berry bush consists of layered rounded foliage clumps with the rear mound visible above and behind the front mounds (rows 0-5), showing clear top-down 3/4 depth and lighting on upper surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5285
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "foliage clusters of berry bush",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush is composed of layered mounds with the rear clump clearly visible behind and above the foreground clumps, displaying illuminated top surfaces spanning rows 1-6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6715
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "berry bush cluster",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush cluster is rendered in 3/4 top-down perspective with layered foliage clumps; upper clumps sit higher in the frame with top-lit surfaces spanning ~6 rows, shading downwards to the base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4833
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cluster of rounded bush foliage with berries",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush is composed of tiered foliage clusters viewed from a 3/4 angle, with the rear cluster visible behind and above (rows 0-6) and foreground clusters sloping forward down to row 14, shaded across their tops.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3548
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.703Z",
+ "cells": {
+  "16": [
+   "3b0671ece8a3f070",
+   "996f0768c5e861e7"
+  ],
+  "24": [
+   "250231602081eebb",
+   "79f3ab2636587055",
+   "990025f95ac4ee54",
+   "99f56ed0cd10c8a2",
+   "a64f76bb643ff94c",
+   "aa490b5a97dc4c24",
+   "be9f57a8748d535f",
+   "cec3e2538681cbc1",
+   "e105e95fa723119a",
+   "e9ea980a8cd87c8c",
+   "ea1e664dee280e1c",
+   "f2b882a5ffd1e8f1"
+  ],
+  "32": [
+   "3caa8a8b35844d37",
+   "44036741a5afa117"
+  ],
+  "48": [
+   "167c39e87ca8feaf",
+   "2a70664e6596fa58",
+   "5f4c4b866907eb72",
+   "b944fa0045d186b7",
+   "dd4e9d26645f968f",
+   "e13899179a57c545"
+  ]
+ }
+}

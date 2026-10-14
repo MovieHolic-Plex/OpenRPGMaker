@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f6acbfa2338de3408ae9a8889c0e1efcccb50e8e178c44cdbf5410ddf04aa1a8",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "prehistoric stone-age skull pole",
+ "label": "prehistoric/ph-skull-pole",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden pole with skull",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the wooden pole displays a visible circular cut surface (tree ring pattern) spanning rows 2 to 7 (6 pixels tall) along with the front face extending below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6348
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden pole",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the wooden pole is clearly visible as an ellipse with tree rings spanning rows 1 through 7.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8214
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden pole with mounted skull",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the wooden pole is clearly visible from rows 1 to 7 with tree-ring details foreshortened in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2997
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden pole with mounted skull",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the wooden pole is prominently visible as a foreshortened cross-section with wood rings across rows 2 to 7 (6px tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4770
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.707Z",
+ "cells": {
+  "16": [
+   "469c2f012f2bf793",
+   "f874c3ec20351293"
+  ],
+  "24": [
+   "036589fd8a65767d",
+   "1b9409e06bada685",
+   "36d17bbb1c5854c3",
+   "3a88fda0a1c9e216",
+   "3feb4c086a15c20a",
+   "53aebc47b462aa21",
+   "5783fc0161862cf7",
+   "78098b05267b2975",
+   "bb3463288274ed8f",
+   "be61e74812c55c6c",
+   "c91c310e06d45218",
+   "d453488b318d5847"
+  ],
+  "32": [
+   "04cfc2a9d9ea4dbe",
+   "7ea72ec7b3094677",
+   "ccef6f20a20e1ab7"
+  ],
+  "48": [
+   "0ec0f6977270befa",
+   "67deb328c937946c",
+   "832847317421e82a",
+   "b3c025160d76ab85",
+   "ca2aeab9d91d4655",
+   "ff872963e55f70a5"
+  ]
+ }
+}

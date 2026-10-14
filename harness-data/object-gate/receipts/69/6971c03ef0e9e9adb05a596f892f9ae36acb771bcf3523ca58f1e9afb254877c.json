@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6971c03ef0e9e9adb05a596f892f9ae36acb771bcf3523ca58f1e9afb254877c",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "prehistoric stone-age mushrooms",
+ "label": "prehistoric/ph-mushrooms",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "large mushroom cap and stalk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mushroom is drawn in pure side-view platformer elevation: the cap is seen strictly in side profile from rows 2-9 with horizontal lower margins, and the vertical stalk extends directly underneath it (rows 10-12) with no top-down perspective or foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12459
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "mushroom cap and stalk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mushroom is drawn in pure side/front elevation: the cap forms a profile dome with a horizontal bottom edge and the stalk extends straight down from the base, without any elliptical foreshortening of the cap surface or rim.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6973
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "mushroom cap and stems",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mushroom cluster is drawn in a pure 2D side-scroller front elevation. The stem extends straight down from a flat bottom edge, with no visible foreshortened top surface or 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10257
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "mushroom cap",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mushroom cap shows its convex upper surface across rows 2 to 7 with top-down lighting and foreshortened curved tiers rather than a flat silhouette.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5801
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.703Z",
+ "cells": {
+  "16": [
+   "5ffe6d597b86c13a"
+  ],
+  "24": [
+   "11dc149b23bacb49",
+   "551cec204956450f",
+   "70354f34160868c3",
+   "7867517e4e16caba",
+   "9056f8851846a810",
+   "b72c0f548f12adee"
+  ],
+  "32": [
+   "411d7900c898cf7f",
+   "63a222c90a101fa3",
+   "c177b98a93c5d56a",
+   "cfad3fedf7b0347a",
+   "d31ce9a43fe2ab93",
+   "ee780f118e8cf02e"
+  ],
+  "48": [
+   "32871008e649be7a",
+   "3c5b976d91fef644",
+   "4fcee5e9ea341534",
+   "676c6b57680626fc",
+   "9e4211496d68ae0b",
+   "d9bb2bcae0246043"
+  ]
+ }
+}

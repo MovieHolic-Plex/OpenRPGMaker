@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c15d139927bb543a15252413f6bc341abf6a882e645459a2f951805013307665",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "prehistoric stone-age low log bench with a fur pad and spears lying on top",
+ "label": "prehistoric/ph-spear-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "log bench seat surface with fur pad and spears",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bench spans rows 1 to 9 (approx 9 rows) showing fur and spears resting on top, with a 3-row front edge at rows 10-12 and short legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4028
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "low log bench with top surface and south-facing beam and legs",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bench occupies rows 1-9 (9 rows tall) showing items resting on it in 3/4 view, followed by a south front edge beam at rows 10-12 and supporting legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3867
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "log bench with fur pad and spears",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bench/cot is clearly visible from rows 1 to 9 (approx. 8 rows deep) displaying the fur pad and spears, with a distinct 3-row front face (rows 10-12) and supporting legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3474
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "log bench with fur pad and spears",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bench is prominently visible from rows 1 to 9 (approx. 9 pixel rows deep) with items lying on it, meeting the south front beam at rows 10-11 and legs beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4171
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.705Z",
+ "cells": {
+  "16": [
+   "1e4bc5df8a8fdaf0",
+   "30350373a16f5352"
+  ],
+  "24": [
+   "097d3461a6092fcd",
+   "09ed72abbe4ff1bc",
+   "14eb99ac3ea85396",
+   "1a72ed14d1ab3200",
+   "2b769b67f233198d",
+   "3360ad2ef85283ff",
+   "3f04e94e1e6acc1e",
+   "b9d9b6cd850590a1",
+   "e27656c6cd971602",
+   "e8834739e36d6040",
+   "f0b35b90f469deba",
+   "fa7c2d2d7c91024e"
+  ],
+  "32": [
+   "09339d3db54953b3",
+   "13465e486c986e19"
+  ],
+  "48": [
+   "2da3b8a09aae307c",
+   "538fbe51f57bfe40",
+   "8503a87225edb7fa",
+   "8e42a54b60665c60",
+   "da22cea769a0adac",
+   "f194ceffc3cbed58"
+  ]
+ }
+}

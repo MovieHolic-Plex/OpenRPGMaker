@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a88c0563c6110356789d398b6675da51a997be7bfd0bcae3a9b345431461f7e2",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "prehistoric stone-age grass",
+ "label": "prehistoric/ph-grass",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ground terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile depicting green grass texture seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4292
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ground terrain tile textured with grass blades and ground details across the full 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4006
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile is a seamless/textured ground terrain surface, valid for RPG Maker top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4037
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 ground tile showing textured grass terrain viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4929
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.697Z",
+ "cells": {
+  "16": [
+   "56e2a4e9d97dc100"
+  ],
+  "24": [
+   "06353b288c53b4e3",
+   "49c59f44e2fbad57",
+   "6eced5bc71208e53",
+   "b503f2f31a330c71",
+   "e48cd72592802782",
+   "ea034d43efff21a8"
+  ],
+  "32": [
+   "0223f5c501a62bff",
+   "82884b9990605ea8",
+   "8ba2f6e595537b97",
+   "c293b0b3a5e572e3",
+   "dc79c1ef79a97b7d",
+   "fd10b71b979f7c52"
+  ],
+  "48": [
+   "0517eeb3588e5268",
+   "175fc11b29acf0e1",
+   "292e602013254e49",
+   "3ce6f1b69b9cd0ee",
+   "4b163b28c200ddba",
+   "aea39655f23ce213"
+  ]
+ }
+}

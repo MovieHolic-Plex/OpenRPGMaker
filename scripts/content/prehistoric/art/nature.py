@@ -16,7 +16,7 @@ R = Reg('nature')
 
 
 # ═══════════════════════ 잎 덩이 ═══════════════════════
-def foliage(c, blobs, mat='fern', base=None, s=0, clump=3):
+def foliage(c, blobs, mat='fern', base=None, s=0, clump=3, leafy=False):
     """잎 덩이(공) 여럿: 뒤(위)부터 앞(아래)으로 겹친다. 덩이마다 왼쪽 위 빛, 오른쪽 아래 가장자리 그늘,
     잎 무늬 = clump px 덩이마다 왼쪽 위 화소 밝게·오른쪽 아래 어둡게(잎사귀 하나)."""
     n = NT[MI[mat]]
@@ -31,11 +31,21 @@ def foliage(c, blobs, mat='fern', base=None, s=0, clump=3):
                 if d > 1.0 + (rnd(x, y, s + bi) - 0.6) * 0.25: continue
                 light = -0.62 * dx - 0.78 * dy
                 t = base + (1 if light > 0.25 else 0) + (1 if light > 0.62 else 0) - (1 if light < -0.3 else 0) - (1 if light < -0.7 else 0)
-                gx, gy = (x + bi * 5) // clump, (y + (x // clump) % 2 + bi) // clump
-                lx, ly = (x + bi * 5) % clump, (y + (x // clump) % 2 + bi) % clump
-                rr = rnd(gx, gy, s + 40)
-                if lx == 0 and ly == 0 and rr < 0.55 and light > -0.5: t += 1
-                elif lx == clump - 1 and ly == clump - 1 and rr > 0.35: t -= 1
+                if leafy:
+                    # 2판(화풍 정렬): 버들항 나무처럼 공 안을 잎 뭉치(지름 6~8px)로 나누고 뭉치마다 왼쪽 위 빛면·오른쪽 아래 그늘면,
+                    # 뭉치 사이 틈은 한 단 어둡게 — 공 하나의 큰 명암 위에 뭉치 명암이 얹혀 4~5단이 된다
+                    k, sx, sy, d1, d2 = _leaf_seed(x, y, cx, cy, r, s + bi * 7)
+                    ll = -0.62 * (x + 0.5 - sx) / 3.4 - 0.78 * (y + 0.5 - sy) / 3.4
+                    if ll > 0.3: t += 1
+                    if ll > 0.68 and light > -0.4: t += 1
+                    if ll < -0.35: t -= 1
+                    if d2 - d1 < 1.2 and ll < 0.1: t -= 1
+                else:
+                    gx, gy = (x + bi * 5) // clump, (y + (x // clump) % 2 + bi) // clump
+                    lx, ly = (x + bi * 5) % clump, (y + (x // clump) % 2 + bi) % clump
+                    rr = rnd(gx, gy, s + 40)
+                    if lx == 0 and ly == 0 and rr < 0.55 and light > -0.5: t += 1
+                    elif lx == clump - 1 and ly == clump - 1 and rr > 0.35: t -= 1
                 if d > 0.8 and light < 0: t -= 1
                 c.P(x, y, mat, max(0, min(n - 1, t)))
                 owner[(x, y)] = bi
@@ -45,6 +55,30 @@ def foliage(c, blobs, mat='fern', base=None, s=0, clump=3):
         if b2 is not None and b2 > bi:
             g = c.get(x, y); c.P(x, y, g[0], max(0, g[1] - 2))
     return owner
+
+
+_LEAF = {}
+
+
+def _leaf_seed(x, y, cx, cy, r, s):
+    """잎 뭉치 씨앗(공 하나 안 격자 4.5px + 흔들림)에서 가장 가까운 것: (번호, 씨앗 x, y, 첫 거리, 둘째 거리)."""
+    key = (round(cx, 2), round(cy, 2), round(r, 2), s)
+    if key not in _LEAF:
+        pts = []; g = 4.6
+        n = int(r / g) + 2
+        for j in range(-n, n + 1):
+            for i in range(-n, n + 1):
+                px_ = cx + i * g + (j % 2) * g / 2 + (rnd(i, j, s + 61) - 0.5) * 2.2
+                py_ = cy + j * g * 0.86 + (rnd(i, j, s + 62) - 0.5) * 2.0
+                pts.append((px_, py_))
+        _LEAF[key] = pts
+    best = (9e9, 0); sec = 9e9
+    for k, (px_, py_) in enumerate(_LEAF[key]):
+        d = math.hypot(x + 0.5 - px_, y + 0.5 - py_)
+        if d < best[0]: sec = best[0]; best = (d, k)
+        elif d < sec: sec = d
+    px_, py_ = _LEAF[key][best[1]]
+    return best[1], px_, py_, best[0], sec
 
 
 def frond(c, x0, y0, ang, ln, droop, mat='fern', t0=4, leaf=2, s=0):
@@ -159,7 +193,7 @@ def trunk(c, cx, top, bot, w, roots=3, s=0):
 @R.add('jungle-tree', '정글 나무(넓은 잎 덩이)', 4, 5, 'organic', tags=['나무', '정글', '숲'], rules='정글 숲 덩이. 줄기 칸(밑 두 줄)만 막힌다. 길 곁에는 한 칸 띄운다.')
 def _(c):
     trunk(c, 32, 44, 78, 8, roots=5)
-    foliage(c, [(20, 22, 14), (44, 20, 15), (32, 12, 13), (14, 36, 11), (50, 36, 11), (32, 34, 14), (24, 46, 9), (42, 47, 9)], mat='fern', base=3, s=1)
+    foliage(c, [(20, 22, 14), (44, 20, 15), (32, 12, 13), (14, 36, 11), (50, 36, 11), (32, 34, 14), (24, 46, 9), (42, 47, 9)], mat='fern', base=3, s=1, leafy=True)
     # 늘어진 덩굴 두 가닥
     for (x, y0, ln) in ((19, 44, 9), (47, 45, 7)):
         for j in range(ln): c.P(x + (j // 4) % 2, y0 + j, 'grass', 3 if j % 3 else 4)
@@ -190,7 +224,7 @@ def _(c):
             f = k / 20; x = x0 + (x1 - x0) * f; y = 62 - 10 * math.sin(math.pi * f)
             c.P(round(x), round(y), 'bark', 3 if f < 0.5 else 2); c.P(round(x), round(y) + 1, 'bark', 1)
     trunk(c, 24, 26, 54, 7, roots=2, s=4)
-    foliage(c, [(14, 18, 11), (34, 16, 12), (24, 9, 10), (24, 24, 11)], mat='fern', base=2, s=4)
+    foliage(c, [(14, 18, 11), (34, 16, 12), (24, 9, 10), (24, 24, 11)], mat='fern', base=2, s=4, leafy=True)
     # 늘어진 이끼
     for x in range(10, 40, 3):
         ln = 4 + h32(x, 1, 4) % 7

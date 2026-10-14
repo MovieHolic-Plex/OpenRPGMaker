@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "05f7ec11bd1f3b366db058f19cea6edf8f9426985d4d67202063d9a599a0f989",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "prehistoric stone-age basalt columns",
+ "label": "prehistoric/ph-basalt-columns",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cluster of basalt columns",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each basalt column clearly exhibits a foreshortened polygonal top surface (3-4 pixel rows tall) viewed from above, with vertical faceted south-facing shafts extending downward.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3826
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cluster of basalt columns",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each basalt column has a clearly rendered, foreshortened polygonal top surface 3 to 4 pixel rows tall (e.g., rows 7-10 on the tallest column and rows 17-20 on the central column) atop vertical front faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11294
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cluster of basalt columns",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each column clearly displays a foreshortened polygonal top surface viewed from above (e.g. center column top spans rows 17-20, tallest column top spans rows 7-9) over vertical columnar faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4005
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cluster of basalt columns",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each basalt column clearly displays a foreshortened polygonal top face measuring 4-5 pixel rows tall, matching the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3801
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.703Z",
+ "cells": {
+  "16": [
+   "183b7b42a964a0a0",
+   "63bc89cd683098df",
+   "6e8d328677e058b7",
+   "7d4c53db56153e1a",
+   "d00a8b8b52ecf5f2",
+   "ffbe0eb14b9e609d"
+  ],
+  "24": [
+   "17c0248990e0c507",
+   "182f12039f329914",
+   "5575ebdaaa1a23fe",
+   "6250b8c6bf002b22",
+   "746acb7e58ced81e",
+   "80cb4707a5ba36f7",
+   "8c8c6db330a8754e",
+   "9489a2c96221e8d8",
+   "9d13062b2a6a4e1a",
+   "b3d2485c7c906e1c",
+   "c0fe93abcc6fdb04",
+   "ccbdfef694f174cb"
+  ],
+  "32": [
+   "03d418413731394b",
+   "18171771254d880a",
+   "88e521fc8dcdb50a",
+   "ba5926d278d8ef58"
+  ],
+  "48": [
+   "17bf5b4e7222580f",
+   "4f4081c4df34a1c0",
+   "6c7f7c52fa5cb4d7"
+  ]
+ }
+}

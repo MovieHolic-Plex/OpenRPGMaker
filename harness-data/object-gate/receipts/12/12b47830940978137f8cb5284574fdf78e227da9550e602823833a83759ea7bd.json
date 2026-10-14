@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "12b47830940978137f8cb5284574fdf78e227da9550e602823833a83759ea7bd",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "prehistoric stone-age fern s",
+ "label": "prehistoric/ph-fern-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fern plant",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fern fronds are arranged in layers viewed from above at a 3/4 angle, with top-facing highlights across rows 6 to 9 showing the spreading fronds.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3898
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fern plant",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fern fronds are viewed from above at a 3/4 angle, with the upper, sunlit top surface of the central fronds occupying rows 6-9 before cascading down into foreground and background layers.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3306
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fern fronds / foliage",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Upper fronds are viewed from above showing their light-receiving top surfaces across rows 6-9, overlapping the lower leaves in depth consistent with 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2986
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fern frond cluster",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fern shows fronds layered in 3/4 view with upper surfaces visible and foreshortened across rows 6-9 overlapping the lower foliage below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5528
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.701Z",
+ "cells": {
+  "16": [
+   "c1e6b323a2963220"
+  ],
+  "24": [
+   "01d3707eacd0d477",
+   "37e9eaea4c743732",
+   "7cad2ce08735ef81",
+   "94f1365b822f4ac1",
+   "b74f6f94820ee91d",
+   "c54529851643c53f"
+  ],
+  "32": [
+   "023d502a72c0cbab",
+   "1729790575ec3c28",
+   "182fb4d024541322",
+   "7b876c681322949c",
+   "c69bac3bcd046f63",
+   "fffae9f99b89ba92"
+  ],
+  "48": [
+   "7079696f7c052240",
+   "767280ec1d53f4b8",
+   "86a801be09a5005a",
+   "beaf410d7f85829d",
+   "d424814891dfb531",
+   "f958c769bf36444b"
+  ]
+ }
+}

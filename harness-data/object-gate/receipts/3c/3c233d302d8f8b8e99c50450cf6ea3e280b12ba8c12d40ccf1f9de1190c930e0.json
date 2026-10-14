@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3c233d302d8f8b8e99c50450cf6ea3e280b12ba8c12d40ccf1f9de1190c930e0",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "prehistoric stone-age fish rack",
+ "label": "prehistoric/ph-fish-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "slanted or flat reed drying rack surface held in a wooden frame on legs",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main rack/tabletop surface spans rows 6 to 20 (15 rows tall) showing the top of the reed mat with fish laid upon it, foreshortened in standard 3/4 perspective above a front frame beam and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5123
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "drying rack surface with fish and wooden frame",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top drying surface spans rows 6 to 20 (~15 pixels high) showing fish laid out from above, supported by a front rail and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3505
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fish drying rack surface and frame",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rack shows an expansive foreshortened top surface (rows 6 to 20, ~15 px) where the fish rest on a reed mat, plus a front south-facing crossbeam and legs below (rows 21-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3157
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fish drying rack surface and frame",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal drying surface spans rows 6 to 20 (approx. 15 rows) seen from above, displaying fish lying on straw matting, supported by a front beam and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3017
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.705Z",
+ "cells": {
+  "16": [
+   "15322877af717693",
+   "a98dad9450ce25bf",
+   "e229ce65c4bb99e3",
+   "fdd44efb0461bd0a"
+  ],
+  "24": [
+   "0422d7caaca16dea",
+   "1484fd819481a64b",
+   "167df616d7477f95",
+   "2027b9ae2a6c613c",
+   "2189756f8f753b93",
+   "2d12868f64f3da26",
+   "35f9bf137c0b3fe1",
+   "371829713925e3e8",
+   "3dd52b74d9cd1b65",
+   "3e81162199ec3d0b",
+   "4490fbc2717968f9",
+   "7e7235e1f068b53c",
+   "7f251fb455b9c1b0",
+   "98b58c2fd2ac40d5",
+   "9abdce72236eca74",
+   "a502bacc22406ab1",
+   "ad75bce4ea061713",
+   "b22110bb71a303d7",
+   "bdb76baba40cce08",
+   "cbeb37b9b34026f0",
+   "dafd598a0b44eb13",
+   "de886b1a6f153945",
+   "e26cc050f093470b",
+   "fc6a28e4929c33d4"
+  ],
+  "32": [
+   "86736c54d7d6684f"
+  ],
+  "48": [
+   "4c11488b91c29515",
+   "72a31fd0d60a9fa7",
+   "a3b3340302d085fb",
+   "ab913588e2ece1a1",
+   "bb8fe55ba37de376",
+   "c5ee989bedbd5b2f"
+  ]
+ }
+}
