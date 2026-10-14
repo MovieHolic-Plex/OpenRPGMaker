@@ -16,14 +16,14 @@
 import { checkGroundSupportForStamp, groundSupportIssues, kitSupportKind } from "@/project/groundSupport";
 import type { AutotileGroup, GameMap, StructureKitDef, TilesetDef } from "@/project/types";
 import { DungeonComposeError } from "../errors";
-import { Grid, WALL_ROWS, hash01, rng, vnoise } from "../grid";
+import { WALL_ROWS, hash01, rng, vnoise } from "../grid";
 import { layoutBlob, layoutMaze } from "../layouts";
 import { layoutDungeon } from "../layoutRooms";
 import { buildMask } from "../mask";
-import { PROFILES, type BeodeulDungeonType } from "./profiles";
+import { PROFILES } from "./profiles";
 import { dressTyped, type DressCtx } from "./dress";
 import { DUNGEON_DIRS, DUNGEON_ROOM_KINDS, DUNGEON_SIZES, DUNGEON_STYLES, DUNGEON_TYPES } from "../types";
-import type { DungeonDir, DungeonLayout, DungeonRoomInput, DungeonRoomKind, DungeonSize, DungeonSpec, DungeonStyle, DungeonType, PlacedCorridor, PlacedRoom, Rect } from "../types";
+import type { DungeonDir, DungeonLayout, DungeonRoomInput, DungeonRoomKind, DungeonSize, DungeonSpec, DungeonStyle, DungeonType, PlacedCorridor, PlacedRoom } from "../types";
 
 export { DUNGEON_DIRS, DUNGEON_ROOM_KINDS, DUNGEON_SIZES, DUNGEON_STYLES, DUNGEON_TYPES, DungeonComposeError };
 export type { DungeonDir, DungeonLayout, DungeonRoomInput, DungeonRoomKind, DungeonSize, DungeonSpec, DungeonStyle, DungeonType, PlacedCorridor, PlacedRoom };

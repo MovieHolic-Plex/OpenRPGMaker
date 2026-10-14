@@ -21,7 +21,6 @@ export interface FloorSpec {
 }
 
 export interface TypeProfile extends GrammarInfo {
-  readonly id: BeodeulDungeonType;
   readonly face: { readonly h3: string; readonly h2: string };
   readonly floor: FloorSpec;
 }

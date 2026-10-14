@@ -468,7 +468,7 @@ function dressVolcano(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | nu
 
 // ---------------------------------------------------------------- 미궁
 
-function dressMaze(c: DressCtx, r: PlacedRoom, i: number, rs: () => number, s: Slot | null): boolean {
+function dressMaze(c: DressCtx, r: PlacedRoom, _i: number, rs: () => number, s: Slot | null): boolean {
   if (r.kind !== "entrance") return false;      // 보스·보물 방은 공통 방 규칙
   if (s) { c.put(TORCH, s.x - 2, s.y); c.put(TORCH, s.x + 2, s.y); }
   // 미궁 전체: 벽 횃불은 드문드문, 길바닥에 뼈·잔해·격자, 막다른 길목에 상자 모둠
