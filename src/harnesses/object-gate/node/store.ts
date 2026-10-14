@@ -80,5 +80,5 @@ export const gateProfileHash = () => objectGateProfileHash(gateProfile());
 /** 답 캐시 키 — 프롬프트에 영향 주는 것(판정자·지시문·출력 형식·기준 그림·확대 배율)만 묶는다. 합치기 규칙·하한만 바뀌면 캐시를 그대로 쓴다(--offline 재계산). */
 export const gatePromptHash = () => {
   const p = gateProfile() as Record<string, unknown>;
-  return objectGateProfileHash({ judges: p.judges, rubric: p.rubric, styleRubric: p.styleRubric, outputFormat: p.outputFormat, styleKinds: p.styleKinds, styleRefs: p.styleRefs, view34Guide: p.view34Guide, magnify: p.magnify });
+  return objectGateProfileHash({ judges: p.judges, factsVersion: p.factsVersion, rubric: p.rubric, styleRubric: p.styleRubric, outputFormat: p.outputFormat, styleKinds: p.styleKinds, styleRefs: p.styleRefs, view34Guide: p.view34Guide, magnify: p.magnify });
 };

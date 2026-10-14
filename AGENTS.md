@@ -61,7 +61,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
 - **던전·동굴 공용 칩셋 beodeul_dungeon(버들항과 같은 oprn-atlas 계열)의 불규칙 벽·바닥 오토타일·물/용암/얼음 가장자리·계단·문·함정·상자·횃불 조각을 그릴 때**
   → `dungeon-chipset` · 시드 `harness-data/dungeon-chipset/seed.json` · `npm run harness -- dungeon-chipset palette|validate|list|draw|gate|sheet|pick|reject|status` · 문서 `openwiki/harnesses/dungeon-chipset.md`
   → 코드 손 도트(행 문자열), 버들항 실제 색 잠금 팔레트. 후보는 사람이 시트(`~/claude-viz/dungeon-<판>.html`)에서 고르고 pick 은 그림 해시에 묶인다. 관문 통과는 합격이 아니며 번들 굽기는 별도.
-- **새 기물(오브젝트) 그림을 번들·공용 DB·스토어·공방 칩셋에 굽거나 올리기 전 / 굽기·게시 스크립트에 3/4 시점 관문을 붙일 때** → `object-gate` · 시드 `harness-data/object-gate/seed.json` · `npm run harness -- object-gate review|calibrate|check|status|audit|preview` · 문서 `openwiki/harnesses/object-gate.md`. 판정자 gemini-4-argon(effort medium, 가정) 하나×네 번(과반, 2026-10-14 전환) 한 번의 판정이 **3/4 시점 + 버들항 화풍(같은 종류 버들항 기준 그림과 같은 배율 비교)** 둘을 함께 정하고, 영수증은 두 판정을 그림 화소 해시·프로필 해시에 묶는다(둘 다 통과해야 통과, 화풍은 영수증의 별도 칸). 위반 표본을 다 잡는 보정 프로필만 효력이 있다(현재 미보정 — 2026-10-14 프로필 `473db36f963972c9` rejected: 3/4 위반 17/47·정상 27/36, 화풍 얕음 53/71·버들 43/78. 옛 영수증은 무효, `rereview` 는 보정 통과 전엔 거절). 번들·공용·스토어는 예외 없이 막고 공방 로컬만 사람이 「그래도 넣기」.
+- **새 기물(오브젝트) 그림을 번들·공용 DB·스토어·공방 칩셋에 굽거나 올리기 전 / 굽기·게시 스크립트에 3/4 시점 관문을 붙일 때** → `object-gate` · 시드 `harness-data/object-gate/seed.json` · `npm run harness -- object-gate review|calibrate|check|status|audit|preview` · 문서 `openwiki/harnesses/object-gate.md`. 판정자 Claude Sonnet 5.5 high(`claude -p`, 사용자 결정 2026-10-14; 신원·effort 는 프로필 해시, 안 되면 다른 모델로 안 넘어가고 멈춤) 하나×네 번(과반) 한 번의 판정이 **3/4 시점 + 버들항 화풍(같은 종류 버들항 기준 그림과 같은 배율 비교)** 둘을 함께 정하고, 영수증은 두 판정을 그림 화소 해시·프로필 해시에 묶는다(둘 다 통과해야 통과, 화풍은 영수증의 별도 칸). 위반 표본을 다 잡는 보정 프로필만 효력이 있다(현재 미보정 — 2026-10-14 프로필 `473db36f963972c9` rejected: 3/4 위반 17/47·정상 27/36, 화풍 얕음 53/71·버들 43/78. 옛 영수증은 무효, `rereview` 는 보정 통과 전엔 거절). 번들·공용·스토어는 예외 없이 막고 공방 로컬만 사람이 「그래도 넣기」.
 - **조선(바람의나라풍) 칩셋 joseon_baram 의 조각·지도를 만지거나 번들을 재생성할 때** (팔레트 잠금·게이트 P/E/T/L/S/A/K/TR/V·판정·지도 관문·16구역 적대 검수)
   → `joseon-baram` · 시드 `harness-data/joseon-baram/seed.json`(지도 15장·관문·쓰지 말 것)
   → `npm run harness -- joseon-baram <단계>` (palette·validate·list·gate·verdict·build·map·review·status) · 문서 `openwiki/harnesses/joseon-baram.md`
@@ -202,7 +202,7 @@ index 에서 제거하고 `.gitignore` 에 `.qoder/` `.qwen/` `.senpi/` `.agents
 3/4 탑뷰 검증을 통과한 뒤에만 번들·공용 DB·맵·스토어에 들어간다.** 「눈으로 봤다」「기계 지표 통과」「서브에이전트 QA 점수」는 이 관문을 대신하지 못한다.
 
 - 관문의 정본은 `object-gate` 하나다: `npm run harness -- object-gate review|check|status` · 문서 `openwiki/harnesses/object-gate.md`.
-  판정자 gemini-4-argon(medium 가정) 하나×네 번(과반, 2026-10-14)이고 한 번에 3/4 와 버들항 화풍 둘을 함께 판정한다(영수증에 칸 둘, 둘 다 통과해야 통과; 숫자 지표는 보조). 영수증은 그림 화소 해시에 묶인다. 그림이 한 화소라도 바뀌면 다시 받는다.
+  판정자 Claude Sonnet 5.5 high 하나×네 번(과반, 2026-10-14 교체; 보정 프로필 `3989203095df6a2f` rejected — 3/4 위반 43/47·정상 19/36, 화풍 58/71·31/78)이고 한 번에 3/4 와 버들항 화풍 둘을 함께 판정한다(영수증에 칸 둘, 둘 다 통과해야 통과; 숫자 지표는 보조). 영수증은 그림 화소 해시에 묶인다. 그림이 한 화소라도 바뀌면 다시 받는다.
 - **지금 상태(2026-10-13 실측): 영수증 0장, 보정 프로필 미보정(`status`), 출구 미배선** — 어느 굽기 스크립트(`bake_jp.py` 등)도 이 관문을 호출하지 않는다.
   그래서 새 키트가 관문 없이 계속 들어왔다. 이 상태를 「관문이 있다」고 쓰거나 「통과했다」고 보고하지 마라.
 - 새 그림을 만든 에이전트는 완료 보고에 `object-gate review` 영수증(또는 `status` 출력)을 붙인다. 없으면 「3/4 관문 미통과」라고 쓴다.
