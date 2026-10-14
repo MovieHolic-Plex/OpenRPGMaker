@@ -268,7 +268,13 @@ def meadow() -> Image.Image:
             if ((x - 197) / 28) ** 2 + ((y - base - 2) / 3.2) ** 2 <= 1:
                 c = cv.get(x, y)
                 cv.p(x, y, (int(c[0] * .78), int(c[1] * .84), int(c[2] * .82), 255))
-    fox(cv, 150, near(150) + 5)
+    fx = 150
+    fy = near(fx) + 6
+    for x in range(fx - 10, fx + 20):                                         # 발밑 그늘
+        for y in range(int(fy - 1), int(fy + 2)):
+            if ((x - fx - 4) / 13) ** 2 + ((y - fy) / 1.6) ** 2 <= 1:
+                c = cv.get(x, y); cv.p(x, y, (int(c[0] * .8), int(c[1] * .86), int(c[2] * .84), 255))
+    fox(cv, fx, fy)
     return cv.im
 
 
@@ -389,7 +395,8 @@ def scarab(cv: Canvas, cx, foot):
     # 다리(뒤 그늘)
     for k, (lx, ly) in enumerate(((-16, 0), (-6, 1), (6, 1), (16, 0))):
         for t in range(5):
-            mask[(int(cx + lx + t * (1 if lx > 0 else -1) * .4), int(foot - 5 + t))] = hx("#2a2a4a")
+            xx = int(cx + lx + t * (1 if lx > 0 else -1) * .4)
+            mask[(xx, int(foot - 5 + t))] = hx("#2a2a4a"); mask[(xx + 1, int(foot - 5 + t))] = hx("#3a3a6a")
     # 등 껍데기(넓은 타원, 가운데 갈라진 줄)
     rx, ry, cy = 24, 13, foot - 14
     for y in range(int(cy - ry), int(cy + ry) + 1):
@@ -445,13 +452,15 @@ def snow() -> Image.Image:
         for x in range(*span):
             cy = y0 + amp * math.sin(x / 34 + ph) + 3 * math.sin(x / 11 + ph * 2)
             fade = min(1, (x - span[0]) / 30, (span[1] - x) / 30)
-            hgt = int((7 + 5 * math.sin(x / 7 + ph) + 3 * math.sin(x / 3.1)) * fade)
+            hgt = int((9 + 3 * math.sin(x / 17 + ph)) * fade)
             for k in range(hgt):
                 y = int(cy + k)
                 t = k / max(1, hgt)
                 if t > .6 and (t - .6) * 40 > BAYER[y % 4][x % 4]:
                     continue                                                   # 아래로 디더 페이드
                 c = au[3] if t < .12 else au[2] if t < .35 else au[1] if t < .7 else au[0]
+                if t < .5 and (x // 2) % 3 == 0:
+                    c = au[min(3, au.index(c) + 1)]                           # 위쪽 빛줄(세로 결)
                 cv.p(x, y, c)
     # 달
     cv.disc(52, 30, 11, hx("#f4f6ff"))
