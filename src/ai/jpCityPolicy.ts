@@ -186,6 +186,10 @@ export function formatJpCityNote(target: JpCityTarget, targetMap: { id: string; 
         + `layout: ${f.programs}. 방 종류만 고를 때는 layout:{rooms:[{kind:"…"}]} (종류: ${f.rooms}).`,
       `floor·wall 은 꼭 준다(건물 기본 — 방마다 바닥·벽은 견본이 덮는다): ${f.floor}. 부품 확인은 list_hand_interior_parts({tileset:\"jp_city\", room:"<방 종류>"}).`,
       "만든 뒤 결과 data.layout.picture 로 배치를 보고 출입구에서 닿지 못한 바닥이 0인지 확인한다. 거리 건물 문과 이을 때는 link_jp_city_interior. 사람(교사·직원·의사·환자)은 Actor1 캐릭터 이벤트로 놓는다.",
+      // 2026-10-14 gemini-4-argon 실조수 4건: 넷 다 첫 호출에 program 으로 잘 지었는데, 둘은 그 뒤 같은 맵을 variant·rooms·손 objects 로 4~5번 다시 지어
+      // 견본 배치를 버리고 손 평면(22×16)·w/h 를 준 rooms 로 좁혀 가구가 겹쳤다.
+      "결과가 「닿지 못한 빈 바닥 0, 경고 0」이면 그 배치를 그대로 둔다 — 같은 맵을 rooms·plan·objects 로 다시 짓지 않는다(견본 방이 가장 잘 맞춘 배치다; 복도·현관·대기실의 빈 바닥은 동선이다). "
+        + "배치만 달리 보고 싶을 때는 layout.variant 하나만 바꾼다. rooms 로 지을 때 w·h 는 주지 않는다(방 크기는 견본이 정한다 — 작게 주면 가구가 겹친다).",
     ].join("\n");
   }
   const where = target.mapId && !target.lived

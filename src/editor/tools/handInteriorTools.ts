@@ -19,6 +19,11 @@ import { handInteriorPlanExits } from '@/editor/handInterior/exits';
 import { withComposedRooms } from '@/editor/handInterior/rooms';
 import { layoutAscii, layoutCandidates, LayoutError, type LayoutCandidate, type LayoutRequest } from '@/editor/handInterior/layout';
 import { furnishRooms } from '@/editor/handInterior/furnish';
+import { addMapLocation } from '@/project/mapNamedLocations';
+import { COMPOSED_LAYOUT_TAG } from '@/ai/piAgent/layoutQuality';
+
+/** layout 으로 짠 방의 이름표 — 다시 지을 때 이 이름표만 갈아 끼운다. */
+const HAND_LAYOUT_ROOM_TAG = 'hand-layout-room';
 import { roomPrograms, roomTemplates } from '@/editor/handInterior/templates';
 import { genId } from "@/util/id";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
@@ -642,6 +647,13 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
       events, climate: { mode: "indoor" },
     } as GameMap;
     delete (map as Partial<GameMap>).lowerTileStacks; delete (map as Partial<GameMap>).upperTileStacks; delete (map as Partial<GameMap>).shadowBits; delete (map as Partial<GameMap>).relief;
+    // layout(program·rooms)으로 짠 방은 방마다 제작자 예제 가구 한 벌을 심은 배치다 — 방 이름표(composed-layout)를 달아 배치 품질 권고(빈 바닥 → 줄여라)가
+    // 이 배치를 손으로 다시 짜게 하지 않는다. 2026-10-14 gemini-4-argon 실조수: 「학교 복도와 신발장」을 school-1f 로 잘 지은 뒤 권고를 받고
+    // 35×16 → 22×16 손 평면·손 가구로 다시 지어 견본 배치를 버렸다(복도는 원래 비어 있는 동선이다).
+    if (picked) {
+      map.locations = (map.locations ?? []).filter((l) => !(l.tags ?? []).includes(HAND_LAYOUT_ROOM_TAG));
+      for (const r of picked.c.rooms) addMapLocation(map, { name: r.kind, x: r.x0, y: r.y0, w: r.x1 - r.x0 + 1, h: r.y1 - r.y0 + 1, note: "layout 으로 짠 방(견본 가구 한 벌)", tags: [HAND_LAYOUT_ROOM_TAG, COMPOSED_LAYOUT_TAG] });
+    }
     draft.maps[mapId] = map;
     const trimNote = trimmed.trimmed
       ? `평면 바깥 막힌 여백을 잘라 ${built.width}×${built.height} 로 지었다 — 입력 좌표는 왼쪽 ${trimmed.dx}·위 ${trimmed.dy} 칸만큼 옮겨졌다. 이후 이 맵 좌표는 새 기준을 쓴다.`
