@@ -180,9 +180,10 @@ export const COMPOSE_CAMPUS_GROUNDS_TOOL: ToolDefinition = {
     if (entranceKits.length) draft.mapTree = next.mapTree;
     return {
       summary: `${style === "school" ? "학교 교정" : "대학 캠퍼스"}를 ${map.width}×${map.height} 맵(${mapId})에 짰다(seed ${seed}) — 건물 ${r.buildings.length}채, 소품 ${r.props.length}개, 시작 칸 (${r.start.x},${r.start.y}) 에서 모든 문 접근칸에 닿음(엔진 통행). `
-        + `건물 문: ${r.buildings.map((d) => `${d.name} (${d.doors.map((c) => `${c.x},${c.y}`).join(" · ")})`).join(" · ")}. 문마다 실내를 build_hand_interior_room 으로 짓고 link_campus_interior 로 잇는다 — 문만 있고 안이 없는 건물을 남기지 않는다(이 요청이 안까지 걷기를 원하지 않는 건물은 final 답에 「문만 있음」이라고 밝힌다).`
+        + `건물: ${r.buildings.map((d) => d.entrance ? `${d.name} (문 ${d.doors.map((c) => `${c.x},${c.y}`).join(" · ")} → 실내에 이어짐)` : `${d.name} (문 없는 벽면)`).join(" · ")}. `
+        + (r.buildings.some((d) => !d.entrance) ? "문 없는 건물은 안이 없다 — 실내를 달려면 build_hand_interior_room 으로 지은 뒤 link_campus_interior({building, interiorMapId}) 가 문과 이음을 한 번에 낸다(문만 있고 안이 없는 죽은 문은 만들지 않는다). " : "")
         + (r.notes.length ? ` 참고: ${r.notes.join(" / ")}.` : "") + (blocked.length ? ` 경고: 막힌 칸 위 이벤트 ${blocked.join(", ")}.` : ""),
-      data: { mapId, style, seed, start: r.start, gate: r.gate, buildings: r.buildings.map((d) => ({ name: d.name, kit: d.kit, rect: d.rect, doors: d.doors, access: d.access })), props: r.props.length },
+      data: { mapId, style, seed, start: r.start, gate: r.gate, buildings: r.buildings.map((d) => ({ name: d.name, kit: d.kit, rect: d.rect, entrance: d.entrance, doors: d.entrance ? d.doors : [], access: d.entrance ? d.access : [] })), props: r.props.length },
     };
   },
 };
