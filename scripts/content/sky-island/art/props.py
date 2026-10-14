@@ -71,6 +71,25 @@ def round_tree(c, s=1, mat='leaf', base=3, flowers=None):
 def _(c): round_tree(c, 3)
 
 
+@A('tree-big', '큰 활엽수', 3, 4, 'organic', ['나무', '숲'], '마을 기본 나무(버들항 활엽수 크기). 풀 칸 위에만, 집·길에서 1칸 띄운다. 줄기 칸(맨 아랫줄 가운데)이 막힘.',
+   gate_name='large round leafy broadleaf tree')
+def _(c):
+    W, H = c.w, c.h
+    cx = W // 2
+    shadow_ell(c, cx + 2, H - 5, 17, 4.2)
+    trunk(c, cx - 3, H - 24, H - 3, 6)
+    for dx, t in ((-5, 2), (-4, 3), (6, 1), (7, 2)): c.P(cx + dx, H - 3, 'wood', t)              # 뿌리 뻗음
+    c.P(cx - 4, H - 4, 'wood', 3); c.P(cx + 5, H - 4, 'wood', 1)
+    c.line(cx + 2, H - 25, cx + 8, H - 32, 'wood', 2)                                             # 가지(잎 사이로 보임)
+    cl = [(cx - 13, H - 30, 9), (cx + 13, H - 29, 9), (cx - 6, H - 40, 11), (cx + 7, H - 41, 11), (cx, H - 52, 10),
+          (cx - 11, H - 48, 8), (cx + 12, H - 50, 8), (cx - 2, H - 28, 10), (cx + 5, H - 30, 8)]
+    pts = blob(c, cl, 'leaf', 3, 41, rim=0)
+    leafy(c, pts, 'leaf', 3, 41)
+    for x in range(cx - 4, cx + 7):                                                              # 잎 덩이 밑 그늘이 줄기에 드리운다
+        g = c.get(x, H - 24)
+        if g and g[0] == 'wood': c.P(x, H - 24, 'wood', 1)
+
+
 @A('tree-blossom', '꽃나무(분홍)', 2, 3, 'organic', ['나무', '꽃'], '신전 앞·광장 모퉁이에 한두 그루.', gate_name='round blossom tree with pink flowers')
 def _(c): round_tree(c, 5, 'flower', 2)
 

@@ -4,6 +4,8 @@
 {"png": "si-grass-flower.png", "kind": "terrain", "name": "grass ground tile", "label": "sky-island/si-grass-flower"}
 {"png": "si-grass-flower-b.png", "kind": "terrain", "name": "grass ground tile", "label": "sky-island/si-grass-flower-b"}
 {"png": "si-grass-b.png", "kind": "terrain", "name": "grass ground tile", "label": "sky-island/si-grass-b"}
+{"png": "si-grass-b2.png", "kind": "terrain", "name": "grass ground tile", "label": "sky-island/si-grass-b2"}
+{"png": "si-grass-b3.png", "kind": "terrain", "name": "grass ground tile", "label": "sky-island/si-grass-b3"}
 {"png": "si-grass-shade-a.png", "kind": "terrain", "name": "grass ground tile with darker grass patch", "label": "sky-island/si-grass-shade-a"}
 {"png": "si-grass-shade-b.png", "kind": "terrain", "name": "grass ground tile with darker grass patch", "label": "sky-island/si-grass-shade-b"}
 {"png": "si-grass-tuft-a.png", "kind": "terrain", "name": "grass ground tile with a small grass tuft", "label": "sky-island/si-grass-tuft-a"}
@@ -72,6 +74,23 @@
 {"png": "si-path-1.png", "kind": "terrain", "name": "flagstone path on grass (terrain)", "label": "sky-island/si-path-1"}
 {"png": "si-path-2.png", "kind": "terrain", "name": "flagstone path on grass (terrain)", "label": "sky-island/si-path-2"}
 {"png": "si-path-3.png", "kind": "terrain", "name": "flagstone path on grass (terrain)", "label": "sky-island/si-path-3"}
+{"png": "si-road.png", "kind": "terrain", "name": "paved cobblestone road tile with curb (terrain)", "label": "sky-island/si-road"}
+{"png": "si-road-n.png", "kind": "terrain", "name": "paved cobblestone road tile with curb (terrain)", "label": "sky-island/si-road-n"}
+{"png": "si-road-s.png", "kind": "terrain", "name": "paved cobblestone road tile with curb (terrain)", "label": "sky-island/si-road-s"}
+{"png": "si-road-ns.png", "kind": "terrain", "name": "paved cobblestone road tile with curb (terrain)", "label": "sky-island/si-road-ns"}
+{"png": "si-road-w.png", "kind": "terrain", "name": "paved cobblestone road tile with curb (terrain)", "label": "sky-island/si-road-w"}
+{"png": "si-road-nw.png", "kind": "terrain", "name": "paved cobblestone road tile with curb (terrain)", "label": "sky-island/si-road-nw"}
+{"png": "si-road-sw.png", "kind": "terrain", "name": "paved cobblestone road tile with curb (terrain)", "label": "sky-island/si-road-sw"}
+{"png": "si-road-nsw.png", "kind": "terrain", "name": "paved cobblestone road tile with curb (terrain)", "label": "sky-island/si-road-nsw"}
+{"png": "si-road-e.png", "kind": "terrain", "name": "paved cobblestone road tile with curb (terrain)", "label": "sky-island/si-road-e"}
+{"png": "si-road-ne.png", "kind": "terrain", "name": "paved cobblestone road tile with curb (terrain)", "label": "sky-island/si-road-ne"}
+{"png": "si-road-se.png", "kind": "terrain", "name": "paved cobblestone road tile with curb (terrain)", "label": "sky-island/si-road-se"}
+{"png": "si-road-nse.png", "kind": "terrain", "name": "paved cobblestone road tile with curb (terrain)", "label": "sky-island/si-road-nse"}
+{"png": "si-road-we.png", "kind": "terrain", "name": "paved cobblestone road tile with curb (terrain)", "label": "sky-island/si-road-we"}
+{"png": "si-road-nwe.png", "kind": "terrain", "name": "paved cobblestone road tile with curb (terrain)", "label": "sky-island/si-road-nwe"}
+{"png": "si-road-swe.png", "kind": "terrain", "name": "paved cobblestone road tile with curb (terrain)", "label": "sky-island/si-road-swe"}
+{"png": "si-road-nswe.png", "kind": "terrain", "name": "paved cobblestone road tile with curb (terrain)", "label": "sky-island/si-road-nswe"}
+{"png": "si-road-b.png", "kind": "terrain", "name": "paved cobblestone road tile (terrain)", "label": "sky-island/si-road-b"}
 {"png": "si-plaza.png", "kind": "terrain", "name": "cobblestone plaza tile (terrain)", "label": "sky-island/si-plaza"}
 {"png": "si-plaza-n.png", "kind": "terrain", "name": "cobblestone plaza edge on grass (terrain)", "label": "sky-island/si-plaza-n"}
 {"png": "si-plaza-s.png", "kind": "terrain", "name": "cobblestone plaza edge on grass (terrain)", "label": "sky-island/si-plaza-s"}

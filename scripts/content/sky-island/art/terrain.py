@@ -82,13 +82,13 @@ def grass_fill(c, s=1, flowers=0, base=4):
 def grass_light(c, s=1, clumps=()):
     """밝은 풀 얼룩(햇빛 받은 풀): 바탕 위에 밝은 풀(5단, 속은 6단 점) 덩이 — 가장자리는 디더로 바탕에 녹는다. 칸 끝 1화소는 바탕 그대로."""
     grass_fill(c, s)
-    for y in range(1, 15):
-        for x in range(1, 15):
+    for y in range(3, 13):
+        for x in range(3, 13):
             v = 0.0
             for (cx, cy, rx, ry) in clumps:
                 dx, dy = (x + 0.5 - cx) / rx, (y + 0.5 - cy) / ry
                 v = max(v, 1 - (dx * dx + dy * dy))
-            v += (tnoise(x, y, 4, s + 41) - 0.5) * 0.22
+            v += (rnd(x, y, s + 41) - 0.5) * 0.45
             if v <= 0.05: continue
             chk = (x + y) % 2
             g = c.get(x, y)[1]
@@ -237,8 +237,12 @@ for _id, _nm, _s, _fl, _b in (('grass', '풀밭', 1, 0, 4), ('grass-flower', '�
     A(_id, _nm, 1, 1, 'terrain', ['풀', '섬'], '섬 윗면. grass 를 바탕으로 grass-b 를 섞고 들꽃 칸은 낱칸으로 드물게(10칸에 하나 이하). 모든 풀 칸은 서로 이음매 없이 붙는다.', pc='floor', gate_name='grass ground tile')(
         (lambda s, fl, b: (lambda c: grass_fill(c, s, fl, b)))(_s, _fl, _b))
 
-A('grass-b', '풀밭(밝은 얼룩)', 1, 1, 'terrain', ['풀', '섬'], '풀밭 얼룩. grass 사이에 몇 칸씩 몰아 깐다(햇빛 받은 풀). 모든 풀 칸은 서로 이음매 없이 붙는다.', pc='floor', gate_name='grass ground tile')(
-    lambda c: grass_light(c, 2, ((6.0, 6.5, 5.0, 4.0), (10.5, 10.0, 4.0, 3.5))))
+# 밝은 얼룩은 작고 불규칙하게(칸 경계에서 4화소 이상 떨어짐) 변형 셋 — 2배에서 칸 모양 네모 얼룩이 반복돼 보이던 것(감독 판정 2026-10-14).
+for _id, _nm, _s, _cl in (('grass-b', '풀밭(밝은 얼룩)', 2, ((6.5, 7.0, 3.0, 2.2), (9.0, 8.5, 2.2, 1.8))),
+                          ('grass-b2', '풀밭(밝은 얼룩 둘)', 25, ((5.0, 9.5, 2.0, 1.6), (10.5, 5.5, 2.6, 1.9))),
+                          ('grass-b3', '풀밭(밝은 얼룩 셋)', 26, ((8.5, 10.0, 3.2, 1.8), (6.0, 8.8, 1.6, 1.4), (11.0, 5.0, 1.5, 1.3)))):
+    A(_id, _nm, 1, 1, 'terrain', ['풀', '섬'], '풀밭 얼룩. grass 사이에 드문드문(햇빛 받은 풀). 모든 풀 칸은 서로 이음매 없이 붙는다.', pc='floor', gate_name='grass ground tile')(
+        (lambda s, cl: (lambda c: grass_light(c, s, cl)))(_s, _cl))
 # 화풍 정렬 2026-10-14(D9 풀 결 단조): 짙은 풀 그늘 덩이 둘 + 풀포기 덤불 둘. 구성기가 풀 얼룩 진한 곳에 몰아 깐다.
 for _id, _nm, _s, _cl in (('grass-shade-a', '풀밭(짙은 풀 그늘)', 21, ((7.5, 8.0, 6.5, 5.5), (11.0, 11.5, 3.5, 3.0))),
                           ('grass-shade-b', '풀밭(짙은 풀 그늘 둘)', 22, ((5.0, 6.0, 4.0, 3.5), (10.5, 9.5, 4.5, 4.5), (6.0, 12.0, 3.0, 2.0)))):
@@ -718,6 +722,71 @@ def flagstones(c, s=1):
 for _s in (1, 2, 3):
     A(f'path-{_s}', f'디딤돌 길({_s})', 1, 1, 'terrain', ['길', '돌'], '집 문 앞 접근칸과 다리 끝·부두를 잇는 길. 1~2칸 폭으로 1·2·3 을 섞는다.', pc='floor', gate_name='flagstone path on grass (terrain)')(
         (lambda s: (lambda c: flagstones(c, s)))(_s))
+
+
+# ═══════════════════════ 포석 큰길(이웃 마스크 16 + 안쪽 변형) ═══════════════════════
+# 화풍 정렬 2026-10-14(감독 판정 2): 디딤돌 길이 섬 위에 점선처럼 떠 보여서, 버들항 포석 큰길처럼 판석이 맞물린 면 + 풀과 닿는 쪽만 연석.
+# 안쪽 판석은 16px 토러스 보로노이(돌 14개, 4~5px)라 길 칸끼리 이음매가 없다. 칸 경계에 걸친 돌은 모든 변형이 같은 단을 쓴다.
+ROAD_STONES = []
+for _j in range(3):
+    for _i in range(3):
+        ROAD_STONES.append(((_i * 16 / 3 + (2.7 if _j % 2 else 0) + (rnd(_i, _j, 131) - 0.5) * 1.6) % 16, (_j * 16 / 3 + 2.6 + (rnd(_i, _j, 132) - 0.5) * 1.2) % 16))
+
+
+def road_px(x, y, var=0):
+    best = []
+    for k, (cx, cy) in enumerate(ROAD_STONES):
+        dx = ((x + 0.5 - cx + 8) % 16) - 8; dy = ((y + 0.5 - cy + 8) % 16) - 8
+        best.append((dx * dx * 0.9 + dy * dy * 1.15, k, dx, dy))
+    best.sort()
+    (d1, k, dx, dy), (d2, _, _, _) = best[0], best[1]
+    gap = math.sqrt(d2) - math.sqrt(d1)
+    if gap < 0.7: return ('stone', 1 if gap < 0.35 else 2)                # 줄눈
+    cx, cy = ROAD_STONES[k]
+    inner = 2.5 < cx < 13.5 and 2.5 < cy < 13.5
+    v = rnd(k, 3 + (var if inner else 0), 141)
+    base = 4 if v < 0.55 else 5 if v < 0.75 else 3
+    t = base
+    if gap < 1.7 and (dy < -0.8 or dx < -1.2): t = base + 1               # 돌 윗·왼 날(빛면)
+    elif gap < 1.7 and (dy > 0.8 or dx > 1.2): t = base - 1               # 돌 아래·오른 날(그늘면)
+    if rnd(x, y, 143 + var) < 0.04: t -= 1
+    return ('stone', clamp(t, 0, 6))
+
+
+def road_tile(c, sides='', var=0):
+    """포석 큰길 칸. sides ⊂ 'nswe' = 풀과 닿는 쪽(연석). 북·서는 어두운 테 + 밝은 연석 윗면, 남은 연석 윗면 + 앞면 두 행(3/4), 동은 그늘 테."""
+    for y in range(16):
+        for x in range(16): c.P(x, y, *road_px(x, y, var))
+    if 'n' in sides:
+        c.HL(0, 0, 16, 'stone', 1); c.HL(0, 1, 16, 'stone', 5)
+        for x in range(0, 16, 5): c.P(x, 1, 'stone', 3)
+    if 's' in sides:
+        c.HL(0, 13, 16, 'stone', 5); c.HL(0, 14, 16, 'stone', 3); c.HL(0, 15, 16, 'stone', 1)
+        for x in range(2, 16, 5): c.P(x, 13, 'stone', 3); c.P(x, 14, 'stone', 2)
+    if 'w' in sides:
+        c.VL(0, 0, 16, 'stone', 1); c.VL(1, 0, 16, 'stone', 5)
+        for y in range(3, 16, 5): c.P(1, y, 'stone', 3)
+    if 'e' in sides:
+        c.VL(15, 0, 16, 'stone', 1); c.VL(14, 0, 16, 'stone', 3)
+        for y in range(1, 16, 5): c.P(14, y, 'stone', 2)
+    # 모서리 다듬기(두 연석이 만나는 곳)
+    if 'n' in sides and 'w' in sides: c.P(0, 0, 'grass', 2); c.P(1, 1, 'stone', 6)
+    if 'n' in sides and 'e' in sides: c.P(15, 0, 'grass', 2); c.P(14, 1, 'stone', 4)
+    if 's' in sides and 'w' in sides: c.P(0, 15, 'grass', 2); c.P(1, 13, 'stone', 6)
+    if 's' in sides and 'e' in sides: c.P(15, 15, 'grass', 2); c.P(14, 13, 'stone', 4)
+    if 's' in sides:
+        if 'w' in sides: c.P(1, 14, 'stone', 4)
+        if 'e' in sides: c.P(14, 14, 'stone', 2); c.P(14, 15, 'stone', 1)
+
+
+ROAD_MASKS = [''.join(ch for ch, b in zip('nswe', (m & 1, m & 2, m & 4, m & 8)) if b) for m in range(16)]
+for _sd in ROAD_MASKS:
+    _id = 'road' + ('-' + _sd if _sd else '')
+    A(_id, f'포석 큰길({_sd or "안쪽"})', 1, 1, 'terrain', ['길', '돌', '포석'],
+      '구성기가 길 칸마다 풀과 닿는 쪽(n·s·w·e)을 보고 고른다 — 연석은 그 쪽에만. 길 칸끼리는 이음매 없이 붙는다.', pc='floor',
+      gate_name='paved cobblestone road tile with curb (terrain)')((lambda sd: (lambda c: road_tile(c, sd)))(_sd))
+A('road-b', '포석 큰길(안쪽, 다른 돌빛)', 1, 1, 'terrain', ['길', '돌', '포석'], 'road 사이에 섞는다.', pc='floor',
+  gate_name='paved cobblestone road tile (terrain)')(lambda c: road_tile(c, '', 1))
 
 
 COBBLES = [(rnd(k, 1, 91) * 16, rnd(k, 2, 91) * 16) for k in range(11)]

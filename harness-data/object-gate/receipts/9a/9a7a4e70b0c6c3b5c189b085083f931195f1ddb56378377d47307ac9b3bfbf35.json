@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9a7a4e70b0c6c3b5c189b085083f931195f1ddb56378377d47307ac9b3bfbf35",
+ "width": 48,
+ "height": 64,
+ "kind": "organic",
+ "name": "large round leafy broadleaf tree",
+ "label": "sky-island/si-tree-big",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn in a flat 2D side/front elevation: the canopy is a symmetrical cluster of lobes facing directly at the viewer, the trunk extends straight down from the bottom silhouette of the canopy, and the trunk base terminates in a flat horizontal line without 3/4 cylindrical curvature.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7188
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "canopy",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree canopy is drawn in pure front elevation as a flat, frontal cluster of lobes with no top surface visible from the 45-degree camera angle (top_rows: 0). The trunk is also rendered as a flat vertical rectangle, showing side-scroller rather than top-down 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11599
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "canopy",
+    "kind_matches": true,
+    "top_rows": 22,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tree is rendered in 3/4 top-down perspective, with upward-facing upper canopy lobes spanning rows 2 to 24 before transitioning into downward/south-facing lower lobes, standing over an elliptical 3/4 perspective grass shadow at the base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6948
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "foliage canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn in a flat 2D side-view/platformer elevation. The lobes of the canopy and the cylindrical trunk face straight at the camera with no foreshortened top surface visible on the canopy or trunk.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7612
+  }
+ ],
+ "decidedAt": "2026-10-14T08:41:08.376Z",
+ "cells": {
+  "16": [
+   "0bf6579cd3dda9c3",
+   "28f9fd99d54e7fb4",
+   "4c8ca56ce067b9a3",
+   "5f2d3279ebadd5a3",
+   "65ddcec96a5c7a20",
+   "6b2c64c0daeb9e41",
+   "96ed6b766cec9819",
+   "ab79700734c35ed4",
+   "cc48d685d4df4c58",
+   "e9550879127d7aad",
+   "ef4c92bef6965cdf",
+   "fa00e7e95c41362a"
+  ],
+  "24": [
+   "23d64c4f2bdadedf",
+   "5edd4b3c76ee2724",
+   "6c5076437ae89b83",
+   "6d42f2d69ed41ef5",
+   "74d966297cfe8e4d",
+   "81e733b3f6ab4b0a",
+   "a94d564e5ccec17d",
+   "b8342252cc36ab2a",
+   "bfc622df7ca19eeb",
+   "dbcd616ec1c700d6",
+   "f87f8c4abe92a051",
+   "f8e9bd0318046094"
+  ],
+  "32": [
+   "0ce819d6386f01d8",
+   "1e7da83016082ab3",
+   "2355e9b61dd79639",
+   "3ec858b39d84afee",
+   "6a452318982228c4",
+   "7d84251a31029f26",
+   "7e856fa72c0c17cb",
+   "a5a4d034215974be",
+   "aab97c25f393f04d",
+   "c5f0dd3c6ecc6fcd",
+   "c8b7b7fc5f065fc3",
+   "dd0d53511cc790b1"
+  ],
+  "48": [
+   "2aab8d93dcd2f70c",
+   "2bc9533e91a4530a",
+   "38f2785cfc13c508",
+   "bd3e5d4528eeb9bd"
+  ]
+ }
+}

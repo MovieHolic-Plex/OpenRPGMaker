@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "199dedbb0753467c7f28b415f3aa4d61a7bb4e23dff117c393b0738480874aa4",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "paved cobblestone road tile with curb (terrain)",
+ "label": "sky-island/si-road-se",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cobblestone ground tile with curb edge",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a cobblestone pavement surface seen from above across rows 0-14, terminating in a curb edge along rows 14-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3855
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cobblestone pavement terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting cobblestone road surface across all 16 rows with a bottom curb transition edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2971
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cobblestone terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing cobblestone paving across all 16 rows with a bottom curb line.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2612
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cobblestone pavement surface",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat horizontal cobblestone terrain tile with a slight curb line at the bottom, viewed from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3238
+  }
+ ],
+ "decidedAt": "2026-10-14T08:41:08.375Z",
+ "cells": {
+  "16": [
+   "7fdb3011310c8beb"
+  ],
+  "24": [
+   "02bc3344a227cda2",
+   "238362360209c332",
+   "7dced41d4b8492a0",
+   "b7361699ad87c397",
+   "cf7f616149de30bd",
+   "ed0ca10530fc951a"
+  ],
+  "32": [
+   "14911dff17064047",
+   "4e8f6e638d95493c",
+   "6dd439272cab7840",
+   "ac18e42b18a2b4aa",
+   "de6e51e2b6180396",
+   "fb20c3a1ad181f8e"
+  ],
+  "48": [
+   "51f84f75674f4aa2",
+   "791f0d2f665692cb",
+   "9d4fde64feddadb1",
+   "bce0ef55539fffef",
+   "bde81c37322756dc",
+   "f0249c20bea1a693"
+  ]
+ }
+}

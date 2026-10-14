@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a419bc1ab6d0244eb81624700185bd018a7c86aa7b6e60e8834bf5f43644a6a6",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "paved cobblestone road tile with curb (terrain)",
+ "label": "sky-island/si-road-nwe",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cobblestone road terrain tile with curbs",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile depicting cobblestone pavement flanked by curb borders, viewed from standard top-down perspective across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3361
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cobblestone road ground surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting a cobblestone paved path/road seen entirely from above as flat ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2763
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cobblestone road ground surface with side curbs",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile viewed top-down showing cobblestone pavement bounded by curb borders, occupying the full tile height.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2892
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cobblestone road surface with curb borders",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tile depicting a top-down paved cobblestone road bordered by curbs across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3150
+  }
+ ],
+ "decidedAt": "2026-10-14T08:41:08.376Z",
+ "cells": {
+  "16": [
+   "0dffea8e20d5b3da"
+  ],
+  "24": [
+   "14e99b5f794069bc",
+   "50a6a3f29a7dc3ad",
+   "ac6be9f77358181c",
+   "b134adc203a060e3",
+   "da12a13d59a13526",
+   "fd4cc7df13013666"
+  ],
+  "32": [
+   "2a068097510fe4ed",
+   "431f7c44a2ee5ef6",
+   "6629407502278914",
+   "9a915915b0cf0622",
+   "cb6979bdc362ac77",
+   "d7bd38c83418bd1d"
+  ],
+  "48": [
+   "52d3db718376e663",
+   "68469d90c5a4a34b",
+   "8301bebaf1ff4b6e",
+   "9253f5386fc120c4",
+   "a7e55d9fb2324399",
+   "d26cb7c22c773391"
+  ]
+ }
+}

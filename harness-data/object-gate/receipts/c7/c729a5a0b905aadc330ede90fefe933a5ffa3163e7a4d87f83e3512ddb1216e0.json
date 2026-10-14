@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c729a5a0b905aadc330ede90fefe933a5ffa3163e7a4d87f83e3512ddb1216e0",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass ground tile",
+ "label": "sky-island/si-grass-b3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 horizontal terrain ground tile viewed completely from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3274
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass ground surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing a continuous 16x16 overhead surface pattern of grass.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6453
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flat grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 terrain tile depicting textured grass ground; entirely horizontal ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9480
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flat grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a seamless flat terrain texture representing grass viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2656
+  }
+ ],
+ "decidedAt": "2026-10-14T08:41:08.373Z",
+ "cells": {
+  "16": [
+   "e70778dd692da81c"
+  ],
+  "24": [
+   "00ebb7d021e5cda4",
+   "16fb21e2a387eeb9",
+   "18275b3a559a88de",
+   "8eccef7b9fa5a031",
+   "c6e9ff56ad02bb0b",
+   "d61fa50b66f9757f"
+  ],
+  "32": [
+   "02bf4b5c4c8cf7a6",
+   "459d500a8cdcddb7",
+   "5a7af8fefb51e08f",
+   "88bde5ac89bbb1c1",
+   "c9734e3a77dee26b",
+   "ce6163b83a10d54b"
+  ],
+  "48": [
+   "09926d703c0a6653",
+   "69f3e9e8acd19f97",
+   "9a92c34e3a0185dc",
+   "a3ff9d21b723cef4",
+   "a73fe89f72383d19",
+   "dabf9422792f1939"
+  ]
+ }
+}

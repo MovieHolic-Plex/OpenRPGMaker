@@ -260,8 +260,13 @@ def _(c):
         half = (y - 2) / 37 * 22 + 1
         for x in range(int(cx - half), int(cx + half) + 1):
             u = (x - (cx - half)) / max(1, 2 * half)
-            t = 5 if u < 0.3 else 4 if u < 0.6 else 3 if u < 0.85 else 2
-            if (y + int(abs(x - cx) * 0.6)) % 4 == 0: t -= 1
+            t = 4 if u < 0.3 else 3 if u < 0.6 else 2 if u < 0.85 else 1    # 원뿔 둘레 명암(왼쪽 빛)
+            yy = (y + int(abs(x - cx) * 0.25)) % 4                          # 기와 줄은 아래로 휜 호
+            row = (y + int(abs(x - cx) * 0.25)) // 4
+            t += 1 if row < 4 else 0 if row < 8 else -1 if row >= 9 else 0  # 줄마다 램프(꼭지 밝음 → 처마 어두움)
+            if yy == 3: t -= 2
+            elif yy == 0 and u < 0.55: t += 1
+            if (x + (2 if row % 2 else 0)) % 4 == 3 and yy < 3 and u > 0.15: t -= 1
             c.P(x, y, 'roofg', clamp(t, 0, 5))
     c.ell(cx, 38, 22, 3.5, lambda x, y, dx, dy, d: ('roofg', 1) if dy > 0.2 else None)
     for y in range(2, 40):
@@ -455,10 +460,13 @@ def _(c):
         for x in range(int(40 - half), int(40 + half)):
             v = (x - (40 - half)) / (2 * half)
             row = (y - 8) // 4; yy = (y - 8) % 4
-            t = 4 if v < 0.5 else 3
-            if u < 0.3: t += 1
-            if yy == 3: t -= 2
-            if ((x + (2 if row % 2 else 0)) % 5) == 0 and yy < 3: t -= 1
+            b = 5 - int(round(row * 3.0 / 8))                             # 기와 줄마다 램프(화풍 정렬 2026-10-14): 5 → 2
+            if x > 61 + (y - 8) * 0.5: b -= 1                              # 오른쪽 모임면(그늘)
+            elif x < 18 - (y - 8) * 0.5: b = min(5, b + 0)                 # 왼쪽 모임면(빛 — 앞면과 같은 단)
+            t = b
+            if yy == 3: t = b - 2                                         # 겹침 그늘
+            elif yy == 0 and x <= 61 + (y - 8) * 0.5: t = b + 1 if ((x + (2 if row % 2 else 0)) % 5) < 3 else b
+            if ((x + (2 if row % 2 else 0)) % 5) == 4 and yy < 3: t = b - 1
             c.P(x, y, 'roofg', clamp(t, 0, 5))
         c.P(int(40 - half), y, 'roofg', 0); c.P(int(40 + half) - 1, y, 'roofg', 0)
     # 들린 처마 끝 + 금 테
