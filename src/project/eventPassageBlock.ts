@@ -38,7 +38,7 @@ function walk(project: Project, map: GameMap, seeds: readonly { x: number; y: nu
   return seen;
 }
 
-function entryCells(project: Project, map: GameMap): { x: number; y: number }[] {
+export function entryCells(project: Project, map: GameMap): { x: number; y: number }[] {
   const out: { x: number; y: number }[] = [];
   if (map.id === project.startMapId) out.push({ ...project.startPos });
   const visit = (commands: readonly unknown[] | undefined): void => {

@@ -191,6 +191,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   remove_field_spawn: people("필드 적 삭제", "user"),
   set_factions: world("진영 정하기", "flag"),
   place_battle_blocker: people("전투 블로커 놓기", "user"),
+  place_field_enemy: people("필드 적 놓기", "user"),
   make_chase_scene: people("추격 장면 만들기", "user"),
   configure_object_behavior: people("오브젝트 동작 설정", "box"),
   author_npc_cast: people("주민 대사 쓰기", "user"),

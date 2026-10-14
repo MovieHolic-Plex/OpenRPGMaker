@@ -1,0 +1,270 @@
+// editor/tools/fieldEnemyTools.ts
+// place_field_enemy — 필드에 보이는 적(심볼 인카운터). 닿으면 전투, 이기면 사라진다.
+// 새 런타임 개념이 아니라 이미 있는 조각의 조립이다: eventTouch 트리거 + movement(fixed/custom 순찰/chase 시야 추격)
+// + showEmote + battleProcessing + 승리 스위치 페이지 + 도망 뒤 기절(self switch B) 페이지.
+// 랜덤 인카운터(set_encounter_table)·구역 스폰(make_hunting_ground)·지키는 한 마리(place_battle_blocker)와 구분한다.
+import type { Command, Dir, EventPage, EventPageGraphic, GameEvent, GameMap, Project } from '@/project/types';
+import { canMove, isPassable } from '@/project/collision';
+import { genId } from '@/util/id';
+import { buildMapPlacementContext } from '@/ai/mapPlacementContext';
+import { ToolError, type ToolDefinition, type ToolExecResult, type JsonSchema } from './types';
+import { inMapBounds, requireMap } from './mapHelpers';
+import { resolveGraphic, type GraphicSpec } from './eventCompile';
+import { ensureNamedSwitch } from './flagHelpers';
+import { assertEventShape, placementAdjustedWarning, resolveEventPlacement, upsertEventIntoMap } from './eventTools';
+import { protectedCells } from './npcPatrolTools';
+import { walkableFromAnchors } from './transferReachability';
+import { entryCells } from '@/project/eventPassageBlock';
+import { GRAPHIC_SPEC_SCHEMA } from './schemaShapes';
+
+const DIRS: Record<Dir, readonly [number, number]> = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
+const OPPOSITE: Record<Dir, Dir> = { up: 'down', down: 'up', left: 'right', right: 'left' };
+const BEHAVIORS = ['stationary', 'patrol', 'chase'] as const;
+const PACES = ['slow', 'normal', 'fast'] as const;
+type Behavior = (typeof BEHAVIORS)[number];
+type Pace = (typeof PACES)[number];
+const ALERTS = ['exclamation', 'anger', 'question', 'none'] as const;
+
+/** 추격 한 칸 = 걸음 트윈(speed) + 결정 간격(frequency). 주인공 걷기는 160ms/칸이라 셋 다 주인공보다 느리다. */
+const CHASE_PACE: Record<Pace, { speed: number; frequency: number }> = {
+  slow: { speed: 3, frequency: 4 },
+  normal: { speed: 4, frequency: 5 },
+  fast: { speed: 5, frequency: 6 },
+};
+const PATROL_INTERVAL_MS: Record<Pace, number> = { slow: 1000, normal: 700, fast: 450 };
+const STUN_MS = 3000;
+const DEFAULT_SIGHT = 4;
+
+function isDir(value: unknown): value is Dir {
+  return typeof value === 'string' && Object.hasOwn(DIRS, value);
+}
+
+function oneOf<T extends string>(value: unknown, list: readonly T[], fallback: T, label: string): T {
+  if (value === undefined) return fallback;
+  if (typeof value === 'string' && (list as readonly string[]).includes(value)) return value as T;
+  throw new ToolError(`${label} 은(는) ${list.join('|')} 중 하나입니다.`, { code: 'invalid-args' });
+}
+
+/** 다른 이벤트가 차지한 칸(자리 + 닫힌 순찰 경유 칸). 그 위로 적이 걸어 들어가지 않게 한다. */
+function occupiedByOthers(map: GameMap, ignoreId: string): Set<string> {
+  const occupied = new Set<string>();
+  for (const other of map.events) {
+    if (other.id === ignoreId) continue;
+    occupied.add(`${other.x},${other.y}`);
+    for (const page of other.pages ?? []) {
+      if (page.movement.type !== 'custom' || !page.movement.route) continue;
+      let at = { x: other.x, y: other.y };
+      for (const move of page.movement.route.moves) {
+        if (move.kind !== 'move' || !isDir(move.dir)) continue;
+        at = { x: at.x + DIRS[move.dir][0], y: at.y + DIRS[move.dir][1] };
+        occupied.add(`${at.x},${at.y}`);
+      }
+    }
+  }
+  return occupied;
+}
+
+/** 시작 칸에서 dirs 를 따라 걸어 본다 — 매 걸음이 양방향으로 통행 가능해야 한다. 막히면 null. */
+function walkRoute(project: Project, map: GameMap, from: { x: number; y: number }, dirs: readonly Dir[]): { x: number; y: number }[] | null {
+  const cells = [{ ...from }];
+  let at = { ...from };
+  for (const dir of dirs) {
+    const next = { x: at.x + DIRS[dir][0], y: at.y + DIRS[dir][1] };
+    if (!inMapBounds(map, next.x, next.y) || !isPassable(project, map, next.x, next.y)) return null;
+    if (!canMove(project, map, at.x, at.y, next.x, next.y) || !canMove(project, map, next.x, next.y, at.x, at.y)) return null;
+    cells.push(next);
+    at = next;
+  }
+  return cells;
+}
+
+/** patrol.directions 가 있으면 그대로(닫힌 경로 확인), 없으면 length 칸 왕복 직선을 통행 가능한 방향으로 고른다. */
+function resolvePatrol(project: Project, map: GameMap, from: { x: number; y: number }, raw: unknown, occupied: ReadonlySet<string>): { dirs: Dir[]; cells: { x: number; y: number }[] } {
+  const spec = (raw && typeof raw === 'object' ? raw : {}) as { directions?: unknown; length?: unknown; axis?: unknown };
+  const free = (cells: readonly { x: number; y: number }[]) => cells.every((cell) => !occupied.has(`${cell.x},${cell.y}`));
+  if (Array.isArray(spec.directions)) {
+    const dirs = spec.directions;
+    if (dirs.length < 2 || dirs.length > 16 || !dirs.every(isDir)) throw new ToolError('patrol.directions 는 up|down|left|right 2..16개의 닫힌 경로입니다.', { code: 'invalid-args' });
+    const cells = walkRoute(project, map, from, dirs);
+    if (!cells) throw new ToolError('patrol.directions 가 벽·지형을 가로지릅니다 — get_map_region 으로 통행 가능한 칸을 확인하세요.', { code: 'unsafe-patrol' });
+    const end = cells[cells.length - 1]!;
+    if (end.x !== from.x || end.y !== from.y) throw new ToolError('patrol.directions 는 출발 칸으로 돌아오는 닫힌 경로여야 합니다(예: right,right,left,left).', { code: 'unsafe-patrol' });
+    if (!free(cells)) throw new ToolError('순찰 경로가 다른 이벤트 칸과 겹칩니다.', { code: 'unsafe-patrol' });
+    return { dirs, cells };
+  }
+  const length = spec.length === undefined ? 3 : Number(spec.length);
+  if (!Number.isInteger(length) || length < 1 || length > 8) throw new ToolError('patrol.length 는 1..8 칸입니다(왕복 직선).', { code: 'invalid-args' });
+  const axis = spec.axis === undefined ? 'any' : spec.axis;
+  if (axis !== 'any' && axis !== 'horizontal' && axis !== 'vertical') throw new ToolError('patrol.axis 는 horizontal|vertical 입니다.', { code: 'invalid-args' });
+  const candidates: Dir[] = axis === 'horizontal' ? ['right', 'left'] : axis === 'vertical' ? ['down', 'up'] : ['right', 'left', 'down', 'up'];
+  for (const out of candidates) {
+    const dirs: Dir[] = [...Array<Dir>(length).fill(out), ...Array<Dir>(length).fill(OPPOSITE[out])];
+    const cells = walkRoute(project, map, from, dirs);
+    if (cells && free(cells)) return { dirs, cells };
+  }
+  throw new ToolError(`(${from.x}, ${from.y}) 에서 ${length}칸 왕복할 직선 통로가 없습니다 — patrol.length 를 줄이거나 get_map_region 으로 넓은 바닥에 다시 놓으세요.`, { code: 'unsafe-patrol' });
+}
+
+function fieldEnemyPages(input: {
+  id: string; troopId: string; graphic: EventPageGraphic;
+  clearSwitchId: string; movement: EventPage['movement']; alert: (typeof ALERTS)[number]; canEscape: boolean; respawnSec: number;
+}): EventPage[] {
+  const { id } = input;
+  const fight: Command[] = [
+    ...(input.alert === 'none' ? [] : [
+      { kind: 'showEmote', target: { eventId: id }, emote: input.alert, durationMs: 600 } as Command,
+      { kind: 'wait', ms: 520 } as Command,
+    ]),
+    { kind: 'battleProcessing', troopId: input.troopId, canEscape: input.canEscape, canLose: false },
+    { kind: 'fork', condition: { kind: 'battleResult', result: 'victory' }, then: [{ kind: 'setSwitch', switchId: input.clearSwitchId, value: true }] },
+    // 도망쳐도 적이 바로 옆에 서 있다 — 기절 페이지(self switch B)가 몇 초 접촉을 끈다. 안 그러면 도망 직후 같은 전투가 다시 열린다.
+    ...(input.canEscape ? [{ kind: 'fork', condition: { kind: 'battleResult', result: 'escape' }, then: [{ kind: 'setSelfSwitch', key: 'B', value: true }] } as Command] : []),
+  ];
+  return [
+    {
+      id: `${id}_fight`, name: '필드 적', conditions: [], graphic: structuredClone(input.graphic),
+      trigger: { kind: 'eventTouch' }, priority: 'same', overlapForbidden: true, animationType: input.movement.type === 'fixed' ? 'fixedGraphic' : 'normal',
+      movement: input.movement, commands: fight,
+    },
+    {
+      id: `${id}_stun`, name: '도망 뒤 숨 고르기', conditions: [{ kind: 'selfSwitch', key: 'B', value: true }], graphic: structuredClone(input.graphic),
+      trigger: { kind: 'parallel' }, priority: 'same', overlapForbidden: true, animationType: 'fixedGraphic',
+      movement: { type: 'fixed', speed: 3, frequency: 3 },
+      commands: [{ kind: 'wait', ms: STUN_MS }, { kind: 'setSelfSwitch', key: 'B', value: false }],
+    },
+    {
+      id: `${id}_cleared`, name: '쓰러진 자리', conditions: [{ kind: 'switch', switchId: input.clearSwitchId, value: true }], graphic: { transparent: true },
+      // action 이면 쓰러진 자리 곁에 「Z 조사」 안내가 남는다(2026-10-14 런타임 QA) — 아무것도 안 하는 병렬 페이지로 둔다.
+      trigger: { kind: 'parallel' }, priority: 'below', overlapForbidden: false, animationType: 'fixedGraphic',
+      movement: { type: 'fixed', speed: 3, frequency: 3 },
+      commands: input.respawnSec > 0 ? [{ kind: 'wait', ms: Math.round(input.respawnSec * 1000) }, { kind: 'setSwitch', switchId: input.clearSwitchId, value: false }] : [],
+    },
+  ];
+}
+
+const schema = (properties: Record<string, JsonSchema>, required: string[]): JsonSchema => ({ type: 'object', additionalProperties: false, properties, required });
+
+export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
+  {
+    name: 'place_field_enemy',
+    mode: 'write',
+    description:
+      '필드 맵에 「보이는 적」(심볼 인카운터, 크로노 트리거·FF 심볼식) 한 마리를 놓는다. 걸어 다니는 적에게 닿으면 그 자리에서 전투가 열리고, 이기면 사라지며 맵을 나갔다 들어와도 그대로 사라져 있다(승리 스위치). 패배는 기존 게임 오버 경로, 도망치면 몇 초 기절해 같은 전투가 바로 다시 열리지 않는다. 닿기 직전 머리 위 느낌표(alert)가 뜬다. ' +
+      'behavior: stationary=제자리 보초(주인공이 닿거나 부딪히면 전투) · patrol=닫힌 왕복 순찰(patrol.length 칸 직선 또는 patrol.directions 닫힌 경로) · chase=시야(sightRange 칸, 벽 가림) 안에 들면 쫓아오고 시야 밖/포기 거리를 벗어나면 멈춘다. pace 는 주인공 걷기보다 항상 느려 피할 수 있다. ' +
+      '던전 층·들판·길목에서 「몬스터가 돌아다닌다/눈에 보이는 적/피하거나 선제」 요청의 정본 — 한 마리씩 의도한 자리에 놓고 필요한 만큼 여러 번 호출한다(보통 한 맵 3~6마리, 서로 다른 troopId·behavior 로). ' +
+      '쓰지 말 것: 마을·실내 생활 공간(마을 맵은 거부됨), 보스방·이야기 전투(place_battle_blocker 로 조사 전투 + upsert_troop_battle_page), 걸을 때마다 무작위로 터지는 랜덤 인카운터(set_encounter_table), 구역 전체에 리스폰하는 사냥터(make_hunting_ground). 출입구·시작점 주변과 도달 불가 칸은 거부하며 chase 는 입구에서 시야 밖에 놓아야 한다. ' +
+      '전투 방향 보정(적 등 뒤 접촉=선제, 등을 잡히면 기습)은 set_project_settings battle.formationRoll:true 를 켜야 적용된다. 그림은 생략하면 적 그룹 선두 몬스터 이름으로 기존 도트를 찾는다(새 그림·생성 인물 금지).',
+    parameters: schema({
+      mapId: { type: 'string' },
+      x: { type: 'integer' },
+      y: { type: 'integer' },
+      troopId: { type: 'string', description: '데이터베이스 적 그룹 id(없으면 upsert_troop 으로 먼저 만든다)' },
+      behavior: { type: 'string', enum: [...BEHAVIORS], description: '기본 stationary' },
+      patrol: { type: 'object', description: 'behavior:patrol 일 때. {length?:1..8 칸 왕복(기본 3), axis?:horizontal|vertical} 또는 {directions:[up|down|left|right..]} 출발 칸으로 돌아오는 닫힌 경로', properties: { length: { type: 'integer' }, axis: { type: 'string', enum: ['horizontal', 'vertical'] }, directions: { type: 'array', items: { type: 'string', enum: ['up', 'down', 'left', 'right'] } } } },
+      sightRange: { type: 'integer', description: 'behavior:chase 시야(칸, 2..8, 기본 4). 이 안에서 벽에 안 가리면 쫓는다' },
+      pace: { type: 'string', enum: [...PACES], description: 'slow(기본)|normal|fast — 셋 다 주인공 걷기보다 느리다' },
+      graphic: { ...GRAPHIC_SPEC_SCHEMA, description: '생략 시 적 그룹 선두 몬스터 이름으로 검색한 기존 도트' },
+      alert: { type: 'string', enum: [...ALERTS], description: '닿기 직전 머리 위 말풍선. 기본 exclamation, none 이면 바로 전투' },
+      canEscape: { type: 'boolean', description: '도망 가능 여부(기본 true). false 는 도망 불가 전투' },
+      respawnSec: { type: 'integer', description: '0(기본)=한 번 이기면 영구 소멸. 양수면 그 맵에 머문 채 N초 뒤 같은 자리에 다시 나타난다' },
+      clearSwitchId: { type: 'string', description: '승리 시 켜지는 스위치(생략 시 자동 생성). 퀘스트·문 조건으로 쓸 수 있다' },
+      id: { type: 'string' },
+    }, ['mapId', 'x', 'y', 'troopId']),
+    invalidArgsExample: { mapId: 'map_dungeon_1', x: 12, y: 8, troopId: 'troop_bat', behavior: 'chase', sightRange: 4, pace: 'slow' },
+    run(draft: Project, args): ToolExecResult {
+      const map = requireMap(draft, args.mapId as string);
+      const x = Number(args.x), y = Number(args.y);
+      if (!Number.isInteger(x) || !Number.isInteger(y) || !inMapBounds(map, x, y)) throw new ToolError(`필드 적 위치가 맵 밖입니다: (${String(args.x)}, ${String(args.y)})`, { code: 'field-enemy-out-of-bounds', mapId: map.id });
+      const troopId = String(args.troopId ?? '');
+      const troop = draft.database.troops.find((entry) => entry.id === troopId);
+      if (!troop) throw new ToolError(`존재하지 않는 troopId: ${troopId} — ${draft.database.troops.slice(0, 8).map((entry) => entry.id).join(', ') || '(적 그룹 없음 — upsert_troop 먼저)'}`, { code: 'troop-not-found', mapId: map.id });
+      const behavior: Behavior = oneOf(args.behavior, BEHAVIORS, 'stationary', 'behavior');
+      const pace: Pace = oneOf(args.pace, PACES, 'slow', 'pace');
+      const alert = oneOf(args.alert, ALERTS, 'exclamation', 'alert');
+      const canEscape = args.canEscape !== false;
+      const respawnSec = args.respawnSec === undefined ? 0 : Number(args.respawnSec);
+      if (!Number.isFinite(respawnSec) || respawnSec < 0 || respawnSec > 3600) throw new ToolError('respawnSec 은 0..3600 입니다.', { code: 'invalid-args' });
+      const sightRaw = args.sightRange === undefined ? DEFAULT_SIGHT : Number(args.sightRange);
+      if (!Number.isInteger(sightRaw) || sightRaw < 2 || sightRaw > 8) throw new ToolError('sightRange 는 2..8 칸입니다.', { code: 'invalid-args' });
+
+      // 마을·실내는 안전한 곳이다 — 거기서 적이 돌아다니면 시나리오가 깨진다.
+      const role = buildMapPlacementContext(draft, map.id)?.role;
+      if (role && (role.role === 'town' || role.role === 'interior')) {
+        throw new ToolError(`${map.name} 은(는) ${role.role === 'town' ? '마을' : '실내'}(${role.reason}) — 필드 적을 두지 않습니다. 들판·길·던전 맵에 놓으세요. 이야기 속 적은 place_battle_blocker.`, { code: 'field-enemy-safe-area', mapId: map.id });
+      }
+
+      const id = typeof args.id === 'string' && args.id.trim() ? args.id.trim() : genId('ev_field_enemy');
+      const placement = resolveEventPlacement(draft, map, x, y, { kind: 'character', ignoreEventId: id, label: `필드 적 '${troopId}'`, code: 'field-enemy-impassable' });
+      const start = { x: placement.x, y: placement.y };
+      const occupied = occupiedByOthers(map, id);
+
+      let patrol: { dirs: Dir[]; cells: { x: number; y: number }[] } | undefined;
+      if (behavior === 'patrol') patrol = resolvePatrol(draft, map, start, args.patrol, occupied);
+      else if (args.patrol !== undefined) throw new ToolError('patrol 은 behavior:"patrol" 에서만 씁니다.', { code: 'invalid-args' });
+      const cells = patrol?.cells ?? [start];
+
+      // 출입구·시작점·표지 곁과 도달 불가 칸은 안 된다 — 들어서자마자 싸우거나, 못 가는 곳에 적이 갇힌다.
+      const protectedAt = protectedCells(draft, map);
+      for (const cell of cells) {
+        const near = protectedAt.filter((entry) => Math.abs(entry.x - cell.x) + Math.abs(entry.y - cell.y) <= 2);
+        if (near.length) throw new ToolError(`출입구·시작점·안내 표지 2칸 안에는 필드 적을 둘 수 없습니다: (${cell.x}, ${cell.y}) 곁 ${JSON.stringify(near.slice(0, 3))}. 더 안쪽 칸으로 옮기세요.`, { code: 'field-enemy-unsafe-spot', mapId: map.id, x: cell.x, y: cell.y });
+        if (occupied.has(`${cell.x},${cell.y}`)) throw new ToolError(`(${cell.x}, ${cell.y}) 은 다른 이벤트 칸입니다.`, { code: 'field-enemy-unsafe-spot', mapId: map.id });
+      }
+      if (behavior === 'chase') {
+        const reach = sightRaw + 1;
+        const arrivals = entryCells(draft, map).filter((entry) => Math.abs(entry.x - start.x) + Math.abs(entry.y - start.y) <= reach);
+        if (arrivals.length) throw new ToolError(`추격 적이 입구에서 시야(${sightRaw}칸) 안에 있어 맵에 들어서자마자 전투가 열립니다: (${start.x}, ${start.y}). 입구에서 ${reach}칸보다 먼 칸에 놓거나 sightRange 를 줄이세요.`, { code: 'field-enemy-ambush', mapId: map.id, x: start.x, y: start.y });
+      }
+      const reach = walkableFromAnchors(draft, map);
+      if (reach) {
+        const cut = cells.find((cell) => !reach.has(cell.y * map.width + cell.x));
+        if (cut) throw new ToolError(`(${cut.x}, ${cut.y}) 은 시작점·출입구에서 걸어 닿지 못하는 칸입니다 — 플레이어가 만날 수 없는 적입니다. 닿을 수 있는 바닥에 놓으세요.`, { code: 'field-enemy-unreachable', mapId: map.id, x: cut.x, y: cut.y });
+      }
+
+      // 적 이름으로 기존 도트(charset)를 찾고, 이름이 어휘에 없으면 「monster」 첫 칸으로 폴백해 경고한다(새 그림·생성 인물 금지).
+      const lead = draft.database.enemies.find((entry) => entry.id === troop.enemyIds[0]);
+      let spec: GraphicSpec | undefined = args.graphic as GraphicSpec | undefined;
+      let graphic: EventPageGraphic | undefined;
+      let graphicNote: string | undefined;
+      if (spec) graphic = resolveGraphic(spec, { overrides: draft.charsetLabels });
+      else {
+        const names = [lead?.name?.trim(), troop.name?.trim()].filter((name): name is string => !!name);
+        for (const name of names) {
+          try { spec = { query: name }; graphic = resolveGraphic(spec, { overrides: draft.charsetLabels }); graphicNote = `graphic 생략 → 적 이름 「${name}」 로 찾은 도트`; break; } catch (error) { if (!(error instanceof ToolError)) throw error; }
+        }
+        if (!graphic) { spec = { query: 'monster' }; graphic = resolveGraphic(spec, { overrides: draft.charsetLabels }); graphicNote = `graphic 생략 + 적 이름 「${names.join('·')}」 에 맞는 도트가 없어 monster 첫 칸을 썼습니다 — list_npc_graphics 로 고른 graphic 을 주면 바뀝니다.`; }
+      }
+      const clearSwitchId = typeof args.clearSwitchId === 'string' && args.clearSwitchId.trim() ? args.clearSwitchId.trim() : `sw_${id}_clear`;
+      ensureNamedSwitch(draft, clearSwitchId, `필드 적 처치: ${id}`);
+
+      const chase = CHASE_PACE[pace];
+      const movement: EventPage['movement'] = behavior === 'chase'
+        ? { type: 'chase', speed: chase.speed, frequency: chase.frequency, sightRange: sightRaw, giveUpRange: sightRaw + 4, pathfind: true }
+        : behavior === 'patrol' && patrol
+          ? { type: 'custom', speed: 3, frequency: 3, moveIntervalMs: PATROL_INTERVAL_MS[pace], route: { repeat: true, skippable: false, moves: [...patrol.dirs.map((dir) => ({ kind: 'move' as const, dir })), { kind: 'wait' as const }] } }
+          : { type: 'fixed', speed: 3, frequency: 3 };
+
+      const event: GameEvent = {
+        id, x: start.x, y: start.y, trigger: { kind: 'eventTouch' }, commands: [],
+        pages: fieldEnemyPages({ id, troopId, graphic, clearSwitchId, movement, alert, canEscape, respawnSec }),
+      };
+      const warnings: string[] = [];
+      assertEventShape(event, warnings);
+      upsertEventIntoMap(map, event);
+
+      if (placement.adjusted) warnings.push(placementAdjustedWarning(`필드 적 '${troopId}'`, { x, y }, start));
+      if (graphicNote) warnings.push(graphicNote);
+      if (draft.system.battleFormationRoll !== true) warnings.push('선제·기습(등 뒤 접촉 보정)은 꺼져 있습니다 — 켜려면 set_project_settings battle.formationRoll:true.');
+      const mapEnemies = map.events.filter((entry) => entry.pages?.some((page) => page.id.endsWith('_fight') && page.trigger.kind === 'eventTouch')).length;
+      if (mapEnemies > 8) warnings.push(`이 맵의 필드 적이 ${mapEnemies}마리입니다 — 한 화면에 몰리면 피할 길이 없습니다. 보통 3~6마리.`);
+      if (map.safeZones?.some((zone) => cells.some((cell) => cell.x >= zone.x && cell.x < zone.x + zone.w && cell.y >= zone.y && cell.y < zone.y + zone.h))) warnings.push('안전지대 안에 놓였습니다 — 추격은 안전지대 안의 주인공을 쫓지 않습니다.');
+      if (respawnSec > 0) warnings.push(`처치 ${respawnSec}초 뒤 같은 자리에 다시 나타납니다(그 맵에 머무는 동안). 영구 소멸이 필요하면 respawnSec 를 빼세요.`);
+
+      return {
+        summary: `${map.name} (${start.x}, ${start.y}) 에 필드 적 '${troopId}' — ${behavior}${patrol ? ` ${patrol.dirs.length}걸음 왕복` : behavior === 'chase' ? ` 시야 ${sightRaw}칸` : ''}`,
+        data: { eventId: id, clearSwitchId, behavior, x: start.x, y: start.y, cells: behavior === 'patrol' ? cells : undefined, adjusted: placement.adjusted },
+        ...(warnings.length > 0 ? { warnings } : {}),
+      };
+    },
+  },
+];

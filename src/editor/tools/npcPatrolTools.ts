@@ -8,7 +8,7 @@ const schema=(properties:Record<string,JsonSchema>,required:string[]):JsonSchema
 function commandsVisit(commands:readonly unknown[],visit:(command:Record<string,unknown>)=>void):void{
   for(const raw of commands){if(!raw||typeof raw!=='object')continue;const command=raw as Record<string,unknown>;visit(command);for(const value of Object.values(command)){if(Array.isArray(value))commandsVisit(value,visit);else if(value&&typeof value==='object')for(const inner of Object.values(value))if(Array.isArray(inner))commandsVisit(inner,visit);}}
 }
-function protectedCells(p:Project,map:GameMap):{x:number;y:number}[]{
+export function protectedCells(p:Project,map:GameMap):{x:number;y:number}[]{
   const cells:{x:number;y:number}[]=[];
   if(map.id===p.startMapId)cells.push(p.startPos);
   for(const source of Object.values(p.maps))for(const event of source.events)for(const page of event.pages??[])commandsVisit(page.commands,command=>{

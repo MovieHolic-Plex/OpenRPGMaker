@@ -4,6 +4,8 @@ import type { PlaySceneContext } from './playSceneTypes';
 import { applyBattleDefeat } from './playSceneDefeat';
 import { BattleAdmissionError } from '@/project/battleAdmission';
 import { runTroopAfterBattle } from './troopAfterBattleRunner';
+import { symbolContactFormation } from './playSceneFieldSpawns';
+import { runtimeEventViewById } from '@/project/runtimeEventState';
 
 type BattleStep = Extract<StepResult, { kind: 'battleProcessing' }>;
 export type CommandBattleResult = 'victory' | 'defeat' | 'escape' | null;
@@ -14,6 +16,7 @@ export async function playCommandBattle(
   step: BattleStep,
   isCurrent: () => boolean,
   isLive: () => boolean = isCurrent,
+  contactEventId?: string,
 ): Promise<CommandBattleResult> {
   const session = scene.session, map = scene.map;
   if (!isCurrent()) return null;
@@ -22,7 +25,8 @@ export async function playCommandBattle(
   let troopId = step.troopId;
   try {
     troopId = resolveBattleTroopId(scene, step);
-    result = await scene.playBattle({ ...step, troopId }, isCurrent);
+    const formation = step.formation ?? contactEventFormation(scene, contactEventId);
+    result = await scene.playBattle({ ...step, troopId, ...(formation ? { formation } : {}) }, isCurrent);
   } catch (error) {
     if (scene.session !== session || scene.map !== map || !isCurrent() || scene.sys?.isActive() === false) return null;
     throw error;
@@ -40,6 +44,18 @@ export async function playCommandBattle(
   await runTroopAfterBattle(scene, troopId, result, isLive);
   if (scene.session !== session || !isLive() || scene.sys?.isActive() === false) return null;
   return result;
+}
+
+/**
+ * 필드 적(접촉 트리거 이벤트)이 연 전투도 구역 스폰과 같이 접촉 방향으로 선제·기습을 정한다
+ * (system.battleFormationRoll 이 켜졌을 때만 — symbolContactFormation 이 거른다). 조사(action) 전투는 해당 없음.
+ */
+function contactEventFormation(scene: PlaySceneContext, eventId: string | undefined) {
+  if (!eventId) return undefined;
+  const view = runtimeEventViewById(store.getCurrent(), scene.map, scene.session, scene.eventPositions, eventId);
+  const kind = view?.trigger.kind;
+  if (kind !== 'eventTouch' && kind !== 'touch' && kind !== 'playerTouch') return undefined;
+  return symbolContactFormation(scene, eventId);
 }
 
 function resolveBattleTroopId(scene: PlaySceneContext, step: BattleStep): string {

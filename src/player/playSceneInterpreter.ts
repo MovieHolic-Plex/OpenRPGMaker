@@ -571,7 +571,7 @@ async function consumeBlockingStep(
       return resumeAfterSurface(scene, interpreter);
     case "battleProcessing": {
       try {
-        const result = await playCommandBattle(scene, step, isCurrent);
+        const result = await playCommandBattle(scene, step, isCurrent, isCurrent, currentEventId);
         if (result === null || (result === "defeat" && !step.canLose)) return { kind: "done" };
         return resumeWithValue(scene, interpreter, result);
       } catch (error) {

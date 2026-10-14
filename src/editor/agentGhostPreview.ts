@@ -316,6 +316,9 @@ export function summarizeAgentGhostPreviewForToolCall(
     case "place_battle_blocker":
       pushArea(pointArea(project, mapId, pointFromXY(args), "place_battle_blocker", "전투 이벤트 배치"));
       break;
+    case "place_field_enemy":
+      pushArea(pointArea(project, mapId, pointFromXY(args), "place_field_enemy", "필드 적 배치"));
+      break;
     case "place_chest":
       pushArea(pointArea(project, mapId, pointFromXY(args), "place_chest", "보물상자 배치"));
       break;

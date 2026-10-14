@@ -2108,7 +2108,7 @@ const setMapProperties: ToolDefinition = {
 
 const setEncounterTable: ToolDefinition = {
   name: "set_encounter_table",
-  description: "맵의 조건부/가중 랜덤 인카운터 테이블을 교체한다. encounterTable이 있으면 기존 troopIds 균등 선택보다 우선한다. 맵 encounterRate가 0이면 기본 발생률로 자동 보정한다(0이면 런타임에서 인카운터가 아예 발생하지 않는다). 인카운터 구역 요청은 이 툴 또는 make_hunting_ground. 지키는 몬스터는 place_battle_blocker, 함정은 place_trap, 추격전은 make_chase_scene.",
+  description: "맵의 조건부/가중 랜덤 인카운터 테이블을 교체한다. encounterTable이 있으면 기존 troopIds 균등 선택보다 우선한다. 맵 encounterRate가 0이면 기본 발생률로 자동 보정한다(0이면 런타임에서 인카운터가 아예 발생하지 않는다). 인카운터 구역 요청은 이 툴 또는 make_hunting_ground. 지키는 몬스터는 place_battle_blocker, 눈에 보이는 필드 적(닿으면 전투)은 place_field_enemy, 함정은 place_trap, 추격전은 make_chase_scene.",
   mode: "write",
   parameters: {
     type: "object",
@@ -2134,7 +2134,7 @@ const setEncounterTable: ToolDefinition = {
 
 const makeHuntingGround: ToolDefinition = {
   name: "make_hunting_ground",
-  description: "사냥터 구획에 보이는 몬스터를 배치한다. 프로젝트 위키의 전투 방식과 맵별 예외를 따르며, 접촉·액션 전투에서는 랜덤 인카운터를 끈다. 액션 결정이면 시스템과 대상 맵도 활성화한다. 위키 결정이 없으면 encounterEntries/encounterRate 설정을 사용한다. 지키는 몬스터 한 마리는 place_battle_blocker.",
+  description: "사냥터 구획에 보이는 몬스터를 배치한다. 프로젝트 위키의 전투 방식과 맵별 예외를 따르며, 접촉·액션 전투에서는 랜덤 인카운터를 끈다. 액션 결정이면 시스템과 대상 맵도 활성화한다. 위키 결정이 없으면 encounterEntries/encounterRate 설정을 사용한다. 지키는 몬스터 한 마리는 place_battle_blocker, 의도한 자리·순찰·시야 추격 적 한 마리씩은 place_field_enemy.",
   mode: "write",
   parameters: {
     type: "object",
