@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.211.0 — 2026-10-14
+
+### 기능
+
+- **monster** — use-based fill for kit outdoor land (towns + furnish_outdoor_area region), beach hut door, theme cast wiring (`965f5af`)
+
 ## 0.210.0 — 2026-10-14
 
 ### 기능
