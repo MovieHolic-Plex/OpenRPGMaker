@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.219.1 — 2026-10-15
+
+### 수정
+
+- **ci** — record the desktop window-control CSS winners (`41a85a4`)
+
+### 성능
+
+- **boot** — editor startup 22.8s -> ~9s (normalization marker, deferred digests) (#2577) (`a3de392`)
+
 ## 0.219.0 — 2026-10-14
 
 ### 기능
