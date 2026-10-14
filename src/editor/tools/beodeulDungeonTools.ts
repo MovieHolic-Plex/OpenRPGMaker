@@ -4,6 +4,7 @@
 import { isPassable } from "@/project/collision";
 import { groundSupportIssues } from "@/project/groundSupport";
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
+import { addMapLocation, COMPOSED_LAYOUT_TAG } from "@/project/mapNamedLocations";
 import type { GameMap, Project } from "@/project/types";
 import { composeDungeon, DUNGEON_ROOM_KINDS, DUNGEON_STYLES, DungeonComposeError, type DungeonRoomInput, type DungeonSpec } from "../beodeulDungeon/compose";
 import { assertMapIdAvailable } from "./mapHelpers";
@@ -13,6 +14,8 @@ import { ToolError, type ToolDefinition } from "./types";
 const BEODEUL_TILESET_ID = "beodeul_city";
 const createMapTool = MAP_TOOLS.find((tool) => tool.name === "create_map")!;
 const resizeMapTool = MAP_TOOLS.find((tool) => tool.name === "resize_map")!;
+
+const ROOM_LABEL: Record<string, string> = { entrance: "입구 홀", hall: "큰 홀", crypt: "묘실", cell: "감방", shrine: "제단 방", boss: "보스방", storage: "창고", vault: "보물 방" };
 
 function isBlankMap(map: GameMap): boolean {
   if (map.events.length > 0 || (map.structurePlacements?.length ?? 0) > 0) return false;
@@ -105,6 +108,14 @@ export const AUTHOR_BEODEUL_DUNGEON_TOOL: ToolDefinition = {
     map.upperTiles = composed.upper.slice();
     for (const layer of ["lowerOverlayTiles", "upperOverlayTiles"] as const) if (map[layer]) map[layer] = new Array<number>(map.width * map.height).fill(-1);
     map.mapRole = "dungeon";
+    // 방마다 이름표 + composed-layout 표식: 큰 홀·통로의 빈 바닥은 필드 적이 돌아다닐 용도로 비운 칸이다.
+    // 표식이 없으면 조수 실행기의 배치 품질 권고(빈 바닥 ≤30%)가 던전을 「빈 방」으로 보고 clear_map 으로 지우려 했다(2026-10-14 재시험 실측).
+    map.locations = (map.locations ?? []).filter((l) => !(l.tags ?? []).includes("dungeon-room"));
+    for (const room of composed.rooms) {
+      addMapLocation(map, { name: `${ROOM_LABEL[room.kind]} ${room.id}`, x: room.x, y: room.y, w: room.w, h: room.h,
+        note: `바닥 ${room.w}×${room.h} · 이벤트 자리 ${(composed.spots[room.id] ?? []).map((p) => `(${p.x},${p.y})`).join(" ")}`,
+        tags: ["dungeon-room", COMPOSED_LAYOUT_TAG, room.kind] });
+    }
     // 만든 결과를 한 번 더, 실제 맵으로 검사한다(조립기 내부 검사와 같은 규칙).
     const bad = groundSupportIssues(map, tileset, { events: false }).filter((issue) => issue.severity === "error");
     if (bad.length) throw new ToolError(`시공 결과에 받침 없는 물체 ${bad.length}건: ${bad[0]!.message}`, { code: "support-violation", mapId });
