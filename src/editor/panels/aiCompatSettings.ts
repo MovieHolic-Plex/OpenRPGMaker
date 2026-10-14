@@ -78,12 +78,20 @@ function describeError(error: unknown): string {
     : "연결 서비스에 닿지 못했어요. 앱을 다시 열거나 서버 관리자에게 알려 주세요.";
 }
 
-function lastTestSummary(endpoint: OpenAiCompatEndpointPublic): { text: string; tone: "ok" | "bad" | "idle" } {
+/** 조각 배열을 따로따로의 글자 노드로 붙인다 — i18n 번역기가 노드마다 번역하므로 조합 문장을 카탈로그에 늘어놓지 않아도 된다. */
+function setParts(target: HTMLElement, parts: readonly string[], separator = " · "): void {
+  target.replaceChildren(...parts.flatMap((part, index) => [...(index ? [document.createTextNode(separator)] : []), document.createTextNode(part)]));
+}
+
+function lastTestSummary(endpoint: OpenAiCompatEndpointPublic): { parts: string[]; tone: "ok" | "bad" | "idle" } {
   const test = endpoint.lastTest;
-  if (!test) return { text: "아직 시험 안 함", tone: "idle" };
-  if (!test.ok) return { text: `마지막 시험 실패${test.status ? `(${test.status})` : ""}`, tone: "bad" };
-  const tools = test.toolsOk === true ? " · 도구 호출 가능" : test.toolsOk === false ? " · 도구 호출 불가" : "";
-  return { text: `시험 통과${endpoint.models.length ? ` · 모델 ${endpoint.models.length}개` : ""}${tools}`, tone: test.toolsOk === false ? "bad" : "ok" };
+  if (!test) return { parts: ["아직 시험 안 함"], tone: "idle" };
+  if (!test.ok) return { parts: [test.status ? `마지막 시험 실패(${test.status})` : "마지막 시험 실패"], tone: "bad" };
+  const parts = ["시험 통과"];
+  if (endpoint.models.length) parts.push(`모델 ${endpoint.models.length}개`);
+  if (test.toolsOk === true) parts.push("도구 호출 가능");
+  else if (test.toolsOk === false) parts.push("도구 호출 불가");
+  return { parts, tone: test.toolsOk === false ? "bad" : "ok" };
 }
 
 export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiCompatSettingsView {
@@ -149,9 +157,9 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
     });
     const testPill = el("span", {
       class: "ai-compat-pill",
-      text: summary.text,
       dataset: { testid: `ai-compat-test-state-${endpoint.id}`, tone: summary.tone },
     });
+    setParts(testPill, summary.parts);
     const flags = [
       ...(endpoint.headerNames.length ? [`추가 헤더 ${endpoint.headerNames.join(", ")}`] : []),
       ...(endpoint.reasoningMode === "field" ? ["추론 강도: reasoning_effort"] : endpoint.reasoningMode === "suffix" ? ["추론 강도: 모델 ID 접미사"] : []),
@@ -264,7 +272,7 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
         }
         const verdict = openAiCompatModelVerdict(endpoint, model);
         if (!verdict.allowed) {
-          note.textContent = `적용하지 않았어요. ${verdict.reason ?? ""}`;
+          setParts(note, ["적용하지 않았어요.", verdict.reason ?? ""], " ");
           note.dataset.active = "false";
           return;
         }
@@ -411,9 +419,20 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
     const warnings = el("ul", { class: "ai-compat-warnings", attrs: { hidden: "" }, dataset: { testid: "ai-compat-warnings" } });
     const modelSelect = el("select", { class: "ai-config-select", attrs: { "aria-label": "받은 모델 목록" }, dataset: { testid: "ai-compat-model-select" } }) as HTMLSelectElement;
     const modelInput = el("input", { class: "ai-config-input", attrs: { type: "text", placeholder: "모델 ID 직접 입력", spellcheck: "false", autocomplete: "off" }, value: source?.defaultModel ?? "", dataset: { testid: "ai-compat-model-input" } }) as HTMLInputElement;
+    // 직접 입력한 모델 ID 가 지금 폼의 허용/차단 패턴에 걸리면 바로 이유를 보여 주고 시험·저장을 막는다(대체 모델로 바꾸지 않는다).
+    const modelNote = el("small", { class: "ai-compat-url-note", attrs: { role: "status" }, dataset: { testid: "ai-compat-model-note" } });
+    const modelVerdict = () => {
+      const id = modelInput.value.trim();
+      return id ? openAiCompatModelVerdict({ allowModels: patternList(allowModels), blockModels: patternList(blockModels) }, id) : { allowed: true as const };
+    };
+    const refreshModelNote = (): void => {
+      const verdict = modelVerdict();
+      if (verdict.allowed) modelNote.replaceChildren(); else setParts(modelNote, [verdict.reason ?? ""]);
+      modelNote.dataset.tone = verdict.allowed ? "idle" : "bad";
+    };
     const probeTools = toggle("도구 호출도 시험", "고른 모델로 짧은 요청을 보내 tools 를 받는지 확인합니다. 토큰을 몇 개 씁니다.", "ai-compat-probe-tools", true);
     const modelBox = el("div", { class: "ai-compat-model-box", attrs: { hidden: "" }, dataset: { testid: "ai-compat-model-box" }, children: [
-      field("모델", "목록에서 고르거나 모델 ID 를 직접 입력하세요. 목록을 못 받는 서버도 직접 입력하면 쓸 수 있어요.", el("span", { class: "ai-compat-model-control", children: [modelSelect, modelInput] })),
+      field("모델", "목록에서 고르거나 모델 ID 를 직접 입력하세요. 목록을 못 받는 서버도 직접 입력하면 쓸 수 있어요.", el("span", { class: "ai-config-stack", children: [el("span", { class: "ai-compat-model-control", children: [modelSelect, modelInput] }), modelNote] })),
       probeTools.row,
     ] });
     let testedModels: readonly string[] = source?.models ?? [];
@@ -427,7 +446,10 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
     };
     fillModels(testedModels);
     modelBox.hidden = !source;
-    modelSelect.addEventListener("change", () => { if (modelSelect.value) modelInput.value = modelSelect.value; });
+    modelSelect.addEventListener("change", () => { if (modelSelect.value) modelInput.value = modelSelect.value; refreshModelNote(); });
+    modelInput.addEventListener("input", refreshModelNote);
+    allowModels.addEventListener("input", refreshModelNote);
+    blockModels.addEventListener("input", refreshModelNote);
 
     const refreshUrlNote = (): void => {
       const text = baseUrl.value.trim();
@@ -469,7 +491,11 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
       result.hidden = false;
       result.dataset.tone = response.ok ? "ok" : "bad";
       result.dataset.code = response.code;
-      result.textContent = `${response.ok ? "연결됨" : response.code === "auth" ? "인증 거절" : response.code === "not-found" ? "경로를 찾지 못함" : "연결 실패"} · ${response.message}${response.status ? ` [${response.status}]` : ""}`;
+      setParts(result, [
+        response.ok ? "연결됨" : response.code === "auth" ? "인증 거절" : response.code === "not-found" ? "경로를 찾지 못함" : "연결 실패",
+        response.message,
+      ]);
+      if (response.status) result.append(document.createTextNode(` [${response.status}]`));
       warnings.hidden = response.warnings.length === 0 && response.hiddenModels === 0;
       warnings.replaceChildren(...response.warnings.map((warning) => el("li", { text: warning })));
       if (response.hiddenModels > 0) warnings.append(el("li", { text: `허용/차단 패턴 때문에 모델 ${response.hiddenModels}개를 숨겼어요.` }));
@@ -480,7 +506,8 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
         warnings.hidden = false;
         warnings.append(el("li", { text: "도구 호출 확인됨." }));
       }
-      if (response.ok || response.models.length) {
+      // 서버에 닿았지만 /models 가 없거나 비정상인 경우(404 등)도 모델 ID 를 직접 입력할 수 있어야 한다.
+      if (response.ok || response.models.length || response.code === "not-found" || response.code === "not-json" || response.code === "server") {
         modelBox.hidden = false;
         fillModels(response.models);
         if (!modelInput.value && response.models.length) modelInput.value = response.models[0] ?? "";
@@ -495,6 +522,7 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
       result.dataset.tone = "checking";
       result.textContent = "연결을 시험하는 중… (GET /models)";
       const model = modelInput.value.trim();
+      if (model && !modelVerdict().allowed) { refreshModelNote(); testButton.disabled = false; result.hidden = true; return; }
       void testOpenAiCompatEndpoint({
         ...(source ? { id: source.id } : {}),
         name: name.value,
@@ -515,6 +543,7 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
     });
 
     saveButton.addEventListener("click", () => {
+      if (!modelVerdict().allowed) { refreshModelNote(); status.textContent = "차단·비허용 모델은 저장하지 않아요. 모델을 바꾸거나 비우세요."; return; }
       saveButton.disabled = true;
       status.textContent = "저장하는 중…";
       const body: OpenAiCompatSaveRequest = {

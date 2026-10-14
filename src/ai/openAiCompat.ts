@@ -98,7 +98,7 @@ export interface OpenAiCompatPreset {
 export const OPENAI_COMPAT_PRESETS: readonly OpenAiCompatPreset[] = [
   { id: "cliproxy-argon", label: "CLIProxyAPI · mdc-server (Argon 만)", name: "CLIProxyAPI Argon", baseUrl: "http://mdc-server:8318/v1",
     hint: "gemini-4-argon 계열만 허용합니다. claude-* 같은 비싼 모델은 목록에서 숨기고 호출도 거절해요. 패턴은 아래에서 바꿀 수 있어요.",
-    allowModels: ["gemini-4-argon*"] },
+    allowModels: ["gemini-4-argon*"], blockModels: ["claude-*"] },
   { id: "cliproxy", label: "CLIProxyAPI (로컬)", name: "CLIProxyAPI", baseUrl: "http://127.0.0.1:8317/v1", hint: "CLI Proxy API 서버. 기본 포트는 8317 입니다. API 키는 서버 설정의 access 키예요." },
   { id: "litellm", label: "LiteLLM", name: "LiteLLM", baseUrl: "http://127.0.0.1:4000/v1", hint: "LiteLLM 프록시. 마스터 키가 있으면 API 키에 넣으세요." },
   { id: "ollama", label: "Ollama", name: "Ollama", baseUrl: "http://127.0.0.1:11434/v1", hint: "키가 필요 없어요. 모델이 도구 호출(tools)을 지원해야 조수에 쓸 수 있어요." },

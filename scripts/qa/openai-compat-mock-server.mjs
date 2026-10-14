@@ -7,6 +7,7 @@
 // 시험용 스위치:
 //   --key <값>          Authorization: Bearer <값> 을 요구한다(CLIProxyAPI 처럼 {"error":"Missing API key"} 로 401).
 //   --no-tools          요청에 tools 가 있으면 400 (이 모델은 도구를 못 쓴다).
+//   --models <a,b,c>    GET /v1/models 가 돌려줄 모델 ID(쉼표). 기본 mock-chat,mock-reasoner,mock-vision.
 //   --no-models         GET /v1/models 를 404 로.
 //   --reject-reasoning  reasoning_effort 가 있으면 400 (모르는 인자).
 //   --rate-limit        chat/completions 를 429 + Retry-After 로.
@@ -31,6 +32,7 @@ function arg(name, fallback) {
 const port = Number(arg("port", 18401));
 const requiredKey = typeof arg("key", "") === "string" ? arg("key", "") : "";
 const noTools = arg("no-tools", false) === true;
+const modelIds = (typeof arg("models", "") === "string" && arg("models", "") ? String(arg("models", "")).split(",").map((id) => id.trim()).filter(Boolean) : ["mock-chat", "mock-reasoner", "mock-vision"]);
 const noModels = arg("no-models", false) === true;
 const rejectReasoning = arg("reject-reasoning", false) === true;
 const rateLimit = arg("rate-limit", false) === true;
@@ -104,7 +106,7 @@ const server = createServer(async (req, res) => {
     log({ path: url.pathname, authOk: auth.ok, authPresent: auth.present });
     if (!auth.ok) return send(res, 401, { error: auth.message });
     if (noModels) return send(res, 404, { error: "404 page not found" });
-    return send(res, 200, { object: "list", data: ["mock-chat", "mock-reasoner", "mock-vision"].map((id) => ({ id, object: "model", owned_by: "mock" })) });
+    return send(res, 200, { object: "list", data: modelIds.map((id) => ({ id, object: "model", owned_by: "mock" })) });
   }
   if (req.method === "POST" && url.pathname === "/v1/chat/completions") {
     const raw = await readBody(req);

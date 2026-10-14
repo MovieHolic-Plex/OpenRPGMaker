@@ -222,12 +222,16 @@ export async function completeProvider(
     };
   }
   const apiKey = options?.apiKey;
-  const message = await completeSimple(model as never, context as never, {
+  // 사용자 지정 엔드포인트: 추론 강도를 엔드포인트가 정한 방식(none/field/suffix)으로 맞춘다. 차단 모델은 여기서도 403 으로 거절한다.
+  const shaped = isOpenAiCompatProviderId(provider)
+    ? shapeOpenAiCompatCall(provider, model as { id: string; name?: string }, completionThinkingOptions(body))
+    : { model, options: completionThinkingOptions(body) };
+  const message = await completeSimple(shaped.model as never, context as never, {
     ...(apiKey ? { apiKey } : {}),
     fetch: provider === "openai-codex" ? codexVersionFetch(options?.fetch ?? fetch)
       : isOpenAiCompatProviderId(provider) ? guardedOpenAiCompatFetch(options?.fetch ?? fetch) : options?.fetch,
     signal: options?.signal,
-    ...completionThinkingOptions(body),
+    ...shaped.options,
     // 사용자 지정 엔드포인트는 출력 상한을 서버가 모른 채 거절하는 일이 흔하다 — 엔드포인트 설정의 상한으로 낮춰 보낸다.
     ...(typeof body.max_tokens === "number"
       ? { maxTokens: isOpenAiCompatProviderId(provider) && typeof model.maxTokens === "number" ? Math.min(body.max_tokens, model.maxTokens) : body.max_tokens }
