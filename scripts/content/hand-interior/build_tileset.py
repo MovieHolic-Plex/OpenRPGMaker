@@ -676,3 +676,8 @@ bad = [r for r in report if r['structDiffPx'] or r['pixelDiffAllFrames'] or r['w
 for r in report: print(r['map'], r['size'], 'struct', r['structDiffPx'], 'px', r['pixelDiffAllFrames'], 'walk', r['walkMismatch'], r['walkMismatchCells'][:4], 'unreached', r['unreached'][:4], 'over2', r['cellsOver2'])
 print('BAD', len(bad))
 if PICKS: print('picks: applied', PICKED['applied'], 'resized', PICKED['resized'], 'variants', PICKED['variants'], 'skipped', PICKED['skipped'], '→ tiledata/hand-interior/pick/out/baked.json')
+# 박물관·배 안·투기장(interior-plus)은 이 시트 끝에 덧붙인 조각이다 — 시트·정의·사양을 다시 썼으니 덧붙임을 다시 얹는다(3/4 관문 영수증 확인 포함).
+# 시트 칸 수가 바뀌었으면 plus 칸 번호가 새 끝에서 다시 시작한다(bake.py 가 알린다). 건너뛰려면 HAND_INTERIOR_NO_PLUS=1.
+if not os.environ.get('HAND_INTERIOR_NO_PLUS'):
+    import subprocess as _sp
+    _sp.run([sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'interior-plus', 'bake.py')], check=True)

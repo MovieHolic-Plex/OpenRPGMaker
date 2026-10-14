@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "286d16300afecef9376a27b148a11aef0f40405b02cfbdec07aab204ce48802c",
+ "width": 32,
+ "height": 32,
+ "kind": "flat",
+ "name": "경기장 바닥 문장(2×2) (arena emblem)",
+ "label": "atlas_biome_interior/plus/arena emblem",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "circular arena floor emblem",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire object is a circular decorative medallion lying flat on the floor, fully visible from above spanning rows 2 to 29 with no front elevation or isometric distortion.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4845
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "circular arena floor emblem medallion",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Floor medallion is seen from above, flat on the ground spanning rows 2 to 29 across all 28 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5296
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "circular arena floor emblem",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat floor medallion/emblem lying completely flat on the ground, displaying its entire top surface across rows 2 to 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3610
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "circular floor emblem",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor emblem/decal displayed across rows 2-29 with the entire surface visible as a ground plate.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5578
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.630Z",
+ "cells": {
+  "16": [
+   "30f93f01be8ddc2c",
+   "3649a518d2fac6c5",
+   "61350f7575a7ad37",
+   "a0ed6b3be06bacdc"
+  ],
+  "24": [
+   "0104064509b98b27",
+   "0b1c0937a3c5e322",
+   "12dd3b6b7340a9b3",
+   "14a992227efbc9f9",
+   "14f481aba2ffa4ef",
+   "24a67639af700e11",
+   "27fe9f0c878ac1b3",
+   "36c65e5900892c66",
+   "43d1b80014794bfb",
+   "47686067d8a184ff",
+   "4e4a5bc97a8562c2",
+   "6165b5ae9834c432",
+   "7980b5ec32adba5f",
+   "88c5971005a35d1d",
+   "8c96a1a79d309033",
+   "9567a7af613714fc",
+   "9727bd7449c7ea16",
+   "99172cc4bc378608",
+   "a5218a8115506cb1",
+   "b73cba963f1ecc1e",
+   "d1559a3c2c6c5642",
+   "eb5d18ae39542dea",
+   "eeb053d9daa92cc6",
+   "f8313b4708cefea7"
+  ],
+  "32": [
+   "81c2701a2c6cfc66"
+  ],
+  "48": [
+   "0fde2d7e24251805",
+   "494a14b47a89d7ea",
+   "5064ed4b4e6f5d95",
+   "a99b2248f7f24c68",
+   "ac1e64dd28c80f8f",
+   "f91a7c540346260b"
+  ]
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "69a80104dfe1f60d77fa57e051315ed4bdd7d958456555b424f56d5574b0f13c",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "짚 허수아비 표적 (training dummy)",
+ "label": "atlas_biome_interior/plus/training dummy",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "straw training dummy on wooden base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The training dummy is mounted on a circular wooden base plinth that clearly displays a foreshortened top surface across rows 23-27 (5 pixel rows tall) with the south face visible below at rows 28-30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6402
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "straw training dummy on wooden plinth",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The circular wooden base plinth shows a clear foreshortened top surface across rows 22–27 (approx 6 rows tall) with wood grain rings, supporting the figure in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4495
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "straw training dummy on round wooden base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The training dummy is mounted on a circular wooden log plinth whose top face is clearly visible in 3/4 perspective across rows 22-27 (approx. 5 rows tall), with the south vertical rim extending down to row 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5376
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "straw training dummy on circular wooden base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden plinth/base shows a foreshortened circular top surface spanning rows 22-27 (approx. 6 rows tall) with wood-grain rings, viewed from a 3/4 top-down angle, and a front vertical edge on rows 28-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 34688
+  }
+ ],
+ "decidedAt": "2026-10-14T05:23:00.550Z",
+ "cells": {
+  "16": [
+   "3c83594d790bfea2",
+   "45f243e310eae48d"
+  ],
+  "24": [
+   "025f9415a3be7a5b",
+   "058367e7a8131619",
+   "090faf5efa46eddb",
+   "1f086dfe102a3a1b",
+   "6eda549b7709cb37",
+   "7a6084bf15a6fa8b",
+   "899ec6d2eda65ea2",
+   "aee0325051d57c3f",
+   "c00ffc1347dd068c",
+   "d097b3cd03bc6e96",
+   "d2191cca5ba7f841",
+   "f98d3293a1de8458"
+  ],
+  "32": [
+   "37db8d6a7432cbb4",
+   "6996a4eae5de584e",
+   "8fccd4fa0dfed7c7"
+  ],
+  "48": [
+   "2aa3de9f109baf61",
+   "3ab09d6fa9be5096",
+   "93f2a3a84e0d6cfb",
+   "a5f9e46f7488e5e5",
+   "d2f06a7e58f3e07c",
+   "db0b8038cfbb50f8"
+  ]
+ }
+}

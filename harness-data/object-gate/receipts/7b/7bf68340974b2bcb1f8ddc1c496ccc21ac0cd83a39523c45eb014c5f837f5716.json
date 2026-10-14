@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7bf68340974b2bcb1f8ddc1c496ccc21ac0cd83a39523c45eb014c5f837f5716",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "돛대 밑동 (mast)",
+ "label": "atlas_biome_interior/plus/mast",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden mast / column",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the mast is rendered as an ellipse with visible wood rings spanning rows 1-4, and the metal bands curve downward across the cylinder consistent with a 3/4 top-down angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3446
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden mast with iron bands and base mount",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the mast is clearly rendered as an ellipse with annual rings spanning rows 1 to 4 (~4px tall). Curved iron bands and the base mounting also maintain consistent 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8585
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden mast with cut top surface and reinforced base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the wooden mast clearly displays wood grain/growth rings spanning rows 1-4 (4px tall ellipse), and the metal bands also curve downward across the cylinder to match the 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3020
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden mast with iron bands and base mount",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the wooden mast is clearly drawn as an ellipse from rows 1 to 4 with visible wood grain rings, and the metal bands show 3/4 downward curvature.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3038
+  }
+ ],
+ "decidedAt": "2026-10-14T05:26:38.541Z",
+ "cells": {
+  "16": [
+   "043e83127ad4a0eb",
+   "42f08c021ce10212",
+   "8492fa939a3bbc9f"
+  ],
+  "24": [
+   "3e9ca19bdd0c25a1",
+   "5bbf83ad94a44786",
+   "5c87d8ac654714df",
+   "b3eb0451642a9445",
+   "c3e4cc5fee2816c6",
+   "dd288bc4025516e5"
+  ],
+  "32": [
+   "246b8f60de964d6b",
+   "3c799fa0a7afe9fd",
+   "6686894e67dba439",
+   "74ac19f5516b66cf",
+   "76fe42c9088ad673",
+   "8bc66ffd49f5a5ac",
+   "9b3579202094e449",
+   "b31668fb117b1e5b",
+   "b79b19ce41f8c515",
+   "bca6f4231f678307",
+   "c0a0b3a85e3345d3",
+   "dddd7eba0739d9a5"
+  ],
+  "48": [
+   "110ce023a5cf76c3",
+   "455faaaec6681420",
+   "539ba6883fea29d9"
+  ]
+ }
+}

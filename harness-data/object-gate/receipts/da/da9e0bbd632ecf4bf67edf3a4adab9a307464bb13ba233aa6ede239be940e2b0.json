@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "da9e0bbd632ecf4bf67edf3a4adab9a307464bb13ba233aa6ede239be940e2b0",
+ "width": 48,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "관중석 돌 계단(낮은 줄, 3칸) (tier seat 3)",
+ "label": "atlas_biome_interior/plus/tier seat 3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone bench / tier seat with cushions",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top seating surface spans rows 1-7 (7 source pixels tall), supporting two red cushions, with a front overhang and vertical face spanning rows 8-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5563
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone bleacher / tiered bench step",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface (step tread with cushions) spans rows 1-7 (approx 7 rows), followed by a front edge and vertical riser face across rows 10-14, matching standard 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10123
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tier seating / bleacher bench with cushions",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bench tier spans rows 2 to 7 (6 rows tall), with two red cushions resting on it that also exhibit top surfaces (rows 3-6) and front faces (row 7). The south vertical face spans rows 8 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5131
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone tier seat bench with cushions",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal seating surface extends from row 1 to row 8 (~7 rows tall) with cushions resting on it, followed by a front riser/face from row 9 to 14 (~6 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5979
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.628Z",
+ "cells": {
+  "16": [
+   "0f4c7f7c60b40945",
+   "b80d287d6e177918",
+   "e88e6400cae9d552"
+  ],
+  "24": [
+   "6c581bd7a002b2bf",
+   "78cd48bfa78be1e6",
+   "9b976d233c807a2b",
+   "e9a0efa118ff6f18"
+  ],
+  "32": [
+   "063ac4a5aa787dca",
+   "06e163c069b9b217",
+   "128a88700900d494",
+   "21ca0e7edc65b259",
+   "3868ee62e60446d5",
+   "66dab924ff06efa1",
+   "91c4e12154b7fd8d",
+   "a785750b9420a69d",
+   "af9b0024d8d55ad4",
+   "c9385cc9a75587b9",
+   "cb3d7122638ddf24",
+   "e280406140fd1fd2"
+  ],
+  "48": [
+   "558e1e7a4f4d3e9b",
+   "59b26ac27bd73bfb"
+  ]
+ }
+}

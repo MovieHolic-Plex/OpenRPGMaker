@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bb0b101214512eddc48c040ccf40591a3ad077a4eb9c9a2370407db8274f09e9",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "자수정 정동 받침 (geode stand)",
+ "label": "atlas_biome_interior/plus/geode stand",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "amethyst geode on a wooden stand",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The geode has a large visible elliptical interior opening filled with amethyst crystals spanning rows 11 to 17 (7 rows), and the wooden stand below shows a 4-row top surface (rows 21-24) above its south face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7391
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "amethyst geode on a wooden pedestal stand",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The geode has a wide elliptic hollow opening displaying purple crystals from row 11 to 17 (7 rows), and the wooden stand underneath clearly shows its top surface from row 21 to 24 (4 rows) above its front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6353
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "amethyst geode cavity on wooden stand",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The geode opening clearly shows the hollow crystal cavity interior across rows 11-17 (7 rows tall) in top-down 3/4 view, resting on a stand with a 4-row visible top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6358
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "geode on a wooden stand",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The geode has an elliptical hollow cavity filled with purple amethyst crystals (rows 11-17, 7 rows tall) clearly visible from above, resting on a wooden stand that itself shows a 4-row top surface (rows 21-24) and a front face (rows 25-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6599
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.624Z",
+ "cells": {
+  "16": [
+   "00fdfb2b4304935e",
+   "51c4829202c8639f"
+  ],
+  "24": [
+   "0d327c6285851da2",
+   "3dbca0d3b623828f",
+   "40a734f75cc46a66",
+   "4cabf15635c29cfe",
+   "542e053e6b16b76e",
+   "8022b7b12e60c391",
+   "a8d4bbd23b8f09e7",
+   "aa20ab90d0941fe6",
+   "cf65acf3a226059f"
+  ],
+  "32": [
+   "0ccce05f3c50d6b3",
+   "bcda7cfc20cc24db",
+   "be42615231f09590"
+  ],
+  "48": [
+   "14ef305d3fa754f3",
+   "2547d0ad84fb79fe",
+   "2ac48b2e11eee4a9",
+   "36e2a1b21c150496",
+   "44138f57aacc978f",
+   "bc98606d945a3c12"
+  ]
+ }
+}

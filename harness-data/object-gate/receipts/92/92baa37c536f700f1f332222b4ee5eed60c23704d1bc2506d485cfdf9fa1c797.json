@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "92baa37c536f700f1f332222b4ee5eed60c23704d1bc2506d485cfdf9fa1c797",
+ "width": 16,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "포문(열림) (gunport)",
+ "label": "atlas_biome_interior/plus/gunport",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "open ship gunport with upper hatch",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted gunport opening set into a vertical ship wall with the hatch cover propped open; valid flat wall-mounted element.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6102
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ship gunport with open hatch",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted ship gunport aperture and open hatch lid mounted flush to a vertical wall, showing ocean/sky through the port. As a wall-mounted element, flat representation is expected.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5878
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "open wooden gunport hatch and frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "A ship gunport or wall hatch set flat into a vertical wall, depicted with the lid swung upward; valid as a flat wall-mounted fixture.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5072
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "open ship gunport with hinged hatch lid",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted opening/port set flush into a vertical wall or ship hull; properly drawn flat against the wall as allowed for wall-mounted elements.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5671
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.627Z",
+ "cells": {
+  "16": [
+   "b269d1b421c062b4",
+   "e1688f30951783ce"
+  ],
+  "24": [
+   "3f5bc46f41dcbf57",
+   "4e9622cb7fa73567",
+   "7468f53515dc259c",
+   "761b4fe075db48b4",
+   "8305ce682f7bfa18",
+   "95429fe3de89f4c2",
+   "ad08be64fb7c0405",
+   "b029dcbba1e37815",
+   "e1ce334ae2f70591"
+  ],
+  "32": [
+   "05dfe769169c3b09",
+   "09f2d280aa63e463",
+   "39e5b0642287fdfc"
+  ],
+  "48": [
+   "4856ed110f1e9428",
+   "71e910456252cc31",
+   "8f00ed00a518a8ba",
+   "94c20e2416c959d1",
+   "9a3e1e6723bb4e7b",
+   "f6ef71b643682a0b"
+  ]
+ }
+}

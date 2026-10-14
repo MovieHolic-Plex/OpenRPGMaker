@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cc4a074997d46395df64f051551a5a28d939cae1415b9577ae48ec7d76ec1fd9",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "항해 도구 선반(2칸) (instrument shelf)",
+ "label": "atlas_biome_interior/plus/instrument shelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tabletop and legs of the instrument shelf",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop has a visible top surface spanning rows 11 to 16 (6 pixel rows) upon which navigation instruments rest, followed by the front apron (rows 17-21) and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6478
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "table / instrument shelf",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop has a visible top surface spanning rows 11 to 16 (6 pixel rows deep) upon which the instruments sit, followed by a 5-pixel tall south-facing front apron (rows 17-21) and front legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15693
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden instrument table/shelf with items on top",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface spans roughly rows 12 to 16 (approx 5 rows deep) upon which the book, lantern, sextant, and letter sit. The vertical front face/apron spans rows 17 to 21, and the sides are vertical without isometric projection.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8582
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden table / instrument shelf",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface spans from row 11 to row 16 (6 pixel rows deep), where navigational tools rest, before transitioning to a 5-row tall front edge (rows 17-21) and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5547
+  }
+ ],
+ "decidedAt": "2026-10-14T05:23:47.901Z",
+ "cells": {
+  "16": [
+   "3d6ae0a370b98b8c",
+   "69c0f65a37a2da4d",
+   "a51e6f139240ed9b",
+   "f73669629e6411f0"
+  ],
+  "24": [
+   "0c123c709a940089",
+   "1dc5e461a1a842de",
+   "1e6ee791b633c05f",
+   "533ed681978f57f5",
+   "5ca08422740b8025",
+   "6b5baea2d65ed1ec",
+   "6e614330f8fb5a23",
+   "89d7182cee2760aa",
+   "909f1d4b09414542",
+   "a9ad04a615be3df3",
+   "b1c2ddbdc5ed7838",
+   "b43b2bd4ece40fbf",
+   "ba0c0ca8d2811361",
+   "bd8f5da8cc522158",
+   "c405499762344e81",
+   "c5d635b4efc1d94e",
+   "c6bb9bb447082f71",
+   "dbc095c61be04e0e",
+   "e19a71acc821fc78",
+   "e4e210e9468163eb",
+   "f0288369be71e82f",
+   "f7a9cda2fe078299"
+  ],
+  "32": [
+   "c14ccf72f0b016bc"
+  ],
+  "48": [
+   "080bd48b1a338120",
+   "183256c775ef0398",
+   "758428f76f427f6d",
+   "be0de2feec88bfef",
+   "e7ebc00e378bdf24",
+   "eb2a205c4946e0cb"
+  ]
+ }
+}

@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "62ae80bea3d6038f2837b7f0dda4e0e53bf72abd8954ee16dd2bd9507a29f913",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "받침대 위 고대 투구 (plinth helmet)",
+ "label": "atlas_biome_interior/plus/plinth helmet",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "plinth with ancient helmet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object (both the Corinthian helmet and the stone plinth beneath it) is drawn in pure front elevation. The helmet shows only its flat front silhouette and T-visor without any top surface foreshortening, and the plinth has no visible top plane around or in front of the helmet, consisting entirely of vertical front-facing tiers.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9094
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pedestal with ancient helmet",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The plinth/column shows a clear horizontal top surface around the base of the helmet spanning rows 10 to 14 (5 pixel rows deep) before dropping to the south-facing front elevation at row 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12160
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pedestal with helmet",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The plinth has a clearly visible top surface from rows 10 to 14 (5 rows) upon which the helmet is set.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5317
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "plinth with helmet",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The plinth has a clearly visible top surface (rows 11-16) upon which the helmet rests, seen from above in proper 3/4 top-down view, with the vertical front face visible below (rows 17-21).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6212
+  }
+ ],
+ "decidedAt": "2026-10-14T05:25:18.786Z",
+ "cells": {
+  "16": [
+   "3477b6a82936a86b",
+   "a324dfa7c426855f"
+  ],
+  "24": [
+   "02943c87160045f8",
+   "0b13485a46a7177d",
+   "28dc420252407b6f",
+   "6234729bce24a7cc",
+   "7dba73dc8d98db7e",
+   "80cc005f22940bd0",
+   "8176842c0d7bf5fe",
+   "8bab913106bda65c",
+   "8d1e1ef557897602",
+   "9c7b745d0a2b37b7",
+   "9d3d259268d21eaf",
+   "bc8220c8f5260c43"
+  ],
+  "32": [
+   "27fd123bd87cf234",
+   "ecbc946144c130e1",
+   "f23d7dc19ad276ea"
+  ],
+  "48": [
+   "30cbc287a98aa37b",
+   "4528b89ddd2ce839",
+   "79e84a5e64d58c0c",
+   "805ff16f80bb8f97",
+   "9f865da9e56f1943",
+   "deea918046ba527f"
+  ]
+ }
+}

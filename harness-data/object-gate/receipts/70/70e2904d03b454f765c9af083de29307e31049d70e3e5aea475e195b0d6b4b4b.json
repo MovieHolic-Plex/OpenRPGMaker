@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "70e2904d03b454f765c9af083de29307e31049d70e3e5aea475e195b0d6b4b4b",
+ "width": 48,
+ "height": 32,
+ "kind": "frame",
+ "name": "관람 줄(3칸) (rope barrier 3)",
+ "label": "atlas_biome_interior/plus/rope barrier 3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stanchions and velvet ropes",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each stanchion base is rendered as an elliptical disc seen from above (rows 21-25, ~4-5 rows of visible top surface) with the post inserted into its top plane, consistent with 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6723
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stanchions and velvet ropes",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The circular stanchion bases are foreshortened into ellipses showing 3-4 rows of visible top surface around the post, and the hanging ropes show top-down thickness rather than flat 1px lines.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8200
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stanchions with velvet rope",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round base plates of the stanchions are drawn as foreshortened ellipses (rows 21-25) showing their top surfaces around the post rather than flat front-view discs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4947
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rope barrier stanchions and rope",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The circular stanchion bases are drawn as foreshortened ellipses (~10px wide by 6px high) with 4 visible rows of top surface (rows 21-24) around the central pole.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6790
+  }
+ ],
+ "decidedAt": "2026-10-14T05:28:27.576Z",
+ "cells": {
+  "16": [
+   "15bb04fefc2fdbdb",
+   "240ef78cdc885ed1",
+   "3010fefefb9965f4",
+   "4860aa76d74f085a",
+   "f4f2075336b317cf",
+   "fdfeeaee9fa53bc7"
+  ],
+  "24": [
+   "0b942b775b4ad217",
+   "25b684ae811f8fed",
+   "5f1e9b83ef898399",
+   "6de624e239c52ef9",
+   "85e407f3a7c021eb",
+   "88d043d76237af7f",
+   "a89e1ea14fbbc3a7",
+   "f5190f41fcbe5f61"
+  ],
+  "32": [
+   "0b73a7724a402cb1",
+   "793be0cd12b22feb",
+   "8f5be296ace82c43",
+   "a1f46cef1061fe96",
+   "f060bf7521da6a04",
+   "fd1a760b15e7de53"
+  ],
+  "48": [
+   "43db21a416fce4c2",
+   "d30e78e2a987fe07"
+  ]
+ }
+}

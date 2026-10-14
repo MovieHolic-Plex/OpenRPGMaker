@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "168e170311520cc301fb298c3b947bd1326723ccad04ce4ce787711eeab78d3b",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "닻 쇠사슬 더미 (anchor chain)",
+ "label": "atlas_biome_interior/plus/anchor chain",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pile of anchor chain",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coiled chain forms a low mound seen from 3/4 top-down perspective, showing the foreshortened top surfaces of the chain links across rows 5-9 with front/lower shading towards the base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4385
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pile of anchor chain links",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coiled pile of heavy chain links is viewed from above at a 3/4 angle, showing interlocking chain loops lying on the ground across rows 4 to 14 without a flat side-on elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4991
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pile of anchor chain",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chain is coiled/heaped on the ground, showing the top surfaces of the chain links spread across rows 6 to 11 with proper top-down 3/4 foreshortening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4555
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "coiled anchor chain pile",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The anchor chain pile is shown resting on the floor in 3/4 perspective, with multiple interlocking links visible across the top surface spanning rows 4 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3820
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.628Z",
+ "cells": {
+  "16": [
+   "b684d1b4dd8a90ba"
+  ],
+  "24": [
+   "37192393f371e0d2",
+   "4951b1790c8b042d",
+   "87e08a17563e1460",
+   "bf644ac0ffe56738",
+   "e987edb08c09f624",
+   "f0043b328aaad604"
+  ],
+  "32": [
+   "1c6b1cb113b16aa8",
+   "46424e89e4e539d0",
+   "4f988855caa29167",
+   "c24784bb405b8503",
+   "c638319f274ed6d9",
+   "eac1359183a7918a"
+  ],
+  "48": [
+   "406e2bad8f459cd4",
+   "6e189e27fe337270",
+   "a3f2c1f317013ce6",
+   "b3cabed93b4fedd9",
+   "c97e668cb5e051f8",
+   "fad2c35c2e058d7b"
+  ]
+ }
+}

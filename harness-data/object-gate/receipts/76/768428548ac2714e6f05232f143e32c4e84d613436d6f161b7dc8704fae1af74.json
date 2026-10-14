@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "768428548ac2714e6f05232f143e32c4e84d613436d6f161b7dc8704fae1af74",
+ "width": 32,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "풍경화(2칸) (painting landscape)",
+ "label": "atlas_biome_interior/plus/painting landscape",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "framed landscape painting",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Framed picture correctly classified as wall_mounted; drawn flat as appropriate for wall decor.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4105
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "framed landscape painting",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted picture frame displayed flat facing south as standard for north-wall decorations in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3759
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "framed landscape painting",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted picture frame drawn flat against the wall, which is standard and permitted for wall_mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6939
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "framed landscape painting",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted picture frame drawn flat against the wall as appropriate for wall_mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2943
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.623Z",
+ "cells": {
+  "16": [
+   "2056a62e2b8e621d",
+   "61ab512372011495",
+   "69239906307bf34d",
+   "7e57960b1288f8a4"
+  ],
+  "24": [
+   "046fd8b9856fb4eb",
+   "2adc0c8436f70462",
+   "396852b3e543a45f",
+   "3aaa2b9d1cb27d23",
+   "44eeffdf0f59e053",
+   "56a31a56ae9689bb",
+   "6fcedc8d0e71426f",
+   "7980ece05988cb33",
+   "7d713c51436c59dc",
+   "7f981fe9590cf8cd",
+   "8a8e205703233bc1",
+   "9ca7c2e25d709b7c",
+   "a321c198dbc0df06",
+   "ae2aff898becdb63",
+   "ba6600812c1c7c2e",
+   "e4d00b1e0d123a44",
+   "ea0aa8975653e948",
+   "f91ea7cf954c60da"
+  ],
+  "32": [
+   "bada3dc4cd148459"
+  ],
+  "48": [
+   "0d786512f1459627",
+   "0eb43fbbfd61e157",
+   "1dfee7879ec3027b",
+   "51c5d9513e251f70",
+   "dc190d6b1092be4e",
+   "f54ec1a58b8be7d3"
+  ]
+ }
+}

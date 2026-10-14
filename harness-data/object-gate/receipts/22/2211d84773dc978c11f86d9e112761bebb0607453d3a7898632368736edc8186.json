@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2211d84773dc978c11f86d9e112761bebb0607453d3a7898632368736edc8186",
+ "width": 32,
+ "height": 32,
+ "kind": "figure",
+ "name": "사자 석상(2칸) (lion statue)",
+ "label": "atlas_biome_interior/plus/lion statue",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "recumbent stone lion statue on a rectangular plinth",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The plinth shows a clear top surface spanning rows 20-24 (about 4-5 pixel rows deep) before dropping to the front vertical face at row 26. The lion's back also shows a 3-row foreshortened top plane (rows 7-9) and staggered paws showing depth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6376
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lion statue on stone plinth",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The plinth has a clearly rendered top surface spanning rows 21-24 (approx. 4 rows deep) upon which the lion rests, above a vertical south face at rows 26-29. The lion's back also features foreshortened top planes across rows 7-10.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6743
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lion statue on rectangular plinth",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lion's back displays a clear top plane across rows 7-10 (approx. 4 rows tall) above its flank, and the supporting plinth shows a visible top surface across rows 21-24 (approx. 4 rows tall) before its front face drops from row 26 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5158
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lion statue reclining on a plinth",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The plinth shows a clear foreshortened top surface spanning rows 20-24 (approx. 4-5 px tall) beneath the statue, and the lion's back also features a highlighted top plane spanning rows 7-9 (3 px tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5504
+  }
+ ],
+ "decidedAt": "2026-10-14T05:28:27.575Z",
+ "cells": {
+  "16": [
+   "05d9e0bae66fe99b",
+   "0e0a3e17e1bb7106",
+   "5180a8330a12d5a4",
+   "d3766a9e85c01b5f"
+  ],
+  "24": [
+   "00657c5f7a41616e",
+   "0a3d252e5e43a773",
+   "126f2d8886b27929",
+   "1df3798323508df5",
+   "279090a965e0223e",
+   "37367ce4fc0edc6f",
+   "3dd4cc5a90a6d8dd",
+   "410e1dc32a24365f",
+   "5092e8ab423f9dbc",
+   "52cf2b910f621545",
+   "5c21b9d6213685d6",
+   "6b74f93d7197cc98",
+   "78032ebf13854f75",
+   "80e5828c13a8219f",
+   "8b42ebf499e9af27",
+   "99ae2e83950c8b73",
+   "a674a5ef811e1644",
+   "b0d21f928ce9a046",
+   "b22252129a3ebc5b",
+   "b50a0b7f6eb21ed1",
+   "cb4a552c0803bbfe",
+   "e795f3c28c6af633",
+   "ef8704ad00e64003"
+  ],
+  "32": [
+   "43ff96bcfec22a8e"
+  ],
+  "48": [
+   "47e661463e351236",
+   "5a3ea9646c0df646",
+   "edcc2bc61bc3e903",
+   "f09a40780ce0fcc8",
+   "f2616f693b1b52bc",
+   "fc4af5305eaf0914"
+  ]
+ }
+}

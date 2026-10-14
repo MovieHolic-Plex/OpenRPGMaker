@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "68fb35dba37cf3d58364bcb8f4c98d5fc2d53c7b70289c529cac7e021e820a0e",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "빈 대리석 받침대 (plinth)",
+ "label": "atlas_biome_interior/plus/plinth",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "marble plinth",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the pedestal is clearly visible from rows 12 to 18 (7 rows tall) leading down to the front south face at rows 19-22, properly drawn in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6300
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "marble pedestal / plinth",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the pedestal cap spans rows 12 to 18 (7 rows tall) with highlights, clearly visible above the front-facing slab edge (rows 19-22).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5841
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "marble plinth/pedestal top slab and shaft",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the marble plinth is prominently visible spanning rows 12-18 (~7 rows tall) above the south-facing vertical edge on rows 19-21, correctly showing the 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6080
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "marble plinth / pedestal",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the plinth is clearly foreshortened and visible from row 11 to row 18 (about 8 rows tall) before dropping into the front-facing vertical tiers on rows 19-29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6328
+  }
+ ],
+ "decidedAt": "2026-10-14T05:28:27.574Z",
+ "cells": {
+  "16": [
+   "41d2fb0ba5bb6693",
+   "84ee0723a7d1e0ea"
+  ],
+  "24": [
+   "0a09b7efb9b84c74",
+   "2e040e4a346b5b26",
+   "38d7b60cb841c2ab",
+   "6b55d35aa3182a47",
+   "7013af5999877dac",
+   "82c845937656aef7",
+   "a9cc0fbfb6f087d7",
+   "bcc01f67862c5680",
+   "e72a9abd7540b1fd"
+  ],
+  "32": [
+   "015ad5b7a4b38b06",
+   "7f29c863fb4c2da6",
+   "c0aaa871bd1998bc"
+  ],
+  "48": [
+   "1cbc03830f1d5af4",
+   "706ddd6d1f53b558",
+   "83e4fc9374831897",
+   "8db53c59621ba7d1",
+   "90dfd39bd895c0b7",
+   "d0abdd97ca629863"
+  ]
+ }
+}

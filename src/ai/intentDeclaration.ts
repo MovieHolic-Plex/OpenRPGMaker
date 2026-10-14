@@ -176,7 +176,7 @@ Rules:
 - 마을·도시를 짓는 요청은 tools 에 author_beodeul_town 을 적는다(버들항 블록 키트 조립). 집 한 채는 inspect_terrain·place_terrain_house. 숲마을 author_village·author_house 는 없다.
 - 일본 상가·상점가·골목 거리(번들 칩셋 jp_city)나 jp_city 맵 위의 건물 짓기는 author_beodeul_town 이 아니다 — tools 에 create_map·fill_region·list_jp_city_building_parts·build_jp_city_building 을 적는다.
 - 해리포터풍·마법 학교·호그와트풍 장소(대연회장·성채 복도·기숙사 휴게실·기숙사 침실·마법약 교실·부엉이 탑·도서관·온실·병동·퀴디치 경기장·검은 호수 보트 창고·금지된 숲 마차 승차장 등, 번들 칩셋 wizarding_world)는 손 도트 실내가 아니다 — tools 에 list_wizarding_spaces·build_wizarding_space 를 적는다.
-- 고딕 호러 장소(흉가·저택 정원·공동묘지·예배당·납골당·미술관·갤러리·박물관 전시실·저택 홀·서재·지하실, 번들 칩셋 gothic_manor)는 손 도트 실내·버들항 마을이 아니다 — tools 에 list_gothic_places·build_gothic_place 를 적는다.
+- 고딕 호러 장소(흉가·저택 정원·공동묘지·예배당·납골당·호러 미술관·저택 홀·서재·지하실, 번들 칩셋 gothic_manor)는 손 도트 실내·버들항 마을이 아니다 — tools 에 list_gothic_places·build_gothic_place 를 적는다. 호러·고딕·흉가 낱말이 없는 박물관·미술관 전시실, 배 안(선장실·조타실·배 주방·선원 숙소·화물칸·포 갑판), 투기장·콜로세움·검투사 방은 손 도트 실내다 — space=interior, tools 에 list_hand_interior_parts·build_hand_interior_room 을 적는다.
 - 사용자와 같은 언어로 clarify·summary 를 쓴다.
 
 JSON schema:

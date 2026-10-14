@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "53cc20e443543840f5ee5f7770a679b627820814399705287a858349f26d4ff0",
+ "width": 16,
+ "height": 32,
+ "kind": "frame",
+ "name": "창살 문 고패 (gate winch)",
+ "label": "atlas_biome_interior/plus/gate winch",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "gate winch drum / capstan",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top circular face of the winch cap/drum is prominently foreshortened and visible from row 7 to row 15 (approx. 9 rows tall) with an axle fitting in the center, properly demonstrating 3/4 view perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5045
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical winch spool / drum",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The winch is drawn as a flat front elevation. The top cap only has a 2px curved outline/cap line (rows 8-9) with no foreshortened top surface or elliptical top face, while the vertical front face of the cap and drum dominate the view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 15706
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "winch drum top flange",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylindrical winch spool displays a fully foreshortened elliptical top surface spanning rows 7-15 (approx. 9 pixel rows) with a central metal axle fitting, as well as the visible top ledge of the lower flange at rows 26-28.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 17516
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden gate winch drum / capstan",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the cylindrical winch drum is drawn as a wide ellipse spanning rows 7 to 15 (approx. 9 pixel rows) with a central metal fitting, clearly presenting the top surface in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5509
+  }
+ ],
+ "decidedAt": "2026-10-14T05:32:58.411Z",
+ "cells": {
+  "16": [
+   "c62ff7e56e6933a1",
+   "e9cd44c8b31798c2"
+  ],
+  "24": [
+   "1ab060ea91d687ec",
+   "1e0588bacf5eb5a8",
+   "31a2d7837984e4c7",
+   "32f639e1883b8d46",
+   "48d11e0ac23caf21",
+   "788de3fed39c068f",
+   "804b7622fab79bba",
+   "a169346891418ac7",
+   "bd659b11555c210d",
+   "bfb5f6f518b32bfc",
+   "ccf85c0b8ee111e9",
+   "d3f7c4fb380ec204"
+  ],
+  "32": [
+   "0cc9c3ee63a4d41a",
+   "6bf773f44697fd28",
+   "8471831476b6e6f4"
+  ],
+  "48": [
+   "01d4b0b8c9df9164",
+   "142ce308b00709c4",
+   "760d58226fa09495",
+   "a019fe5b20977e8e",
+   "b19a2ab6416912d0",
+   "b728cbbf2ee744bf"
+  ]
+ }
+}

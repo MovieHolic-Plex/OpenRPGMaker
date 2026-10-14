@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "84aff9d27f674cfae3f9bc78aeaef65b5daa5587fcc9cb62b4ba6fe9b7864575",
+ "width": 32,
+ "height": 32,
+ "kind": "flat",
+ "name": "천창 빛(2×2) (skylight light)",
+ "label": "atlas_biome_interior/plus/skylight light",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "skylight light projection on the floor",
+    "kind_matches": true,
+    "top_rows": 30,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a 2x2 tile flat floor decal representing light cast from a skylight onto the ground, spanning rows 2 to 31 with 4 window pane light patches.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3284
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "skylight light cast on floor",
+    "kind_matches": true,
+    "top_rows": 30,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a 2x2 floor light projection decal viewed flat from above spanning rows 2 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3247
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "skylight floor projection patch",
+    "kind_matches": true,
+    "top_rows": 30,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat light decal cast onto the floor across a 2x2 grid, properly rendered flat on the ground plane spanning rows 2 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3693
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "skylight floor projection",
+    "kind_matches": true,
+    "top_rows": 30,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat 2x2 tile light decal cast on the floor from a skylight, correctly viewed flat from above spanning rows 2 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2839
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.624Z",
+ "cells": {
+  "16": [
+   "5908d7983514efe5",
+   "9929dcc8390eb15a",
+   "dc5701bf575037ec",
+   "e4ab7d21981d0271"
+  ],
+  "24": [
+   "0e355c4e8d264fe9",
+   "1f06e3eaffb3a8f6",
+   "38475235b49fa25c",
+   "418c61fc06939cea",
+   "43aedc5c7722767b",
+   "48794a51d96ee831",
+   "494d041e8258a30b",
+   "49a3f306fa39dc63",
+   "4e9ed2e41875bf71",
+   "593cbf9d798aa00a",
+   "665ff4768877321c",
+   "6a4888e0e334d25d",
+   "6f5b71618b462cd3",
+   "8dd89cdde8d5675d",
+   "a9af04fe89cdcf59",
+   "ce3bbb2aca802e7f",
+   "d1fc78b70001ddf7",
+   "d876a1bae9e391b9",
+   "db7b37d225d47365",
+   "de14482ca1c6c851",
+   "e501a431dea15b4b",
+   "e8f3d088294f2f7d",
+   "ee8500f714c4d374",
+   "f434349bda55f871"
+  ],
+  "32": [
+   "8b6d574a4cb552fe"
+  ],
+  "48": [
+   "03bdd29bb0ae8f4b",
+   "142ca901d460d0ad",
+   "7d170e5e262addc7",
+   "c720714443ce3dfc",
+   "d6bdb6dc3629b155",
+   "ee00c3af8c8f9343"
+  ]
+ }
+}

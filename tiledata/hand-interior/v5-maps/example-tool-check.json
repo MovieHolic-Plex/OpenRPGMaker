@@ -154,5 +154,29 @@
   "errors": 0,
   "warnings": 0,
   "reachable": 72
+ },
+ {
+  "map": "arena",
+  "errors": 0,
+  "warnings": 0,
+  "reachable": 326
+ },
+ {
+  "map": "museum",
+  "errors": 0,
+  "warnings": 0,
+  "reachable": 296
+ },
+ {
+  "map": "ship",
+  "errors": 0,
+  "warnings": 0,
+  "reachable": 233
+ },
+ {
+  "map": "ship_hold",
+  "errors": 0,
+  "warnings": 0,
+  "reachable": 223
  }
 ]

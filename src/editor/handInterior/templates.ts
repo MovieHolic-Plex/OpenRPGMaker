@@ -5,6 +5,9 @@
 import data from "@/assets/interiorRoomTemplates.json";
 // 전국·에도(sengoku_edo) 방 견본은 손으로 짠 따로 된 파일이다(공용 JSON 한 줄을 여러 PR 이 같이 고치지 않게) — 아래에서 합친다.
 import sengokuData from "@/assets/sengokuEdoRoomTemplates.json";
+// 박물관·배 안·투기장(interior-plus, 손 도트 v5 에 덧붙인 조각) 방 견본 — scripts/content/interior-plus/templates.mts 가 굽는다.
+// 같은 칩셋(atlas_biome_interior) 키라 펼치기로 합치면 v5 견본을 덮는다 → 배열·건물 목록을 이어 붙인다.
+import plusData from "@/assets/interiorPlusRoomTemplates.json";
 import type { HandInteriorSpec } from "./builder";
 
 export interface InteriorTemplateItem {
@@ -29,7 +32,17 @@ interface TemplateData {
 }
 const D0 = data as unknown as TemplateData;
 const DS = sengokuData as unknown as TemplateData;
-const D: TemplateData = { templates: { ...D0.templates, ...DS.templates }, programs: { ...D0.programs, ...DS.programs } };
+const DP = plusData as unknown as TemplateData;
+function mergeTemplateData(...all: TemplateData[]): TemplateData {
+  const templates: Record<string, InteriorRoomTemplate[]> = {};
+  const programs: Record<string, Record<string, { map: string; kinds: readonly string[] }[]>> = {};
+  for (const d of all) {
+    for (const [tid, list] of Object.entries(d.templates)) (templates[tid] ??= []).push(...list);
+    for (const [tid, byB] of Object.entries(d.programs)) for (const [b, maps] of Object.entries(byB)) ((programs[tid] ??= {})[b] ??= []).push(...maps);
+  }
+  return { templates, programs };
+}
+const D: TemplateData = mergeTemplateData(D0, DS, DP);
 
 export function roomTemplates(tilesetId: string): readonly InteriorRoomTemplate[] { return D.templates[tilesetId] ?? []; }
 export function roomPrograms(tilesetId: string) { return D.programs[tilesetId] ?? {}; }
@@ -50,6 +63,8 @@ const V5_STYLE: Record<string, string> = {
   hobbit: "town", narshe: "town", zozo: "town", stable: "town",
   manor_1f: "noble", manor_2f: "noble", chapel: "noble", throne: "noble", opera: "noble", casino: "noble", mead: "noble",
   elf: "fantasy", dwarf: "fantasy", tower: "fantasy", magitek: "fantasy", mine: "fantasy", dungeon: "fantasy",
+  // interior-plus: 박물관·범선·투기장은 각자 한 묶음(다른 건물 방과 섞지 않는다)
+  museum: "museum", ship: "ship", ship_hold: "ship", arena: "arena",
 };
 export function templateStyle(t: Pick<InteriorRoomTemplate, "map">): string { return V5_STYLE[t.map] ?? "any"; }
 

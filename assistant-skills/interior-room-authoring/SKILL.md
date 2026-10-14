@@ -68,6 +68,11 @@ description: Use when building or reviewing a 16px RPG interior (house, shop, in
 - 함정: RM2k3 투명 칸 자동 보정(`applyCustomChipsetMinimalHarness`)에서 이 시트를 빼야 한다(0~479 가 번호표대로 윗층으로 간다).
   줄 자동 타일은 안쪽 모서리가 여럿 겹친 조합(`NES+NeEs`)까지 굽는다. `spiral stair` 는 층 이동 계단이 아니다(막힌 장식).
   창 빛(`lights`)과 탁상 물건을 얹은 가구는 예제에서만 합성 칸으로 굽는다 — 조수 도구는 탁상 물건을 4층 칸으로 얹는다.
+- 박물관·배 안·투기장(interior-plus, 2026-10-14)은 v5 시트 **끝에 덧붙인** 조각이다(칸 번호 덧붙이기만, 기존 칸 불변): 그림은
+  `scripts/content/interior-plus/pieces/*.py`(같은 팔레트 v6, iplib 램프) → `python3 scripts/content/interior-plus/bake.py`(관문 영수증 확인 후 덧붙임,
+  `build_tileset.py` 끝에서 자동으로 다시 돈다) → `rooms_json.py`·`templates.mts`(방 종류·방 견본) → `prepare-references.mts`. 예제 평면은
+  `tiledata/hand-interior/plus/plans/*.json`(방 사각형 입력), 시험 `bun scripts/content/interior-plus/qa/build_plans.mts`. 3/4 관문은 `gate_export.py pending` →
+  `object-gate review --batch`, 바닥·벽면은 조립 방(`gate_rooms.py`, kind structure) 영수증으로 덮는다.
 
 ## 3. 편집기 조수만
 
@@ -80,4 +85,8 @@ description: Use when building or reviewing a 16px RPG interior (house, shop, in
 6. 여러 층: 층마다 맵. 아래층 `stairs up wood|stone` 발밑 칸들에 `links:[{x,y,toMapId,toX,toY}]`(도착 = 위층 계단 구멍 바로 아래 바닥), 위층 `stairwell down` 칸에 아래층 도착 칸.
 7. `show_map_region` 으로 그림을 보고 확인한다. 참고문서에 없는 가구는 만들지 않는다 — 없다고 말하고 가장 가까운 id 를 쓴다.
 8. 다른 실내 칩셋(Tibo·EasyRPG 실내)을 쓰라는 요청은 거절된다. 그 이유(폐기)를 사용자에게 말하고 손 도트 실내로 짓는다.
-9. 해리포터풍·마법 학교(번들 칩셋 wizarding_world) 방·야외는 이 스킬이 아니다 — `list_wizarding_spaces({space})` → `build_wizarding_space({space, name|mapId, doors, density, seed})` 한 번으로 짓는다(13공간 레시피, 통행 한 덩이 보장). 결과 `doorCells` 에 이동 이벤트를 단다.
+9. 박물관·미술관 전시실(판타지·중세)·배 안(선장실·조타실·배 주방·선원 숙소 / 포 갑판·화물칸·배 감방)·투기장(관중석·모래 마당·검투사 방·무기고)은
+   이 칩셋의 방 종류다 — `build_hand_interior_room({layout:{program:"museum"|"ship"|"ship_hold"|"arena"}})`, 말한 방만이면 `layout:{rooms:[{kind:"ship_cabin"},{kind:"ship_cargo"}]}`.
+   경계: 호러·고딕·흉가 미술관은 gothic_manor(`build_gothic_place`), 해적 항구·섬 바깥은 pirate_isles, 보고 있는 맵이 pirate_isles 면 그 칩셋의 배 안. 그림·명판에는 글자가 없다.
+   관람 통로·배 안 통로·모래 마당은 비어 있는 것이 쓰임이다 — 흩뿌려 채우지 않는다.
+10. 해리포터풍·마법 학교(번들 칩셋 wizarding_world) 방·야외는 이 스킬이 아니다 — `list_wizarding_spaces({space})` → `build_wizarding_space({space, name|mapId, doors, density, seed})` 한 번으로 짓는다(13공간 레시피, 통행 한 덩이 보장). 결과 `doorCells` 에 이동 이벤트를 단다.
