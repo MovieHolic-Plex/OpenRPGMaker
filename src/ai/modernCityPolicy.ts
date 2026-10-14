@@ -98,7 +98,7 @@ export function modernCityTargetFor(
     return { mapId: map.id, lived };
   }
   if (intent.mode !== "create") return null;
-  if (NAMES_MODERN_CITY_RE.test(text)) return wantsIndoor ? { indoor: true, ...(program ? { program } : {}) } : intent.space === "interior" ? null : {};
+  if (NAMES_MODERN_CITY_RE.test(text)) return wantsIndoor ? { indoor: true, ...(program ? { program } : {}) } : {};
   if (wantsIndoor && indoorWords && projectUses(project, MODERN_CITY_TEXTURE) && !projectUses(project, JP_CITY_TEXTURE)) return { indoor: true, ...(program ? { program } : {}) };
   return null;
 }
