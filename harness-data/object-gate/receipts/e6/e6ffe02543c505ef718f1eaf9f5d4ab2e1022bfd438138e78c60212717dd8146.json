@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e6ffe02543c505ef718f1eaf9f5d4ab2e1022bfd438138e78c60212717dd8146",
+ "width": 32,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "벽 배관 두 줄(구리 파이프 + 이음 고리 + 밸브)",
+ "label": "sf-station/sf-wall-pipes",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal wall pipes with brackets and valve",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted pipes running horizontally across the wall with brackets and valve wheel; shading indicates cylindrical form suitable for a wall fixture.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 17410
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal copper wall pipes with brackets and a round valve",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted pipes and valve correctly rendered flat against the vertical wall surface with cylindrical shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9925
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal wall pipes with brackets and valve",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted pipes drawn flat against the wall with cylindrical horizontal shading, appropriate for wall_mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12104
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal copper wall pipes with brackets and valve",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted pipes running horizontally across a vertical wall face. As a wall-mounted fixture, it is viewed head-on against the wall surface without requiring a separate top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3325
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.258Z",
+ "cells": {
+  "16": [
+   "438bff7f0bdb682d",
+   "bdb28c52fedc15ce"
+  ],
+  "24": [
+   "0817069bef059733",
+   "42b6299f8b989d6d",
+   "619f65bc1a567042",
+   "68157df4d7ff874e",
+   "737d403bab85a618",
+   "7b6375d79a70d4d6",
+   "a34c8ca9fd4bb79b",
+   "af57f72be727a248",
+   "ccfa62178fcd1270",
+   "d1d1a6755b97f537",
+   "d7d7213d3db9cbfb",
+   "e851050af637c3e3"
+  ],
+  "32": [
+   "a66d127b851c51a5",
+   "b74986e8dd18342a"
+  ],
+  "48": [
+   "320bbb4c19bb04df",
+   "4566f58207d91fbf",
+   "67e5f3c61864580d",
+   "9a26df62ed0fd8b1",
+   "a91bffaf4d38d59f",
+   "c0931df18e062e89"
+  ]
+ }
+}

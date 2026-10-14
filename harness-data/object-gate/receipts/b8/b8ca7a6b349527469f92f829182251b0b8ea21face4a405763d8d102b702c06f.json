@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b8ca7a6b349527469f92f829182251b0b8ea21face4a405763d8d102b702c06f",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "경고 표지 상자(깊은 윗면 + 주황 삼각 경고면 + 받침)",
+ "label": "sf-station/sf-sign-chunky",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "box-shaped warning sign terminal / enclosure",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the enclosure is clearly rendered from rows 3 to 8 (about 6 rows tall) above the south-facing front display panel with the hazard symbol.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8685
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rectangular warning sign box mounted on a base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the main box is clearly visible from rows 3 to 8 (about 6 rows tall) above the front face showing the orange warning sign.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9248
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "warning sign box on a base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the main box body spans rows 2 to 7 (6 pixel rows tall), rendered clearly in light blue-gray above the vertical front face bearing the warning sign.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8716
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "warning sign box on a base",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the main box body spans rows 2 through 8 (7 pixels tall) with clear shading, followed by the vertical front face showing the warning sign.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8832
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.245Z",
+ "cells": {
+  "16": [
+   "1edd49a64ae01deb",
+   "e3ae3e255d7d586f"
+  ],
+  "24": [
+   "0857f4042b62996b",
+   "09eec3994233ef84",
+   "2f1ea69bbc3ab658",
+   "4fb8fdc17b48b545",
+   "556005ce28f12026",
+   "79f84cf62ab27b50",
+   "a8f392589e3261f9",
+   "a9e32e252b84df99",
+   "afdb72d2c95d868c",
+   "c5c8ce4beef2b92c",
+   "df1f16d67b78fec3",
+   "df7999814f6bdc6c"
+  ],
+  "32": [
+   "06ab9566b25a6653",
+   "67e524ca079ab48d",
+   "de5b3b6df2524778"
+  ],
+  "48": [
+   "03c16b2cad1c5b6e",
+   "4425fa27150bb017",
+   "534a2a5afed847b6",
+   "746ba454593d8693",
+   "ca77b7d635060660",
+   "d7ee75424422dd05"
+  ]
+ }
+}

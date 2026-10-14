@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8032ba8d847fd2a6c196ab01612f97e33dfe987976477ba5f4ab546efad76c9f",
+ "width": 48,
+ "height": 32,
+ "kind": "organic",
+ "name": "바위 무더기(크고 작은 돌덩이 여럿)",
+ "label": "sf-station/sf-boulder-cluster",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pile of rocks/boulders",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The boulders feature prominent, clearly delineated top surfaces lit from above (e.g. top rock rows 5-12, left rock rows 13-19) sloping down to shaded front faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3513
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cluster of rocks",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rocks in the cluster clearly show large foreshortened top surfaces (rows 4-13 on the top boulder, rows 12-19 on the left boulder, and rows 12-21 on the right boulder) above their darker south-facing fronts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3680
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pile of rocks",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each boulder in the pile clearly renders its illuminated top plane visible from above (the central top boulder has a top surface spanning rows 5-13, ~8 rows deep) above shaded south-facing vertical planes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3626
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pile of rocks/boulders",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each boulder in the pile features a clearly defined, lit top surface seen from above (the top boulder's top plane spans rows 5-11, about 7 rows tall; the left and right boulders show top planes 7-10 rows tall) above shadowed south-facing cliff/sides.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3126
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.246Z",
+ "cells": {
+  "16": [
+   "03cf4e2b4347c879",
+   "266246ad6b3777ff",
+   "33efc5759824791c",
+   "8d80709bf2823af1",
+   "d50808a4d282ec0b",
+   "d5c3cc801b667e71"
+  ],
+  "24": [
+   "17c5f6f0852ecb98",
+   "2c58cbba97729a20",
+   "2e66cc2f9c362250",
+   "a99f74181303cfdb",
+   "adc49d5c353984d5",
+   "c51ed262aedf2886",
+   "e4dd841d0018ac38",
+   "ece639c88a6600f5"
+  ],
+  "32": [
+   "05d180ffc99d5e49",
+   "364009eb09a3fa2d",
+   "44f2f234d66b4aa7",
+   "7b9928cd43b71c99",
+   "ac1ad4fcf50366be",
+   "fac869d6d643b9c1"
+  ],
+  "48": [
+   "68157c153d6ced11",
+   "91fe11eb10771b2f"
+  ]
+ }
+}

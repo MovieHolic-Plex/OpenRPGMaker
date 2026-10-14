@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "79633b08222f34b34fc9dd54dd44ffc6e3b19ad90f227aff4ad76c8314c5ad9e",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "서버 랙(밝은 회색 윗판 윗면·환기 격자 + 어두운 앞면 램프 칸 여섯 + 손잡이)",
+ "label": "sf-station/sf-server-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "server rack",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the server rack is clearly depicted across rows 1-7 (approx 7 pixel rows) with a light gray panel and ventilation detail, above the dark south face with rack units and indicator lamps.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4456
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "server rack cabinet",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the server rack is clearly visible across rows 1 to 7 (approx. 7 rows tall) with a ventilation grille pattern, meeting the 3/4 view requirement before transitioning to the dark front face with LED slots below row 8.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4395
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "server rack",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the server rack is clearly depicted across rows 1–6 (with a ventilation slot/handle detail), transitioning at row 7–8 to the dark front face filled with server unit slots and status LEDs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3566
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "server rack",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the server rack is clearly drawn across rows 1-7 in light grey with a ventilation slot/grille detail, showing proper 3/4 top-down foreshortening above the vertical front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3929
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.238Z",
+ "cells": {
+  "16": [
+   "859a6a185a3f79a4",
+   "fe905839df72e3d1"
+  ],
+  "24": [
+   "28ba5678f02c9dd8",
+   "4db782b237114014",
+   "868d0da4239a6a19",
+   "8808bf02da930c1b",
+   "94c12a41891c4f94",
+   "9f358ee2457b36cd",
+   "c2f6f1a6cbd3efce",
+   "d67b4b094eb8c45b",
+   "dfdb20dbc522d769",
+   "ecebe71b36eabc3a",
+   "f02799e75f9c61ba",
+   "fb3e2b2244298b75"
+  ],
+  "32": [
+   "1c6edccd2918a8ff",
+   "25a9063f9a72824d",
+   "c05be5246fd0030c"
+  ],
+  "48": [
+   "b08298fc98a388b2",
+   "c8573f327ba186b9",
+   "c9fb07c699f45a29",
+   "e06f8c135e213217",
+   "e647c04bf08ced26",
+   "f6d579764f31b152"
+  ]
+ }
+}

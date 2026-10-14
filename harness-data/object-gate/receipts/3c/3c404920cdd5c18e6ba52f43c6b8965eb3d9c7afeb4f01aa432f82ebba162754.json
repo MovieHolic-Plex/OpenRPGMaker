@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3c404920cdd5c18e6ba52f43c6b8965eb3d9c7afeb4f01aa432f82ebba162754",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "드론 이륙 패드(낮은 단 윗면 + 노란 원·십자 표식 + 모서리 램프 + 앞 띠)",
+ "label": "sf-station/sf-street-drone-pad",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "drone takeoff platform pad",
+    "kind_matches": true,
+    "top_rows": 21,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the pad extends from row 4 to row 24 with a prominent yellow circular landing marker, corner lamps, and a south-facing hazard-striped front edge from row 25 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3898
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "drone launch pad platform",
+    "kind_matches": true,
+    "top_rows": 21,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the platform spans rows 4 to 24 (21 px) with a foreshortened circular yellow marking, while the south front face with hazard striping occupies rows 25 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3564
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "drone takeoff pad platform",
+    "kind_matches": true,
+    "top_rows": 21,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the platform is clearly visible from row 4 to row 24 (approx 21 rows) featuring foreshortened circular markings, with the front hazard-striped face visible below from row 25 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3277
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "drone takeoff pad platform",
+    "kind_matches": true,
+    "top_rows": 21,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main pad top surface is clearly visible from rows 4 to 24 (21 px tall) with a foreshortened circular/cross marking and corner lights, while the front south face spans rows 25 to 31 with hazard stripes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3272
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.249Z",
+ "cells": {
+  "16": [
+   "1f4869f79de643f9",
+   "43e176c90d7964dd",
+   "79661574f4e95d90",
+   "afba2aeb7c317487"
+  ],
+  "24": [
+   "18248a711fbc6a32",
+   "19f224662fefc4c3",
+   "21a155d634c4054f",
+   "4127bb72a777df97",
+   "498f1b87613eac42",
+   "500f845ce37ca4c4",
+   "54f68a30d246faa6",
+   "55f07751223f081f",
+   "6e0dcf5724c76039",
+   "7f8417ff659dff3e",
+   "87cf1760d2873874",
+   "94504490bbc185df",
+   "a15647f1d8e7046d",
+   "a89d51ad0cf3dc18",
+   "b4756f39aef4e1c8",
+   "c07f53964c917961",
+   "c3aab5f09d99631e",
+   "e185f2ba0367b48c",
+   "e3e2fc22ba5b8f5e",
+   "e43d6b68451339e8",
+   "ea036c8185cf27b4",
+   "ebd17be416961c70",
+   "eefe623f5b66e4e1",
+   "ff0e683f05bd8595"
+  ],
+  "32": [
+   "9e7eb14ff46a9306"
+  ],
+  "48": [
+   "2c4daafe41f76e15",
+   "6a58949d230057a0",
+   "a25d367bbaeebcf5",
+   "ac86b7ca6b9c7041",
+   "bfda08ce899725a9",
+   "c0dedeac6140b015"
+  ]
+ }
+}

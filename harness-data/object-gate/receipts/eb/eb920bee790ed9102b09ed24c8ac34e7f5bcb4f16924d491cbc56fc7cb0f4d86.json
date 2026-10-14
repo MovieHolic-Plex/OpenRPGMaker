@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "eb920bee790ed9102b09ed24c8ac34e7f5bcb4f16924d491cbc56fc7cb0f4d86",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "시안 호버 포드(사다리꼴 지붕 윗면 + 유리 돔 캐노피 + 지붕 짐 받침대 + 밑 추진 빛)",
+ "label": "sf-station/sf-street-pod-car-cyan",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hover pod body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hover pod is drawn in orthographic front elevation. The glass dome canopy has a flat horizontal base (row 14), the pink bumper strip runs straight across horizontally (rows 20-21), and the thrusters and shadow sit directly below in pure front view. There is no visible horizontal top plane on the main body; the color variation from rows 2 to 19 consists of vertical cylindrical gradient bands on a front-facing surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6484
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hover pod body (cyan top deck with central canopy and lower hull)",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top deck of the pod extends across rows 2–14 (13 rows tall), visibly angled toward the viewer with a luggage rack behind and a dome canopy seated on it, clearly differentiated from the vertical south face (rows 15–21).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12539
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cyan hover pod",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hover pod is drawn as a flat front elevation: the luggage rack, glass dome canopy, panel lines, bumper, and bottom thrusters are all aligned horizontally with flat, straight horizontal baselines and no visible receding top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5863
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hover pod",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire pod is depicted in pure front elevation. The canopy dome has a flat horizontal base line (row 14), the pink bumper stripe (rows 20-21) and underside run straight horizontally, and the thruster pads at the bottom are drawn straight-on without any foreshortened top or horizontal surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5211
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.249Z",
+ "cells": {
+  "16": [
+   "1d982109e01231b2",
+   "32ce00b91b5aa75a",
+   "404872d17ddceb72",
+   "7425a17c4f594685",
+   "93871a0912391bb8",
+   "f5d09a6de6417c30"
+  ],
+  "24": [
+   "0714b0441ae27ae9",
+   "18c39bd68d918a43",
+   "44b3e07a802f2cd1",
+   "60aaa1ba74606715",
+   "68eea5b12c58cdcc",
+   "92a242a76d0aa087",
+   "973c2d99cee66d6d",
+   "97426d54f801a363"
+  ],
+  "32": [
+   "00ceb5d229d31dc6",
+   "562b433da88bb772",
+   "89e39012fbaa605f",
+   "d8cdee9ec0f151d8",
+   "e507a77eea78a507",
+   "eb8bcacdddd93ec2"
+  ],
+  "48": [
+   "4bddd546ef50fd2f",
+   "d70ddda1e41c3202"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fe2788f9fbd362663b2458f3fbaad4aa1626d8bbcbcabc4694f281567a91729e",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "화물 상자(주황 판 윗면 + 모서리 보강 + 위험 띠)",
+ "label": "sf-station/sf-cargo-crate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cargo crate",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The orange top lid with corner reinforcements spans rows 2 to 8 (7 pixels tall), clearly visible from above, while the south front face with hazard stripes spans rows 9 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4881
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cargo crate",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The crate clearly shows its orange top surface with corner brackets across rows 2–8 (7 rows tall) and its vertical south face with hazard striping across rows 9–13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4683
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cargo crate",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the crate is clearly depicted as an orange panel with reinforced corners spanning rows 2 to 8 (7 rows tall), while the front face below shows hazard striping from row 9 down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4106
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cargo crate",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the crate occupies rows 2-8 (7 rows tall) showing orange paneling with corner brackets, above a clearly demarcated front face with hazard striping in rows 9-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3159
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.237Z",
+ "cells": {
+  "16": [
+   "6a19878a880f335e"
+  ],
+  "24": [
+   "1097611000c4bcb9",
+   "5079d0dc6801d2bd",
+   "6ed3b91434b0c7cd",
+   "8565fbaaa0d212c2",
+   "a7cce40d8c640081",
+   "b4087b22c03b99a2"
+  ],
+  "32": [
+   "11fbfe37d8d14dfa",
+   "2ed740278c19f589",
+   "6618289fb1227ff9",
+   "a638a91ae81cddfb",
+   "aadada6670de8dde",
+   "f0cf0977f10d09a7"
+  ],
+  "48": [
+   "32a2e721b0376faf",
+   "64968446ea283a78",
+   "76512ddfa7819c7c",
+   "a225e08f40a2ce94",
+   "d0416d0082d016f8",
+   "fb7af42592613490"
+  ]
+ }
+}

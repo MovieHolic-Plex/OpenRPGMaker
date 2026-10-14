@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f3c65ef407869bcdb9af5012ab1d2ee43731a0496de785b679e375787ff96a9c",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "홀로 테이블(낮은 원판 + 위에 떠 있는 시안 행성 홀로)",
+ "label": "sf-station/sf-holo-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "circular holo-table base",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base plinth/table shows a clear foreshortened elliptical top surface spanning rows 16 to 25 (around 9-10 rows) with an inner cyan emitter surface, and a curved south front face from rows 25 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5878
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "circular holo-projector table base",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base table displays a wide foreshortened circular top surface spanning rows 16 to 25 (around 10px tall) with a recessed emitter, and a 6px south-facing vertical rim from row 26 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5349
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "circular holo table platform with floating holographic sphere",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The circular table base displays an elliptical top surface spanning rows 16 to 24 (9 pixel rows) including an inner glowing projector pool, above a 7px south vertical edge (rows 25 to 31), properly rendered in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10197
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "circular holo projector table base with floating hologram sphere",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The circular table base clearly shows its top surface foreshortened as an ellipse from row 15 to row 25 (around 10 pixel rows tall) with an illuminated recessed center, above a distinct vertical south face from row 25 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6010
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.254Z",
+ "cells": {
+  "16": [
+   "17a2d0eda6ffdb9a",
+   "377254f976de9279",
+   "5e78b36a950dc42d",
+   "eed49ee2344aaf46"
+  ],
+  "24": [
+   "1b9d7b3b8738772e",
+   "29006ac8849914c2",
+   "2af2a48198f686ad",
+   "2d9f0dad65069b50",
+   "3c1ecefbaf5ff1fa",
+   "60521ab675d226df",
+   "66fcbfd5d46627b6",
+   "67f2e282a6242cac",
+   "6df0c02fed8477a7",
+   "6f75e153576b2430",
+   "70cad4c8a54737fa",
+   "71d752804e1fab81",
+   "8217034ca3971a4f",
+   "82d1ae58b9ded34a",
+   "83d3a1a701d6871b",
+   "86aade64aeccb41f",
+   "b7e89e06ce11725c",
+   "bc3e0d60aee8ac7a",
+   "d803b8007025507c",
+   "f04c3c35ace00dab",
+   "f94c2c4807a8b060",
+   "febf16afd71ab03f"
+  ],
+  "32": [
+   "8c9e04bf7c389804"
+  ],
+  "48": [
+   "7beaf7c476eaec48",
+   "9cff5190ae197cf0",
+   "a3cefed284c601c0",
+   "c9ff3d5b8452d0e4",
+   "d7e9818ebbb8276a",
+   "db94c0c55d47936c"
+  ]
+ }
+}

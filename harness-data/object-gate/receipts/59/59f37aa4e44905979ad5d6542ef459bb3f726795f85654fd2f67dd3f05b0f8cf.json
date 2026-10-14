@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "59f37aa4e44905979ad5d6542ef459bb3f726795f85654fd2f67dd3f05b0f8cf",
+ "width": 32,
+ "height": 16,
+ "kind": "other",
+ "name": "호버 바이크(날렵한 차체 윗면 6줄 + 안장 윗면 + 앞 바람막이 + 어두운 옆 + 밑 네온 빛 + 그림자)",
+ "label": "sf-station/sf-street-hover-bike",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hoverbike",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hoverbike shows a 6-pixel-tall top surface (rows 2–7) displaying the top deck, seat, and windshield, above a distinct south side face (rows 8–10) with neon strip, repulsors, and drop shadow.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6760
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hover bike",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hover bike, aligned east-west, shows its top deck across rows 2–7 (6 rows tall) containing the top view of the windshield and seat. Below row 8's edge, rows 9–10 form the vertical south-facing flank, followed by hover thrusters and ground shadow.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7261
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hoverbike body",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top deck of the west-facing hoverbike is clearly foreshortened and visible across rows 1-6 (showing the windshield and seat from above), while rows 7-10 form the south flank, resting above glowing hover pads and cast shadow.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3892
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hoverbike",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hoverbike is shown facing west in 3/4 top-down view: rows 1–6 form the foreshortened top surface showing the windshield and seat from above (6 rows tall), while rows 7–10 show the south vertical side with cyan trim, hovering over light pads and ground shadow.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6266
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.249Z",
+ "cells": {
+  "16": [
+   "c3179a56e90af8fa",
+   "cbb4e12a917cecb0"
+  ],
+  "24": [
+   "13e7264377b64c89",
+   "172bc79518dee7a5",
+   "2ac6eb51cbf6d0cd",
+   "32812ea693f8115e",
+   "3ae277ba3eb39437",
+   "65d41fe18d6e1ed9",
+   "667e5efc96faad12",
+   "758233405f0883a8",
+   "acccde7580ee0c05",
+   "af5d3111bf532157",
+   "bac0f7e05990bc0f",
+   "ec79252df200868a"
+  ],
+  "32": [
+   "17d8a2f487cd73a3",
+   "bcb80c669dae6dc4"
+  ],
+  "48": [
+   "0fdffdeaa5c20da8",
+   "31c2cdb037cddb4e",
+   "3ac2f19478a83b75",
+   "51d55d762798a6f8",
+   "6aa5a268a48b1e7a",
+   "c0ed6b3444a97c59"
+  ]
+ }
+}

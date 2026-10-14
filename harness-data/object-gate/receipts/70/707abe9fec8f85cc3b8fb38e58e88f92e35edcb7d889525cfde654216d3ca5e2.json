@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "707abe9fec8f85cc3b8fb38e58e88f92e35edcb7d889525cfde654216d3ca5e2",
+ "width": 64,
+ "height": 16,
+ "kind": "terrain",
+ "name": "station deck floor plating, four variants (brushed steel panel, recessed hatch, half-plate seam, floor light)",
+ "label": "sf-station/sf-deck-plate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "metal deck floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Four 16x16 modular sci-fi metal floor tiles viewed entirely as top-down horizontal terrain surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4285
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "station deck floor plating tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Four 16x16 floor plating terrain tiles shown directly from the top-down perspective, with flat paneling, recessed hatch, seam lines, and embedded floor light.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4247
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "station deck floor plating tiles",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tiles viewed from above covering the full height of the tile, with recessed details correctly drawn for a floor surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2889
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "station deck floor plating tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Four 16x16 floor plating terrain tiles viewed from above as a horizontal deck surface spanning all 16 rows with top-down panel seams, recessed hatch, and flush indicator light.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5037
+  }
+ ],
+ "decidedAt": "2026-10-14T08:35:45.460Z",
+ "cells": {
+  "16": [
+   "92fc3200ba4e747f",
+   "9c4628e1752b02d5",
+   "a74db2f1272ca45f",
+   "a95138c6e1a66392"
+  ],
+  "24": [
+   "03463a09efc426d1",
+   "1ae01f7f19bb6f97",
+   "236a54984f9917e7",
+   "30975b5ca5d332d5",
+   "4de3f4d5e30b0b44",
+   "569c5aaae999d955",
+   "7cd926a119a3279d",
+   "7d1ddad215f83d87",
+   "7d4c5c7301f0faf0",
+   "8c399584b3b5b57a",
+   "a4aa7c424ee44f10",
+   "a58b9b05f9a3da05",
+   "ae47332a2bc68dc5",
+   "bb16e9e3c1ba2d5b",
+   "d0096f1987f8d85c",
+   "e6fe147194b4b184",
+   "f0567a4ffd27980b",
+   "f8485938e678574d"
+  ],
+  "32": [
+   "4e87e22b49fc0c95",
+   "c91c334e504d9ce6",
+   "d345c3213a317912",
+   "f04cd1b836e9666f"
+  ],
+  "48": [
+   "197664cf502dbc2d",
+   "2f96ad6d335567d7",
+   "4fb4756da559cdaa",
+   "5a9787eaba224c54",
+   "87a53d989881ad17",
+   "889a422ac404e237",
+   "98f94016a6d1e582",
+   "d1a5431deed6078f",
+   "f6ec6abc00e2df93",
+   "f74fb42827fc91d1",
+   "f89ed09f4268534a",
+   "fafb3135adca954f"
+  ]
+ }
+}

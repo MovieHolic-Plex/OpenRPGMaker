@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "787ae4275af17910c55ca17e90a7b637ad04f5e066c5d6e411de60eaa2134f92",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "1인 침대(흰 베개 + 매트리스 + 접힌 남색 담요)",
+ "label": "sf-station/sf-bed-single",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "single bed with mattress, pillow, and blanket",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bed (pillow on the left, blue blanket on the right) is viewed from above across rows 2-9 (~8 rows deep), with the front base/frame visible below on rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5574
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "single bed with white pillow and navy blue blanket",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bed (mattress with pillow and blanket) is clearly visible and foreshortened, spanning rows 1 to 9 (approx. 9 pixel rows), with the south front face of the bed frame visible below it on rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6466
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "single bed",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bed (mattress with pillow and blanket) is clearly foreshortened and visible from above across rows 2-9 (~8 rows), while the south front face of the bed frame extends below across rows 10-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5553
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "single bed with pillow and navy blanket",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bed (mattress, pillow, and blanket) occupies rows 2-9 (8 rows tall), and the front face of the bed base occupies rows 11-14 (4 rows tall), properly following 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6350
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.253Z",
+ "cells": {
+  "16": [
+   "17d538637d163e4a",
+   "f538a74b03fd7ca3"
+  ],
+  "24": [
+   "382d3168b2f83765",
+   "4fe69210b50d3270",
+   "61224bfa5279baf9",
+   "669bb04fbb526dc0",
+   "72289f614a12dccb",
+   "8466d5ff4c0923fc",
+   "a1b5495b7247ff02",
+   "a7594d22d6169a17",
+   "a9d8452269395412",
+   "d9cea7797d86237e",
+   "ed10cea072cb4973",
+   "f572350396c3791e"
+  ],
+  "32": [
+   "a2838ffc791b8ca8",
+   "ea0deccab9364bf3"
+  ],
+  "48": [
+   "11054721a77d3000",
+   "1ae30b622449adf5",
+   "26c9a5d9cdfbfc49",
+   "85d625b9d4069fc3",
+   "90b22abe43830be3",
+   "ef0c584e59ca04cc"
+  ]
+ }
+}

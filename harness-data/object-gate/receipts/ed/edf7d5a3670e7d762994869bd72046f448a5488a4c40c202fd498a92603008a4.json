@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "edf7d5a3670e7d762994869bd72046f448a5488a4c40c202fd498a92603008a4",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "원심분리기(흰 원통 + 윗면 투명 뚜껑 속 회전자 + 램프)",
+ "label": "sf-station/sf-centrifuge",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "centrifuge cylinder",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the cylinder is drawn as a large visible ellipse spanning rows 3-9 displaying the transparent lid and internal rotor, with the south-facing front body spanning rows 10-13 with indicator lights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7733
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "centrifuge cylinder",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the centrifuge is an elliptical lid clearly viewed from above (rows 3-9, ~7px tall) displaying the rotor mechanism inside, sitting above a 5px tall south-facing front cylinder body with control lights (rows 10-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4350
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "centrifuge cylinder",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap with transparent lid and rotor is clearly visible as an ellipse occupying rows 3-9 (~7 rows), atop a south-facing cylindrical front face (rows 10-13) with status LEDs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3808
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "centrifuge cylinder",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface (transparent lid showing inner rotor) is clearly foreshortened from rows 3 to 9 (approx 7 rows tall), while the front cylinder face spans rows 10 to 14 with indicator lights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2878
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.254Z",
+ "cells": {
+  "16": [
+   "a9d77abf6cf586c0"
+  ],
+  "24": [
+   "403d5494b6a8ffdd",
+   "472665e8b8020af0",
+   "61c9631b7bf99ac2",
+   "85c3c93965f897e3",
+   "b83f0d92bf04e2e9",
+   "cdbb002473abc936"
+  ],
+  "32": [
+   "41b4773638f812aa",
+   "6c2e61744cc73768",
+   "e74775967ecb2673",
+   "e8ad8910b3ef020b",
+   "ed84641af0fd0be6",
+   "eee92475960b4cff"
+  ],
+  "48": [
+   "74725c68064d2222",
+   "75b344f2cd24ecbf",
+   "921803ebffe27380",
+   "d5fc1fd093405c4c",
+   "e8572dd8bdc09a26",
+   "f0c3720d7604dd31"
+  ]
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cc2e15b1068319b3fe52a078dd53e3aab3bcb2e2c2aefa34c24b161a2c03a5ae",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "샤워 포드(윗면 샤워 머리 + 반투명 유리문 물줄기 + 배수 받침)",
+ "label": "sf-station/sf-shower-pod",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "shower pod",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the pod is clearly visible across rows 1 to 5 (5 pixel rows tall) featuring a shower head/unit fixture, above the front translucent glass door and base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5587
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "shower pod",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the pod is clearly drawn across rows 1-5 (5 pixel rows deep) featuring a foreshortened top shower head fixture, looking down into the front glass enclosure below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5940
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "shower pod / booth",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the pod is clearly drawn from rows 1 to 5 (5 pixels deep) showing the top shower fixture/cap in foreshortened 3/4 view above the front glass door and drain base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5600
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "shower pod",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shower pod spans rows 1 to 5 (5 pixels tall) displaying the top panel and shower head apparatus, with the front glass enclosure and base tray extending below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5299
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.256Z",
+ "cells": {
+  "16": [
+   "8e381afbb22b0beb",
+   "e0b6b0f79f3f79b1"
+  ],
+  "24": [
+   "0205ae0d2dc804e6",
+   "0a7f0eb8f2dcc8ba",
+   "141c4d7cb13831f6",
+   "2a9e5495e1932cd8",
+   "3391e55729b759ce",
+   "3c28c8f1fe12c534",
+   "587cc0b6cb09e02c",
+   "95ad523154bc95e1",
+   "96ece8dc10b742c9",
+   "a909dc87f42869cf",
+   "e7836ae5df23b96b",
+   "ec7c076c4ac4a98b"
+  ],
+  "32": [
+   "22bbcd443c20e5eb",
+   "62e1446fee5b5505",
+   "e4bf61500249d935"
+  ],
+  "48": [
+   "0558aa0c797ebd69",
+   "0c66b0e52fdeb1bf",
+   "3db81fe40f648709",
+   "5234b6546ccb894e",
+   "be7864bab4b2b347",
+   "fe625cbb478e1f3f"
+  ]
+ }
+}

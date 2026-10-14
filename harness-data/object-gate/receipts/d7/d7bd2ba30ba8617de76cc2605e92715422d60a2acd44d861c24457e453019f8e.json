@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d7bd2ba30ba8617de76cc2605e92715422d60a2acd44d861c24457e453019f8e",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "함장 의자(높은 등받이 + 주황 쿠션 + 흰 팔걸이)",
+ "label": "sf-station/sf-captain-chair",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "captain's chair with high backrest and orange cushion",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chair faces south in standard 3/4 view: the top of the backrest frame shows 2 rows of top surface (rows 0-1), the armrest tops are visible in white/light grey (rows 6-7), and the horizontal seat cushion is clearly visible from above across rows 7-10 before dropping to the front edge and dark base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6649
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "captain's chair with high backrest and orange cushion",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn in a pure front elevation. The backrest (rows 0-6), seat cushion (rows 7-11), under-seat frame (rows 12-13), and center pedestal (rows 14-15) are stacked vertically with no visible top surface for the seat cushion or armrests.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10831
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "captain's chair",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chair clearly shows the horizontal seat cushion surface from above between the armrests (rows 7-10/11) with contour shading representing the bucket seat cushion, as well as visible top bevels on the backrest and armrests.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7825
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "captain's chair with high backrest and orange cushion",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn in front elevation: the orange seat cushion (rows 7-11) directly abuts the backrest cushion (rows 3-6) without any visible horizontal seat surface foreshortened from above. The 1px light strip on row 7 is merely a directional edge highlight, not a top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7219
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.252Z",
+ "cells": {
+  "16": [
+   "88e79996e0ab7fb7"
+  ],
+  "24": [
+   "08876fa8ec735617",
+   "31733b2bd8005ad1",
+   "4c326959837cfbb2",
+   "6d23a303080ac0c3",
+   "c6502ab84baf64c3",
+   "d6ba875db1cc4520"
+  ],
+  "32": [
+   "266e811f0828ec6c",
+   "629b1e31a0d91324",
+   "668d9e473e9e82cd",
+   "8d1c8aa23a258205",
+   "93b4dcfe15dc53c1",
+   "c9ad04fed4db2479"
+  ],
+  "48": [
+   "201f1218f04cedd2",
+   "59b5c2f53f51a57c",
+   "94b735474e993f2e",
+   "9c76816e60fffabb",
+   "b1c61d351a7141e9",
+   "ca53955f663d07f8"
+  ]
+ }
+}

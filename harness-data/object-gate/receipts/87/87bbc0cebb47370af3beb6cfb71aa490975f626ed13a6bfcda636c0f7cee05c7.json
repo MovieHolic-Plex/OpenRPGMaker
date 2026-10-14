@@ -1,0 +1,153 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "87bbc0cebb47370af3beb6cfb71aa490975f626ed13a6bfcda636c0f7cee05c7",
+ "width": 64,
+ "height": 32,
+ "kind": "structure",
+ "name": "연결 통로 튜브(가로로 누운 가압 통로 + 유리 창 줄 + 이음 고리)",
+ "label": "sf-station/sf-tube-h",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal pressurized corridor tube",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper curved roof/top slope of the corridor tube is prominently rendered from rows 2 to 13 (approx. 12 source pixel rows) above the south-facing windowed wall section (rows 14-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4025
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal pressurized corridor tube with joint collars",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper cylindrical curve/roof of the horizontal tube is clearly foreshortened and visible from above across rows 2-13 (12 source pixels tall), above the vertical front wall containing windows (rows 14-27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4167
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal connecting corridor tube with joint collars",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper curved roof/top surface of the pressurized tube spans rows 2 to 14 (12-13 pixel rows) with vertical support ribs and top-down cylindrical lighting, sitting atop the south-facing front wall (rows 15-28) with windows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12903
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal pressurized corridor tube with windows and end rings",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 2-14 clearly render the curved upper surface/roof of the horizontal tube corridor from above (13 source pixel rows), before dropping to the vertical south wall with windows on rows 15-28.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3946
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.241Z",
+ "cells": {
+  "16": [
+   "2c4fe645e505a8f9",
+   "3b41dcd918c981c6",
+   "44f12a41a9409b2c",
+   "486972bb1f53144f",
+   "6a36347358084bdb",
+   "8a57989367d180fa",
+   "9b13f467c1de7b42",
+   "a280b4a9cd94634b"
+  ],
+  "24": [
+   "04813f0461749eea",
+   "107c0d09b1bae430",
+   "127e97eaf88645ae",
+   "22834bcb409efe2c",
+   "2655b45583abe040",
+   "434c6aee0b3a4f50",
+   "438970e9960abcd8",
+   "5aecbcb482cc9835",
+   "62414b9bcd43f944",
+   "62a0d14165d4510d",
+   "65aeeadfab20269d",
+   "66e55a51225f64c7",
+   "693fd943d0c2a7c5",
+   "6c85a2e0a6469ac6",
+   "70f75c82bd5955f4",
+   "779728ddee1c2ab4",
+   "7a69e2972640817b",
+   "7fdfb100c8e90998",
+   "82d899b154421a14",
+   "89fd918aec5cea15",
+   "8f1f7a75253b154d",
+   "9a0043a78e2d6587",
+   "9b717ef2c7016216",
+   "a5393b35578d6c52",
+   "aa175036170e32db",
+   "aee0f51132110a72",
+   "af7ed99ba2f3b1fe",
+   "ba0b67bab8b4316b",
+   "c337d29a0812edff",
+   "d08391a471b0a9b2",
+   "d4922a2ebb9d86fc",
+   "d5c3660f7773d235",
+   "dd11875113985791",
+   "e5afd20640861c3d"
+  ],
+  "32": [
+   "4e622d96a410ba3d",
+   "53661452d7125490"
+  ],
+  "48": [
+   "0bd583167553dfa5",
+   "0bf9dadd638cd9c2",
+   "0dd85b2c2b26fa91",
+   "2e3e708f449d340d",
+   "468b53e9737d7a4d",
+   "6a7c3b1c1f1f9320",
+   "721d9e0ea5720dee",
+   "8fad43d25f1ce6e8",
+   "a2263d2369b11e48",
+   "b168d398560abbc6",
+   "cf31ffa8dd75644f",
+   "d04faa8c67b2380a"
+  ]
+ }
+}

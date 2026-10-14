@@ -1,0 +1,134 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "255f061a71b2bcd5412116cf778410e158872c853c2831ba0f72ef4093ca8e13",
+ "width": 32,
+ "height": 16,
+ "kind": "structure",
+ "name": "화물 드론(몸통 윗면 + 회전날개 원 넷(흐린 날 원) + 매단 화물 상자 + 그림자)",
+ "label": "sf-station/sf-street-cargo-drone",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cargo drone with rotor rings and suspended box",
+    "kind_matches": false,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The drone body shows a 4-row top surface (rows 3-6) and a 2-row front face (rows 7-8) with foreshortened rotor rings, but the object is a drone/machine rather than a large architectural structure (gate, pavilion, building).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail"
+   ],
+   "ms": 6564
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cargo drone fuselage and suspended crate",
+    "kind_matches": false,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a mechanical cargo drone with rotors and a suspended crate, which does not match the assigned kind 'structure (gate, pavilion, sealed door, building)'. The drone body shows a 3-row white top surface (rows 4-6) above a 3-row front face (rows 7-9), but fails kind matching.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail"
+   ],
+   "ms": 6968
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cargo drone fuselage",
+    "kind_matches": false,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a cargo drone / vehicle, not a large structure (gate, pavilion, sealed door, building). While the drone body correctly shows a 3-row top surface (rows 4-6) above a 3-row front face (rows 7-9) with elliptical rotor disks, the caller-supplied kind does not match.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail"
+   ],
+   "ms": 6411
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "drone body with rotors and suspended cargo crate",
+    "kind_matches": false,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The drone body shows a sloped/top white casing across rows 3-6 above its darker south front face (rows 7-9), with rotor discs foreshortened into 3/4 ellipses. However, kind is incorrectly specified as 'structure (gate, pavilion, sealed door, building)' for a flying drone.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail"
+   ],
+   "ms": 5741
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.250Z",
+ "cells": {
+  "16": [
+   "0bd53ac218fe6a7c",
+   "c918878ffc9591a3"
+  ],
+  "24": [
+   "23e0978045c8e344",
+   "271567c1d6508c84",
+   "2b07fcc5cecb9dd0",
+   "4322ea58278a0cab",
+   "75d020b652b2257f",
+   "ae54f35e37ba3c58",
+   "bd703789bde50b1e",
+   "bf7d7770f05a66c9",
+   "c5d7ae9c0f31f2ff",
+   "ca2768fb972c60dd",
+   "ca9da3912098e41d",
+   "cb1cbd91b78482d0"
+  ],
+  "32": [
+   "9afda1bc2b8bc28f",
+   "f79ab2e0008296d9"
+  ],
+  "48": [
+   "9a37b7ab3613a7fb",
+   "b4a2513b62096f4c",
+   "e6d4ddca198fd581",
+   "f5e2bc76c7de4dd6",
+   "f822b981bc73d924",
+   "fe3684cbe3f9fd01"
+  ]
+ }
+}

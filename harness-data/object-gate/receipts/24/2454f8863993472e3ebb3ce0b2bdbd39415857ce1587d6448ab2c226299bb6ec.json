@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2454f8863993472e3ebb3ce0b2bdbd39415857ce1587d6448ab2c226299bb6ec",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "의료 보관장(윗면 + 유리문 안 약병 칸 + 녹색 십자 램프)",
+ "label": "sf-station/sf-med-cabinet",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "medical cabinet",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet has a clearly rendered top surface occupying rows 1-5 (5 pixels tall) in light grey above the dark divider at row 6, showing the horizontal top surface in 3/4 perspective before the south vertical face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4301
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "medical storage cabinet",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cabinet is clearly rendered across rows 1 to 5 as a light-colored horizontal plane, with the front face, glass shelves, and green cross lamp extending below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3399
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "medical storage cabinet",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the medical cabinet is clearly visible as a light-colored horizontal plane spanning rows 1 to 5 (about 5 pixel rows tall) above the dark border line at row 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3311
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "medical cabinet",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the medical cabinet is clearly visible across rows 1 to 5 (5 pixel rows tall) above the front glass door and lower compartment.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2982
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.253Z",
+ "cells": {
+  "16": [
+   "bc40db3f77ea119b",
+   "df0197399464ad13"
+  ],
+  "24": [
+   "0ce62967ec79ee37",
+   "2d8fd0d6e1da07a0",
+   "34162af84060ea1f",
+   "3c207c706e832681",
+   "4ed4572c9fb3641c",
+   "871c72be149d290a",
+   "886c4c804dc08a45",
+   "8c96231cbdce95cc",
+   "a3e4d86ded030741",
+   "aabdaa3311702bfc",
+   "e6295fd5da7fe3f0",
+   "efef7b57841c91fc"
+  ],
+  "32": [
+   "02917db115f4c5d8",
+   "3c1a21ec9ab95512",
+   "6e495567bfe833df"
+  ],
+  "48": [
+   "1cca32b4fb0b8379",
+   "2597feda30b85afb",
+   "76f72a408ba81c0a",
+   "b8bb5adb19113dbe",
+   "c8ec1479f382d5ae",
+   "e21c5f9d25029be6"
+  ]
+ }
+}

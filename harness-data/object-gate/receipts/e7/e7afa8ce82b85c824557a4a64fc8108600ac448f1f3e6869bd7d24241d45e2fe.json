@@ -1,0 +1,159 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e7afa8ce82b85c824557a4a64fc8108600ac448f1f3e6869bd7d24241d45e2fe",
+ "width": 96,
+ "height": 64,
+ "kind": "structure",
+ "name": "환승 정거장(넓은 유리 천창 지붕 + 시안 띠 + 출입 게이트 + 노선 화면)",
+ "label": "sf-station/sf-street-transit-station",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "transit station building with glass skylight roof",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sloped glass skylight roof extends from row 1 to row 16 (16 rows tall), showing its foreshortened surface from above over the vertical south facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6601
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "transit station building with glass skylight roof and entrance gates",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building has a clearly visible sloped skylight roof occupying rows 2 to 16 (15 source pixel rows) above the vertical south facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5893
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "transit station building with glass skylight roof and entrance gates",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a wide sloped skylight roof occupying rows 2-16 (approx 15 rows) seen foreshortened from above, crowning the south-facing facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6011
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "transit station building with skylight roof",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the structure features a large forward-sloping skylight roof spanning rows 1-16, clearly displaying panels and perspective foreshortening above the south facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5605
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.248Z",
+ "cells": {
+  "16": [
+   "0d18509c7f9a483b",
+   "0d749cca6d48f329",
+   "122f48428671dc18",
+   "12ee9328464951f3",
+   "134bfeb7f67b4c76",
+   "2130c747e304f88a",
+   "2194d1d765d57563",
+   "25ecd73c8790c7bd",
+   "4659af7bd229d0e8",
+   "6126977ecff22721",
+   "72b992ea518de3f2",
+   "852aa532b99711b4",
+   "85f3b1ea5cb73026",
+   "9417f14badc6ba28",
+   "96f74fe972d4d5ef",
+   "990ba2be08a8e62d",
+   "ae2ea2b2a1322cee",
+   "b1c3dda12d0883ca",
+   "c265e31595e4ca43",
+   "c619ac5cea07a24d",
+   "cf1efe6f3c4802f3",
+   "d16855fe3553e719",
+   "df9d1621dd89b597",
+   "e4db3d96dfa5e4ff"
+  ],
+  "24": [
+   "107836d18424d46f",
+   "1d7deae3c4d9edd8",
+   "2d192f996e1f2809",
+   "3162739ff09af4b7",
+   "31dce3b77dc282ee",
+   "380253ba94a9daff",
+   "4acc3d92015ccdbf",
+   "4dd28a6e4ed0be17",
+   "5b8f802971c6e9b4",
+   "6745a52b8a148ff3",
+   "79b893bb3744e3c0",
+   "8286c0dd40bc5838",
+   "881ec9a6b6c09118",
+   "8c3b5603a5d7fa61",
+   "9c43a8d05a51fa4a",
+   "a024209620e52432",
+   "abf1c05c5100ce84",
+   "b7b147f06091e463",
+   "b8df902f96670955",
+   "d481a5ccdf5f0935",
+   "e28f829393986bf8",
+   "e3bf7f85117786e7",
+   "f20bb2f81c956f50",
+   "f9702efe1c3f163b"
+  ],
+  "32": [
+   "2f5648cf60e26a0f",
+   "3d87edc7854b4ab8",
+   "5384b244a1cb7adb",
+   "647368d3b1f2dce8",
+   "7d561f681fc1d61b",
+   "a71b2cc722658612"
+  ],
+  "48": [
+   "17244798bfb0b5d6",
+   "7a80f3a1b6ade255",
+   "8211f6959da71f90",
+   "90f0ced28871a1c6",
+   "b90ae286c0a7db52",
+   "ce627891200a9613",
+   "d17e27a01b32acba",
+   "e1cb2fad5b35a1cf"
+  ]
+ }
+}

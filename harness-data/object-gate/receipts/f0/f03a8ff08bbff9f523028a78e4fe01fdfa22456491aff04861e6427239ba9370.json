@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f03a8ff08bbff9f523028a78e4fe01fdfa22456491aff04861e6427239ba9370",
+ "width": 48,
+ "height": 32,
+ "kind": "round_body",
+ "name": "가스 탱크 한 쌍(흰·시안 원통 둘 + 이음 배관)",
+ "label": "sf-station/sf-gas-tank-pair",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pair of vertical cylindrical gas tanks connected by a pipe",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both tanks clearly show foreshortened elliptical top caps roughly 7 source pixel rows tall (rows 3-9) with center valve fittings, transitioning to cylindrical front faces below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3246
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pair of cylindrical gas tanks connected by a pipe",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both cylinders feature clearly drawn foreshortened top ellipses spanning approximately 6 rows (rows 4 to 9) with central valve caps, matching proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3838
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pair of vertical cylindrical gas tanks connected by a pipe",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both cylinders feature clearly visible elliptical top surfaces spanning rows 3 to 10 (~8 rows tall) with top-mounted fittings, correctly rendered in 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 17892
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pair of cylindrical gas tanks connected by a pipe",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both cylinders feature clearly defined elliptical top caps spanning rows 4 to 10 (7 rows tall) complete with top valves, and the cylindrical bodies curve appropriately at the bottom.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3920
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.243Z",
+ "cells": {
+  "16": [
+   "22fb61bddf192424",
+   "34cca5d1867507fc",
+   "354f2da3544938f7",
+   "481699ace9c53ee6",
+   "9d210969c58adcee",
+   "e7ed36fcf33673a9"
+  ],
+  "24": [
+   "01506b877efbd056",
+   "1eb2f4f635a33cde",
+   "3850e0d11726691e",
+   "6dd9a175d9b474b0",
+   "9e9ce6fc6132238b",
+   "abe1518db40baa07",
+   "c1345c0a439dd285",
+   "e63c29b2f4b541d7"
+  ],
+  "32": [
+   "1035cebcdccf50fc",
+   "521fe273dc223fb3",
+   "5b60d1c3a2b0d103",
+   "7a32ae8493ca15d7",
+   "9635cb1ca02118df",
+   "a7409313f5f7e276"
+  ],
+  "48": [
+   "9a34dc800caaaf18",
+   "a6eb044689aafe36"
+  ]
+ }
+}

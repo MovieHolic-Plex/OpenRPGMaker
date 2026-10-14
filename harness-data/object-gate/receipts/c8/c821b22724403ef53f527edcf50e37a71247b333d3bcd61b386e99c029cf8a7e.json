@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c821b22724403ef53f527edcf50e37a71247b333d3bcd61b386e99c029cf8a7e",
+ "width": 32,
+ "height": 16,
+ "kind": "organic",
+ "name": "재배 상자(금속 테 + 흙 윗면 + 초록 잎 덩이)",
+ "label": "sf-station/sf-planter-box",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "metal planter box",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The planter box shows a clear top opening with visible soil bed spanning rows 4 to 8 (5 pixel rows tall) and a distinct south front face across rows 9 to 14, perfectly matching 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13483
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "planter box",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The grow box is drawn in proper 3/4 perspective: the open top rim reveals 5 rows of brown soil (rows 4-8) containing four green plants, above a 6-row front face (rows 9-14). No isometric side faces are present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13623
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "planter box with plants",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The planter box shows a 5-row deep soil bed/opening (rows 4-8) framed by the metal rim, with crops/leaves emerging from it, above a 6-row front face (rows 10-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5615
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "금속 재배 상자 (planter box)",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "상자 상단 개구부와 흙 윗면이 4~8행(5행)에 걸쳐 3/4 뷰 타원형으로 넓게 드러나 있고, 전면부(10~15행, 6행)도 명확히 보여 상면과 정면이 고르게 표현되었습니다.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9135
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.255Z",
+ "cells": {
+  "16": [
+   "1ae482e5b1a1afde",
+   "5c3f45440c671eae"
+  ],
+  "24": [
+   "0b6b94f7f706f325",
+   "145d39ef38b0ef52",
+   "17092a3237fcd188",
+   "3b1ae4c6827b91b0",
+   "533169431c909f72",
+   "6ad2600fe8395213",
+   "96f56fbdd014fc94",
+   "bb3a347db5bb201d",
+   "bdd0d0c0847ab5d7",
+   "cbcd82a41873bc93",
+   "e0abf77d9934b1de",
+   "f45c9316d0c8a50a"
+  ],
+  "32": [
+   "91dfc9142fc607dc",
+   "d371b66c6c44538a"
+  ],
+  "48": [
+   "0f5c2ac23e2d623f",
+   "1c6ef1564c61ecbc",
+   "2726df20ba63cf1f",
+   "621a8dbaa6558887",
+   "8447a46f815fccc2",
+   "bcbb1c95a674ca37"
+  ]
+ }
+}

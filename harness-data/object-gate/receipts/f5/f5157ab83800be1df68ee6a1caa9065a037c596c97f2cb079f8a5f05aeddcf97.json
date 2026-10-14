@@ -1,0 +1,154 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f5157ab83800be1df68ee6a1caa9065a037c596c97f2cb079f8a5f05aeddcf97",
+ "width": 64,
+ "height": 32,
+ "kind": "structure",
+ "name": "화물 호버 트럭(높은 화물칸 윗면·옆 골판 + 앞 낮은 캐빈 + 창 + 밑 추진 빛)",
+ "label": "sf-station/sf-street-pod-truck",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hover truck cargo container",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cargo container top is clearly rendered across rows 2–8, and the cabin roof/hood shows top-down foreshortening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 17211
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hover truck cargo body and cabin",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cargo roof spans rows 2 to 8, displaying a clear horizontal top surface seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 18465
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cargo hover truck",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof of the cargo container spans roughly 7 rows (rows 2-8) seen from above, along with the cabin top.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 18288
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cargo hover truck",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cargo container shows an 8-row top surface (rows 1-8) above its vertical south face, matching standard 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 19275
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.249Z",
+ "cells": {
+  "16": [
+   "218b5c3b7b9b9c18",
+   "416e202a9b77075a",
+   "5b45ba6bc0352aa1",
+   "70731dba7e85b959",
+   "90ece79bff2835dd",
+   "a52d4471482d2936",
+   "c42e920440f0c170",
+   "f6f4b5ef6012a85a"
+  ],
+  "24": [
+   "0470959602d2f7b6",
+   "08cb5b48b8bc4c4e",
+   "0ba45748bd3057f2",
+   "122c5c99d4f3d32d",
+   "13f2cefbebb461d6",
+   "17761ce99511b6b8",
+   "1ba4220ccc386edd",
+   "2daeb5c9f28a0e44",
+   "5209c70285486020",
+   "58b1b1c3003f9f32",
+   "59e864a1c274589a",
+   "617ee1b89b25a3f8",
+   "730a075c1fc146ef",
+   "81989909d5a4caab",
+   "81ba87bfe38011b8",
+   "8207d1505ac09cb4",
+   "83159d0a2451735b",
+   "88a92904a6997b6d",
+   "8c80f0a683fa1463",
+   "93b1373dd43fc0f9",
+   "95562c41444c573a",
+   "972fc70130b1f45b",
+   "995a50cabca39d10",
+   "b0fd846b8300750a",
+   "be369cdc37f1a9cc",
+   "bef7520d1135edf3",
+   "c028420eed854ae2",
+   "c52c709e1f4874fc",
+   "d1e6c7c240e338c4",
+   "d69fe53fade4e924",
+   "e55fbfb1315bdd8f",
+   "e688dad0092ff688",
+   "e701d6ed9c8bcf6e",
+   "ea37a45d48d7c275",
+   "f23a45e7773b577d"
+  ],
+  "32": [
+   "3d9f06fed85c10c5",
+   "6d475618d3a8c7b2"
+  ],
+  "48": [
+   "03cbea010ab83c60",
+   "30ff21b42562e1e7",
+   "3c8205196d979bd6",
+   "4a93e9a97be2a0c5",
+   "555f87a3a79b21ac",
+   "5e007c6a00042df6",
+   "88dda0cbe93dbb81",
+   "b1c5047baa434d9f",
+   "c55f720c1dfbcf9a",
+   "dd4235eed4371fa9",
+   "f3ff2ca1df97861f",
+   "fd51c45fcd3679d6"
+  ]
+ }
+}

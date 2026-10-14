@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a3dd75c03da2414286932240c2579a25b4302c07ad9780db2057cab1093b3f60",
+ "width": 64,
+ "height": 32,
+ "kind": "terrain",
+ "name": "white lab wall front face strip under the ceiling autotile: upper and lower face rows, four variants",
+ "label": "sf-station/sf-wall-face-white",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sci-fi lab wall front face tiles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image displays terrain autotile strips for a vertical lab wall face with technological paneling, pipes, and vents. As a terrain wall face tile meant to sit below ceiling tiles, it correctly depicts the vertical front surface in standard JRPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6260
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sci-fi lab wall face tiles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tiles representing vertical wall surfaces with tech panels and conduits in front view for top-down map assembly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4793
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall front face strip",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tiles represent vertical south-facing surfaces designed to be placed beneath wall tops/ceilings; correctly structured as wall face panels.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3227
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lab wall front face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile strip depicting the vertical south face of a sci-fi/lab wall with paneling, pipes, and vents, designed to sit beneath a ceiling/wall-top autotile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4402
+  }
+ ],
+ "decidedAt": "2026-10-14T08:35:45.463Z",
+ "cells": {
+  "16": [
+   "034b38572e63628e",
+   "1e088cb431a2382d",
+   "4853d953455f304a",
+   "58fe16b4d23c86d7",
+   "7bef82d60314bdbd",
+   "8487e5020d5b4d02",
+   "a5b32a58f487993e",
+   "abb5473c1d3bfb5e"
+  ],
+  "24": [
+   "00a7ce1a54d79343",
+   "1793e1ab8d80b2a0",
+   "1927689ac6ba070f",
+   "242cf0fa2901bf0b",
+   "26688a75d9e64b5b",
+   "2d0cbd034471c3b7",
+   "2ec73f699d4e4f25",
+   "31f13ad62eebc277",
+   "323411252815ae5f",
+   "3672a3e3b4d67a00",
+   "42553579971e41d3",
+   "451f075936300ba3",
+   "521821009029a8be",
+   "52cd5d24de31ab20",
+   "574edaddc64b55f6",
+   "5c4fb30489c5afb8",
+   "648afd32d71b5b36",
+   "66a4c9e37cfd38dc",
+   "6a1685da880628e3",
+   "6f5c9ab3c900b268",
+   "765b0048d0a3b9a9",
+   "802e463b3d95a74e",
+   "8d5d932ecb11ab4a",
+   "91c58819c8aac1fa",
+   "95b71618da5610df",
+   "970a8cf70a5607be",
+   "a5cfce7b2622a203",
+   "a8cff6cdf14e5d8e",
+   "bc9e7b7ee5231521",
+   "c8aa0e641180becc",
+   "cf1b8d4008de0c0c",
+   "d242dcc31ed34bd3",
+   "def96428f8173c61",
+   "e7f7b8d35f0196ef",
+   "f7bac48e1827a070",
+   "fe5654e0ac5e3a87"
+  ],
+  "32": [
+   "0580f0408dfe701c",
+   "9261b887659e5f88"
+  ],
+  "48": [
+   "4e30ded7d5d62142",
+   "5473869d391d781f",
+   "5fe6644a0b0a89a5",
+   "773b59d38fe307c7",
+   "964e21602ddbf2d6",
+   "a04969a394b520b1",
+   "a1b427d185e434d5",
+   "d1aab713baea01bb",
+   "de056d5ac00ebba0",
+   "eb62d3519501ee78",
+   "f8440fb0eff1a928",
+   "fd1418521d808c3d"
+  ]
+ }
+}

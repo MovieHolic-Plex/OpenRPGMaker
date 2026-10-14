@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8ff8107fbc2f50cef21bed74b8ba8deeb7f2b6e269f298efe876d57dfad4af2d",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "가로등(받침 + 가는 기둥 + 위 넓은 등 머리 상자(윗면 6줄·아래 발광면) + 땅 빛 웅덩이)",
+ "label": "sf-station/sf-street-lamp-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "streetlamp head and post",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the lamp head is prominently rendered across rows 1-6 (6 rows tall) viewed from above, above the illuminated south-facing light panel and pole.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5062
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lamp head box and column",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wide lamp head box is clearly visible and foreshortened across rows 1-6 (6 source pixel rows tall), with the front light-emitting band visible below it on rows 8-9.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9459
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "streetlamp head box and pole",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the lamp head is prominently rendered across rows 1-6 (6 pixel rows tall) above the downward/forward-facing light element at rows 8-9, with no isometric side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5612
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lantern head and pole",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the lantern head box is clearly visible across rows 1 to 6 (6 pixel rows tall), with the front luminous face situated below it at rows 7-9 leading down through a mounting bracket to the pole and base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6826
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.250Z",
+ "cells": {
+  "16": [
+   "6a77ee79e4eed28a",
+   "9e9ea24a75e85db7"
+  ],
+  "24": [
+   "22831c0b5853ae4d",
+   "34d192503e8d3ea4",
+   "35e74d74c3f31482",
+   "35f12024f4989b16",
+   "505c143c38f243a4",
+   "5cb5041af5fabba6",
+   "6c51d4e0792e10f6",
+   "8fa22b3448fd579d",
+   "96c132bcbad76154",
+   "9fc298a4513714ca",
+   "a5b48096ad08429a",
+   "c105f1e9d9986ba4"
+  ],
+  "32": [
+   "048126a4ee661503",
+   "5b40ce89158f6f52",
+   "f62eee5895281963"
+  ],
+  "48": [
+   "107bdd498fdfab36",
+   "88ad5d5a92413bb1",
+   "8bb75ae363f439f6",
+   "937bcc3e8f7d40b4",
+   "9fd16fd3ba58173c",
+   "a0e4c1523211c8f5"
+  ]
+ }
+}

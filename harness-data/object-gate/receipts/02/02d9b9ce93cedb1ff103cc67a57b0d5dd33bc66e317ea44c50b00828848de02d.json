@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "02d9b9ce93cedb1ff103cc67a57b0d5dd33bc66e317ea44c50b00828848de02d",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "의무실 침대(흰 매트 + 연청 담요 + 머리맡 생체 화면)",
+ "label": "sf-station/sf-med-bed",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "infirmary bed mattress and frame",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Standard top-down RPG bed view: the headboard with biometric monitor is at the top (rows 0-7), the horizontal mattress surface (white sheet/pillow and light blue blanket) extends from row 8 to row 23 (~15 rows), and the south-facing foot frame with controls and legs is at rows 24-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8722
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "infirmary bed mattress and frame",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed is viewed in classic 3/4 top-down perspective facing south: the top surface of the mattress (with pillow and blue blanket) spans rows 8-23 (16px), while the south footboard face spans rows 24-29 with feet on rows 30-31 and the headboard monitor extending north on rows 0-7.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5183
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "infirmary bed with mattress, blanket, and footboard",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed's horizontal sleeping surface (white mattress, pillow crease, and light blue blanket) is clearly shown foreshortened from above across rows 8-23 (16 rows), with the vertical headboard/vital monitor at the north end (rows 0-7) and the footboard base facing south at the bottom (rows 24-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7524
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "infirmary bed mattress and blanket surface",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed is viewed in standard 3/4 top-down perspective: the monitor stands at the head (north), the mattress surface (white mat and light-blue blanket) spans rows 9 to 23 (15 rows of visible top surface), and the front footboard/panel and legs occupy rows 24 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6967
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.253Z",
+ "cells": {
+  "16": [
+   "1b84eafd63b2c788",
+   "65d81814b5fed2fa",
+   "b868308cae000bb0",
+   "feda3246be66e8ef"
+  ],
+  "24": [
+   "02748a9d39c417cc",
+   "063ac30cf349f5fd",
+   "161cb4ccd876db38",
+   "19abd66bf13ffb7d",
+   "1d073e8328e25642",
+   "2b73fd01e4b6b58d",
+   "3c9c33954c62c5b2",
+   "4e489465b8474c91",
+   "517eaa008542169b",
+   "5de52da111bea846",
+   "6b92f556cd4839c8",
+   "79522893e3537af9",
+   "7f30ee7e47552268",
+   "84eaaea3b9cfde5b",
+   "9af534bf26a08ad0",
+   "9f1546ea7d7fe98b",
+   "a7623baf9d68af6f",
+   "aba3e701b8dde6e5",
+   "b238cbb59915313b",
+   "b3400a081e2ee87c",
+   "c73c23a4fc836919",
+   "d784458b88b4c209",
+   "e8f5aad8e3f2e426",
+   "fe9be2dabc913178"
+  ],
+  "32": [
+   "d4cb9c9d36f5ba4d"
+  ],
+  "48": [
+   "1277f62a0a7d6d79",
+   "152c3abc9ccdfe6a",
+   "27e975c2b34447dd",
+   "adf6b0dba6dee872",
+   "bb177c81fa347d23",
+   "c89149a7091eaab9"
+  ]
+ }
+}

@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a4ff5370b1920480e0adb457dd9270e34d804e70ae6bc9437fcea36427e4a4d9",
+ "width": 64,
+ "height": 16,
+ "kind": "terrain",
+ "name": "station deck floor plating, four variants (brushed steel panel, recessed hatch, half-plate seam, floor light)",
+ "label": "sf-station/sf-deck-plate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "station deck floor tiles (four 16x16 variants)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Four 16x16 terrain floor tiles viewed flat from above; the entire 16-row surface represents walkable floor plating.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2995
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "floor plating tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Four 16x16 floor panel variants viewed directly from above as top-down terrain tiles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3470
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "station deck floor plating tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles viewed from above covering the entire 16x16 tile area across four variants.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3454
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "station deck floor plating tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Four 16x16 floor terrain tiles depicting brushed steel panel, recessed hatch, seam, and inset floor light viewed directly as flat horizontal deck surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2636
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.238Z",
+ "cells": {
+  "16": [
+   "095e5f37a76bac52",
+   "0fb68390c73070f0",
+   "385ee748a14537dc",
+   "e3b6c692b51877d6"
+  ],
+  "24": [
+   "075bc7f6e9c39c9a",
+   "14da7159c696caac",
+   "1dd290f7d814400a",
+   "2df0e1170d35b969",
+   "46823d8da236b506",
+   "5f94ee166c13799d",
+   "7116b40c98330466",
+   "777f8d60d7a21e17",
+   "7dc520d64d0c8749",
+   "89b9160576ddfe61",
+   "8e780b2dea20cc6c",
+   "966510047554dded",
+   "aa6eeff268fcc82f",
+   "ac7f96ae443d7f51",
+   "b1f33e1107f1868b",
+   "c1b16d9117f6137b",
+   "eac3465d5f12c717",
+   "f725371c3ae0fa02"
+  ],
+  "32": [
+   "7665acaa921b132e",
+   "950652c793b8e35a",
+   "b08a06ee5ef3d32c",
+   "c3efbd8aeff91d8e"
+  ],
+  "48": [
+   "043dd1c3878013ab",
+   "18dc17298b1fb5c7",
+   "54cce379b0e86bdf",
+   "65602dd254d1506e",
+   "8903acd60df4ffa9",
+   "a2a6652a5b6a3969",
+   "ac190e81bd06d33b",
+   "d0661fd1b4b755c0",
+   "d4621e18c5453588",
+   "f16854fa97ad04aa",
+   "f418f8dd29d9b95b",
+   "f9d6cf43df1e4443"
+  ]
+ }
+}

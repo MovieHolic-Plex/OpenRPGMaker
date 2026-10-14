@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "74379248a536e2d933185d9eef077b2fc256a995e82e660c053a51a91ace7b21",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "station corridor floor with recessed vertical cyan guide light, two variants",
+ "label": "sf-station/sf-deck-lane-v",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "station corridor floor tiles with recessed guide light strip",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tiles spanning all 16 rows viewed from above with embedded guide light strips, correctly fulfilling the terrain category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4311
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "station corridor floor tiles with recessed guide light",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tiles covering all 16 rows seen from top-down/overhead perspective with recessed vertical cyan lighting strips.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3224
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "floor panels with recessed guide light",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain floor tiles viewed from top-down perspective across all 16 rows with vertical cyan guide light strips and metal panel texture.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3165
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "station corridor floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tiles viewed entirely from above with vertical cyan strip lighting; valid terrain tile format.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3186
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.239Z",
+ "cells": {
+  "16": [
+   "53aef872f9dfe876",
+   "961c61cc6d1b9518"
+  ],
+  "24": [
+   "1784f87c40b468e1",
+   "1b167c75709aa9c2",
+   "23f9c00c4d2feac5",
+   "25874eb6e8b0a287",
+   "36195862600cc0ae",
+   "42307da090909785",
+   "48cf138560c61228",
+   "6061a25ec9e6fea3",
+   "a0b66972a3899803",
+   "d0568b48ef971b46",
+   "d18526988570a5b9",
+   "f08325f62903b085"
+  ],
+  "32": [
+   "ac4b8ae371824460",
+   "f1ca6ec9b6fe9b37"
+  ],
+  "48": [
+   "04b508d88042047f",
+   "3b7fb5ab6b332f09",
+   "5c32e7272cbcbeaa",
+   "6e37984ec17099e9",
+   "832080fd793be302",
+   "8a3332f40824b5bf"
+  ]
+ }
+}

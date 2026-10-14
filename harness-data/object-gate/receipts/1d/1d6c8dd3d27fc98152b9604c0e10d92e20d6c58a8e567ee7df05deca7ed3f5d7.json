@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1d6c8dd3d27fc98152b9604c0e10d92e20d6c58a8e567ee7df05deca7ed3f5d7",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "승강기 문(사다리꼴 윗면 문틀 + 두 장 미닫이 + 층 램프)",
+ "label": "sf-station/sf-elevator-door",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "elevator door and frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire elevator unit is drawn in pure front elevation. The upper panel (rows 1-7) houses the floor indicator display and is drawn facing directly toward the camera, with no foreshortened top surface visible above the frame (only a 1px outline on row 0). The door panels and frame also lack any top depth or horizontal surface view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9935
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "elevator door and frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The elevator is rendered as a flat front architectural elevation. The doors, side jambs, lintel, call button, and indicator panel above the door all face the viewer directly with no receding top surface showing the depth of the frame or cabin.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7294
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "elevator door and frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire elevator frame and doors are drawn as a flat front elevation. The upper section (rows 1-8) is a vertical front panel containing the floor display lamps, rather than a foreshortened top surface or lintel top seen from above, leaving 0 pixel rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5520
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "elevator door and frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire elevator structure is drawn as a flat front architectural elevation. The upper section (rows 1-8) is a vertical front lintel/fascia containing a front-facing digital floor display, rather than a top horizontal surface seen from above. There is no visible horizontal top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9385
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.256Z",
+ "cells": {
+  "16": [
+   "39cc7893f926c7f1",
+   "5831ddd40312dc3f",
+   "aa99aad30faf57ea",
+   "d85fdfd9fa7ac153"
+  ],
+  "24": [
+   "02978dcb66fe16dd",
+   "2863ae809ed4bfd3",
+   "2a6b12657cd98edd",
+   "2e479bd604395cf1",
+   "3919e81195a21e1e",
+   "4086b7c095796ef6",
+   "58b464251d93ee99",
+   "5cc19c4409aad02c",
+   "5e843f86d3696c5f",
+   "67648531cdae8925",
+   "6b6ce3a83adba88e",
+   "9c12d127e73d6c05",
+   "ad9871a2e79a7fc8",
+   "b858a9eafbc48e59",
+   "bb3c8fd6f91e2201",
+   "bc73a74077608bec",
+   "be266a1d6afb019f",
+   "bec65abe915249e4",
+   "d3bc82876ad5e78a",
+   "d49390caf0e0511c",
+   "e2dc07e75ce3dfab",
+   "ec0d07b407be4446",
+   "f1305a30f171ded5",
+   "f7c04ee46617148d"
+  ],
+  "32": [
+   "8dd058f78945383d"
+  ],
+  "48": [
+   "3a68453ab03d0e2f",
+   "754b584cb01609ea",
+   "892f948e2f14081f",
+   "c7888f119c87e115",
+   "cf022526cfacc9e3",
+   "ee83aa414113d944"
+  ]
+ }
+}
