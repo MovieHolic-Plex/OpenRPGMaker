@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f6157c91d20b24d014eefc79dba14262cf23440b861633039bb98d904ce39a39",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "마치야(단층, 짙은 판자벽 + 격자, 감물빛 노렌)",
+ "label": "sengoku-edo/se-machiya-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "single-story machiya facade with tiled roof",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features a large foreshortened tiled roof slope spanning rows 6 to 30 below the ridge beam, properly showing the downward slope in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5153
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "machiya townhouse roof and facade",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof slope is clearly visible from above, spanning rows 6 to 30 (about 25 pixel rows of roof slope) with ridge details at rows 0-5.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4954
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "single-story machiya facade with tiled roof",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof slope is extensively visible from rows 6 to 30 (25 rows) facing the camera in 3/4 top-down perspective above the lower facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5745
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "single-story machiya building with tiled roof slope and ground floor facade",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large tiled roof slope is clearly visible from above, spanning rows 6 to 30 (25 rows) in standard JRPG 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5088
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:28.007Z",
+ "cells": {
+  "16": [
+   "1f22452b6c2b80bf",
+   "20457efcefbc59da",
+   "5de9a506e7548aed",
+   "62484fd429cfb28e",
+   "63377032be0b96e2",
+   "8895a2d136eecfb0",
+   "9facef49fdd48f50",
+   "a06b84a570a22f75",
+   "a402a15f82b5352e",
+   "a5cd4bccb6f9e2fc",
+   "c3fe58e1eeac7b16",
+   "fc013adf3925bd4f"
+  ],
+  "24": [
+   "0268f76fdd014b2d",
+   "07f801d2bfb23108",
+   "0b587b9df95a7e6a",
+   "1ac2a3f2bbff30f4",
+   "91e1fd7fca002cb4",
+   "939a281187cb26a8",
+   "9b570237d6294802",
+   "b293bc8f989fb64c",
+   "bbd8695ba21f1e7b",
+   "d534a9a899c7d7c0",
+   "ddea071a0e13cd35",
+   "fcb1aaa9b17809c4"
+  ],
+  "32": [
+   "0666d0cefee7372f",
+   "0f6965672794c58c",
+   "21145fa0a3ab1f36",
+   "436495642229f1a3",
+   "52ab20f1972da5c6",
+   "592a6f59780e6168",
+   "772944c7e72c0587",
+   "9b303f11cce8cad4",
+   "a58f6adabf05ff8f",
+   "c2a5e6d01189b28f",
+   "f0ca2a45974f4fc9",
+   "f8852ac5c3d876b7"
+  ],
+  "48": [
+   "11cd7539ce807db0",
+   "1939b85f84d526fd",
+   "2dea3281d01f71a2",
+   "e21d7256c4172ef9"
+  ]
+ }
+}

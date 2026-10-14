@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "de580b69f271147d430ddcc0a6152624caf48115520fcd69a51d9d2abec64d45",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "풀밭 가장자리(서쪽 흙길)",
+ "label": "sengoku-edo/se-grass-edge-w",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass and dirt terrain edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile showing transition from grass to west dirt path, viewed entirely from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4090
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ground terrain tile showing grass edge bordering dirt path on the west",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile transitioning from dirt path on the west to grass on the east across all 16 rows; standard top-down ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3203
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass terrain with west dirt path transition",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile showing grass meeting a dirt path on the west edge; entire tile represents a top-down ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2793
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ground terrain tile (grass meeting dirt path on west)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile depicting a grassy field with a western dirt border; appropriately flat top-down ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3096
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:28.012Z",
+ "cells": {
+  "16": [
+   "ed2b500a6dcb7c56"
+  ],
+  "24": [
+   "0b9a037c44ebfe6c",
+   "5a55e14b2c3eaf10",
+   "5fcde9b82519c95c",
+   "abc61b08667ca9a6",
+   "dcea8be22ab8843a",
+   "fdb6f31341b75536"
+  ],
+  "32": [
+   "2e206edb73dae811",
+   "4d736dd805d4cb0f",
+   "4ec780572ec302ab",
+   "784af5c9cd89bac3",
+   "7b7988790bab93b4",
+   "c0ff16be665abb99"
+  ],
+  "48": [
+   "0de1e2ededf4824e",
+   "2f3cc83fa2f45fce",
+   "3daf5b6454dfbfb9",
+   "97791eacc7ffe876",
+   "bc40d720f288c274",
+   "cee162232e1842cd"
+  ]
+ }
+}

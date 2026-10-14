@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "663042209af5b2903290d1be9338e4436ed742d1b2e95cd383d20266b15e6786",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "풀밭 가장자리(남쪽 흙길)",
+ "label": "sengoku-edo/se-grass-edge-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass to dirt path terrain transition",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down terrain tile showing grass with an irregular south edge border onto a dirt path.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3635
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass to dirt path terrain edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain autotile transition showing grass edge meeting dirt path at the bottom. Correctly drawn as top-down ground terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3185
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass to dirt path border terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile depicting a grass surface with an irregular southern edge meeting a dirt path; valid top-down ground terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2786
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass terrain edge transitioning to dirt",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile showing grassy ground transitioning to dirt at the south edge; correctly depicted as a horizontal top-down terrain surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3672
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:28.011Z",
+ "cells": {
+  "16": [
+   "5a9ba99fe7400384"
+  ],
+  "24": [
+   "086162e267eafbc9",
+   "9c71d09d05379540",
+   "aaaf6de0b54bf601",
+   "b2f694bd1746d08b",
+   "c582aa813e9a7cc5",
+   "fbcc742461667806"
+  ],
+  "32": [
+   "08b51035d1cc0d05",
+   "2ca69fb54561cdbc",
+   "5c08be34794c30f8",
+   "5c605981a7aa3854",
+   "8d2dc3a1663448bb",
+   "f538d65307633a83"
+  ],
+  "48": [
+   "2109fe6faccb06ae",
+   "4e6d765bb6d46808",
+   "88ad0d0fccd0c803",
+   "8aa6ec40202718bc",
+   "bacce5e2727707af",
+   "f53024968345a9fa"
+  ]
+ }
+}

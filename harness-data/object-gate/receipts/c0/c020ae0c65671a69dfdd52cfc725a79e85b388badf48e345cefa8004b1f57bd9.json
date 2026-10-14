@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c020ae0c65671a69dfdd52cfc725a79e85b388badf48e345cefa8004b1f57bd9",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "풀밭 모서리(남동쪽 흙길)",
+ "label": "sengoku-edo/se-grass-edge-se",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass autotile edge over dirt ground",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a grass edge bordering a dirt path, viewed entirely from above as ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4043
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass ground tile corner",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing a grass edge bordering a dirt path, viewed from top-down as expected for terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3161
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass autotile corner",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tile showing grass meeting a dirt path on the southeast edge; valid top-down ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3727
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass terrain edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting grass meeting a dirt path on the south and east edges, viewed flat from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4824
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:28.012Z",
+ "cells": {
+  "16": [
+   "1176267ea04637e6"
+  ],
+  "24": [
+   "00fbd8c38eaac123",
+   "28d00e4d56247456",
+   "86c28ab14712179e",
+   "8dc5ddf99df1effe",
+   "d00ac2a86dc30915",
+   "e3f34fb1834561a0"
+  ],
+  "32": [
+   "3b8f88b984661835",
+   "642e021628e7b6cd",
+   "821d21d0f6aa218c",
+   "94fa51c269063a9e",
+   "afe17ed1358c4564",
+   "c70979f3fc76649b"
+  ],
+  "48": [
+   "0fecda80aefefd69",
+   "53c5d78405c72366",
+   "553c7c4f3b54ad6e",
+   "766645444fbd27f5",
+   "a9a4632c6bbf1de6",
+   "c6c4949f9a399d3b"
+  ]
+ }
+}
