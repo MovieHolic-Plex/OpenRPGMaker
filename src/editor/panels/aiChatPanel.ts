@@ -76,7 +76,7 @@ import { createAssistantWide } from "./aiAssistantWide";
 import { createInlineWorkCard } from "./aiInlineWorkCard";
 import { currentTeamActivity, setTeamStopHandler } from "@/ai/piAgent/teamActivity";
 import { DEFAULT_PI_TEAM, type PiRunPlan } from "@/ai/piAgent/executionRoute";
-import { classifyPlainPiTurn } from "@/ai/piAgent/plainTurn";
+import { classifyPlainPiTurn, selectedEventFact } from "@/ai/piAgent/plainTurn";
 import { resolveContextWindow } from "@/ai/contextCompaction";
 import { modelForRole } from "@/ai/modelRoles";
 import { warmHeavyWire } from "@/ai/piAgent/heavyWire";
@@ -2240,6 +2240,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         text,
         currentMapId: turnMapId,
         selection: (turnOptions?.selection !== undefined ? turnOptions.selection : mapContext().selection) ?? null,
+        selectedEvent: selectedEventFact(store.getCurrent(), turnMapId, editorState.get().selectedEventId, editorState.get().selectedEventPageId),
         hasActivePlan: workPlanSurfaceState?.active === true,
         autonomy: currentAutonomy(),
         declarer: () => (piIntentDeclarer ??= createLlmIntentDeclarer({ timeoutMs: 30_000, coverageAudit: false })),

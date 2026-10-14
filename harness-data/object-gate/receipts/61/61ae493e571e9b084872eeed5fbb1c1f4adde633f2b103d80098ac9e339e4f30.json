@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "61ae493e571e9b084872eeed5fbb1c1f4adde633f2b103d80098ac9e339e4f30",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "열린 관(빈 안쪽·비스듬한 뚜껑)",
+ "label": "gothic_manor/gm-coffin-open",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "open coffin base with interior lining",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The open coffin shows a clear foreshortened top view with its interior cavity visible from row 11 to row 16 (6 rows tall), surrounded by the coffin rim, atop a 7-row south face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9140
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "open coffin box",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coffin is clearly rendered in 3/4 top-down view; the top rim spans rows 8-17 with a 6-row deep visible interior cavity (rows 10-15) and a 7-row south face below it (rows 18-24).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4609
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "open coffin with visible interior lining and detached lid",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coffin opening and rim span rows 8 to 16 with a 5-row visible interior cavity, set atop a clearly visible front/south face extending to row 24.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4504
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "open coffin base",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coffin is viewed from 3/4 top-down perspective, clearly showing its rim and a 5-pixel-tall interior opening lined with red fabric (rows 11-15), plus the vertical south front face (rows 18-24).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3362
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.462Z",
+ "cells": {
+  "16": [
+   "1104fe3dd80456d3",
+   "63c9a74870a68e5b",
+   "93018f5711d376dd",
+   "ffc857c9c6d9e14b"
+  ],
+  "24": [
+   "05e6b7bb862b8327",
+   "296be1e1cfc88cd0",
+   "2ff34bc0c0d73768",
+   "3b13b2145f0b06e8",
+   "42d3d153fccaf6ef",
+   "467ac6a6667ae8e0",
+   "588e6dbe353e1437",
+   "5a4efbdefc9228ce",
+   "6dc300a7c14d0bca",
+   "82b9f9d6de83a2cb",
+   "8724509a6be30758",
+   "876105b5482b654a",
+   "89a2bd7281078c65",
+   "90a53107825eb710",
+   "919cf3ba9556e301",
+   "9606e30b3f3e2c30",
+   "ac4c955f9679f686",
+   "b15a37b04ba4b977",
+   "b8732ceb32b0f034",
+   "c1676a8bc210358d",
+   "c40217e2d94a2b43",
+   "ef0b2a5dab7dbe04"
+  ],
+  "32": [
+   "217683211c5530c7"
+  ],
+  "48": [
+   "0d02db2ae747853c",
+   "352ba6823bcb1c53",
+   "7fa712d4816c49d3",
+   "985c4c91af63ddc6",
+   "a229016c2f388d27",
+   "df7ea78786d58acc"
+  ]
+ }
+}

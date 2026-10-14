@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f8c060478fd1c31dc2da58b99613d41dbd24334433f0ee00875ee22be74c2f0d",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "통신 중계기(받침 위 장비 상자 + 작은 접시 + 램프)",
+ "label": "sf-station/sf-comms-relay",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "equipment box / repeater console",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The equipment unit (both the silver upper tier and the dark lower tier) is drawn in pure front elevation with only a 1px contour line along the top (row 13). No horizontal top surface is visible for the main body or the base; all features, panels, and panel lights face directly forward.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6868
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "equipment box with base plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main equipment box (rows 14-21) and its base (rows 22-31) are drawn completely in pure front elevation with vertical specular streaks and front-facing indicator lights. Neither the upper box nor the base plinth shows any horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4782
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "equipment box with dish and antenna/lamp on top",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main equipment box consists of a lighter grey upper section (rows 14-21) and a dark lower section (rows 22-31), both drawn in a pure front elevation with front-facing indicator lights and vertical shine lines. Neither section shows a foreshortened top surface; the dish and antenna sit directly on the top edge with 0px of visible top plane depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4937
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "equipment box with satellite dish and antenna lamp",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main equipment box (rows 14-31) shows only its vertical front faces (both the upper grey tier and lower dark base tier with LEDs) with no top surface foreshortening. The dish and antenna are also drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4069
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:09.621Z",
+ "cells": {
+  "16": [
+   "07b9baebbbf07f05",
+   "847fbc5e655d27d4",
+   "c17ba33c46be77d9",
+   "cba3d7074be0fd62"
+  ],
+  "24": [
+   "00321906c091f92c",
+   "027e893cf3306146",
+   "0950f0e0549c6e9c",
+   "143101de2326c42f",
+   "190560eded53e541",
+   "323378252f287607",
+   "36644bf5ad7091d8",
+   "37d4043a43b5709f",
+   "38d838af9e382ebb",
+   "3dc191e74e5dc90d",
+   "41b4d05d84e89aea",
+   "4ef2cdac0219cd45",
+   "4f45ae9607bee619",
+   "4f8b95b594bb3c72",
+   "59e8ac12bcd79a8a",
+   "768817131f0aa497",
+   "7e2e33418f4a8db3",
+   "869eec7e9712e736",
+   "b8d4453f40ef15d6",
+   "b9a0513c10a21840",
+   "c153a89c6502c731",
+   "eef24067ad909b31",
+   "f12b2d3f0debf7d4",
+   "fd84db800c0613c8"
+  ],
+  "32": [
+   "05462f0b24a7d966"
+  ],
+  "48": [
+   "819210481480c620",
+   "8a791f80ed4b2bb9",
+   "9c61de5ace5bf26f",
+   "c99c7a3c0fbbaced",
+   "da0d99139ff2d133",
+   "e93fe75b62b77cf4"
+  ]
+ }
+}

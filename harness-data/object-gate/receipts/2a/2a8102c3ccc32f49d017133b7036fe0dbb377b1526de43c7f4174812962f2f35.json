@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2a8102c3ccc32f49d017133b7036fe0dbb377b1526de43c7f4174812962f2f35",
+ "width": 32,
+ "height": 16,
+ "kind": "seat",
+ "name": "돌 벤치(쇠 다리)",
+ "label": "gothic_manor/gm-bench",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone slab bench with iron legs",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal seat surface of the stone bench is clearly visible from above across rows 4-8 (approx. 5 pixel rows), followed by a 2-pixel tall shaded front face on rows 9-10 and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4815
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone slab bench top",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone slab displays a clear top seat surface across rows 4-7 (4 rows tall) and a front south-facing thickness/edge at rows 8-10 above the legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5412
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone bench slab with metal legs",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone seat surface is visible from above spanning rows 3-7 (5 pixel rows), followed by a highlighted front edge at row 8 and a 2-pixel-tall front face/slab thickness on rows 9-10 above the legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4523
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone bench slab",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone bench shows a clear top seat surface spanning rows 4 to 8 (5 pixel rows), followed by a darker south-facing front thickness on rows 9-10 resting on iron legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3893
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.461Z",
+ "cells": {
+  "16": [
+   "ed22e2628e4b8921",
+   "edc8c6feaf49a26d"
+  ],
+  "24": [
+   "2e4b666fda15945e",
+   "2ec9157bab5c7550",
+   "3a350f992536ac81",
+   "43395e879fb8127a",
+   "7ec5e64bbc550cae",
+   "92d7b43e19b8d772",
+   "982dcbb5c099dbdd",
+   "a7aab4276bf3f92b",
+   "a9f794faf1063ac2",
+   "b4f3cd41864d3921",
+   "be92ac2537ea233c",
+   "ded38ec820a4d5cd"
+  ],
+  "32": [
+   "5e9e2636ff6c6495",
+   "9a6c6a4ed4bea22c"
+  ],
+  "48": [
+   "53a8a1e30e682af9",
+   "57905d94328c54c1",
+   "716c86d9bf1cdad6",
+   "97ff5d3224e08140",
+   "b90e328b106699cf",
+   "cbb7ac56b08360c8"
+  ]
+ }
+}

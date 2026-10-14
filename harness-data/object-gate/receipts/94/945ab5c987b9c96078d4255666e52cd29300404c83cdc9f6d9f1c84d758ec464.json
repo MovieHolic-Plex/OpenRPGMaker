@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "945ab5c987b9c96078d4255666e52cd29300404c83cdc9f6d9f1c84d758ec464",
+ "width": 48,
+ "height": 48,
+ "kind": "terrain",
+ "name": "판석 광장(틈 이끼)",
+ "label": "gothic_manor/gm-flagstone",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone paving ground tiles with moss in crevices",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tiles representing flagstone paving viewed from above; fits terrain classification cleanly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4781
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flagstone paved ground",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tiles depicting stone paving with mossy cracks, viewed top-down across the entire 40-row paved area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4685
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flagstone pavement with moss in crevices",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tiles depicting stone pavers with moss in between, viewed from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4342
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flagstone pavement with moss in crevices",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The asset is a terrain ground tile showing flat flagstone paving with moss growing in the gaps, correctly viewed from above for ground terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4698
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.464Z",
+ "cells": {
+  "16": [
+   "0635da567ef69e13",
+   "0a984773290ec1e8",
+   "0e825abed12ae9ef",
+   "2c2aca46e4e15989",
+   "4f3598d30947e029",
+   "65f751a8c411e0bb",
+   "66b4d03485ed69ea",
+   "e44436b71de1d29a",
+   "faa38f70623a3243"
+  ],
+  "24": [
+   "361f8d2f576a659f",
+   "64e75a8c5fe91cc0",
+   "cfe6e265aa439dd2",
+   "e16880d7f91b518c"
+  ],
+  "32": [
+   "1cb9cc2840d100a2",
+   "46b5e8bd72e2e943",
+   "4f4fe496feca4a93",
+   "56b48274a673eaf9",
+   "5a4230cecc69d258",
+   "67ce0178a4a51fdf",
+   "6b70a5929185cecc",
+   "6d880413a7e743c5",
+   "6db34750cd8aa753",
+   "705b82ed289c359e",
+   "7a6aee6425c52422",
+   "8d1c9c2f270d8912",
+   "92e77671e2f2e9f6",
+   "946dd177cc796508",
+   "95e82d8e8b500552",
+   "97eccfccb48fb90e",
+   "a3c8ec04a6436530",
+   "a99ee52fed01c98e",
+   "ae6c3bef7bbb89fa",
+   "b0f530daefbd6e38",
+   "b7606087e05106c2",
+   "bd6893f092a82bc5",
+   "bda6cb11b6382882",
+   "ecdc808364992790"
+  ],
+  "48": [
+   "5b6dcae9075958f0"
+  ]
+ }
+}

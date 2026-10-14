@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "428325aa42bb9192082099e39093277c89985bbc6610aa6ba7e9a803df86910c",
+ "width": 32,
+ "height": 48,
+ "kind": "box",
+ "name": "홀로 광고 슬랩(투사기 기단 + 두꺼운 시안 광고판 윗면 포함)",
+ "label": "sf-station/sf-street-holo-ad",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "holographic ad slab with projector base",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The holographic slab clearly shows a foreshortened top surface across rows 3-9 (~7 rows deep) above the front projection face (rows 11-36), and the projector plinth at the base also displays its top surface across rows 37-42.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6192
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "holographic ad slab standing in a projector base",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cyan holo slab is clearly visible from rows 3 to 9 (7 rows tall), and the projector base at the bottom also shows a large visible top surface across rows 37 to 43.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5888
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "holographic ad slab and projector base",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cyan slab is clearly visible in rows 3-9 (7 rows tall) viewed from above, and the projector base plinth also clearly depicts a foreshortened top plane (rows 37-43) above its front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4791
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "holographic ad slab on projector base",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the holographic slab is clearly foreshortened and visible from row 3 to row 9 (7 rows tall), and the projector plinth at the base also depicts a 6-row visible top surface (rows 37-42) above its front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4104
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:06.340Z",
+ "cells": {
+  "16": [
+   "1a71842fbad7b5f5",
+   "24f27346c8a7fee5",
+   "6f14e8a429972e8c",
+   "be343c7715071878",
+   "fb45130f7a192118",
+   "fe2814bcac8df966"
+  ],
+  "24": [
+   "0360a7e964975d82",
+   "073a8b63b996ca69",
+   "353fd0f00cf3f2af",
+   "37462cf86cfa14f8",
+   "6b66c0e4258717cd",
+   "7accb787116b61b5",
+   "86b9cdc73efe0418",
+   "92a258b7b7f9d1ce",
+   "c2167cf334458d26",
+   "d20b3c873b197ef2",
+   "e79af552bdb608bf",
+   "ee6a535047184ce4"
+  ],
+  "32": [
+   "1203ea34710399ae",
+   "58588b297bdfb82e",
+   "885a29b2a581ee6b",
+   "ead4f98379eb061b"
+  ],
+  "48": [
+   "50a0a78ece4330f2",
+   "ac00468e56d3d1b7",
+   "ccab3037e049c410"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "079608e2a612e12e45e0d26539f6b676c9689d1ef05c7f8bc9a5b4db3d63e6b3",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "안개 이끼 땅 B",
+ "label": "gothic_manor/gm-ground-moss-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mossy ground terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 ground tile showing dark mossy terrain with small pale fog or spore flecks viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5941
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "moss ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Entire 16x16 tile is a seamless mossy ground terrain texture viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6138
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "mossy ground tile with pale specks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless terrain ground tile depicting mossy ground texture with scattered flecks; constitutes a flat top-down surface across the full 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5909
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "mossy ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 pixel terrain tile depicting mossy ground texture with scattered misty/flowery specks; valid flat ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7760
+  }
+ ],
+ "decidedAt": "2026-10-13T17:01:50.504Z",
+ "cells": {
+  "16": [
+   "62d25b51ca0a5998"
+  ],
+  "24": [
+   "19627ee5d55f2574",
+   "4409a7ae2febda53",
+   "6de4c91879b76850",
+   "85dc7cd648d3c823",
+   "c247dca164011e5a",
+   "e5d87c092a7e1ddb"
+  ],
+  "32": [
+   "07b8ef818a0add5e",
+   "10c80b5843fea14b",
+   "6efe2f3c577daae9",
+   "9d89c79487cfcea7",
+   "c4e58ce3739e59d1",
+   "ffec49abf0f99bae"
+  ],
+  "48": [
+   "0b136c39219df57c",
+   "0bfc953fc81ce2b7",
+   "4c4c02be64ffc2aa",
+   "6e219ca7fb036f2a",
+   "e278ed7ace0c93c8",
+   "fdb74cbcfd76c636"
+  ]
+ }
+}

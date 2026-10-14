@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1ab4289adb480bb8f88dc64459cbe27a1f293315f1c7ad05db52d7c5525859e2",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "asphalt road with white dashed center line, horizontal and vertical",
+ "label": "sf-station/sf-lane-dash",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "asphalt road terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing asphalt texture with horizontal and vertical white dashed road markings. Appropriately classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5526
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "asphalt road ground surface with white dashed line segments",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing asphalt texture with horizontal and vertical white dashed lane markings viewed from top-down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2882
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "asphalt road terrain tile with dashed lines",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile depicting dark asphalt with horizontal and vertical white dashed lane markings covering the full 16x16 surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3153
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "asphalt road surface with dashed white lines",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting dark asphalt ground with horizontal and vertical white dashed lane markings viewed from top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3119
+  }
+ ],
+ "decidedAt": "2026-10-13T15:44:10.256Z",
+ "cells": {
+  "16": [
+   "3f3c3a8cda39e248",
+   "7e8b6741be6c66f1"
+  ],
+  "24": [
+   "0f48e2be83c72aa0",
+   "0f8fcbfc1f43b16c",
+   "34b9308c309b55fa",
+   "45fdecfd8be201af",
+   "481e5aa2ab4bb393",
+   "80f0b5a20d704ad8",
+   "966315cc1b023c37",
+   "af80e476d4d50d45",
+   "bbca67dfd95833a8",
+   "bee32444d0163878",
+   "e43ec4ea3deca34e",
+   "e8adb17b7512ce81"
+  ],
+  "32": [
+   "551979735db6b228",
+   "ff64f7f19770d44b"
+  ],
+  "48": [
+   "09319d4dee2df952",
+   "0a39cba2f964b5ec",
+   "2a48074aaab54b7b",
+   "35cf3f72077e1f36",
+   "7588ba22fb7bc9e8",
+   "eea67e12cfae8540"
+  ]
+ }
+}

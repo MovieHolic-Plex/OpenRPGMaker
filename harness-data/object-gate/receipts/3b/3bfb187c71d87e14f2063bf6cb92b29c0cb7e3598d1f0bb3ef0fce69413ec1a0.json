@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3bfb187c71d87e14f2063bf6cb92b29c0cb7e3598d1f0bb3ef0fce69413ec1a0",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "의료 보관장(윗면 + 유리문 + 약품 칸)",
+ "label": "sf-station/sf-med-cabinet",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "medical storage cabinet",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet displays a large foreshortened top surface across rows 2-9 (8 rows tall) above the front face containing the glass door, shelves, and medicine boxes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5811
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "medical storage cabinet",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet has a prominent, foreshortened top surface spanning rows 2 to 10 (approximately 9 pixel rows) above the vertical south-facing cabinet doors and shelves.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5778
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "medical cabinet",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet has a prominent top surface clearly rendered from row 2 to row 9 (8 rows tall), followed by the front-facing glass display and cabinet body down to row 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6913
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "medical storage cabinet",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cabinet is clearly rendered across rows 2 to 10 (approx. 9 pixel rows tall) above the front glass-door compartment (rows 11 to 30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5576
+  }
+ ],
+ "decidedAt": "2026-10-13T15:25:00.449Z",
+ "cells": {
+  "16": [
+   "3abf00a1bdaaaec0",
+   "d91afd68c9add605"
+  ],
+  "24": [
+   "324cfc9f21efc762",
+   "343f734326b611ef",
+   "399322e9af18a29c",
+   "4e0c992ae804f29e",
+   "4f0aebb1d6bd5cd1",
+   "552cbf753738827c",
+   "610eb7bff0efa094",
+   "a0e1806027d700ba",
+   "af62fc6cc1bfbbdb",
+   "b63da30d6b6b3297",
+   "b8fbb05e0b12742f",
+   "f289cc5a77d5d75e"
+  ],
+  "32": [
+   "1418a04a55b7f5b1",
+   "468d3c7d99b9aa5f",
+   "8adb0d0c23687c43"
+  ],
+  "48": [
+   "2c7c3b174367b67c",
+   "4ea04bed005254cf",
+   "7ec5cc0707292c59",
+   "8b8e45c5a8127712",
+   "b01a99a1a7b90901",
+   "f88dda7ac1a9f30f"
+  ]
+ }
+}

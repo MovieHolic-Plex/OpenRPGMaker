@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "05de457a90849a5def8f591a9964bc36506317852065f4945d5bfc7b25af6d37",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "바깥 돌계단(3단)",
+ "label": "gothic_manor/gm-steps-stone",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone stairs (3 steps)",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Three distinct stair steps are depicted, each clearly showing alternating horizontal top treads (2 rows each) and vertical front risers (3 rows each) in standard 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5032
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "outdoor stone stairs (3 steps)",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Outdoor stone stairs terrain tile with 3 visible steps. Each step correctly shows both a 2px horizontal tread (top surface seen from above) and a 3px south-facing vertical riser, matching standard 3/4 RPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8233
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone stairs (3 steps)",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Outdoor stone stairs drawn in standard top-down 3/4 perspective with alternating horizontal step treads (2px visible top surfaces) and vertical step risers (3px south faces).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4560
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "3-step stone staircase",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The staircase terrain tile properly depicts alternating horizontal treads (2 rows each at rows 0-1, 5-6, 10-11) and vertical risers (3 rows each at rows 2-4, 7-9, 12-14) in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7586
+  }
+ ],
+ "decidedAt": "2026-10-13T16:24:27.174Z",
+ "cells": {
+  "16": [
+   "b831fb40522846a4",
+   "ef7e213f9aa20d06"
+  ],
+  "24": [
+   "082745cd9dd89791",
+   "3413e62502191469",
+   "6bdae27499757a08",
+   "70393828120bb6a6",
+   "9a0df198e04e2cf8",
+   "9c2cc66e9da1bf3c",
+   "b169576ec2bd79d8",
+   "c8a26181630000f5",
+   "d696452cfea25e82",
+   "dd33e78def7c7dac",
+   "f92583bb5204fcc3",
+   "f99a92507560b3d5"
+  ],
+  "32": [
+   "1b93b3aef3f9838e",
+   "a1fdf21a46176ce5"
+  ],
+  "48": [
+   "18c576fdaaf46ec8",
+   "4112007f1c8540f5",
+   "5d577631ddda2228",
+   "8b596b57d6e34b56",
+   "d42ead564326ddaf",
+   "d9a6a2103ae3b3ec"
+  ]
+ }
+}

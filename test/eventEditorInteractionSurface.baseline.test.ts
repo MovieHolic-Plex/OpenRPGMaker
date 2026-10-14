@@ -12,7 +12,7 @@
 // 두 갱신 실행 모두 **의도적으로 빨갛다** — 갱신은 통과가 아니라 리뷰 요청이다.
 //
 // ⚠ 로그(`console.log`)를 보려면 `--silent=false` 를 붙여라. vitest.config.ts 가 silent:true 다.
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { COMMAND_KINDS } from "@/project/commandKindRegistry";
@@ -79,22 +79,24 @@ function countValues(actual: Record<string, InteractionSurface>, pred: (v: strin
 }
 
 describe("이벤트에디터 상호작용 후 폼 표면 스냅샷", () => {
-  const started = Date.now();
-  const actual = captureAllInteractionSurfaces();
-  const elapsedMs = Date.now() - started;
-
-  const probeTotal = Object.values(actual).reduce((s, v) => s + v.probeCount, 0);
-  const reactingTotal = Object.values(actual).reduce((s, v) => s + v.reactingCount, 0);
-  const noChangeTotal = countValues(actual, (v) => v === "no-change" || v.endsWith("no-change"));
-  const selfOnlyTotal = countValues(actual, (v) => v.startsWith("self-only"));
-  const blockedTotal = probeTotal - reactingTotal - noChangeTotal - selfOnlyTotal;
-
-  // 규모를 로그로 남긴다 — "반응 컨트롤 수"가 이 축의 유일한 존재 이유라 숫자가 보여야 한다.
-  console.log(
-    `[상호작용 후 폼] kind ${Object.keys(actual).length} / 프로브 ${probeTotal} / ` +
-      `반응 ${reactingTotal} / no-change ${noChangeTotal} / self-only ${selfOnlyTotal} / ` +
-      `조작불가 ${blockedTotal} / 수확 ${(elapsedMs / 1000).toFixed(1)}s`
-  );
+  let actual: Awaited<ReturnType<typeof captureAllInteractionSurfaces>> = {};
+  // 종류마다 렌더가 만든 DOM·타이머를 같은 턴에 쌓으면 힙이 12GB 를 넘긴다.
+  // 종류 사이에서 happy-dom 작업을 끊고 나서 다음 종류로 간다.
+  beforeAll(async () => {
+    const started = Date.now();
+    actual = await captureAllInteractionSurfaces();
+    const elapsedMs = Date.now() - started;
+    const probeTotal = Object.values(actual).reduce((s, v) => s + v.probeCount, 0);
+    const reactingTotal = Object.values(actual).reduce((s, v) => s + v.reactingCount, 0);
+    const noChangeTotal = countValues(actual, (v) => v === "no-change" || v.endsWith("no-change"));
+    const selfOnlyTotal = countValues(actual, (v) => v.startsWith("self-only"));
+    const blockedTotal = probeTotal - reactingTotal - noChangeTotal - selfOnlyTotal;
+    console.log(
+      `[상호작용 후 폼] kind ${Object.keys(actual).length} / 프로브 ${probeTotal} / ` +
+        `반응 ${reactingTotal} / no-change ${noChangeTotal} / self-only ${selfOnlyTotal} / ` +
+        `조작불가 ${blockedTotal} / 수확 ${(elapsedMs / 1000).toFixed(1)}s`
+    );
+  }, 1_800_000);
 
   it("kind 집합이 COMMAND_KINDS 와 일치한다 (조용한 절단 금지)", () => {
     // 성능을 이유로 kind 를 빼면 여기서 반드시 빨개진다. 절단은 조용히 "다 봤다"로 읽힌다.

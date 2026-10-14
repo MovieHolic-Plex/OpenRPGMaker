@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5f1c639be21514ce4fd5221a26a70639733a590dade16bb27e1ab8925050b7dc",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "화물 상자 더미(큰 회색 상자 + 위 주황 상자 + 옆 작은 상자)",
+ "label": "sf-station/sf-crate-stack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "large grey cargo crate in the stack",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large grey crate clearly shows a foreshortened top surface across rows 13-18 (6 rows tall), and both smaller orange crates also display distinct top surfaces (rows 2-7 and 19-24) viewed from above in classic 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5825
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stack of cargo boxes (large gray box with orange crates)",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large gray box shows a clear top surface around rows 13-18 (6 rows) and front face rows 19-30. Both orange crates also clearly display foreshortened top surfaces (~5-6 rows each) above their front faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6009
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "large grey cargo crate with stacked smaller crates",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large grey box shows a substantial top surface (rows 12-18, ~7 rows) above its front face (rows 19-30). The smaller crates on top and to the right also clearly display 3/4 view top surfaces (~6-7 rows each).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7163
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "large grey crate at the base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main grey crate shows a clear 6-row top surface (rows 14-19) in 3/4 top-down projection, and both stacked/adjacent crates also display distinct top lid surfaces (~6 rows each).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5097
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:09.620Z",
+ "cells": {
+  "16": [
+   "3a58a3fb8e896397",
+   "7711a19453e66e1a",
+   "cd124994a5fb85b4",
+   "f7339a2c62260868"
+  ],
+  "24": [
+   "00b56bc547a7f940",
+   "0235ef1e305914e2",
+   "0e35d44e05a30273",
+   "12f2262463815d73",
+   "179152762c8e1572",
+   "17bac13c3109ae3e",
+   "1cdc09be55208bee",
+   "2d0d7767dcaa4072",
+   "4021f4f5f7e81c6e",
+   "5fad76ff379b295a",
+   "755cabd69f503b8e",
+   "7e17482fa2aaa7a8",
+   "87e9d8bbfb5b0f14",
+   "93d76ede25fe169a",
+   "9eff73fef61af255",
+   "a12a8e3a31f32855",
+   "a73496cbd76bb1cf",
+   "ac7e1a8239a24d6e",
+   "bc2b0549dce9abea",
+   "c529b2dcf39d186f",
+   "c5b5d442e91e918a",
+   "c7e258d8aa560f7b",
+   "eb238b3dcdece74f"
+  ],
+  "32": [
+   "ba0c866b931243dc"
+  ],
+  "48": [
+   "03e2b806e9001a63",
+   "0de9cdd468b1d44d",
+   "2ad80c3621062300",
+   "39cef8a374b993be",
+   "6cbb67937b3d55d9",
+   "f71d3f665fa884e9"
+  ]
+ }
+}

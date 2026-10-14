@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fba0def9e238bed648602b4952bb38df869f48fa65007128c7d098a4670b1385",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "세로 네온 간판(두꺼운 판 윗면 + 램프 테 + 칸마다 도형 + 고정 다리)",
+ "label": "sf-station/sf-street-sign-vertical",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 3행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical neon sign board",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is drawn almost entirely as a flat front elevation. The attempted top surface at rows 2-3 is only 2 pixel rows tall, which qualifies as a mere cap/rim line rather than a foreshortened top surface showing true 3/4 top-down depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 4"
+   ],
+   "ms": 8361
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical neon sign board",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the sign casing is visible across rows 1-3 (3 pixel rows tall) before the front face begins below row 4, satisfying the 3/4 top-down perspective requirement.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 3행 < 4"
+   ],
+   "ms": 6823
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vertical neon sign board",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the thick signboard is drawn above the front frame from row 1 to row 3 (3 pixel rows tall), seen foreshortened from above before transitioning to the front display face at row 4.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 3행 < 4"
+   ],
+   "ms": 5754
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical neon sign board",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body features a clearly defined 3-pixel-tall top surface (rows 1-3) seen from above, separated by an edge line from the front vertical display face (rows 5-29).",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 3행 < 4"
+   ],
+   "ms": 5625
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:31.922Z",
+ "cells": {
+  "16": [
+   "0483aa1b88a36a41",
+   "49d5294706e7bed6"
+  ],
+  "24": [
+   "03b33516a3287996",
+   "1aa036f69115be8e",
+   "1e02445375ceee5e",
+   "1e07d477e1bf2ce0",
+   "48696dcff7a7f0f6",
+   "5b7777dfdac46482",
+   "5d36c7d6eb0eed70",
+   "7023783420dd9b33",
+   "773048ce1a6a4675",
+   "9f0f20f96e822986",
+   "c101f7cad3621fe1",
+   "d796f257b042bb46"
+  ],
+  "32": [
+   "1191f02d106daf0a",
+   "42c371c18cf06884",
+   "c753d5271f519a1a"
+  ],
+  "48": [
+   "2c3777a75482540a",
+   "2ea71a1a8a603669",
+   "58a30fdcf44ede67",
+   "5b4084ce228ec9e2",
+   "7db23c61c2f987e0",
+   "d2a7ad2b70fc59e2"
+  ]
+ }
+}

@@ -1,0 +1,159 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cfde1d7de4ea92dad3761709cf9a83e4d89730800ae732c5e404fa2644492b7a",
+ "width": 96,
+ "height": 64,
+ "kind": "structure",
+ "name": "대형 주거 모듈(긴 지붕 + 해치·배관 + 두 줄 창 + 가운데 문)",
+ "label": "sf-station/sf-hab-module-3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "large residential module building",
+    "kind_matches": true,
+    "top_rows": 22,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building has a large sloped roof visible from rows 3 to 24 (22 source pixel rows tall) with hatch, vents, and paneling, sitting atop the front facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4339
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "large residential module building with sloped roof and front facade",
+    "kind_matches": true,
+    "top_rows": 21,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features a prominent, well-articulated sloped roof spanning roughly 21 source pixel rows (rows 3 to 24) complete with hatches, pipes, and vents viewed from above, atop the south-facing facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4630
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "residential module building",
+    "kind_matches": true,
+    "top_rows": 21,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building has a large, clearly visible forward-facing roof plane spanning from row 3 to row 24 (approx 21 source pixel rows) equipped with hatch, vents, and pipe details, sitting atop the front facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3433
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "large residential module building with sloped hip roof and front facade",
+    "kind_matches": true,
+    "top_rows": 21,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building has a clearly visible forward-facing sloped roof extending from row 4 to row 24 (~21 rows) complete with roof details (vents, piping), positioned above a straight south-facing facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3815
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:09.617Z",
+ "cells": {
+  "16": [
+   "1111b1261bd0d5ce",
+   "29c635c2f3a126aa",
+   "2adfb29b06943b09",
+   "2e7a478e153d291e",
+   "2fcb026356cb7687",
+   "3dd3a58194ff90a8",
+   "47a77427b479429b",
+   "4dd555bd13df67a2",
+   "5d6451cab0d30b0a",
+   "62d509768e8afb1c",
+   "7d8d8f513ab3211c",
+   "7ec486547baea38d",
+   "a011ca54f1b11eca",
+   "a9f19180e589912b",
+   "aa4fa24d3fbe9c31",
+   "ac874c5a12a74f2d",
+   "ae6a52b9f2599107",
+   "b50807dde420a319",
+   "c1bf970f424c6342",
+   "ca361e2df436a56b",
+   "dcb9c188a224bca6",
+   "e84aa2849be3f84e",
+   "e9fe1d4e0a8ffb76",
+   "fa1f868759db1ef8"
+  ],
+  "24": [
+   "01430e90c9cb7b78",
+   "12dc9d18e0d5df3b",
+   "15d20f2a314f92a4",
+   "39a33e4c9fc3aaa5",
+   "3c497382d58e6966",
+   "4cde2ebd16c49fe2",
+   "4e4ffed95f2bf74b",
+   "50f443eb25f6f97f",
+   "59e0c7d6dd99edb5",
+   "5a03d0a4351920bf",
+   "5eafab6f6f2b2704",
+   "637ba5c83357ce90",
+   "6b45495b04dd406a",
+   "6e59d6ce6e1e5bc7",
+   "85a6829aee45ef3f",
+   "85b6b79abe49c9bf",
+   "ae069a44f33b309a",
+   "b047d914707f4965",
+   "b186f2ff42694277",
+   "b4c82b15ba298a27",
+   "bc476c2cd5752ebf",
+   "cb0d5a650f741283",
+   "ccc1c80b4b35b624",
+   "cd814a5397cdf5e0"
+  ],
+  "32": [
+   "10249700bf1de4b1",
+   "275f2389b74bbdb9",
+   "2dfdc38eba1eb884",
+   "635a9aa418e6ce45",
+   "9393be8b6cea5bae",
+   "bad3996d27a9929a"
+  ],
+  "48": [
+   "0a51fe8b9d6ff1dd",
+   "55956f4b7f884228",
+   "77062717cc5aabf0",
+   "7c8009bb54e2a647",
+   "8a5f0156c22821cd",
+   "b8e13292c1535b5d",
+   "c1af2cc209ed7100",
+   "e08871ac7f093245"
+  ]
+ }
+}

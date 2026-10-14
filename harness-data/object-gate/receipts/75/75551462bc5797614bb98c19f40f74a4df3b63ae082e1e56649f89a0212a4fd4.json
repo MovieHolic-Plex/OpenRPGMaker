@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "75551462bc5797614bb98c19f40f74a4df3b63ae082e1e56649f89a0212a4fd4",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "받침 위 큰 도자기 항아리",
+ "label": "gothic_manor/gm-vase-plinth",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "아가리 2행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "large ceramic jar on a wooden stand",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mouth of the ceramic jar shows a 2-row dark opening ellipse seen from above (rows 1-2), and the wooden display stand beneath it has a clearly foreshortened top surface (rows 18-23, ~6px tall) with a darker south-facing panel below.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 2행 < 4"
+   ],
+   "ms": 15134
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "porcelain jar on a wooden pedestal",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The vase opening is rendered with a foreshortened elliptical rim showing a 2-pixel-tall dark interior opening at rows 2-3.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 2행 < 4"
+   ],
+   "ms": 6234
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "large ceramic jar on a wooden pedestal",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The jar's opening is drawn with a visible top rim and a 2-row dark interior cavity (rows 1-2). Furthermore, the wooden pedestal beneath it shows a clear top surface spanning rows 18-23.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 2행 < 4"
+   ],
+   "ms": 6724
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "large ceramic jar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The jar's mouth displays an elliptical opening showing the dark interior across rows 1-2 (2 rows tall), flanked by back and front rims, correctly indicating a top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 2행 < 4"
+   ],
+   "ms": 8309
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.505Z",
+ "cells": {
+  "16": [
+   "5dda9ab9027b216c",
+   "c91880d574caa3ed"
+  ],
+  "24": [
+   "19528532b12bf618",
+   "25a69fd3328a9216",
+   "295794fe8523759b",
+   "5eef1faf83ebd097",
+   "6ab5a9e073a5b10b",
+   "6bcd5d271ce205eb",
+   "757b5e3ce9b92f7e",
+   "a6d062091e84f0ea",
+   "af0401c0a50a312b",
+   "c8120d1e89c497c1",
+   "d1ee72fda58236c2",
+   "e2905c61871c0a89"
+  ],
+  "32": [
+   "2522abcd1738b3f4",
+   "5fdd62a71832c151",
+   "e9243f4213396703"
+  ],
+  "48": [
+   "27e990be4f9759a3",
+   "5a8eba4b88dc86f7",
+   "88fc6c887caeabae",
+   "a3e9f5d8477f518c",
+   "a81aa470fc8c89be",
+   "ae68d75cbd24e42a"
+  ]
+ }
+}

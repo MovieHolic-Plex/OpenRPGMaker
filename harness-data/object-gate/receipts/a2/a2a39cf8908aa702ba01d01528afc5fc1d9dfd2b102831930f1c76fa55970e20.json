@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a2a39cf8908aa702ba01d01528afc5fc1d9dfd2b102831930f1c76fa55970e20",
+ "width": 32,
+ "height": 16,
+ "kind": "other",
+ "name": "호버 바이크(날렵한 차체 윗면 6줄 + 안장 윗면 + 앞 바람막이 + 어두운 옆 + 밑 네온 빛 + 그림자)",
+ "label": "sf-station/sf-street-hover-bike",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hoverbike",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hoverbike faces west in 3/4 view: rows 2-7 form a 6-pixel-tall top surface showing the windshield and seat from above, while rows 8-10 depict the south-facing side wall above the hover pads and ground shadow.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10405
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hoverbike body",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hoverbike clearly separates its horizontal top deck (rows 2–7, 6 rows tall, containing the windshield and seat) from its south-facing vertical side body (rows 8–10, 3 rows tall), supported by hover repulsors and a drop shadow underneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9112
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hoverbike chassis",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the hoverbike (showing the top deck, embedded windshield, and seat) spans rows 2 to 7 (6 rows tall), while rows 8 to 10 form the shaded south face with neon accents and hover pads beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5994
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hoverbike chassis",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hoverbike body shows a clear foreshortened horizontal top deck across rows 2–7 (6 rows tall) containing the seat and windshield seen from above, resting over a shaded south vertical face (rows 8–10) and hover pads with shadow underneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6348
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:07.398Z",
+ "cells": {
+  "16": [
+   "c9475f4d67389d95",
+   "d33c51fde643b670"
+  ],
+  "24": [
+   "09ac9e3d246869c3",
+   "121175717f8c1ac5",
+   "1f9475753ad80d0a",
+   "41161ba940eba0d2",
+   "54904be0e1a6f1e3",
+   "5adc29a687ff275b",
+   "6d2b9032ee65f698",
+   "ab63c250e325a4ab",
+   "b7b91907bad6b774",
+   "c4e903859fa0a1d8",
+   "d55a9b21ecf9f453",
+   "fd8ebab0d0f2d161"
+  ],
+  "32": [
+   "dfd20bd0afa39e92",
+   "ed674780eee80756"
+  ],
+  "48": [
+   "094421186fcb36d1",
+   "65e7fac35bed1744",
+   "a18b442a7392f45a",
+   "bc2814328a8acd80",
+   "c36eb15ffd4654e8",
+   "c4a9d73e6ba6c41c"
+  ]
+ }
+}

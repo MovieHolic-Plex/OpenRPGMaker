@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "518acb759ff557db0a786d636df2c9c32fbc02fd525aca4204358bb3826182f8",
+ "width": 48,
+ "height": 32,
+ "kind": "flat",
+ "name": "빛바랜 페르시아 깔개",
+ "label": "gothic_manor/gm-rug-persian",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "faded persian rug lying flat on the floor",
+    "kind_matches": true,
+    "top_rows": 30,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat floor rug viewed from above spanning rows 1 to 30, correctly presented as a flat ground decal with no front elevation or isometric side face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3293
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "persian rug lying flat on the floor",
+    "kind_matches": true,
+    "top_rows": 30,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat carpet viewed from above covering rows 1 to 30 with visible fringe edges and patterned surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3018
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "faded Persian rug lying flat on floor",
+    "kind_matches": true,
+    "top_rows": 30,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a floor rug viewed flat from above spanning rows 1 to 30 with visible fringes and woven pattern, correctly represented as a ground-plane surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3267
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "persian rug",
+    "kind_matches": true,
+    "top_rows": 30,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rug is drawn flat on the floor viewed from above with tassels at top and bottom edges spanning rows 1 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3149
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.501Z",
+ "cells": {
+  "16": [
+   "2b7f0c51c5abc4be",
+   "3d0a32692d1f5627",
+   "456ccefbcb84d457",
+   "7cfca7a7bcac7d5a",
+   "c1e85d4dbc9c5edf",
+   "f7918c80c8bccfc5"
+  ],
+  "24": [
+   "26b463684db52ac3",
+   "4f2f6eb86b0f1bbe",
+   "7cd9c83f66426a49",
+   "90342993da9d5518",
+   "c1637e41899bb3c5",
+   "dc4a4c84cf18c7b7",
+   "ddc05b9d234b4f74",
+   "e168952984c2df48"
+  ],
+  "32": [
+   "787514c8d7771ca2",
+   "7fa76f425dc36ad1",
+   "8a2e6cf62d77ee8a",
+   "b0861df22667e8f1",
+   "d17e3b55c94d8140",
+   "fecc1cd4434f1411"
+  ],
+  "48": [
+   "39de61aea6f419cc",
+   "8107aa65fb58c6c4"
+  ]
+ }
+}

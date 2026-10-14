@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "793706e0df47a657b792259f5787ca02a1b1c411d064942df457684733945773",
+ "width": 32,
+ "height": 16,
+ "kind": "flat",
+ "name": "wet puddle reflecting magenta and cyan neon, two variants (overlay on road)",
+ "label": "sf-station/sf-puddle",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flat neon-reflecting puddle overlay",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both variants are drawn as flat ground decals/puddles viewed from above with foreshortened ellipses (7-9 pixel rows tall) and interior neon light reflections.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5087
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wet puddle flat floor decal",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both puddle variants are drawn flat on the ground plane as foreshortened ellipses (7-9 pixel rows tall) with neon reflections.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3529
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two wet puddles lying flat on the ground with neon reflections",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both puddles are correctly depicted as flat ground overlays (7 and 9 rows tall respectively) foreshortened on the floor plane with reflected neon highlights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3498
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "puddle surface",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both puddle variants are foreshortened flat shapes lying on the ground surface (7-9 source pixel rows tall) with neon reflections.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2970
+  }
+ ],
+ "decidedAt": "2026-10-13T15:26:41.509Z",
+ "cells": {
+  "16": [
+   "04d43012da481d90",
+   "1ef31bf7edb74ad3"
+  ],
+  "24": [
+   "0d68dbc8f6671b2d",
+   "25043fbe7423d427",
+   "30851a583cafde6a",
+   "43b91b766f1793cd",
+   "4682d68071f4f79c",
+   "5d0ea0869e7838b8",
+   "7d63483833599614",
+   "bcfce3789ac9aaeb",
+   "d41e71eb87258bdb",
+   "eb3ebd3c2694d68e",
+   "eddf26ad140283b3",
+   "fd784a2f880ab0b7"
+  ],
+  "32": [
+   "a5d8b2cd9b4dc954",
+   "d3faf24b3800dc93"
+  ],
+  "48": [
+   "0df512658eb57142",
+   "49a581070ed09595",
+   "6f60f1ba7b0e3e77",
+   "a7718bd2eae25080",
+   "ba1d66bc59911e6e",
+   "ca0bf7319d3b3991"
+  ]
+ }
+}

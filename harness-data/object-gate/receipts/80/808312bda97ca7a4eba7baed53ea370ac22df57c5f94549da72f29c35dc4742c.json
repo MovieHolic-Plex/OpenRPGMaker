@@ -1,0 +1,138 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "808312bda97ca7a4eba7baed53ea370ac22df57c5f94549da72f29c35dc4742c",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "방열 패널(눕혀 놓은 핀이 줄지은 냉각 판)",
+ "label": "sf-station/sf-radiator-panel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cooling radiator panel on support legs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The panel is drawn straight-on in pure front elevation: the top frame is a single 1px outline with no visible top surface (0px), and the fins and support legs are rendered directly from the front with no 3/4 top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12058
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "radiator panel and support legs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The standing radiator panel with horizontal louver fins is drawn in flat front elevation. The top rim is only a 1px outline (row 0) with no visible top surface foreshortened from above, and the support legs show only their front faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14936
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "heat dissipation panel / cooling frame on support legs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure, including the outer frame, fin panel, lower bar, and support legs, is drawn in pure 2D front elevation. The top horizontal edge of the frame (rows 0-1) is only a 1px outline and 1px edge highlight with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14683
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "radiator panel on support legs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire panel structure and its supporting legs are drawn in pure front elevation. The top edge at row 0 is just a 1px outline with no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11759
+  }
+ ],
+ "decidedAt": "2026-10-13T15:31:15.749Z",
+ "cells": {
+  "16": [
+   "34b0a28a6aab87e6",
+   "62064de77a605bed",
+   "709097511ccf5a3e",
+   "a30c732ec39619f4",
+   "c38cb2a219b891ab",
+   "cba732bdda6a6272"
+  ],
+  "24": [
+   "1cd939fd3924c977",
+   "3687cda4eac089bb",
+   "3e5949ce91afa2c8",
+   "79653f87c8b6967d",
+   "853421d8e3443831",
+   "c371aa8d2f13fd4c",
+   "c8c6ac648f95efef"
+  ],
+  "32": [
+   "3c3520a907f0a90d",
+   "48dae3d538dee674",
+   "842803b7aa0beb5b",
+   "8bf316479d8f761a",
+   "9ddf6725a754c719",
+   "b440947faf42854d"
+  ],
+  "48": [
+   "26d9076b5484cc5e",
+   "dc51784b742bd76f"
+  ]
+ }
+}

@@ -1,0 +1,144 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1d9358a8d07f3594decbf80caa3e1ffc5421362b351a8d739cf63a171507f5e4",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "독수리 강론대",
+ "label": "gothic_manor/gm-lectern",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lectern board and book stand",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is a lectern reading desk with an open book, but it is drawn completely upright as a flat front elevation with a 1px top outline (row 1) and no visible top surface or 3/4 tilt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7143
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "reading board and stand of the lectern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (the upper reading board with the book, rows 1-13) is drawn as a flat vertical rectangle facing directly forward like a signpost, with only a 1-2px border outline along the top instead of a visible top surface. The only foreshortened top surface is on the bottom base plinth, which cannot substitute for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7794
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lectern desk with open book",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (the lectern reading desk and book, rows 1-13) is drawn as a flat front-facing rectangle like a wall sign, with only a 1-2px outline/rim along the top edge and no visible top surface depth. While the base plinth has 3/4 perspective, the main body is in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7460
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lectern board with book on stand",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main volume is the lectern board and book (rows 2-13), which is drawn in pure flat front elevation with no visible top surface (only a 1px outline along row 1). While the base plinth at rows 24-28 has an elliptical top, the main body lacks 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6922
+  }
+ ],
+ "decidedAt": "2026-10-13T16:47:35.281Z",
+ "cells": {
+  "16": [
+   "ac74f5f029dd3444",
+   "b0ab43e5cf2dece8"
+  ],
+  "24": [
+   "0625406ac8d470fb",
+   "08a8806a9e93d836",
+   "2583561ddf1293d4",
+   "2ed392bbae78a704",
+   "5ef0a8371fa05dff",
+   "5f064e30fb1fd00d",
+   "8990c471cb5cfcde",
+   "8a78e7256c3d26aa",
+   "afab18ee09d668b6",
+   "b5e3b5d16d3921d7",
+   "c37753273dbd4823",
+   "ed34b47db3ecab5f"
+  ],
+  "32": [
+   "794b76dfacf90c35",
+   "7c87cceaccbaa649",
+   "dbb0c8d98ce999cf"
+  ],
+  "48": [
+   "0be8892aa2b05217",
+   "45ba0a5d1ae55194",
+   "5fdd48f36e307a2a",
+   "65fc0aa9277dc2b7",
+   "775e83b194e114b0",
+   "d1e9aa48a22444dd"
+  ]
+ }
+}

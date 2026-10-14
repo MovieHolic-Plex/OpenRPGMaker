@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "df58332332596273302021dd25022fbc28a2418f82d2d418421b1b34d977b424",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "의무실 링 스캐너(환형 터널 몸체 + 이동 베드)",
+ "label": "sf-station/sf-med-scanner",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "medical ring scanner (MRI/CT machine) housing with movable patient bed",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the main scanner unit is clearly shown spanning rows 1 to 9 (9 rows tall), and the protruding patient bed also shows a top surface spanning rows 21 to 25 (5 rows tall). Both components have clearly foreshortened horizontal surfaces viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4347
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "medical ring scanner with movable bed",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main scanner housing shows an extensive foreshortened top surface spanning rows 1-9 (approx. 9 rows). The tunnel opening and the patient bed also show their top/horizontal surfaces in proper 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3854
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "medical ring scanner gantry with movable bed",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The gantry has a large sloping top surface spanning rows 1-9 (9 rows tall) above its front face (rows 10-24). The scanner tunnel opening shows interior depth and the bed in front clearly exhibits its top surface (rows 21-25) and front face (rows 26-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3464
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "medical ring scanner with examination bed",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main scanner housing has an extensive visible top surface spanning rows 1-9 (9 rows tall) in a 3/4 perspective, and the examination bed also shows a distinct top surface (rows 21-25) and front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6942
+  }
+ ],
+ "decidedAt": "2026-10-13T15:25:00.449Z",
+ "cells": {
+  "16": [
+   "306e4ec8ce249319",
+   "9005f7dec057db04",
+   "950f5d414d7ad47c",
+   "d5e2f545b50f6f0b"
+  ],
+  "24": [
+   "0798e12182e2794d",
+   "26d837541a8ad781",
+   "32aa2825c5a55f40",
+   "42839d48705d8596",
+   "42da443565225971",
+   "4b013b2bb37231ab",
+   "584f72a749a60c4a",
+   "66b2ebdd3f0a19b4",
+   "6ef7f483bc8ff391",
+   "769758ee04b56e67",
+   "8168b78a22a765c3",
+   "8320e3d665a3a096",
+   "9cf09c292879cc49",
+   "a0f7584cac950809",
+   "a1096b516b199f55",
+   "a7bfa53156d55dfe",
+   "b5ba471acfa5ee1a",
+   "ba3f7002f796552a",
+   "babe88832f9c4717",
+   "bea55cd03aad05f9",
+   "cffc43daee9fdcac",
+   "d3fc92897f1015af",
+   "d93bfa95278e9e3e",
+   "fc1478e4e81a02d5"
+  ],
+  "32": [
+   "bcfa0d169c7e761b"
+  ],
+  "48": [
+   "56891b4ae6e02558",
+   "71a4f9c0008e2fa4",
+   "965b06f521d97819",
+   "aab6150cdd82daa4",
+   "bcc29cd69538d2b1",
+   "f9e3dea35b052f85"
+  ]
+ }
+}

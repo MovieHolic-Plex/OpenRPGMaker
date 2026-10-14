@@ -1,0 +1,149 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "acec417d9a80541f92111ff5cb2cb2eb275ec9981c1fe84b2a7508422e6afb29",
+ "width": 64,
+ "height": 48,
+ "kind": "other",
+ "name": "검은 영구 마차(유리 관실·깃털 장식)",
+ "label": "gothic_manor/gm-hearse",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hearse carriage body and roof",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The carriage is depicted facing sideways (profile), with its roof correctly rendered as a foreshortened top surface spanning rows 8-13 (approx. 6px tall) above the yellow molding.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6873
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "black funeral carriage (hearse)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The carriage is drawn in a pure 2D side elevation (side-scroller style). Both wheels are flat circles with no tread/top depth, the driver box on the right has no visible top surfaces, and the roof canopy (rows 7–13) is depicted as a flat vertical side panel beneath the feather plumes rather than a horizontal surface viewed from a 45-degree angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11526
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hearse carriage body",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The carriage is depicted facing sideways (appropriate for a JRPG 3/4 view) with a clearly visible foreshortened roof surface spanning rows 7 to 13 (7 pixel rows) above the gold trim and carriage cabin.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7298
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hearse carriage",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The carriage is drawn as a flat 2D side elevation (side-scroller style). Horizontal surfaces such as the driver's seat/step on the right and the coffin lid inside have 0-1px depth, the wheels are pure flat circles with no thickness or far wheels, and only two plumes are shown on the side silhouette.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14709
+  }
+ ],
+ "decidedAt": "2026-10-13T16:24:27.173Z",
+ "cells": {
+  "16": [
+   "09f86fd95691ffb7",
+   "2d77b6a6c65bbe92",
+   "2e580e4139e53d1f",
+   "60c5705275f63e24",
+   "6f1bb984e3df116b",
+   "ba0351de6bada360",
+   "c60777b748565cfe",
+   "d37e8a1b8a2cb5d0",
+   "e4ffe65ef012b1ba",
+   "eeaa6967f5409a8e",
+   "f0e40d96c65885e1",
+   "f18039a3e26517ad"
+  ],
+  "24": [
+   "0c50b01d60e8e8e3",
+   "13794e0ab69247fb",
+   "1ca11427bb210999",
+   "1d525decfca4a116",
+   "2a6f80abab3a2108",
+   "2f047fdab4645b0f",
+   "3fdc758e89851647",
+   "48bc387f7d921ccc",
+   "8a021fd45ba4041b",
+   "9d65dbeddbb9e92f",
+   "aaae0d4ccefba19e",
+   "ab741d0b30318629",
+   "c8e88c128a360187",
+   "df1eb6f88389947b",
+   "f82edd8c93c0541b",
+   "fd0dc3a7c39bbfee",
+   "fe65b8469d056a39",
+   "ff8eabe0067509b0"
+  ],
+  "32": [
+   "0c04949091b600a1",
+   "283f154eb2d864e2",
+   "5273c68cd7fc3f0a",
+   "659f99ec9fd2c202",
+   "adc09e15d2554e7e",
+   "c591060780344591",
+   "ed1a9dfdc9337640",
+   "ee8ecfcffa40d4fc"
+  ],
+  "48": [
+   "21d2c9fbecca6297",
+   "2697ee87d9033333",
+   "26f0a757061e8c3f",
+   "5c6926e477801447",
+   "9389b533b3f93147",
+   "e5034e6bd8910b96"
+  ]
+ }
+}

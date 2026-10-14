@@ -35,9 +35,6 @@ function hint(text: string, testid: string): HTMLElement {
 
 export function setDifficultyBody(context: CommandEditContext, cmd: Extract<Command, { kind: "setDifficulty" }>): HTMLElement {
   const rows = store.getCurrent().system.difficulties ?? [];
-  if (rows.length === 0) {
-    return formRows(hint("난이도가 없습니다. 데이터베이스 「시스템 → 난이도」에서 먼저 만드세요.", "set-difficulty-empty"));
-  }
   const picker = recordPickerWithPreview({
     records: rows,
     selectedId: cmd.difficultyId,
@@ -47,7 +44,10 @@ export function setDifficultyBody(context: CommandEditContext, cmd: Extract<Comm
   picker.select.addEventListener("change", () => {
     context.actions.replaceCommand(context.path, { kind: "setDifficulty", difficultyId: picker.select.value });
   });
-  return formRows(picker.root, hint("적 HP·공격력, 경험치·골드, 인카운트율 배율이 바로 바뀝니다.", "set-difficulty-hint"));
+  const note = rows.length === 0
+    ? "난이도가 없습니다. 데이터베이스 「시스템 → 난이도」에서 먼저 만드세요."
+    : "적 HP·공격력, 경험치·골드, 인카운트율 배율이 바로 바뀝니다.";
+  return formRows(picker.root, hint(note, rows.length === 0 ? "set-difficulty-empty" : "set-difficulty-hint"));
 }
 
 export function partySetBody(

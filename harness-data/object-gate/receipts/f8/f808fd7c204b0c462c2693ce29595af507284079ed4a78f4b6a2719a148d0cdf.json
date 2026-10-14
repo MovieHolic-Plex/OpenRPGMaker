@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f808fd7c204b0c462c2693ce29595af507284079ed4a78f4b6a2719a148d0cdf",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "켈트 고리 십자가",
+ "label": "gothic_manor/gm-tomb-celtic",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Celtic ring cross monument",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The Celtic cross and its base are drawn in flat front elevation with no visible top surface at the apex of the cross, arms, or base plinth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5865
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Celtic cross with ring and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The Celtic cross and its circular ring are drawn in a completely flat front elevation. There are no foreshortened horizontal top surfaces on the crossbar, the top end of the shaft, or the ring.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6530
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "Celtic cross with circular ring and rectangular base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The Celtic cross and its base are drawn in flat front elevation. Neither the top of the cross, the horizontal cross arms, nor the stone base show any foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5698
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "Celtic high cross with ring and base plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire Celtic cross and its pedestal are drawn straight-on in flat front elevation. Neither the top of the cross, the horizontal cross arms, nor the pedestal show any foreshortened top horizontal surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7627
+  }
+ ],
+ "decidedAt": "2026-10-13T16:24:27.172Z",
+ "cells": {
+  "16": [
+   "60019389e330ed6c",
+   "95761f1d84ffd9fb"
+  ],
+  "24": [
+   "06069de5978f6ff3",
+   "062fc3ed6f054384",
+   "12c5fef1e1e310a4",
+   "30e58fe44e0ae0fd",
+   "3a289beb4dec0218",
+   "40eea40fe33bf6e9",
+   "61249e521eb2c3ae",
+   "9e140daf65a3b109",
+   "bfa9a1e98970cce0",
+   "e126352bad69f603",
+   "f386755203b5e277",
+   "f9ac9388fe5916ef"
+  ],
+  "32": [
+   "00abbcbfe664e459",
+   "373119608d7605d8",
+   "d723cbc616be0f55"
+  ],
+  "48": [
+   "4621b5777888b159",
+   "7396494acb5b0f66",
+   "86ffbfaa217b3f7b",
+   "981af1df7e1cd84d",
+   "b3cfc8c226972afb",
+   "d7bbd3a1cbf1f5fc"
+  ]
+ }
+}

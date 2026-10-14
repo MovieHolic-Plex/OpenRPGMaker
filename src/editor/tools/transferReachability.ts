@@ -114,12 +114,22 @@ export function transferGatesStayApproachable(
   newGate?: Point,
 ): { readonly ok: boolean; readonly sealed: readonly string[]; readonly group: ReadonlySet<number> } {
   const blocked = touchBlockedCells(map);
-  if (newGate) blocked.add(`${newGate.x},${newGate.y}`);
+  // 새 문을 넣기 전부터 막혀 있던 문은 이 배치의 책임이 아니다 — 그걸 이유로 모든 새 문을 거절하면 조수가 손으로 이벤트를 짜게 된다
+  // (실측 2026-10-13: 나무로 막힌 남쪽 출입구가 있는 맵에서 집 문 연결이 전부 거절됐다).
+  const alreadySealed = new Set<string>();
+  if (newGate) {
+    const baseGroup = largestWalkGroup(project, map, blocked);
+    for (const event of map.events ?? []) {
+      if (isTransferGateEvent(event) && !gateTouchesGroup(project, map, event, baseGroup)) alreadySealed.add(event.id);
+    }
+    blocked.add(`${newGate.x},${newGate.y}`);
+  }
   const group = largestWalkGroup(project, map, blocked);
   const sealed: string[] = [];
   for (const event of map.events ?? []) {
     if (!isTransferGateEvent(event)) continue;
     if (newGate && event.x === newGate.x && event.y === newGate.y) continue;
+    if (alreadySealed.has(event.id)) continue;
     if (!gateTouchesGroup(project, map, event, group)) sealed.push(`${event.id}(${event.x},${event.y})`);
   }
   if (newGate && !gateTouchesGroup(project, map, newGate, group)) sealed.push(`새 출입구(${newGate.x},${newGate.y})`);

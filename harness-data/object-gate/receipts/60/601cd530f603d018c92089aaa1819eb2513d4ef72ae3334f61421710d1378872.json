@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "601cd530f603d018c92089aaa1819eb2513d4ef72ae3334f61421710d1378872",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "흉상 돌기둥(대리석 흉상)",
+ "label": "gothic_manor/gm-bust-column",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "marble bust on stone pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bust and the stone pedestal are drawn in pure front elevation. The stepped plinth at the bottom has only a 1px line (row 24) with no visible top surface, and the bust itself has no top-down foreshortening or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5855
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "marble bust on stone pillar pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bust and its stone pedestal are drawn in pure front elevation. The pedestal shows completely flat vertical rectangles without any foreshortened top surface (only a 1px divider line at row 24), and the bust head and shoulders also lack any top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4106
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "marble bust on a stone pillar plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object, including the bust and stone plinth, is drawn as a flat front elevation. The plinth steps out at row 24 with only a 1px horizontal line rather than a foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4616
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "marble bust on stone pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire bust and pedestal are drawn in pure front elevation with no visible top surface. The base/plinth only has a 1px highlight line at row 24, failing the requirement for a visible top surface in 3/4 top-down view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5406
+  }
+ ],
+ "decidedAt": "2026-10-13T16:57:24.059Z",
+ "cells": {
+  "16": [
+   "456c174e92c05da8",
+   "c11a6986d3b63aec"
+  ],
+  "24": [
+   "1c3c67455f9929cb",
+   "292cbfb56fffedb6",
+   "4535461ef9e9500d",
+   "5146bcc636879b24",
+   "5a8128bb20b1083a",
+   "6a2bca66dda683e3",
+   "83c55b240853e36b",
+   "a3a4d1d18e8bb892",
+   "ac3f7c1fefb9d682",
+   "ba720069eebc6d4e",
+   "df29a9d399bcd95a",
+   "f96f0b7c4e4bf1c3"
+  ],
+  "32": [
+   "4369c29850e5e279",
+   "9d98acd5caa13e33",
+   "e0e2ca61aa0b1550"
+  ],
+  "48": [
+   "183d6fd334389b76",
+   "295c0dbb3dd3eae2",
+   "514eb23cf0833378",
+   "a535c7e898094f3f",
+   "d67a502e36d191fa",
+   "f381b2b323eaf48e"
+  ]
+ }
+}

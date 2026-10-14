@@ -1,0 +1,154 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "87e0b3d8589c0de6995d5ce78d05bc943cef0d27b2c1a5cedb7a421ffa0c1521",
+ "width": 64,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "긴 식탁(먼지 쌓인 만찬)",
+ "label": "gothic_manor/gm-dining-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "long dining table covered with a white tablecloth",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface spans rows 2 through 19 (18 source pixel rows) with plates, cups, and candlesticks resting on it, followed by a front-hanging tablecloth skirt from row 20 to 25 and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3315
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "long dining table with white tablecloth",
+    "kind_matches": true,
+    "top_rows": 19,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tablecloth-covered tabletop surface is clearly visible from rows 2 to 20 (approx. 19 pixel rows) holding dishes and candlesticks, with the front overhang/skirt and legs below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3252
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "long dining table covered with a white tablecloth",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from above, spanning approximately 18 pixel rows (rows 2-20) covered with place settings and candelabras, with the vertical front drop of the tablecloth visible below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3359
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "long dining table",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The long tabletop is prominently rendered with a visible top surface spanning roughly 18 source pixel rows (rows 2-19) holding candlesticks and dishes, accompanied by a south-facing tablecloth apron (rows 20-25) and legs beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3980
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.503Z",
+ "cells": {
+  "16": [
+   "05612418d7a822ba",
+   "4df3bc7b4be36a88",
+   "55a4376fb7385dfa",
+   "9dfb57f5e291f95e",
+   "bf3e9c33de9625cf",
+   "c032ef96508c0540",
+   "e8c86e10060ff5c3",
+   "ea2d1ecf6e14ae8a"
+  ],
+  "24": [
+   "021d734456ca59ca",
+   "06cd49630c460c01",
+   "13caa44abcc1160f",
+   "2101ec1c8fdb4f66",
+   "2a49a4783fd9a8f6",
+   "32d1c55452b6a101",
+   "36116d84483efabc",
+   "3720fb38591f34bf",
+   "4a662358ac193eb4",
+   "52107238a13c4081",
+   "58f2efebc1059e7f",
+   "5f7308f93b80615e",
+   "600c308cb2049af2",
+   "6160c8b7dfd70551",
+   "6b4fc42dbaee9e7b",
+   "7203523ddfa06a87",
+   "7c98ee973762224a",
+   "810a9d94d3e2a7f2",
+   "823a83d5d70d6c86",
+   "8ae1e8f10a565572",
+   "90be1185e51db44a",
+   "9b352b2b87161e7b",
+   "9c3b48add7a0a195",
+   "aeaeed5abe5e2b95",
+   "d0c2018f1f338b18",
+   "d341974818c6e459",
+   "d8636fe6d3421849",
+   "d9d75ac978cd068d",
+   "dc6a916911499d27",
+   "de308e6180a69e4d",
+   "e3a77b91a628eb37",
+   "ef792d3887e3fef8",
+   "f2e27a1c50bf0fbb",
+   "fc37a5c5779695db",
+   "fd8ed89ff11d0a4c"
+  ],
+  "32": [
+   "3138f8bb1776fbde",
+   "9a63f70013d7b1e1"
+  ],
+  "48": [
+   "18e198ff398d18b2",
+   "2c2e6de244c00828",
+   "2fd054412f14f4e3",
+   "533d142496091e06",
+   "5ba7795452855a92",
+   "8e4ff7ad2dc467b8",
+   "95fcb87bd6bb1e03",
+   "bfcc9285fbd750cd",
+   "e5b9fc32dfa4907d",
+   "f64a2b0bf3f20b2d",
+   "f834fb4e04ad5e52",
+   "fdf8227dc5ff36e8"
+  ]
+ }
+}

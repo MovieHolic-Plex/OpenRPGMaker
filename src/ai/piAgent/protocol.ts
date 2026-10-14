@@ -64,6 +64,24 @@ export interface PiAgentRequest {
    * 실행기 계열 검사(`tileset-family-change`)가 이 계열로의 변경을 통과시킨다. 비우면 승인 없음.
    */
   readonly approvedTilesetFamilies?: readonly string[];
+  /**
+   * 편집기가 가진 되돌리기 기록(가까운 것이 먼저). 워커는 별도 프로세스라 편집기의 히스토리 스택을 못 본다 —
+   * `list_edit_history` 가 이 목록을 답하고, `revert_last_edit` 는 초안을 건드리지 않고 되돌림을 요청만 한다(편집기가 끝에 실행).
+   */
+  readonly editHistory?: readonly {
+    readonly label: string;
+    readonly mapId: string | null;
+    readonly steps: number;
+    /** 이 편집이 바꾼 것(맵별 타일 칸 좌표·이벤트 id). 가까운 몇 건만 채운다. */
+    readonly changes?: readonly {
+      readonly mapId: string;
+      readonly tileCells: readonly { readonly x: number; readonly y: number; readonly layer: "lower" | "upper" }[];
+      readonly tileCellCount: number;
+      readonly eventsAdded: readonly string[];
+      readonly eventsRemoved: readonly string[];
+      readonly eventsChanged: readonly string[];
+    }[];
+  }[];
   readonly project: Project;
   /** 기본 시스템 프롬프트를 대체한다(테스트·CLI 용). */
   readonly systemPrompt?: readonly string[];

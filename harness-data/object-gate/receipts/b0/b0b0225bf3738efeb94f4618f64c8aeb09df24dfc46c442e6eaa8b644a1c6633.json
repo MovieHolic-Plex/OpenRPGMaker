@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b0b0225bf3738efeb94f4618f64c8aeb09df24dfc46c442e6eaa8b644a1c6633",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "이끼 덮인 바위",
+ "label": "gothic_manor/gm-rock-moss",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "moss-covered boulder",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The boulder has an upward-facing lit top facet spanning rows 3-10 with moss patches, transitioning into a front/lower shadowed face extending down to row 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4993
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "moss-covered rock / boulder",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock displays a well-defined illuminated top surface spanning rows 3-10 with moss patches, transitioning into a shaded south-facing front slope down to row 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5286
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "moss-covered rock",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The boulder shows a clearly defined upper/top surface from rows 3 to 10 with moss accents and highlights, sloping down into the southern face and shadowed lower body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5233
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "moss-covered rock boulder",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The boulder features a clearly defined, illuminated upper surface with moss patches across rows 3-12, transitioning down into darker front-facing shadowed rock surfaces below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6017
+  }
+ ],
+ "decidedAt": "2026-10-13T16:24:27.173Z",
+ "cells": {
+  "16": [
+   "40f64f34232dff32",
+   "7ea762f11fc7eb57",
+   "9d9f0bf17d256c3d",
+   "c96155aaddf28279"
+  ],
+  "24": [
+   "003024ea357f74e6",
+   "0a35ba847ef2b7c6",
+   "1b550865f547356d",
+   "23f180e80d05b847",
+   "4581f40e442a9590",
+   "5150f4509741fa08",
+   "5c18c66a5b88fa07",
+   "739dcc0c6dbf2839",
+   "8e9a73f86d3f6880",
+   "923a30a9fd8cb549",
+   "94127cc9eb86d2a0",
+   "a1ab8da5e0fc44b6",
+   "ad3e3ad752be53b4",
+   "ae33ade897d509a8",
+   "b1378df9a3c04c4b",
+   "b3fcb94c72ccd8bd",
+   "b4ea8932f2b3c209",
+   "c5baf85c340ce294",
+   "e72d877e653912ee",
+   "f28feb3dea2b1720",
+   "faed2126e1df8a03",
+   "fd3a7018fa183089",
+   "ffcfd934768e3d5d",
+   "ffee4dfd3a76965a"
+  ],
+  "32": [
+   "fa5a89c5b8cf1c32"
+  ],
+  "48": [
+   "151aa0836b3b63e4",
+   "2b3f0b67cd5e9979",
+   "4e283c00805401d1",
+   "63b7de611374580a",
+   "65963aa48e0559fd",
+   "eae94498758a55ea"
+  ]
+ }
+}

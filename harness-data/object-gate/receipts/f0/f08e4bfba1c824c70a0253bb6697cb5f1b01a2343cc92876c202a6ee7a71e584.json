@@ -1,0 +1,148 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f08e4bfba1c824c70a0253bb6697cb5f1b01a2343cc92876c202a6ee7a71e584",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "녹슨 쇠 우리",
+ "label": "gothic_manor/gm-cage",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron cage",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cage is rendered in pure front elevation: all horizontal crossbeams (rows 11, 20-21, 29-31) are completely flat horizontal lines without visible top surfaces, and the inside has no visible floor depth. The arched top (rows 0-10) is also drawn flat from the front as in an architectural elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7415
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron cage",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface/roof plate of the cage is visible from above across rows 0–10 (11 pixels tall), showing surface seams and bolted reinforcement straps. The front face with vertical bars and crossbeams extends below from row 11 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11830
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rusty iron cage",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cage is drawn entirely in flat 2D front elevation: the domed roof terminates in a flat 1px edge at row 0 without showing an elliptical or foreshortened top cap, the interior shows no floor depth (bars and objects sit directly on a flat baseline), and the horizontal beams and base have no top surfaces (only 1px horizontal bands).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8140
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron cage frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cage is drawn entirely in a flat front elevation. The horizontal crossbeams at rows 11, 20-21, and the base at rows 29-31 show only 1px edge highlights with no foreshortened top surfaces, and the interior floor/base has no depth visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10558
+  }
+ ],
+ "decidedAt": "2026-10-13T16:52:42.786Z",
+ "cells": {
+  "16": [
+   "3aa09a9ea0faefb9",
+   "d9a96e1199abc1e7",
+   "e902db83719ca733",
+   "f479c7e7add20e0b"
+  ],
+  "24": [
+   "01a06e02ca8b5602",
+   "099d4dea74d7b806",
+   "15156b596be1b06e",
+   "17207be801ffdf13",
+   "26d1658c8ed73ee5",
+   "2eaf2365434adf27",
+   "3696d435ad4134ac",
+   "40609cba049c541c",
+   "4409e54501ea23cf",
+   "51fa4ebc7a24d413",
+   "563421cfc8b184be",
+   "61832bc04aa92382",
+   "67188cbc13c627f8",
+   "6b1a27662f880d58",
+   "90d743fff2e9e8cc",
+   "9b12748e9f147f50",
+   "a075d7911dba718e",
+   "b05e66d8cf5d1a3b",
+   "c473af00972d25ac",
+   "c8fa84d5448788f5",
+   "c93411fb55f7547f",
+   "d4d2b34b622d37e0",
+   "e35a62440a6b3964",
+   "fed2c686fff6ba84"
+  ],
+  "32": [
+   "7a3385789db14f33"
+  ],
+  "48": [
+   "3b2611a9a553d388",
+   "60010cc01c9843ac",
+   "7fba0e58663418c3",
+   "b7848a797f0986fc",
+   "bc6688006a24e78c",
+   "f91f6aba998d2354"
+  ]
+ }
+}

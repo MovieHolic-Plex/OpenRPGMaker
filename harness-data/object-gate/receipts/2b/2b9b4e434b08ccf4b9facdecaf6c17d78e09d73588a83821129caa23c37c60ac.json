@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2b9b4e434b08ccf4b9facdecaf6c17d78e09d73588a83821129caa23c37c60ac",
+ "width": 16,
+ "height": 32,
+ "kind": "flat",
+ "name": "무덤 자리 흙(덧그림)",
+ "label": "gothic_manor/gm-ov-grave-plot",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rectangular patch of grave dirt lying flat on the ground",
+    "kind_matches": true,
+    "top_rows": 26,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat ground decal representing dug/tilled grave earth, viewed top-down across 26 rows without any vertical elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4341
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grave dirt plot decal",
+    "kind_matches": true,
+    "top_rows": 26,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat dirt patch overlay for a grave site, viewed completely from above as a ground decal across rows 3 to 28.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3881
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "patch of grave dirt decal",
+    "kind_matches": true,
+    "top_rows": 26,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat rectangular patch of earth/grave plot designed to lie flat on the ground as an overlay (rows 3 to 28).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4089
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grave dirt patch",
+    "kind_matches": true,
+    "top_rows": 26,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat ground decal depicting a dug/filled grave plot of dirt, seen entirely from above as a ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3550
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.463Z",
+ "cells": {
+  "16": [
+   "1205553a4f54aff8",
+   "6e571f10d4d56505"
+  ],
+  "24": [
+   "03942b42818a1198",
+   "241e6d669d375af4",
+   "3db428c04c0d08f2",
+   "3fc9c7fe4f1697fd",
+   "4048b720625d8e57",
+   "525e2ce518543c7f",
+   "6fc6be822ea1d2e1",
+   "86e70d3142cf20fa",
+   "903cd9ff840e1729",
+   "aa21c083dff8cbc7",
+   "dbf529d5ff994a10",
+   "f27c54c30c4edb3a"
+  ],
+  "32": [
+   "17ee1a850851c286",
+   "30cea4a32ab9fa71",
+   "faffe69c42d37a7d"
+  ],
+  "48": [
+   "1e42d7310979040e",
+   "212408e247c4ae3a",
+   "23986f15518f4771",
+   "69768428a4a5d041",
+   "c52b2dbb58a4a23a",
+   "d06bc7f087bb38bb"
+  ]
+ }
+}

@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "79c0787b54da5cf90502f1653617f4a9965de23301ef9316a6d9be0a6e2b156b",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-lot-slide",
+ "label": "jp_city/street_hand/jp-lot-slide",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "playground slide tower",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire slide tower, platform, and ladder are drawn in completely flat 2D front elevation (side-scroller style) with zero visible top surfaces or depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5444
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "playground slide tower and chute",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure 2D front elevation with perfectly horizontal edges and no foreshortened top surfaces visible on the platform, chute, ladder, or base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5371
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "playground slide structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire slide structure (ladder, upper box/platform, central column/chute, and base) is drawn in pure 2D front/side elevation with perfectly flat horizontal lines and zero visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5788
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "playground slide tower and platform",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure (ladder, blue platform box, and yellow tower/slide) is drawn as a flat 2D front elevation. The blue platform has 0 rows of top surface visible beneath row 3's horizontal outline, and the 2px red strip at the top is merely a flat band/edge. No horizontal top surfaces are shown in 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5559
+  }
+ ],
+ "decidedAt": "2026-10-13T17:30:03.089Z",
+ "cells": {
+  "16": [
+   "3186138c241a695b",
+   "36307ed331d5c01e",
+   "489f7dc3328ceff2",
+   "749b0fda69f9f92b",
+   "9f570c304f1245af",
+   "a2e436bb608fead7"
+  ],
+  "24": [
+   "00c8d5aa0b72a9b4",
+   "09a68a27931c73a5",
+   "40e361ce3bd4f238",
+   "4a2b68256f750a21",
+   "4d51d754cde4d6a7",
+   "5bdb17adc1b38671",
+   "5e1a9464a52dfbdd",
+   "6a663d4180dae61e",
+   "83e45902b091a1fe",
+   "958af5b5fceda7c8",
+   "d18c853084dd2ce2",
+   "f2238d8ebb9f6352"
+  ],
+  "32": [
+   "206c0a012ab692a3",
+   "70f3462c57a878ec",
+   "b060426ea65f7516",
+   "fe4befe4fd305897"
+  ],
+  "48": [
+   "0c261bfb057cd48f",
+   "5212c0ed4d7a32d5",
+   "8066c70b2f46b0e3"
+  ]
+ }
+}

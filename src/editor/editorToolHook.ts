@@ -78,6 +78,8 @@ type RegionTaskHarness = {
   /** 에디터 화면을 해당 맵으로 전환한다(헤드리스 스크린샷용). */
   selectMap: (mapId: MapId) => boolean;
   setSelection: (selection: { mapId: MapId; x: number; y: number; width: number; height: number } | null) => void;
+  /** 이벤트 도구로 이벤트를 고른 상태를 재현한다 — 「이 NPC」「현재 이벤트」가 가리키는 것. */
+  selectEvent: (eventId: string | null, pageId?: string | null) => void;
   readCell: (mapId: MapId, layer: "lower" | "upper", x: number, y: number) => number | null;
   /** 영역 안에서 아직 걸어 들어갈 수 있는 칸 수 — "아예 통행불가능하게" 를 실측할 유일한 창구. */
   passableCount: (mapId: MapId, area: { x: number; y: number; w: number; h: number }) => number | null;
@@ -204,6 +206,7 @@ export function installEditorToolHook(): void {
     currentMapId: () => editorState.get().currentMapId ?? store.getCurrent().startMapId,
     selectMap: (mapId) => selectEditorMap(mapId),
     setSelection: (selection) => editorState.set({ selection: selection ?? null }),
+    selectEvent: (eventId, pageId) => editorState.set({ selectedEventId: eventId, selectedEventPageId: pageId ?? null }),
     readCell: (mapId, layer, x, y) => {
       const map = store.getCurrent().maps[mapId];
       if (!map) return null;

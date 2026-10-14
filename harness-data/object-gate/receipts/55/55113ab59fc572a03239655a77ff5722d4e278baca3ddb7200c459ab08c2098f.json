@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "55113ab59fc572a03239655a77ff5722d4e278baca3ddb7200c459ab08c2098f",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "받침 위 돌 항아리(장례 항아리)",
+ "label": "gothic_manor/gm-urn",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone funerary jar resting on a square stone plinth",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The jar's top opening is clearly visible from above as an ellipse spanning rows 2-5 showing dark interior and green contents, and the plinth below also features a 5-row top surface (rows 18-22).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7303
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone urn on pedestal",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The urn features a clearly visible elliptical opening (rows 2-5, 4 rows deep) showing inside contents from above, and the pedestal below shows both a top surface (rows 17-22, 6 rows) and south front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4639
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone funerary jar on pedestal",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The jar features a clear elliptical opening viewed from above (rows 2-5, 4 rows deep) showing dark contents with green markings, as well as a 5-row visible top surface on the plinth (rows 18-22).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5043
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone urn on pedestal",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The urn features a clearly foreshortened elliptical opening spanning rows 2 to 5 with dark interior and green liquid/contents visible, surrounded by a distinct rim. The pedestal below also shows a 6-row visible top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3600
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:15.453Z",
+ "cells": {
+  "16": [
+   "21c3a615dc650ed7",
+   "d2186a9990df7667"
+  ],
+  "24": [
+   "0885c56ba9930eed",
+   "140e263b21aa4405",
+   "37b50afef36ded08",
+   "3ca65d99c477054a",
+   "583edead365ec87d",
+   "5d565ac11c439297",
+   "991f2232678bd298",
+   "a8c173b4a69f9902",
+   "bdba6aa1f6391e21",
+   "c6750b48782feb45",
+   "c6d3b37057c74722",
+   "f75e4e0e903288b5"
+  ],
+  "32": [
+   "29fc28b77376db13",
+   "508197acd5432821",
+   "efc713b8fcb47e45"
+  ],
+  "48": [
+   "127400bafbf50a14",
+   "611efdc7103ec00e",
+   "87b68c31a538c633",
+   "9ed0ad8f9471d2a1",
+   "b11c4d2f60c915eb",
+   "ed8279391f255204"
+  ]
+ }
+}

@@ -128,7 +128,11 @@
     "sw_gen2_bridge_relay",
     "sw_gen2_moon_relay",
     "sw_gen2_seal_relay",
-    "sw_gen2_sun_relay"
+    "sw_gen2_sun_relay",
+    "switch_shared_relay_earth",
+    "switch_shared_relay_moon",
+    "switch_shared_relay_sun",
+    "switch_shared_relay_tide"
    ],
    "event-condition-switch-value": [
     "true",
@@ -145,7 +149,7 @@
    "div": 14,
    "input": 1,
    "label": 4,
-   "option": 68,
+   "option": 72,
    "p": 3,
    "section": 2,
    "select": 3,
@@ -4778,7 +4782,11 @@
     "sw_gen2_bridge_relay",
     "sw_gen2_moon_relay",
     "sw_gen2_seal_relay",
-    "sw_gen2_sun_relay"
+    "sw_gen2_sun_relay",
+    "switch_shared_relay_earth",
+    "switch_shared_relay_moon",
+    "switch_shared_relay_sun",
+    "switch_shared_relay_tide"
    ],
    "event-condition-switch-value": [
     "true",
@@ -4797,7 +4805,7 @@
    "div": 19,
    "input": 1,
    "label": 5,
-   "option": 102,
+   "option": 106,
    "p": 5,
    "section": 2,
    "select": 4,
@@ -5022,7 +5030,11 @@
     "sw_gen2_bridge_relay",
     "sw_gen2_moon_relay",
     "sw_gen2_seal_relay",
-    "sw_gen2_sun_relay"
+    "sw_gen2_sun_relay",
+    "switch_shared_relay_earth",
+    "switch_shared_relay_moon",
+    "switch_shared_relay_sun",
+    "switch_shared_relay_tide"
    ],
    "event-condition-switch-value": [
     "true",
@@ -5041,7 +5053,7 @@
    "div": 19,
    "input": 1,
    "label": 5,
-   "option": 102,
+   "option": 106,
    "p": 5,
    "section": 2,
    "select": 4,
@@ -5257,7 +5269,11 @@
     "sw_gen2_bridge_relay",
     "sw_gen2_moon_relay",
     "sw_gen2_seal_relay",
-    "sw_gen2_sun_relay"
+    "sw_gen2_sun_relay",
+    "switch_shared_relay_earth",
+    "switch_shared_relay_moon",
+    "switch_shared_relay_sun",
+    "switch_shared_relay_tide"
    ],
    "event-condition-switch-value": [
     "true",
@@ -5274,7 +5290,7 @@
    "div": 17,
    "input": 1,
    "label": 5,
-   "option": 102,
+   "option": 106,
    "p": 4,
    "section": 2,
    "select": 4,
@@ -5544,7 +5560,11 @@
     "sw_gen2_bridge_relay",
     "sw_gen2_moon_relay",
     "sw_gen2_seal_relay",
-    "sw_gen2_sun_relay"
+    "sw_gen2_sun_relay",
+    "switch_shared_relay_earth",
+    "switch_shared_relay_moon",
+    "switch_shared_relay_sun",
+    "switch_shared_relay_tide"
    ],
    "event-condition-switch-value": [
     "true",
@@ -5596,7 +5616,7 @@
    "div": 23,
    "input": 2,
    "label": 9,
-   "option": 163,
+   "option": 167,
    "p": 7,
    "section": 2,
    "select": 7,
@@ -5882,7 +5902,11 @@
     "sw_gen2_bridge_relay",
     "sw_gen2_moon_relay",
     "sw_gen2_seal_relay",
-    "sw_gen2_sun_relay"
+    "sw_gen2_sun_relay",
+    "switch_shared_relay_earth",
+    "switch_shared_relay_moon",
+    "switch_shared_relay_sun",
+    "switch_shared_relay_tide"
    ],
    "event-condition-switch-value": [
     "true",
@@ -5903,7 +5927,7 @@
    "div": 23,
    "input": 2,
    "label": 8,
-   "option": 142,
+   "option": 146,
    "p": 6,
    "section": 2,
    "select": 6,
@@ -6282,7 +6306,11 @@
     "sw_gen2_bridge_relay",
     "sw_gen2_moon_relay",
     "sw_gen2_seal_relay",
-    "sw_gen2_sun_relay"
+    "sw_gen2_sun_relay",
+    "switch_shared_relay_earth",
+    "switch_shared_relay_moon",
+    "switch_shared_relay_sun",
+    "switch_shared_relay_tide"
    ],
    "event-condition-switch-value": [
     "true",
@@ -6337,7 +6365,7 @@
    "img": 1,
    "input": 2,
    "label": 13,
-   "option": 237,
+   "option": 241,
    "p": 11,
    "section": 2,
    "select": 11,
@@ -6671,7 +6699,11 @@
     "sw_gen2_bridge_relay",
     "sw_gen2_moon_relay",
     "sw_gen2_seal_relay",
-    "sw_gen2_sun_relay"
+    "sw_gen2_sun_relay",
+    "switch_shared_relay_earth",
+    "switch_shared_relay_moon",
+    "switch_shared_relay_sun",
+    "switch_shared_relay_tide"
    ],
    "event-condition-switch-value": [
     "true",
@@ -6692,7 +6724,7 @@
    "div": 26,
    "input": 2,
    "label": 9,
-   "option": 176,
+   "option": 180,
    "p": 7,
    "section": 2,
    "select": 7,
@@ -7675,7 +7707,11 @@
     "sw_gen2_bridge_relay",
     "sw_gen2_moon_relay",
     "sw_gen2_seal_relay",
-    "sw_gen2_sun_relay"
+    "sw_gen2_sun_relay",
+    "switch_shared_relay_earth",
+    "switch_shared_relay_moon",
+    "switch_shared_relay_sun",
+    "switch_shared_relay_tide"
    ],
    "event-command-switch-value": [
     "true",
@@ -7692,7 +7728,7 @@
    "button": 2,
    "div": 5,
    "label": 2,
-   "option": 57,
+   "option": 61,
    "p": 1,
    "select": 3,
    "span": 4
@@ -7805,7 +7841,11 @@
     "sw_gen2_bridge_relay",
     "sw_gen2_moon_relay",
     "sw_gen2_seal_relay",
-    "sw_gen2_sun_relay"
+    "sw_gen2_sun_relay",
+    "switch_shared_relay_earth",
+    "switch_shared_relay_moon",
+    "switch_shared_relay_sun",
+    "switch_shared_relay_tide"
    ],
    "event-command-switch-value": [
     "true",
@@ -7822,7 +7862,7 @@
    "button": 2,
    "div": 5,
    "label": 2,
-   "option": 57,
+   "option": 61,
    "p": 1,
    "select": 3,
    "span": 4
@@ -7936,7 +7976,11 @@
     "sw_gen2_bridge_relay",
     "sw_gen2_moon_relay",
     "sw_gen2_seal_relay",
-    "sw_gen2_sun_relay"
+    "sw_gen2_sun_relay",
+    "switch_shared_relay_earth",
+    "switch_shared_relay_moon",
+    "switch_shared_relay_sun",
+    "switch_shared_relay_tide"
    ],
    "event-command-switch-value": [
     "true",
@@ -7952,7 +7996,7 @@
    "button": 2,
    "div": 5,
    "label": 2,
-   "option": 57,
+   "option": 61,
    "p": 1,
    "select": 3,
    "span": 4
@@ -10462,9 +10506,9 @@
   },
   "labels": [
    "×스킬 선택비우기",
-   "검검격MP 0 · 위력 22 · 적 1명",
+   "검검격MP 0 · 위력 67 · 적 1명",
    "공공격MP 0 · 위력 10 · 적 1명",
-   "마마법탄MP 4 · 위력 28 · 적 1명",
+   "마마법탄MP 4 · 위력 73 · 적 1명",
    "배우기",
    "잊기",
    "주인공",
@@ -10627,9 +10671,9 @@
   },
   "labels": [
    "×스킬 선택비우기",
-   "검검격MP 0 · 위력 22 · 적 1명",
+   "검검격MP 0 · 위력 67 · 적 1명",
    "공공격MP 0 · 위력 10 · 적 1명",
-   "마마법탄MP 4 · 위력 28 · 적 1명",
+   "마마법탄MP 4 · 위력 73 · 적 1명",
    "배우기",
    "잊기",
    "주인공",

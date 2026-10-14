@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "77db41ff9018f5db9ba2eefbedae3c85e131b9adb92ac0bcf4941e85e31261fe",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "흄 후드 실험장(윗면 배기 덕트 + 유리 가림창 속 기구 + 아래 수납)",
+ "label": "sf-station/sf-fume-hood",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fume hood laboratory cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main fume hood cabinet is drawn in flat front elevation with no visible top surface foreshortened from above (top_rows: 0). The sash chamber, shelves, and lower cabinet doors are all viewed straight-on.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5675
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fume hood lab station",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire main body is drawn from a flat front view. The upper hood canopy has only a 1px top edge highlight at row 2 with a flat front panel below it, the glass window and instruments are shown straight-on, and the bottom cabinet doors are completely flat front elevation with no visible horizontal surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5224
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fume hood laboratory unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fume hood unit (upper panel, glass sash interior, and bottom cabinet) is drawn from a straight-on front elevation. The top of the cabinet has no foreshortened horizontal surface (only a 1px edge highlight under row 1 outline), and the counter inside the sash is a flat 1-2px horizontal band with no visible depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4673
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fume hood laboratory cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fume hood is drawn in flat 2D front elevation. The main body has no visible top surface (0 rows), transitioning directly from the top outline at row 2 into the vertical upper front face (rows 3-7), sash opening, and cabinet doors below.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6000
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.952Z",
+ "cells": {
+  "16": [
+   "0cc029a403018b80",
+   "35a94526bf292f1d",
+   "af14baba9625e7e8",
+   "fa3a9feb50d45087"
+  ],
+  "24": [
+   "03025495dba4160f",
+   "0a8a5987b0000d51",
+   "0c499fc404f6e782",
+   "16c940bc5e1285e1",
+   "191f9d3e6c406e9d",
+   "368bfd54bd4f2428",
+   "40fd2580697503b8",
+   "479487eca3444c49",
+   "48da413db29e4c73",
+   "54e0ea8d0241dc56",
+   "5d243a91c5207455",
+   "78f9a6cccacfd879",
+   "81cea9893b6f30ac",
+   "9d042e0b97329f53",
+   "b55398fdeffc9be8",
+   "be3278e9f376f21d",
+   "ce00f28af9b1161a",
+   "ce4ec824ad775fb8",
+   "cff5923d76a19f62",
+   "df05ab3cf9bd11f0",
+   "e4ba85bf118d983f",
+   "e80bc9d116fc23d4",
+   "f1d6af659a179831",
+   "f883c065a1bb272b"
+  ],
+  "32": [
+   "1700133f80e3a6e3"
+  ],
+  "48": [
+   "108a3c843f79f4b2",
+   "2595f836a8edcb1c",
+   "3a72a7c161f11443",
+   "6ca020504d7c752c",
+   "a3428b524ab8ce4f",
+   "e9bb3cb9e6eeece3"
+  ]
+ }
+}

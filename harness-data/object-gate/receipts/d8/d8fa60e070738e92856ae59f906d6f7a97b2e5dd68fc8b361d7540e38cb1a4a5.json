@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d8fa60e070738e92856ae59f906d6f7a97b2e5dd68fc8b361d7540e38cb1a4a5",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "까마귀가 앉은 부러진 돌기둥",
+ "label": "gothic_manor/gm-crow-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "broken stone pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The broken top end of the pillar (rows 11-14) is drawn purely as a flat jagged 2D outline silhouette in front elevation with no visible fractured top surface or cross-section seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4997
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "broken stone pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The broken top of the pillar is drawn as a flat, 2D jagged silhouette without any foreshortened cross-section or cut-face visible from above. Although the base plinth shows a top step, the main broken column top is a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5372
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "broken stone pillar shaft",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The broken top end of the column shaft is drawn as a flat jagged silhouette line in pure front elevation without any visible foreshortened top surface or cut face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4018
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "broken stone pillar shaft",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The broken top of the pillar is drawn as a flat front-facing jagged silhouette with no visible cross-section or top surface (0 rows). The crow perches directly on a 1px outline profile, making the main shaft a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5583
+  }
+ ],
+ "decidedAt": "2026-10-13T16:24:27.172Z",
+ "cells": {
+  "16": [
+   "c8c8d75496163bf9",
+   "df4933632dc5ea8a"
+  ],
+  "24": [
+   "01dfb42bda17562e",
+   "114fb3f5a88637b0",
+   "123c6f22113d177c",
+   "24ae85912fcb6347",
+   "6d1cd0af7abe2910",
+   "8065cb77dfab1c61",
+   "add8f96938b72e82",
+   "b3a428ddbc90fbf4",
+   "c709590a0937879d",
+   "d60cd16ed27c1b7a",
+   "da0b77509050be22",
+   "fcedd7ad20d65700"
+  ],
+  "32": [
+   "803cb2d566c2351f",
+   "9fc144322193ba43",
+   "e1972ccc93b47d70"
+  ],
+  "48": [
+   "05c43c05204ba511",
+   "1c8e48f162acbea8",
+   "6370f6dca62e0e77",
+   "c13544d8e3eace21",
+   "f3d18a9e7b55318c",
+   "f6acce04b9fcd167"
+  ]
+ }
+}

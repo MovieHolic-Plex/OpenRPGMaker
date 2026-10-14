@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "747fb408412bd3c52601e0f34b849ac2940e8753483bfa626819db0daf7c7f76",
+ "width": 64,
+ "height": 48,
+ "kind": "flat",
+ "name": "착륙장 바닥(둥근 위험 고리와 사각 표적이 칠해진 판)",
+ "label": "sf-station/sf-landing-pad",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "landing pad floor marking",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor marking with an elliptical hazard ring and square target lying flat on the ground plane, occupying rows 4 to 43 in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6546
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "landing pad floor decal with hazard ring and target",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat floor decal lying entirely on the ground plane, viewed from above with no vertical front elevation or isometric side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7633
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "landing pad floor decal",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat floor decal/pad marked with a hazard ring and target, lying flat on the floor surface across rows 4-43.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5092
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "landing pad floor decal with hazard ring and central square target",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The landing pad lies completely flat on the floor tiles, correctly drawn from a top-down 3/4 perspective with an elliptical foreshortened hazard stripe ring spanning rows 4 to 43.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5822
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:27.306Z",
+ "cells": {
+  "16": [
+   "0cba7b7ee8909584",
+   "10ac06461724399a",
+   "19b549d32f23abfb",
+   "2a24478a5659e0d8",
+   "3f61fc4f59708d3a",
+   "4898e71cf6a44c53",
+   "4a3953e00e89738a",
+   "52028753d0ebd638",
+   "6d6d8caafd44d463",
+   "a91cda517765feaf",
+   "c36160f5d2450f84",
+   "e61933819effb444"
+  ],
+  "24": [
+   "0508b3e7cf49f12a",
+   "0608e387ceb532a6",
+   "0c676568644f538a",
+   "1216abb179c23495",
+   "12f10d903ec73e35",
+   "20cd8b4ed2f0bcd2",
+   "3af9c095cdf730ab",
+   "4d8da7dfa129f7aa",
+   "76cd71d11f60a715",
+   "78ea52d30aba934d",
+   "861b422a661e0e80",
+   "8c1ad1e46e0fadb3",
+   "8fce3dbe37d3b1db",
+   "c87b721c8668b284",
+   "ce2558eb577fad38",
+   "e73f99985c330d48",
+   "ea06e603eb21c27c",
+   "f2afbf6b8332bcac"
+  ],
+  "32": [
+   "560de2a839ef931e",
+   "64a875ee6e872aec",
+   "7e3d84c9ff5351cd",
+   "8f0536bdf99df2d1",
+   "bc289bb20b5cb5da",
+   "c8952f83d909ff9e",
+   "d2b60c184834637e",
+   "ff1a4052a20835cc"
+  ],
+  "48": [
+   "2c5f0d09671709e7",
+   "8d94e109aa5eacca",
+   "9da917d33c97f543",
+   "de4df68b6111e56e",
+   "e573e6e99a573838",
+   "fe0d12d71b2958fb"
+  ]
+ }
+}

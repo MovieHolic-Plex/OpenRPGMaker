@@ -1,0 +1,123 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "898c62040018c9b765de259566bf8529bc7de3e347712adc972f1c5bf41c230e",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "호버 포드(사다리꼴 지붕 윗면 + 유리 돔 캐노피 + 지붕 짐 받침대 + 짧은 옆판 + 밑 추진 빛 + 그림자)",
+ "label": "sf-station/sf-pod-car",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hover pod body",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The trapezoidal roof surface of the pod is visible across rows 2–14 (around 12 pixel rows tall), bearing a luggage rack at the top back and a glass dome canopy with a cast shadow on its surface. The vertical front face with the cyan light bar occupies rows 15–24.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8905
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hover pod body",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hover pod features a distinct trapezoidal top/roof surface extending across rows 2-14 upon which the glass dome canopy rests, meeting the vertical front panel and bumper below row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6875
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hover pod body with glass dome canopy",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hover pod displays a clear foreshortened top roof deck/hood surface (rows 2–14) upon which the glass dome canopy sits, clearly distinguished from the vertical front face/bumper below row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8070
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hover pod body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pod is drawn in pure front elevation: the lower bumper/grille with cyan strip (rows 20-21), cabin with glass dome canopy (rows 6-14), and roof rack (rows 0-3) are stacked vertically as in a 2D side/front architectural view. The canopy dome has a flat horizontal baseline (row 14) rather than an elliptical foreshortened footprint, and no horizontal top surfaces of the pod body are foreshortened from the 3/4 overhead perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8730
+  }
+ ],
+ "decidedAt": "2026-10-13T16:16:06.846Z",
+ "cells": {
+  "16": [
+   "42249e37e09b0f93",
+   "4684269ca24bcf3f",
+   "53b2cf8c3c98f716",
+   "a6419bc67c376b4d",
+   "d706cf85c107d7ae",
+   "f8fcdcb42f8364ad"
+  ],
+  "24": [
+   "21a0675cdd4b380d",
+   "5cc771e3da7e63dd",
+   "68ae5aaa14182866",
+   "7946f1bacea7cb54",
+   "a400686637348f4e",
+   "c94957ceec0df4f5",
+   "e812a8a51a68bf74",
+   "fd9a3cdd10160f9e"
+  ],
+  "32": [
+   "41276c0402a41d71",
+   "490da9709dcd7e30",
+   "59ba2d7777c945e5",
+   "5c9c3da46ccd27d4",
+   "909b0b3ecb33c383",
+   "95ccb06f9b30b327"
+  ],
+  "48": [
+   "3cf21d8d7d878d28",
+   "cc691549312ef42e"
+  ]
+ }
+}

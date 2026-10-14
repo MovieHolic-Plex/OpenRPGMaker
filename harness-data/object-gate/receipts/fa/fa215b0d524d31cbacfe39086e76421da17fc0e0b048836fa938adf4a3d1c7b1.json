@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fa215b0d524d31cbacfe39086e76421da17fc0e0b048836fa938adf4a3d1c7b1",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "줄무늬 차단 바리케이드(두꺼운 가로대 윗면 + 위험 사선 앞면 + 다리 + 경광등)",
+ "label": "sf-station/sf-street-barrier-stripe",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 2행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal barricade crossbar",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crossbar top surface consists of only 2 pixel rows (rows 3-4), which functions as a 1-2px cap/edge line rather than a foreshortened 3/4 top surface. The hazard-striped face and legs are drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 4"
+   ],
+   "ms": 6648
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal barricade beam",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main beam is drawn in a flat front elevation. The slate-colored band at rows 3-4 is only a 2px edge/rim rather than a distinct 3/4 foreshortened top surface, violating the requirement that a 1-2px line where the top should be fails as a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6544
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal barricade crossbar",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crossbar's top surface consists of only 2 pixel rows (rows 3-4) above the striped front face, which functions as a 1-2px rim/highlight rather than a foreshortened top surface in 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 4"
+   ],
+   "ms": 6299
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal barricade crossbar",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the barricade bar spans only 2 pixel rows (rows 3-4), which functions merely as a top edge/rim rather than a distinct 3/4 perspective top surface. The hazard-striped front face dominates in a flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 4"
+   ],
+   "ms": 4908
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:31.924Z",
+ "cells": {
+  "16": [
+   "12fa33b36f300995",
+   "434ef70ecd618228"
+  ],
+  "24": [
+   "320a51b37f74cf64",
+   "4f5a858590be8052",
+   "5b145259f2d767f9",
+   "67242562e4568630",
+   "7c4de38eeffdcfff",
+   "84231f5b59b29e20",
+   "919d7af7923988bd",
+   "c0bcf1f73cf1f399",
+   "d8bc0c846983d2db",
+   "e862e82e534274db",
+   "ea4677b926f575fe",
+   "f007fee49fb36f30"
+  ],
+  "32": [
+   "0bb1620ca6580ab8",
+   "deea7aa10bf36fa4"
+  ],
+  "48": [
+   "0bc82f49f44317ef",
+   "663bc6d530f30e62",
+   "786ab7a342ac7ddf",
+   "934f1b3794131ba2",
+   "bf79312b05800135",
+   "cd21b1fce60b7382"
+  ]
+ }
+}

@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "20ad05787077de01b3ffec2c119b6fee07b3f506858c1943499b81f830eecaee",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "부서진 묘비(그루터기 + 쓰러진 조각)",
+ "label": "gothic_manor/gm-tomb-broken",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "broken gravestone stump with fallen piece",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The upright broken gravestone is drawn in pure 2D front elevation with jagged vertical spikes at the top (rows 1-3) and no horizontal cross-section / break plane visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6073
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "broken tombstone stump",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The broken top of the standing tombstone is drawn purely as a jagged 2D silhouette outline (rows 0-2) with no foreshortened horizontal fracture surface visible from above. The entire pillar is rendered in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6369
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "broken gravestone / stele stump",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The standing broken pillar/stele has its jagged broken top drawn as a 2D silhouette at rows 1-3 with no visible horizontal broken cross-section/top surface viewed from above. The entire pillar from row 1 down to row 10 is rendered as a flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6061
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "broken tombstone stump",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The broken top of the standing stone is drawn as a flat, 2D jagged silhouette with no foreshortened top fracture surface visible from above. The entire object is rendered in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6817
+  }
+ ],
+ "decidedAt": "2026-10-13T16:24:27.172Z",
+ "cells": {
+  "16": [
+   "78ec9f54fd6cbd4a"
+  ],
+  "24": [
+   "3de2b1927e42a836",
+   "54f2c8ff714ea796",
+   "9489134070df5976",
+   "c723e53e98b8a6d5",
+   "ca5095d7d9cb3b8a",
+   "f61af1bf6bf8e6e6"
+  ],
+  "32": [
+   "0fe125b69e03a682",
+   "3de14977d39a5266",
+   "3dfe605a2367c23d",
+   "b52fdd8fc81bcc47",
+   "c2a283a97ba7cb11",
+   "f60e3f6fafbbcef2"
+  ],
+  "48": [
+   "43d6b1905ee8d5a0",
+   "47122cec28b389f6",
+   "6a13368365955814",
+   "a4d4d79b73eb7464",
+   "a6846f513812e9fc",
+   "abf516fe34b38aeb"
+  ]
+ }
+}

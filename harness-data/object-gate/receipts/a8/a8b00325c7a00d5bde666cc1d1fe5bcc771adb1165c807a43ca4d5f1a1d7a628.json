@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a8b00325c7a00d5bde666cc1d1fe5bcc771adb1165c807a43ca4d5f1a1d7a628",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "white ceramic laboratory floor tiles with grout lines, two variants",
+ "label": "sf-station/sf-lab-floor",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles viewed top-down with grout lines, covering the surface properly as ground terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4501
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ceramic floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid floor terrain tiles showing horizontal floor surface with grout lines across the entire 16x16 grid.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4175
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles viewed from above with visible grout lines spanning the full 16-row height.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5658
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ceramic floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles viewed from above with grout lines, perfectly matching top-down floor terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3153
+  }
+ ],
+ "decidedAt": "2026-10-13T15:26:41.508Z",
+ "cells": {
+  "16": [
+   "42d9c74f64bcc1f7",
+   "7a87d853d4a267e4"
+  ],
+  "24": [
+   "2c3de3c35a1439a9",
+   "3420b8f1f619e511",
+   "62f0dfc88d891d23",
+   "77dddd0b791c6792",
+   "9226640687106829",
+   "9f2524d525d800d8",
+   "9f5d830437b1c48d",
+   "a5bf4e1793427ced",
+   "ab9b48befd14e8f5",
+   "ac82ab3bd5313bf1",
+   "bdde998623f02c98",
+   "d0f624eb239ded51"
+  ],
+  "32": [
+   "31bc3e0a6e63e233",
+   "bf71cce71b2a4820"
+  ],
+  "48": [
+   "29a3eb9ea01d82fa",
+   "35e55421834f12e7",
+   "3900d6ab956f2441",
+   "976750eec4fcb7de",
+   "b04066448aab0f28",
+   "d8996780f5d1e156"
+  ]
+ }
+}

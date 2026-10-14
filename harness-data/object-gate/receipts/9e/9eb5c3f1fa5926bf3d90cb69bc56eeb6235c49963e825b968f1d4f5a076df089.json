@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9eb5c3f1fa5926bf3d90cb69bc56eeb6235c49963e825b968f1d4f5a076df089",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "배관 다발(굵은 구리관 셋 + 흰 밸브 바퀴 + 받침 상자)",
+ "label": "sf-station/sf-pipe-cluster",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bundle of three copper pipes on a base box",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top ends of the three pipes show foreshortened openings/cut faces across rows 0-3 (with visible 2-row dark interior openings), and the supporting base box shows a clear 3-row top surface at rows 23-25 above its front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7850
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "three vertical copper pipes mounted on a base box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pipes and base box are drawn in pure front elevation with straight horizontal bands and no foreshortened top surface showing the pipe cut faces or the top plane of the base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7072
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bundle of three copper pipes on a base box with a valve",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pipes and brackets are drawn in pure front elevation without foreshortened top surfaces. The pipe tops at rows 1-3 have flat 1-2px dark marks rather than true elliptical openings or top surfaces, the brackets and base box top are just flat 1-2px horizontal bands, and the valve wheel is a flat circular front-facing disc.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6993
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bundle of copper pipes on a base box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pipes and base box are drawn in pure front elevation with straight horizontal bands (rows 7-8, 16-17, 23-24) and no visible top surface or elliptical openings at the top.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7509
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.954Z",
+ "cells": {
+  "16": [
+   "436276b151667b59",
+   "fe69d83dc73c2b71"
+  ],
+  "24": [
+   "1bb830108cd65389",
+   "3b20ad2aa286beba",
+   "6b7522291443451e",
+   "7c6f175378be8279",
+   "7fbaa2d276a8ac95",
+   "8a58c79d1d2ecf79",
+   "8c06605c3181cd45",
+   "960d2e1d04b4b91f",
+   "a66a62b42a1c29ec",
+   "c922711aea2faa91",
+   "e1329c1e61e13f41",
+   "e36fb9cf168be26c"
+  ],
+  "32": [
+   "1c0a65766d260c11",
+   "74cc46fee19df036",
+   "c532e495a6038b7e"
+  ],
+  "48": [
+   "04072ba179e98a04",
+   "2bcbdf467e71b7ff",
+   "a28b4977569c19b8",
+   "c5493fef8de370da",
+   "ce4a6fc1b8fde72a",
+   "d58944c098f616e1"
+  ]
+ }
+}

@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "91594420e04e3bba83b859c4e892134f9e29e9ca415f3c1ad29ab9b1f909e3e8",
+ "width": 16,
+ "height": 48,
+ "kind": "box",
+ "name": "네온 간판 탑(굵은 기둥 + 간판 상자, 글자 없음)",
+ "label": "sf-station/sf-neon-sign-tower",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "neon sign box on a pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign box is drawn straight-on as a flat front elevation (like in a 2D side-scroller), consisting of a top front panel (rows 14-19), middle neon screen (rows 21-34), and lower panel (rows 35-37) framed vertically. There is no visible top horizontal surface (roof/top face) of the sign box seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 19075
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "neon sign box on a pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign box is drawn entirely in pure front elevation: rows 13-19 represent the upper front frame/casing (symmetrically matching the lower frame at rows 35-39) rather than a foreshortened top surface viewed from above. There is no visible horizontal top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 10539
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sign box on a pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign box and its supporting pillar are drawn in a flat front elevation. The area above the neon display (rows 14-19) is an upper front bezel matching the lower bezel (rows 35-37), bounded by vertical side frame rails, with no receding top surface depicted.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 7448
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sign box on a pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign box is drawn entirely in pure front elevation. The continuous vertical side borders from row 14 down to row 38 confirm the entire box is a south-facing front facade with a central screen, terminating at row 13 with only a flat outline and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 10185
+  }
+ ],
+ "decidedAt": "2026-10-13T15:13:19.239Z",
+ "cells": {
+  "16": [
+   "0493b3e2341a44d7",
+   "5b968c0f4cf7c3e7",
+   "847b683de2c184e7"
+  ],
+  "24": [
+   "0eaa542c17aeac7e",
+   "c17c36789b3f3d11",
+   "c1d9a58cb44648a4",
+   "c78365d7d1a16fc8",
+   "db9235d61f357407",
+   "e888039ef59879b0"
+  ],
+  "32": [
+   "414078b36def22a1",
+   "4bdc55b3fad445ea",
+   "4de646647644515d",
+   "50d57bfdf296c31d",
+   "5feb415072e428d2",
+   "61db7dddc4dcbe29",
+   "6811c2ab217c5076",
+   "8a51c3fd37ab4e9b",
+   "a5d2e28b00380e35",
+   "d1bbbcd359019b28",
+   "efb111726fdc213c",
+   "efb49a2aa15c34b1"
+  ],
+  "48": [
+   "0dfcb626436d6ef9",
+   "b06f2f8e1c4e1b40",
+   "ea8de40809f815b3"
+  ]
+ }
+}

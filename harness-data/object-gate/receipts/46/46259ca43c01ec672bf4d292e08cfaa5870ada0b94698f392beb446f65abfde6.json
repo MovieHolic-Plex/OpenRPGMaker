@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "46259ca43c01ec672bf4d292e08cfaa5870ada0b94698f392beb446f65abfde6",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-lot-slide",
+ "label": "jp_city/street_hand/jp-lot-slide",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "playground slide tower and chute",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire slide structure is drawn in flat side-scroller / 2D elevation rather than 3/4 top-down perspective. The ladder rungs, platform fascia, posts, and yellow slide chute show no foreshortened top surfaces or interior trough from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7970
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "playground slide tower and chute",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire slide structure is drawn in a flat 2D side-scroller / front elevation style. The tower platform, ladder rungs, railings, and diagonal slide chute show no horizontal surfaces seen from above (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4548
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "playground slide tower and chute",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The slide and tower are drawn entirely in a flat 2D platformer/side elevation view. The ladder rungs, top railing, platform, and slide chute show no top-down 3/4 perspective depth (top surface is 0px).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4918
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "playground slide tower and chute",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire slide structure is drawn in flat 2D side/front elevation (side-scroller style). The platform has no top surface (only a 2px strip at rows 8-9), the ladder rungs and support posts have no visible depth, and the slide chute shows a purely side-profile silhouette rather than an angled 3/4 view looking down into the chute bed.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6551
+  }
+ ],
+ "decidedAt": "2026-10-13T17:27:07.784Z",
+ "cells": {
+  "16": [
+   "2e5cd7e8295a164e",
+   "aa9747040ec8089f",
+   "ab2bcb40ef6cca54",
+   "bfdf149bdd1dd790",
+   "e24b81eb98204b80",
+   "ec87e712fe8efa50",
+   "f16dca8ec2e8c36c",
+   "f62970955fdfc345"
+  ],
+  "24": [
+   "66b739bdb34ffb80",
+   "7cc241f57bbf23a3",
+   "cbafb8e7b9ac7620",
+   "fe1d7663021af194"
+  ],
+  "32": [
+   "0b5cc95a87e3fbe6",
+   "27f33cdee4dd3982",
+   "2c74687c68e7dc6c",
+   "4c60ac781631e89c",
+   "4f3b413edbbf673c",
+   "51265c977f93f38d",
+   "6a07276b95ff0454",
+   "6bcaf7a832958895",
+   "72fef3ecba5785f8",
+   "7cc05a58ce8c74bb",
+   "864759465fa6cd92",
+   "8efda92d8a463671",
+   "90a020aee811dfad",
+   "978d48abb5bb687b",
+   "9b0238958c4454b0",
+   "aa404bd5042af14c",
+   "bcf71e98c742b0d3",
+   "cc6e6cb3d30b2857",
+   "ce4ca5fb9cd6d5d5",
+   "d5013c72d0f3d69d",
+   "e0cdf834593cceb1",
+   "f60a284841a38be6"
+  ],
+  "48": [
+   "5bb114cee43a15ec"
+  ]
+ }
+}
