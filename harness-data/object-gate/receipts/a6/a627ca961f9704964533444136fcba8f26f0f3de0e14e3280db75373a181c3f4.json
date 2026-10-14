@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a627ca961f9704964533444136fcba8f26f0f3de0e14e3280db75373a181c3f4",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "물가 돌 축대(북서쪽 뭍)",
+ "label": "sengoku-edo/se-water-nw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone embankment and water terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid top-down 3/4 JRPG terrain tile showing stone bank ground, edge railing/barrier, and water surface seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8284
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone embankment and water terrain tile",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a top-down terrain piece showing a paved stone edge/revetment with railing at the north/west and an open water surface spanning 11 rows to the south-east.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7418
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone embankment and water terrain tile",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid top-down terrain tile showing stone walkway along the top and left edges bordering water.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4143
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water and stone embankment terrain",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting a water body bordered by a stone quay/embankment on the north and west. Terrain surfaces are viewed from above and meet top-down 3/4 map perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5954
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:28.013Z",
+ "cells": {
+  "16": [
+   "3e6a636a44f7335d"
+  ],
+  "24": [
+   "173db65046ad3c61",
+   "328d2e65ad5ed519",
+   "5c958e9f8ac7f504",
+   "775acaed840651ca",
+   "9c4d2f0e6d452224",
+   "ac2b6cb7ce8e0928"
+  ],
+  "32": [
+   "482bb50e6b286742",
+   "5c579dfffbecdc63",
+   "a2b316af56d8e7e0",
+   "ac2125e938fa8cf1",
+   "c9fbb89ed46eccf7",
+   "f737df81291ca75c"
+  ],
+  "48": [
+   "0269b91e477d5e55",
+   "1de3bfe46dff1b55",
+   "31fd77e6f155f640",
+   "42f311e95ae41a2b",
+   "61a6c5453760a9a7",
+   "c5db57eaca4ec3eb"
+  ]
+ }
+}

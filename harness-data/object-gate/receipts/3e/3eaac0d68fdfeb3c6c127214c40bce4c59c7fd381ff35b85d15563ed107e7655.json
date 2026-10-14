@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3eaac0d68fdfeb3c6c127214c40bce4c59c7fd381ff35b85d15563ed107e7655",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "풀밭 가장자리(동쪽 흙길)",
+ "label": "sengoku-edo/se-grass-edge-e",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass to dirt path edge terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ground terrain tile depicting a transition between grass and a dirt path on the east side across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2760
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass terrain edge transitioning to dirt path",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing grass transitioning to a dirt path along the eastern edge, viewed completely from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3255
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass to dirt path terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile showing a transition from grass to a dirt path on the east side.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 16720
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass to dirt path terrain transition",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile showing the eastern edge of a grass field bordering a dirt path, viewed entirely from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3316
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:28.011Z",
+ "cells": {
+  "16": [
+   "29ff81684eeb5696"
+  ],
+  "24": [
+   "169d434065ab488c",
+   "4fc6b9f83464eb5b",
+   "6728f58e8581ea6f",
+   "6b439a0e585474a5",
+   "970d225c82537582",
+   "eb8467267c422779"
+  ],
+  "32": [
+   "0dff0ba0e8029db8",
+   "1d0052b283c2991f",
+   "60e7fe6a75584c20",
+   "687af98c214196a0",
+   "aa7de68191c12e6f",
+   "f10a038162dac80c"
+  ],
+  "48": [
+   "5599d840f3b13698",
+   "598ec9e52ae1c01d",
+   "8949fd5381e6ee4b",
+   "8a7b0ad1696fd6e9",
+   "d2671a4f66f004bb",
+   "d3be76997577c9af"
+  ]
+ }
+}

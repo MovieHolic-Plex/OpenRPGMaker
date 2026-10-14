@@ -342,7 +342,7 @@ def wall_cap(c, x, y, w, h=9, mat='kawara'):
     for i in range(w):
         c.P(x + i, y, 'sumi', 1)
         c.P(x + i, y + 1, mat, 6); c.P(x + i, y + 2, mat, 4); c.P(x + i, y + 3, mat, 2)
-        for k in range(4, h - 2): c.P(x + i, y + k, *_tile_px(mat, x + i, k, 4, course=9))
+        for k in range(4, h - 2): c.P(x + i, y + k, *_tile_px(mat, x + i, k, 4, course=9, vary=False))
         c.P(x + i, y + h - 2, mat, 5 if (x + i) % 4 == 0 else 2)
         c.P(x + i, y + h - 1, 'sumi', 1)
 
@@ -383,9 +383,9 @@ def _(c):
 def _(c):
     for j in range(16):
         c.P(3, j, 'sumi', 1); c.P(12, j, 'sumi', 1)
-        c.P(4, j, 'kawara', 5); c.P(5, j, *_tile_px('kawara', 0, j, 4, course=4))
+        c.P(4, j, 'kawara', 5); c.P(5, j, *_tile_px('kawara', 0, j, 4, course=4, vary=False))
         c.P(6, j, 'kawara', 4); c.P(7, j, 'kawara', 6); c.P(8, j, 'kawara', 5)
-        c.P(9, j, 'kawara', 3); c.P(10, j, *_tile_px('kawara', 2, j, 3, course=4)); c.P(11, j, 'kawara', 2)
+        c.P(9, j, 'kawara', 3); c.P(10, j, *_tile_px('kawara', 2, j, 3, course=4, vary=False)); c.P(11, j, 'kawara', 2)
         c.P(13, j, 'kuro', 1)
 
 

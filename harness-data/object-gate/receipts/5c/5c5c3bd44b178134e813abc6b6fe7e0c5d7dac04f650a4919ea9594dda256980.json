@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5c5c3bd44b178134e813abc6b6fe7e0c5d7dac04f650a4919ea9594dda256980",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "물가 돌 축대(북쪽 뭍)",
+ "label": "sengoku-edo/se-water-n",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone embankment waterfront edge",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing paved stone ground at rows 0-1, a 3-4px stone retaining wall face at rows 2-4, and water surface from row 6 downward. Standard top-down terrain representation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4034
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "waterfront stone embankment with water below and ground above",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-1 show the horizontal ground surface of the northern shore, rows 2-4 depict the south-facing stone embankment face with a shadow at row 5, and rows 6-15 show the horizontal water plane, correctly matching top-down 3/4 terrain tiling.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4377
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone revetment / embankment shore tile",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a north shore/revetment with paved land at rows 0-1, a vertical stone wall face at rows 2-4, and water surface below from row 6 to 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3985
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone embankment and water terrain tile",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid top-down terrain tile depicting a stone embankment edge (rows 0-4) meeting a water surface below (rows 5-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3325
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:28.013Z",
+ "cells": {
+  "16": [
+   "096d494aedbedb65"
+  ],
+  "24": [
+   "16846c9e8a0d8981",
+   "2f6f16b604167eef",
+   "30b07b0c35fd9eb3",
+   "6e42b9f26733545b",
+   "aa36eb2042c81fda",
+   "eb3b41df1704975d"
+  ],
+  "32": [
+   "2803ccd7b719868e",
+   "348a6beacff47648",
+   "4d0a973f6b8bbfc1",
+   "6c1c927b467cfcec",
+   "d47749c4d6c60be5",
+   "dd5ec66d592ab452"
+  ],
+  "48": [
+   "168cd6b89de7edc2",
+   "52522bead257cc63",
+   "5bf8d6497a518aa9",
+   "98f0edc64892cfd4",
+   "bdc9ae65e4895731",
+   "fba292cbb8cef4c4"
+  ]
+ }
+}

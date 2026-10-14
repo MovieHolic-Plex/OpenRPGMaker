@@ -16,9 +16,11 @@ def clamp(mat, t):
 
 
 # ═══════════════════════ 지붕 ═══════════════════════
-def _tile_px(mat, i, k, base, course=6, period=4):
+def _tile_px(mat, i, k, base, course=6, period=4, vary=True):
     """기와 골 무늬 한 화소(본기와). 둥근 기와 3px(밝·중·어) + 골 1px(어둠) 세로 줄이 주인공이고,
-    course 행마다 둥근 기와 머리(밝은 점)와 바로 위 마디(한 단 어둡게)만 살짝 — 네모 격자처럼 보이지 않게."""
+    course 행마다 둥근 기와 머리(밝은 점)와 바로 위 마디(한 단 어둡게)만 살짝 — 네모 격자처럼 보이지 않게.
+    vary(2판, quality-b): 기와 한 장(줄 × 단) 단위로 한 단 밝거나 어두운 장을 섞고(햇빛 받은 새 기와·바랜 기와),
+    둥근 기와 몸에 2px 반사, 장 아래쪽 1행은 다음 장에 덮인 그늘 — 가로 띠 반복을 깬다."""
     c = i % period
     cy = k % course
     if c == 0: t = base + 1
@@ -28,6 +30,12 @@ def _tile_px(mat, i, k, base, course=6, period=4):
     if c in (0, 1):
         if cy == 0: t = base + 2 if c == 0 else base + 1
         elif cy == course - 1: t = base - 1
+    if vary and c != 3:
+        u = h32(i // period, k // course, 77) % 11
+        if u == 0: t += 1
+        elif u in (1, 2): t -= 1
+        if c == 0 and cy == 1 and u % 3 == 0: t += 1
+        if cy == course - 2 and c == 2: t -= 1
     return (mat, clamp(mat, t))
 
 

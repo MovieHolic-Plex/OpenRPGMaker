@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d298879541b953eb8a3d2c305465be5581e4226991488b77f6ed4cfda8b028a1",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "해자·강물",
+ "label": "sengoku-edo/se-water",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat water surface tile viewed from above with scattered ripples/highlights, filling the 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3062
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water surface tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat water terrain tile filling the entire 16x16 area with ripple highlights, viewed from top-down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2915
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water surface tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat water terrain tile filling the full 16x16 grid viewed top-down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5211
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water surface tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile depicts flat water surface (moat/river) viewed from above, perfectly matching terrain classification.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3051
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:28.014Z",
+ "cells": {
+  "16": [
+   "1bce450d8f5e6f8e"
+  ],
+  "24": [
+   "52b50888769b9109",
+   "57f2ab884cc050f9",
+   "5adc091131e56cd8",
+   "7d93b093d49462a2",
+   "8e3581fa2f47545d",
+   "ecdf7b06e91c6989"
+  ],
+  "32": [
+   "7d90853496493a78",
+   "7de4a31e57658fd9",
+   "98b4b88da219793c",
+   "df818efc16ecdbe4",
+   "edafcfc3463d5761",
+   "f7afed98e55f5dbc"
+  ],
+  "48": [
+   "11296bd5a8a678eb",
+   "5ff33e484c1920e5",
+   "96beef5d70f7e8a9",
+   "c4510922132b1326",
+   "ddecb066420f4fdc",
+   "e13463ba3766889e"
+  ]
+ }
+}

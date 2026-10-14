@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "653015e95386a45989d35e2a8f447e49aaa9306e7a409ec25e697b4083b57468",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "데미즈야(손 씻는 곳, 지붕 + 돌 물확)",
+ "label": "sengoku-edo/se-chozuya",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "temizuya pavilion (roof and stone water basin)",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof shows an expansive top slope spanning rows 1-14. Below it, the stone water basin shows a clear top surface and recessed water opening from rows 30-35 above its vertical front face (rows 36-44), conforming accurately to 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6819
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pavilion roof and water basin",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof clearly displays its downward-sloping top surface (rows 1-14, ~13 rows tall), and the stone water basin shows its top surface with a 4-row visible water opening (rows 32-35) in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6719
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "temizuya pavilion with tiled roof and stone water basin",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof clearly displays its sloped top surface (~14 rows, rows 1-15), and the stone water basin beneath properly shows its top rim and water basin interior (~6 rows total top/opening, rows 30-35). Both are correctly drawn in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6112
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water pavilion with roof and stone basin",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof slope is clearly visible from above across rows 3-15, and the stone water basin below shows a fully rendered top rim and 4-row deep open water interior (rows 32-35).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10792
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:28.010Z",
+ "cells": {
+  "16": [
+   "05a24b38065e2301",
+   "c0927bc99cc0477e",
+   "c5f4bdeebcde8c99",
+   "d6c179bf99e0cee5",
+   "e7934734921fa985",
+   "f0b57e3b07168807"
+  ],
+  "24": [
+   "0c2eaac4a6c2890c",
+   "2cfeebad574304bd",
+   "3536e35173fa8304",
+   "457fd5c367601657",
+   "45d26bdd0e512625",
+   "55c6f361602e91e4",
+   "56a2f57368e821ae",
+   "656c4090f057b22a",
+   "987e0606c372961b",
+   "a7714e8494ce30e3",
+   "af693276fee44486",
+   "b494c8cc19f18b4b"
+  ],
+  "32": [
+   "34f6b23295585437",
+   "43655b7cfa103d7b",
+   "bb1681cdbad04f3f",
+   "f76664879facb442"
+  ],
+  "48": [
+   "4d0facc771d724bd",
+   "5329f4f7e848be48",
+   "e2a697d94d8eccbd"
+  ]
+ }
+}
