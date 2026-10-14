@@ -1,27 +1,20 @@
-import type { Project, TitleEffect, UploadedAsset } from './types';
+import type { Project, UploadedAsset } from './types';
 import professorArtwork from '../../public/assets/emerald-monster/professor-asset.json';
-import titleArtwork from '../../public/assets/emerald-monster/title-asset.json';
+import { createStagTitleEffects, monsterTitleArt, monsterTitleThemeOf, type MonsterTitleTheme } from './emeraldMonsterTitleArt';
 import { defaultTitleScreenSettings } from './defaults/defaultDatabase';
 
 export type EmeraldOpeningPage = { id: string; text: string; monsterSpeciesId?: string };
 
 /** Anchors belong to the bundled stag/coastal sunset artwork, in image coordinates. */
-export function createEmeraldMonsterTitleEffects(): TitleEffect[] {
-  return [
-    { kind: 'godRays', intensity: 0.24, speed: 0.3, color: '#ffe8ab', source: [0.44, 0.65], toward: [0.66, 0.12], spread: 0.38 },
-    { kind: 'water', intensity: 0.32, speed: 0.45, color: '#b8fff1', region: [[0, 0.7], [0.62, 0.7], [0.53, 0.88], [0.35, 1], [0, 0.91]] },
-    { kind: 'dapple', intensity: 0.2, speed: 0.35, region: [[0.61, 0.84], [0.96, 0.89], [1, 1], [0.46, 1]] },
-    { kind: 'motes', intensity: 0.35, speed: 0.32, color: '#f9ffd3', count: 12, region: [[0.59, 0.1], [0.95, 0.1], [0.97, 0.65], [0.62, 0.7]] },
-    { kind: 'glow', intensity: 0.22, speed: 0.4, color: '#f6ffbd', source: [0.93, 0.055], spread: 0.06 },
-    { kind: 'parallax', intensity: 0.12, speed: 0.25 },
-  ];
-}
+export const createEmeraldMonsterTitleEffects = createStagTitleEffects;
 
 /** Shared original sprite introduction; actual starter selection remains in authored events. */
 export function configureEmeraldMonsterOpening(project: Project, options: {
   professorName?: string;
   pages?: EmeraldOpeningPage[];
   musicResourceId?: string;
+  /** 타이틀 키아트 테마(startTheme 에서). 생략하면 지금 프로젝트에서 추정(monsterTitleThemeOf). */
+  titleTheme?: MonsterTitleTheme;
 } = {}): void {
   const professor = professorArtwork as UploadedAsset;
   project.assets.uploaded[professor.id] = { ...professor, meta: { ...professor.meta } };
@@ -50,7 +43,7 @@ export function configureEmeraldMonsterOpening(project: Project, options: {
   project.system.opening = { enabled: true, skippable: true, scenes, ...(musicResourceId ? { musicResourceId } : {}) };
   project.meta.oprnOpeningBook = { version: 1, sceneIds: scenes.map(s => s.id), ink: 'ivory', portraitResourceId: professor.id };
   configureEmeraldMonsterPortraitMotion(project);
-  configureEmeraldMonsterTitle(project);
+  configureEmeraldMonsterTitle(project, options.titleTheme);
 }
 
 /** 교수 초상 움직임 시트(pokemon-character-motion 산출)는 저작권 정리(2026-10-07)로 지웠다. 초상은 정지 그림으로 둔다. */
@@ -64,8 +57,9 @@ export function configureEmeraldMonsterPortraitMotion(project: Project): void {
 }
 
 /** Shared original pixel key art; menu input and saved-game availability remain native. */
-export function configureEmeraldMonsterTitle(project: Project): void {
-  const artwork = titleArtwork as UploadedAsset;
+/** theme: 시작 마을 풍경별 키아트(그림이 없으면 사슴으로). 생략하면 지금 프로젝트에서 추정한다. */
+export function configureEmeraldMonsterTitle(project: Project, theme: MonsterTitleTheme = monsterTitleThemeOf(project)): void {
+  const { asset: artwork, effects } = monsterTitleArt(theme);
   project.assets.uploaded[artwork.id] = { ...artwork, meta: { ...artwork.meta } };
   const previous = project.system.titleScreen ?? defaultTitleScreenSettings();
   project.system.titleScreen = {
@@ -73,7 +67,7 @@ export function configureEmeraldMonsterTitle(project: Project): void {
     backgroundFit: 'cover', backgroundRendering: 'pixelated', logoStyle: 'plain',
     logoSubtitle: '작은 동료와 여덟 빛의 약속', menuStyle: 'plain',
     layout: { ...previous.layout, titleX: 24, titleY: 30, menuX: 28, menuY: 132 },
-    effects: createEmeraldMonsterTitleEffects(), backgroundLayers: [], particles: undefined,
+    effects, backgroundLayers: [], particles: undefined,
     sequence: { fadeMs: 700, push: 0.015, sweep: false, logoAtMs: 250, logoReveal: 'fade', menuAtMs: 500 },
     sounds: {
       cursorSeResourceId: 'cc0-se-orp-interface-interface1',
