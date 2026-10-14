@@ -5,6 +5,13 @@
 
 <!-- releases -->
 
+## 0.209.1 — 2026-10-14
+
+### 수정
+
+- **gothic** — gate cell keeps the drive's paving; dead-tree groves in the gallery plaza's upper lawns (`ce145ef`)
+- **gothic** — chapel altar centred at the runner end with flanking candles, cobwebs only in the NW corner, paintings only on bare wall, single dust decals; gemini-4-argon assistant config (`d965186`)
+
 ## 0.209.0 — 2026-10-14
 
 ### 기능
