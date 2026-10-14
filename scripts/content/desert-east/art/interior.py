@@ -121,6 +121,32 @@ def tray_ell(c, cx, cy, rx, ry, mat, base, rim=True):
     c.ell(cx, cy, rx, ry, f)
 
 
+def mouth_ell(c, cx, cy, rx, ry, rim_hi, rim_lo, inner, rim=0.62):
+    """3/4 아가리: 위에서 내려다본 타원 테(뒤·왼쪽 밝음) + 안쪽(inner(X,Y,dx,dy,d))."""
+    def f(X, Y, dx, dy, d):
+        if d > rim: return rim_hi if (dx * 0.6 + dy) < 0.2 else rim_lo
+        return inner(X, Y, dx, dy, d)
+    c.ell(cx, cy, rx, ry, f)
+
+
+def under_lip(c, cx, cy, rx, ry, mat, t):
+    """아가리 앞 테 바로 아래 1px 그늘(몸통 위)."""
+    for x in range(int(cx - rx), int(cx + rx) + 1):
+        dx = (x + 0.5 - cx) / rx
+        if abs(dx) >= 0.95: continue
+        y = int(cy + ry * math.sqrt(1 - dx * dx) + 0.5)
+        if c.on(x, y): c.P(x, y, mat, t)
+
+
+def deep_inner(mat, wall=2, mid=1, s=0):
+    """아가리 안: 뒤 안벽(위) → 깊은 그늘(아래)."""
+    def f(X, Y, dx, dy, d):
+        if dy < -0.3: return cl(mat, wall)
+        if dy < 0.15: return cl(mat, mid)
+        return ('sumi', 1 if rnd(X, Y, s) < 0.8 else 2)
+    return f
+
+
 def glass(c, x, y, tea='red'):
     """찻잔(유리, 차가 담김) 2×4: 금 테 · 반사 · 붉은 차 · 받침."""
     G(c, x, y, ['Gg', 'wr', 'rR', 'dd'], dict(G=('gold', 5), g=('gold', 4), w=('plaster', 5), r=(tea, 3), R=(tea, 2), d=('gold', 1)))
@@ -712,24 +738,26 @@ def _(c):
 
 @P_('hookah', '물담배(시샤)', 1, 1, 'other', ['찻집'], '방석 곁에 1칸. 찻상 옆.', 'floor-zellige')
 def _(c):
-    G(c, 3, 0, [
-        '...ff....',
-        '..rRRr...',
-        '..rrrq...',
-        '.gGGggd..',
-        '...gm....',
-        '...gm.hh.',
-        '...gmh..h',
-        '..gGmd..h',
-        '...gm...h',
-        '..LLLL..h',
-        '.LwLLLl.H',
-        '.LLLLll.H',
-        '.LLLlll..',
-        '..Lll1...',
-        '..dgmd...',
-    ], dict(f=('fire', 3), r=('red', 3), R=('red', 4), q=('red', 1), g=('gold', 4), G=('gold', 5), m=('gold', 3), d=('gold', 2),
-            h=('red', 2), H=('gold', 3), L=('lapis', 3), l=('lapis', 2), w=('lapis', 4), **{'1': ('lapis', 1)}))
+    # 넓은 놋 받침(평평한 타원 윗면 6행, 새긴 둥근 무늬) 뒤 절반에 작은 군청 유리 단지 · 대롱 · 숯 대접
+    cx = 7.5
+    def tray_top(X, Y, dx, dy):
+        d = dx * dx + dy * dy
+        if d > 0.78: return ('gold', 5) if (dx * 0.6 + dy) < 0.25 else ('gold', 3)
+        if abs(d - 0.45) < 0.07: return ('gold', 3)
+        return ('gold', 4)
+    cyl(c, cx, 10.4, 7.4, 4.0, 2, tray_top, lambda X, Y, dx, dep: cl('gold', 2 if dx < 0.4 else 1))
+    def body_side(X, Y, dx, dep):
+        if 0.8 <= dep < 1.8: return ('gold', 4 if dx < 0.3 else 2)
+        return cl('lapis', ramp_t(-0.7 * dx - 0.15 * dep, 0, 3))
+    def body_top(X, Y, dx, dy):
+        d = dx * dx + dy * dy
+        if d > 0.6: return ('lapis', 4) if dy < 0.2 else ('lapis', 3)
+        return ('lapis', 3)
+    cyl(c, cx, 5.2, 3.8, 2.0, 3, body_top, body_side)
+    for x in range(4, 12): c.P(x, 10, 'gold', 2) if c.get(x, 10) and c.get(x, 10)[0] == 'gold' else None   # 단지 그늘
+    c.VL(7, 1, 5, 'gold', 4); c.VL(8, 1, 5, 'gold', 2)
+    mouth_ell(c, cx, 1.2, 2.4, 1.2, ('gold', 5), ('gold', 3), lambda X, Y, dx, dy, d: ('fire', 3) if rnd(X, Y, 2) < 0.5 else ('fire', 1), rim=0.5)
+    for (x, y, t) in ((11, 5, 3), (12, 5, 3), (13, 6, 2), (13, 7, 2), (12, 8, 3)): c.P(x, y, 'red', t)
     fin(c)
 
 
@@ -806,37 +834,66 @@ def _(c):
 
 
 # ── 가게 ──
-@P_('shelf-pottery', '그릇 선반', 2, 2, 'tall_furniture', ['가게', '여관'], '벽 앞에 붙인다(벽 바로 아래 줄).', 'floor-flag')
-def _(c):
-    W = 32
-    c.R(0, 0, W, 3, 'wood', 4); c.HL(0, 0, W, 'wood', 2); c.HL(1, 2, W - 2, 'wood', 5); c.HL(0, 3, W, 'wood', 2)
-    for y in range(4, 31):
+def pot34(c, cx, yb, rx, h, mat='adobe', band=None):
+    """선반 위 작은 항아리 3/4: 몸통 구면 + 위에서 보이는 아가리 타원(안쪽 어둡게)."""
+    n = top(mat); ry = h * 0.42; cy = yb - ry + 0.5
+    def b(X, Y, dx, dy, d):
+        if band and abs(dy - 0.1 - 0.25 * (1 - dx * dx)) < 0.17: return cl(band[0], band[1] - (1 if dx > 0.3 else 0))
+        return cl(mat, ramp_t(lum(dx, dy), 1, n - 1))
+    c.ell(cx, cy, rx, ry, b)
+    mrx = max(1.6, rx * 0.62)
+    mouth_ell(c, cx, yb - h + 1.6, mrx, 1.5, (mat, n), (mat, n - 2), lambda X, Y, dx, dy, d: ('sumi', 1), rim=0.45)
+
+
+def board34(c, x, y, w):
+    """선반 판: 윗면 3행(뒤 → 앞 밝아짐) + 앞 모서리 1행 + 밑 그늘."""
+    c.HL(x, y, w, 'wood', 3); c.HL(x, y + 1, w, 'wood', 4); c.HL(x, y + 2, w, 'wood', 5)
+    c.HL(x, y + 3, w, 'wood', 2); c.HL(x, y + 4, w, 'dwood', 0)
+    for i in range(x + 5, x + w - 2, 9): c.P(i, y + 1, 'wood', 3)
+
+
+def shelf34(c, W, fill):
+    """벽 앞 선반 3/4: 꼭대기 판 윗면 6행 + 앞 모서리, 옆 기둥, 칸마다 판 윗면 3행."""
+    box3(c, 0, 0, W, 6, 2, 'wood', tt=4, ft=2)
+    for y in range(1, 5):
+        for x in range(1, W - 1):
+            if rnd(x // 5, y, 4) < 0.18: c.P(x, y, 'wood', 3)
+    for y in range(8, 32):
+        for x in range(3, W - 3): c.P(x, y, 'dwood', 1 if rnd(x // 3, y, 2) > 0.2 else 2)
+    c.HL(3, 8, W - 6, 'dwood', 0)
+    board34(c, 3, 14, W - 6)
+    board34(c, 3, 23, W - 6)
+    c.R(3, 27, W - 6, 4, 'wood', 2); c.HL(3, 27, W - 6, 'dwood', 0); c.HL(3, 28, W - 6, 'wood', 3)
+    for y in range(8, 31):
         c.P(0, y, 'wood', 3); c.P(1, y, 'wood', 4); c.P(2, y, 'wood', 2)
         c.P(W - 3, y, 'wood', 3); c.P(W - 2, y, 'wood', 2); c.P(W - 1, y, 'wood', 1)
-    for y in range(4, 30):
-        for x in range(3, W - 3):
-            c.P(x, y, 'dwood', 1 if rnd(x // 3, y, 2) > 0.2 else 2)
-    for sy in (13, 22):
-        c.HL(3, sy - 1, W - 6, 'dwood', 0)
-        c.HL(3, sy, W - 6, 'wood', 4); c.HL(3, sy + 1, W - 6, 'wood', 3); c.HL(0, sy + 2, W, 'wood', 2)
-    c.HL(3, 4, W - 6, 'dwood', 0)
-    c.R(0, 29, W, 2, 'wood', 2); c.HL(0, 29, W, 'wood', 3)
-    # 윗칸: 항아리 둘 + 청록 대접
-    pot(c, 4, 13, 6, 8, 'adobe', band=('turq', 3))
-    pot(c, 11, 13, 5, 6, 'adobe')
-    c.ell(22, 11, 4.5, 1.6, lambda X, Y, dx, dy, d: ('turq', 1) if dy < 0 and d < 0.5 else ('turq', 4 if dy < 0 else 3))
-    c.HL(19, 12, 7, 'turq', 2); c.HL(20, 13, 5, 'turq', 1)
-    c.ell(22, 6.5, 2.5, 2.5, lambda X, Y, dx, dy, d: ('lapis', 3) if d > 0.55 else ('plaster', 5) if d < 0.2 else ('lapis', 2))
-    # 가운데 칸: 세운 접시 + 주전자 둘
-    for k, (m, cx) in enumerate((('lapis', 7), ('turq', 13))):
-        c.ell(cx, 18.5, 3, 3, lambda X, Y, dx, dy, d, m=m: (m, 3) if d > 0.6 else ('plaster', 5 if d < 0.2 else 4) if d < 0.35 else (m, 2))
-    pot(c, 18, 22, 4, 6, 'adobe')
-    pot(c, 23, 22, 5, 7, 'turq')
-    # 아래 칸: 큰 단지 + 작은 대접 쌓기
-    pot(c, 5, 29, 8, 6, 'adobe', band=('sumi', 2))
-    for k in range(3):
-        c.HL(17 + k, 28 - k * 2, 8 - 2 * k, 'adobe', 4 - (k == 0)); c.HL(17 + k, 29 - k * 2, 8 - 2 * k, 'adobe', 2)
+    c.HL(0, 31, W, 'wood', 0)
+    if fill == 'pottery':
+        # 윗칸: 항아리 둘 + 청록 대접(윗면)
+        pot34(c, 7, 15, 3.5, 7, 'adobe', band=('turq', 3))
+        pot34(c, 13.5, 15, 2.6, 5, 'adobe')
+        mouth_ell(c, 22, 13.5, 5, 2.2, ('turq', 5), ('turq', 3), lambda X, Y, dx, dy, d: ('turq', 1) if dy < 0 else ('plaster', 4), rim=0.5)
+        c.HL(19, 15, 7, 'turq', 2)
+        # 아랫칸: 쌓은 대접(윗면 타원) + 청록 주전자 + 큰 단지
+        for k in range(3):
+            mouth_ell(c, 7, 23.6 - k * 1.6, 4.2 - k * 0.6, 1.5, ('adobe', 5), ('adobe', 3), lambda X, Y, dx, dy, d: ('adobe', 2), rim=0.4)
+        pot34(c, 15, 24, 2.8, 6, 'turq')
+        pot34(c, 23, 24, 4.0, 7, 'adobe', band=('sumi', 2))
+    else:
+        # 윗칸: 갠 담요 둘(윗면) + 작은 단지
+        for (m, y, x0) in (('indigo', 10, 3), ('red', 12, 3)):
+            box3(c, x0, y, 7, 2, 2, m, tt=4 if m == 'red' else 3, ft=2 if m == 'red' else 1, edge=False)
+        pot34(c, 12, 15, 1.8, 5, 'adobe')
+        # 아랫칸: 대접 쌓기 + 바구니(윗면 테·안쪽)
+        for k in range(2):
+            mouth_ell(c, 6.5, 23.4 - k * 1.6, 3.2 - k * 0.6, 1.4, ('adobe', 5), ('adobe', 3), lambda X, Y, dx, dy, d: ('adobe', 2), rim=0.4)
+        c.R(9, 21, 5, 4, 'hide', 3); c.VL(9, 21, 4, 'hide', 4); c.VL(13, 21, 4, 'hide', 2); c.P(11, 23, 'hide', 2)
+        mouth_ell(c, 11.5, 20.5, 2.6, 1.6, ('hide', 5), ('hide', 4), lambda X, Y, dx, dy, d: ('hide', 1), rim=0.45)
     fin(c)
+
+
+@P_('shelf-pottery', '그릇 선반', 2, 2, 'tall_furniture', ['가게', '여관'], '벽 앞에 붙인다(벽 바로 아래 줄).', 'floor-flag')
+def _(c): shelf34(c, 32, 'pottery')
 
 
 @P_('sacks-spice', '열린 향신료 자루', 1, 1, 'container', ['가게', '바자르'], '가게 앞·계산대 옆에 1~3개 무리.', 'floor-flag')
@@ -927,31 +984,30 @@ def _(c):
 def _(c):
     cx = 8
     def body(X, Y, dx, dy, d):
-        t = ramp_t(lum(dx, dy), 1, 5)
-        if Y in (8, 9):
-            if (X % 4 == 1 and Y == 8) or (X % 4 == 3 and Y == 9): return cl('plaster', 5 if dx < 0.3 else 3)
+        yb = 9.6 + 2.0 * math.sqrt(max(0.0, 1 - dx * dx))           # 앞으로 휜 청록 띠
+        if yb <= Y + 0.5 < yb + 2:
+            if (X + int(Y)) % 4 == 0: return cl('plaster', 5 if dx < 0.3 else 3)
             return cl('turq', 3 if dx < 0.3 else 2)
-        return cl('adobe', t)
-    c.ell(cx, 10.3, 6.3, 5.3, body)
-    c.R(cx - 3, 3, 6, 3, 'adobe', 3); c.VL(cx - 3, 3, 3, 'adobe', 5); c.P(cx - 2, 4, 'adobe', 4); c.VL(cx + 2, 3, 3, 'adobe', 2)
-    def mouth(X, Y, dx, dy, d):
-        if d > 0.42: return ('adobe', 6) if (dx + dy) < 0.3 else ('adobe', 4)
-        if dy < -0.05: return ('adobe', 2)
-        return ('sumi', 1)
-    c.ell(cx, 3.0, 4.2, 2.3, mouth)
+        return cl('adobe', ramp_t(lum(dx, dy), 1, 5))
+    c.ell(cx, 10.4, 7.3, 5.5, body)
+    mouth_ell(c, cx, 4.8, 6.6, 4.4, ('adobe', 6), ('adobe', 5), lambda X, Y, dx, dy, d: ('sumi', 2) if dy < -0.25 else ('sumi', 1) if rnd(X, Y, 4) < 0.85 else ('sumi', 0), rim=0.55)
+    under_lip(c, cx, 4.8, 6.6, 4.4, 'adobe', 2)
     fin(c)
-
 
 @P_('chest-brass', '놋 띠 궤짝', 1, 1, 'box', ['가게', '여관', '궁전'], '벽 앞·침상 발치.', 'floor-flag')
 def _(c):
-    box3(c, 1, 4, 14, 5, 6, 'dwood', tt=4, ft=2)
-    for x in (3, 12):
-        c.VL(x, 4, 5, 'gold', 4); c.VL(x, 9, 6, 'gold', 3)
-    c.HL(1, 8, 14, 'gold', 3)
-    c.R(7, 10, 2, 3, 'gold', 4); c.P(7, 10, 'gold', 5); c.P(8, 11, 'sumi', 0)
-    for (x, y) in ((2, 5), (13, 5), (2, 13), (13, 13)): c.P(x, y, 'gold', 5)
+    # 뚜껑 윗면 6행(밝은 판자 · 위로 감긴 놋 띠 · 뒤 어두운 선) / 뚜껑 앞 테 / 몸통 앞면(놋 띠·자물쇠)
+    c.R(1, 1, 14, 6, 'wood', 4)
+    c.HL(1, 1, 14, 'wood', 2); c.HL(1, 6, 14, 'wood', 5)
+    for y in (2, 4): c.HL(2, y + 1, 12, 'wood', 3)                       # 판자 이음(가로 = 앞뒤로 깊이)
+    c.VL(1, 1, 6, 'wood', 3); c.VL(14, 1, 6, 'wood', 2)
+    for x in (4, 11):
+        c.VL(x, 1, 6, 'gold', 4); c.P(x, 1, 'gold', 2); c.P(x, 6, 'gold', 5)
+    c.R(1, 7, 14, 2, 'dwood', 3); c.HL(1, 7, 14, 'dwood', 1)            # 뚜껑 앞 테
+    c.R(1, 9, 14, 6, 'dwood', 2); c.HL(1, 9, 14, 'sumi', 2); c.VL(1, 9, 6, 'dwood', 3); c.VL(14, 9, 6, 'dwood', 1)
+    for x in (4, 11): c.VL(x, 7, 8, 'gold', 3)
+    c.R(7, 9, 2, 3, 'gold', 4); c.P(7, 9, 'gold', 5); c.P(8, 10, 'sumi', 0)
     fin(c)
-
 
 # ── 궁전 ──
 @P_('throne', '금 옥좌(단 위)', 2, 2, 'seat', ['궁전'], '홀 북쪽 가운데, 벽 앞. 앞 2칸은 비운다.', 'floor-marble')
@@ -996,64 +1052,76 @@ def _(c):
 
 @P_('column-palace', '궁전 대리석 기둥', 1, 2, 'column', ['궁전', '목욕탕'], '홀 안 2~3칸 간격으로 줄지어. 벽에서 1칸 띄운다.', 'floor-marble')
 def _(c):
+    # 둥근 머리돌: 위에서 내려다본 타원 윗면(7행) → 금 무카르나스 → 둥근 몸(휜 금 띠) → 둥근 받침(타원 윗면)
+    def base_top(X, Y, dx, dy):
+        d = dx * dx + dy * dy
+        if d > 0.72: return ('marble', 5) if (dx * 0.6 + dy) < 0.2 else ('marble', 3)
+        return ('marble', 4)
+    cyl(c, 8, 26.5, 7.4, 2.8, 2, base_top, lambda X, Y, dx, dep: cl('marble', ramp_t(-0.7 * dx, 1, 3)))
     shade = (3, 5, 5, 4, 4, 3, 2, 1)
-    for y in range(9, 27):
+    for y in range(11, 27):
         for i, t in enumerate(shade):
             tt = t
             if i in (2, 5) and y % 2 == 0: tt -= 1
             c.P(4 + i, y, 'marble', tt)
-    for yb in (10, 25):
-        for i, t in enumerate((3, 5, 5, 4, 4, 3, 2, 1)): c.P(4 + i, yb, 'gold', min(5, t))
-    # 주두: 윗면(잘린 면) + 무카르나스 층
-    c.R(1, 0, 14, 3, 'gold', 4); c.HL(1, 0, 14, 'gold', 2); c.HL(2, 1, 12, 'gold', 5); c.HL(1, 3, 14, 'gold', 2)
-    for y, (x0, x1) in zip(range(4, 9), ((2, 14), (2, 14), (3, 13), (3, 13), (4, 12))):
+    for yb in (13, 23):
+        for i, t in enumerate(shade):
+            dy = int(round(1.2 * math.sqrt(max(0.0, 1 - ((i - 3.5) / 4.0) ** 2))))
+            c.P(4 + i, yb + dy, 'gold', min(5, t))
+    for y, (x0, x1) in zip(range(6, 11), ((1, 15), (2, 14), (3, 13), (3, 13), (4, 12))):
         for x in range(x0, x1):
             t = 4 if x < 7 else 3 if x < 10 else 2
-            if y in (5, 7) and (x - x0) % 3 == 1: t = 1
+            if y in (7, 9) and (x - x0) % 3 == 1: t = 1
             c.P(x, y, 'gold', t)
-    c.HL(4, 8, 8, 'lapis', 2)
-    # 받침
-    c.R(3, 26, 10, 1, 'marble', 4)
-    box3(c, 1, 27, 14, 2, 3, 'marble', tt=5, ft=3)
+    c.HL(4, 11, 8, 'lapis', 2)
+    def cap_top(X, Y, dx, dy):
+        d = dx * dx + dy * dy
+        if d > 0.74: return ('gold', 5) if (dx * 0.6 + dy) < 0.2 else ('gold', 3)
+        if d > 0.5: return ('marble', 3) if dy < 0 else ('marble', 4)
+        return ('marble', 5) if (dx + dy) < -0.2 else ('marble', 4)
+    cyl(c, 8, 3.6, 7.6, 3.6, 2, cap_top, lambda X, Y, dx, dep: cl('gold', ramp_t(-0.7 * dx, 1, 4)))
     fin(c)
-
 
 @P_('brazier-stand', '놋 화로대', 1, 2, 'container', ['궁전', '무덤'], '옥좌·문 양옆에 짝으로. 벽에서 1칸 띄운다.', 'floor-marble')
 def _(c):
     # 세 발
-    c.line(7, 23, 3, 30, 'gold', 3); c.line(8, 23, 12, 30, 'gold', 2); c.VL(7, 23, 8, 'gold', 4); c.VL(8, 23, 8, 'gold', 2)
+    c.line(7, 24, 3, 30, 'gold', 3); c.line(8, 24, 12, 30, 'gold', 2); c.VL(7, 24, 7, 'gold', 4); c.VL(8, 24, 7, 'gold', 2)
     c.HL(2, 30, 3, 'gold', 4); c.HL(11, 30, 3, 'gold', 2); c.HL(6, 31, 4, 'gold', 3)
     # 줄기 + 마디
-    c.VL(7, 15, 9, 'gold', 4); c.VL(8, 15, 9, 'gold', 2)
-    c.R(6, 18, 4, 2, 'gold', 3); c.HL(6, 18, 4, 'gold', 5)
-    # 그릇 몸
-    cyl(c, 8, 10, 6.5, 2.6, 4,
-        lambda X, Y, dx, dy: None,
+    c.VL(7, 16, 9, 'gold', 4); c.VL(8, 16, 9, 'gold', 2)
+    c.R(6, 19, 4, 2, 'gold', 3); c.HL(6, 19, 4, 'gold', 5)
+    # 넓은 그릇: 앞면 띠 + 위에서 보이는 아가리(테 1px, 안쪽 숯불 6행)
+    cyl(c, 8, 10, 7.4, 4.2, 4, lambda X, Y, dx, dy: None,
         lambda X, Y, dx, dep: cl('gold', ramp_t(-0.7 * dx - 0.15 * dep, 1, 4)))
-    for x in range(3, 13): c.P(x, 14, 'gold', 2 if x > 8 else 3)
-    def rim(X, Y, dx, dy, d):
-        if d > 0.6: return ('gold', 5) if dy < 0.15 and dx < 0.5 else ('gold', 3)
-        return None
-    c.ell(8, 10, 6.5, 2.6, rim)
-    coals(c, 8, 10, 5.0, 1.6, 3)
-    flame(c, 8, 10, 10, 6, 0.3)
-    flame(c, 6, 10, 6, 3, 2.0)
-    flame(c, 10.5, 10, 7, 3, 4.0)
+    def inner(X, Y, dx, dy, d):
+        if dy < -0.45: return ('gold', 1)                    # 뒤 안벽(그늘)
+        r = rnd(X, Y, 3)
+        if r < 0.16: return ('fire', 2)
+        if r < 0.24: return ('fire', 3)
+        if r < 0.5: return ('sumi', 2)
+        return ('fire', 0) if dy < 0.3 else ('sumi', 1)
+    mouth_ell(c, 8, 10, 7.4, 4.2, ('gold', 5), ('gold', 3), inner, rim=0.7)
+    # 불꽃은 뒤쪽에서 작게(아가리 앞쪽 숯불이 보이게)
+    flame(c, 8, 8, 6, 4, 0.3)
+    flame(c, 5.5, 8, 3, 2, 2.0)
+    flame(c, 10.5, 8, 4, 2, 4.0)
     fin(c)
-
 
 @P_('vase-tall', '군청 금테 꽃병', 1, 1, 'container', ['궁전'], '벽 앞·기둥 사이·벽감 곁.', 'floor-marble')
 def _(c):
-    c.ell(8, 10.6, 5.2, 4.4, lambda X, Y, dx, dy, d: ('gold', 4 if dx < 0 else 2) if Y == 9 else cl('lapis', ramp_t(lum(dx, dy), 0, 4)))
-    c.R(6, 4, 4, 3, 'lapis', 2); c.VL(6, 4, 3, 'lapis', 3); c.VL(9, 4, 3, 'lapis', 1); c.HL(6, 5, 4, 'gold', 4)
-    c.R(5, 14, 6, 2, 'gold', 3); c.HL(5, 14, 6, 'gold', 4)
-    def mouth(X, Y, dx, dy, d):
-        if d > 0.55: return ('gold', 5) if dy < 0.2 and dx < 0.5 else ('gold', 3)
-        return ('lapis', 2) if dy < -0.2 else ('void', 0)
-    c.ell(8, 2.6, 4.2, 2.5, mouth)
-    c.P(5, 9, 'lapis', 4); c.P(5, 10, 'lapis', 4)
+    # 둥근 몸(휜 금 띠) → 짧은 목 → 벌어진 아가리(위에서 보이는 타원, 안쪽 어둡게)
+    def body(X, Y, dx, dy, d):
+        yb = 10.4 + 1.6 * math.sqrt(max(0.0, 1 - dx * dx))
+        if yb <= Y + 0.5 < yb + 1: return ('gold', 4 if dx < 0 else 2)
+        return cl('lapis', ramp_t(lum(dx, dy), 0, 4))
+    c.ell(8, 11.0, 5.6, 4.6, body)
+    c.R(6, 6, 4, 2, 'lapis', 2); c.VL(6, 6, 2, 'lapis', 3); c.VL(9, 6, 2, 'lapis', 1)
+    c.R(5, 15, 6, 1, 'gold', 3)
+    mouth_ell(c, 8, 3.7, 5.6, 3.6, ('gold', 5), ('gold', 3),
+              lambda X, Y, dx, dy, d: ('lapis', 2) if dy < -0.3 else ('lapis', 1) if dy < 0.05 else ('void', 0), rim=0.6)
+    under_lip(c, 8, 3.7, 5.6, 3.6, 'lapis', 1)
+    c.P(5, 10, 'lapis', 4); c.P(5, 11, 'lapis', 4)
     fin(c)
-
 
 @P_('fountain-indoor', '대리석 실내 분수', 2, 2, 'container', ['궁전', '목욕탕'], '홀·안뜰 가운데. 둘레 1칸은 비운다.', 'floor-marble')
 def _(c):
@@ -1114,18 +1182,21 @@ def _(c):
 
 @P_('canopic-jars', '뚜껑 단지 셋(석고)', 1, 1, 'round_body', ['무덤'], '석관 머리맡·벽감 앞.', 'floor-tomb')
 def _(c):
-    def jar(cx, yb, rx, h):
-        cy = yb - h / 2
-        c.ell(cx, cy + 0.5, rx, h / 2, lambda X, Y, dx, dy, d: ('lapis', 2 if dx < 0.3 else 1) if abs(dy + 0.15) < 0.16 else cl('plaster', ramp_t(lum(dx, dy), 1, 5)))
-        # 뚜껑(윗면 타원 + 꼭지)
-        c.ell(cx, yb - h + 0.4, rx - 0.4, 1.4, lambda X, Y, dx, dy, d: ('gold', 5) if dy < 0 and dx < 0.4 else ('gold', 3))
-        c.P(int(cx), int(yb - h - 1), 'gold', 4)
-        c.HL(int(cx - rx + 1), yb, int(2 * rx) - 1, 'plaster', 0)
-    jar(4.5, 10, 3.0, 7)
-    jar(11.5, 10, 3.0, 7)
-    jar(8, 14, 3.2, 8)
+    # 곧은 원통 단지 셋: 위에서 보이는 둥근 뚜껑 윗면(타원 5행, 금 테) + 앞면(휜 군청 띠)
+    def jar(cx, cy, rx, ry, h):
+        def top_(X, Y, dx, dy):
+            d = dx * dx + dy * dy
+            if d > 0.66: return ('gold', 5) if (dx * 0.6 + dy) < 0.2 else ('gold', 3)
+            if d < 0.07: return ('gold', 4)
+            return ('plaster', 5) if (dx + dy) < -0.1 else ('plaster', 4)
+        def side(X, Y, dx, dep):
+            if 1.5 <= dep < 2.5: return ('lapis', 2 if dx < 0.3 else 1)
+            return cl('plaster', ramp_t(-0.75 * dx - 0.1 * dep, 1, 4))
+        cyl(c, cx, cy, rx, ry, h, top_, side)
+    jar(4.0, 2.8, 3.7, 2.4, 5)
+    jar(12.0, 2.8, 3.7, 2.4, 5)
+    jar(8.0, 8.6, 4.0, 2.6, 4)
     fin(c)
-
 
 @P_('guardian-statue', '좌상 사자 석상(받침)', 1, 2, 'figure', ['무덤', '궁전'], '문·석관 양옆에 짝으로. 벽 앞.', 'floor-tomb')
 def _(c):
@@ -1136,38 +1207,40 @@ def _(c):
             if extra: t = extra(X, Y, dx, dy, d, t)
             return cl('stone', t)
         S.ell(cx, cy, rx, ry, f)
-    # 뒷다리 허리(양옆 뒤) · 꼬리
-    sh(1, 4, 3.0, 15.5, 2.8, 4.8); sh(1, 3, 13.0, 15.5, 2.8, 4.8)
-    for (x, y) in ((14, 19), (15, 18), (15, 17), (14, 16)): S.P(x, y, 'stone', 3)
-    S.P(15, 16, 'stone', 4)
-    # 가슴
-    sh(2, 5, 8, 13.5, 4.8, 6.0)
-    # 앞다리 둘(왼쪽 밝음) + 가운데 그늘
+    sh(1, 4, 3.5, 15.5, 2.6, 4.5); sh(1, 3, 12.5, 15.5, 2.6, 4.5)
+    sh(2, 5, 8, 13.5, 4.6, 6.0)
     for x, ts in ((5, (5, 4)), (6, (4, 4)), (9, (4, 3)), (10, (3, 2))):
         for y in range(13, 20): S.P(x, y, 'stone', ts[0] if y < 17 else ts[1])
     for y in range(15, 20): S.P(7, y, 'stone', 2); S.P(8, y, 'stone', 1)
-    # 발 + 발가락
     for px0 in (4, 8):
-        S.R(px0, 19, 4, 2, 'stone', 5 if px0 == 4 else 4); S.HL(px0, 20, 4, 'stone', 3)
+        S.R(px0, 19, 4, 2, 'stone', 5 if px0 == 4 else 4); S.HL(px0, 19, 4, 'stone', 6 if px0 == 4 else 5); S.HL(px0, 20, 4, 'stone', 3)
         S.P(px0 + 1, 20, 'stone', 1); S.P(px0 + 2, 20, 'stone', 2)
-    # 갈기: 들쭉날쭉한 테(가닥 결)
     def mane(X, Y, dx, dy, d, t):
         ang = math.atan2(dy, dx)
         if d > 0.78 and (int((ang + 3.2) * 4.5) % 2 == 0): return -9
         if rnd(int(ang * 6), int(d * 4), 3) < 0.35: t -= 1
         return t
-    S.ell(8, 6.5, 6.7, 6.0, lambda X, Y, dx, dy, d: None if mane(X, Y, dx, dy, d, 0) == -9 else cl('stone', ramp_t(lum(dx, dy), 1, 4) + (mane(X, Y, dx, dy, d, 0))))
-    # 얼굴(밝음) · 주둥이 · 코 · 눈 · 귀
-    sh(3, 6, 8, 7.2, 3.7, 3.6)
-    sh(5, 6, 8, 9.2, 2.2, 1.5)
+    S.ell(8, 6.5, 6.4, 6.0, lambda X, Y, dx, dy, d: None if mane(X, Y, dx, dy, d, 0) == -9 else cl('stone', ramp_t(lum(dx, dy * 1.4), 1, 5) + (mane(X, Y, dx, dy, d, 0))))
+    sh(3, 6, 8, 7.4, 3.7, 3.6)
+    S.HL(6, 4, 5, 'stone', 6); S.HL(5, 5, 7, 'stone', 5)
+    sh(5, 6, 8, 9.4, 2.2, 1.5)
     S.P(7, 8, 'rock', 1); S.P(8, 8, 'rock', 1); S.P(7, 9, 'stone', 3); S.P(8, 10, 'stone', 2)
-    S.P(6, 6, 'sumi', 1); S.P(10, 6, 'sumi', 1); S.P(6, 5, 'stone', 6); S.P(10, 5, 'stone', 5)
-    S.P(5, 6, 'stone', 4); S.P(11, 6, 'stone', 3)
-    for (x, y, t) in ((4, 2, 4), (5, 2, 5), (11, 2, 3), (12, 2, 2)): S.P(x, y, 'stone', t)
+    S.P(6, 6, 'sumi', 1); S.P(10, 6, 'sumi', 1)
+    for (x, y, t) in ((4, 2, 5), (5, 2, 6), (11, 2, 4), (12, 2, 3)): S.P(x, y, 'stone', t)
     S.outline(bottom=None)
-    c.paste(S, 0, 1)
-    box3(c, 0, 22, 16, 3, 6, 'stone', tt=5, ft=3)
-    c.HL(1, 27, 14, 'saffron', 2); c.HL(1, 28, 14, 'turq', 2)
+    # 둥근 받침(회갈 돌): 위에서 보이는 평평한 타원 윗면 — 사자는 뒤 절반에 앉고 앞 반달이 비어 보인다 · 앞면(휜 채색 띠)
+    def ptop(X, Y, dx, dy):
+        d = dx * dx + dy * dy
+        if d > 0.78: return ('stone', 6) if (dx * 0.6 + dy) < 0.25 else ('stone', 4)
+        if (X + Y) % 7 == 0 and d < 0.6: return ('rock', 4)
+        return ('rock', 5)
+    def pside(X, Y, dx, dep):
+        if 1.0 <= dep < 2.0: return ('saffron', 3 if dx < 0.3 else 2)
+        if 2.0 <= dep < 3.0: return ('turq', 3 if dx < 0.3 else 2)
+        return cl('rock', ramp_t(-0.7 * dx - 0.1 * dep, 1, 3))
+    cyl(c, 8, 23.0, 7.9, 5.6, 3, ptop, pside)
+    c.paste(S, 0, -1)
+    c.ell(9.5, 20.6, 5.5, 1.3, lambda X, Y, dx, dy, d: ('rock', 3) if not (c.get(X, Y) or ('', 0))[0] == 'stone' else None)   # 사자 그늘
     fin(c)
 
 
@@ -1196,17 +1269,26 @@ def _(c):
 @P_('torch-stand', '돌 화톳대', 1, 2, 'container', ['무덤', '궁전'], '통로·묘실 모서리. 벽에서 1칸 띄운다.', 'floor-tomb')
 def _(c):
     shade = (4, 5, 4, 3, 2, 1)
+    def base_top(X, Y, dx, dy):
+        d = dx * dx + dy * dy
+        if d > 0.72: return ('stone', 6) if (dx * 0.6 + dy) < 0.2 else ('stone', 4)
+        return ('stone', 5)
+    cyl(c, 8, 26.0, 6.8, 2.6, 3, base_top, lambda X, Y, dx, dep: cl('stone', ramp_t(-0.7 * dx, 1, 4)))
     for y in range(14, 27):
         for i, t in enumerate(shade): c.P(5 + i, y, 'stone', t - (1 if y % 5 == 0 else 0))
-    box3(c, 2, 26, 12, 2, 3, 'stone', tt=5, ft=3)
-    c.R(4, 12, 8, 2, 'stone', 4); c.HL(4, 12, 8, 'stone', 5)
-    cyl(c, 8, 9, 5.6, 2.4, 3, lambda X, Y, dx, dy: None, lambda X, Y, dx, dep: cl('rock', ramp_t(-0.7 * dx, 1, 4)))
-    c.ell(8, 9, 5.6, 2.4, lambda X, Y, dx, dy, d: (('rock', 5) if dy < 0.15 and dx < 0.5 else ('rock', 3)) if d > 0.55 else None)
-    coals(c, 8, 9, 4.2, 1.5, 7)
-    flame(c, 8, 9, 9, 5, 1.0)
-    flame(c, 6.5, 9, 5, 3, 3.0)
+    # 돌 화톳 그릇: 앞면 + 위에서 보이는 밝은 테와 넓은 아가리(숯·불씨)
+    cyl(c, 8, 8.5, 7.5, 4.6, 3, lambda X, Y, dx, dy: None, lambda X, Y, dx, dep: cl('stone', ramp_t(-0.7 * dx, 1, 3)))
+    def inner(X, Y, dx, dy, d):
+        if dy < -0.45: return ('stone', 1)
+        r = rnd(X, Y, 7)
+        if r < 0.14: return ('fire', 2)
+        if r < 0.2: return ('fire', 3)
+        if r < 0.55: return ('sumi', 2)
+        return ('sumi', 1)
+    mouth_ell(c, 8, 8.5, 7.5, 4.6, ('stone', 6), ('stone', 4), inner, rim=0.68)
+    flame(c, 8, 6, 5, 4, 1.0)
+    flame(c, 6, 6, 3, 2, 3.0)
     fin(c)
-
 
 @P_('sand-pile', '들이친 모래 더미', 1, 1, 'debris', ['무덤', '폐허'], '구석·벽 밑·문 안쪽에 덩이로.', 'floor-tomb')
 def _(c):
@@ -1232,25 +1314,28 @@ def _(c):
 
 @P_('treasure-chest', '열린 보물 궤', 1, 1, 'box', ['무덤', '궁전'], '묘실 안쪽·석관 곁. 벽 앞.', 'floor-tomb')
 def _(c):
-    # 열린 뚜껑(안쪽 붉은 천)
-    c.R(1, 0, 14, 5, 'dwood', 3); c.HL(2, 0, 12, 'dwood', 4)
-    c.R(3, 1, 10, 4, 'red', 2); c.HL(3, 1, 10, 'red', 1)
-    for x in (2, 13): c.VL(x, 0, 5, 'gold', 4 if x == 2 else 3)
-    # 몸통 윗테 + 금화 더미
-    box3(c, 1, 5, 14, 5, 5, 'dwood', tt=4, ft=2)
-    for y in range(6, 10):
+    # 뒤로 젖힌 뚜껑(안쪽 붉은 천, 낮게)
+    c.R(1, 0, 14, 3, 'dwood', 3); c.HL(2, 0, 12, 'dwood', 4)
+    c.R(3, 1, 10, 2, 'red', 2)
+    for x in (2, 13): c.VL(x, 0, 3, 'gold', 4 if x == 2 else 3)
+    # 몸통 윗면 7행: 뒤 테 · 옆 테 · 앞 테 사이로 금화 더미가 위에서 보인다
+    c.R(1, 3, 14, 7, 'dwood', 4)
+    c.HL(1, 3, 14, 'dwood', 2); c.HL(1, 9, 14, 'dwood', 4)
+    for y in range(4, 9):
         for x in range(2, 14):
             r = rnd(x, y, 8)
-            L = -(x - 7.5) / 8 - (y - 6.5) / 4
+            L = -(x - 7.5) / 8 - (y - 6.0) / 4
             t = 4 + (1 if L > 0.25 else 0) - (1 if L < -0.45 else 0)
             if r < 0.1: t = 5
-            if y == 6 and x in (2, 13): continue
+            if y == 4: t -= 1
             c.P(x, y, *cl('gold', t))
-    c.P(5, 7, 'lapis', 4); c.P(10, 8, 'red', 5); c.P(11, 7, 'turq', 5)
-    for x in (3, 12): c.VL(x, 10, 5, 'gold', 3)
-    c.R(7, 11, 2, 2, 'gold', 4); c.P(8, 12, 'sumi', 0)
+    c.P(5, 6, 'lapis', 4); c.P(10, 7, 'red', 5); c.P(11, 5, 'turq', 5)
+    c.VL(1, 3, 7, 'dwood', 3); c.VL(14, 3, 7, 'dwood', 2)
+    # 앞면 6행
+    c.R(1, 10, 14, 6, 'dwood', 2); c.HL(1, 10, 14, 'dwood', 1); c.VL(1, 10, 6, 'dwood', 3); c.VL(14, 10, 6, 'dwood', 0)
+    for x in (3, 12): c.VL(x, 10, 6, 'gold', 3)
+    c.R(7, 11, 2, 3, 'gold', 4); c.P(7, 11, 'gold', 5); c.P(8, 12, 'sumi', 0)
     fin(c)
-
 
 # ── 목욕탕 ──
 @P_('plunge-pool', '타일 탕(물)', 3, 2, 'container', ['목욕탕'], '목욕탕 가운데. 둘레 1칸은 비운다. 물 칸은 걸을 수 없다.', 'floor-marble')
@@ -1312,38 +1397,36 @@ def _(c):
 
 @P_('basin-tap', '대리석 세면 대야(벽 꼭지)', 1, 1, 'container', ['목욕탕'], '목욕탕 벽 바로 앞(벽 아래 첫 줄)에 2~3칸 간격.', 'floor-marble')
 def _(c):
-    G(c, 5, 0, ['dGGd..', 'gGgd..', '.mm...', '..mm..', '...d..'], dict(d=('gold', 2), G=('gold', 5), g=('gold', 4), m=('gold', 3)))
     def bowl_side(X, Y, dx, dep):
-        if dep > 3.2 - 2 * dx * dx: return None
+        if dep > 3.0 - 2 * dx * dx: return None
         return cl('marble', ramp_t(-0.7 * dx - 0.2 * dep, 1, 4))
     def bowl_top(X, Y, dx, dy):
         d = dx * dx + dy * dy
-        if d > 0.55: return ('marble', 5) if dy < 0.3 and dx < 0.6 else ('marble', 4)
-        if dy < -0.3: return ('marble', 2)
-        return ('water', 3 if (X + Y) % 5 else 4)
-    cyl(c, 8, 9, 6.6, 3.0, 4, bowl_top, bowl_side)
-    c.P(8, 5, 'water', 5); c.P(8, 6, 'water', 4)
+        if d > 0.74: return ('marble', 5) if dy < 0.3 and dx < 0.6 else ('marble', 4)
+        if dy < -0.5: return ('marble', 2)
+        if (dx + 0.3) ** 2 + (dy + 0.1) ** 2 < 0.03: return ('water', 5)
+        return ('water', 3 if (X + Y) % 5 else 4) if dy < 0.45 else ('water', 2)
+    cyl(c, 8, 8.4, 7.2, 4.6, 3, bowl_top, bowl_side)
+    # 벽 꼭지(뒤 테 위, 작게) + 물줄기
+    G(c, 6, 0, ['dGGd', '.gm.', '..m.'], dict(d=('gold', 2), G=('gold', 5), g=('gold', 4), m=('gold', 3)))
+    c.P(8, 3, 'water', 5); c.P(8, 4, 'water', 4); c.P(8, 5, 'water', 5)
     fin(c)
-
 
 @P_('towel-rack', '수건걸이', 1, 1, 'frame', ['목욕탕'], '벽 앞·걸상 곁.', 'floor-marble')
 def _(c):
-    for x, t in ((2, 4), (3, 2), (12, 3), (13, 1)): c.VL(x, 3, 11, 'dwood', t)
-    c.HL(1, 2, 14, 'wood', 5); c.HL(1, 3, 14, 'wood', 3); c.HL(1, 4, 14, 'dwood', 2)
-    c.HL(2, 10, 12, 'dwood', 3)
-    for fx in (1, 11): c.R(fx, 13, 4, 2, 'dwood', 3); c.HL(fx, 13, 4, 'dwood', 4)
-    # 걸친 수건(줄무늬)
-    for y in range(3, 10):
-        for x in range(4, 12):
-            m, t = 'plaster', 5 if y < 5 else 4
-            if x == 11: t -= 1
-            if y in (7, 8): m, t = 'red', 3 if x < 10 else 2
+    # 위 판(윗면 5행 + 앞 모서리 2행, 그 위에 갠 수건) · 기둥 둘 · 앞 모서리에서 늘어진 수건 · 받침 판(윗면 3행)
+    for x, t in ((1, 4), (2, 2), (13, 3), (14, 1)): c.VL(x, 7, 6, 'dwood', t)
+    box3(c, 0, 11, 16, 3, 2, 'dwood', tt=4, ft=2)
+    box3(c, 0, 0, 16, 5, 2, 'wood', tt=4, ft=2)
+    box3(c, 9, 0, 5, 2, 2, 'turq', tt=4, ft=2, edge=False)                  # 갠 수건(윗면이 보이는 작은 덩이)
+    for y in range(7, 12):
+        for x in range(4, 11):
+            m, t = 'plaster', 4 if y < 9 else 3
+            if x == 4: t += 1
+            if x == 10: t -= 1
+            if y == 9: m, t = 'red', 3 if x < 9 else 2
             c.P(x, y, *cl(m, t))
-    for x in range(4, 12, 2): c.P(x, 10, 'plaster', 3)
-    # 아래 칸에 접은 청록 수건
-    c.R(5, 8, 6, 2, 'turq', 4); c.HL(5, 8, 6, 'turq', 5); c.HL(5, 10, 6, 'turq', 2)
     fin(c)
-
 
 # ── 여관 ──
 @P_('bed-mat', '낮은 나무 침상(담요)', 1, 2, 'low_furniture', ['여관', '집'], '벽 앞에 머리를 북쪽으로. 곁 1칸은 비운다.', 'floor-wood')
@@ -1405,33 +1488,7 @@ def _(c):
 
 
 @P_('shelf-inn', '여관 좁은 선반', 1, 2, 'tall_furniture', ['여관'], '벽 앞에 붙인다.', 'floor-wood')
-def _(c):
-    W = 16
-    c.R(0, 0, W, 3, 'wood', 4); c.HL(0, 0, W, 'wood', 2); c.HL(1, 1, W - 2, 'wood', 5); c.HL(0, 3, W, 'wood', 2)
-    for y in range(4, 31):
-        c.P(0, y, 'wood', 3); c.P(1, y, 'wood', 4); c.P(W - 2, y, 'wood', 2); c.P(W - 1, y, 'wood', 1)
-    for y in range(4, 29):
-        for x in range(2, W - 2): c.P(x, y, 'dwood', 1 if rnd(x // 3, y, 6) > 0.2 else 2)
-    c.HL(2, 4, W - 4, 'dwood', 0)
-    for sy in (12, 21):
-        c.HL(2, sy - 1, W - 4, 'dwood', 0); c.HL(2, sy, W - 4, 'wood', 4); c.HL(2, sy + 1, W - 4, 'wood', 3); c.HL(0, sy + 2, W, 'wood', 2)
-    c.R(0, 29, W, 2, 'wood', 2); c.HL(0, 29, W, 'wood', 3)
-    # 윗칸: 갠 담요 둘
-    for k, (m, y) in enumerate((('red', 9), ('indigo', 6))):
-        c.R(3, y, 7, 3, m, 3); c.HL(3, y, 7, m, 4); c.HL(3, y + 2, 7, m, 1); c.VL(9, y, 3, m, 2)
-    pot(c, 10, 12, 4, 6, 'adobe')
-    # 가운데 칸: 대접 쌓기 + 잔
-    for k in range(3): c.HL(3 + k, 20 - k * 2, 6 - 2 * k, 'adobe', 4); c.HL(3 + k, 21 - k * 2, 6 - 2 * k, 'adobe', 2)
-    pot(c, 10, 21, 3, 4, 'turq')
-    # 아래 칸: 바구니
-    for y in range(24, 29):
-        for x in range(3, 13):
-            t = 4 if (x + y) % 2 else 3
-            if y == 24: t = 5 if x < 10 else 4
-            if x == 12: t -= 1
-            c.P(x, y, *cl('hide', t))
-    c.HL(4, 23, 8, 'hide', 2)
-    fin(c)
+def _(c): shelf34(c, 16, 'inn')
 
 
 # ═════════════════════════════ 미리보기 · 시연 방 ═════════════════════════════

@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "01ffbed4229966314587e20b5df7b424a3f1d158189566a147a87889854d062b",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "오벨리스크",
+ "label": "desert-east/de-obelisk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "obelisk shaft",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main pillar shaft (rows 3-27) is drawn in pure front elevation with a flat horizontal top edge at row 3 and no visible top surface. The plinth at the bottom has stepped horizontal surfaces, but the main body lacks any top view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6870
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "obelisk shaft",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body of the obelisk/column is drawn in pure front elevation; the stone shaft terminates at row 4 as a flat horizontal line with no foreshortened top surface visible, and the golden tip at the top is also drawn entirely from the front.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7049
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "obelisk shaft",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The obelisk shaft is drawn in pure front elevation with a flat horizontal boundary at row 4 and zero visible rows showing the top surface of the pillar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7427
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "obelisk shaft",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main pillar shaft terminates at row 4 with a flat horizontal edge and no visible top surface around the central ornament/cap. The shaft is drawn in pure front elevation, despite the base plinths having 3/4 surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6692
+  }
+ ],
+ "decidedAt": "2026-10-14T00:30:49.531Z",
+ "cells": {
+  "16": [
+   "75d1b51c838fca34",
+   "e5cb98d933bf693a",
+   "ece3726d4b3c86c1"
+  ],
+  "24": [
+   "0fe4c5629d918cf7",
+   "197e72ec71b1f1c2",
+   "4a09b85bb0a77abc",
+   "4ff2a585754e8086",
+   "51072adafa4dadea",
+   "c187ae0bad11c2fa"
+  ],
+  "32": [
+   "0769bab635c09447",
+   "09ddffbb39885c74",
+   "29917c81fa761de9",
+   "3c9846d4fc949899",
+   "3cde0380b17d7257",
+   "6b006c20bc3db2a2",
+   "70e27028453491b0",
+   "7f17d3f0f05a38e2",
+   "90c6bc08ec7d5b8b",
+   "b9351a7a01fcbb6e",
+   "bda04d4f6b943551",
+   "e7c32e48152b2fa4"
+  ],
+  "48": [
+   "2f684fc08e20df92",
+   "c52f96e54e49a9a0",
+   "d0f353992c1afb7c"
+  ]
+ }
+}

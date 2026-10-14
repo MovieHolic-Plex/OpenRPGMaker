@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "05f97f251a7ebdd3e4bedf81fbe655ada71484005cf7eaae9fbec5419c6bb857",
+ "width": 32,
+ "height": 48,
+ "kind": "frame",
+ "name": "두레박 장대(샤두프)",
+ "label": "desert-east/de-shaduf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "shadoof frame (horizontal beam and supporting pillars)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat 2D side/front elevation. The horizontal beam has only a 1px flat outline at row 16 with no visible top surface, the posts end in flat horizontal lines at row 46, and the pole and bucket are drawn in pure profile with no 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11728
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal beam and support pillars of the shaduf frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main horizontal beam (rows 16-24) is drawn in pure front elevation with a 1px outline along its top edge at row 16 and no visible top surface. The supporting pillars below are also rendered as flat vertical rectangles without top faces or 3/4 perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7781
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal crossbeam and shaduf pivot frame",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main horizontal beam shows a 5-pixel-tall top surface (rows 17-21) with an edge highlight above its 3-pixel-tall south-facing front drop (rows 22-24). The bucket also shows an elliptical opening with visible interior.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7901
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal crossbeam and vertical support pillars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire shadoof structure (posts, crossbeam, lever arm, counterweight, and bucket) is drawn in pure 2D side elevation. The horizontal beam terminates at row 16 with a 1px outline and shows zero top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9687
+  }
+ ],
+ "decidedAt": "2026-10-14T00:27:26.539Z",
+ "cells": {
+  "16": [
+   "04036a8aeacc0164",
+   "32272653ac41e93d",
+   "6e9f51a2ae2e6afc",
+   "8c0669fd98515e47",
+   "a6a2c2505b577cf0"
+  ],
+  "24": [
+   "2688aebbbf3177f9",
+   "348bb3f64a0f24fe",
+   "3b2498d0e3b2d66d",
+   "5dad77c3bf62743d",
+   "6e9f9f71e0946600",
+   "80b5bfdea465e391",
+   "874bab2e712b3fdf",
+   "9227a847bb3fb9bc",
+   "a83dbe19ee3bab93",
+   "c12b53162f49aa94",
+   "e7c7c5fb2ad107d0",
+   "e892d93f4f895a0f"
+  ],
+  "32": [
+   "0ef38139d9a6d63d",
+   "1f49867d27170caf",
+   "827815a00854454d",
+   "bdd05c6a988e0d2a"
+  ],
+  "48": [
+   "0de60643bc10cf0c",
+   "4d8d748a3ae36789",
+   "f8d9ca3025d55556"
+  ]
+ }
+}

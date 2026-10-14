@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b391f0ccd52ce945f573f294a7ab04a45f88a3fe957f77dbcd2efa07e087c8a7",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "뚜껑 단지 셋(석고)",
+ "label": "desert-east/de-canopic-jars",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cluster of three lidded jars",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The jars show clear elliptical top lids seen from above (rows 6-10 on the front jar, rows 1-4 on the rear jars) above their south-facing curved vertical bodies (rows 11-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4439
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "front jar with lid",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cluster consists of three round jars with prominent elliptical lids viewed from above; the front jar's lid top spans rows 6 to 10 (5 rows) before the front body drops down to row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3194
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cluster of three lidded jars",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The jars feature distinct elliptical lids seen from above (the front jar's lid spans rows 6 to 10, approx 5 rows tall) sitting atop cylindrical front faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6188
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cluster of three lidded jars",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The jars show foreshortened elliptical lid tops visible from above (the front jar lid spans rows 6-10, approx 5 rows, with a central knob) atop vertical cylindrical bodies.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3506
+  }
+ ],
+ "decidedAt": "2026-10-14T00:25:45.001Z",
+ "cells": {
+  "16": [
+   "620c85c50266854c"
+  ],
+  "24": [
+   "43aba8fe934228b0",
+   "58a0c427e79a9915",
+   "86296b59ca7378a7",
+   "8edc6e642bf25112",
+   "f1598e8cdf3cb584",
+   "f4745562b71e0107"
+  ],
+  "32": [
+   "126f79ffdecd985e",
+   "589309d9dee69b4d",
+   "7d2f307b2ad4c462",
+   "84a156646f89f503",
+   "f2dcc67e7f4e895f",
+   "f6b3fa93c95ab044"
+  ],
+  "48": [
+   "24e5cdac4e9d4df6",
+   "4c251b9adb21b979",
+   "550877686fedb67b",
+   "6caf4f016e13dfe2",
+   "d8953af839ddfff5",
+   "e3e3c30f1ff9e1fc"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "347513e090e69d933caed78e21516bf11652be057eadb1a7d8ade896ed57fbf6",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "열린 보물 궤",
+ "label": "desert-east/de-treasure-chest",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "open treasure chest",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chest is open, clearly showing its interior filled with gold and jewels from above across rows 4-8 (5 rows), with the south front face below on rows 10-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4897
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "open treasure chest",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chest is shown open in 3/4 perspective: the open interior filled with treasure is viewed from above across rows 4-8 (5 rows tall), with the front face and latch below (rows 10-15) and the raised lid above (rows 0-3).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4977
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "open treasure chest",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chest is open, clearly showing its interior filled with gold coins and gems across rows 4-8 (5 rows tall), with the lid upright/back at rows 0-2 and the front face with lock plate spanning rows 10-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3235
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "open treasure chest",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chest is open, showing a 5-row deep interior filled with gold and gems (rows 4-8) viewed from above, with the south face occupying rows 10-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4272
+  }
+ ],
+ "decidedAt": "2026-10-14T00:23:19.735Z",
+ "cells": {
+  "16": [
+   "ee271124bd6f1643"
+  ],
+  "24": [
+   "172453051632bb5b",
+   "22192af1570d9cfb",
+   "8454c0f06aedc7be",
+   "a84cd48fe6e66513",
+   "e1ee537364af50d7",
+   "e8812ecdf206d7f9"
+  ],
+  "32": [
+   "26116205ba4c537c",
+   "5d7a96a9d04d7a5e",
+   "79658aa453ec23cf",
+   "c7bb634e686a13b9",
+   "e6c2a2256610cc26",
+   "f43a8214be114049"
+  ],
+  "48": [
+   "420711aa35fb288d",
+   "51d535f6a98c6950",
+   "75b524b8f24a7d9e",
+   "9b8fb3e759cf4c91",
+   "da8b409396c2560d",
+   "fbc80ff70ccf3594"
+  ]
+ }
+}

@@ -25,7 +25,7 @@
 {"png": "de-jar-big.png", "kind": "container", "name": "큰 물 항아리", "label": "desert-east/de-jar-big"}
 {"png": "de-jars-group.png", "kind": "container", "name": "항아리 무리", "label": "desert-east/de-jars-group"}
 {"png": "de-basket-spice.png", "kind": "container", "name": "향신료 바구니", "label": "desert-east/de-basket-spice"}
-{"png": "de-sacks.png", "kind": "box", "name": "곡식 자루 더미", "label": "desert-east/de-sacks"}
+{"png": "de-sacks.png", "kind": "container", "name": "곡식 자루 더미", "label": "desert-east/de-sacks"}
 {"png": "de-crate.png", "kind": "box", "name": "나무 궤짝", "label": "desert-east/de-crate"}
 {"png": "de-crates-stack.png", "kind": "box", "name": "궤짝 쌓음", "label": "desert-east/de-crates-stack"}
 {"png": "de-lantern-post.png", "kind": "column", "name": "등잔 기둥", "label": "desert-east/de-lantern-post"}
@@ -53,4 +53,4 @@
 {"png": "de-carpet-rack.png", "kind": "frame", "name": "양탄자 걸이", "label": "desert-east/de-carpet-rack"}
 {"png": "de-incense-burner.png", "kind": "container", "name": "놋 향로(연기)", "label": "desert-east/de-incense-burner"}
 {"png": "de-jars-rack.png", "kind": "container", "name": "물항아리 시렁", "label": "desert-east/de-jars-rack"}
-{"png": "de-palm-stump.png", "kind": "debris", "name": "야자 그루터기", "label": "desert-east/de-palm-stump"}
+{"png": "de-palm-stump.png", "kind": "column", "name": "야자 그루터기", "label": "desert-east/de-palm-stump"}

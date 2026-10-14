@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a03cd124a5ffec0892fc82e200cf94f72b5e2cbc36a62ce8d28fb5ab550ba8e6",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "물담배(시샤)",
+ "label": "desert-east/de-hookah",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "large yellow base/jar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (yellow vessel, rows 7-15) is drawn entirely in front elevation with no visible top plane; its upper edge forms a convex silhouette (higher in center, curving down to the sides) typical of a front-on view. The blue neck and vertical stem are also drawn purely from the front with 0px top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8508
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "yellow base jar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main yellow body is drawn as a flat front elevation with straight horizontal base lines (rows 13-15) and rounded shoulder outlines instead of a foreshortened top surface seen from above (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14988
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "yellow base vessel",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main yellow vessel is drawn essentially in front elevation: its horizontal top plane is barely 1-2 source pixels tall (rows 7-8 around the upper stem) before dropping into the 5-row tall vertical front face (rows 9-13). Under the rules, a 1-2px top edge does not qualify as an adequate 3/4 top-down visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 7281
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "yellow base bowl/cushion",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hookah is drawn in a flat front elevation: the blue flask has vertical straight sides with no top visible, and the large yellow base shows only 1-2 rows of curved silhouette at row 7-8 rather than a foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 7191
+  }
+ ],
+ "decidedAt": "2026-10-14T00:28:57.645Z",
+ "cells": {
+  "16": [
+   "ad7356ab630fee88"
+  ],
+  "24": [
+   "3d174e9f62442800",
+   "67d01f7731b5a403",
+   "9df8886566486e0f",
+   "acb104109bd349f4",
+   "b6da1d7cd90e54f5",
+   "be18771eaea0fda0"
+  ],
+  "32": [
+   "2f2be5c3236c0a72",
+   "6dbad9e89d63a703",
+   "8ff0b7b0228c7081",
+   "a78cf4d15fcca98e",
+   "fbd66cf1df4e234a",
+   "fbfb1a45a5495457"
+  ],
+  "48": [
+   "0adb7c8540a4858f",
+   "0d188e78701292d6",
+   "4a00e4a5dc3a291e",
+   "a1902520b3bb5fdd",
+   "bd02ec40c68497cb",
+   "c911122b64052e72"
+  ]
+ }
+}

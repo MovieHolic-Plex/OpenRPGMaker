@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2126bc2b6c08a02916435c33a25060640d2f0e1549c6e20aab8431a44cfc771a",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "갈대 차양(그늘막)",
+ "label": "desert-east/de-parasol-reed",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "reed awning roof and support posts",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The thatch canopy slopes downward toward the viewer with roughly 11 pixel rows of visible upper reed surface (rows 1-11) plus fringe (rows 12-14). Depth is reinforced by the back posts terminating higher (row 21) than the front posts (row 30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4217
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "thatched reed awning roof",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sloping reed canopy roof is viewed from above across rows 1-11 with visible horizontal tiering, overhang fringe at rows 12-14, and proper depth offset between front and rear supporting posts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3728
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "reed awning canopy with support posts",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The awning roof prominently displays its top thatch slope across rows 1-11 with fringed eaves along rows 12-14. Perspective depth is reinforced by the staggered rear and front support posts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4215
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "thatched reed canopy roof on posts",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sloping top surface of the reed canopy is clearly depicted over rows 1 to 11 with distinct thatched tiers viewed from above, with front and rear supporting posts below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3708
+  }
+ ],
+ "decidedAt": "2026-10-14T00:27:26.538Z",
+ "cells": {
+  "16": [
+   "17e9c7396adc9e8f",
+   "3fdd01327ecda065",
+   "928c9758c09c2cbc",
+   "bf3a6a08f9d4d78d"
+  ],
+  "24": [
+   "0c0077883896c9d3",
+   "1647d3683614ad55",
+   "1f187eb395b9d24c",
+   "2861457580f8d59c",
+   "35c167c9cf4debef",
+   "3715933215fc8e0c",
+   "3d0ecd39009aa458",
+   "3e279ce3e53151c6",
+   "50b47396fe294ccb",
+   "5632b50d1d8929de",
+   "5cf5c818060968bf",
+   "5de55daef99ce656",
+   "5e228851e4899c05",
+   "5ef75baef010b703",
+   "74124ff0f74c2567",
+   "79518857ce022997",
+   "85abcf2dfef9c6f0",
+   "9e8c830344f72d6d",
+   "a0c478455d9d3136",
+   "a1cf08f1bce3636c",
+   "b133a769fceb01a1",
+   "b938d34ac8feacc0",
+   "ef1a679993d8646d",
+   "f4733d15936c49e6"
+  ],
+  "32": [
+   "931aa3b91c6fd330"
+  ],
+  "48": [
+   "19d126478036f91f",
+   "1c80b5935564af34",
+   "4fb86f66f6b0665d",
+   "aab6404d6360eb92",
+   "c8e280606202bf28",
+   "d05019228b27c96c"
+  ]
+ }
+}

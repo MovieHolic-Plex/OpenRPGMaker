@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7f2c400f05a43204cf4dda9ca029655c0cbc39d1a4b5fdd36fa1c90e7a6b3443",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "물담배(시샤)",
+ "label": "desert-east/de-hookah",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water vase / bulb of the hookah",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main vessel (rows 5-12) and the base plate (rows 12-15) are drawn strictly in front elevation without any foreshortened top surfaces or circular top planes visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6469
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water base of the hookah",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hookah is drawn purely in side/front elevation. The main blue base, the stem, and the bottom saucer show no foreshortened top surfaces or elliptical cross-sections.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5925
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "glass water base / vessel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main vessel body (rows 5-12) has a completely flat horizontal top edge at row 5 with no visible top surface foreshortened in depth, depicted as a straight front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5926
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water container and stem of a hookah",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hookah body, stem, and base are drawn entirely in front elevation with no visible horizontal top surfaces or elliptical foreshortening on either the vase or the base plinth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6046
+  }
+ ],
+ "decidedAt": "2026-10-14T00:23:19.734Z",
+ "cells": {
+  "16": [
+   "50e0ed37ea28e995"
+  ],
+  "24": [
+   "2a3f79c3fa2e181b",
+   "63c5c649d7a944a7",
+   "70e24d5b103ff572",
+   "b87b9eed68cf1a78",
+   "e52e37862debe210",
+   "f49f7ad63b2f756a"
+  ],
+  "32": [
+   "7b781d5e0b1d5752",
+   "7c951df5ae21bdfe",
+   "b7bb30b24ccca1d8",
+   "ca14cb0655c34921",
+   "e21fb46b0ddfafa7",
+   "f52edaba7d46f53a"
+  ],
+  "48": [
+   "0232e2bcb4c21d52",
+   "384812c912488f36",
+   "595a849cd0a500ef",
+   "90c5bed00eac616a",
+   "919a6c5395d1168b",
+   "d90198641696b5ae"
+  ]
+ }
+}

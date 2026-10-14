@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "72b009cb44297b42e747dcdf44eab18afc08ff8f658fddb3dc330a3365eb5b02",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "흙 가마(그릇 굽는)",
+ "label": "desert-east/de-kiln",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "earthen pottery kiln",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening of the kiln is rendered as an ellipse viewing into the illuminated interior (rows 6-10, approx 5 rows tall), clearly demonstrating the top-down 3/4 perspective above the front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4071
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "clay pottery kiln",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening of the kiln is clearly visible from above across rows 6-10 (5 rows deep) showing the glowing interior, with back rim at row 3 and front rim at row 11, properly rendered in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4378
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "earthen pottery kiln",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the kiln is rendered with a clear open top viewing the interior/contents from row 6 to 10 (approx. 5 pixel rows), with front wall and lower opening below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2689
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "clay pottery kiln",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The kiln has a clearly foreshortened top opening between rows 5 and 9 showing the glowing interior (5 pixel rows deep) framed by back and front rims, followed by a tall south-facing front wall with a lower fire door.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5111
+  }
+ ],
+ "decidedAt": "2026-10-14T00:27:26.540Z",
+ "cells": {
+  "16": [
+   "47607fa68c0333ae",
+   "67af182f23ad8286",
+   "79754be109e906ff",
+   "da3558d8750eb1f9"
+  ],
+  "24": [
+   "0fe2e9d94cf439f5",
+   "115ea87dc1e83579",
+   "2d20ac01aa9f7421",
+   "35cf5463bf3df8ab",
+   "463106488988bbdc",
+   "54086db382a2b9bc",
+   "61948b33aaf9b97d",
+   "61b6d95caf6f127a",
+   "6fe884146182e404",
+   "70548b3d982ec4c7",
+   "7881c431dd14a169",
+   "972aea8c9d965228",
+   "9a6b2d47c7ae7cef",
+   "9cdbb01d482901e6",
+   "b4321cea19dac6c8",
+   "b5da6d53f3fd8980",
+   "b8f04256a7d51030",
+   "bb4ccf1bde7c51d4",
+   "bebcb002408ed603",
+   "cf86e8e0ba76b65a",
+   "db2cc22e3dd403fe",
+   "e7fe9c4af31b832c",
+   "edf888fb75aa700d",
+   "f809498f4b254328"
+  ],
+  "32": [
+   "57f63bb40b673276"
+  ],
+  "48": [
+   "02aa96bd82e52f0a",
+   "0b6ba4fd99122cfd",
+   "25e34f19615eef09",
+   "75de2b8e4fab0bfa",
+   "80295efbd57e8db2",
+   "e9784b35b31f125c"
+  ]
+ }
+}

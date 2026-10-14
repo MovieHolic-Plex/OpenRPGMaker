@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5e5c407af9a95330a1db27fbef41d5b0c10903a0ddf265101153edb42ab78c39",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "말뚝 고삐 기둥",
+ "label": "desert-east/de-hitch-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hitching rail beam and posts with cloth on top",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the rail/cloth is clearly foreshortened and visible across rows 0–5 (6 source pixels deep), with a front edge highlight along row 5 and the south-facing vertical edge shown on row 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 19785
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal rack / hitching rail with draped blanket or top surface",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal beam/rack clearly displays a 5-pixel deep foreshortened top surface (rows 1–5 bounded by front and rear beam edges) supported by vertical posts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7494
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hitching rail with blanket/reins",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hitching rail, legs, and draped blanket are drawn entirely in flat front elevation with no visible top surface on the horizontal rail, posts, or blanket fold (row 0 is merely a 1px border line).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6523
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hitching rail with draped blanket",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hitching rail and draped cloths are drawn in pure front elevation; the horizontal rail/drape top is only 1 pixel row tall (row 0), showing no top surface foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 8223
+  }
+ ],
+ "decidedAt": "2026-10-14T00:36:51.617Z",
+ "cells": {
+  "16": [
+   "6b3c7b029016e0f8"
+  ],
+  "24": [
+   "25dc38bf74d48d5b",
+   "571dbc0833326039",
+   "6685e80269ba56af",
+   "a3fb0a5da458fb0f",
+   "c0e2a9c72ba60afb",
+   "ccd3ba5fb4c33c64"
+  ],
+  "32": [
+   "2184a61019f78ec0",
+   "4a63255797e95e2c",
+   "65933113ae5049f0",
+   "8c39997aced4bb88",
+   "a21d5395be6487a8",
+   "a788068ed4215478"
+  ],
+  "48": [
+   "35d5f88b96772860",
+   "396557693cb55480",
+   "4c94f03953c8f979",
+   "5145c9725ab39d40",
+   "8c99f4e012898b89",
+   "af4889b79fde6396"
+  ]
+ }
+}

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7b257373bb28093b0684609157fa73377496d2da0f312201ba7d4f1aaddf0dc1",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "부러진 기둥",
+ "label": "desert-east/de-column-broken",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "broken pillar / column",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The column and its base are drawn in pure front elevation. The top end is capped with a flat horizontal outline with no foreshortened top surface or cut face visible from above (top_rows = 0), and the base plinths are flat rectangular blocks with no visible top horizontal surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9307
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "broken pillar shaft and capital",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillar is drawn in flat front elevation. Neither the top end (rows 6-7) nor the base steps (row 23, row 28) show any foreshortened horizontal top surfaces (0 pixel rows of top view).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5226
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "broken column shaft with capital/broken top and pedestal base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The column is drawn in pure front elevation. The top end has a flat 1-pixel horizontal outline at row 6 with no elliptical or foreshortened horizontal cut surface visible. Both the capital and the base pedestal are depicted purely from the front with no visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8307
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "broken pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the pillar is completely flat across row 6 with no elliptical foreshortened cut face or top surface visible. The cracks and fluting are drawn entirely on vertical front-facing planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6385
+  }
+ ],
+ "decidedAt": "2026-10-14T00:33:14.417Z",
+ "cells": {
+  "16": [
+   "6be5754716f908e4",
+   "f3a42a3184da5931"
+  ],
+  "24": [
+   "0770371280b3e4df",
+   "3318433690636d5c",
+   "373f69d13f0e1311",
+   "381eaa3bd68dae46",
+   "3974a9518b5bfa4f",
+   "52114077fae0749a",
+   "66620e0771bbde86",
+   "6c14f0878f85ad26",
+   "983e086a65a3f894",
+   "9a8f7188efb112d1",
+   "abb1f7b0c4b3be93",
+   "f570b3f536634448"
+  ],
+  "32": [
+   "32dee2063760931a",
+   "9a3de7e61edd9790",
+   "e2a221ed8e3e1516"
+  ],
+  "48": [
+   "856244499bd84384",
+   "8e8e02032a568dc7",
+   "a3fd16d54a69b832",
+   "adf7e0009ef1950b",
+   "c318244946f1c13f",
+   "d126b0c2ec5ff0d0"
+  ]
+ }
+}

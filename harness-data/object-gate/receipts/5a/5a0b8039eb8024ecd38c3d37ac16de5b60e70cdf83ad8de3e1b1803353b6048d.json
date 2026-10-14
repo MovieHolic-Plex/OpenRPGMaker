@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5a0b8039eb8024ecd38c3d37ac16de5b60e70cdf83ad8de3e1b1803353b6048d",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "수건걸이",
+ "label": "desert-east/de-towel-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "towel rack with upper shelf",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top shelf shows a foreshortened top surface across rows 1-3 holding folded items, viewed from a 3/4 downward angle above the front edge and lower hanging bar.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5319
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "towel rack with shelf",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the upper shelf is clearly visible across rows 1-4 (4 rows deep), with a folded blue cloth/object resting on it in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6993
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "towel rack frame with shelf",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire towel rack is drawn as a flat front elevation: the top shelf/towels, hanging towel, brackets, and lower horizontal rail show only vertical front faces with no foreshortened horizontal top surfaces (0px top surface).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 16942
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "towel rack / shelf",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top shelf surface is clearly foreshortened and visible from above across rows 1-3 (3 rows deep) with a folded teal towel/item resting on it, leading to a front edge on row 4 above the hanging towel section.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7547
+  }
+ ],
+ "decidedAt": "2026-10-14T00:25:45.001Z",
+ "cells": {
+  "16": [
+   "ef4b815ce5ac4bd0"
+  ],
+  "24": [
+   "033b6528fc0579dc",
+   "1a27729833b9b1dc",
+   "888a239d394a139e",
+   "f724fc2641562fbd",
+   "fc1d8e5cfced6d54",
+   "ff504f0c69481af9"
+  ],
+  "32": [
+   "2b1dc7c2c9f6c9d2",
+   "2fbff5654c3f834f",
+   "6150d3778e04a8eb",
+   "c2d6b9241bb0b70b",
+   "cd56bf7cc95cdf70",
+   "d91ffecb5db07af2"
+  ],
+  "48": [
+   "1bd67a851e6b1c53",
+   "2481f4c42d9bba3a",
+   "2a4af9631d9db77b",
+   "643366156cc51040",
+   "700ef45ef2331de0",
+   "75a52479d43150e2"
+  ]
+ }
+}

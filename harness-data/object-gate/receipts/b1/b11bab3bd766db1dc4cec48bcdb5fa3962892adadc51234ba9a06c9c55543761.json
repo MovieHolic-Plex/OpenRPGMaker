@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b11bab3bd766db1dc4cec48bcdb5fa3962892adadc51234ba9a06c9c55543761",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "오벨리스크",
+ "label": "desert-east/de-obelisk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "obelisk shaft",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The column shaft is drawn as a flat front elevation with completely vertical straight sides terminating at a flat horizontal top. The top edge has only 1-2px of darker outline/shading rather than an angled, foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5829
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "shaft and capital of the obelisk/pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the column ends in a flat 1px horizontal border at row 2 with no foreshortened top surface or angled pyramidion face visible from above. The entire shaft (rows 2–27) is drawn as a flat vertical rectangle in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7056
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "obelisk shaft and plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The obelisk and its stepped base are drawn in pure front elevation with completely flat horizontal lines across the top and between tiers. No foreshortened top surface is visible on the column/cap (row 2 is a flat 1px horizontal outline) or on the stepped plinths.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7437
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "obelisk shaft and cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the obelisk (rows 2-3) is completely flat with only a 1px border and 1px edge shading instead of a foreshortened top surface or 3D pyramidion, drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4379
+  }
+ ],
+ "decidedAt": "2026-10-14T00:36:21.264Z",
+ "cells": {
+  "16": [
+   "1f7c4603e27b6614",
+   "25babe3c6006bd3e",
+   "5ac929758edbd391"
+  ],
+  "24": [
+   "3d824445414841a2",
+   "4ef451cf43cd960a",
+   "5865f1bf889a0bcb",
+   "adbf5d781973577a",
+   "ca709f60743df196",
+   "d28bf5ff6f4c0bc7"
+  ],
+  "32": [
+   "01822c29cd7f4048",
+   "065a87b9b4d62956",
+   "100e92dfc86508f7",
+   "2942cd8f4dfded5c",
+   "38d28b493a3cf672",
+   "41219dde2b87b2e1",
+   "5c535f4750c170ce",
+   "647618a391a1fa82",
+   "8c2331c1f0831ce9",
+   "9541893a2e9fcf62",
+   "e43152f96b6fc366",
+   "ef89a81060943c2f"
+  ],
+  "48": [
+   "20ced507e010a92d",
+   "db8d323f282eb3d2",
+   "ddb51940bd30be0d"
+  ]
+ }
+}

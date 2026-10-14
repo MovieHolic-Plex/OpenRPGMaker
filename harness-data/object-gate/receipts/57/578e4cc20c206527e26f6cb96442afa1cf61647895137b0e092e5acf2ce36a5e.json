@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "578e4cc20c206527e26f6cb96442afa1cf61647895137b0e092e5acf2ce36a5e",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "좌상 사자 석상(받침)",
+ "label": "desert-east/de-guardian-statue",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "seated lion statue on a decorative drum/pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire figure and pedestal are drawn in pure front elevation: the head, body, and round pedestal show no foreshortened top surfaces or 3/4 downward angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5896
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "seated lion statue on a decorative drum/plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The statue and its base are drawn in pure front elevation. The head, torso, ball/body, and base bands face the viewer directly with no foreshortened top surfaces visible on the figure or on the base/plinth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6949
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "seated lion statue on pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The statue and its plinth/base are drawn in pure front elevation with 0 visible top rows. The head, body, and pedestal show no foreshortened top surfaces seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14102
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "seated lion stone statue on pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The statue's head, body, sphere, and base are drawn entirely in straight front elevation with no visible top surface on any horizontal plane or the plinth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4717
+  }
+ ],
+ "decidedAt": "2026-10-14T00:25:45.001Z",
+ "cells": {
+  "16": [
+   "8f482d39d2229adc",
+   "f3951cbb6c571cbf"
+  ],
+  "24": [
+   "3bfac8c276defc2a",
+   "43113e63440b7362",
+   "707b108c7d08f380",
+   "73a5e3095e94b3fc",
+   "8fe836305a3a5357",
+   "99c854fc3f028d2f",
+   "a2917873cee50544",
+   "a4a935ee561990df",
+   "b33ea794cb035d70",
+   "b975dfe52b05dbe1",
+   "fd4a4a5508c543b5",
+   "fdaa26a127898265"
+  ],
+  "32": [
+   "1aacd5ada12ed207",
+   "628b8270b78ab8ff",
+   "f66bbfaca49647e3"
+  ],
+  "48": [
+   "6b58f88c45b14260",
+   "9e127579d7cdc249",
+   "aecfd19195bb8bb6",
+   "ba3b85b50c5aa78b",
+   "e92d5cca0add9716",
+   "f15889ee372d0deb"
+  ]
+ }
+}

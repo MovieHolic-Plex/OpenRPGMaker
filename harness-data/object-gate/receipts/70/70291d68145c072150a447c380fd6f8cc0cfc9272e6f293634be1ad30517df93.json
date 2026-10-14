@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "70291d68145c072150a447c380fd6f8cc0cfc9272e6f293634be1ad30517df93",
+ "width": 32,
+ "height": 64,
+ "kind": "column",
+ "name": "비둘기 탑(흙벽돌)",
+ "label": "desert-east/de-dovecote",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mudbrick pigeon tower with tiered cylindrical sections and top cupola",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top parapet/platform forms a clear foreshortened ellipse from row 6 to row 11 (~5 rows deep) surrounding the central cupola, and the lower tiers and wide flared base also show distinct elliptical top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5894
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "multi-tiered mudbrick pigeon tower",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top circular platform (rows 6-11) is foreshortened and visible around the central white dome. Additionally, the horizontal ledges between the expanding tiers and the broad base ledge (rows 48-56) clearly curve forward and show their upper surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4559
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "mudbrick pigeon tower with tiered cylindrical sections",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof/platform around the central cap spans rows 6-12 (around 6 rows tall) displaying a clear foreshortened elliptical top surface. The stepped tiers and base also show strong downward curves and horizontal shelf surfaces consistent with 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4863
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical mudbrick pigeon tower",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top platform ring around the white dome shows a clear top surface from rows 6-11 (approx 5 rows tall), and each stepped tier and base features visible top ledge surfaces with appropriate circular perspective curvature.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3531
+  }
+ ],
+ "decidedAt": "2026-10-14T00:24:39.343Z",
+ "cells": {
+  "16": [
+   "46fee0b07da779d2",
+   "544793824862e3af",
+   "7930e4323ea5bb2f",
+   "93e17ea0abd76968",
+   "ad95ffc76c629c7a",
+   "c7f8a77f529ae644",
+   "d5d4b6426c5d28b4",
+   "fea22c708e21ac42"
+  ],
+  "24": [
+   "2219d82829f4fca8",
+   "28a1987dd2d65753",
+   "2a59a634dd2de206",
+   "2f55f2494a647fa7",
+   "2f56ef56c4fbf52f",
+   "3972f2de87c7639d",
+   "39d920d7c17f2366",
+   "45ef8b80495486c0",
+   "4b99ec8b5619677e",
+   "4e643a1c5b9e5492",
+   "50a769a4a534b391",
+   "5d569a30fa8312a2",
+   "63d8d7b9a559d280",
+   "690130627986c5c6",
+   "6911b3241566c4cb",
+   "9266f7bdfa29b775",
+   "a2ac42ac817e10f9",
+   "a4c9904f709708f2",
+   "a74323551670dc24",
+   "aac065404be54f08",
+   "adaf4a8413957b58",
+   "ae1ec623e339c3f5",
+   "b53e5159b7e2d875",
+   "c19f41bf63804821",
+   "caad41a6911e8cb6",
+   "cf23f6b019d9c735",
+   "d14bab1c32b17a67",
+   "d890df5b70f370c8",
+   "dc5fe5714df1214c",
+   "dcfbea1107ffda39",
+   "debfbbc73baf0f50",
+   "e0e7e5fac24656fd",
+   "e7db55e066d5da5b",
+   "ee5e40348c0fae5a",
+   "f0b87fb35a57886b",
+   "f0da93f21a416813"
+  ],
+  "32": [
+   "08a3158649416881",
+   "34e8370a5ca4b5f8"
+  ],
+  "48": [
+   "089ba830a9f9d1f3",
+   "0c3c20feac5e5f94",
+   "33cf0d7e0c4d8c72",
+   "3f4b133a3333cb38",
+   "5255ef240e9bcc6e",
+   "704a98603ec608f9",
+   "7b7f6607645775ac",
+   "8cb74583a46c8134",
+   "bb3101e76d7b0568",
+   "c73540eb5a9aea63",
+   "e9b5644421269a05",
+   "f6a583374c0830ef"
+  ]
+ }
+}

@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a34e03855e9ae299455a8fd88f7cec9da66a8a33070c031cfd6fcb0df432a558",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "그릇 선반",
+ "label": "desert-east/de-shelf-pottery",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden dish shelf / cabinet",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet top surface is clearly visible across rows 1-5 (about 5 pixel rows tall) with a highlighted front rim, and the internal shelf surfaces also show 2-3 pixel rows of top-down depth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6181
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dish cupboard / shelf unit",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cabinet is clearly rendered from rows 1 to 5 (~5 pixels deep) with appropriate wood shading, and the interior shelf planes are also shown foreshortened from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5038
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden dish shelf",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet top has a clearly defined top surface spanning rows 1 to 4 (4 px tall) with wood grain shading, and the interior shelf surfaces are also visible under the dishes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5570
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden dish shelf / cupboard",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cabinet is clearly visible across rows 1-5 (approx 4-5 source pixel rows) with an overhang highlight and shadow at rows 5-6. The interior shelf surfaces are also visible from above with 2-3 rows of depth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6206
+  }
+ ],
+ "decidedAt": "2026-10-14T00:23:19.734Z",
+ "cells": {
+  "16": [
+   "81e136ff6cbf9b04",
+   "8ec1ee729a70a5e6",
+   "b4a0ff9c390cfce9",
+   "f55c72006c2fadba"
+  ],
+  "24": [
+   "0b5e75adc0c574b0",
+   "0e039647d2b3f087",
+   "1d66b4db8a10b065",
+   "256e317ef7ff51a3",
+   "3de4b6e2d9ec5be3",
+   "402faa3d09e1e621",
+   "4036859c06a28168",
+   "432e8ff7e7e23b09",
+   "4363a736ce59bd0c",
+   "7aa288125aae32d9",
+   "92404874d66e4703",
+   "9b482a8f1bde7690",
+   "9cc4d64191bb7906",
+   "a073e5d14f25f3d3",
+   "a1b02d2dbcef48ae",
+   "aa145dfbdb9957c1",
+   "b4082a07e7132853",
+   "cc08189b6eff79ce",
+   "d08400382da6051f",
+   "d4acd46e2eb3a50d",
+   "dc530ef45faa5d06",
+   "e47f565e7a11f0b9",
+   "f29c1435a81086a1",
+   "f8899dcac98d3058"
+  ],
+  "32": [
+   "a1549f88431968c9"
+  ],
+  "48": [
+   "3d6844709696de78",
+   "559f22f668cedacf",
+   "5aba289ac98ce8d6",
+   "674b7e62ab0565aa",
+   "885c0a4c14c8ac7f",
+   "df0f2895192d2ea6"
+  ]
+ }
+}

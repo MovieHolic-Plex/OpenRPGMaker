@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "99798199904d3598993d2ee2f54daf075a99da4eb4473ae86c4fb391e7fd5f62",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "바랜 나무 울타리(가로)",
+ "label": "desert-east/de-fence-wood",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal wooden fence beam and posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal fence rail is drawn in pure front elevation from row 1 to 7 with only a 1px outline at row 0 instead of a foreshortened top surface visible from a 3/4 top-down angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6006
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal wooden fence beam and posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal fence rail spans rows 0-7 but only has a 1px outline at row 0 with no visible top surface foreshortened from above; the entire board and posts are drawn as a flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3961
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal wooden fence beam and posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal fence board (rows 1-7) is drawn entirely as a flat front face with attachments on rows 2-4 and only a 1px outline at row 0; no top plane is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6655
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal wooden fence beam and posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal fence rail spans rows 1-7 with only a 1px dark outline at row 0, presenting a flat front elevation without any visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4513
+  }
+ ],
+ "decidedAt": "2026-10-14T00:49:10.254Z",
+ "cells": {
+  "16": [
+   "efbb647cb9954a92"
+  ],
+  "24": [
+   "3f52b1a930851f13",
+   "3f534712a9a12649",
+   "9564cac7278c7936",
+   "99bd2b3145644eb0",
+   "be7be871c80d801b",
+   "c7871707d763148c"
+  ],
+  "32": [
+   "25bfa69c53f194c1",
+   "5db4909527bb735c",
+   "7d61619d82bb753f",
+   "8868f63061fbc087",
+   "92c7a9834cbe6b04",
+   "a7affef715f47474"
+  ],
+  "48": [
+   "2fc8568dbf541e26",
+   "4122747686cf41ba",
+   "52878007a0a30ad2",
+   "6b684668edbed7d2",
+   "8c2d45d7e099c6d2",
+   "a26a2c6407412d2d"
+  ]
+ }
+}

@@ -1,0 +1,153 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "33b59cc6d87c94a73358c7ab31530a0589ef4ab364f11e590424f4bdc88a7c8a",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "작은 피라미드",
+ "label": "desert-east/de-pyramid-small",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stepped pyramid",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": false,
+    "evidence": "The pyramid is drawn in an isometric/oblique perspective showing a receding, shaded side face on the right. The stepped tiers on the front face show no top depth (only 1-2px highlight stripes), violating the top-down 3/4 view requirement of no receding isometric side faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "옆면(아이소)",
+    "윗면 0행 < 3"
+   ],
+   "ms": 17442
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "small pyramid structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The structure is drawn in a flat front elevation against a flat ground line at row 46, with vertical lower walls and no depth receding backward. The main body shows no visible top surface (top_rows = 0), with only 1px horizontal step highlights.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 29187
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pyramid structure / building",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire pyramid/monument is drawn in pure 2D front elevation (side-scroller view), with horizontal stone courses rendered flat across the front and the sides dropping vertically at the bottom. There is zero top surface or top-down depth visible for the base, steps, or structure.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12029
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stepped pyramid with golden capstone",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Viewed from an elevated southern perspective (3/4 top-down view), showing the foreshortened central south stepped face with clearly visible horizontal treads on each layer, flanked by the sloping west and east faces, culminating in a three-faceted visible capstone.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9310
+  }
+ ],
+ "decidedAt": "2026-10-14T00:30:49.530Z",
+ "cells": {
+  "16": [
+   "023355a916751476",
+   "0b514a0679db7a0b",
+   "117e988fe2ac1647",
+   "1494e64a11187299",
+   "4a091d75174952a8",
+   "64929ffaa8fd79dd",
+   "6ad86abee085cd86",
+   "87691a8053309e26",
+   "9b1738896233e4b4",
+   "cd79c9dfc578a223"
+  ],
+  "24": [
+   "0085e5cfdb3be106",
+   "03caf188ee16cf3c",
+   "12f87e5387c7e66a",
+   "306fe945477137b7",
+   "4193288e6ba6d0d3",
+   "4e5c4f7b3f02a6b8",
+   "506c368423de5e56",
+   "68a1592aaf6faf05",
+   "71dbfc863bd2a406",
+   "8466f867a3a9bf45",
+   "a5b6d438a9c38a79",
+   "bf2593a4ec68ec5b",
+   "d04099172310edba",
+   "d6820a785a731119",
+   "da389c544aa5820d",
+   "e3a8419524980350",
+   "fa8366334179bf3a"
+  ],
+  "32": [
+   "383e4b0505aef575",
+   "76a78b6fe0737058",
+   "7a5cc5aea343def6",
+   "836750129b035d2d",
+   "99f587bb60ea96f3",
+   "c36348d64362ef61",
+   "d936c4dc92fbbc3d",
+   "e85604ae6db0f6e3"
+  ],
+  "48": [
+   "14035e7237e7079b",
+   "2075596ba19739eb",
+   "4f637057d987bd56",
+   "724c019054db037c",
+   "a1f48daf853999d7",
+   "e1f0e55cb230055d"
+  ]
+ }
+}

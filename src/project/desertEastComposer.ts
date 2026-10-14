@@ -792,7 +792,8 @@ function composePalace(b: Board, rng: () => number): DesertCell {
   const ex = g0.x;
   const outY = ring.y + ring.h;
   b.ground({ x: ex, y: outY, w: gate.length, h: H - outY }, "f", "plaza");
-  b.prop("de-obelisk", ex - 2, outY + 1, 0); b.prop("de-obelisk", ex + gate.length + 1, outY + 1, 0);
+  const ob = b.pal.kit("de-obelisk") ? "de-obelisk" : "de-stele";   // 관문 미통과로 오벨리스크가 시트에 없으면 비석
+  b.prop(ob, ex - 2, outY + 1, 0); b.prop(ob, ex + gate.length + 1, outY + 1, 0);
   if (H - outY >= 8) {
     const roadY = H - 3;
     b.ground({ x: 2, y: roadY, w: W - 4, h: 1 }, "r", "road");
@@ -875,7 +876,8 @@ function composePyramid(b: Board, rng: () => number): DesertCell {
     b.stamp("de-wall-gate", ax - 1, pylY, "wall");
     b.zone("탑문", "참배 길 남쪽 끝 문", { x: ax - 1, y: pylY, w: pyl.w, h: pyl.h });
   }
-  const pairs = ["de-lion-statue", "de-obelisk", "de-column", "de-obelisk"];
+  const ob = b.pal.kit("de-obelisk") ? "de-obelisk" : "de-stele";
+  const pairs = ["de-lion-statue", ob, "de-column", ob];
   let k = 0;
   for (let y = dy + dk.h + 1; y < pylY - 1; y += 4, k++) {
     const id = pairs[k % pairs.length]!;
