@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **173쪽 / 5761KB / 약 1,681,976 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **173쪽 / 5767KB / 약 1,683,719 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -18,7 +18,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/beodeul-city.md` | 104KB | 10KB | 619 | ~31,743 |
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,114 |
 | `openwiki/editor-ai-panel.md` | 657KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 4252 | ~192,652 |
-| `openwiki/editor-ai-tools.md` | 381KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 3100 | ~110,723 |
+| `openwiki/editor-ai-tools.md` | 382KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 3105 | ~110,976 |
 | `openwiki/editor-database.md` | 414KB | 63KB ⚠상한 초과 — 절을 더 쪼개라 | 2475 | ~121,569 |
 | `openwiki/editor-event-authoring.md` | 180KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 1099 | ~52,499 |
 | `openwiki/editor-event-commands.md` | 68KB | 32KB | 303 | ~18,704 |
@@ -647,7 +647,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L4243` 완료 음원 결과와 연결 재개 (2026-10-05)
 - `L4249` 응답 오류와 이미 반영된 변경의 분리 (2026-10-05)
 
-### `openwiki/editor-ai-tools.md` — 381KB · 3100줄 · ~110,723 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-ai-tools.md` — 382KB · 3105줄 · ~110,976 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` stamp_object 높이 단 규칙 · 트인 땅 배치 기준 (2026-10-11)
 - `L34` 출입구 도달·문앞 좌표 계약 (2026-10-07)
@@ -783,14 +783,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L3031` 작은 편집의 래스터 보존과 선택지 취소 (2026-10-05)
 - `L3037` 슈퍼하네싱 사용자 선택 기물 우선 사용 (2026-10-05)
 - `L3046` 키트 시트 야외 빈 터 꾸미기 — `find_empty_ground` · `furnish_outdoor_area` (2026-10-07)
-  - `L3056` naturalize_beodeul_hamlet (2026-10-04)
-- `L3061` compose_beodeul_courtyard_village (2026-10-04)
-- `L3066` refine_beodeul_courtyard_vegetation (2026-10-04)
-- `L3071` 오프닝 그림 프롬프트 구조화 (2026-10-11)
-  - `L3077` 그림 기본 경로 = ChatGPT(GPT Image) (2026-10-11)
-  - `L3083` 오프닝 바이블·cast·화풍 기법 (2026-10-11)
-  - `L3090` 오프닝 후보 생성 + 독립 판정자 (2026-10-11)
-  - `L3096` 시연 오프닝 6컷 mp4 (2026-10-12)
+  - `L3061` naturalize_beodeul_hamlet (2026-10-04)
+- `L3066` compose_beodeul_courtyard_village (2026-10-04)
+- `L3071` refine_beodeul_courtyard_vegetation (2026-10-04)
+- `L3076` 오프닝 그림 프롬프트 구조화 (2026-10-11)
+  - `L3082` 그림 기본 경로 = ChatGPT(GPT Image) (2026-10-11)
+  - `L3088` 오프닝 바이블·cast·화풍 기법 (2026-10-11)
+  - `L3095` 오프닝 후보 생성 + 독립 판정자 (2026-10-11)
+  - `L3101` 시연 오프닝 6컷 mp4 (2026-10-12)
 
 ### `openwiki/editor-database.md` — 414KB · 2475줄 · ~121,569 토큰 · 통째읽기 잘림 · 깨진 줄 8
 
@@ -1884,7 +1884,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L66` Authored field menu and assistant tools (2026-10-04)
 - `L95` Emerald authored presentation
 
-### `openwiki/monster-expedition.md` — 13KB · 198줄 · ~3,381 토큰
+### `openwiki/monster-expedition.md` — 15KB · 218줄 · ~4,147 토큰
 
 - `L6` Source and regeneration
 - `L41` Campaign metadata contract
@@ -1892,6 +1892,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L106` Normal-play dogfood and authoring policy (2026-10-03)
 - `L130` 실제 Pi 조수 제작 오프닝 · revision11 (2026-10-03)
 - `L159` Native creature refinement · 2026-10-04
+- `L200` 빈터 쓰임 채우기 · 타이틀/주민 테마 배선 (2026-10-14)
 
 ### `openwiki/monster-kit-origin.md` — 41KB · 290줄 · ~12,518 토큰
 
@@ -2529,7 +2530,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L33` QA (한 번의 개선 판, 2026-10-14)
 - `L39` 함정
 
-### `openwiki/snow-north.md` — 8KB · 89줄 · ~2,477 토큰
+### `openwiki/snow-north.md` — 11KB · 114줄 · ~3,201 토큰
 
 - `L13` 한 줄 지도
 - `L27` 버들항 눈 기후와의 경계 (결정)
@@ -2537,7 +2538,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L44` 칸 통행 (bake_sn.py)
 - `L52` 3/4 관문 (object-gate)
 - `L63` 적대적 시각 QA (한 번, 2026-10-14)
-- `L86` 조수 실제 실행
+- `L94` 조수 실제 실행
 
 ### `openwiki/spatial-ai-tools.md` — 28KB · 343줄 · ~7,871 토큰
 
