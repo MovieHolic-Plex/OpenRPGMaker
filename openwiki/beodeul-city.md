@@ -651,3 +651,7 @@ revision 16 기와 변경은 사용자 지적을 오해한 것이며 철회했�
 - 시험 케이스: `harness-data/space-craft/seed.json` 의 `dungeon-fe1`(원 요청 그대로)·`dungeon-stone`·`dungeon-crypt`.
 
 **한계:** 구조는 일렬 방+통로 그래프다(ㄱ자·갈림길 방·물 구역 없음). 방 안 장식은 종류별 규칙형이라 같은 종류 방은 비슷하다. 이벤트(적·상자·이동)는 조수가 spots 에 직접 둔다. 필드 적 시스템 쪽 도구는 건드리지 않았다.
+
+**실조수 재시험(2026-10-14, Argon medium, 같은 요청 「필드에 몬스터가 돌아다니는 던전 층을 만들어 줘」, `space-craft` 케이스 `dungeon-fe1`):**
+수리 전(origin/main) 15분 하네스 한도에서 미완결(stamp_object 65·paint_tiles 5·upsert_troop 8 …), 수리 후 3분 11초·도구 호출 28번(author_beodeul_dungeon 1번)·받침 없는 물체 0·전부 도달·lint error 0. 정본 저장·재로드 sha256 일치(테스트 프로젝트 0376c4e4-a5d7-4702-88cf-b8cae5523ff0). 중간 시행에서 두 가지를 더 고쳤다 — (1) 의도 노트가 `space=interior` 라서 조수가 손 도트 실내 도구를 찾으며 7분을 읽기만 함 → 던전 선언이면 전용 노트, (2) 배치 품질 권고(빈 바닥 ≤30%)가 던전 큰 홀을 「빈 방」으로 보고 조수가 `clear_map` 을 불렀음(응답 없이 15분 멈춤 — 승인 대기로 보이며 별도 조사 필요) → 방마다 `composed-layout` 이름표(`dungeon-room`)를 달아 권고에서 뺐다. 증거: `~/claude-viz/dungeon-place-fix.html`.
+
