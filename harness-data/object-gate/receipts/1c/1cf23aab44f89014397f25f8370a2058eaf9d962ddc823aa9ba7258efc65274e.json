@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1cf23aab44f89014397f25f8370a2058eaf9d962ddc823aa9ba7258efc65274e",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "시장 노점(과일·채소, 빨강 줄무늬 차양)",
+ "label": "steampunk-city/sp-stall-fruit",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "market stall counter and awning",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter surface has 6 rows (rows 26-31) of top-down depth showing recessed bins with produce, leading down to the front counter face (rows 33-43). The awning also functions as a forward-sloping canopy.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6675
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "market stall with striped awning and counter",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The striped awning displays a large sloping top surface (rows 1-16, ~15 rows), and the counter reveals its top interior compartments holding produce (rows 25-32, ~8 rows) in proper 3/4 perspective above the vertical front wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6749
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "market stall with striped awning and produce counter",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall counter display spans rows 25 to 32 (8 rows) showing the foreshortened top surface with partitioned produce bins, and the awning slopes down towards the camera showing its top surface over rows 1 to 16.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6240
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "market stall with striped awning and counter",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter surface containing the produce display compartments is clearly viewed from above across rows 26 to 32 (7 rows tall) above the vertical front wooden paneling (rows 34-43).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6387
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.526Z",
+ "cells": {
+  "16": [
+   "2a3cbcce20d4fb52",
+   "3ed0d2bc8c0a54d2",
+   "5bc1db56f0645e71",
+   "68ceffa4c4ae4ee5",
+   "79736c153b9615e2",
+   "7aee938e7636a15a",
+   "99c46867acf18d03",
+   "e07193b4241554ca",
+   "ff256ff0be0f30dc"
+  ],
+  "24": [
+   "310938ef4da3c144",
+   "b2bd28b5697314bc",
+   "d6d0b7ca49999c72",
+   "fde38024dedbf413"
+  ],
+  "32": [
+   "1dd1d39431bc02c7",
+   "23448fa52baeac39",
+   "249ac279fcc1605b",
+   "36deec5b4f6924a1",
+   "3778652b36ef82b1",
+   "3a399761ef8deeea",
+   "4391e5e56510b574",
+   "51b3c7dbccecf668",
+   "5428c1a44ae34910",
+   "5c645d41bc6db1f1",
+   "5ccbb5f73b33e148",
+   "5f04f30cd814aeb7",
+   "6348e3368fe42fd2",
+   "6f3719ddbc327e5e",
+   "71fa3ea138600cca",
+   "7a9dfb2ddafe17cc",
+   "89e9e8762412b045",
+   "98a3b04fa956000a",
+   "b7c0b76cfd61ffc3",
+   "b826082d63ab2346",
+   "df2839f3da7347a2",
+   "e8d02431256a615a",
+   "fccb89b6c8d2cf17",
+   "fd26bca403ff69e0"
+  ],
+  "48": [
+   "88e8d0e338e3ea35"
+  ]
+ }
+}

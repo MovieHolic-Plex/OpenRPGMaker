@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b067b0f55c9b55e79654d752899e7083b0f404901d6510838e018132d8b465da",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "석탄재 마당(바퀴 자국)",
+ "label": "steampunk-city/sp-cinder-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ground tile with wheel ruts",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile depicts flat coal ash terrain with horizontal wheel ruts, viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12217
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ground terrain tile with horizontal wheel ruts",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground surface tile depicting coal ash yard ground with wheel tracks running horizontally across the tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12046
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "coal ash yard ground tile with wheel ruts",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing coal ash ground with horizontal tire tracks. Entire 16x16 surface is ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7421
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "coal ash ground with wheel tracks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile represents flat terrain depicting a coal ash yard surface with horizontal wheel ruts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12531
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.517Z",
+ "cells": {
+  "16": [
+   "70e189e89e7eb6c1"
+  ],
+  "24": [
+   "1277f66322165254",
+   "173960071d2b1caa",
+   "3651ccd2a719e614",
+   "39ec6525f1946dd7",
+   "43e70b97218734c6",
+   "b04e10e8bbc2c6a6"
+  ],
+  "32": [
+   "2f5b2964c8d5af03",
+   "6685c8de4f7e3b4e",
+   "7e85f5b6e11bae88",
+   "bbbc4c59a13b2097",
+   "ded736c51b8554c5",
+   "f98f12b4ae0c9919"
+  ],
+  "48": [
+   "306903660215bbcf",
+   "4324846c513608d6",
+   "448e1a6b9169ce74",
+   "60e2b7ad0aee2801",
+   "76755b097cfa6d40",
+   "fab8371d0f813b01"
+  ]
+ }
+}

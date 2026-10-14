@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4bc4278a37c1d37c8d02d14941c925c5e4fbda9a7d49bbf8e58aff87ba4e75cb",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "무쇠 화분(둥근 통 — 흙이 위에서 넓게 보인다, 뒤쪽에 작은 관목)",
+ "label": "steampunk-city/sp-planter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cast iron planter with soil and small shrub",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The container opening is clearly visible from above as a wide ellipse spanning rows 3-8 (filled with dark brown soil and green foliage), above a south-facing iron pot body spanning rows 9-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6073
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cast iron planter pot",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round opening is clearly rendered from above as an ellipse showing soil and a small bush spanning rows 3-8 (around 5-6 rows deep), sitting above the vertical south face of the pot (rows 9-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8612
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron planter tub",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round iron tub clearly shows an elliptical opening from above spanning rows 3-8 filled with soil and a small shrub, followed by the south-facing cylindrical wall from row 9 down to row 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5123
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cast iron planter pot",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round pot opening is clearly depicted as an ellipse showing soil and a shrub from above across rows 3-7, with the front rim and south body face visible below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3605
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.518Z",
+ "cells": {
+  "16": [
+   "c8d5b5c933b07db5"
+  ],
+  "24": [
+   "07b9aadfbc5cc1dc",
+   "8409bcb59501a5ce",
+   "94ed4166b9c8cc3a",
+   "d316e538495b3c34",
+   "d44fa3648a0eb4b4",
+   "ea701daae00a7928"
+  ],
+  "32": [
+   "2b043670b13125bb",
+   "4c38e0ab847c8b82",
+   "6d3e8ef63ecba89b",
+   "8cb9a58e630b99fa",
+   "8f885d9f0a1525aa",
+   "b250051732463096"
+  ],
+  "48": [
+   "1f053ae75c6b8f43",
+   "71e0e8efb6bb8779",
+   "763155f6a9dad3ff",
+   "7de12e1a838065d5",
+   "ae17cf7014e915cb",
+   "c84d71408c290272"
+  ]
+ }
+}

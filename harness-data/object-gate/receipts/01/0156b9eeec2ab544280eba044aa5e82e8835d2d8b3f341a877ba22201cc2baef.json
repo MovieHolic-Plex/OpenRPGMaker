@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0156b9eeec2ab544280eba044aa5e82e8835d2d8b3f341a877ba22201cc2baef",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "벽돌 바구니 포석(광장)",
+ "label": "steampunk-city/sp-brickpave",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "basketweave brick paving tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile depicting a basketweave brick pavement pattern seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9066
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick pavement tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Basketweave brick paving tile viewed from above as ground terrain; the entire 16x16 tile represents a flat horizontal ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2742
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brick basketweave pavement tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing a flat ground brick pavement pattern viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5088
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "basketweave brick pavement",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing a basketweave brick paving pattern viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2837
+  }
+ ],
+ "decidedAt": "2026-10-14T08:37:24.708Z",
+ "cells": {
+  "16": [
+   "707c6b0e82a770e5"
+  ],
+  "24": [
+   "1c287938e24d432e",
+   "47a962beabdd62f1",
+   "780e143140ff77f6",
+   "b400d69b000a7659",
+   "c05d3e5610f84a98",
+   "eedbb64f5cf6c7fe"
+  ],
+  "32": [
+   "18d5ad9f56da8857",
+   "21bd585bd74b7daf",
+   "233fb92ab741db9c",
+   "3446c023491dc5db",
+   "a63fe2b1dce8879f",
+   "c4e359010cd49ada"
+  ],
+  "48": [
+   "1e34d07a1cab2c73",
+   "500bcd50b8e46271",
+   "53c1bfe8a947beac",
+   "87ec28c425534c25",
+   "986a2823c5e00935",
+   "c89c0c8ea3071453"
+  ]
+ }
+}

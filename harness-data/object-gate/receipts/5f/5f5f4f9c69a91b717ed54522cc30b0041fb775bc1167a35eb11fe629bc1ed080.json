@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5f5f4f9c69a91b717ed54522cc30b0041fb775bc1167a35eb11fe629bc1ed080",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "자갈 포석(돌 셋트)",
+ "label": "steampunk-city/sp-cobble",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cobblestone paving tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting stone paving / cobblestone ground texture spanning the full 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4694
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cobblestone ground pavement tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing cobblestone paving seen from top-down ground view, filling the full 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5165
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cobblestone paving ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts interlocking cobblestones/paving stones forming a flat ground terrain texture across the entire 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5875
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone paving / wall terrain tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a full-surface stone masonry/paving terrain texture rather than a standing discrete object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4100
+  }
+ ],
+ "decidedAt": "2026-10-14T08:37:24.705Z",
+ "cells": {
+  "16": [
+   "996aef895b3a1d50"
+  ],
+  "24": [
+   "0fde60f658007f6c",
+   "5dc3a2a91464629a",
+   "6163af22dd7039c7",
+   "70f7183740bdb7bb",
+   "76217b3d33ea0850",
+   "e5519f343d8b2678"
+  ],
+  "32": [
+   "0bf0c7c698c91192",
+   "124e2299f245b35e",
+   "46da218f2134709d",
+   "89405c243b2d9b0c",
+   "9826b89efccecdd5",
+   "c01f84266c7a377e"
+  ],
+  "48": [
+   "25812ddb485b2ec8",
+   "75fe3d26d51492a4",
+   "94736d8942321a1d",
+   "971534960936e105",
+   "b2482fd32d9e5d56",
+   "e2e960b50d1f1861"
+  ]
+ }
+}

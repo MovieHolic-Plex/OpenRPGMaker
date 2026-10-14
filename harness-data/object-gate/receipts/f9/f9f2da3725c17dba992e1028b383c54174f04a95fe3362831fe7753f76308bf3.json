@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f9f2da3725c17dba992e1028b383c54174f04a95fe3362831fe7753f76308bf3",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "광차(석탄 실은 무쇠 통, 작은 바퀴)",
+ "label": "steampunk-city/sp-minecart",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "minecart iron bin",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening of the minecart is clearly visible from above across rows 3-7, showing coal inside framed by top and front rims (row 8), above a south-facing front wall (rows 9-13) with wheels.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5610
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "minecart tub filled with coal",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The minecart shows a clear 3/4 perspective: the top opening filled with coal spans 5 pixel rows (rows 3-7) between the back rim (row 2) and front rim (row 8), sitting atop a 5-row front face (rows 9-13) with wheels below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4432
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "minecart bin loaded with coal",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening of the minecart is viewed from above across rows 3-7 showing dark coal piled inside, bounded by a front rim at row 8 and a front vertical face with rivets and wheels below (rows 9-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4425
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "minecart body",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 3-7 clearly show the interior opening of the minecart filled with coal, bounded by the front rim at row 8 and a 5-row front face below with rivets and wheels.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6828
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.529Z",
+ "cells": {
+  "16": [
+   "b9b8dc1db3a181af"
+  ],
+  "24": [
+   "209decdbf1a35b20",
+   "297067fc20aea4aa",
+   "9bdb5e659a2ad402",
+   "cdb78fb419099ec7",
+   "da27282e41d7d7ba",
+   "f119d8f207556db5"
+  ],
+  "32": [
+   "0085dc8b7e8e54f1",
+   "3c90839699520bd2",
+   "3ea3c964192ba352",
+   "4a6c2e281bdf031f",
+   "5dc1ac568e746a40",
+   "601245f5ac4072ae"
+  ],
+  "48": [
+   "06dba5ed0ae50c25",
+   "78f5671ecda40be6",
+   "8701a44e308fe711",
+   "90e9e840519595ac",
+   "d7a421b702836f4b",
+   "e9b288b8acfd900d"
+  ]
+ }
+}

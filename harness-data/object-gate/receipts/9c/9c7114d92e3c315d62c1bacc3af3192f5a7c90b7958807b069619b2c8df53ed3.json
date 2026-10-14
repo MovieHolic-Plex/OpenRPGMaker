@@ -1,0 +1,145 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9c7114d92e3c315d62c1bacc3af3192f5a7c90b7958807b069619b2c8df53ed3",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "노면 증기 전차(크림·빨강 칠, 지붕 위 작은 굴뚝)",
+ "label": "steampunk-city/sp-steam-tram",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "street steam tram car",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tram faces east-west with its south flank visible. The roof deck/slope is clearly rendered from row 5 to 14 (10 source pixel rows) displaying roof-mounted vents and chimney base, plus the chimney rim shows an elliptical top opening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10731
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tram car (body and roof)",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tram car shows its south-facing carriage side (doors, windows, lower chassis, wheels) and a generous 10-row foreshortened roof surface (rows 6-15) fitted with roof vents and a chimney with an elliptical top opening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11506
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tram car (street steam tram)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire vehicle is drawn in a pure 2D side-scroller elevation rather than a 3/4 top-down perspective. The roof (rows 5–14), side walls, windows, door, and wheels/bogeys (rows 37–41) are rendered completely flat from the side with vertical side boundaries and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9302
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tramcar body and roof",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 1,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tramcar shows its south side face (windows, door, red lower panel) and a broad 9-row roof surface (rows 6-14) with mounted roof vents and a chimney. The chimney at the top features a visible 1-row foreshortened top opening (row 0). No isometric side faces are shown.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11748
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.528Z",
+ "cells": {
+  "16": [
+   "0c516edad34ca374",
+   "1652128d17f824bf",
+   "20acaab25e666e46",
+   "4429a47c10f7437c",
+   "6a4bb729a2dd2d01",
+   "6a7a136a55be7577",
+   "7d55baab849fa6ac",
+   "845b775026984a32",
+   "d5c5aa51ba60dd59",
+   "e01df8e946466f59",
+   "e932bad7720d038f",
+   "ec1990e7e5d74e87"
+  ],
+  "24": [
+   "032c3d9e15ef5f7c",
+   "108e49da72088ddd",
+   "17cc49ea89c83f65",
+   "1cf22fedcb1a8fc8",
+   "3514ae5a5861f00e",
+   "4c12d6ab9de54c88",
+   "4f95baafdb741472",
+   "4fdf1465c9bbbc24",
+   "551f7df3b8b8626a",
+   "5c122ed85b1f6497",
+   "6f5971e01940ce1c",
+   "8464eb24bf2b5954",
+   "84f6abf7a45147f7",
+   "87a3ff69b534f0a0",
+   "8b20fb7212ea9ced",
+   "a500845bfe543bf3",
+   "a8fc4640b6ace2c5",
+   "aa4bc0db0d74fb14"
+  ],
+  "32": [
+   "2098208572dfbb52",
+   "27bc4334e7cfa50e",
+   "7978af3c94e9fd5c",
+   "89fd18a4226932d1",
+   "b04dbd7df73b28da",
+   "bf763f1f20f35d8a",
+   "c83a71c1b625e1e2",
+   "d66ca531e4e276c9"
+  ],
+  "48": [
+   "25c186e98c262f0b",
+   "2c21d2034877d7fc",
+   "9a08fcbd2cb71439",
+   "a09fceb1eb843f76",
+   "a7fe262945612857",
+   "d4d9c6d71fd9947a"
+  ]
+ }
+}

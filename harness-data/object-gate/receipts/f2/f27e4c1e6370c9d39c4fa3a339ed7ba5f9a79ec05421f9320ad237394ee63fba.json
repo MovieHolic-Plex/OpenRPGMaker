@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f27e4c1e6370c9d39c4fa3a339ed7ba5f9a79ec05421f9320ad237394ee63fba",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "테슬라 코일(둥근 받침 + 구리 감은 탑 + 꼭대기 놋쇠 도넛 + 불꽃) (프레임 3)",
+ "label": "steampunk-city/sp-tesla-coil-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tesla coil column with toroid terminal and rounded base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brass toroid terminal at rows 5-11 shows a clear elliptical top-down view with the center hole visible across rows 6-9 (around 4-5 rows of foreshortened top surface), and the base shows rounded curvature.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5129
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Tesla coil tower with brass toroid cap and base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brass toroid/donut at the top is drawn in clear 3/4 perspective, displaying its foreshortened elliptical top surface and central hole across rows 5-11, consistent with the top-down viewing angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 20414
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "Tesla coil pillar with brass toroid terminal and rounded base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top brass toroid terminal clearly shows its foreshortened elliptical top surface and interior opening (rows 5-11, approx 6 rows tall) viewed from a 3/4 top-down angle, and the base similarly shows a foreshortened curved shoulder.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6075
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tesla coil with copper-wound shaft, base, and brass toroid cap",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brass toroid at the top of the column (rows 5-11) is drawn in 3/4 view with a foreshortened elliptical top surface and hollow center spanning about 6 pixel rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5860
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.532Z",
+ "cells": {
+  "16": [
+   "50e6dbbf52fd8431",
+   "b70d27c1ef724d5d",
+   "d8685f85508ee478"
+  ],
+  "24": [
+   "3ae4335e8e818ab0",
+   "48c1ed50262ee787",
+   "95e955d927b0dce8",
+   "985ff8d8a8e725a1",
+   "b3cdcbfb5f3aa8f9",
+   "f45512bc6991fb71"
+  ],
+  "32": [
+   "17b4d17b374bd350",
+   "2a7e9fba89c90245",
+   "2aa6388e901a99cd",
+   "4a52dd223487c40f",
+   "4b7ffb3a1f9f0057",
+   "58a3542e9fa84a0e",
+   "5e4c634a455513e1",
+   "6fa3a35fc7cbe002",
+   "a29b1c8ebd583499",
+   "af41ebde00c74a37",
+   "f21566110ec7408b",
+   "f5e6dde4f98ba48f"
+  ],
+  "48": [
+   "5fd58e1b81a7f8be",
+   "7c26ac1f85e9de3e",
+   "a790ace4c4040b5f"
+  ]
+ }
+}

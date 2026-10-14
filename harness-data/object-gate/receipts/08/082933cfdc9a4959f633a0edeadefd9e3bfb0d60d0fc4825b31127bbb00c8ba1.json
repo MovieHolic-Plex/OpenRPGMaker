@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "082933cfdc9a4959f633a0edeadefd9e3bfb0d60d0fc4825b31127bbb00c8ba1",
+ "width": 32,
+ "height": 48,
+ "kind": "figure",
+ "name": "톱니 기념비(돌 단 위 큰 놋쇠 톱니바퀴 둘)",
+ "label": "steampunk-city/sp-gear-monument",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "gears monument on stepped stone plinth",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stepped stone plinth clearly shows foreshortened horizontal top surfaces on both tiers (upper tier top is ~5 rows from row 23-27; lower tier top is ~6 rows from row 33-38).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5411
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone pedestal with interlocking gears monument",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both tiers of the stone pedestal prominently display foreshortened top surfaces (upper tier top is rows 23-27, ~5 rows deep; lower tier top is rows 33-38, ~6 rows deep) viewed from the 3/4 RPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5835
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone pedestal with gear monument",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone plinth base features clearly defined 3/4 perspective top surfaces on both tiers (rows 23-27 and rows 34-38, each 5 rows tall) supporting the vertical gear sculpture.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5045
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "gears mounted on a two-tiered stone plinth",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone pedestal has two tiers with clearly visible top surfaces foreshortened for 3/4 perspective: the upper tier top surface spans rows 23-26 (4 rows deep) and the lower tier top surface spans rows 33-38 (6 rows deep).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5931
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.518Z",
+ "cells": {
+  "16": [
+   "13cac6080e25f86e",
+   "4c0ed413f6123425",
+   "b0703c66fae350b1",
+   "b75bdc8e51f4e1cd",
+   "e19c21838831bd39",
+   "fd1aaa6512e9e983"
+  ],
+  "24": [
+   "14adc7c03e4f12e1",
+   "1c98336497bdd366",
+   "308a344f26993dac",
+   "69071dfb392d8a95",
+   "82269a4e7ea99226",
+   "96eec297155afd10",
+   "a5d2ce6d1ca04be7",
+   "aa6f8d9729a74ef6",
+   "abd68efdfbba3b95",
+   "cbfa6bf3ce9cb33a",
+   "ef9f0ebdb8b5c576",
+   "f219c756cdfa08fc"
+  ],
+  "32": [
+   "1508265be25dfc3d",
+   "2efc638d5a69e870",
+   "3b04ea0862c4b73a",
+   "49f48d94dd4c057a"
+  ],
+  "48": [
+   "07d2c554de902a43",
+   "3e7518e638970df2",
+   "fdcf7b179b756e68"
+  ]
+ }
+}

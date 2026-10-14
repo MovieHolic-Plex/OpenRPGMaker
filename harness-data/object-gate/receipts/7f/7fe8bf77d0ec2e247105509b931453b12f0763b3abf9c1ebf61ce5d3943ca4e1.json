@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7fe8bf77d0ec2e247105509b931453b12f0763b3abf9c1ebf61ce5d3943ca4e1",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "석탄재 마당(잔돌 적은 변주)",
+ "label": "steampunk-city/sp-cinder-c",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "coal ash ground surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 flat terrain surface representing a coal ash ground texture with small pebbles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10548
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a coal ash ground surface with small embedded stones seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10524
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "coal ash ground terrain tile with embedded small stones",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Entire 16x16 tile is a seamless ground/floor terrain texture representing coal ash ground with pebbles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11812
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "coal ash ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground surface texture covering the entire 16x16 canvas depicting coal ash yard terrain with small embedded stones.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9886
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.517Z",
+ "cells": {
+  "16": [
+   "3290b2edc6bc1820"
+  ],
+  "24": [
+   "1a2453eb09a3ce3d",
+   "7b8ad05b4c789859",
+   "9783502de3ffd0fa",
+   "b29e90b96a2868ef",
+   "ee4f80dc8abdd64d",
+   "f50341d67d56fe46"
+  ],
+  "32": [
+   "5bd010967949124e",
+   "6bbbc4acbf4f59c0",
+   "8661429cef7e300e",
+   "ae3a9d71d417f8f3",
+   "dfdd65750889ae29",
+   "e3bf87899cb82c99"
+  ],
+  "48": [
+   "5422e0e339958849",
+   "6d281773f98f4609",
+   "7c5d80b72dcaa77d",
+   "c65e7d4c8399afe2",
+   "cec362b269f883c3",
+   "da68c4ffc3351e82"
+  ]
+ }
+}

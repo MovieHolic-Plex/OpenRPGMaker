@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "46f182641c8ee4efe8347fff78b7b1768c6e5af1cc780ee57e610384c8d1a36b",
+ "width": 32,
+ "height": 96,
+ "kind": "column",
+ "name": "비행선 계류탑(무쇠 격자탑 + 꼭대기 원판 발판 + 놋쇠 계류 원뿔)",
+ "label": "steampunk-city/sp-mooring-mast",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lattice mooring tower with top circular platform",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mooring platform atop the tower clearly shows its circular top surface foreshortened into an ellipse from row 10 to row 17 (8 pixel rows deep).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6940
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lattice mooring tower with top circular platform and cone",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top circular mooring platform is rendered as an elliptical horizontal surface seen from above (rows 10-17, 8 rows tall) with the brass mooring cone mounted in the center, and the base plinth also shows a foreshortened top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6200
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lattice mooring tower with top circular platform",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The circular platform at the top of the tower clearly shows an elliptical top surface spanning from row 10 to row 16 (approx 7 pixel rows) before curving to the front rim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4270
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "airship mooring mast with lattice tower, circular platform disk, and mooring cone",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mooring platform disk near the top clearly shows its horizontal top surface as a foreshortened ellipse spanning rows 10 to 17 (8 rows tall), and the base plinth also shows a 5-row top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4007
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.520Z",
+ "cells": {
+  "16": [
+   "0a6eab4582932867",
+   "2c29a51f3390ac90",
+   "323c5a2af16b16f1",
+   "57d881bbf1e01a03",
+   "851c3b672ac88c85",
+   "85aa7ffe7fbbe612",
+   "a9b86c5bd454a8a0",
+   "adc4ab0ff22e998c",
+   "b6fe5b9a21c7b663",
+   "bd62314161977fc8",
+   "d281f9d3fe28c336",
+   "f713938dfb033634"
+  ],
+  "24": [
+   "00f64afa3b4bf76b",
+   "01319c6db84ed201",
+   "06bd369600b7848a",
+   "0856730c85ca4d5d",
+   "0afe378d800771fe",
+   "189f84a911b820be",
+   "27d719a764d99a6c",
+   "47db30b71ae63f84",
+   "4cac97c4e2ea6d9e",
+   "651e330710254bbc",
+   "749806f9a42f5cc1",
+   "7b11058dfb8a8948",
+   "cf79cdfdcda5d223",
+   "cf908f8b8f36fdfc",
+   "d4ad766d7de041e5",
+   "d66fa4954456bdc9",
+   "db2a9791f44a2b16",
+   "e1f372df5731651c",
+   "e363d3d614b2b3d8",
+   "e53199f7d4d52a16",
+   "eb64e7b51023b8b7",
+   "f9b76d28dded202e",
+   "ffd6f1e021a98751"
+  ],
+  "32": [
+   "5705dfb2e6edfe56",
+   "5c9e5e8ff50c16d4",
+   "7f0704c5d0b31352"
+  ],
+  "48": [
+   "408d731f11a2b401",
+   "4b691e3533bd76a6",
+   "712a782f59e48f06",
+   "7d3069ff900eb4d4",
+   "c696212fe51ec9cd",
+   "eebfb977d3febcfe"
+  ]
+ }
+}

@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4ff5bae2cfc7778b02389737b233c253e36963d48ae1dd643e73d2ba088150b9",
+ "width": 32,
+ "height": 16,
+ "kind": "debris",
+ "name": "고철 더미(부서진 톱니·관·철판)",
+ "label": "steampunk-city/sp-scrap-heap",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "scrap metal pile (gear and metal blocks)",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gear on the left is drawn as a flat upright shape facing directly south with no top-down perspective or foreshortening. The metal block/pipe on the right has at most 2 rows of a horizontal strip, giving the entire pile the appearance of a side-scrolling platformer asset rather than a 3/4 top-down RPG object.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6476
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pile of scrap metal",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The scrap pile is drawn as a flat 2D platformer-style elevation. The upright gear faces directly toward the camera with no foreshortening or top depth, and the box/beam on the right has only a 1px top highlight (row 4). The components lack the horizontal ground spread and visible top surfaces required for 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7835
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "scrap metal pile with upright gear and metal beam",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gear stands nearly full height (rows 1-10) drawn entirely as a flat 2D silhouette facing straight south, and the adjacent beam/plates show only a 1px highlight line on row 4 without any foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6868
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pile of scrap metal with an upright broken gear and metal block",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gear is drawn in pure front elevation facing the camera without any foreshortened top thickness or top-down slant, and the debris cluster is depicted as a flat side-view profile suitable for a side-scroller rather than a 3/4 top-down view.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5349
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.519Z",
+ "cells": {
+  "16": [
+   "b2039023fc7861fa",
+   "c2f11dfb4aa50302"
+  ],
+  "24": [
+   "06606abedfc533b4",
+   "112090ffa7620d70",
+   "2abd085f3f21ea0d",
+   "2ce390dc101ce324",
+   "5cc592e83bc36e7d",
+   "830c21edfd7a847b",
+   "893b7fd4f237015d",
+   "925778c1c9118389",
+   "aa0b77388d694e21",
+   "bac03635f0463d95",
+   "e68f506c0b7ab766",
+   "f0ba84ace787c6f5"
+  ],
+  "32": [
+   "4366604c57c8938c",
+   "9dd5e16fa05083c4"
+  ],
+  "48": [
+   "36f80b39a3bbe0e3",
+   "4f481fc1bcb40a70",
+   "685d78788156f384",
+   "ad174281bdacaea5",
+   "ee461f769507de94",
+   "f40420f2065db608"
+  ]
+ }
+}

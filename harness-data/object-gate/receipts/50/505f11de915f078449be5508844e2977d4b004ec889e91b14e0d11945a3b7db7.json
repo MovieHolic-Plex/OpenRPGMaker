@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "505f11de915f078449be5508844e2977d4b004ec889e91b14e0d11945a3b7db7",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "그을린 플라타너스(무쇠 나무 울 + 흙 둘레)",
+ "label": "steampunk-city/sp-plane-tree",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "plane tree with canopy, trunk, and tree grate",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tree features top-down foreshortened leaf clump tiers (top dome spans rows 0-6) and stands in an elliptical soil basin with an iron tree grate (rows 40-45) showing clear 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5788
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tree (canopy and trunk)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree canopy and trunk are drawn in pure front elevation (side-view silhouette with vertical trunk and under-canopy visible). While the base soil ring has a top-down elliptical tilt, the main body (the tree itself) shows no top-down foreshortened upper surface (0 rows).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9061
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sycamore tree with foliage canopy and iron-guarded base pit",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tree canopy features rounded top-down foliage lobes (rows 0-7) with south-facing front foliage, and the base features an elliptical soil bed and tree guard viewed from an overhead 3/4 angle (rows 38-45).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3956
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sycamore tree with iron grate and soil basin",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The foliage is shaded volumetrically with clear top-down lighting on the crown (rows 0-6), and the soil basin/iron tree guard at the base (rows 38-45) forms an elliptical ring viewed from an overhead 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3832
+  }
+ ],
+ "decidedAt": "2026-10-14T08:37:24.710Z",
+ "cells": {
+  "16": [
+   "17a710ed6bbe9947",
+   "368b24601c360c33",
+   "8be3d2453c7be867",
+   "8bfd268305509ce6",
+   "ab293c0a38e97a72",
+   "b7647d30deacf7eb"
+  ],
+  "24": [
+   "0ed2a35b808d904a",
+   "2b3a1a53a922d813",
+   "316f7f3ea8b9fef0",
+   "4e1a22682155d543",
+   "538cae88f0c0ded2",
+   "65e6474045b0a946",
+   "7eca99351b43c52b",
+   "8580a6663bbbf276",
+   "c2272e612d8b4452",
+   "c878ed91dfa948cb",
+   "ca1b90b21555bc0d",
+   "f2719927824120d1"
+  ],
+  "32": [
+   "648b484241b1e4c7",
+   "72e3270353ffb005",
+   "746c3e5c938793de",
+   "75218fedcf05cfeb"
+  ],
+  "48": [
+   "7b7e439d31fc2a3a",
+   "9aaf4a54a65ee7bb",
+   "d06bff7a58d30ff8"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d77377e230627120506949d382b82333afe4b2fa3acaab28aa062be7d6873bb9",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "승강장 끝(놋쇠 안전선 + 선로로 내려가는 벽)",
+ "label": "steampunk-city/sp-platform-edge",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "train platform edge transitioning from floor surface to vertical track wall",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-6 show the horizontal top platform floor and safety stripe, rows 7-8 show the edge curb, and rows 9-14 show the south-facing vertical platform wall, correctly matching standard 3/4 RPG terrain platform/cliff structure.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5246
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "platform edge with floor and vertical drop wall",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-8 depict the horizontal platform surface including floor tiles and the yellow brass safety line (9 rows tall), transitioning into the vertical wall face dropping down to the tracks from row 9 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3124
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "platform edge with floor, safety strip, and south-facing wall drop",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-8 show the horizontal platform floor and safety line viewed from above, followed by rows 9-15 depicting the vertical wall face descending to the tracks.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3356
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "platform edge with floor and descending wall",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Platform floor and brass safety line span rows 0-8 as horizontal ground plane, followed by a vertical drop wall in rows 9-15, correctly forming a 3/4 view platform edge terrain tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3489
+  }
+ ],
+ "decidedAt": "2026-10-14T08:37:24.709Z",
+ "cells": {
+  "16": [
+   "ec7bd4dbea18ed5b"
+  ],
+  "24": [
+   "114e5b218bbc661c",
+   "5ede752baa903f4c",
+   "803d3d18663567d4",
+   "acc2e71228f1a724",
+   "b8dc401eebfb9fe6",
+   "bf823dd012a8615f"
+  ],
+  "32": [
+   "16f7dc4fc45cb6a5",
+   "1ae163076788e58e",
+   "253426620c98f805",
+   "53b8f0624b163acc",
+   "7d58bb51f3c43257",
+   "f26ac08f384cea6b"
+  ],
+  "48": [
+   "3c08d80e29a60949",
+   "60bf6af049352a45",
+   "6d9fd7645fbe8495",
+   "6e88dc3fa20bab8a",
+   "7ca6b415b9036d76",
+   "eeba809e63f06d0e"
+  ]
+ }
+}

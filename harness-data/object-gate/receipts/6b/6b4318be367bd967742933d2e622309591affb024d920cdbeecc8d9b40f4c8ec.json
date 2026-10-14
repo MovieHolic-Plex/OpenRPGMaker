@@ -1,0 +1,157 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6b4318be367bd967742933d2e622309591affb024d920cdbeecc8d9b40f4c8ec",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "급수 펌프장(다듬은 돌 1층, 폭 3, 구리 돔)",
+ "label": "steampunk-city/sp-pump-house",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "one-story stone pump station with copper dome",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat architectural front elevation. The copper dome base (rows 22-23) is a completely straight horizontal bar with no elliptical curvature, the wall behind it is vertical siding, and all cornices, lintels, sills, and rooflines are straight horizontal bands with 0 visible top surface rows.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6384
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pumping station building with copper dome",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure architectural front elevation. The copper dome, upper pediment/wall, cornice, door, windows, and foundation show completely flat horizontal lines without visible top horizontal surfaces foreshortened in 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6087
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water pumping station building with copper dome",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building and dome are drawn as a flat architectural front elevation. The base of the copper dome is completely horizontal rather than an ellipse seen from above, and the roof cornice and main building lack any visible foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5442
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water pumping station building with copper dome",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure 2D architectural front elevation. The dome base (row 23) and plinth (rows 25-26) are flat horizontal lines with no foreshortened elliptical curvature, and the building facade and roofs show zero top surfaces visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7437
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.524Z",
+ "cells": {
+  "16": [
+   "097818ef70101b60",
+   "4763142d77f00335",
+   "47a7b24457be56fd",
+   "5268c518b01d4e34",
+   "5b49a833b82c763f",
+   "934ad04105de3e4c",
+   "ad47bbb38d7d0d56",
+   "adfe276b54325682",
+   "be575c6d7886e020",
+   "cf9feafd4dbd51b0",
+   "e92cfd9654a45f67",
+   "f23eb674ecb90a8d"
+  ],
+  "24": [
+   "0a33dba7212445c6",
+   "0a66847c06e0ccb0",
+   "0d53766d9bbab0a6",
+   "18037f10b2e43cc2",
+   "275be84caff9ae50",
+   "2be6b97d54048833",
+   "2f1fb4b8dc4f0634",
+   "3784d06d70451134",
+   "514f65f0e4981504",
+   "914f468edee8a490",
+   "c1c76b568d086669",
+   "ebe90c90d5f4a261"
+  ],
+  "32": [
+   "10ac7486979dbf53",
+   "33709216e249b104",
+   "6b16e6343446ada7",
+   "6bf0b4bdc79087c0",
+   "75978faf6ebbcd75",
+   "a3ee6bb7eeea1891",
+   "ccb1b2f380ff40b4",
+   "d732d634ec8039b9",
+   "da1bd6dc9d589347",
+   "e2e4b2bed45df832",
+   "ef86dc53797d6da8",
+   "f8ba5758a15f6a19"
+  ],
+  "48": [
+   "1053bce88aeea6db",
+   "84902714306609c4",
+   "8bd3924ce37dcc88",
+   "cdfb719d158e6d31"
+  ]
+ }
+}

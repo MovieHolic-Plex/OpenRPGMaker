@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7025a32bcb6412af8dfb6c95d6bea445d5d6c96c8147648df9abacae46f772bb",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "나무 상자 두 개(큰 것 + 작은 것)",
+ "label": "steampunk-city/sp-crates",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "two wooden crates (large and small)",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both crates clearly show illuminated, foreshortened top surfaces with horizontal planking (large crate rows 6–14, 9 rows tall; small crate rows 14–21, 8 rows tall) above their darker south-facing front faces with diagonal bracing.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10822
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "two wooden crates (large and small)",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both wooden crates show clearly foreshortened top surfaces (rows 6-14 on the large box, rows 14-21 on the small box) above their front-facing sides.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5600
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two wooden crates",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both wooden crates clearly show their foreshortened top surfaces (rows 6-14 on the larger crate, rows 14-21 on the smaller crate) above their darker south-facing fronts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5747
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "large wooden crate with a smaller crate next to it",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main crate has a clearly visible top surface with horizontal wood planks spanning rows 6 to 14 (~9 rows), above a darker vertical front face (rows 15 to 26). The smaller crate similarly displays a large top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6018
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.525Z",
+ "cells": {
+  "16": [
+   "39ddd3c4e986ac4d",
+   "3a809795908c50e0",
+   "f1e9d1dcf0d7180b",
+   "f272c42b11aa43c6"
+  ],
+  "24": [
+   "13394149b69ba802",
+   "18250d17b13e138b",
+   "2fbbdb289317c976",
+   "37a0f89813377d38",
+   "4586e5cb70245ad3",
+   "60a2a03f7d65b78c",
+   "61c930db689a84de",
+   "6745288cc9b2231c",
+   "70b188290848c035",
+   "754f25748de2614f",
+   "78d8a7418c569662",
+   "7bca01254010e32e",
+   "8d7224a8a0c51323",
+   "96f528a5501c9962",
+   "a4b8436e16e6e79a",
+   "a8b92b024cdd8102",
+   "ad496559ac6f4a1d",
+   "aec4949aa76c0d53",
+   "c1aee88b832b13ee",
+   "ccc0deea4c91c522",
+   "f13fef72484c3fdb",
+   "f5708a550354870e",
+   "fd865eb83828f15c"
+  ],
+  "32": [
+   "d0cb33edbb54ebd8"
+  ],
+  "48": [
+   "1484687694bdc944",
+   "2710699e3c9b047b",
+   "aaaf3841a914e5b1",
+   "ab2fe2387afc2cc6",
+   "e57cb6c6dc70e510",
+   "ebbdc4e9ac70e1ef"
+  ]
+ }
+}

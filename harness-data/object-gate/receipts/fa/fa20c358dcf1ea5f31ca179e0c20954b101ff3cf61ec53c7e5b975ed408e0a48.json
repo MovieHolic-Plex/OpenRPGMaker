@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fa20c358dcf1ea5f31ca179e0c20954b101ff3cf61ec53c7e5b975ed408e0a48",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "보도 연석(남쪽 차도로 턱)",
+ "label": "steampunk-city/sp-curb-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sidewalk curb terrain tile",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Sidewalk stone paving covers rows 0-7, followed by a horizontal curb edge and drop step, correctly depicted as top-down 3/4 perspective terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3486
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sidewalk curb terrain tile",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting a sidewalk transitioning to a curb/roadway. The upper horizontal pavement surface spans rows 0 to 6 (7 rows) before the curb edge and step down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4678
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sidewalk curb terrain tile",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image is a terrain tile showing the horizontal sidewalk surface from above (rows 0–7) stepping down via a curb face to a lower road level, viewed properly in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4525
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sidewalk curb terrain tile",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a top-down sidewalk paving (rows 0-6) transitioning via curb stone blocks down to the roadway, showing clear horizontal ground surfaces appropriate for 3/4 view terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5614
+  }
+ ],
+ "decidedAt": "2026-10-14T08:37:24.707Z",
+ "cells": {
+  "16": [
+   "977eb9ee815efee3"
+  ],
+  "24": [
+   "20daa2c0d59a8f12",
+   "2acfa178294bab1d",
+   "6dfd5b0a830c2fce",
+   "a931b561dd7c1eeb",
+   "b9c419712df159ce",
+   "fe5c8c79eeef7418"
+  ],
+  "32": [
+   "5044fa499fa6bdab",
+   "7e1cb82f8bdf4301",
+   "ac177537b5ecdaf9",
+   "aff7c2ae566e4ed8",
+   "f1c5e441cb1aa0e6",
+   "f9a3fe66f975544b"
+  ],
+  "48": [
+   "55d19b42cc8ae4f8",
+   "59748b9edba46b03",
+   "7c095e932ad751b4",
+   "8649469ebd38dfcf",
+   "c1facf1b11a3dc59",
+   "d53a8a6dc0edf9f4"
+  ]
+ }
+}

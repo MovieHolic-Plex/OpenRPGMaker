@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "de7da36ca2339adca11021cde9a23ed6f69794d194f98fe8736592b11d5a1788",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "선로 끝 차막이(나무 들보 + 빨강 완충기, 동서 선로 두 줄을 막는다)",
+ "label": "steampunk-city/sp-buffer-stop",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rail buffer stop beam",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bumper runs north-south across the two rails of an east-west track. The top horizontal surface of the beam is clearly shown from above across rows 4-23, with the south-facing front face visible below it on rows 24-29, and two buffer heads correctly protruding east toward the incoming train.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 26404
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "track buffer stop beam",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The north-south crossbeam correctly displays its foreshortened top surface across rows 5–23 (about 18 rows), with the south vertical face rendered at the bottom across rows 24–29 (6 rows).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 23602
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden buffer beam",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The buffer stop barrier is drawn either in pure plan view (flat 2D overhead) or pure side/front elevation, lacking the 3/4 view combination of a distinct top horizontal surface and a south-facing vertical face on the main beam.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 33341
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal wooden buffer beam spanning north-south with steel framing",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The beam runs north-south across the track rails, viewed from above at the standard 3/4 angle. Its top surface spans rows 4–21 (about 18 rows), with two track buffers correctly protruding eastward towards the oncoming track, and a south-facing end cap visible at the bottom (rows 24–29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 18443
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.519Z",
+ "cells": {
+  "16": [
+   "6b2e5bc3e1949180",
+   "8abc7b19ae303552"
+  ],
+  "24": [
+   "301a3de56956ba50",
+   "311273b71576e876",
+   "37dbcd13526494cc",
+   "6765922adcbbc924",
+   "765659ec00d4aaba",
+   "82245dd4406d13bb",
+   "852a7bdcd1d3582f",
+   "85ba050b3fa98429",
+   "ae0756454d6b1cfe",
+   "af285b86ea2d6150",
+   "af76fcbd6ae29ff5",
+   "bd6234d332f64ec4"
+  ],
+  "32": [
+   "0381b0f62808a807",
+   "5ff3644d9b9a0236",
+   "ebd25e1531aa28ae"
+  ],
+  "48": [
+   "976a8102ee200b65",
+   "cc74a1fb630e122b",
+   "d4b58c4a5761cea6",
+   "e3f777a7edee246d",
+   "ef4935ac0b71597c",
+   "f50ababc2735dbc5"
+  ]
+ }
+}

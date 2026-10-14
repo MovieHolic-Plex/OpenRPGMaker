@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8b67673105ab5d1f35226241cc83a1c18e9bcd4c91ab1d2713e0394b5aca4360",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "나무 그루터기 위 모루(위에서 본 넓은 작업면)",
+ "label": "steampunk-city/sp-anvil",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "anvil on wooden stump",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The anvil's broad working top surface is clearly visible from rows 1 to 7 (~7 rows deep), with the south front face and waist descending into the wooden stump base beneath it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5920
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "anvil on wooden stump",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top working face of the anvil is prominently displayed from rows 2 to 7 (about 6 rows tall) with the south face visible below it from rows 8 to 10 resting on a stump.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5652
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "anvil on tree stump",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The anvil's top working face is prominently rendered from row 2 through row 7 (6 rows tall) above its darker south-facing body (rows 8-10), sitting atop a wooden base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5412
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "anvil on wooden stump",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The anvil's wide top working face is prominently shown from rows 2 to 8 (7 pixel rows) with hot metal on it, resting on a dark front edge and a wooden stump base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6105
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.531Z",
+ "cells": {
+  "16": [
+   "3ce1e6b6cdcae149"
+  ],
+  "24": [
+   "1174a30d0e77137c",
+   "29323693e7113313",
+   "5e6c55cc0895f06b",
+   "b79b4eccc054eb4d",
+   "c2715f04fe02d14b",
+   "c9b348fe7ecd9b0b"
+  ],
+  "32": [
+   "011259b949f1e922",
+   "1d759f557562613f",
+   "40959e4aec959a78",
+   "b2674e6cdbcd9049",
+   "b497b982425df7f9",
+   "c98aac5852e0073d"
+  ],
+  "48": [
+   "0fb32bdd64d3be33",
+   "4aeeea7bdf424b23",
+   "58bc7f00616bf622",
+   "7057ccb72aff0901",
+   "dd95bc87dbe741c7",
+   "e7aa55eb20117be4"
+  ]
+ }
+}

@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "df4ff886267b7ad4dfcca8f0396fb90c27b182dc324d123d6284dbaea84c2bdb",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "광장 가스등(돌 받침대 위 큰 등)",
+ "label": "steampunk-city/sp-plaza-lamp",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "gas lamp on stone pedestal",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the stone pedestal is clearly visible across rows 31-35 (5 rows deep), and the domed cap of the lamp shows its top surface and finial from row 1 to 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4439
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "gas lamp on stone pedestal",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone pedestal shows a clear 5-row top surface (rows 31-36) where the lamp base rests, and the lamp cap is also rendered with top-down curvature.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4827
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "gas lamp with dome cap on a stone pedestal",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone pedestal shows a clear top surface foreshortened across rows 31-35 (~5 rows tall), and the lamp's dome cap also shows its curved upper surface from rows 1-9.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5066
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "gas lamp with stone pedestal",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The dome cap of the lamp shows 5-6 rows of top surface (rows 1-6), and the stone pedestal displays a clear 5-row foreshortened top surface (rows 31-35).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5042
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.525Z",
+ "cells": {
+  "16": [
+   "45393c81fb2e153b",
+   "b58145d70827519a",
+   "b7c460474040467f"
+  ],
+  "24": [
+   "37dfb4d966858bfe",
+   "5ce4dcecbe640584",
+   "5f446768d042fccd",
+   "65b82cba6a5d35f1",
+   "8236e47b53bde1c2",
+   "87d385466daacbcf"
+  ],
+  "32": [
+   "0b145e2536a6f42b",
+   "23e1319e912710a7",
+   "300cd570c2f220fb",
+   "3331c1376e55c2c9",
+   "33b6a2ebaf75a138",
+   "7da23b1d0c10d3dc",
+   "9a894e81c5798c3f",
+   "9fe2058a29247016",
+   "a417156f628b887b",
+   "b623aac40383ffb5",
+   "e20ab0ae45d3f9f2",
+   "fd0c924b91066094"
+  ],
+  "48": [
+   "2ef13de355cd4e21",
+   "97a7b407312b0485",
+   "b18c682a0867f282"
+  ]
+ }
+}

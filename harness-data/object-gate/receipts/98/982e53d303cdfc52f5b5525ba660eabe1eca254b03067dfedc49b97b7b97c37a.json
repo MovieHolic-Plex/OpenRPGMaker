@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "982e53d303cdfc52f5b5525ba660eabe1eca254b03067dfedc49b97b7b97c37a",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "벽 압력계 묶음",
+ "label": "steampunk-city/sp-gauge-wall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall-mounted pressure gauge panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted gauge panel displayed flat against the wall, consistent with wall_mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3703
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall panel with pressure gauges",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted gauge panel correctly rendered flat against the vertical wall plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3553
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall-mounted pressure gauge panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a set of wall-mounted pressure dials/gauges on a dark backing plate, correctly represented flat against a north wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3993
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall panel with pressure gauges",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a cluster of pressure gauges on a panel mounted flat to the wall, correctly drawn in front-facing orientation permitted for wall-mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5341
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.531Z",
+ "cells": {
+  "16": [
+   "978d583cc461b7f3"
+  ],
+  "24": [
+   "0ead64e4509b5af1",
+   "22ba30679b8cb11b",
+   "6eb52426e4d43a3f",
+   "910a1b7f70d60c49",
+   "a8a5d5fb87948b57",
+   "cf36db8a0c940671"
+  ],
+  "32": [
+   "0df2f0beccaca4a2",
+   "1dbac6cfe2f20782",
+   "7173f78d0680d5cf",
+   "745af518e0c42d75",
+   "d18052480a0aa414",
+   "d7fd8f9cc875ea37"
+  ],
+  "48": [
+   "4b44470193167397",
+   "72285ddfa04347b5",
+   "7cae6a49bef67272",
+   "89ae4a1b985a99ba",
+   "a216f2329e6c785f",
+   "dc74f2855ca0545c"
+  ]
+ }
+}
