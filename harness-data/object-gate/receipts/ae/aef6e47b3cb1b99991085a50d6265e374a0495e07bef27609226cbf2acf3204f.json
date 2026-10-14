@@ -1,0 +1,138 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "aef6e47b3cb1b99991085a50d6265e374a0495e07bef27609226cbf2acf3204f",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "wooden dock crane with pulley and hanging cargo net",
+ "label": "pirate-isles/pi-dock-crane",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "crane mast and horizontal jib arm",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crane mast cap and horizontal beam top are drawn in flat side elevation without foreshortened top surfaces (the mast cap is a flat outline at row 3 with 0px top, and the horizontal beam top is at most a 1px highlight). Although the base plinth and hanging cargo show top planes, the main crane structure lacks top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10684
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "crane base and suspended cargo",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the substantial base box (rows 36-41, 6px top surface) and the suspended cargo box (rows 27-31, 5px top surface) clearly display foreshortened top surfaces consistent with 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7999
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden crane mast and jib arm",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crane mast and horizontal jib beam are drawn in a flat side elevation. The horizontal beam extending to the right shows no foreshortened top surface (only a 1px line between outlines), and the mast cap has no visible top, failing the requirement that beam tops and horizontal surfaces must be visible from above in 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 11307
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "crane mast and horizontal boom arm",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body of the crane (vertical mast and horizontal boom arm) is drawn as a flat 2D side elevation. The horizontal beam has no visible top surface, and the mast cap is just a flat 1px outline. The base plinth cannot be credited as the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7633
+  }
+ ],
+ "decidedAt": "2026-10-13T19:19:03.413Z",
+ "cells": {
+  "16": [
+   "63e31626b7e8e1a4",
+   "9b817a21c10e68ff",
+   "a4630c99916ba399",
+   "aaf375661082553a",
+   "d94e2dc928c4bd99",
+   "e8f4027d36089fce"
+  ],
+  "24": [
+   "03131a5d61368e0d",
+   "102deedd139e8c94",
+   "20ecbd87ed22e6ed",
+   "2f98aa7b11b7cff8",
+   "39a91087ecc9b8ad",
+   "a97b4e6878203338",
+   "c8b2ce7d31272e80",
+   "d28c65db568bedd9",
+   "d7c252b0f7a7d1d3",
+   "da6518b76c06151c",
+   "f7fb9af7152c3e75",
+   "f8815517458dbdc7"
+  ],
+  "32": [
+   "561db31f1502d257",
+   "5684906716d021fd",
+   "ba638019ef733052",
+   "dda7886d983ca3a5"
+  ],
+  "48": [
+   "2af7ca4930e04d4c",
+   "34d54dd143f03e85",
+   "d59afa43932a1d02"
+  ]
+ }
+}

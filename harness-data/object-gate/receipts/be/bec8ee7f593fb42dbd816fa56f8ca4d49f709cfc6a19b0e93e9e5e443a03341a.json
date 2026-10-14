@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bec8ee7f593fb42dbd816fa56f8ca4d49f709cfc6a19b0e93e9e5e443a03341a",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "square stone lantern pillar seen from above at an angle: flat square top face with a small glowing lamp box standing on it",
+ "label": "pirate-isles/pi-lantern-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "square stone lantern pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in pure front elevation. The pillar shaft, overhanging capital/molding, and the lantern box on top are all drawn flat with no visible top horizontal surfaces foreshortened.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9378
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone lantern pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in pure front elevation with straight horizontal bands and no foreshortened top surfaces. The lantern cap at the top is a 2px flat bar, the window and lantern base are flat rectangles, and the pillar capital and shaft are drawn as flat architectural mouldings with horizontal grooves rather than showing a horizontal surface seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 15855
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pillar shaft with cap and lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure flat front elevation. Neither the top of the lantern roof (rows 0-2), the lantern body, the pillar cap (rows 9-13), nor the pillar shaft shows a foreshortened horizontal top surface; all dividing lines and bounds are straight horizontal lines with vertical sides.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5385
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pillar shaft with capital and lamp housing",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in a pure front architectural elevation with zero visible top surfaces. The pillar shaft, capital molding (rows 8-13), and lamp housing with cap are all rendered as flat frontal rectangles without any top-down angle or foreshortened horizontal planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6908
+  }
+ ],
+ "decidedAt": "2026-10-13T19:37:04.821Z",
+ "cells": {
+  "16": [
+   "351986c5c84051f4",
+   "6539406d2e6b714b"
+  ],
+  "24": [
+   "10ca91f717e32b85",
+   "11001de09719d975",
+   "1fb3a3d2bf456d1d",
+   "3daacc04f99e79b9",
+   "48e85787f320a645",
+   "4bf4f5924e39cae3",
+   "66b38a067120c617",
+   "6b2546d6d5a9fb5a",
+   "89a2472faba1a20f",
+   "9b1a2cfb24365dc1",
+   "9f5a082860cf8538",
+   "cbdb505a089f5ec3"
+  ],
+  "32": [
+   "13194ba530f4cb61",
+   "27338e0700437538",
+   "dd7da9baafaac2e0"
+  ],
+  "48": [
+   "129996e4905d9964",
+   "1ed4be4c73140531",
+   "6517d08aefb535e3",
+   "6fe32492ec828ab2",
+   "e1d4e679722e0335",
+   "fd3d2fc895563278"
+  ]
+ }
+}

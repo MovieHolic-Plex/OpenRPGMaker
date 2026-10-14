@@ -1,4 +1,5 @@
 import { roomSpecOf } from "@/editor/handInterior/builder";
+import { isPirateIslesTilesetDef } from "@/ai/pirateIslesPolicy";
 import { tileAt } from "@/project/collision";
 import { hasRelief } from "@/project/relief/walk";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
@@ -219,6 +220,9 @@ export function inspectPiLayoutQuality(project: Project, baseline: Project, scop
     const map = project.maps[mapId];
     if (!map || skip.has(mapId)) continue;
     if (map.width * map.height < MIN_CELLS) continue;
+    // 구성기(compose_pirate_isles_map)로 짠 해적 군도 맵은 바다·해변·부두·광장이 용도로 비운 칸이다 — 이 검사는 그것을 「빈 바닥」으로 세어 소품을 흩뿌리게 한다.
+    // 구역 이름표(pirate-area)가 있는 pirate_isles 맵은 묻지 않는다(SF 구성기와 같은 이유).
+    if (isPirateIslesTilesetDef(project.tilesets[map.tilesetId]) && (map.locations ?? []).some((l) => (l.tags ?? []).includes("pirate-area"))) continue;
     // 구성기(compose_sf_station_map)로 짠 SF 맵은 용도(방·도로·보도·착륙장·문 통로)부터 깔린 맵이다 — 이 검사는 도로·복도·착륙장을 「빈 바닥」으로 센다.
     // 2026-10-14 실제 입력창 3건(gemini-3.8-flash): 빈 바닥 43~56% 권고를 받은 조수가 4줄 도로 한가운데 드론 패드·광고판·벤치를 찍고
     // 연구실에 흄 후드·프린터를 겹으로 흩뿌렸다(구성기 출력보다 나빠짐). 구역 이름표(sf-area)가 있는 sf_station 맵은 묻지 않는다.

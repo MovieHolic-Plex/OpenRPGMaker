@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "629a28f9de2a60d88e1872c2cfb7ad4f92f891b2d1f7640c08614866ede098cf",
+ "width": 64,
+ "height": 32,
+ "kind": "terrain",
+ "name": "stone fort wall front face strip, 4 variants x 2 rows (plain, arrow slit, cannon port, mossy)",
+ "label": "pirate-isles/pi-wall-face-fort",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone fort wall face strip",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile strip showing vertical stone fort wall front faces with arrow slit and cannon port variants, meant to tile with wall tops in standard JRPG map layouts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4321
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone wall front face tiles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face strip terrain tile showing the south-facing vertical stone masonry surface with variants (plain, arrow slit, embrasure, mossy vines). As a wall face terrain element, it correctly represents a vertical surface in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5586
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone fort wall face strip",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile strip; as a standard 2D vertical wall face in JRPG autotile systems, it correctly represents the south wall surface without an integrated top.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4497
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone wall face strip",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall face terrain tiles depicting stone fort wall masonry with arrow slit, cannon port, and vine variants. As a wall front face terrain surface, it correctly represents vertical elevation without needing a top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4243
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.696Z",
+ "cells": {
+  "16": [
+   "03e644d0af148a5e",
+   "0d906d2161fe6b01",
+   "3c3610b605be403f",
+   "76fd2ea2eb93d50a",
+   "78d5d8a266eef6a9",
+   "8d6a957d1a230f07",
+   "cd22c530171a3bf9",
+   "ebf0c999e7816bf1"
+  ],
+  "24": [
+   "0059e7a2923e4ddc",
+   "02a1d3092cadd041",
+   "0a8473b0d6485cf0",
+   "1b365b37bf63efd0",
+   "1b8ff1bd77b0de09",
+   "1ba18e287f4890bf",
+   "1d2fb780a7f76190",
+   "1e816402208972f8",
+   "2820e8a6c93847a2",
+   "3cb226d64094611d",
+   "4fda390d1ed3bb7c",
+   "57cbb0fa09e185d9",
+   "64163d9d1a4ae570",
+   "6b911900e5fa8a2a",
+   "6dd2300914d85eff",
+   "749055dc2bf3d157",
+   "76fc8d3b743dc2bf",
+   "77d137c9afee6046",
+   "7a81da4e74c6f6cf",
+   "7aea42db35e1b588",
+   "889cf6885600eb64",
+   "8cf59ac01b05e36e",
+   "9a6ad6619fd98416",
+   "a23de66fd0e40602",
+   "a24130af638c4ccc",
+   "b419dcb41fd9161b",
+   "bf3b3fb5a7152e34",
+   "d34dd81937b3dd42",
+   "d420883a1a507dd0",
+   "ddbdccaf09b36960",
+   "deb30fdc1505d4b3",
+   "dfa6d02f9c414a84",
+   "e55602287c95ed2b",
+   "ecfd354928f6fe99",
+   "ee09da408491c129",
+   "f2ddb0e2e5e94feb"
+  ],
+  "32": [
+   "195e32eae66b4394",
+   "f8d977698aacb811"
+  ],
+  "48": [
+   "04d966504172aa6f",
+   "0c45065399497b60",
+   "29afb90e3a4f695b",
+   "2dd7e7d4793e2897",
+   "38c37048d2510f6c",
+   "3ad100b254d0c004",
+   "4a7972837be5cd07",
+   "8f9ca0e342ebeb9c",
+   "9af4ae6a6873e414",
+   "c0732558924e7ce4",
+   "c19d6c5ccf48cdff",
+   "f0fb1a15377d2954"
+  ]
+ }
+}

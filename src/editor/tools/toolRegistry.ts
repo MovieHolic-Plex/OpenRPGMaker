@@ -84,6 +84,7 @@ import { HAND_INTERIOR_TOOLS } from "./handInteriorTools";
 import { JP_CITY_TOOLS } from "./jpCityTools";
 import { CAMPUS_TOOLS } from "./campusTools";
 import { WIZARDING_SPACE_TOOLS } from "./wizardingSpaceTools";
+import { PIRATE_ISLES_TOOLS } from "./pirateIslesTools";
 import { SENGOKU_EDO_TOOLS } from "./sengokuEdoTools";
 import { SKY_ISLAND_TOOLS } from "./skyIslandTools";
 import { STEAMPUNK_CITY_TOOLS } from "./steampunkCityTools";
@@ -231,6 +232,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(CAMPUS_TOOLS, "tile"),
   // 마법 학교(해리포터풍, wizarding_world) 공간 빌더 — 13공간 레시피로 방·야외 한 장을 한 번에 짓는다(통행 한 덩이 보장).
   ...withDomain(WIZARDING_SPACE_TOOLS, "tile"),
+  // 열대 군도·해적 항구(pirate_isles) 맵 구성기 — 항구·섬 마을·요새·난파선 섬·배/술집/오두막/동굴 안을 씨앗으로 한 장째 짠다. oprn-pirate 맵에서만 동작한다.
+  ...withDomain(PIRATE_ISLES_TOOLS, "tile"),
   // 전국·에도 일본(sengoku_edo) 야외 구성(성하마을·여관 거리·무가 저택·성·신사/절·농촌)과 건물 문 ↔ 실내 이음. sengoku_edo 맵에서만 동작한다.
   ...withDomain(SENGOKU_EDO_TOOLS, "tile"),
   // 하늘섬(sky_island) 구성기 — 마을·신전 섬·비공정 부두·섬 사슬·실내 방 한 장(섬·건물·다리·소품, 도달 검사)과 건물 문 ↔ 실내 이음. sky_island 맵에서만 동작한다.

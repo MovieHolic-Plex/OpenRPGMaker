@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "21968bc6446227d460175fdd6d60ce3077aa87ab1e6dd4c8b5c3fa22c4c8466a",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "wooden drying rack with fishing nets hanging",
+ "label": "pirate-isles/pi-net-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden frame and crossbeam",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal wooden crossbeam is drawn as a flat 3-pixel-tall bar with simple vertical-strip shading (rows 7-9) and no visible top surface. The post tops and bases also show no top faces, rendering the entire frame in flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8057
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden frame (posts and crossbeam)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden frame consists of two vertical posts and one horizontal crossbeam drawn entirely in flat 2D front elevation. Neither the post tops, post bases, nor the horizontal crossbeam show visible top surfaces in 3/4 perspective; the beam merely uses 1px gradient bands.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9101
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden drying rack frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal crossbeam is only 2 source pixel rows tall (rows 7-8) with a 1px highlight and 1px shadow, representing a flat front elevation with no visible top surface. The frame posts also lack any top perspective or 3D base depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4509
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden frame rack with hanging net",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire wooden frame is drawn in flat front elevation. The horizontal beam is only 3 pixels tall with simple 1px top highlight, showing no distinct horizontal top surface, and the vertical posts have no base or depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7636
+  }
+ ],
+ "decidedAt": "2026-10-13T19:19:03.412Z",
+ "cells": {
+  "16": [
+   "0db8cc407f27c8f9",
+   "845a009f016f989b",
+   "ded9454887a70a93",
+   "e91d5dd37c747f16"
+  ],
+  "24": [
+   "023548670d4427ea",
+   "0c1403d910fa6504",
+   "12cc4936a60dc326",
+   "12e5bef818625f99",
+   "30ea077ade36722b",
+   "31c8c7e9334bc57c",
+   "41924191885c9606",
+   "4b9b56179f2ccba5",
+   "4bb78a31b1a38fbe",
+   "5dec9a23367c6a96",
+   "65a4892247423216",
+   "77d36754e86c0ae0",
+   "7e7b0540f14ad0b4",
+   "8662f95f79bb9b59",
+   "8a168c6235c24a9e",
+   "940fa75a6992dbda",
+   "9ccd3a31bbf7d600",
+   "b3caef8c42e31449",
+   "be02cf0f34bb5077",
+   "c6d2f59cb820cf7c",
+   "cc2cc31e1ba8d3d9",
+   "cc75b47c60a78468",
+   "dd0e7ef91b64294a",
+   "e49900a55a35505f"
+  ],
+  "32": [
+   "3b7b5913422be8ec"
+  ],
+  "48": [
+   "2bde5509e957f72a",
+   "469d3208633aac4b",
+   "94617b85893c2f3f",
+   "a97445bd72914a62",
+   "c9abe51c089112cc",
+   "e04b2cdc08463796"
+  ]
+ }
+}

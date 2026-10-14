@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "535485aafd85de20789b2e17985ad90e8ff8551539967bc29f37bdadf6c89a48",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "bundles of drying herbs and a garlic braid hanging from a wooden wall peg rail",
+ "label": "pirate-isles/pi-hanging-herbs",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hanging bundles of herbs and garlic on a wooden peg rail",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted hanging item displayed flat against the wall plane as appropriate for the kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3590
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hanging herb bundles and garlic braid on a wall rail",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted hanging herb bundles and garlic braid suspended from a peg rail, appropriately flat against the wall background with no invalid receding isometric faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3837
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "herb bundles and garlic braid hanging from wooden peg rail",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted hanging herb bundles and garlic braid on a horizontal peg rail, viewed flat against the wall as appropriate for wall-mounted decor.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4221
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hanging herb bundles and garlic braid on a wall rail",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted hanging herb bundles and garlic braid flat against the wall; permissible for wall_mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4251
+  }
+ ],
+ "decidedAt": "2026-10-13T19:28:41.190Z",
+ "cells": {
+  "16": [
+   "ba9eb9f0985cadad"
+  ],
+  "24": [
+   "40db9cb501479213",
+   "72ab86e2e2d4583c",
+   "7cc0cd3cccc07e50",
+   "aa16ffa73f02c6fb",
+   "cdfd6ea7b3ca7815",
+   "d1315a1b1d01aadd"
+  ],
+  "32": [
+   "4be543afbc9d24ea",
+   "562fc10be231d044",
+   "804fa68f3300e90d",
+   "c286ea9b54c24e92",
+   "cdb20d7d32317d24",
+   "e238b5dd8d33a338"
+  ],
+  "48": [
+   "0d20756beec94856",
+   "7fd5d721aff937d4",
+   "9a893a1d7c587e7b",
+   "bc09c988b50b158c",
+   "e5df008042da8378",
+   "e693c927b6d4b6d5"
+  ]
+ }
+}

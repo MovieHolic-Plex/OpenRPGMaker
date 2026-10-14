@@ -5,6 +5,7 @@ import joseonBaramSheet from "./joseonBaramSheet.json";
 import modernCitySheet from "./modernCitySheet.json";
 import jpCitySheet from "./jpCitySheet.json";
 import wizardingWorldSheet from "./wizardingWorldSheet.json";
+import pirateIslesSheet from "./pirateIslesSheet.json";
 import sengokuEdoSheet from "./sengokuEdoSheet.json";
 import skyIslandSheet from "./skyIslandSheet.json";
 import steampunkCitySheet from "./steampunkCitySheet.json";
@@ -65,6 +66,7 @@ export function bundledChipsetTilesPerRow(key: string): number {
   if (key === "tex_modern_city") return modernCitySheet.tilesPerRow;
   if (key === "tex_jp_city") return jpCitySheet.tilesPerRow;
   if (key === "tex_wizarding_world") return wizardingWorldSheet.tilesPerRow;
+  if (key === "tex_pirate_isles") return pirateIslesSheet.tilesPerRow;
   if (key === "tex_sengoku_edo") return sengokuEdoSheet.tilesPerRow;
   if (key === "tex_sky_island") return skyIslandSheet.tilesPerRow;
   if (key === "tex_steampunk_city") return steampunkCitySheet.tilesPerRow;

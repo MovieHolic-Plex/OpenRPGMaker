@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "19e85fe8c4891f133a85914dab49bba4b2b4d06c63c820a48c5603e142f5cfcc",
+ "width": 32,
+ "height": 32,
+ "kind": "flat",
+ "name": "red woven rectangular rug with gold diamond medallion, patterned border and fringed ends",
+ "label": "pirate-isles/pi-tavern-rug",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "woven rectangular rug",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rug is classified as flat and is viewed from above across its entire 32-row height, with fringes at north and south ends and central medallion.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3954
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "woven rectangular rug",
+    "kind_matches": true,
+    "top_rows": 31,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rug lies flat on the floor plane as viewed from above, spanning rows 1-31 with patterned borders, fringes on the north/south ends, and a central medallion.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2942
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "woven rectangular rug",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire object is a rug lying flat on the ground, correctly rendered as a top-down floor plate with patterned border, central medallion, and fringed top/bottom ends spanning rows 1-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3249
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "woven rectangular rug",
+    "kind_matches": true,
+    "top_rows": 31,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat floor rug viewed from above spanning 31 rows, complete with fringed ends, patterned borders, and a central diamond medallion.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2944
+  }
+ ],
+ "decidedAt": "2026-10-13T19:28:41.189Z",
+ "cells": {
+  "16": [
+   "48119293c71eac7c",
+   "5b9f531b5c40d4c4",
+   "6d59958480d651ae",
+   "fc49aace7cb34a8a"
+  ],
+  "24": [
+   "0eed9fd0b1faba8b",
+   "10dcfccd7f5ae804",
+   "1252311ad82275ad",
+   "1d9539a4dfd92f88",
+   "1f9a5065dea9b8a1",
+   "30ed86c50c9d64bb",
+   "4ad45c5bde9f516a",
+   "525e3c1553cbbf25",
+   "596e0f3e3b1e2b82",
+   "635cd986fdeb46c8",
+   "6a75efd2b6072d3b",
+   "a348381a65c0c30c",
+   "b4e03bcfc4b99985",
+   "be51015ce087501d",
+   "c1178e39278842b7",
+   "c43329438e84b742",
+   "c4378bc9a53fdabf",
+   "c9fb7ed0fc71bafc",
+   "cc70b8fdc8b3d49f",
+   "cd001e1f282f6bae",
+   "de492de4d9a524af",
+   "ea06aa4258dceb31",
+   "f968f6680de19985",
+   "fa78bf48a937b117"
+  ],
+  "32": [
+   "3e4936bf1f01dac9"
+  ],
+  "48": [
+   "223a2ba8fff238cf",
+   "2d2e31fab4652b79",
+   "766d19b231ffa77a",
+   "aeb2d8212aa6c52e",
+   "b59ae5fa1aae3fdf",
+   "c7e2ddb2db72c3b0"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "516a1dff23d97ae6fed5890c6e52c6c3a14c5d19d61aa58686463a4032252d19",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "round tropical bush",
+ "label": "pirate-isles/pi-bush",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "spherical bush foliage",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush is drawn as a rounded 3D volume with top-down lighting highlighting the upper crown across rows 2-7 (approx 5 rows), transitioning to shaded lower foliage.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4287
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "spherical bush foliage",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The spherical bush has upper highlight and shading indicating 3/4 downward lighting and viewing angle, showing the top hemisphere across rows 2-8 before shading into the underside.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4552
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round bush foliage",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush is rendered as a rounded volume with the upper surface spanning rows 2-7 catching top light, consistent with 3/4 top-down spherical shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5373
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "spherical bush foliage",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Spherical organic bush with lighting on the upper dome spanning rows 2 to 7, tapering to shadow toward the base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3816
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.698Z",
+ "cells": {
+  "16": [
+   "98ef43f24275cf6e"
+  ],
+  "24": [
+   "02b37dd1bfce750d",
+   "4b4969cbf7edfc4c",
+   "70683251432ba2ba",
+   "751d26e352529c3e",
+   "98fd77b359bc9c4e",
+   "a042b7fb7f22bb05"
+  ],
+  "32": [
+   "14586ab3fea6c619",
+   "159bad705bdcb95f",
+   "33ee83d917e4caaa",
+   "503e30d5156eca52",
+   "9e6f183e1489b3c5",
+   "e8a5fab1bbe608ef"
+  ],
+  "48": [
+   "08c629cf28ce7718",
+   "48c42096acb19800",
+   "91b6b4371f56ef28",
+   "92d7dd7430dac112",
+   "99f9ecde0ace4af0",
+   "b2c85381fc55d605"
+  ]
+ }
+}

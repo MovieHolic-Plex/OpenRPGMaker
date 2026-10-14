@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "55bc19500278cf103e0bb890176cd41a26d3ebc85a63f4103d3fbde6b92ae17a",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "small red crab on the sand seen from above, claws raised",
+ "label": "pirate-isles/pi-crab",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "crab carapace",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The dorsal surface of the crab's carapace is clearly visible across rows 6–10 (approx. 5 pixel rows) with legs and claws splayed around it in a proper top-down 3/4 angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 16236
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "crab carapace",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crab is drawn in pure front elevation as if facing the viewer directly: the carapace is upright with eye notches at row 6, claws raised vertically to the sides, and legs extending straight downward. There is no foreshortened dorsal (top) shell visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 10690
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "crab carapace",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The dorsal surface of the crab carapace is clearly visible across rows 7-9, with darker shading on row 10 indicating the south-facing edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3504
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "carapace and body of the crab",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crab is rendered in a flat 2D front-facing elevation reminiscent of a side-scrolling or arcade sprite; the carapace has no visible foreshortened top surface (top_rows=0), and the legs extend vertically downward as if standing in profile rather than sprawling across the ground plane in 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 7360
+  }
+ ],
+ "decidedAt": "2026-10-13T19:48:22.807Z",
+ "cells": {
+  "16": [
+   "f5f26728d3e4ac1b"
+  ],
+  "24": [
+   "08dc7836385c4d9c",
+   "605df2ad20b21f6e",
+   "a6549d3d3727a2dd",
+   "bf704e2ab610bfa8",
+   "c46542e1509d4267",
+   "e0308d7e18e6aadb"
+  ],
+  "32": [
+   "02663a3a06756694",
+   "2063bf523bad6ccf",
+   "756c95d30fa60e98",
+   "7a607ecb91a27264",
+   "a36f9e222780b87c",
+   "de0a1521fdad93c2"
+  ],
+  "48": [
+   "61756d4f766f0ba6",
+   "6450e954fae752c1",
+   "8b9b609601e0bf09",
+   "95c884a0fe80965c",
+   "a8e6270ec28f79ae",
+   "f436e184708e43ce"
+  ]
+ }
+}

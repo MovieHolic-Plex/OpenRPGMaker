@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "eafa339d3c2dea087e6120bc5f8cf8588eac92008bb7a3ad7f6ac2ebc7493144",
+ "width": 64,
+ "height": 32,
+ "kind": "terrain",
+ "name": "tavern plaster and wainscot wall front face strip, 4 variants x 2 rows",
+ "label": "pirate-isles/pi-wall-face-tavern",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall front face strip",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall front face terrain tiles rendered flat as intended for south-facing interior walls in top-down 3/4 perspective, with no isometric side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5098
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tavern plaster and wainscot wall front face strip",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tiles representing vertical tavern walls (plaster upper, wainscot lower with window and lantern decorations); correctly drawn as vertical south-facing wall front tiles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6493
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tavern plaster and wainscot wall front face strip",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid vertical wall-face terrain tiles representing plaster and wood wainscoting for south-facing walls in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7720
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tavern plaster and wainscot wall front face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Classified as terrain (wall face). Wall front faces in 3/4 view are correctly drawn as south-facing vertical surfaces without top perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7592
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.697Z",
+ "cells": {
+  "16": [
+   "083cc9ec2337aac1",
+   "628f0de198fb4443",
+   "6b68a2b29dae7b50",
+   "7f98d14714481c9a",
+   "9fb2d4df41a45729",
+   "ac32fb2748eaebf7",
+   "cba42b8c648beceb",
+   "e9dc3bcd816bf990"
+  ],
+  "24": [
+   "05a67b76bc3b6fbc",
+   "0671b667875a50fe",
+   "071cd5fe50c1bc24",
+   "0f60addac077e8e3",
+   "12ec97f23aa050d6",
+   "16ddc3432aa012e4",
+   "22de325b6c5d4455",
+   "29ae44f061eab371",
+   "2ba593887ce83be2",
+   "34735579cb770b63",
+   "3d510aa079f0b1fc",
+   "3de712872dab2379",
+   "46b9201243c52678",
+   "47d093dfe5f3df9c",
+   "5600910629c4464d",
+   "580ace0e1065fb26",
+   "76fd245828959e08",
+   "78d8a1adbfb0e45d",
+   "7dbe2b3baa5993a4",
+   "881486ed1a5c662e",
+   "8ddc400fd941bbc0",
+   "8fa34ef2e7c745e0",
+   "9314641c3095190b",
+   "974e575a2ce25ce6",
+   "afa1d85afc373d71",
+   "b44eb17050203069",
+   "c154179524ccaf77",
+   "c25ad299a5c141b4",
+   "c4d358153cb906d3",
+   "c9e86efcda7e4cc6",
+   "d8c11dc031976ee0",
+   "df167738accbce97",
+   "e66f2e5a16fdf5d7",
+   "e6c9eb913d494331",
+   "eb0311e959a4bed6",
+   "ff1282cc81bc4bd2"
+  ],
+  "32": [
+   "71ea8bb2723dfeca",
+   "a2b57284543f819d"
+  ],
+  "48": [
+   "00e6c614f6baddd6",
+   "547b29802a59f925",
+   "6cf34f7165c973f3",
+   "6e939368c147550b",
+   "7d05529ec20121bb",
+   "8ecac7357cf36212",
+   "97cb01730fee00f8",
+   "c78a5294cfbdfe00",
+   "c9fa491aa121bab6",
+   "ca24538070593b01",
+   "e7a5b6c4a8453705",
+   "fd76c24db2ef03c6"
+  ]
+ }
+}

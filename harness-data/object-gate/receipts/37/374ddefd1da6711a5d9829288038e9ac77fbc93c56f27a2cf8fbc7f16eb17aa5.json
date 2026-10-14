@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "374ddefd1da6711a5d9829288038e9ac77fbc93c56f27a2cf8fbc7f16eb17aa5",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "thick wooden ship mast rising from a big round wedged deck collar, seen from above at 3/4",
+ "label": "pirate-isles/pi-mast-base",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mast shaft and deck collar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mast and collar are drawn entirely in front elevation with flat horizontal bands across the cylinder (e.g. rows 4 and 8) instead of curved ellipses. There is no visible top surface or cut face anywhere (top_rows: 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7596
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ship mast and deck collar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mast is drawn in pure front elevation: the metal bands at rows 3-4 and row 8 are perfectly straight horizontal lines rather than foreshortened curved ellipses, and the mast has no visible top cut face (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7473
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ship mast and deck collar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mast extends off the top with no visible top surface (0px). Furthermore, the metal bands on the cylindrical mast (rows 3-4 and 8) are drawn as completely flat horizontal bars with no elliptical curvature, and the collar/base is depicted from a straight front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9356
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "mast with deck collar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mast and round collar are drawn in pure front elevation: all bands and wedges are drawn as flat horizontal bars across the cylinder with no elliptical top surface or foreshortened horizontal plane visible around the mast or collar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7756
+  }
+ ],
+ "decidedAt": "2026-10-13T19:35:50.750Z",
+ "cells": {
+  "16": [
+   "c8d1933df72abbef"
+  ],
+  "24": [
+   "241c871a6b56fffb",
+   "3ce684f6619b0e15",
+   "9c4fe6b3c4e8f1f6",
+   "9d4999907f933ca1",
+   "adb990029c4f7a2b",
+   "b1ef536d7723a3ec"
+  ],
+  "32": [
+   "3596e7efc21210a3",
+   "6255512c18fda2d2",
+   "9447478f6d45adf5",
+   "966a80f11003c2d3",
+   "f460562edb9f44e7",
+   "fa70b0c54d71d023"
+  ],
+  "48": [
+   "1339335ac743e4f6",
+   "1a3735ffcf7b3434",
+   "3a1bf447d4d94095",
+   "adeccd75f4548435",
+   "f640833e2abea1f8",
+   "fd25ea8cd7ba58a9"
+  ]
+ }
+}

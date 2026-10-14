@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "71533300c31fdc89a1eeb710dfaf5fd4880b21fec1dfee6e5ecd27acf35d931a",
+ "width": 32,
+ "height": 16,
+ "kind": "flat",
+ "name": "woven reed sleeping mat on the floor with a cloth pillow and a folded patterned blanket",
+ "label": "pirate-isles/pi-sleeping-mat",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "woven reed sleeping mat",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sleeping mat is viewed from above as a flat floor object spanning rows 2-13, with a pillow and folded blanket resting on top in consistent 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3319
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "woven reed sleeping mat",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mat lies flat on the floor viewed from above, displaying its full surface across rows 2 to 13, with a pillow on the left and folded blanket on the right.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4307
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "woven reed sleeping mat",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mat lies flat on the floor spanning rows 1 to 13, shown from above in 3/4 perspective with a pillow and folded blanket resting on its surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4051
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "woven reed sleeping mat",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mat lies flat on the ground viewed from above across rows 2-13, with a pillow and folded blanket resting on its surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3386
+  }
+ ],
+ "decidedAt": "2026-10-13T19:28:41.189Z",
+ "cells": {
+  "16": [
+   "3b7fef0f176a0ae1",
+   "93ba2677e17626ce"
+  ],
+  "24": [
+   "2f0ab1f1ea3b47bf",
+   "372ac8d4da5d7752",
+   "5141a361c1098433",
+   "6a2bfb9b73c8d235",
+   "6f8f634339c44a2e",
+   "789504f94c24855e",
+   "8328333a2c22ea3c",
+   "9d91e2883955b3a5",
+   "9e13b4e5f570b0c1",
+   "d858a77d9afb6d23",
+   "e6abe38870b371c5",
+   "fce463887ea03391"
+  ],
+  "32": [
+   "2909da2dbcbee98a",
+   "784612b0d3e3f73c"
+  ],
+  "48": [
+   "23405796cb8645f0",
+   "444e29694b025d7e",
+   "6361b6ab98a39644",
+   "65738f0f4730f7f8",
+   "885bd976e4a94966",
+   "9e01605419d6c771"
+  ]
+ }
+}

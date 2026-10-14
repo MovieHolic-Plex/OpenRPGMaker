@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e0ee680d235875b06574fab614ccc6f5ac3650db3b4a3a4f570e9478242f0121",
+ "width": 32,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "stern-cabin leaded window: dark wood frame with small glass panes showing the sea, brass fittings, sill below",
+ "label": "pirate-isles/pi-ship-window",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stern-cabin leaded window set in dark wood wall frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted window fixture intended for a north-facing cabin wall; depicted flat in front elevation as permitted for wall-mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6999
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stern-cabin leaded window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted multi-pane stern window mounted flat against the back wall, showing front-facing panes and wooden frame with lower sill.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5450
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stern cabin leaded window frame with panes and sill",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The window is a wall-mounted feature designed to sit flat on a north wall, which is permitted to be flat in top-down JRPG perspective. No receding isometric side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5410
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stern-cabin leaded window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Stern cabin leaded window mounted flat on a north wall with wood mullions, glass panes, brass latches, and bottom sill. As a wall-mounted fixture, it correctly presents flush against the wall surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8177
+  }
+ ],
+ "decidedAt": "2026-10-13T19:41:01.301Z",
+ "cells": {
+  "16": [
+   "a00c051ae2dc207c",
+   "ea798fe3827619dd"
+  ],
+  "24": [
+   "1001424bb4d091bc",
+   "22b306f358babf97",
+   "2f9c04e65f1c5924",
+   "40033e2aef57a962",
+   "68ff68ef2666dd56",
+   "70cb300248dce136",
+   "a49813e842c4a681",
+   "a937c8920260b252",
+   "ab2c2b60b21eb516",
+   "b272aaec4ef07a3e",
+   "efbb25981eaf1770",
+   "fbb2c3c98392fbc6"
+  ],
+  "32": [
+   "ce051155bbc4f563",
+   "e22b4f6abec3e4e9"
+  ],
+  "48": [
+   "199b2516f24826ef",
+   "5497029ea000fad6",
+   "54aa8720241429a2",
+   "bd8407c97f72b609",
+   "c4b6830b314edb90",
+   "ffabe2d21fc5fbef"
+  ]
+ }
+}

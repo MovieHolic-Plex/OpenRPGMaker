@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8f23a11bf504d1c0bf024135fed1a56ebca9871912cd71154a5b174eb6af828d",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "large chart table covered with a sea chart showing islands, a dotted route line, compass rose and brass dividers",
+ "label": "pirate-isles/pi-map-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "chart table top",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface occupies rows 2 to 17 (16 rows deep), fully displaying the sea chart and instruments from above, before transitioning to the front apron (rows 18-20) and legs (rows 21-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7566
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "chart table top and legs",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal tabletop surface covered by the nautical chart occupies rows 2 to 16 (15 pixels tall) viewed from above, with the south apron and legs extending downwards below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7359
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "chart table top and legs",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop carrying the sea chart is visible from above across rows 2 to 16 (approx 15 pixel rows deep), with the south apron and legs extending downwards below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5535
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "chart table top and legs",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop displaying the sea chart occupies rows 2 to 16 (15 pixel rows tall) viewed from above, resting on front and recessed back legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6300
+  }
+ ],
+ "decidedAt": "2026-10-13T19:28:41.185Z",
+ "cells": {
+  "16": [
+   "046744a6818ac0d1",
+   "44d604eb3b8675c7",
+   "711d43d195eb6ef9",
+   "f3a4d60095db47ab"
+  ],
+  "24": [
+   "00f26916bd884d4b",
+   "0abce04855698365",
+   "14c3496500986d41",
+   "16e70da674fb2d14",
+   "17b46df5a37a9c35",
+   "1c99a61d02392c4a",
+   "2c8840daab99e917",
+   "2e39c9e575dac967",
+   "44ec44767e99e4d1",
+   "543d362ce079bfde",
+   "6540ed116d00c7bf",
+   "6aa6f07c4d7e0737",
+   "6b58e3eb51aa413e",
+   "80fbf3f8e2b6c0d4",
+   "8f389fa1504649a3",
+   "95e46a90bad749b9",
+   "b6f3ce1841e15477",
+   "c0bf243f1563b006",
+   "c1982cd66c23e2e8",
+   "d2910748fd7db928",
+   "d9913237828e0c3a",
+   "e3ddb69c827af2bb",
+   "eda88b6c6dc8fd6b",
+   "fd16614243270d6e"
+  ],
+  "32": [
+   "f5b5780091f71f9b"
+  ],
+  "48": [
+   "191a42aec7c459a3",
+   "19ddec93439d7253",
+   "49985aaa7db5750e",
+   "9b12bb2af7cf8f72",
+   "eeb727fd7ae23a2b",
+   "f3f07ed5dec32ea3"
+  ]
+ }
+}

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e343e3bf9cf5763b5581f2cfc38166225a5b5ec6f94df4d7c193aedd9366e4b5",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "bamboo tiki torch with burning flame",
+ "label": "pirate-isles/pi-tiki-torch",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bamboo tiki torch shaft and head",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The torch head, bamboo segment joints, and base are drawn with completely flat, straight horizontal lines with no foreshortened top surfaces, rims, or ellipses visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3367
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bamboo tiki torch with pole and fuel cup",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The torch is drawn completely in flat front elevation. The fuel cup (rows 6-10), bamboo segments (rows 11-27), and base (rows 29-31) have straight horizontal divider lines and no visible top surface or elliptical perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4131
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bamboo pole and torch head",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The torch head, bamboo pole joints, and base are drawn with purely horizontal lines with no visible top surface, opening, or foreshortened elliptical planes, making it a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3772
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bamboo pole and torch head",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The torch head is drawn as a flat rectangle with completely horizontal top and bottom edges, the bamboo nodes are straight horizontal lines, and there is no visible top surface or elliptical opening for the cup.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8150
+  }
+ ],
+ "decidedAt": "2026-10-13T19:19:03.411Z",
+ "cells": {
+  "16": [
+   "816318f7f82c0ffe",
+   "8801c7f35c994ca0"
+  ],
+  "24": [
+   "038045039fa2ed82",
+   "0616f9f54950605b",
+   "341da309c40f088b",
+   "570751a13b3fbfc8",
+   "571a25711b888918",
+   "7e0fc93f7b69608b",
+   "94253db21feca096",
+   "ab99c2e436b6eab6",
+   "b046f8f6512a9f2f",
+   "bbbe7da7c8f9d47a",
+   "d371f9a8ed30f2ce",
+   "f9da524a6f956d1c"
+  ],
+  "32": [
+   "0bfaff4df68d774b",
+   "5dff773848f7e880",
+   "abadcc5a4e53552c"
+  ],
+  "48": [
+   "07866c4081749198",
+   "09b3f09e00891261",
+   "1d45830e4b2a2b4f",
+   "4bb2c19d9238168b",
+   "95a6af60d18a9ab7",
+   "ddfb493eb2ea526e"
+  ]
+ }
+}

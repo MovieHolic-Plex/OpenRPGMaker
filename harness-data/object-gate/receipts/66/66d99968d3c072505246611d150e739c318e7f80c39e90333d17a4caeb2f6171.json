@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "66d99968d3c072505246611d150e739c318e7f80c39e90333d17a4caeb2f6171",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "round wooden table with two stools",
+ "label": "pirate-isles/pi-table-stools",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round wooden tabletop on pedestal",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round tabletop clearly displays a foreshortened elliptical top surface spanning rows 6 to 13 (8 rows tall), plus vertical edge thickness and pedestal base below. The stools also display visible top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3404
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round wooden table",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop has a prominent elliptical top surface spanning rows 6 to 13 (8 pixel rows tall) with a beer mug on it, followed by a south-facing edge and base, clearly drawn in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7784
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round tabletop and pedestal",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round tabletop has an elliptical top surface extending roughly 7 pixel rows (rows 6-12) with a beer mug on top, above its underside/front edge, correctly displaying 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4109
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round wooden table",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop has an 8-pixel tall elliptical top surface (rows 6 to 13) visible from above with a beer mug on it, above a front rim and pedestal base. The flanking stools also show foreshortened top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3120
+  }
+ ],
+ "decidedAt": "2026-10-13T19:19:03.411Z",
+ "cells": {
+  "16": [
+   "0fe8bf6826aae125",
+   "32671c58fa2a47dc",
+   "502dff1d0920b8a6",
+   "a7543d79bb6d0dc4"
+  ],
+  "24": [
+   "0aa1ce778697cd68",
+   "16d9e3503fb7f3ad",
+   "1a65685a758d9218",
+   "1e0949552395e88a",
+   "248fccb752cd4525",
+   "2dead2574f36fa13",
+   "2e69c3ba23b763a8",
+   "36f31a9308f81882",
+   "3edbe1bf4b293f69",
+   "42fc85286d5ae91d",
+   "4307332dbb7d60e1",
+   "490506534a4eec71",
+   "4fe6e7d13dc82086",
+   "5598d2dfd1deaf62",
+   "58b40ec2755e0384",
+   "7e6e34261ee2a3a3",
+   "8db98212dd09ef5f",
+   "956cb3d6fdca81f0",
+   "a45ebeef050e396d",
+   "c533f07797382a6c",
+   "cc161e77673b0f42",
+   "ee93643f1e457563",
+   "f6c7f70c4bcb9902",
+   "fdf9debd1061a2e6"
+  ],
+  "32": [
+   "0da1242b9ba7cc86"
+  ],
+  "48": [
+   "123d1d5ad358460b",
+   "1ce73b2af46e296b",
+   "9ee320603eff890a",
+   "ad1f23d61459c79a",
+   "c98205143c3c16d7",
+   "fcb992188243fb10"
+  ]
+ }
+}

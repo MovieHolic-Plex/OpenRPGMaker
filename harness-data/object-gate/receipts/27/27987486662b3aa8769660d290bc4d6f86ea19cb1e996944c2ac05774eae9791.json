@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "27987486662b3aa8769660d290bc4d6f86ea19cb1e996944c2ac05774eae9791",
+ "width": 32,
+ "height": 16,
+ "kind": "debris",
+ "name": "bleached driftwood log lying on the sand",
+ "label": "pirate-isles/pi-driftwood",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal driftwood log",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The log is drawn as a flat side-scroller profile with branches projecting straight up and down in the vertical plane. It lacks any visible foreshortened top surface or 3/4 depth, appearing as a pure front/side elevation.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7469
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal driftwood log",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The log is drawn as a flat 2D side-scroller profile with branches projecting straight up and down, flat vertical cut ends, and no foreshortened top surface or elliptical cross-section visible from a 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9674
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal driftwood log lying on the ground",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylindrical driftwood log lies horizontally with its upper surface visible and highlighted across rows 8-10 (3 pixel rows) transitioning to shadow along the bottom edge, consistent with 3/4 view top-down lighting on a floor debris object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7796
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal log trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The log is drawn as a flat 2D side-scroller elevation with parallel horizontal top and bottom outlines (rows 7-8 and 13-14), vertical branch stubs, and no foreshortened top surface or 3/4 perspective depth cues.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8395
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.699Z",
+ "cells": {
+  "16": [
+   "534d6ed0f8718710",
+   "7901235845ae5a70"
+  ],
+  "24": [
+   "0efbe230d4aae153",
+   "0ff3277306fa6fac",
+   "1958fef211e3a7af",
+   "1970e53e0290c3e9",
+   "19e2fc7b01c8e15d",
+   "3f43680f03109947",
+   "44b6926840aa2b94",
+   "490bf385fafab221",
+   "4eb9776d8416784e",
+   "9a9adb6069e17188",
+   "a468aca4efabac50",
+   "fa52c6d57c067e07"
+  ],
+  "32": [
+   "1080a1e56054eadc",
+   "3604781dab32370d"
+  ],
+  "48": [
+   "51a5bb15115720bb",
+   "97437a63fcac104a",
+   "c1cf93a27677d0a5",
+   "f0d7bb83e8193690",
+   "f1836706f4957912",
+   "fcc628b253aab0c2"
+  ]
+ }
+}

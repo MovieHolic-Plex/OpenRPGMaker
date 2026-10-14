@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d465d18f95e655966520c6469c900fe0fdf51cfcda9d65dc27637fee09904800",
+ "width": 32,
+ "height": 32,
+ "kind": "other",
+ "name": "iron cannon on a wooden carriage with wheels, aimed south",
+ "label": "pirate-isles/pi-cannon",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cannon barrel and carriage",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cannon barrel points south towards the viewer with its full cylindrical top length foreshortened and receding north (rows 0-25), terminating at the front muzzle opening (rows 26-29), perfectly matching 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4541
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cannon barrel and wooden carriage",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cannon is aimed south with the barrel receding north across rows 1-25 in proper 3/4 perspective, displaying its upper cylindrical surface along its full length and an elliptical muzzle opening at rows 26-29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7230
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cannon barrel and carriage",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cannon aimed south clearly displays the top surface of the long cylindrical barrel receding northwards from rows 1 to 25 (~24 px), with its southern muzzle opening visible as an ellipse (rows 26-29) in proper 3/4 overhead perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4147
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cannon barrel and carriage",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cannon points south, showing the foreshortened cylindrical top of the barrel extending north (rows 1-25) and the front muzzle opening at rows 26-29, correctly rendered for 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5709
+  }
+ ],
+ "decidedAt": "2026-10-13T19:56:51.379Z",
+ "cells": {
+  "16": [
+   "0549b16b806c0ee0",
+   "b895951851785e5b",
+   "d3b52f7c4a9e35c0",
+   "fd9b98c35fda39b4"
+  ],
+  "24": [
+   "0957ca5111c08d86",
+   "0a5377ef4cd7f054",
+   "11526924b861733f",
+   "136640e856d24a63",
+   "176d804010f8abc0",
+   "33c029065835bd4f",
+   "3b6141827c1fb232",
+   "3d4d9c3758266f91",
+   "3da371a23f152032",
+   "410bf847cd605f45",
+   "4e1e64bf72610027",
+   "503005cf362bafe0",
+   "97544fbd7c32c402",
+   "9fc9bacb35928906",
+   "a42f8a59b8271ba5",
+   "a72240ff7ccf2d9b",
+   "acbddc2b12ced2ea",
+   "b9d33c306b0845eb",
+   "bda8d6200f7b38a2",
+   "bfa413c18d9b9e71",
+   "e536ef5a9ffb41de",
+   "f2b224d140c63177"
+  ],
+  "32": [
+   "ddc595ba2bb0ed36"
+  ],
+  "48": [
+   "1ce3506f6edde7bc",
+   "4ef0e9f9de08e404",
+   "554790db360a758c",
+   "9a2fec841f7ac726",
+   "b1e2405b46bd39cf",
+   "d37ad456403c3761"
+  ]
+ }
+}

@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "194d381ee1374a5e5f3aa4de4aa0aa8f89eaf7ed18263f92b6f4f1abd0146f74",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "tall wooden flagpole flying a black pirate flag with a white skull",
+ "label": "pirate-isles/pi-flagpole",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flagpole with base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, top finial, and bottom base block are entirely drawn in pure front elevation with flat horizontal outlines and 0 visible top surface rows.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4536
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flagpole with base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole and finial show no top cut face or surface from above, and the base block is drawn as a flat front elevation with horizontal shading bands and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10045
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flagpole with stone base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire flagpole and base are drawn in pure front elevation. The stone base at rows 40-46 shows only a vertical front face with no top surface, and the pole is a flat vertical strip capped by a flat 2x2 highlight with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9616
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flagpole with base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, its yellow finial cap, and the base plinth are all rendered in a flat front elevation without any visible top surface or 3/4 perspective foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8246
+  }
+ ],
+ "decidedAt": "2026-10-13T19:19:03.410Z",
+ "cells": {
+  "16": [
+   "647ab8f5a211720b",
+   "6ddb2c3bbc3b0071",
+   "f8bf4cce17cb46e4"
+  ],
+  "24": [
+   "0240750adae35653",
+   "81901bfb4b6145f1",
+   "84b8fcaf7adaa146",
+   "bb35079b0a4b8ad8",
+   "d7009d522f5e914d",
+   "e174554c5fd4b9fb"
+  ],
+  "32": [
+   "3746fe2e65cf2e9d",
+   "3f360917df84eb6c",
+   "4a4d9b0a12f66f1b",
+   "672772d3d0f4aefa",
+   "89cf4a11acda84cf",
+   "8b54601744118631",
+   "a32f20e17a51eb17",
+   "a468a2445f77cd54",
+   "a6663cfbf1832ccc",
+   "e3ee0d404c564179",
+   "ee063233d215a6ee",
+   "f51da90aebe51bbc"
+  ],
+  "48": [
+   "14da580d8f359ab3",
+   "802e492ff860c2db",
+   "df513854a3218352"
+  ]
+ }
+}

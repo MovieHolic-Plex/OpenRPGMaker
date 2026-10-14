@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e0e42c19a70ed3009cb2850d030870c7445db5a536fa5a88a4f5aa099ccab430",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "small fishing boat with a short mast, furled sail and a pile of nets",
+ "label": "pirate-isles/pi-fishing-boat",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "boat hull",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": true,
+    "opening_rows": 15,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The interior deck of the boat is extensively visible from above (rows 12 to 26), revealing floor planking and nets, with the southern gunwale/hull face visible below it (rows 27 to 31). Proper top-down 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6765
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "boat hull",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": true,
+    "opening_rows": 14,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The interior floor/deck of the boat is clearly visible from above across rows 12-26, with the south side of the hull visible below it on rows 27-31, correctly adhering to the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8102
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "boat hull",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": true,
+    "opening_rows": 15,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The boat interior and floor deck are clearly seen from above across rows 12-27, with the south exterior hull foreshortened at rows 27-31 in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3805
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "boat hull",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": true,
+    "opening_rows": 15,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The interior deck and cavity of the boat hull are clearly visible from above across approximately 15 pixel rows (rows 12 to 26), with the south-facing hull wall visible at the bottom.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7912
+  }
+ ],
+ "decidedAt": "2026-10-13T19:19:28.499Z",
+ "cells": {
+  "16": [
+   "196bb650279addd3",
+   "4da92473c22aaa6f",
+   "6264741be1950fd6",
+   "6e21587d770ba73d",
+   "82dc924ce0d85e50",
+   "888b4ad7a38c6433"
+  ],
+  "24": [
+   "08558c9354d02ae6",
+   "493fb272ee5efb02",
+   "51cc717d145491f6",
+   "64ab08e00f54b974",
+   "7c6d6ac7c8ab89bf",
+   "8a9ceaa6286d991c",
+   "8d4454504dcb4902",
+   "afd143eecff85eeb"
+  ],
+  "32": [
+   "38320f9de3975875",
+   "5d2daa63b03fb8e0",
+   "aad92143a9f8a0bd",
+   "da609af5e377f98d",
+   "e3e2a981bc875772",
+   "ec065445ce100697"
+  ],
+  "48": [
+   "b92ad48b192ac380",
+   "d3f33d8db2674b17"
+  ]
+ }
+}

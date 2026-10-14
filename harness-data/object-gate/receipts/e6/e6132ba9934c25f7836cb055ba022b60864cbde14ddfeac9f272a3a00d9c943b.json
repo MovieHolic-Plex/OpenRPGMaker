@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e6132ba9934c25f7836cb055ba022b60864cbde14ddfeac9f272a3a00d9c943b",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "broken natural cave rock column seen from above at 3/4: flat rough top cut face clearly visible, cylindrical body with downward-curving strata rings, flared rocky base",
+ "label": "pirate-isles/pi-rock-pillar",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "broken rock column",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the broken column is clearly rendered as an elliptical planar surface spanning rows 1 to 5 (5 source pixel rows tall) with moss details, followed by curved strata down the shaft consistent with 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4444
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "broken rock column shaft with flared base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the column is clearly visible as an elliptical surface across rows 1 to 5 with lighter stone texture and moss spots, before the vertical shaft begins at row 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4163
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "broken rock column shaft with flared base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the column is clearly rendered across rows 1-5 with lighter stone and moss patches, showing clear depth in 3/4 perspective before the darker cylindrical vertical face begins around row 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3765
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "broken rock column shaft",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the broken pillar is clearly visible spanning rows 2 to 6 (about 5 pixel rows tall) with green moss spots, correctly rendered in 3/4 top-down perspective atop the cylindrical shaft.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4362
+  }
+ ],
+ "decidedAt": "2026-10-13T19:41:53.922Z",
+ "cells": {
+  "16": [
+   "12c1ac5f59d95d89",
+   "86d33ebc7783f9c9"
+  ],
+  "24": [
+   "13599bc5fcd7772e",
+   "2a0a4f0adc523a2d",
+   "3fe5bfb8ae9bc80c",
+   "41fd368c68d76f95",
+   "6a06f751b36bf155",
+   "9856ad7a28ecf011",
+   "a098304fa3821f0e",
+   "a6a4cfc49e59b59d",
+   "c342f86036c486f9",
+   "d3b50dfd8c211b49",
+   "f048595a23dfb15a",
+   "f653777c4e6e6265"
+  ],
+  "32": [
+   "0fe0d8ef090ddc04",
+   "eed3b7899c3b9050",
+   "fa6ee3e3f1db8200"
+  ],
+  "48": [
+   "020c0ed301ca8808",
+   "0f015f96f4a75979",
+   "3610456e2fa73b3b",
+   "41e541f26aaa5629",
+   "b636ef86418a724e",
+   "bb6c34a2b25c2a35"
+  ]
+ }
+}

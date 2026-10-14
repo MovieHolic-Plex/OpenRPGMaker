@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "beca4871aefea97a8a1cf40a87edeaf8145495b2589ef93081d9be94521a8181",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "coral reef heads rising from shallow water with foam",
+ "label": "pirate-isles/pi-coral",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "coral reef mounds in water",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coral heads form rounded mounds set inside an elliptical pool/foam ring (rows 8-14). The orange mound displays an illuminated upper surface across rows 9-10 transitioning into a shadowed south face on rows 11-13, appropriately rendered in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6422
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cluster of coral reef heads in water",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coral mounds show lighter top-facing surfaces (rows 8-10) with darker south-facing shading below, encircled by an elliptical waterline and foam ring.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3390
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "coral reef mounds in shallow water",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coral mounds show top-facing lighted surfaces (rows 9-10 in bright yellow/orange) transitioning to darker south-facing shading (rows 11-13), seated in a foreshortened ellipse of water and foam.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5461
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "coral reef head in water",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main orange coral dome displays a visible illuminated top surface (rows 8-10) sloping down to a shaded south-facing front (rows 11-14), encircled by an elliptical waterline and foam ring.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6694
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.699Z",
+ "cells": {
+  "16": [
+   "34f5ee6f318a716e"
+  ],
+  "24": [
+   "09a37c8a960c30e9",
+   "27d7422384e52f8c",
+   "8b0db814a96a2ece",
+   "ad90837f1f0efaaa",
+   "c6a7a0948ab6768d",
+   "cbbb96b2e0a39fa0"
+  ],
+  "32": [
+   "186cc2c3da8ff782",
+   "7702dfaae1b88d41",
+   "8d6efabef22882e7",
+   "b2bfcca7a1ff25a2",
+   "bede15b9399273f5",
+   "f4608c7e5aa94eb4"
+  ],
+  "48": [
+   "3204835606291253",
+   "32c0deb60bfc3b7b",
+   "4b8708c2a7cf6cdf",
+   "7333756c7784b45e",
+   "92f95e0baaf9e146",
+   "d414d28717a82ce5"
+  ]
+ }
+}

@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "51abb2404d0a0364e67501937c5a350987c6ba9bda3355daf3933681e63ab4da",
+ "width": 32,
+ "height": 32,
+ "kind": "other",
+ "name": "naval deck cannon on a four-wheeled wooden truck carriage with breeching rope, aimed south",
+ "label": "pirate-isles/pi-gun-port-cannon",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cannon barrel and carriage",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cannon points south, exposing the full length of the barrel from cascabel to muzzle (over 28 pixel rows) seen from above. Both the front and rear pairs of truck wheels and the carriage frame are spread out along the vertical axis in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8043
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cannon barrel and wooden truck carriage",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cannon and carriage are correctly depicted in 3/4 top-down perspective aimed south. The full length of the barrel and carriage side cheeks are visible from above (~28 rows of top/upper surface), while the front faces of the crossbeam, wheels, and muzzle are visible facing south.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12881
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cannon barrel and carriage",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cannon points south, showing the entire cylindrical top length of the barrel foreshortened from breech (row 0) to muzzle (row 29), along with the top-down view of the carriage cheeks and breeching rope, combined with the front-facing vertical surfaces at the south end (transom/axle on rows 26-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8154
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cannon barrel and carriage",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cannon points south toward the camera in standard 3/4 top-down view. Rather than a pure front elevation (which would only show the round muzzle), the full length of the barrel is foreshortened along rows 0-30, showing its top cylindrical surface, while the carriage reveals both its top surfaces (cheeks, transom) and south-facing vertical planes (front transom and front wheel faces).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6969
+  }
+ ],
+ "decidedAt": "2026-10-13T19:28:41.188Z",
+ "cells": {
+  "16": [
+   "063c450e318ae0fd",
+   "5108c2324053450b",
+   "bd591ed727f086e9",
+   "d538f6ae53250eee"
+  ],
+  "24": [
+   "088181d7e434dd77",
+   "122aba0974d74067",
+   "12d379b3bcd6ef7b",
+   "21964197d8cd951f",
+   "24e8bedf71a200a3",
+   "254a0dbf18f42314",
+   "523ae892f54575d2",
+   "58d07d2210d95afa",
+   "59cd9ca64627b0b8",
+   "5b2e950ade432e95",
+   "62f610a5f5fc41a2",
+   "84c17f7f3222d7a9",
+   "9b7f8c0b3765d436",
+   "9dd9c2b9c8d82f02",
+   "9ff0ca91eb1a5cb4",
+   "a631b50dbece5619",
+   "a6c2c7dd122c7d87",
+   "a74a90d2d35f4667",
+   "b49acadd8b0c15c1",
+   "c3e9aa74e34ef5c3",
+   "caaf38c1ebf92aae",
+   "d0cd646727e5332a",
+   "d2e75bd60c6679e4",
+   "e90aadb1816f6654"
+  ],
+  "32": [
+   "87fa7807558c12c5"
+  ],
+  "48": [
+   "28b330665a90dc0e",
+   "44dc7e80f58466dd",
+   "b261a2592a047313",
+   "c7947c92399fb5b5",
+   "e2a500baa0e63538",
+   "ef9d1a020027121f"
+  ]
+ }
+}

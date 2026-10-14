@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0fb3cc9cdb278ff5ba41f2e6aede4307f6f72a3de5f35e137682f4eb68c4b6d2",
+ "width": 48,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "long polished wooden tavern bar counter with panelled front, brass foot rail, mugs and bottles on top",
+ "label": "pirate-isles/pi-bar-counter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tavern bar counter",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter top surface spans approximately 11 pixel rows (from row 7 to row 17) supporting various tavern items, above a panelled front elevation and brass rail.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3031
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tavern bar counter",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden counter top spans clearly from row 7 to row 17 (11 rows) showing bottles, mugs, and coins, above a panelled front elevation from row 18 to row 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3968
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tavern bar counter",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bar counter top surface spans rows 7 to 17 (11 pixel rows) with bottles and mugs resting on it, above a panelled front face spanning rows 19 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5594
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tavern bar counter",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bar counter top is clearly visible from row 7 to row 17 (11 rows) with mugs, bottles, and other items resting on its wooden surface, above a panelled south front face from row 19 to row 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3194
+  }
+ ],
+ "decidedAt": "2026-10-13T19:28:41.188Z",
+ "cells": {
+  "16": [
+   "76a0e070a60b8adc",
+   "9c33ceaa6770e478",
+   "b03ed30cb10e2171",
+   "b76fb0c6f3fd604d",
+   "c8191e27b65b6ca6",
+   "d905a213b3313d97"
+  ],
+  "24": [
+   "6685079d52bf4c1f",
+   "78f5fa197af796e0",
+   "7bccf79ad8088933",
+   "bce960fb2d0cfd54",
+   "c0d1544a229ff9ec",
+   "d4a6d3823e270187",
+   "eb64025581e375a0",
+   "f13d08ff5b5e4671"
+  ],
+  "32": [
+   "16166d62f5e1d870",
+   "5b5397afae7fd83b",
+   "85dc8eb3917cf3dc",
+   "992645459fa25c26",
+   "c33a47f7a327c61e",
+   "cd379c7e73b6ac50"
+  ],
+  "48": [
+   "0dc69cd42d0e9e95",
+   "7bc22d369cb3ff74"
+  ]
+ }
+}

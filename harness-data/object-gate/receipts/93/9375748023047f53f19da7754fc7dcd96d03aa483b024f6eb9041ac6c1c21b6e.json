@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9375748023047f53f19da7754fc7dcd96d03aa483b024f6eb9041ac6c1c21b6e",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "two crossed pirate cutlasses mounted on a wooden wall plaque",
+ "label": "pirate-isles/pi-cutlass-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden wall plaque with crossed cutlasses",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted plaque and crossed cutlasses mounted flush on a vertical wall; flat front-facing perspective is standard and correct for wall-mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3877
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "crossed cutlasses on wooden wall plaque",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted object (crossed cutlasses on a wooden plaque) mounted flat against the wall surface, correctly depicted without depth projection as permitted for flat wall mounts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5516
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden wall plaque with crossed cutlasses",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crossed cutlasses and wooden plaque are mounted flat against a vertical wall, which is standard and acceptable for wall_mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3089
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden wall plaque with crossed cutlasses",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted plaque with crossed cutlasses viewed flat against the wall, permitted for wall_mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8226
+  }
+ ],
+ "decidedAt": "2026-10-13T19:28:41.190Z",
+ "cells": {
+  "16": [
+   "33a3a9557725be5c"
+  ],
+  "24": [
+   "6cb47ca1bff8bf2f",
+   "c5de6882d6bcaa16",
+   "cb2e976cd73bad26",
+   "da2c87da20202f8a",
+   "f1e3d963d4b7a5e3",
+   "f5e807e2c5cb0886"
+  ],
+  "32": [
+   "1a0bca594dd5ca7a",
+   "29bbc46bf89ec185",
+   "539ee23f95531a23",
+   "8c6fece8a57e8f39",
+   "a8bf40f5d5460eaf",
+   "d0ac8e2b27f10fd1"
+  ],
+  "48": [
+   "149efe14cf3e5c49",
+   "14aac69118a21310",
+   "223fa171c14a02fb",
+   "8ffe23e488a99a6c",
+   "f34e7ba7fc2731ca",
+   "f3f9495de5948ac1"
+  ]
+ }
+}

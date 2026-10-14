@@ -1,0 +1,162 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "da487a5d8cbb722ba720f4ad104966e0b2d9dc5a8711d5cccb23986a6c87cefb",
+ "width": 96,
+ "height": 96,
+ "kind": "structure",
+ "name": "grand two-storey pirate captain mansion with tile roof, balcony and flag",
+ "label": "pirate-isles/pi-captain-house",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "two-storey mansion with sloping tiled roof",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large tiled roof spans rows 0 to 40, presenting a clear foreshortened top slope above the south-facing facade in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10890
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "two-storey mansion with tile roof",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof slopes downward toward the viewer occupying rows 0 to 39 (approx. 40 rows of visible top/slope surface), accurately following the top-down 3/4 perspective for RPG Maker-style buildings.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5193
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two-storey mansion building with large tiled roof",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large hipped tile roof shows roughly 40 rows of upward-facing roof slope foreshortened from above, matching classic RPG Maker 3/4 building perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4001
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "two-storey mansion with tile roof and balcony",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof slopes toward the camera across rows 0-39 (40 source pixel rows), properly foreshortened in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7594
+  }
+ ],
+ "decidedAt": "2026-10-13T19:16:35.209Z",
+ "cells": {
+  "16": [
+   "10e5df8b306f02c8",
+   "12f9858b757e1273",
+   "1efc291351c548d3",
+   "1f7221cb1eb8deb8",
+   "20cff2beb3828093",
+   "2915285e90befddb",
+   "36047d18bc6ea999",
+   "37496e04c84d64ab",
+   "3a067401f669a79e",
+   "3fe52bf146c1cec5",
+   "47777a36cf72059c",
+   "491b98d9b6f4cf87",
+   "499e874c354e41c8",
+   "5643d5e22b71aa5b",
+   "575662947bbfcc5c",
+   "58d03b8fe2f5b8c0",
+   "5c3a1f7ed92b08e7",
+   "5e000b4b48a8a2a0",
+   "6414a862d1b9d410",
+   "66a8309f0a7333d3",
+   "7226446ea301ec8f",
+   "8292c0ce073cb52f",
+   "84f4ceea4e31d2a8",
+   "89ceabd598f78dee",
+   "8a0fcc4bf4af65e5",
+   "9e2dc4e9bf3b788b",
+   "a81d59bc0ed81f75",
+   "b2688a11d3d2ea08",
+   "b52d17e7eefdf574",
+   "b96e11a5cc6f783b",
+   "bbd8a248f94ce2d0",
+   "c3868a307bb853da",
+   "d4ed431839b23ce9",
+   "d61141c74e53034f",
+   "ed820cf8b47c6966",
+   "fa6076bbaa0fecdd"
+  ],
+  "24": [
+   "0647a5d8178257fb",
+   "30fdf38218841700",
+   "4980f58ae6fa0542",
+   "4a002456bbb5e363",
+   "62f8fdbd1223d00e",
+   "6c732c8b516f007f",
+   "85a2926311f30d67",
+   "8894e74d2ec0c7b0",
+   "925cc7dbf2747edd",
+   "a70b74039723527f",
+   "abd4cfc5fc56521d",
+   "b1548a110f1e166f",
+   "bf5c912213c10ca1",
+   "c47cbf36ffeed47d",
+   "eee7fe28372c4730",
+   "fdd209ec27e83f6c"
+  ],
+  "32": [
+   "0139973649ccb8f1",
+   "0e5c93f83da3dd0e",
+   "17a2217b31ce6bc0",
+   "25cae005c9194a26",
+   "3d81d943c5a8c57b",
+   "883b955d0ccd7af1",
+   "abf1c9949ab9c37f",
+   "c9f6be0ad09e14d9",
+   "fb2805f79247b05a"
+  ],
+  "48": [
+   "126c7588f70e2893",
+   "7fb63a79b23196ce",
+   "95babe902d8fc519",
+   "beaf07b9de5bf057"
+  ]
+ }
+}

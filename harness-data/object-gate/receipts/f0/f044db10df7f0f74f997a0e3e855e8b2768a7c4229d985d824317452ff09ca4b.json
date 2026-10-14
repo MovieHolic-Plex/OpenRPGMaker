@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f044db10df7f0f74f997a0e3e855e8b2768a7c4229d985d824317452ff09ca4b",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "leaning coconut palm tree bending toward the sea",
+ "label": "pirate-isles/pi-palm-lean",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "leaning coconut palm tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn as a flat 2D side-scroller silhouette: the trunk leans purely in the 2D plane with a flat horizontal base cut-off (row 46), and the canopy is rendered in pure side elevation with upright frond arches rather than showing the crown viewed from above at a 3/4 top-down angle.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5898
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "palm tree trunk and fronds",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The palm tree is rendered in a pure 2D side-scroller elevation: the trunk rings and bottom base cut off in flat horizontal lines with no 3/4 ground perspective, and the fronds drape strictly in the 2D vertical plane rather than radiating in a foreshortened top-down circular canopy.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5949
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "leaning palm tree (trunk and frond canopy)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The palm tree is drawn as a flat 2D side-scroller silhouette/elevation. The fronds do not fan out in a top-down elliptical cluster, the trunk base is cut off flat horizontally at the bottom rather than showing a 3/4 ground contact, and there is no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5416
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "palm tree (trunk and canopy)",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The palm canopy is viewed from an elevated angle, showing the upward/backward fronds at the top (rows 10-18) foreshortened above the hanging foreground fronds (rows 20-34), consistent with 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8076
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.697Z",
+ "cells": {
+  "16": [
+   "39580b29751c1920",
+   "864c0190cb5d7b06",
+   "cb251b05421b364a",
+   "e93fb032c5f9bd8b",
+   "fc2b184510d3bca6",
+   "fef1602a4b9f2609"
+  ],
+  "24": [
+   "07df957d0e748f95",
+   "0fd5126baf24e573",
+   "24507789dc9c37e0",
+   "356e820bd10e040b",
+   "572f76d4b17d6394",
+   "57bd92695c41e97b",
+   "690b75ffa532568a",
+   "84aebd746a16f19c",
+   "8c318bbb5aa703ba",
+   "a693c1bd8bd6feb9",
+   "cc11ce0392a4980e",
+   "e6e6b27b084bb885"
+  ],
+  "32": [
+   "240599faf5206951",
+   "44d13473c7b15a9f",
+   "75f77a7dee77bf4e",
+   "f97d378c617729ef"
+  ],
+  "48": [
+   "1a0ebe927b36a981",
+   "65c69c797f07543b",
+   "e55d019628579619"
+  ]
+ }
+}

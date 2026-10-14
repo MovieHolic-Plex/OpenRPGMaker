@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2b804c865c983ffc3ff2c3c7aa97def20336b954341724cca0bbd5f2e03b7481",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "hanging oil lantern on an iron wall bracket, glowing",
+ "label": "pirate-isles/pi-wall-lantern",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hanging lantern and wall bracket",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern and its mounting bracket are drawn entirely in straight-on side/front elevation at eye level. The top cap (rows 4-6) and bottom base (rows 12-14) are vertically symmetrical domes with no foreshortened top surface visible from the 3/4 top-down angle.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12329
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hanging oil lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted lantern on an iron bracket. The lantern and bracket are drawn in a flat elevation view, which is acceptable for the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6629
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "oil lantern and wall bracket",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted fixture attached to the wall with bracket extending across. As permitted for wall_mounted objects, it is drawn flat against the wall plane with no receding isometric faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6800
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lantern and wall bracket",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted iron bracket and hanging lantern drawn in direct elevation; permitted to be flat under the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4581
+  }
+ ],
+ "decidedAt": "2026-10-13T19:28:41.187Z",
+ "cells": {
+  "16": [
+   "4db9fef6985e2db9"
+  ],
+  "24": [
+   "0c92f046972a2941",
+   "1d0bb0d69e155e83",
+   "6033832287220eae",
+   "74d09452bf8d3d46",
+   "a7b70230567fc98a",
+   "e5add5836295738b"
+  ],
+  "32": [
+   "142dbc33d6a48bce",
+   "94812d6a68fe8e6f",
+   "baac3397ca2af64f",
+   "cb50f1597591f28d",
+   "e486e57bbb9291d9",
+   "e807687d86f6196e"
+  ],
+  "48": [
+   "2d83aae39e08e209",
+   "3ccb497a5ec4c553",
+   "61482b5fb27be66d",
+   "71da0bfbbacc2e3e",
+   "7f67dc76188f518e",
+   "ba1ddccaa3356f59"
+  ]
+ }
+}

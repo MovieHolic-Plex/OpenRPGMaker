@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1682731dd121a025a8fb3326e5b40982b0804e164c809e0737ab8efbe7098311",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "large grey sea rock shaped like a skull with two dark hollow eyes, mossy top",
+ "label": "pirate-isles/pi-skull-rock",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "skull-shaped sea rock",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The skull rock is drawn as a flat, straight-on front elevation/icon. The eyes sit dead-center vertically (rows 13-18 of 30) with teeth at the bottom and forehead moss painted flatly across the front face, showing no top-down 45-degree foreshortening of the crown.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4834
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "skull-shaped rock",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The skull rock is drawn as a direct front-facing icon/elevation; the eyes, nose, and teeth are facing straight forward at the camera with no foreshortened top surface or downward tilt visible.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3829
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "skull-shaped rock",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The skull rock is rendered in a dead-on front elevation: the eyes sit at the vertical midpoint (rows 13-18) and the teeth at the bottom with no 45-degree downward tilt or foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5084
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "skull-shaped rock",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The skull rock is drawn as a flat front-facing icon/elevation; the eyes, nose, and teeth are viewed straight-on with no top-down tilt, foreshortening, or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6974
+  }
+ ],
+ "decidedAt": "2026-10-13T19:48:22.806Z",
+ "cells": {
+  "16": [
+   "226d3704ad8dd70d",
+   "869944216b85f85c",
+   "ccfb185fb7712a6d",
+   "e59f68a87ad9ddcc"
+  ],
+  "24": [
+   "020404e3bfdf1b9e",
+   "0474aadf82a5585b",
+   "0ea1c4fd2d1a5060",
+   "11eac0cf329974ba",
+   "1676e4460eae5a1a",
+   "32f318efa1b2f848",
+   "343f7da62adf2ece",
+   "486b3346fc4dd512",
+   "4bcdfe7218d7f30f",
+   "6f7fd20ddf61ec8d",
+   "758578dc69cb513e",
+   "76127f6ae5b9878b",
+   "8bce7ba4bf70af02",
+   "8d549a00df303f82",
+   "9297fa151fc3c086",
+   "a4a90c29e6b03f48",
+   "bc9bda0e9682a8d9",
+   "c284841a7f46e74b",
+   "c47599468d72d582",
+   "ceac2e8991ac7455",
+   "d89e22347911f805",
+   "e3fd87300492d13a",
+   "f67b8c32e23260c6",
+   "fa3317473fa937ec"
+  ],
+  "32": [
+   "f211f0f13773eb34"
+  ],
+  "48": [
+   "475d8ecd18005d4f",
+   "8439e64bb92037e2",
+   "aea899b3c5661368",
+   "eee5a5c64edeef81",
+   "f2cf81faa8d2d9da",
+   "f4ba1686766093cc"
+  ]
+ }
+}

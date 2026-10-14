@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "daddd6644758c5b1279b933ef30b33188334998a1dd2e623d9373a328ef470a5",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "ornate clay urn with gold bands and handles, its open mouth full of jewels and coins",
+ "label": "pirate-isles/pi-treasure-urn",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "아가리 3.5행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ornate clay urn with handles and gold band",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The urn's mouth is foreshortened from above (rows 2–5, about 4 source pixels tall), revealing the interior filled with colored jewels and gold coins.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10514
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "clay urn with gold bands and mouth full of jewels",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mouth of the urn is viewed from above with an elliptical opening across rows 1-5 (approx 4 rows of visible contents including jewels and coins in blue, cyan, pink, and gold) before transitioning into the bulging front body and base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4651
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "clay urn with gold bands",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The urn mouth is rendered as a foreshortened ellipse showing the interior cavity filled with colorful jewels and coins across rows 2-4 (3 interior rows tall) between the back rim at row 1 and front rim at row 5.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 9944
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ornate clay urn with handles and neck opening",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The urn mouth has an elliptical opening visible from above at rows 2-4 displaying colorful jewels and coins inside, with a foreshortened rim and front body.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 3763
+  }
+ ],
+ "decidedAt": "2026-10-13T19:28:41.190Z",
+ "cells": {
+  "16": [
+   "2fe36b6e8faa0a63"
+  ],
+  "24": [
+   "551594e8a7e013c8",
+   "562dfde2612bdc10",
+   "778725f436611a92",
+   "8174081ffb87ae46",
+   "84edfd51b6807945",
+   "dcde7ff07387b55b"
+  ],
+  "32": [
+   "062791a6611f2e3d",
+   "6e675f0539d72272",
+   "7d50976b18bd2bad",
+   "83298d838a897b52",
+   "9f0d3d9c066ae6d4",
+   "c31f1f2750764a25"
+  ],
+  "48": [
+   "1c1266de503bee5a",
+   "3d922fa78730d8fd",
+   "4cd27ccc8e9e01d2",
+   "67a82009cac5dc4c",
+   "8c1df436e1e5d394",
+   "a4bad3c2e712dac1"
+  ]
+ }
+}

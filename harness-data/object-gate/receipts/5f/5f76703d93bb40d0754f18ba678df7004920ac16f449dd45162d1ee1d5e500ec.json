@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5f76703d93bb40d0754f18ba678df7004920ac16f449dd45162d1ee1d5e500ec",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "open square deck hatch with a wooden ladder going down into the dark hold",
+ "label": "pirate-isles/pi-ladder-hatch",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "open deck hatch frame with ladder descending into hold",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hatch is viewed from above looking down into the deck opening (rows 3-10), showing the interior darkness and top surfaces of ladder rungs in proper top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12236
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "square deck hatch frame with ladder descending inside",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Viewed from above at 3/4 angle, showing the square hatch frame set in the floor with an 8-row opening looking down into darkness and ladder rungs descending.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4975
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "open square deck hatch with frame and descending ladder",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 9,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hatch is viewed from above looking down into the hold, showing the top surround frame (rows 1-12) and a 9-row deep opening (rows 3-11) with visible ladder rungs descending inside.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5239
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "square deck hatch frame with ladder descending into dark opening",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 9,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hatch is viewed properly from above in 3/4 perspective, showing the horizontal top frame, a deep 9-row opening into the hold with visible ladder rungs descending inside, and a 2-row south lip/shadow at rows 13-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6102
+  }
+ ],
+ "decidedAt": "2026-10-13T19:28:41.187Z",
+ "cells": {
+  "16": [
+   "ca6dcc76f38bcf82"
+  ],
+  "24": [
+   "03ff89bab32ec346",
+   "10bfd7f152bbd3a1",
+   "1e4d2c01be37c90d",
+   "ac2c7f044053437d",
+   "bd358bc5af088048",
+   "e2b761dbd65f97c4"
+  ],
+  "32": [
+   "0a09c37a9bc55cf8",
+   "3106aad9d1b350be",
+   "3c8c883960cfd10e",
+   "4f1e0ef47a285560",
+   "801ca8d0d9bac269",
+   "830571deef0c3793"
+  ],
+  "48": [
+   "04e350ef71b3a671",
+   "7e9c19f345ae3e12",
+   "9af10c71e51ad35e",
+   "9b626fb47b57b7c8",
+   "9cf130ac81412b57",
+   "d26eaa49d748b30e"
+  ]
+ }
+}

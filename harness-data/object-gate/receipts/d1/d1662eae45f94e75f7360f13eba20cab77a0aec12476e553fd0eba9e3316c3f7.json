@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d1662eae45f94e75f7360f13eba20cab77a0aec12476e553fd0eba9e3316c3f7",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "iron wall rail with a hanging frying pan, a ladle and a copper pot",
+ "label": "pirate-isles/pi-hanging-pans",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron wall rail with hanging cookware",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted rail and hanging utensils drawn flat against the vertical wall face as permitted for wall_mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5383
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron wall rail with hanging utensils",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted fixture correctly depicted flat against the north wall, with the rail, hanging pan, ladle, and pot appropriately viewed from the front against the wall surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7207
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron wall rail with hanging cookware",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted rail with hanging utensils (pan, ladle, pot) correctly depicted flat against the vertical wall surface, appropriate for the wall_mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9789
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall rail with hanging cookware",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted rail and hanging utensils (pan, ladle, copper pot) mounted flat against the wall, which is standard and correct for wall-mounted items in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5510
+  }
+ ],
+ "decidedAt": "2026-10-13T19:28:41.187Z",
+ "cells": {
+  "16": [
+   "249e3ecb6ddb2bc8"
+  ],
+  "24": [
+   "024ce6c218f72eee",
+   "5bd1c62a46fa6299",
+   "8e801964e04e6d74",
+   "96a69d8ebc21a51b",
+   "beee32cc88d158b9",
+   "d487a45572d681dc"
+  ],
+  "32": [
+   "3339af7bb8eb1889",
+   "5987032458b97602",
+   "7f3b4e98a57c570a",
+   "e3737909c9dda2d3",
+   "e6dd15d95c374ecc",
+   "f5479e1ba8037233"
+  ],
+  "48": [
+   "5a731091ffa822ac",
+   "63ecfd758122b28d",
+   "6fc556e351733180",
+   "b652accad4c0d1e2",
+   "eae7e19520db0b3f",
+   "f3e80d52dffa5a4e"
+  ]
+ }
+}

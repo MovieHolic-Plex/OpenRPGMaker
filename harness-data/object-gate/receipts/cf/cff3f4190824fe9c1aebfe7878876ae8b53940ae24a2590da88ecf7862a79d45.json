@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cff3f4190824fe9c1aebfe7878876ae8b53940ae24a2590da88ecf7862a79d45",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "tall dark wooden ship wardrobe with two panelled doors and a tricorn hat on top",
+ "label": "pirate-isles/pi-ship-wardrobe",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wardrobe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wardrobe is drawn in a pure front elevation with no visible top surface. The tricorn hat rests directly on top (rows 1-6), and beneath it is only a 2px horizontal strip (rows 7-8) before the vertical cabinet doors begin.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6435
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wardrobe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wardrobe is drawn in pure front elevation with no visible top surface (rows 7-8 represent a 2px ledge/cap beneath the hat, while rows 10-31 show purely the vertical front doors).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5508
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wardrobe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wardrobe is drawn in a flat front elevation. There is no visible top surface of the wardrobe body (only a 1-2px band under the hat), and the doors, handles, and hat are all rendered straight-on.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5637
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall wooden wardrobe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wardrobe is drawn in pure front elevation with no visible horizontal top surface (the 2-pixel band below the hat acts only as a flat molding/rim). The doors, panels, and hat are all rendered flatly from the front.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6202
+  }
+ ],
+ "decidedAt": "2026-10-13T19:28:41.186Z",
+ "cells": {
+  "16": [
+   "4d76b64135f76e17",
+   "9fc56acedf5d507e"
+  ],
+  "24": [
+   "00dd542d1e433c9a",
+   "20e0fffdd1edbac7",
+   "6a56fef96408d958",
+   "6c53f7a1617aac51",
+   "7aca574b093b95b4",
+   "92cfea794f477e71",
+   "b3500c8d225cc1b8",
+   "dae05cf41c96af1b",
+   "deb80d5092f026de",
+   "ef301de063acb85a",
+   "f4d9b0c007e6cc71",
+   "f99a6f881c4926bf"
+  ],
+  "32": [
+   "0745cd5893a80d87",
+   "70fe3716225de29b",
+   "7a7c1a9e9f6da94f"
+  ],
+  "48": [
+   "07671961766d5546",
+   "07d2f84b30f21ab0",
+   "672a1e29e7672ea0",
+   "c948117863bc44ec",
+   "d4721afc74c81ba2",
+   "e271940bcf2c2f49"
+  ]
+ }
+}

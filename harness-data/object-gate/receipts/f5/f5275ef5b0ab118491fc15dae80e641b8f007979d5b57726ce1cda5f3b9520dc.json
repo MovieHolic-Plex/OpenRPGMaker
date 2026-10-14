@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f5275ef5b0ab118491fc15dae80e641b8f007979d5b57726ce1cda5f3b9520dc",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "purple fan coral and brain coral in shallow water",
+ "label": "pirate-isles/pi-coral-purple",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brain coral in shallow water pool",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pink brain coral mound is 6 rows tall (rows 8-13) with only a 1-2px highlight along the top edge (rows 8-9) and a vertical front face with shaded crevices, reading as a side elevation rather than having a foreshortened top surface visible from 45 degrees.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7393
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brain coral and shallow water pool",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The shallow water pool forms an ellipse seen from 3/4 top-down view (spanning rows 6 to 14), with visible water surface behind the coral (rows 6-8, ~3 rows). The coral mound inside shows top-down lighting and rests naturally within the foreshortened pool.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8010
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "coral mound in shallow water",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rounded brain coral mound in shallow water spans rows 8-13, with rows 8-9 forming the illuminated top surface foreshortened from above, transitioning into south-facing shadow in rows 10-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3804
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "coral mound / cluster in shallow water",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The coral mound has a vertical front profile with only a 1-2px rim highlight across row 8 rather than a distinct foreshortened top surface visible from the 3/4 downward angle.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8106
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.699Z",
+ "cells": {
+  "16": [
+   "55b67cf114f028ac"
+  ],
+  "24": [
+   "3d437b9cf6113e49",
+   "4b7a7967c7e4fe86",
+   "513d0ba0f4069dd7",
+   "77bbf43cf4b3b043",
+   "eee2bf83bf4cf23b",
+   "fed9f90abae1a4fb"
+  ],
+  "32": [
+   "0d51e36037ef5ab0",
+   "1c66ee1a6a9a5796",
+   "225aae657289d26f",
+   "550b50bb6c549210",
+   "ac0377a9053c2c5c",
+   "e4455c8dd1dcd8a3"
+  ],
+  "48": [
+   "064411ec54dc33c6",
+   "0ec8d6ceef856db7",
+   "704194ac9ed0ea29",
+   "8c0f67dd0a0e0c08",
+   "ce88f75eed31e57a",
+   "d9ebb1e7fa488328"
+  ]
+ }
+}

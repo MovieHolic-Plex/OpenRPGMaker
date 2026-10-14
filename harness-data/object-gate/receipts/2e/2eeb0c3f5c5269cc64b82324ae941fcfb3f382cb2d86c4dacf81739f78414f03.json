@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2eeb0c3f5c5269cc64b82324ae941fcfb3f382cb2d86c4dacf81739f78414f03",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "pirate flag on a short pole planted in a big square stone pedestal block seen from above, black flag with white skull",
+ "label": "pirate-isles/pi-flagpole",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone pedestal block with flag pole",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large stone pedestal clearly shows its foreshortened top surface across rows 17 to 21 (5 pixel rows tall) with the socket hole for the pole, sitting above the south-facing brick face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4382
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone pedestal block holding the flagpole",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the stone pedestal block is clearly rendered from rows 17 to 21 (5 rows tall) with a recessed socket for the pole, above a distinct south-facing stone brick front wall (rows 22-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4095
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone pedestal block",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large stone pedestal has a clearly visible top surface from rows 16 to 21 (approx 6 rows) with a socket hole for the pole, above a south-facing stone brick front (rows 22-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4377
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone pedestal block with flag pole",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large stone pedestal has a clearly foreshortened top surface spanning rows 17-21 (5 rows) featuring the socket hole where the pole inserts, transitioning to the front south face at row 22-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4579
+  }
+ ],
+ "decidedAt": "2026-10-13T19:33:03.044Z",
+ "cells": {
+  "16": [
+   "18972b4b08042e23",
+   "7de809aca05c4777"
+  ],
+  "24": [
+   "05cd27222a27c80e",
+   "28631d4200b7d662",
+   "3af35b435df78ed4",
+   "40c582a17633da84",
+   "477d37fe53aa0138",
+   "9ffe80c2e88db451",
+   "a19e02427d393cf2",
+   "a3ee0fe918daa80a",
+   "ad50d949da92aa33",
+   "c2203be1bc70b7f1",
+   "d61b176703076016",
+   "ec26529c9dd972b2"
+  ],
+  "32": [
+   "55fe0d077164308c",
+   "5a5055616a5564fa",
+   "78e3262711ab81da"
+  ],
+  "48": [
+   "1aea25b586634e62",
+   "5dd1c94345763cd4",
+   "646958659573cfbf",
+   "7cabb014875c4d64",
+   "8513f86ed202bddb",
+   "aea401b131e8b959"
+  ]
+ }
+}
