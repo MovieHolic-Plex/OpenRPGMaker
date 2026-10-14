@@ -3095,3 +3095,10 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 
 `scripts/qa/opening-showcase-gen.mts`(바이블 자동 적용·cast·후보 3장·판정자, `regenerate`면 fix를 넣어 1회 재생성 — 6컷 중 1·6컷에서 실제로 재생성 경로가 돌았다) → `scripts/qa/opening-showcase-build.mts`(실제 도구 `upsert_resource`·`generate_original_bgm`·`generate_original_se`·`set_opening`으로 프로젝트 구성, 직접 대입 없음) → `scripts/qa/runtime/opening-showcase-record.mjs`(player.html 재생 webm). 결과: http://mdc-server:18301/opening-showcase.mp4.
 계획·글·악보는 조수가 아니라 감독자(사람 대신 쓴 스크립트)가 줬다 — 실조수 품질 증거가 아니라 도구 파이프라인이 낼 수 있는 상한의 시연이다. webm에는 소리가 없어 BGM·효과음은 ffmpeg로 얹었고(장면 시작 시각은 프레임 매칭으로 맞춤) 모델은 소리를 듣지 못했다.
+
+### 조수가 도트를 직접 찍는다 — `author_pixel_art` · `author_actor_charset` · Argon 기본 (2026-10-14)
+
+- **기본 모델 = `gemini-4-argon`**(Antigravity, 전송 ID `gemini-4-argon-{low,medium,high}`, minimal→low). 설치된 pi-catalog 에는 없어 `scripts/lib/ohMyPiModel.ts` 가 3.7 메타데이터를 덮어 쓴다. 모든 슬롯 기본값(llmClient·modelCatalog·modelPresets·modelRoles·ohMyPiProviders·ultrabrainConfig·providerSelection)이 Argon 이고 저장된 옛 기본 3.8 은 승격된다. 컷신 독립 심사자(`cutsceneCritic`)는 독립성을 위해 3.8 로 남겼다. 계약 테스트 기대값은 고쳤으나 돌리지 않았다.
+- **`author_pixel_art`**(`src/editor/tools/pixelArtTools.ts`, 순수 변환 `src/editor/pixelArt/rowsImage.ts`): 행 문자열+팔레트로 object(16px 칩셋 끝에 `bakeWorkshopObject` 로 구워 `workshop:<이름>`, `stamp_tileset_object` 로 놓음) · charset(24×32, 방향별 stand+선택 stepA/stepB, 안 주면 다리 1px 자동 걷기, left 생략 시 right 뒤집기) · picture(컷신 소품, 배경으로 맵을 가리지 말 것). 확대 미리보기를 `toolAdapter.ts` 가 모델에 돌려준다. **3/4 object-gate 는 배선돼 있지 않다** — 결과 요약이 «관문 영수증 없음»을 말하며 공용·스토어 게시 금지. 한글 이름은 id 가 비면 해시로 대신한다.
+- **`author_actor_charset`**: 파라미터 생성기(체형 4종), 자유 도트가 필요하면 `author_pixel_art` kind charset.
+- 측정 검사(`cutscenePreview/probe.ts`): 색조 알파 <0.2, 주체가 가장자리에 걸려 잘리는 시간 ≥40% 를 조수에게 되돌린다. 잘림 검사는 2026-10-14 실행 2회에서 한 번도 걸리지 않았다(원인 미조사). 증거 보고서: `~/claude-viz/argon-report.html`.
