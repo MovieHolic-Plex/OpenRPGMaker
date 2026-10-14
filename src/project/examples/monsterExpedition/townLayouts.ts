@@ -562,3 +562,130 @@ export const START_ROUTES: Partial<Record<StartTheme, { template: string; sketch
     ],
   } },
 };
+
+/**
+ * 화산 캠페인의 재 마을·재 길 변주 — 시작 마을·1번길 한 판으로 끝내지 않고 캠페인 전체를 같은 재(ash) 재료로 깐다.
+ * 화산 기획서(「화산 섬 … 체육관 세 개」)가 첫 두 곳만 재 판이고 셋째 마을부터 풀밭·꽃밭이 나왔다(2026-10-14 자유도 감사 v5).
+ * 새 그림은 없다: 재 마을 템플릿(climate/ash_town)의 재료로 같은 문법(START_TOWNS.volcano·START_ROUTES.volcano)에서 판만 변주한다 —
+ * 좌우 뒤집기·소품(재 더미·용암 바위·증기구멍)·재 풀 덩이(stamp A) 자리를 번호마다 해시로 다시 흩는다.
+ * 건물 위치는 안내 문장(「북동쪽 건물이 체육관」)과 world.ts 문 찾기가 기대하는 자리에 고정이다.
+ */
+export const VOLCANO_TOWN_KEYS = ["home", "grove", "ember", "dune", "frost", "moon"] as const;
+export const VOLCANO_ROUTE_KEYS = ["meadow", "forest", "river", "snow", "marsh"] as const;
+
+function variantHash(variant: number, i: number): number {
+  let n = Math.imul(variant + 1, 374761393) ^ Math.imul(i + 7, 668265263) ^ 0x6a09e667;
+  n = Math.imul(n ^ (n >>> 13), 1274126177);
+  return (n ^ (n >>> 16)) >>> 0;
+}
+
+/** 격자에서 w×h 빈 땅('.')에 주변 한 칸까지 빈 땅인 자리를 해시 순서로 고른다. 못 찾으면 undefined. */
+function freeSpot(grid: string[][], variant: number, salt: number, w: number, h: number, margin: number, boxes: readonly (readonly [number, number, number, number])[]): [number, number] | undefined {
+  const H = grid.length, W = grid[0]!.length;
+  const spots: [number, number][] = [];
+  for (let y = margin; y + h <= H - margin; y++) for (let x = margin; x + w <= W - margin; x++) spots.push([x, y]);
+  const start = variantHash(variant, salt) % Math.max(1, spots.length);
+  for (let k = 0; k < spots.length; k++) {
+    const [x, y] = spots[(start + k * 37) % spots.length]!;
+    let ok = true;
+    for (let dy = -1; dy <= h && ok; dy++) for (let dx = -1; dx <= w && ok; dx++) {
+      const c = grid[y + dy]?.[x + dx];
+      if (c !== undefined && c !== ".") ok = false;
+    }
+    if (ok && boxes.some(([bx, by, bw, bh]) => x < bx + bw + 1 && x + w > bx - 1 && y < by + bh + 1 && y + h > by - 1)) ok = false;
+    if (ok) return [x, y];
+  }
+  return undefined;
+}
+
+function variantSketch(base: readonly string[], kits: TownSketch["kits"], kitSizes: Record<string, number>, variant: number, plan: { stamps: number; props: number; big?: number }, seed = variant): TownSketch {
+  const grid = base.map(r => [...r]);
+  // 번호 판마다 옛 장식(재 더미·바위·증기구멍·재 풀 덩이)은 걷어 다시 흩는다. 길(=)·벼랑(#^)·샘(~)·표지판(S)·꼭대기 원뿔(Z C)은 그대로.
+  for (const row of grid) for (let x = 0; x < row.length; x++) if ("prvA".includes(row[x]!)) row[x] = ".";
+  const flipped = variant % 2 === 1;
+  if (flipped) for (const row of grid) row.reverse();
+  const W = grid[0]!.length;
+  // 뒤집어도 건물은 안내 문장이 기대하는 자리(집 북서·체육관/연구소 북동·도구점 남서·센터 남동)에 둔다 — 건물 자리는 비워 둔다.
+  const boxes = kits.map(([name, x, y]) => [x, y, kitSizes[name] ?? 4, kitSizes[name] ?? 4] as const);
+  // 뒤집힌 판은 건물이 원래 자리에 있어야 하므로 그 자리의 칸(길·샘 포함)이 건물 밑에 덮인다 — 길을 깐 칸은 그대로 두고 건물만 얹는다.
+  let salt = 0;
+  for (let n = 0; n < plan.stamps; n++) {
+    const at = freeSpot(grid, seed, salt++, 7, 4, 3, boxes);
+    if (at) { grid[at[1]]![at[0]] = "A"; for (let dy = 0; dy < 4; dy++) for (let dx = 0; dx < 7; dx++) if (dx || dy) grid[at[1] + dy]![at[0] + dx] = "*"; }
+  }
+  // 큰 소품(재 나무 2×4·화산 원뿔 2×2)을 먼저 흩고 작은 것(재 더미·바위·증기구멍)을 그 틈에 채운다 — 길 판이 빈 회색 평지로 보이던 것을 줄인다.
+  const bigMarks: readonly (readonly [string, number, number])[] = [["C", 2, 2], ["C", 2, 2], ["T", 2, 4]];
+  for (let n = 0; n < (plan.big ?? 0); n++) {
+    const [mark, w, h] = bigMarks[variantHash(seed, 300 + n) % bigMarks.length]!;
+    const at = freeSpot(grid, seed, 400 + n, w, h, 2, boxes);
+    if (at) { grid[at[1]]![at[0]] = mark; for (let dy = 0; dy < h; dy++) for (let dx = 0; dx < w; dx++) if (dx || dy) grid[at[1] + dy]![at[0] + dx] = "*"; }
+  }
+  const marks = ["p", "r", "v"];
+  for (let n = 0; n < plan.props; n++) {
+    const mark = marks[variantHash(seed, 100 + n) % marks.length]!;
+    const h = mark === "v" ? 2 : 1;
+    const at = freeSpot(grid, seed, 200 + n, 1, h, 2, boxes);
+    if (at) { grid[at[1]]![at[0]] = mark; if (h === 2) grid[at[1] + 1]![at[0]] = "*"; }
+  }
+  const rows = grid.map(r => r.map(c => (c === "*" ? "." : c)).join(""));
+  void W;
+  return { ground: ["ash0", "ash1", "ash2", "ash3"], legend: VOLCANO, kits, rows };
+}
+
+/** 시작 마을 판에 남쪽 출구를 더한 것 — 이어지는 마을은 북·남 출구가 둘 다 있어야 길이 앞뒤로 이어진다(home 은 북쪽 하나뿐). */
+const ASH_THROUGH_TOWN_ROWS: readonly string[] = [
+  ...START_TOWNS.volcano.sketch.rows.slice(0, 19),
+  "##########==##########",
+  "##########==##########",
+];
+
+/** 화산 캠페인의 마을 판(home 제외). gym = 그 마을에 체육관이 있다 — 북동 건물이 체육관(7×7, 문은 아래 가운데), 없으면 북동 집. */
+export function volcanoTownSketch(index: number, gym: boolean): TownSketch {
+  const kits: TownSketch["kits"] = gym
+    ? [["house_ash_a", 3, 4], ["gym_fire", 13, 2], ["mart", 3, 14], ["center_ash", 15, 14]]
+    : START_TOWNS.volcano.sketch.kits;
+  return variantSketch(ASH_THROUGH_TOWN_ROWS, kits, { house_ash_a: 4, house_ash_b: 4, gym_fire: 7, mart: 4, center_ash: 4 }, index, { stamps: 0, props: 9 }, index);
+}
+
+/** 길 판 둘: 시작 길(START_ROUTES.volcano)과 다른 굽이의 길. 안쪽 줄을 위아래로 뒤집으면 세 번째 굽이가 된다(출구는 가운데 두 칸이라 대칭). */
+const ASH_ROUTE_B: readonly string[] = [
+  "####Z######==######C####",
+  "###########==###########",
+  "##^^^^^^^^^==^^^^^^^^^##",
+  "##^^^^^^^^^==^^^^^^^^^##",
+  "##.........==.........##",
+  "##.........==.........##",
+  "##.........==.........##",
+  "##.........==.........##",
+  "##.........=========..##",
+  "##.........=========..##",
+  "##................==..##",
+  "##................==..##",
+  "##................==..##",
+  "##................==..##",
+  "##................==..##",
+  "##................==..##",
+  "##................==..##",
+  "##................==..##",
+  "##....==============..##",
+  "##....==============..##",
+  "##....==..............##",
+  "##....==..............##",
+  "##....==..............##",
+  "##....==..............##",
+  "##....=======.........##",
+  "##....=======.........##",
+  "##.........==.........##",
+  "##.........==.........##",
+  "##.........==.........##",
+  "##.........==.........##",
+  "###########==###########",
+  "###########==###########",
+];
+const ASH_ROUTE_C: readonly string[] = [...ASH_ROUTE_B.slice(0, 4), ...ASH_ROUTE_B.slice(4, 28).reverse(), ...ASH_ROUTE_B.slice(28)];
+
+/** 화산 캠페인의 길 판 — 같은 문법에서 굽이(A·B·C)·좌우·재 풀 덩이(A)·소품 자리를 길마다 다르게 한다. index 1~5 = 2·3·5·6·7번길. */
+export function volcanoRouteSketch(index: number): TownSketch {
+  const [rows, flip]: [readonly string[], boolean] = ([[ASH_ROUTE_B, false], [ASH_ROUTE_C, false], [ASH_ROUTE_B, true], [ASH_ROUTE_C, true], [START_ROUTES.volcano!.sketch.rows, true]] as const)[(index - 1) % 5]!;
+  return variantSketch(rows, [], {}, flip ? 1 : 0, { stamps: 6, props: 14, big: 9 }, index);
+}

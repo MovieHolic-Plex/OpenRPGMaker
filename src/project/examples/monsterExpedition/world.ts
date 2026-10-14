@@ -10,7 +10,7 @@ import { EXPEDITION_TOWNS as allTowns, EXPEDITION_GYMS as gyms, EXPEDITION_ROUTE
 import { campaignLevels, campaignShape, clampGymCount, FULL_GYMS, gymWord } from "./campaignPlan";
 import markerAssets from "./markers.json";
 import templateData from "./mapTemplates.json";
-import { composeTown, START_ROUTES, START_TOWNS, TOWN_SKETCHES, type StartTheme } from "./townLayouts";
+import { composeTown, START_ROUTES, START_TOWNS, TOWN_SKETCHES, VOLCANO_ROUTE_KEYS, VOLCANO_TOWN_KEYS, volcanoRouteSketch, volcanoTownSketch, type StartTheme } from "./townLayouts";
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { shapeAllAutotileGroupsAround } from "@/project/defaults/autotileEngine";
 import { expeditionEnemyActions } from "./enemyActions";
@@ -48,6 +48,8 @@ export interface ExpeditionManifest {
 /** Build one ordinary editor project. No game-specific gameplay engine is hidden here. */
 const START_HABITAT: Readonly<Record<StartTheme, string>> = { desert: "desert", snow: "snow", coast: "coast", volcano: "volcano" };
 const START_ROUTE_NAMES: Readonly<Record<StartTheme, string>> = { desert: "1번길 · 모래바람 길", snow: "1번길 · 서리 들길", coast: "1번길 · 바닷바람 길", volcano: "1번길 · 재바람 길" };
+/** 화산 캠페인: 시작 길 이후의 길도 같은 재 재료로 깐다(townLayouts.volcanoRouteSketch). 고개·유적은 본래 바위 그림이라 그대로 둔다. */
+const VOLCANO_ROUTE_NAMES: Readonly<Record<string, string>> = { forest: "2번길 · 재 능선", river: "3번길 · 온천 협곡", desert: "5번길 · 유리재 평원", snow: "6번길 · 연기 고개", marsh: "7번길 · 증기 비탈" };
 
 /** 관장 타입을 바꾼 관의 배지 이름. 본래 타입이면 worldPlan 의 배지를 그대로 쓴다. */
 const TYPE_BADGE: Readonly<Record<string, string>> = {
@@ -85,7 +87,11 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
   };
   const sides = allSides.filter(s => towns.some(t => t.key === s.town)).map(s => ({ ...s, level: levels.side(townIndex(s.town), s.level) }));
   // 시작 테마의 1번길 이름도 그 땅으로 — 사막 모랫길 위에 「1번길 · 별싹 들판」 표지가 떴다(2026-10-07 사막 런타임 캡처).
-  const routes = planRoutes.slice(0, shape.finalTown).map((r, j) => ({ ...r, level: levels.route(j + 1), required: gate(r.required)!, ...(r.key === "meadow" && options.startTheme ? { name: START_ROUTE_NAMES[options.startTheme] } : {}) }));
+  const routes = planRoutes.slice(0, shape.finalTown).map((r, j) => ({ ...r, level: levels.route(j + 1), required: gate(r.required)!, ...(r.key === "meadow" && options.startTheme ? { name: START_ROUTE_NAMES[options.startTheme] } : {}),
+    ...(options.startTheme === "volcano" && VOLCANO_ROUTE_NAMES[r.key] ? { name: VOLCANO_ROUTE_NAMES[r.key] } : {}) }));
+  const volcano = options.startTheme === "volcano";
+  /** 화산 캠페인의 재 길: 길 열쇠 → 변주 번호(0 은 시작 길 그대로). */
+  const volcanoRoute = (key: string): number => volcano ? ([...VOLCANO_ROUTE_KEYS, "desert"] as string[]).indexOf(key) : -1;
   for (const [aid, asset] of Object.entries(markerAssets)) project.assets.uploaded[aid] = structuredClone(asset) as Project["assets"]["uploaded"][string];
   project.maps = {};
   project.mapConnections = [];
@@ -111,7 +117,10 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
   // 바닷가는 바꾸지 않는다 — 물결 항구는 잔교·배 출구 좌표가 그 판에 묶여 있고(harborExit), 바닷가 시작 마을도 풀밭 판이다.
   const swappedTown = options.startTheme === "desert" ? "dune" : options.startTheme === "snow" ? "frost" : options.startTheme === "volcano" ? "ember" : undefined;
   const lookOf = (key: string): string => !swappedTown ? key : key === "grove" ? swappedTown : key === swappedTown ? "grove" : key;
-  const lookTown = (t: (typeof allTowns)[number]) => allTowns.find(other => other.key === lookOf(t.key))!;
+  // 화산 캠페인에서 풀 마을 판을 쓰던 마을 이름(새순)이 재 땅에 남지 않게 한다 — 재를 뚫고 나는 싹이라는 본래 소개 문장은 그대로 맞는다.
+  const VOLCANO_TOWN_RENAME: Readonly<Record<string, string>> = { "새순 마을": "재싹 마을" };
+  const lookTown = (t: (typeof allTowns)[number]) => { const look = allTowns.find(other => other.key === lookOf(t.key))!; return volcano && VOLCANO_TOWN_RENAME[look.name] ? { ...look, name: VOLCANO_TOWN_RENAME[look.name]! } : look; };
+  const gymPlanTowns = new Set<string>(gyms.slice(0, gymCount).map(g => g.town));
 
   function make(key: string, name: string, source: string, track: keyof typeof audio, role: "town" | "field" | "interior" | "dungeon"): GameMap {
     const look = role === "town" ? lookOf(key) : key;
@@ -141,8 +150,14 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     }
     // 같은 템플릿을 지붕 색만 바꿔 쓰던 마을은 저마다의 판으로 다시 깐다(townLayouts.ts).
     const startTown = !options.startTheme ? undefined : key === "home" ? START_TOWNS[options.startTheme] : key === "meadow" ? START_ROUTES[options.startTheme] : undefined;
-    const sketch = startTown?.sketch ?? TOWN_SKETCHES[look];
-    if (sketch) composeTown(project, map, t, sketch, templates);
+    // 화산 캠페인은 시작 마을·길만이 아니라 뒤의 재 마을·재 길도 같은 재 재료 판이다(항구·도시는 섬의 항구라 그대로).
+    const volcanoTown = volcano && role === "town" && key !== "home" && (VOLCANO_TOWN_KEYS as readonly string[]).includes(key);
+    const volcanoField = volcano && role === "field" && key !== "meadow" && volcanoRoute(key) > 0;
+    const sketch = volcanoTown ? volcanoTownSketch(towns.findIndex(x => x.key === key) + 1, gymPlanTowns.has(key))
+      : volcanoField ? volcanoRouteSketch(volcanoRoute(key)) : startTown?.sketch ?? TOWN_SKETCHES[look];
+    // 0관 캠페인: 마을 판의 체육관 건물(7×7)은 체육관 문처럼 보이는데 안은 조련사 회관(교실 판 재사용)이었다. 같은 크기의 박공 집으로 바꾼다.
+    const gymless = gymCount === 0 && role === "town" && sketch && t.buildings.some(b => b.name === "gable_a");
+    if (sketch) composeTown(project, map, t, gymless ? { ...sketch, kits: sketch.kits.map(([n, x, y]) => [n.startsWith("gym_") ? "gable_a" : n, x, y] as [string, number, number]) } : sketch, templates);
     // 1번길 템플릿은 길 끝 다섯 줄이 모래 띠였다 — 길로 이어 깐다(모래 네모가 풀숲 옆에 떠 보였다, 2026-10-06 시각 QA).
     // 메아리 동굴 템플릿은 바닥 한가운데 밝은 노란 모래 네모가 떠 보였고, 드나드는 문도 바닥 한가운데 보이지 않는 칸이었다.
     // 모래는 동굴 바닥으로, 문은 템플릿이 그려 둔 사다리(「이동 이벤트를 올릴 자리」) 칸으로 옮긴다.
@@ -497,7 +512,7 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     return towns.find(t => map.id.startsWith(id(t.key)))?.key ?? routes.find(r => id(r.key) === map.id)?.from ?? sides.find(s => id(s.key) === map.id)?.town ?? ({ mx_map_hideout: "prism", mx_map_observatory: finalKey, mx_map_lab: "home", mx_map_museum: "prism", mx_map_school: "home" }[map.id] ?? (map.id.startsWith("mx_map_league_") ? finalKey : "home"));
   }
 
-  const townMaps = new Map(towns.map(t => [t.key, make(t.key, lookTown(t).name, t.key === "home" && options.startTheme ? START_TOWNS[options.startTheme].template : lookTown(t).template, lookTown(t).music, "town")]));
+  const townMaps = new Map(towns.map(t => [t.key, make(t.key, lookTown(t).name, t.key === "home" && options.startTheme ? START_TOWNS[options.startTheme].template : volcano && (VOLCANO_TOWN_KEYS as readonly string[]).includes(t.key) ? "climate/ash_town" : lookTown(t).template, lookTown(t).music, "town")]));
   // 관장 타입을 기획서가 바꾸면(사막 기획서 1관 = 땅) 체육관 판도 그 타입의 판으로 — 「땅 관장」이 꽃밭 정원 체육관에 서 있었다(2026-10-07 사용자 지적).
   // 1관 타입을 기획서가 다른 관의 본래 타입으로 바꾸면(눈 기획서 1관 = 얼음) 그 관은 1관의 본래 타입을 받는다 — 얼음 관장이 둘 나왔다(2026-10-07 눈 시험).
   const displaced = options.firstGymType && options.firstGymType !== gyms[0]!.type
@@ -548,10 +563,17 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     attachRoom(map, center, centerDoor); attachRoom(map, mart, martDoor);
     attachRoom(map, home, residential[0]!);
     // 0관 캠페인의 마을에는 체육관이 없다 — 체육관 건물 문은 조련사 회관(작은 모임방)으로 잇는다.
+    // 체육관이 없는 마을의 둘째 건물은 평범한 큰 집이다 — 교실 판을 「조련사 회관」으로 재사용하던 것을 몬스터 키트의 집 방(3종 중 다른 변주)으로.
     const gymRoom = i === 0 ? lab : gymMaps.get(t.key as Exclude<typeof t.key, "home">)
-      ?? make(`${t.key}_hall`, `${lookTown(t).name} · 조련사 회관`, "rooms/school", "town", "interior");
+      ?? make(`${t.key}_annex`, `${lookTown(t).name} · 이웃집`, ["overworld/room-house", "overworld/room-house-b", "overworld/room-house-c"][(i + 1) % 3]!, "town", "interior");
     attachRoom(map, gymRoom, residential[1]!);
-    if (i > 0 && !gymMaps.has(t.key as never)) npc(gymRoom, "host", "회관 관리인", "이곳은 조련사들이 쉬어 가는 모임방이에요. 이 섬에서는 체육관 대신 도감과 탐험이 여행의 중심이랍니다.", { x: gymRoom.width >> 1, y: 5 }, [{ kind: "recoverAll" }], 5);
+    if (i > 0 && !gymMaps.has(t.key as never)) {
+      // 집 방 그림에는 계단이 있다 — 2층을 이어 주지 않으면 막다른 계단이 된다.
+      const annexUp = make(`${t.key}_annex_2f`, `${lookTown(t).name} · 이웃집 2층`, i % 2 ? "overworld/room-house-2f" : "overworld/room-house-2f-b", "town", "interior");
+      attachStairs(gymRoom, annexUp);
+      npc(gymRoom, "host", "이웃 주민", "체육관이 없는 섬이라 다들 도감을 채우며 지내요. 동료들이 지쳤다면 여기서 쉬었다 가요.", { x: 6, y: 5 }, [{ kind: "recoverAll" }], 5);
+      npc(annexUp, "kid", "아이", "우리 동네엔 체육관이 없어도 도감 모으는 사람이 많아. 나도 도감 반은 채웠어!", { x: 6, y: 6 }, [], 1);
+    }
     npc(center, "nurse", "센터 직원", "수고했어요. 몬스터의 체력·상태·기술 횟수를 모두 회복해 드릴게요.", { x: center.width >> 1, y: 5 },
       [{ kind: "recoverAll" }, { kind: "checkpointSave", label: `${lookTown(t).name} 회복 센터` }, text("회복 완료! 메뉴에서 파티와 보관함을 관리할 수 있어요.")], 3);
     npc(mart, "shop", "도구점 주인", "포획구슬과 회복 도구를 챙겨 가세요. 약은 메뉴에서 몬스터를 골라 사용할 수 있어요.", { x: mart.width >> 1, y: 5 },
@@ -569,8 +591,9 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
   }
 
   for (const r of routes) {
-    const map = make(r.key, r.name, r.key === "meadow" && options.startTheme ? START_ROUTES[options.startTheme]?.template ?? r.template : r.template, r.music, "field");
-    const wildPool = wild(map, r.habitat, r.level, r.key === "meadow" && options.startTheme ? START_HABITAT[options.startTheme] : undefined);
+    const ashRoute = volcanoRoute(r.key) > 0;
+    const map = make(r.key, r.name, ashRoute ? "climate/ash_town" : r.key === "meadow" && options.startTheme ? START_ROUTES[options.startTheme]?.template ?? r.template : r.template, r.music, "field");
+    const wildPool = wild(map, r.habitat, r.level, ashRoute || (r.key === "meadow" && options.startTheme) ? START_HABITAT[options.startTheme!] : undefined);
     connect(townMaps.get(r.from)!, map, r.required);
     connect(map, townMaps.get(r.to)!);
     for (let i = 0; i < 3; i++) {
@@ -740,7 +763,7 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     const cabin = make("ship_cabin", "별바람호 · 선실", "rooms/ship_cabin", "coast", "interior");
     connect(townMaps.get("harbor")!, deck, "mx_badge_2"); connect(deck, corridor); connect(corridor, cabin);
     const ferryChoices = (list: typeof towns, blocked: string): Command => ({
-      kind: "choices", options: list.map(t => ({ text: t.name, branch: [{ kind: "fork", condition: condition(`mx_visit_${t.key}`),
+      kind: "choices", options: list.map(t => ({ text: lookTown(t).name, branch: [{ kind: "fork", condition: condition(`mx_visit_${t.key}`),
         then: [transfer(townMaps.get(t.key)!, entries.get(id(t.key))!)], else: [text(blocked, "선장")] }] })),
       cancelBehavior: "branch", cancelBranch: [],
     });

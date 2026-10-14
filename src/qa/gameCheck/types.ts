@@ -95,6 +95,8 @@ export interface GameCheckOptions {
   readonly rawProject?: unknown;
   /** 자동 플레이 전체 상한(ms). */
   readonly autoPlayBudgetMs?: number;
+  /** 호출자가 따로 계산한 지적(그림 기반 시각 공백 등, 노드 전용 검사) — 정렬·중복 제거에 함께 든다. */
+  readonly extraFindings?: readonly Finding[];
 }
 
 export function whereText(where: CommandWhere | undefined): string {

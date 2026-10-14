@@ -309,7 +309,7 @@ export async function genMain(argv: readonly string[] = process.argv.slice(2)): 
   console.log(`[qa-game] gen 완료 ${Math.round((Date.now() - started) / 1000)}s → ${out}`);
   if (!flag("no-check")) {
     const { checkMain } = await import("./check.mts");
-    checkMain([out, "--quiet"]);
+    await checkMain([out, "--quiet"]);
   }
   return 0;
 }

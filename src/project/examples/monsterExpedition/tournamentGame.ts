@@ -22,6 +22,9 @@ export function createMonsterTournament(options: TournamentOptions & { readonly 
   const character = hero.characterResourceId;
   configureScarloxyPokemonDemoProject(project);
   configureMonsterPresentation(project);
+  // 체육관·배지가 없는 게임(대회형·탐험형)에는 「배지」 메뉴 칸이 없다 — 빈 배지 화면이 열리던 것을 뺀다. 목표는 「원정 수첩」(trainer-card)에서 본다.
+  const menu = project.meta.oprnFieldMenu;
+  if (menu) project.meta.oprnFieldMenu = { ...menu, entries: menu.entries.filter(e => e.command !== "campaign-progress") };
   hero.characterResourceId = character;
   hero.characterIndex = 0;
   hero.name = "여행자";
