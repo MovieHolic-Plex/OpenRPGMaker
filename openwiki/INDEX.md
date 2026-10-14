@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **171쪽 / 5745KB / 약 1,677,179 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **171쪽 / 5747KB / 약 1,677,812 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -2089,13 +2089,15 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L38` Canonical boundary
 - `L48` Approved integration (2026-10-05)
 
-### `openwiki/prehistoric.md` — 6KB · 46줄 · ~1,684 토큰
+### `openwiki/prehistoric.md` — 8KB · 70줄 · ~2,317 토큰
 
 - `L8` 한 줄 지도
 - `L22` 꼭짓점(Wang) 바닥
 - `L29` 칸 통행 (bake_ph.py)
 - `L34` 3/4 관문 (object-gate)
-- `L39` 적대적 시각 QA (한 번, 2026-10-14)
+  - `L39` 관문 결과 (2026-10-14)
+- `L51` 적대적 시각 QA (한 번, 2026-10-14)
+- `L59` 조수 실제 실행 (gemini-3.8-flash high, 2026-10-14)
 
 ### `openwiki/project-wiki.md` — 12KB · 199줄 · ~3,096 토큰
 
