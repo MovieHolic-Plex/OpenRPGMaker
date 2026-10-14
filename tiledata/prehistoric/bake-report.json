@@ -1,32 +1,32 @@
 {
  "gate": {
   "dev_no_gate": false,
-  "provisional_profile_uncalibrated": 313,
-  "covered_by_assembled": 170,
+  "provisional_profile_uncalibrated": 328,
+  "covered_by_assembled": 185,
   "blocked": [],
-  "pieces": 283,
-  "outdoor": 217,
+  "pieces": 298,
+  "outdoor": 232,
   "interior": 66
  },
  "tiles": {
-  "count": 754,
-  "rows": 16,
+  "count": 769,
+  "rows": 17,
   "sheetPx": [
    768,
-   256
+   272
   ],
   "strips": 22,
   "kits": 87,
-  "groups": 200
+  "groups": 215
  },
  "palette_violations": 0,
  "definition": {
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 754,
+  "tiles_checked": 769,
   "kits_checked": 87,
-  "groups_checked": 200,
+  "groups_checked": 215,
   "autotiles_checked": 0
  },
  "reassembly": {

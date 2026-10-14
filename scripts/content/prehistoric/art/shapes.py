@@ -210,7 +210,7 @@ def rock_hill(c, x0, y0, w, h, top_h, mat='stone', cap='grass', s=0, cell=10, ro
             j = y - back[i]
             if cap == 'grass':
                 import terrain as _T
-                gm, gt = _T.p_grass((x0 + i) % 16, y % 16)
+                gm, gt = _T.p_grass0((x0 + i) % 16, y % 16)
                 t = gt + (1 if u < 0.3 else 0 if u < 0.72 else -1)
                 if j == 0: t = 1
                 elif j == 1: t = max(t, 4)

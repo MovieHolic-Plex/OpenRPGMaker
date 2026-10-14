@@ -655,7 +655,7 @@ def _(c):
             return ('dirt', max(1, min(6, t)))
         if phi > 1.37: return ('ink', 0)                  # 연기 구멍
         if phi > 1.31: return ('bark', 2)
-        gm, gt = T.p_grass(int(X + 40) % 16, int(Y * 0.5 + Zc) % 16)
+        gm, gt = T.p_grass0(int(X + 40) % 16, int(Y * 0.5 + Zc) % 16)
         if gm == 'bloom': return (gm, gt)
         t = gt + shade(n, 0, 2.6, -2, 2)
         if phi < sod + 0.05: t -= 1

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "af2817bdc30abaa376ecb3d38cd0ec424be6ca507cfe6813cc53c69f7bd19c26",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "prehistoric stone-age path b",
+ "label": "prehistoric/ph-path-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dirt path terrain tile with small embedded stones",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile covering the full 16x16 area viewed from above with small embedded pebbles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4977
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ground dirt path with embedded pebbles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a dirt path with small stones, appropriately rendered as a top-down ground surface covering all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4188
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dirt ground path tile with small embedded stones",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile covering the full 16x16 canvas with mottled dirt texture and small scattered stones.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2646
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dirt path ground tile with embedded pebbles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 top-down ground terrain texture showing a dirt path with small pebbles, correctly represented as a ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4564
+  }
+ ],
+ "decidedAt": "2026-10-14T08:04:55.972Z",
+ "cells": {
+  "16": [
+   "66d7ef17691eb0a5"
+  ],
+  "24": [
+   "0a2a400e36598e82",
+   "46322659dcee4ba6",
+   "5cc347973dbf23c3",
+   "6794116e1ddd5404",
+   "6b6514ae172db17c",
+   "8009d7084e6dd10d"
+  ],
+  "32": [
+   "14e811ffcd8acf78",
+   "1f122c1b7ece3b53",
+   "6b00e22bb498c9c1",
+   "96bc73083ac714f9",
+   "be1a29a63628a3a3",
+   "f96d40df17d7c96d"
+  ],
+  "48": [
+   "0714fc311926fb08",
+   "16f99401ebb94d54",
+   "309cae87ef1e0d83",
+   "57861be42487d7e5",
+   "7255e1ede7ed97b8",
+   "eb63a39544585c11"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "770993a027cdf5459a69e4da332acd891d747c39ae539239abfc86a96fac6227",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "prehistoric stone-age grass b",
+ "label": "prehistoric/ph-grass-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 ground texture representing a grass terrain tile seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2950
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 grass ground terrain tile viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2945
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 pixel ground tile representing textured grass terrain seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2373
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 flat grass terrain ground tile viewed top-down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2418
+  }
+ ],
+ "decidedAt": "2026-10-14T08:04:55.972Z",
+ "cells": {
+  "16": [
+   "81b49cc462ad3f16"
+  ],
+  "24": [
+   "0e5b0d8501a7c4d3",
+   "1e3ea10319ace033",
+   "579bedb40f468333",
+   "accfe8e60f24fe60",
+   "b322eef3698cae8e",
+   "d2ff5986f7862f1f"
+  ],
+  "32": [
+   "0caab8df4d559e56",
+   "28447c6fc11ddbf6",
+   "6647e2635d5a64ff",
+   "6b1096c517de6914",
+   "735699bf6d369c65",
+   "c34ad261dadfed82"
+  ],
+  "48": [
+   "1632f2c5887f600d",
+   "223d87dc149ef49a",
+   "653191ebdfe8da34",
+   "75258dc284ed82d3",
+   "b75f21b44fa86d36",
+   "bad4ef2895a66629"
+  ]
+ }
+}

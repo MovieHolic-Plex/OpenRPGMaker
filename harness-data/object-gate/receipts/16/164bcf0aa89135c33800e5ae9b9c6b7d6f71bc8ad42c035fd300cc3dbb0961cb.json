@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "164bcf0aa89135c33800e5ae9b9c6b7d6f71bc8ad42c035fd300cc3dbb0961cb",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "prehistoric stone-age dirt b",
+ "label": "prehistoric/ph-dirt-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dirt terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 ground tile representing dirt terrain viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6619
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ground dirt tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 sprite is a seamless dirt ground terrain tile, correctly viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7098
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dirt terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 ground dirt tile viewed from above with a small embedded pebble.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4093
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dirt terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile covering the full 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3638
+  }
+ ],
+ "decidedAt": "2026-10-14T08:04:55.972Z",
+ "cells": {
+  "16": [
+   "110361026f2027c3"
+  ],
+  "24": [
+   "33225c0947b3995d",
+   "51266da5f2a70bce",
+   "8f538dd75cb7ad06",
+   "9b449fd0f000936d",
+   "d5be333e8a073525",
+   "e81a3d25ce96289f"
+  ],
+  "32": [
+   "280e9c9749ce9abb",
+   "640a3617fcdab8da",
+   "7e3969a864da1a1a",
+   "b495524c03060415",
+   "e851e333414c35a7",
+   "f9e8f4b9a6165587"
+  ],
+  "48": [
+   "1934d19fec6a6fce",
+   "334f7bfc526c542a",
+   "682f032d630a03e2",
+   "8d1982d8bc587876",
+   "91c3a9270e9dd65d",
+   "b8620e143f569cfb"
+  ]
+ }
+}

@@ -307,6 +307,26 @@ class Board {
     }
   }
 
+  /** 흙길 테(2판): 길 칸의 이어지지 않는 변을 손으로 흔든 테로 끝낸다(`lane-<N E S W>`, 1 = 이어짐). 시트에 없으면 그대로 둔다.
+   *  이어짐 = 맵 밖 · 길 · 건물 칸(문으로 들어간다) · 다리 위층. */
+  lanes(): void {
+    if (this.pal.tile("lane-0000") < 0) return;
+    const bridges = new Set(["bridge-h", "bridge-v"].map((n) => this.pal.tile(n)).filter((i) => i >= 0));
+    const link = (x: number, y: number): boolean => {
+      if (!this.in(x, y)) return true;
+      const k = y * this.W + x;
+      return this.ground[k] === "path" || this.use[k] === "bld" || bridges.has(this.upper[k]!);
+    };
+    for (let y = 0; y < this.H; y++) for (let x = 0; x < this.W; x++) {
+      const k = y * this.W + x;
+      if (this.ground[k] !== "path") continue;
+      const key = [link(x, y - 1), link(x + 1, y), link(x, y + 1), link(x - 1, y)].map((v) => (v ? "1" : "0")).join("");
+      if (key === "1111") continue;
+      const id = this.pal.tile(`lane-${key}`);
+      if (id >= 0) this.lower[k] = id;
+    }
+  }
+
   // ── 놓기 ──
   /** 칸 바닥이 grounds 중 하나인가('edge:*' 는 'edge' 로도 받는다, 'grass' 는 grass·grass-b). */
   groundIs(x: number, y: number, grounds: readonly string[]): boolean {
@@ -1287,7 +1307,7 @@ export function composePrehistoric(spec: PrehistoricSpec, pal: PrehistoricPalett
   else if (spec.style === "volcano") start = composeVolcano(b, rng);
   else if (spec.style === "fossil") start = composeFossil(b, rng);
   else start = composeRoom(b, rng, spec.style as PrehistoricRoomStyle);
-  if (!indoor) b.variety();
+  if (!indoor) { b.variety(); b.lanes(); }
   const exits: PrehistoricCell[] = [];
   if (indoor) { for (let x = 0; x < b.W; x++) if (b.walk(x, b.H - 1)) exits.push({ x, y: b.H - 1 }); }
   else exits.push(start);
