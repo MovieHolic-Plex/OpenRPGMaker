@@ -7,3 +7,4 @@
 {"png": "ph-swatch-water.png", "kind": "terrain", "name": "맑은 물 ↔ 흙 둑 ground edge transition patch", "label": "prehistoric/ph-swatch-water"}
 {"png": "ph-swatch-lava.png", "kind": "terrain", "name": "용암 ↔ 굳은 용암 둑 ground edge transition patch", "label": "prehistoric/ph-swatch-lava"}
 {"png": "ph-swatch-crust.png", "kind": "terrain", "name": "굳은 용암 판 ↔ 화산재 ground edge transition patch", "label": "prehistoric/ph-swatch-crust"}
+{"png": "ph-swatch-lane.png", "kind": "terrain", "name": "trodden dirt footpath network on packed earth ground", "label": "prehistoric/ph-swatch-lane"}

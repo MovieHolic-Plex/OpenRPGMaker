@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c315dc57007e665620dc4edd9249ce78f52ef562964196d9bb78d0b3d073b4dd",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "prehistoric stone-age fur bed",
+ "label": "prehistoric/ph-fur-bed",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fur-covered bed with headrest and foliage base",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed surface is clearly viewed from above at a 3/4 angle, displaying over 14 rows of the top fur layer foreshortened with proper depth down to the front edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3868
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fur bed / pelt sleeping mat on frame",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top sleeping surface of the fur bed is viewed from above at a 3/4 angle, spanning from row 7 down to row 23 across the frame and leaves.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3470
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fur pelt and bed frame/nest",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed is viewed from above at a 3/4 angle, showing the broad horizontal surface of the fur pelt and underlying nest/frame spanning roughly rows 7 to 22.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4600
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fur bed on wood and leaf frame",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed's fur-covered sleeping surface is viewed from above in standard 3/4 perspective, spanning roughly 16 rows from row 7 to row 23.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2649
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.709Z",
+ "cells": {
+  "16": [
+   "5a53c51d6a43a3a4",
+   "5bc14cc4f8ff15b5",
+   "76dd6c3bf7e785b4",
+   "76ed921d3c0c14bc"
+  ],
+  "24": [
+   "0858c919d436feac",
+   "112a400211461057",
+   "1627f6ca8625cac9",
+   "16e3f19f902cfee5",
+   "2f63055d80f0f825",
+   "362f8978a2048541",
+   "48fd495d063ea8d0",
+   "4ba2769b0f8ccba4",
+   "59076d0cd1e69d4a",
+   "5d39e3265fe83a1d",
+   "60c23e50d7210309",
+   "68c28599a441a3c9",
+   "6b6e5a33d970ceab",
+   "968ce294ab710bd4",
+   "ac9db7bd1e9f6b89",
+   "b096eb221457afaa",
+   "c8589efd566a075a",
+   "cd2dd58230128541",
+   "cfd0a29286446288",
+   "dae3642267d1a115",
+   "dd90a815abee2231",
+   "eaaacae9883b86cb",
+   "fb9ada2b68fe76ec",
+   "ff4fa3f9bcf152b7"
+  ],
+  "32": [
+   "a9c7e95a847324fd"
+  ],
+  "48": [
+   "4a84f78cfb09b81c",
+   "7de503f77a91901c",
+   "868beb09b5c0f74e",
+   "a34efcc95af85f30",
+   "b31993c5867aeba3",
+   "cf7953a8128d7611"
+  ]
+ }
+}

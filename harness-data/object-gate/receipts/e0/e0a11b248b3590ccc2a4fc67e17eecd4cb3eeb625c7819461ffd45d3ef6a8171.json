@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e0a11b248b3590ccc2a4fc67e17eecd4cb3eeb625c7819461ffd45d3ef6a8171",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "prehistoric stone-age altar",
+ "label": "prehistoric/ph-altar",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone altar block",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The altar shows a clear top horizontal surface (rows 3-7, 5 rows deep) with markings/bone details, separated by an edge highlight row at row 8 from the vertical front face (rows 9-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3649
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone altar block",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The altar block clearly shows a 5-row deep top horizontal surface (rows 3-7) with markings/bone placed on it, separated by an edge line at row 8 from the 5-row tall south face (rows 9-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3642
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone altar block",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The altar's top surface clearly spans rows 3 to 7 (with ritual markings/bone lying flat on it) above a front edge highlight on row 8 and a south-facing front face on rows 9 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3287
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone altar block",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the stone altar spans rows 3 to 8 (about 6 rows tall) and displays offerings/markings, with the front south face below from rows 9 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3352
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.707Z",
+ "cells": {
+  "16": [
+   "46924f0e8e8534fe",
+   "ae5022d1eb8ef312"
+  ],
+  "24": [
+   "015fc1220f25e037",
+   "05c399ce9689bbe2",
+   "3e6b557154640f51",
+   "76b14ed125fde3cd",
+   "7e8eb666b0668efa",
+   "8cd22f7b9aa3f0df",
+   "a251573921be2ad7",
+   "ba276c44ec941531",
+   "ca3ed0b7a233059b",
+   "d0b3db6556ff5c93",
+   "ded7105a3237ba27",
+   "e7bccfd74359a442"
+  ],
+  "32": [
+   "56f454fae2044862",
+   "5aea37fad62f8971"
+  ],
+  "48": [
+   "04d4efcea45359f0",
+   "2606a332106f869c",
+   "5c1c7a3660bf65b4",
+   "8d88ed55906a3d64",
+   "90e82ed4b6235f07",
+   "bf3f91bc1accd22d"
+  ]
+ }
+}

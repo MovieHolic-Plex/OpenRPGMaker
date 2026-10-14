@@ -1,0 +1,166 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "52ff9c191216ae2344883a43e542fb4b1b7b508e511b970d37197b6c4e11559c",
+ "width": 48,
+ "height": 80,
+ "kind": "structure",
+ "name": "prehistoric stone-age shaman tent",
+ "label": "prehistoric/ph-shaman-tent",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "conical hide tent / tipi",
+    "kind_matches": true,
+    "top_rows": 55,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tent is rendered in proper 3/4 top-down view: its circular cross-sections (the orange band and the base hem) curve deeply downward toward the viewer, and the entire sloping conical roof surface faces the camera from row 22 to row 76 with a visible smoke hole opening at the apex.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8932
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "conical hide tent",
+    "kind_matches": true,
+    "top_rows": 54,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The conical tent slopes back in proper 3/4 perspective, evidenced by the strongly curved horizontal contour lines (the mid-level orange band drops 8px toward the front center, and the base stones drop 6px at the front). The top smoke hole also exhibits a foreshortened elliptical opening where the poles emerge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7042
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "conical shaman teepee / tent",
+    "kind_matches": true,
+    "top_rows": 22,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tent structure features curved cylindrical/conical contours on the top opening (rows 23-26), the decorative mid-band (rows 44-52), and the bottom perimeter stones (rows 68-76), clearly displaying a downward 3/4 perspective rather than a flat front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6511
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "conical hide tent",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The conical tent is rendered in proper 3/4 perspective: the top smoke hole shows an elliptical opening (rows 23-25) viewed from above, the decorative band curves downwards across the cylinder/cone, and the bottom skirt curves downwards along an elliptical base arc.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 0행 < 3"
+   ],
+   "ms": 4651
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.700Z",
+ "cells": {
+  "16": [
+   "10438a43770471ce",
+   "2420a6fd9d75b5d2",
+   "36f9c95d8e48af83",
+   "40635bf66baaad0a",
+   "5b712aa59da29a79",
+   "655ed634a845fd66",
+   "893337731dee3d23",
+   "8cd104049109667b",
+   "b2e9586a4a8b0396",
+   "bd93b4b87e72a17c",
+   "c2ae516e7c9c4124",
+   "da288aaad165fc17",
+   "f0a8b7a2ec6f1eae"
+  ],
+  "24": [
+   "08de8b934452e154",
+   "2c73b20b71994425",
+   "30edf3fd46b287b6",
+   "3173abea26ffa9a7",
+   "323736df03bd5ffd",
+   "4a0a1e89c610474b",
+   "4dfbf08194630928",
+   "61fcebf6645fc87c",
+   "6908396a4e33bee9",
+   "7a1bf3dca670e266",
+   "8469e5759ac15e8f",
+   "8dd50df7444c77a4",
+   "a6b63b8c091a021d",
+   "ab6a4bcadc2e950a",
+   "ac4252b593cdf24c",
+   "f4c0a5edf7ef74a9"
+  ],
+  "32": [
+   "0f1f9c0e863bea2d",
+   "235e33c4cae4f843",
+   "23bd85f051b9bce0",
+   "33bd32e38f92d742",
+   "39e0e0b124650551",
+   "3ddafef4c8177608",
+   "4dd0bac16e8d70c4",
+   "50b065c115ec84ef",
+   "610518418a823582",
+   "672121b63a7a283b",
+   "70e501de2b18257d",
+   "72ead7a1d7505422",
+   "752e29809861effe",
+   "796f3e88c956c6ad",
+   "7b5d042d446b382f",
+   "81917d001b8ed548",
+   "84f64a1f852e69cc",
+   "8c38f63749866f30",
+   "8f35d951d97f5329",
+   "8f53cc88bcd42ed1",
+   "a97f7bd0184a97a1",
+   "afa4316d8185974a",
+   "b0b264f6a1a88a8d",
+   "b60a78d55de88367",
+   "bd427662d6418889",
+   "c1e221023e1ad046",
+   "c71b7797c8ecd798",
+   "ca890e3212ed5aff",
+   "cff6b8ba3d50a900",
+   "e4d48cd2efa5c3fd",
+   "e6095b3185eb13cf",
+   "ea6c6243367c0840",
+   "eab52646e57befe7",
+   "f1e075feba0326a3"
+  ],
+  "48": [
+   "25fcad092ffa66be",
+   "9f7c0ac921102ec8",
+   "b5c1f84bec3e0344",
+   "f5f794ea91f45e38"
+  ]
+ }
+}

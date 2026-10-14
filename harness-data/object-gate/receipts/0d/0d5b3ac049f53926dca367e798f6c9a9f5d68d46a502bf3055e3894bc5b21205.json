@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0d5b3ac049f53926dca367e798f6c9a9f5d68d46a502bf3055e3894bc5b21205",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "prehistoric stone-age path",
+ "label": "prehistoric/ph-path",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dirt path ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 ground terrain tile representing a prehistoric dirt path with embedded pebbles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4224
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ground terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless dirt/path terrain tile filling the 16x16 canvas with flat ground texture and small pebble details.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2758
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dirt path terrain texture",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 ground terrain tile representing a prehistoric dirt/earth path with subtle pebbles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4176
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dirt path ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a dirt and stone path surface across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3528
+  }
+ ],
+ "decidedAt": "2026-10-14T08:04:55.972Z",
+ "cells": {
+  "16": [
+   "4bf5719d65c170a7"
+  ],
+  "24": [
+   "1fef211187092492",
+   "52abef3508b049b9",
+   "54cfec30621c1b80",
+   "6343cf40ee706acc",
+   "90c3f83ce743afc7",
+   "cb42fd7d98e81350"
+  ],
+  "32": [
+   "5e13a070d597ec73",
+   "7be26d62346e1f59",
+   "8b649b2eea55b02f",
+   "cfccfa025807a478",
+   "ebbad4fa3c90df35",
+   "f7a2eb1d9d2a65d7"
+  ],
+  "48": [
+   "37af05b6165db9b7",
+   "781a1120f0981ff3",
+   "abc5760a612d6595",
+   "c62d5d20568b3365",
+   "e99b63e056724209",
+   "f1c072369ea02902"
+  ]
+ }
+}

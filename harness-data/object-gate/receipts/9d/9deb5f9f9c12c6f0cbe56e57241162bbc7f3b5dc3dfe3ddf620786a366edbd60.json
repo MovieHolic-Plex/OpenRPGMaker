@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9deb5f9f9c12c6f0cbe56e57241162bbc7f3b5dc3dfe3ddf620786a366edbd60",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "prehistoric stone-age stone seat",
+ "label": "prehistoric/ph-stone-seat",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone seat",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top sitting surface of the stone is clearly seen foreshortened from above across rows 3 to 9, with the darker front vertical face shown beneath it across rows 10 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5339
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone seat",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top seating surface of the stone seat is clearly visible from above, spanning approximately rows 3 through 8, with the shaded front face extending below down to row 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5542
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone seat",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone seat shows a large foreshortened top sitting surface (rows 2-8, ~7 rows) and a shaded front south face (rows 9-13, ~5 rows).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5160
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone seat",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone seat has a clear foreshortened top sitting surface extending from row 3 to row 9 (about 7 rows), with the darker front south face visible from row 10 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5307
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.706Z",
+ "cells": {
+  "16": [
+   "32393cc77a89ac75"
+  ],
+  "24": [
+   "3ab9ea8247b1dfd7",
+   "670c44aa697a48c4",
+   "a67f4e62ac9801b3",
+   "bca1ee308a2fda0f",
+   "deec8117f292aca7",
+   "eb281f9a788aae3d"
+  ],
+  "32": [
+   "3503b52c2931931e",
+   "3e0816ea0fa30ec2",
+   "8e8788804e1f7ea4",
+   "9baead81c64af3b5",
+   "d2e455916ae29590",
+   "fdf2a5e3801f6169"
+  ],
+  "48": [
+   "3813a12624481dfb",
+   "b396e5790c6cd147",
+   "b42a605482cfebb8",
+   "b899c5ea610bf786",
+   "bde687d030b6681b",
+   "fdddc3a7e5787e2a"
+  ]
+ }
+}

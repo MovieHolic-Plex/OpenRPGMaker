@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5166dc52176fa8239c9898c37f74c63950c89c28b3ac15a01b65e5d71dbb262c",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "prehistoric stone-age menhir",
+ "label": "prehistoric/ph-menhir",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "standing stone (menhir)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the menhir is clearly visible across rows 4-8 (5 source pixel rows), distinctively highlighted and separated from the darker south-facing vertical shaft below row 9.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5718
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "standing stone / menhir",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The menhir is drawn as a flat front elevation: the base is a straight horizontal line, the top is an arched 2D silhouette, and vertical cylindrical shading bands run uniformly all the way to the top edge with no visible top surface or cut face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10311
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone menhir / pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn in pure front elevation: the top is drawn as an arched/domed 2D profile rather than showing a foreshortened top surface, the horizontal band around row 10 is completely flat with no elliptical curvature, and the bottom base is a flat horizontal line.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8966
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone menhir / standing stone pillar",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rounded top surface/cap of the menhir is rendered facing up toward the 3/4 camera across rows 4-8 (5 pixel rows of lighter top-surface shading) before transitioning into the front vertical shaft.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6053
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.706Z",
+ "cells": {
+  "16": [
+   "7c6f52bdfeaaafc2",
+   "8a27b9fc10a8f20a"
+  ],
+  "24": [
+   "114fb24094644047",
+   "3564dc6a943bc80e",
+   "3dc5286fe0add6a8",
+   "5fdd556c00394b70",
+   "719cbb0fc22d5e3d",
+   "7210ee8ec18b2265",
+   "9db313c38e95885b",
+   "b20c1f6bcc744937",
+   "c92540dff1999281",
+   "d10e0c3643acc002",
+   "dc69c7913f7b7d7f",
+   "fa74654a8114f661"
+  ],
+  "32": [
+   "026bf83c4a333dbb",
+   "9ee9b3f22d47a3ac",
+   "af0eb79a9270a528"
+  ],
+  "48": [
+   "231343fff750f552",
+   "35b32407ec832718",
+   "a7e94f7b11162c26",
+   "db56f52c303c7aba",
+   "e2eb972f9761bf3f",
+   "f6dd106c7d9dfcc7"
+  ]
+ }
+}

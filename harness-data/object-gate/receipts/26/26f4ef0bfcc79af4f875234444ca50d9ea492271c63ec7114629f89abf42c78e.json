@@ -1,0 +1,123 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "26f4ef0bfcc79af4f875234444ca50d9ea492271c63ec7114629f89abf42c78e",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "prehistoric stone-age knap bench",
+ "label": "prehistoric/ph-knap-bench",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "knap bench",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bench has a clearly visible horizontal top work surface across rows 4-8 (5 rows tall) with knapped stone items resting on it, and a darker south front face spanning rows 9-13 (5 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6368
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "knap bench / workbench",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn within a flat rectangular outer frame (rows 2–14, cols 2–29) with legs at the bottom (row 15). The top edge is only a 2px outline (rows 2–3) and the side borders run straight from top to bottom, depicting a pure front elevation with no visible horizontal top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11905
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "knap bench / workbench",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal bench top is clearly visible from rows 3 to 8 (6 rows tall) with knapped stone tools resting on its surface, above a shaded 5-row front face and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5670
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "knapping bench",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The knapping bench has a clearly visible horizontal top surface (rows 4–8, 5 source pixels tall) showing flint pieces resting upon it, followed by the south-facing front body (rows 9–13) and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7651
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.710Z",
+ "cells": {
+  "16": [
+   "586e8e936455e5bf",
+   "ae145817b9fb9060"
+  ],
+  "24": [
+   "087ec2764ff6fbda",
+   "0e666bac9af4a496",
+   "1db24066c128cc13",
+   "299504dccc4b89ac",
+   "6cf466ca01acc3f5",
+   "90dd9b7c7545b294",
+   "ad62ce82dd3e74f1",
+   "bc90e83b2ba25d9f",
+   "bddc4f6c5c5304f1",
+   "c2673dcb2fb5c4e8",
+   "c7fe1510b0535481",
+   "e4623712e10be241"
+  ],
+  "32": [
+   "130d150490bd3f9e",
+   "890aa80fc53b58ea"
+  ],
+  "48": [
+   "1f619345b7572e5b",
+   "365088be8cc7fba0",
+   "37ec85daf3a2cf0d",
+   "7371febde918463c",
+   "b57dd4714f8e9ac0",
+   "c5fee3bc2c451cf8"
+  ]
+ }
+}

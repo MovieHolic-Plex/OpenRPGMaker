@@ -67,7 +67,8 @@ def speck(lx, ly, s, p):
     return rnd(lx, ly, s) < p
 
 
-def p_dirt(lx, ly, s=1):
+def p_dirt0(lx, ly, s=1):
+    """1판 흙(실내 움집 바닥이 그대로 쓴다 — 바꾸면 실내 영수증이 풀린다)."""
     n = sm(lx, ly, s)
     t = 3 + (1 if n > 0.8 else 0) - (1 if n < 0.2 else 0)
     # 잔돌: 밝은 머리 + 오른쪽 아래 그늘
@@ -89,7 +90,8 @@ def p_path(lx, ly, s=2):
     return ('dirt', t)
 
 
-def p_grass(lx, ly, s=3):
+def p_grass0(lx, ly, s=3):
+    """1판 풀(바위 언덕 풀 덮개·흙 움집 뗏장이 그대로 쓴다)."""
     n = sm(lx, ly, s)
     t = 3 + (1 if n > 0.66 else 0) - (1 if n < 0.3 else 0)
     # 풀잎: 밝은 끝(위) + 밑 그늘(아래) 쌍
@@ -205,6 +207,115 @@ def p_lava(lx, ly, s=12, f=0):
     return ('lava', t)
 
 
+# ─────────── 2판 흙·길·풀 (화풍 정렬 2026-10-14) ───────────
+# 버들항 바닥은 몸 전체에 한 단 위·아래 낱점이 촘촘하고(화소의 3~4할), 잔돌(밝은 머리 + 오른쪽 아래 그늘)·짙은 흙점 덩이가 섞인다.
+# 1판 흙은 낱점이 드물어 단색 갈색 몸으로 보였다. 무늬는 칸 안 고정 도장(감싸기)이라 이웃 칸과 이음새가 없다.
+_STAMP_CACHE = {}
+
+
+def _grid(key, build):
+    if key not in _STAMP_CACHE: _STAMP_CACHE[key] = build()
+    return _STAMP_CACHE[key]
+
+
+def _stamp(g, x0, y0, rows, mat):
+    """rows: 문자열 줄. 숫자 = 그 재질의 단, 's'/'S' = 잔돌 몸/머리, '.' = 그대로."""
+    for j, row in enumerate(rows):
+        for i, ch in enumerate(row):
+            if ch == '.': continue
+            x, y = (x0 + i) % 16, (y0 + j) % 16
+            if ch == 's': g[y][x] = ('stone', 4)
+            elif ch == 'S': g[y][x] = ('stone', 5)
+            elif ch == 'k': g[y][x] = ('stone', 3)
+            else: g[y][x] = (mat, int(ch))
+
+
+PEBBLE = [['Ss.', 'sk1'], ['S1'], ['.S.', 'Ssk', '.11'], ['s1']]
+CLOD = [['21', '12'], ['.2.', '212'], ['2.', '12', '.2'], ['12.', '.21']]     # 짙은 흙점 덩이(밟힌 흙 속 젖은 흙·씨앗 껍질)
+
+
+def _dirt_grid(s):
+    import random
+    r = random.Random(4100 + s)
+    g = [[None] * 16 for _ in range(16)]
+    for y in range(16):
+        for x in range(16):
+            n = sm(x, y, s)
+            t = 3 - (1 if n < 0.14 else 0)
+            q = rnd(x, y, s + 41)
+            if q < 0.19: t += 1                     # 밝은 낱알(촘촘히)
+            elif q < 0.32: t -= 1                   # 어두운 낱알
+            elif q < 0.335: t += 2
+            g[y][x] = ('dirt', max(1, min(5, t)))
+    for k in range(2): _stamp(g, r.randrange(16), r.randrange(16), CLOD[(k + s) % 4], 'dirt')
+    # 잔돌은 변주 칸(dirt-b)에만 — 바탕 칸마다 같은 자리에 찍히면 16px 격자 점으로 보였다
+    if s != 1: _stamp(g, r.randrange(16), r.randrange(16), PEBBLE[s % 4], 'dirt')
+    return g
+
+
+def p_dirt(lx, ly, s=1):
+    """2판 다진 흙: 촘촘한 한 단 낱알 + 짙은 흙점 덩이 2 (+ 변주 칸 잔돌 1)(밝은 머리·그늘)."""
+    return _grid(('dirt', s), lambda: _dirt_grid(s))[ly % 16][lx % 16]
+
+
+FOOT = [['.3.', '343', '454', '.5.'], ['3.', '43', '45', '5.'], ['.3', '34', '54', '.5']]     # 발자국: 북쪽 벽 그늘·남쪽 테 빛
+
+
+def _path_grid(s):
+    import random
+    r = random.Random(5200 + s)
+    g = [[None] * 16 for _ in range(16)]
+    for y in range(16):
+        for x in range(16):
+            n = sm(x, y, s)
+            t = 5 - (1 if n < 0.2 else 0)                # 흙(3 둘레)보다 두 단 밝아야 길이 흙 바탕에서 읽힌다
+            q = rnd(x, y, s + 43)
+            if q < 0.12: t += 1
+            elif q < 0.24: t -= 1
+            g[y][x] = ('dirt', max(2, min(6, t)))
+    pos = [(2, 3), (9, 1), (5, 10), (12, 9)]
+    r.shuffle(pos)
+    _stamp(g, pos[0][0], pos[0][1], FOOT[s % 3], 'dirt'); _stamp(g, pos[0][0] + 3, pos[0][1] + 2, FOOT[(s + 1) % 3], 'dirt')
+    _stamp(g, pos[2][0], pos[2][1], PEBBLE[(s + 1) % 4], 'dirt'); _stamp(g, pos[3][0], pos[3][1], PEBBLE[(s + 3) % 4], 'dirt')
+    _stamp(g, (pos[3][0] + 6) % 16, (pos[3][1] + 4) % 16, CLOD[s % 4], 'dirt')
+    return g
+
+
+def p_path(lx, ly, s=2):
+    """2판 밟힌 흙길: 흙보다 한 단 밝은 몸 + 낱알 + 발자국 한 쌍·잔돌 둘·흙점."""
+    return _grid(('path', s), lambda: _path_grid(s))[ly % 16][lx % 16]
+
+
+GTUFT = [['.5.5.', '54545', '43434', '.212.'], ['5.5', '444', '323', '.1.'], ['.55', '545', '434', '21.']]   # 풀 포기: 잎끝 빛·밑동 그늘
+GDARK = [['..222..', '.22222.', '2222122', '.22222.', '..2.2..'], ['.2222..', '2222222', '2212222', '.22222.', '...22..'],
+         ['..22...', '.22222.', '2221222', '.22222.', '..222..']]              # 짙은 풀 덩이(그늘 고인 곳) — 3판: 크게(7×5)
+
+
+def _grass_grid(s):
+    import random
+    r = random.Random(6300 + s)
+    g = [[None] * 16 for _ in range(16)]
+    for y in range(16):
+        for x in range(16):
+            # 3판: 1판 풀잎 쌍(9%)이 2배에서 시끄러웠다 — 잎 쌍을 5%로, 얼룩은 한 단만
+            n = sm(x, y, s)
+            t = 3 + (1 if n > 0.7 else 0) - (1 if n < 0.28 else 0)
+            if rnd(x, y, s + 7) < 0.05: t = min(5, t + 2)
+            elif rnd(x, (y - 1) % 16, s + 7) < 0.05: t = max(1, t - 1)
+            g[y][x] = ('grass', t)
+            if rnd(x, y, s + 21) < 0.004: g[y][x] = ('bloom', 2)
+    gx, gy = r.randrange(16), r.randrange(16)
+    _stamp(g, gx, gy, GDARK[s % 3], 'grass')
+    for k in range(2): _stamp(g, (gx + 8 + 3 * k) % 16, (gy + 7 + 4 * k) % 16, GTUFT[(k + s) % 3], 'grass')
+    return g
+
+
+def p_grass(lx, ly, s=3):
+    """2판 풀밭: 1판 풀잎 결 + 큰 짙은 풀 덩이 1 + 풀 포기 2(잎끝 빛 · 밑동 그늘)."""
+    return _grid(('grass', s), lambda: _grass_grid(s))[ly % 16][lx % 16]
+
+
+
 PAINT = dict(dirt=p_dirt, path=p_path, grass=p_grass, fern=p_fern, stone=p_stone, gravel=p_gravel, ash=p_ash, crust=p_crust,
              mud=p_mud, swamp=p_swamp, water=p_water, lava=p_lava)
 
@@ -274,7 +385,8 @@ def wang_mask(key, s=0):
             val = nw * (1 - u) * (1 - v) + ne * u * (1 - v) + sw * (1 - u) * v + se * u * v
             # 경계 잡음: 가장자리(0·15)에서 0 이 되게 줄여 이웃 칸과 이어 붙는다
             edge = min(x, 15 - x, y, 15 - y) / 4.0
-            val += (vn(x, y, 4, 77 + s) - 0.5) * 0.34 * min(1.0, edge)
+            # 2판: 4px 잡음을 키우고 2px 잡음을 더해 경계가 곧은 곡선으로 끊기지 않게(화풍 정렬 — 「딱딱한 가장자리」)
+            val += ((vn(x, y, 4, 77 + s) - 0.5) * 0.46 + (vn(x, y, 2, 79 + s) - 0.5) * 0.22) * min(1.0, edge)
             m[y][x] = val > 0.5
     return m
 
@@ -323,12 +435,81 @@ def wang(c, pair, key):
                         mat, t = fb(x, y); c.P(x, y, mat, t)
                     elif y < 15 and not m[y + 1][x]:
                         g = c.get(x, y); c.P(x, y, g[0], max(0, g[1] - 1))
+    if pid in ('grass', 'fern'):
+        _blades(c, m, a)
+
+
+def _blades(c, m, mat):
+    """2판 풀 결(화풍 정렬): 풀 덩이 가장자리가 매끈한 곡선으로 끊기지 않게, 북·옆 경계 밖으로 잎끝이 삐져나오고
+    남쪽 앞 테는 짙은 잎이 그늘 위로 늘어진다. 칸 맨 끝 줄·열에는 찍지 않는다(이웃 칸과 이음새)."""
+    tip, mid, dark = (5, 4, 2) if mat == 'grass' else (5, 4, 2)
+    ins = lambda x, y: 0 <= x < 16 and 0 <= y < 16 and m[y][x]
+    for y in range(1, 15):
+        for x in range(1, 15):
+            if m[y][x]: continue
+            q = rnd(x, y, 131)
+            if ins(x, y + 1):                                   # 북쪽 경계 바로 위: 잎끝
+                if q < 0.5:
+                    c.P(x, y, mat, mid)
+                    if q < 0.18 and y > 1 and not ins(x, y - 1): c.P(x, y - 1, mat, tip)
+            elif ins(x - 1, y) or ins(x + 1, y):                # 옆 경계: 비스듬한 잎
+                if q < 0.35: c.P(x, y, mat, mid - 1)
+            elif ins(x, y - 1) and q < 0.45:                    # 남쪽 앞 테 밑: 늘어진 짙은 잎(그늘 위)
+                c.P(x, y, mat, dark)
 
 
 for pid, a, b, shape, nm in PAIRS:
     for key in CORNER_KEYS:
         R.add('w-%s-%s' % (pid, key), '%s 가장자리(%s)' % (nm, key), 1, 1, 'terrain', tags=['가장자리', a, b], rules='구성기가 꼭짓점 격자로 고른다(NW NE SW SE).',
               wang=pid)(lambda c, pid=pid, key=key: wang(c, pid, key))
+
+
+# ═══════════════════════ 흙길 테(2판, lane-<N E S W>) ═══════════════════════
+# 1판 흙길은 칸 경계에서 네모로 딱 끊겼다. 이어지지 않는 변은 칸 끝에서 2~4화소 안쪽에 손으로 흔든 테로 끝나고,
+# 그 바깥은 다진 흙이다. 테의 양 끝(칸 모서리)은 늘 3화소라 같은 변을 가진 이웃 길 칸과 이어진다.
+# 북쪽 테 = 둑 그늘(어두운 두 줄), 남쪽 테 = 빛 받는 둑머리(바깥 흙 한 줄 밝게), 동·서 테 = 한 단 어둡게.
+LANE_KEYS = ['%d%d%d%d' % (n, e, s_, w) for n in (0, 1) for e in (0, 1) for s_ in (0, 1) for w in (0, 1) if (n, e, s_, w) != (1, 1, 1, 1)]
+
+
+def _wob(u, side):
+    import math
+    base = math.sin(math.pi * u / 15.0)
+    v = vn(u, side * 5, 4, 300 + side)
+    return int(round(base * (v - 0.5) * 3.2))      # 양 끝 0, 가운데 -1~+1(+ = 길이 좁아짐)
+
+
+def lane_mask(key):
+    n, e, s_, w = (ch == '1' for ch in key)
+    def inside(x, y):
+        if not (0 <= x < 16 and 0 <= y < 16): return True
+        if not n and y < 3 + _wob(x, 0): return False
+        if not s_ and y > 12 - _wob(x, 2): return False
+        if not w and x < 3 + _wob(y, 3): return False
+        if not e and x > 12 - _wob(y, 1): return False
+        return True
+    return inside
+
+
+def lane(c, key):
+    ins = lane_mask(key)
+    for y in range(16):
+        for x in range(16):
+            if ins(x, y):
+                mat, t = p_path(x, y)
+                up, dn, lf, rt = ins(x, y - 1), ins(x, y + 1), ins(x - 1, y), ins(x + 1, y)
+                if not up: t = 2
+                elif not ins(x, y - 2): t = min(t, 3)
+                elif not lf: t = min(t, 4)
+                c.P(x, y, mat, t)
+            else:
+                mat, t = p_dirt(x, y)
+                if y > 0 and ins(x, y - 1) and mat == 'dirt': t = 5          # 남쪽 둑머리 빛
+                c.P(x, y, mat, t)
+
+
+for key in LANE_KEYS:
+    R.add('lane-' + key, '흙길 테(이어진 변 %s)' % key, 1, 1, 'terrain', tags=['길', '흙길', '가장자리'],
+          rules='구성기가 길 칸의 네 이웃(N E S W, 1 = 길로 이어짐)으로 고른다.', lane=key)(lambda c, key=key: lane(c, key))
 
 
 # ═══════════════════════ 가장자리 조립 표본(관문용) ═══════════════════════
@@ -363,6 +544,33 @@ def swatch(pid):
     return c, places
 
 
+LANE_GRID = ['0000000000000000000',
+             '0111001110100010010',
+             '0010001010110110110',
+             '0000001110100000010',
+             '0100000000000100000',
+             '0000000000001110000',
+             '0000000000000000000']
+
+
+def lane_swatch():
+    """흙길 테 15칸이 모두 나오는 길 그물(흙 바탕). 1 = 길."""
+    G = LANE_GRID; H, W = len(G), len(G[0])
+    on = lambda x, y: 0 <= y < H and 0 <= x < W and G[y][x] == '1'
+    c = C(W * 16, H * 16); places = []
+    for y in range(H):
+        for x in range(W):
+            if on(x, y):
+                key = ''.join('1' if on(x + dx, y + dy) else '0' for dx, dy in ((0, -1), (1, 0), (0, 1), (-1, 0)))
+                iid = 'path' if key == '1111' else 'lane-' + key
+                if key != '1111': places.append(dict(id=iid, x=x * 16, y=y * 16))
+            else: iid = 'dirt'
+            c.paste(R.render(R.by[iid]), x * 16, y * 16)
+    missing = set('lane-' + k for k in LANE_KEYS) - {p['id'] for p in places}
+    assert not missing, ('길 표본에 빠진 조합', missing)
+    return c, places
+
+
 def export_swatches():
     d = os.path.join(OUT, 'terrain', '_gate_assembled'); os.makedirs(d, exist_ok=True)
     man, rows = {}, []
@@ -374,6 +582,10 @@ def export_swatches():
         rows.append(dict(png=os.path.basename(png), kind='terrain', name='%s ground edge transition patch' % nm, label='prehistoric/ph-swatch-' + pid))
         missing = set('w-%s-%s' % (pid, k) for k in CORNER_KEYS) - {p['id'] for p in places}
         assert not missing, ('표본에 빠진 조합', pid, missing)
+    c, places = lane_swatch()
+    png = os.path.join(d, 'ph-swatch-lane.png'); save(c, png)
+    man['lane'] = dict(png=os.path.relpath(png, os.path.join(OUT, '..', '..')), parts=places)
+    rows.append(dict(png=os.path.basename(png), kind='terrain', name='trodden dirt footpath network on packed earth ground', label='prehistoric/ph-swatch-lane'))
     json.dump(man, open(os.path.join(d, 'manifest.json'), 'w'), ensure_ascii=False, indent=1)
     with open(os.path.join(d, 'items.jsonl'), 'w') as f:
         for r in rows: f.write(json.dumps(r, ensure_ascii=False) + '\n')
@@ -386,11 +598,11 @@ if __name__ == '__main__':
     d = os.path.join(OUT, 'terrain', '_gate')
     with open(os.path.join(d, 'items.jsonl'), 'w') as f:
         for r in rows:
-            if not r['png'].startswith('ph-w-'): f.write(json.dumps(r, ensure_ascii=False) + '\n')
+            if not r['png'].startswith(('ph-w-', 'ph-lane-')): f.write(json.dumps(r, ensure_ascii=False) + '\n')
     man = export_swatches()
     ims = []
     for it in R.items:
-        if it['id'].startswith('w-'): continue
+        if it['id'].startswith(('w-', 'lane-')): continue
         im = R.render(it).img()
         from PIL import Image
         t = Image.new('RGBA', (48, 48))
@@ -398,6 +610,6 @@ if __name__ == '__main__':
             for b in range(3): t.paste(im, (a * 16, b * 16))
         ims.append((it['id'], t))
     for pid in man:
-        ims.append(('swatch-' + pid, swatch(pid)[0].img()))
+        ims.append(('swatch-' + pid, (lane_swatch() if pid == 'lane' else swatch(pid))[0].img()))
     contact(ims, os.path.join(OUT, 'terrain', 'preview.png'), z=3, W=1900)
     print(len(rows), 'terrain pieces,', len(man), 'swatches')

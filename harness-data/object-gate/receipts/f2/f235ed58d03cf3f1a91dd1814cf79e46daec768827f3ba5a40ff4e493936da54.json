@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f235ed58d03cf3f1a91dd1814cf79e46daec768827f3ba5a40ff4e493936da54",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "prehistoric stone-age path",
+ "label": "prehistoric/ph-path",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ground path tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile filling the 16x16 tile space, viewed from above as an earthy path with small stones.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3866
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ground texture",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless dirt/path terrain tile filling the full 16x16 footprint viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 23454
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dirt path terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile depicting a prehistoric stone-age dirt path with scattered pebbles and soil texture across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3395
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ground terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat dirt/stone ground surface viewed from above spanning the entire 16x16 tile; fully valid terrain texture.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3821
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:23.518Z",
+ "cells": {
+  "16": [
+   "ad3f6f62168fda39"
+  ],
+  "24": [
+   "18852b74b1e5f12d",
+   "2fd3d2edddd85125",
+   "3ce4fa393c7f0b08",
+   "619e7f205ec35d53",
+   "a8de7fba70fca831",
+   "d3d82dccc891d617"
+  ],
+  "32": [
+   "26710adeff88e4e4",
+   "4447a1b0005c378b",
+   "5881161e972b8ede",
+   "77b1310bef4c100a",
+   "8ea8809eedda4853",
+   "de987bde3b0f981d"
+  ],
+  "48": [
+   "23089585d3e0dc11",
+   "61dab1aeeb667a88",
+   "8df7928ad80a9bc3",
+   "c823ba5144245cd8",
+   "cf1b88343534c0ac",
+   "f343c7ff12840576"
+  ]
+ }
+}

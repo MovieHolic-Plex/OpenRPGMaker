@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6f47b1dacf36a89558bd4f314a08d49a27226becb61c2ae6c711dcaba1f240f1",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "prehistoric stone-age obsidian",
+ "label": "prehistoric/ph-obsidian",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "scattered obsidian shards",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Small shards of obsidian scattered on the floor, rendered in 3/4 top-down perspective with visible top/upper facets on the largest chunk.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4400
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "scattered obsidian shards",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Three dark obsidian shards lie scattered on the ground, with top-lit facets visible across several pixel rows on the larger fragments.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4738
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "scattered obsidian shards",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Three dark obsidian flakes/shards scattered across the ground, naturally foreshortened and shaded to sit on the floor plane in top-down 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14971
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "scattered obsidian shards",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Small shards of obsidian scattered across the ground plane, viewed from above as appropriate for floor debris.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2958
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.703Z",
+ "cells": {
+  "16": [
+   "230cda3bb70a04c7"
+  ],
+  "24": [
+   "2e7b3a721071084f",
+   "50f5b11c114a9fb2",
+   "55d2ad180bde4b97",
+   "6e28269f7d1dffe3",
+   "90f4d19f56fddc10",
+   "ca9c6e2792f36421"
+  ],
+  "32": [
+   "445a54c47f7da58a",
+   "7323e46bd48bdf83",
+   "7e8ac8fa8192ba5f",
+   "8ca607b087d43a7e",
+   "a71bfea363a5d11b",
+   "bfb65a9cb25a7a49"
+  ],
+  "48": [
+   "24bf5612df433124",
+   "56bf7d33e7b5c62a",
+   "5f0295e29efe9857",
+   "5f920b848e632b02",
+   "b22f47b62d4ab081",
+   "fccdc30a66b2853f"
+  ]
+ }
+}

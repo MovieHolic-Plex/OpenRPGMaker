@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3152b934c9ac59acbcfdc33d771ebd17fc435d9f4fc223514b8949d15fe651df",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "prehistoric stone-age drum",
+ "label": "prehistoric/ph-drum",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical drum body",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The drumhead top surface is clearly visible from rows 3-4 to row 7 (approx 4-5 pixel rows tall) as a foreshortened ellipse, with the vertical front cylinder body and rope bindings below extending down to row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4123
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cylindrical drum with membrane top",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The drumhead top surface spans roughly 5 pixel rows (rows 3-7) as an elliptical cap viewed from above, with the cylindrical drum body below spanning rows 8-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4939
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cylindrical drum body with drumhead top",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The drum head forms a clearly visible, foreshortened top surface across rows 3-7 (around 5 rows tall), with the south cylindrical face and ropes extending below to row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3634
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical drum with membrane top",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The drum head (taut hide membrane) is drawn as a clearly foreshortened elliptical top surface spanning rows 3-7 (approx 5 rows tall), resting above the patterned cylindrical drum body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4247
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.707Z",
+ "cells": {
+  "16": [
+   "4d757e425d53aa2b"
+  ],
+  "24": [
+   "2966c8a6c6c7a208",
+   "5de9b7971004f692",
+   "6cdb02a1fd824dcc",
+   "da7c7a086356421b",
+   "e042ca13be71b317",
+   "fbc6320485e4f827"
+  ],
+  "32": [
+   "086ad186342140b5",
+   "3eb751580ded097a",
+   "86e9f156fc1edb20",
+   "8b3e18b55f52c0ab",
+   "ddf335ac49202483",
+   "f570dbf381f476cc"
+  ],
+  "48": [
+   "3519391e4dee81b4",
+   "a0fbfb70f2921039",
+   "acdfd1dd0f1dd7ae",
+   "b0caa3ed7ff75976",
+   "b50e8a641a22ffbc",
+   "c42bb9768a1c520c"
+  ]
+ }
+}

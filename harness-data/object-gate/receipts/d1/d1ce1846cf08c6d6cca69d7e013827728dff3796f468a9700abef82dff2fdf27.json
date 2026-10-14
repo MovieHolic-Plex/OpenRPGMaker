@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d1ce1846cf08c6d6cca69d7e013827728dff3796f468a9700abef82dff2fdf27",
+ "width": 32,
+ "height": 32,
+ "kind": "seat",
+ "name": "prehistoric stone-age chief seat",
+ "label": "prehistoric/ph-chief-seat",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone block with hide seat",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the stone seat block spans rows 12-23 (12 source pixel rows) displaying a circular hide cushion, before meeting the vertical front face at row 24.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5564
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone block seat with fur cushion and bone/skull back ornament",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the stone seat spans rows 11-23 (13 rows tall) bearing a round pelt cushion, while the front south face spans rows 24-29 (6 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5192
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone block seat with fur cushion and bone backrest",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat shows a clear top horizontal surface across rows 12-23 topped with a rounded fur cushion, above a darker 6px south-facing front wall (rows 24-29), with an upright bone backrest behind it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5892
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone bench with fur cushion",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone seat has a clear top horizontal surface (rows 12-23, 12 rows tall) featuring a circular fur cushion, above a darker south front face (rows 24-29, 6 rows tall), backed by a bone arch backrest.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5404
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.710Z",
+ "cells": {
+  "16": [
+   "1a566e173d31fe88",
+   "5c1c9a4f85a51fc2",
+   "690430569fd185c6",
+   "92cb5352fd543931"
+  ],
+  "24": [
+   "03e8af46ba6bbf3f",
+   "10154c4a50b28331",
+   "211cd46eed0bde38",
+   "258c984c004e650f",
+   "3410ca80a72f822a",
+   "495b803e68cb607a",
+   "4d96000140afaf08",
+   "57b5fea85ea97377",
+   "8544dd22986bc781",
+   "9141f0876d44ed1f",
+   "99d8c9d883d1f991",
+   "9c7b9cf6a3dc5d13",
+   "a53ef3eaf1b7480d",
+   "a6f2e3b8b41c774a",
+   "a8edc7e8999c9ad1",
+   "b1d2d9fc452b74a6",
+   "c07cd73c3cc0f5ed",
+   "c5e6ca459aa12c41",
+   "d115f83e6ea1ebe2",
+   "d68fc348ea4f9d2e",
+   "e279fe1e2e3e93ed",
+   "e39a655939a81920",
+   "fb6005dd227d92f4",
+   "ffbc04dece95e601"
+  ],
+  "32": [
+   "bc8fb21143f9e4bf"
+  ],
+  "48": [
+   "0447b0d9d9cb5dab",
+   "05217b26407a8ddb",
+   "4ca286ca365caf28",
+   "864891858931e7f7",
+   "d908e53d536b8c0b",
+   "dba61c416d1a18c1"
+  ]
+ }
+}

@@ -1,0 +1,123 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1df465531bcb2266ecb88af01c090c57197d09df69d6bb747904135ca8e4364b",
+ "width": 32,
+ "height": 16,
+ "kind": "frame",
+ "name": "prehistoric stone-age spit roast",
+ "label": "prehistoric/ph-spit-roast",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "spit roast frame with roasted meat",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The spit roast frame is drawn in front elevation: the horizontal spit bar is only 2px thick with no visible top face, the upright posts terminate at the top in only a 2px cap, and the posts touch the ground with flat vertical silhouettes without visible bases or top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11613
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "spit roast frame with roasting meat over a stone fire pit",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upright wooden posts show clear cut top faces (rows 1-3, 3px tall) and the stone fire pit below is drawn with elliptical 3/4-view perspective showing the embers within.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4702
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "spit roast frame with two upright wooden posts, roasting meat, and fire pit base",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upright log posts show clearly defined top cross-sections/end-grain faces (rows 2-4, ~3px tall) viewed from above, and the fire pit base forms an elliptical surround around the embers in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5025
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "timber uprights with spit-roasted meat over a stone fire pit",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden upright posts clearly show their cut top cross-sections at rows 1-3 (3 source pixel rows tall), and the fire pit stones below form a foreshortened circular basin.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4214
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.704Z",
+ "cells": {
+  "16": [
+   "26011a5b54b0f0c5",
+   "8d9785446658f886"
+  ],
+  "24": [
+   "035647fccdc5c2ad",
+   "0a9062efb842afe1",
+   "2607e1f5df09a07e",
+   "29e9ee52820a4fc5",
+   "48547f5e9348a8bd",
+   "4906bbb8020a873c",
+   "661875c4c40a4d3f",
+   "94386855c6168f5a",
+   "baa6098a2e1c78d7",
+   "c66cb112ccfe0836",
+   "d8189eb0a7b96f55",
+   "fc6c7a596d0be74f"
+  ],
+  "32": [
+   "53bee0a0d9dfe46f",
+   "95534c4d3ca302ff"
+  ],
+  "48": [
+   "53051412634ba795",
+   "71e25dee2328e285",
+   "781a81ca6385f4ff",
+   "9103007328b0c59a",
+   "d0d24abe5798d94c",
+   "f9635db7664a2754"
+  ]
+ }
+}

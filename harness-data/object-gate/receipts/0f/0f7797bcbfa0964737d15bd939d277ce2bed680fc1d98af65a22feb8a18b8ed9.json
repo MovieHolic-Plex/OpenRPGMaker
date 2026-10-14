@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0f7797bcbfa0964737d15bd939d277ce2bed680fc1d98af65a22feb8a18b8ed9",
+ "width": 16,
+ "height": 32,
+ "kind": "organic",
+ "name": "prehistoric stone-age lava spire",
+ "label": "prehistoric/ph-lava-spire",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "conical rock spire",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rock spire tapers to a 1px peak and has a perfectly flat horizontal base at row 30, rendered as a pure side-scroller or architectural front elevation with no visible top surface or 3/4 perspective foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3691
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lava spire",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The spire is rendered as a flat 2D front elevation tapering to a sharp 1px tip with no foreshortened top surfaces, ledges, or elliptical base visible from a 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5609
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone spire",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The spire is drawn in pure front elevation with a flat horizontal bottom line and vertical profile, showing no 3/4 top-down foreshortening or visible top facets.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6806
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall rock spire",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The spire is rendered as a flat vertical silhouette with a pointed tip and flat horizontal base, showing pure side/front elevation with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3686
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.703Z",
+ "cells": {
+  "16": [
+   "4aabf2d2b34ef23e",
+   "8adb09a19a9c40e4"
+  ],
+  "24": [
+   "11ede1b6cdf2c5bc",
+   "1e8152e30ef5577d",
+   "3ef17b77b2fdcafa",
+   "52b9557590478e6f",
+   "54f492441c7739e9",
+   "87ffaf263093c0c6",
+   "90aa6fcd42c7ed88",
+   "b6ccadcbed149d89",
+   "b6ce537dc07e5b83",
+   "e148510186af8502",
+   "e9e5a67182522e7c",
+   "f9108a80b1319623"
+  ],
+  "32": [
+   "0e6ab05a6eeb7a27",
+   "d32e793e326070c0",
+   "e2c933e0e7455917"
+  ],
+  "48": [
+   "09a2faa0a5d9f130",
+   "1d01dcb1e68542df",
+   "3a09857a5428dddb",
+   "3e6bbd038d504c9f",
+   "5247270c046139ed",
+   "e122549691ee9d74"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7e8fadf6f8e6d57e5617e92b63287575da18e834bf58c8d44a2d0af6056b9c88",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "prehistoric stone-age stump stool",
+ "label": "prehistoric/ph-stump-stool",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cut tree stump stool",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The yellowish cut wood surface of the stump top is clearly visible from rows 3 to 7 (5 pixel rows tall), with the bark front face extending from rows 8 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3784
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tree stump stool",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut surface of the stump stool is clearly visible from above, spanning rows 3 through 7 (around 4-5 rows tall), resting atop a vertical bark front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4434
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stump stool",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut surface of the stump (the seat) is clearly visible across rows 4-7 (approx 4 pixel rows tall), with the front bark face extending from row 8 down to row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3764
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tree stump stool",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut surface of the stump is visible from above across rows 4-7 (4 pixel rows tall), and the south bark face extends from row 8 to row 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4124
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.710Z",
+ "cells": {
+  "16": [
+   "9c4f5a6e888f4de0"
+  ],
+  "24": [
+   "67246916f8c4fd7c",
+   "8ebff91946ce7b0f",
+   "967135a74e4914f4",
+   "b07b67c7cfacd9a9",
+   "da030fc1347bca1a",
+   "f98eeaf36ccee212"
+  ],
+  "32": [
+   "23eba006508ead41",
+   "b49d95a6da9cba53",
+   "cc4c200bec021690",
+   "ce19b8ce86a37146",
+   "e8a34f9defcf3f39",
+   "f2e3ca53564420d8"
+  ],
+  "48": [
+   "0353ba5d7323289d",
+   "4683695f024d51b1",
+   "63c09813dbdce3e0",
+   "6c5aa894a9a8c286",
+   "a587c22edc2ed6ff",
+   "c584aad5fcc1b8cb"
+  ]
+ }
+}

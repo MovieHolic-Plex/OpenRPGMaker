@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e204ba03cfe66ae9407451a3d017b8eece1df93da1a1a3179668048a14889810",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "prehistoric stone-age bonfire",
+ "label": "prehistoric/ph-bonfire-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone ring fire pit with fire",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone-ring fire pit forms a clear foreshortened ellipse spanning rows 16 to 28, displaying the interior basin (approx. 8 rows tall from row 18 to 25) containing the flames in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5044
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone ring fire pit with burning bonfire",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone pit forms an elliptical opening viewed from above (spanning approx rows 17-25 inside the rim), properly foreshortened in 3/4 perspective with fire and logs contained within.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4758
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone ring fire pit with bonfire",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 9,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone pit forms a clear foreshortened ellipse viewed from above (~24px wide by 12px tall), with the interior fire basin visible across roughly 9 rows between the back and front stone rims.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4394
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone fire pit with bonfire",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone pit forms a clear foreshortened elliptical ring viewed from above (3/4 perspective), with the inside of the hearth clearly visible containing the fire and wood from rows 17 to 25.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4140
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.704Z",
+ "cells": {
+  "16": [
+   "83234268e9296ef1",
+   "92fd7415b689d158",
+   "c2368baeecb0f12d",
+   "e679932736ef416e"
+  ],
+  "24": [
+   "061590e5c2bb7a93",
+   "15d7289103d843cb",
+   "199e6539b044c2c0",
+   "1f14ada9fbbfb58a",
+   "203fb414799cb4dc",
+   "30b2e2a0ec04ae39",
+   "3a3fdb91e2b4c902",
+   "4f9c4107af660058",
+   "5ffd19b46a8d0999",
+   "64c5a8ab5fc073b9",
+   "6f9e57769a669725",
+   "74eb34d064e8407e",
+   "8941f0c9b1a72af3",
+   "a2127cee164f808e",
+   "aabb3e7e5b6dcb8c",
+   "ad94d2879e6e3891",
+   "afc705efb222e7c8",
+   "b3dc16651bf8843d",
+   "d98b8d62c3532568",
+   "e42349bcda07f226",
+   "ea55c73291fa6d29",
+   "f36355793193652d"
+  ],
+  "32": [
+   "29948d2df8c66989"
+  ],
+  "48": [
+   "00ef286392d4abd0",
+   "0ca8ec422e24cc5d",
+   "5f4554717dde902d",
+   "ab92d039343788ff",
+   "d3ff9aaa9682e080",
+   "fc1a36e33d72b338"
+  ]
+ }
+}

@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "abd5ef495a36a11d967c94d74c2f2e3fece5641e14a64dc556d31731c3107d2c",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "prehistoric stone-age hide frame",
+ "label": "prehistoric/ph-hide-frame",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hide stretching frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hide frame is drawn in a flat front elevation. The top horizontal beam has only a 1px line (row 4) without a foreshortened top surface, and the bottom beam also lacks a substantial top face (only a 1-2px highlight at row 21).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9610
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hide drying rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top horizontal beam has only a 1px strip of wood (row 4) beneath the outline with no foreshortened top surface visible from above. The bottom horizontal beam is drawn as a front-facing bar with vertical gradient shading (rows 21-24) rather than a clear horizontal top face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8689
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hide frame on legs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The frame's horizontal beams (top beam at rows 3-5 and bottom beam at rows 21-23) are drawn as flat vertical rectangles without foreshortened top surfaces. The top beam has at most a 1px line, which does not constitute a valid top surface in 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8730
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hide frame on legs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The frame is drawn in a front elevation with vanishing-point perspective rather than 3/4 top-down view. The horizontal beams lack proper top surfaces seen from above (the top beam shows only a 1px outline cap, and the bottom crossbeam has only a 2px highlight strip).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 15112
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.705Z",
+ "cells": {
+  "16": [
+   "2b016722dd392abc",
+   "2ba16127583e4a21",
+   "74a0650174c745ff",
+   "b3abbd2183454e45"
+  ],
+  "24": [
+   "1bb8cbee193bd02e",
+   "296b1fe49a22e74f",
+   "30fdf1ae30682081",
+   "35f9bf137c0b3fe1",
+   "371829713925e3e8",
+   "37b5e68c741540f2",
+   "4517ecdca132d38d",
+   "598611debe8cf7f8",
+   "6b455073b591fe13",
+   "7694f51a96992533",
+   "7f251fb455b9c1b0",
+   "88b3cb06503195a8",
+   "89d722c56bc0ba88",
+   "8e668c865a2c3165",
+   "9abdce72236eca74",
+   "ad75bce4ea061713",
+   "b9e0dc18e5139221",
+   "c4285c930e2feccd",
+   "ca094d89e765916e",
+   "cdac94d6de4d5a4d",
+   "de886b1a6f153945",
+   "dfc09dff34b4c9e7",
+   "eb0efe4994c2688e",
+   "fa641660d73edf1d"
+  ],
+  "32": [
+   "4700dcebd68492a0"
+  ],
+  "48": [
+   "01dfee8b88337670",
+   "0c2540574c3e1c4e",
+   "84940db2b76d6027",
+   "8f61c034dd095706",
+   "928aab0531ccfeb8",
+   "bb46575a2e3f2be7"
+  ]
+ }
+}

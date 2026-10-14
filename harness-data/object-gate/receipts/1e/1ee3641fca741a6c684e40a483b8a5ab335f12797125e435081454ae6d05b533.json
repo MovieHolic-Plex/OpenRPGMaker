@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1ee3641fca741a6c684e40a483b8a5ab335f12797125e435081454ae6d05b533",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "prehistoric stone-age bush",
+ "label": "prehistoric/ph-bush",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bush foliage",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush is rendered as a rounded organic volume with visible top-down lighting and layered foliage clumps across rows 3-7 representing the upper rounded surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5233
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bush foliage",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush is rendered with a distinct upper canopy/top foliage lobe across rows 2–6 before shading into the front-facing lower foliage mound down to row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7315
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bush foliage",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bush is drawn in pure front elevation (side-scroller style), with vertically stacked scalloped leaf clumps and a stem at the very bottom (rows 14-15). It has no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6761
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bush foliage clump",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The foliage clump displays top-down volume with the upper crown/top surfaces spanning roughly rows 3-6 lit from above, transitioning into the shadowed lower south face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6127
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.702Z",
+ "cells": {
+  "16": [
+   "25fcb64cea84c3f3"
+  ],
+  "24": [
+   "32990c59598e801c",
+   "488f20e7e85cd385",
+   "90cde164e5326861",
+   "980e940bbbf8f9c5",
+   "b88eaa54f96f20a8",
+   "c646ae5ae4e2bd40"
+  ],
+  "32": [
+   "5821bd20ee4a38f1",
+   "5d8591fc5b084fca",
+   "6778fd99d7e1bbcf",
+   "7e6e2a6461afd41c",
+   "bb6f5d8e476eea4d",
+   "f7533c25c8bb360f"
+  ],
+  "48": [
+   "1b567149f00e2921",
+   "1d11d83295047959",
+   "299a2c9b9bc8c1bf",
+   "2abee8ddb1eee470",
+   "4c155b2b4e953a52",
+   "6eb2c81a692cd1df"
+  ]
+ }
+}
