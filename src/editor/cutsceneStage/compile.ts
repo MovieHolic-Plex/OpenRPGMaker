@@ -205,7 +205,9 @@ export function compileStage(input: StageInput): StageResult {
     const events: TimedEvent[] = [];
     const walkFrames = a.spec.walk ? a.spec.walk?.[directionOf(to.x - a.x, to.y - a.y)] : undefined;
     // bob: 걷기 프레임이 없는 그림(생성 소품·몬스터)도 발걸음 박자로 위아래가 출렁이며 나아간다.
-    const bob = anim === "bob" && !walkFrames;
+    // anim 을 안 주면 걷기 프레임 없는 배우도 24px 이상 움직일 땐 발걸음 출렁임을 준다 — 같은 자세로 미끄러지는 인물·기계가 어색하다는 판정이 반복됐다.
+    const travel = Math.hypot(to.x - a.x, to.y - a.y);
+    const bob = !walkFrames && (anim === "bob" || (anim === undefined && travel >= 24 && ms >= 400));
     const segments = walkFrames || bob ? Math.max(1, round(ms / WALK_STEP_MS)) : ease === "linear" ? 1 : 6;
     const from = { x: a.x, y: a.y };
     for (let i = 1; i <= segments; i += 1) {
