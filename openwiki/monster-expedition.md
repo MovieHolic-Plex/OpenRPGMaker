@@ -278,3 +278,11 @@ It requires an existing catalog; full generation without the option remains supp
   대회형·탐험형(`createMonsterTournament`)은 필드 메뉴에서 「배지」 칸을 뺀다 — 배지가 없는 게임에서 빈 배지 화면이 열렸다. `check` 의 `visual-flat` 은 빈 판 마을을 잡는다.
 - **알려진 한계(미해결):** 이미 지은 캠페인에 마을·체육관을 **더하는** 전용 도구가 없다 — 조수가 `create_map`+낱개 도구로 지으면 빈 회색 판 한 장이 된다(`visual-flat` 이 이제 경고). `configure_monster_campaign definition` 을 통째로 주면 `plan`(검수 하한)이 0 으로 덮여 구조 검수가 느슨해진다.
 
+
+## 던전 어댑터 — 몬스터 키트로 자유 던전 (2026-10-15, dungeon-genres)
+
+- **자유 경로 전용.** `author_dungeon`(옛 `author_beodeul_dungeon` 의 일반화)이 프로젝트 장르(`system.genre==="monster-collect"`) 또는 기존 맵 칩셋(`monster_overworld`·`monster_dungeon`, 시트는 오토타일 그룹으로 알아봐 에메랄드 재채색도 포함)을 보고 몬스터 어댑터(`src/editor/dungeonKit/monster/monsterAdapter.ts`)로 간다. **`build_monster_game` 의 고정 템플릿·`markers.json` 앵커 맵은 건드리지 않았다**(그 맵은 autoplay 엔딩이 앵커 좌표에 묶여 있다).
+- **짓는 종류(기존 조각만, 새 그림 0장):** cave(마른 갈색 동굴, `monster_overworld`) · cave `variant:"wet"`(바다 동굴: 젖은 바위+물웅덩이+바위섬 둑길) · volcano(화산암 벽+용암+식은 껍질 다리) · ice(얼음 벽+눈 바닥+미끄럼 판) · labyrinth(유적 얇은 칸막이 미로) · temple(열주 홀+제단). catacomb·castle·sewer·mine 은 **거절**한다(지하묘지 벽·수로·선로 그림이 몬스터 키트에 없다) — 가장 가까운 종류로 cave/temple 을 권한다. 버들항 쪽은 ice 를 거절하고 cave 를 권한다.
+- **포켓몬풍 프리셋(`genre:"pokemon"`, 몬스터 프로젝트 기본):** 방 2~4(입구+조우 방 2+보스, small), 걸을 수 있는 바닥 전체가 야생 조우 구역(방마다 map.locations 이름표 「야생 조우 …」 + `encounters:[{troopId,weight}]` 를 주면 `encounterTable` 에 `conditions.locationId` 로 구역마다 깐다), 트레이너는 `data.population.enemies` 의 시선 3~4칸 제자리 보초, 보스는 선택, 깊은 방 구멍 사다리(`stairsDown`)는 입구 앞 칸으로 돌아오는 지름길 계획. 보물 방·잠긴 문은 없다. 일반 RPG 프리셋은 같은 도구에서 `genre:"rpg"`(긴 던전·잠긴 문+열쇠 방·곁방 상자).
+- **원 해상도 QA에서 고친 것:** 마른 동굴 노란 점 조각 제외, 유적 미궁 「ring」 벽 스타일이 줄무늬 허공으로 나와 「plateau」로 변경, 얇은 칸막이(1칸) 미로는 가로 칸막이=앞면만·세로=윗면+앞면. 몬스터 키트의 한계(정직): 벽이 크고 평평한 한 덩이라 동굴이 「그림 한 장」 같고(6/10), 화산 벽에 동굴 천장 윤곽 변형이 없다.
+- 검증: `bun scripts/content/dungeon-proof.mts <dir>` — 몬스터 6종(cave·wet·volcano·ice·labyrinth·temple) × rpg/pokemon × 시드 2. lint error 0, 전부 도달, `check_terrain_access` 전부 true. 능력표 정본은 `src/editor/dungeonKit/capabilities.ts`.

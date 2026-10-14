@@ -646,7 +646,7 @@ revision 16 기와 변경은 사용자 지적을 오해한 것이며 철회했�
 
 **수리:**
 - `src/project/groundSupport.ts` — 던전 테마 키트(`ai.themes` 에 dungeon)만 대상. 규칙: 천장(허공) 위 금지 · 서는 물체의 맨 아랫줄이 벽이면 금지 · 벽걸이(`torch-wall|banner|niche|chains|sconce`)는 벽 칸에만 · 문·아치 바로 남쪽은 바닥 · 벽 앞면 바로 남쪽이 천장/빈 칸이면 거절. 훅 둘: `kitPlacementRules.checkKitPlacement`(stamp_object 가 어기면 칸·이유·가까운 올바른 자리 3곳을 돌려주고 거절), `projectLint.checkGroundSupport`(코드 `ground-support`, 칸 단위 error + 허공 향한 벽 warning, 천장 칸 이벤트 error — 커밋 게이트가 기준선 대비 새 오류만 막으므로 paint_tiles 가 물체 밑을 지우는 길도 막힌다).
-- `src/editor/beodeulDungeon/compose.ts` + `src/editor/tools/beodeulDungeonTools.ts` — 도구 `author_beodeul_dungeon({rooms:[{kind,w,h,from,dir}]})`. 방 목록 → 배치(통로 4칸·바닥 3줄 폭) → 바닥 마스크 → 천장 → 벽 앞면(바닥 북쪽 변 위 3줄만) → 마스크에서 장식 유도(방 종류별). 끝나면 위 받침 규칙으로 자기 결과를 검사하고, 입구에서 모든 방이 걸어 닿는지 BFS 로 본 뒤에만 맵을 만든다(어기면 맵 안 만들고 거부). 결과 `data.rooms[].spots` 가 이벤트·적·상자를 둘 수 있는 빈 바닥 칸이고 `stairsUp.front`/`stairsDown` 이 이동 지점이다. 빈 시작 맵이면 방 배치 크기로 넓혀 그 자리에 짓고 시작 위치를 입구로 옮긴다.
+- `src/editor/dungeonKit/beodeul/compose.ts`(옛 `src/editor/beodeulDungeon/`) + `src/editor/tools/dungeonTools.ts`(옛 beodeulDungeonTools.ts, 현재 도구 이름 `author_dungeon`, 옛 이름은 별칭) — 도구 `author_beodeul_dungeon({rooms:[{kind,w,h,from,dir}]})`. 방 목록 → 배치(통로 4칸·바닥 3줄 폭) → 바닥 마스크 → 천장 → 벽 앞면(바닥 북쪽 변 위 3줄만) → 마스크에서 장식 유도(방 종류별). 끝나면 위 받침 규칙으로 자기 결과를 검사하고, 입구에서 모든 방이 걸어 닿는지 BFS 로 본 뒤에만 맵을 만든다(어기면 맵 안 만들고 거부). 결과 `data.rooms[].spots` 가 이벤트·적·상자를 둘 수 있는 빈 바닥 칸이고 `stairsUp.front`/`stairsDown` 이 이동 지점이다. 빈 시작 맵이면 방 배치 크기로 넓혀 그 자리에 짓고 시작 위치를 입구로 옮긴다.
 - 안내: 참고문서 던전 절(md + `src/assets/beodeulCityReferences.json` 베이크본), `intentDeclaration`·`sessionToolExposure`·`toolCapabilityIndex`·도구 설명이 던전 층은 이 도구 하나로 가라고 한다.
 - 시험 케이스: `harness-data/space-craft/seed.json` 의 `dungeon-fe1`(원 요청 그대로)·`dungeon-stone`·`dungeon-crypt`.
 
@@ -701,3 +701,35 @@ revision 16 기와 변경은 사용자 지적을 오해한 것이며 철회했�
 - **역할극에서 나온 마찰(미수정, 도구 쪽 별건)**: `place_field_enemy` 는 `required` 에 없는데 troopId 나 graphic 이 없으면 거절한다. 기본 부대(`troop_golem_guard`·박쥐 선두)는 필드용으로 거절돼 조수가 `upsert_troop` 으로 슬라임·오크 계열 부대를 만들어야 했다. 거절 메시지의 허용 목록이 잘린다. `run_lint` 상세는 `data.issues`.
 - **없는 그림(MISSING, `profiles.ts`)** — 이번에 한 장도 새로 그리지 않았다(그래서 3/4 관문 해당 없음, 영수증 0). 목록: 광산 — 선로 타일(가로·세로·모서리·T), 갱목 지지대(벽 걸이 1×2·바닥 기둥 1×2), 광맥 벽 앞면 변형, 채굴장 벽 광석 장식. 화산 — 현무암·재 바닥 2×2 변형 3종, 현무암 벽 앞면 3h/2h, 용암 가장자리 식은 껍질 오토타일. 동굴 — 갈색 테두리 동굴 천장 오토타일(지금은 회색 석벽 띠), 종유석 천장 늘어짐. 얼음 동굴 — 전부(beodeul_city 에 없음). 선로·광차(`props.cart` RAIL/RAIL_END/CART)와 용암 가장자리(`edges.lava`)는 `dungeon-chipset` 하네스에 **후보만 있고 사람이 안 골랐다** — 고른 뒤 굽기는 별도 단계. 후속은 Opus tile-artist 몫.
 - **남은 결함(정직)**: 광산은 석재 통로+주황 판자 길이라 선로·갱목이 없어 「광산」 느낌이 약하다. 화산은 용암이 가장자리 그림 없이 평평하고 벽은 성 벽돌, 바닥은 보랏빛 재색. 미궁은 바닥이 단조롭다. 동굴·화산에서 방 끝 코너에 천장 1칸 검은 점이 남는 곳이 있다(벽 앞면 양옆). 하수도 다리는 두꺼운 돌 띠로 보인다. 증거·점수: `~/claude-viz/dungeon-types.html`.
+
+
+### 던전 시공기 4판 — 장르 × 칩셋 어댑터 (2026-10-15, 사용자: 「던전을 장르별로 — 포켓몬풍 / 일반 RPG / 그 밖」)
+
+**구조(세 층, `src/editor/dungeonKit/`).**
+1. **칩셋 몰라도 되는 층:** `types.ts`(종류·사양) · `grammar.ts`(종류별 배치 문법 표, `inferDungeonType`) · `mask.ts`(`buildMask` → 열린 칸·방 번호·액체·다리·문 앞 보호) · `layouts.ts`(`layoutRooms/layoutMaze(thin)/layoutBlob`). 어떤 그림을 쓰는지 모른다.
+2. **어댑터(칩셋마다 하나):** `beodeul/`(compose·profiles·dress, 기존 그대로) · `monster/monsterAdapter.ts`(몬스터 키트: `monster_overworld`·`monster_dungeon` 의 기존 조각만 칠한다). 나머지 칩셋(고딕·조선·마법 학교·해적·선사·사막동양·그 밖)은 `capabilities.ts` 능력표에 **stub** 으로만 있고 **거절**한다.
+3. **장르 프리셋(`genres.ts`):** `pokemon` = 짧은 던전(방 2~4, 야생 조우 구역 전체가 걸을 때 확률로 조우, 시선 3~4칸 트레이너 한두 명, 선택 보스, 깊은 방 구멍→입구 지름길, 보물 방·잠긴 문 없음) · `rpg` = 긴 던전(medium 이상, 방 여럿, 곁방 상자, 필드 적, 보물 방 앞 잠긴 문+열쇠 방, 보스). 프리셋은 배치 인자와 **채우기 계획**(`planPopulation` → `data.population`)을 정한다. 이벤트 자체는 조수가 기존 도구로 놓는다.
+
+**라우팅(`route.ts`).** ① 기존 맵을 지으면 그 맵의 칩셋이 어댑터를 정한다 ② 새 맵이면 프로젝트 장르(`system.genre==="monster-collect"` → pokemon) 또는 이미 있는 맵들의 어댑터 다수결 ③ 요청의 `genre` 인자는 **배치 프리셋만** 바꾸고 그림체 계열은 바꾸지 않는다(칩셋 계열 지키기) ④ 어댑터가 그 종류를 못 지으면 `DungeonComposeError(type-unsupported-by-tileset)` + 가장 가까운 지원 종류를 권한다. 조용한 팔레트 바꿔치기는 없다.
+
+| 어댑터 | 짓는 종류 | 못 짓는 종류(이유) |
+|---|---|---|
+| beodeul | catacomb castle labyrinth sewer cave temple mine volcano | ice(얼음 그림 없음) |
+| monster | cave · cave:wet · volcano · ice · labyrinth · temple | catacomb castle sewer mine(지하묘지 벽·수로·선로 그림 없음) |
+| stub 7곳 | 없음(거절) | 이미 있는 재료·모자란 그림을 거절 문구가 같이 알려 준다 |
+
+**`build_monster_game` 은 이 길을 안 탄다.** 고정 템플릿·`markers.json` 앵커 맵이라 건드리면 autoplay 엔딩이 깨질 수 있다. 몬스터 어댑터는 자유 경로(`author_dungeon`)에서만 쓴다(`openwiki/monster-expedition.md` 「던전 어댑터」).
+
+**4판의 고침(beodeul 만, 새 그림 0장).** 적대 시각 QA 결함 → 원인 → 수리:
+- 동굴·광산·화산 바닥에서 2×2 무늬 반복이 격자로 보임 → `FloorSpec.mix`: 무늬 키트에서 칸마다 무작위 한 칸을 뽑는다(결·색은 그대로).
+- 동굴 통로에 하수구 창살이 박힘(성 지하 규칙을 공유) → `dressCorridor` 가 동굴·화산 통로는 잔돌·불씨만.
+- 광산에 선로·갱목이 없다 → 새 그림 없이 기존 조각으로: 판자 줄 위 광차(`cart-h`), 갱목 틀 대용 선반 조각(`rack`) 쌍, 램프, 세로 통로엔 통. **선로·갱목 그림은 여전히 없다.**
+- 화산 바닥이 보랏빛 재색 한 장 + 모래색 얼룩 → 얼룩을 같은 계열 갈색(광산 땅 키트)으로, 용암 못 가장자리 계단식은 이웃 다수결 두 번으로 완화.
+- 안 바뀐 것: 천장 회색 윤곽선(오토타일 그림), 벽 앞면(성 벽돌 / 회색 석재), 화산 벽. 그림이 필요하다.
+
+**검증:** `bun scripts/content/dungeon-proof.mts <dir>` — 종류 × 어댑터 × 장르 × 시드를 `author_dungeon` 으로 실제 시공하고 `run_lint`·`check_reachability`·`check_terrain_access` 를 같이 돌려 PNG(원 해상도)와 `proof.json` 을 쓴다(2026-10-15: 42판, lint error 0, 전부 도달, check_terrain_access 전부 true). 기존 beodeul 24판 sha1 기준선: 안 건드린 5종은 전부 동일, 고친 동굴·광산·화산만 의도적으로 바뀜.
+
+**없는 그림(다음 타일 작업자 몫, `capabilities.ts` `missingArt` 가 정본):**
+- beodeul: 선로 타일(가로·세로·모서리·T) / 갱목 지지대(벽 걸이 1×2·바닥 기둥 1×2) / 광석 박힌 벽·바닥 / 현무암·재 바닥 변형 · 현무암 벽 앞면 3h/2h · 용암 식은 껍질 가장자리 / 갈색 테두리 동굴 천장 오토타일 / 얼음 동굴 일체.
+- monster: catacomb·castle·sewer·mine 일체 / 마른 동굴 안 물·용암 조각 / 유적 신전 안쪽 칸막이 / 화산 제단·보스 연출 / 얼음 판 퍼즐 문.
+- stub 칩셋: 고딕(지하 벽·석관·감방) · 조선(동굴 벽 앞면·천장·바닥) · 마법 학교(지하 감옥 오토타일) · 해적(동굴 천장·물웅덩이) · 선사(동굴 일체·용암) · 사막동양(지하 무덤 일체) · 그 밖(던전 조각 일체).
