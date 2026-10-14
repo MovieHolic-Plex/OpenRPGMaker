@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dc9f39a2ab85289881cfd1327a82a44f48614b83cc1db8df5f602da61e641921",
+ "width": 16,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "벽시계",
+ "label": "modern_city/interior/mci-wall-clock",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall clock",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall clock is correctly categorized as wall_mounted, which allows flat front elevation against the wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4322
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall clock",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall clock shown flat as mounted on a wall; valid for wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4329
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall clock",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "A round wall clock mounted flat on a wall; correctly categorized as wall_mounted where a flat front-facing view is appropriate.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3254
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall clock",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall clock mounted flat against the wall, permitted to be drawn as a flat front view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2898
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:02.402Z",
+ "cells": {
+  "16": [
+   "30a9f77bc3a1706e",
+   "acb540b8750987d5"
+  ],
+  "24": [
+   "0e81b40b324db37d",
+   "45500fa289485211",
+   "4b00bc3f07c14505",
+   "6a045ceb85772ae0",
+   "83c7f6e072f33c78",
+   "9738e88d084ff320",
+   "9d8d73af1eb6bbe4",
+   "b92d36532fcebeff",
+   "f7471137d3fac05d"
+  ],
+  "32": [
+   "52b232a22226f79a",
+   "86591d4ed614d957",
+   "a62a448c7816d885"
+  ],
+  "48": [
+   "392fb56797e07218",
+   "421b6956940d24d1",
+   "69c141f6f19f1023",
+   "753f3f21a1aee9dc",
+   "925ab2a3eed6f11f",
+   "e90cf434408d1dce"
+  ]
+ }
+}

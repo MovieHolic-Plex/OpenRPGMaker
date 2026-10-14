@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6e0c8eb677dda255c176b3fccd62db3485a54a468f60a71ce0db135d1e5d2854",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "ATM",
+ "label": "modern_city/interior/mci-atm",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ATM cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ATM is drawn as a flat front elevation: the top sign, screen, keypad, and cash dispenser slot are all seen directly from the front, with only a 1px outline at row 1 and no top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4299
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ATM kiosk body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ATM is drawn entirely as a flat architectural front elevation (top sign/camera, green trim band, monitor, keypad, and cash dispenser slot all facing directly forward) with only a 1px border at the top and no visible horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5810
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ATM cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ATM is drawn entirely in flat front elevation within a single vertical rectangular outline; the upper section (rows 2-8) is the front signage fascia with an inset logo/camera, with no top horizontal surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5054
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ATM cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ATM is drawn as a flat front architectural elevation with a screen, keypad, slot, and upper signage panel, showing only a 1px top outline border and no foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5844
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:53.420Z",
+ "cells": {
+  "16": [
+   "241ed8a47c401e9d",
+   "7401e09d936dac01"
+  ],
+  "24": [
+   "088e5e2a3485d828",
+   "2d0b6bdf1543efc1",
+   "2f176d90286d5724",
+   "41d428cd4df0b5b4",
+   "56bf76b7d67571f2",
+   "58558acbbe6013bd",
+   "6ee5060fe07da266",
+   "ab284ccaa3347fa4",
+   "ac88143950610141",
+   "b0810d3d85ee771d",
+   "d7b7c4518ea0f3ef",
+   "e6b20649e26bcdfe"
+  ],
+  "32": [
+   "556bbb2c013945b1",
+   "6f7cf9b7311616e5",
+   "cb4ff8da24dbb8ea"
+  ],
+  "48": [
+   "029b85d2b7b5c1d1",
+   "24cfb610d63106d1",
+   "34a640b907be5733",
+   "682c021323024aaa",
+   "769bd2150beddc30",
+   "fae473a5731e6e92"
+  ]
+ }
+}

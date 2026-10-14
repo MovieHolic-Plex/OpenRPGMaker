@@ -28,9 +28,40 @@ modern-chipset 하네스가 합성한 도시(건물·도로·소품·차량)를 
 - 열 수가 다름: 다른 시트로 보고 칸 표를 통째로 바꾼다.
 - 변경 감지는 층·통행 요약과 표 길이로만 한다(키트 본문이 같은 개수로 바뀐 경우는 못 잡는다).
 
-## 조수 정책
+## 조수 정책 (2026-10-14, `src/ai/modernCityPolicy.ts`)
 
-`src/ai/modernTilesetPolicy.ts` 는 현대 맵 요청에 사용자 설치 PAW 업로드 칩셋만 허용한다. `modern_city` 는 번들 이미지(`tile.image.type !== "uploaded"`)라 승인 시트가 못 되어 조수가 이 타일셋으로 현대 맵을 깔면 `modernTilesetViolation` 이 거부한다. 사람이 칠하는 경로와 현대 문구가 없는 요청은 무관하다. 정책 수정은 후속 단계.
+옛 PAW 전용 게이트(`modernTilesetPolicy.ts`)는 2026-10-07 저작권 정리로 지워졌다. 지금 길:
+
+- **첫 승자 사슬 자리:** `plainTurn.ts` 의 시대 테마(전국→스팀펑크→SF→선사) → jp_city → 고딕 → 해적 → 하늘섬 → 캠퍼스 → **modern_city** → 버들항. 앞이 잡으면 보지 않는다. `routingAudit` 꼬리 「→ 도쿄풍 도시 맵 / 실내」, 노트는 `executionRoute.ts` 의 같은 순서 사슬(`formatModernCityNote`), 노출 도구 `MODERN_CITY_EXPOSED_TOOLS`.
+- **잡는 경우는 셋뿐:** ① 대상(보는) 맵이 modern_city ② 칩셋 이름(`modern_city`·`oprn-modern`·「도쿄풍 도시 칩셋」) ③ 실내 요청이고 프로젝트가 modern_city 맵을 쓰면서 jp_city 맵은 안 쓸 때. 번들이라 모든 프로젝트에 있으므로 「현대 도시·번화가·편의점」 거리 낱말만으로는 잡지 않는다(jp_city 몫 — `jpCityPolicy` 는 보는 맵이 modern_city 면 거리 요청을 놓아 준다). 학교 낱말은 캠퍼스에 양보(`describesCampus`), SF·고딕 등은 사슬 앞에서 이긴다.
+- 시스템 프롬프트 줄(`modernCityPromptLines`)은 범위에 modern_city 맵이 있을 때만 붙는다.
+- 연기 시험: `npx --no-install tsx --import ./tiledata/jp-city/refs/css-stub.mjs scripts/content/modern-city-int/qa/routing.mts`(사슬을 그대로 따라 11건).
+
+## 거리 구성기 `compose_modern_city_street` (2026-10-14)
+
+- 구성기 `src/project/modernCityStreetComposer.ts`(순수 함수), 도구 `src/editor/tools/modernCityTools.ts`. 맵 40×30~120×100, 권장 60×48.
+- 계획: 가로 도로 1~3줄(높이/22)·세로 도로 1~2줄(폭 84 이상이면 2), 모두 12줄 단면 키트(`mc-street-ew-section`·`-ns-section`), 교차로 `mc-intersection-12x12`. 띠 높이 ≤11(남는 1~2줄은 첫 띠, 7줄 이상이면 맨 아래 남향 띠, 그 사이는 광장).
+- 건물: 가로 도로 첫 보도 줄을 «문 앞 접근칸 줄»로 삼아 키트(`mc-bld-*`)를 남향으로, 접근칸은 키트 `ai.access`. 이웃 같은 종류 금지·종류당 2채, 꼭 넣을 종류(편의점·사무·병원·카페·은행·아파트·로비형) 먼저, 띠 높이에 가까운 건물을 더 자주. 문 접근칸 ±1·아래 한 줄은 소품 금지(`keep`). 건물 뒤 빈 띠는 잔디 + 관목·침엽수.
+- 공원(블록 셋 이상일 때 둘째 띠 블록 하나): 잔디·벽돌 길·분수·벤치·공원 등·나무. 소품: 남쪽 보도 가로수·가로등 번갈아, 버스 정류장 하나, 북쪽 보도 둘째 줄 소화전·볼라드·화분, 세로 도로 보도 가로등·가로수, 교차로 남쪽 모서리 신호등, 지하철 입구 하나. 차: 가로 도로 차선마다 0~2대(교차로 2칸 안 금지, 북쪽 차선 동향).
+- 도구는 시작 칸 → 모든 문 접근칸 도달·문 칸 막힘을 엔진 통행으로 다시 재고, 실패하면 맵을 안 바꾼다. 건물 이름표(`locations`, 태그 `modern-city-building`)에 문·접근칸·맞는 실내 방 구성(program)을 적는다.
+- QA: `qa/compose-street.mts OUT.json [W H seed …]` → `qa/render_map.py OUT.json DIR`.
+
+## 실내 (2026-10-14, `scripts/content/modern-city-int/`)
+
+- 가구 64종·바닥 9·벽면 8·탁자 3·탁상 물건 7 — 코드 손 도트(`pieces.py`, `art_*.py`), object-gate 영수증(문 4종은 조립 방 `assembled.py`). 네 번 다시 그려도 못 넘은 14종은 `pieces.DROPPED`.
+- 굽기 `bake_interior.py`(덧붙이기 전용, 시트 10179→10743칸, 칸 키 `tiledata/modern-city/pins.json`·소유 `interior/baked.json`) — `bake_tileset.py` 가 거리 굽기 끝에서 다시 부른다. 방 짓기 사양 `src/assets/modernCityRoomSpec.json`(`HAND_INTERIOR_SPECS.modern_city`), 방 구성 9개는 `extract.mts` 가 `interiorRoomTemplates.json` 에 넣는다(방 종류 14).
+- 예제 9장 `examples.py --render` → `tiledata/modern-city/interior/examples/*.json`. 실내 60칸 넘는 한 방은 기둥·알코브로 꺾었다(ㅁ자 경고 0). `layout.ts` 의 `DOOR_OF` 에 병동·대기 복도(병원 문)·뒷방(철문)·회의실(유리문) 한 줄.
+- 엔진 검사 `qa/check-rooms.mts`(평면·program 두 경로 18장, 엔진 BFS) · 변조 `qa/tamper.mts`(6종 코드+좌표) · 참고문서 `refs_interior.py` → 용도 `mc-interior`(문서 10·그림 20, `public/assets/modern-city-interior-references/`). `bake_refs.py` 가 끝에서 저장본(`tiledata/modern-city/interior/refs/category.json`)을 다시 붙인다.
+- 문 이음 `link_modern_city_interior`(거리 문 ↔ 실내 출입구 틈 왕복, 막힌 문 칸에는 이벤트 없음).
+
+## 실조수 시험에서 나온 결함 (2026-10-14, gpt-6.1-sol — gemini-3.8-flash 는 할당량 429)
+
+- **거리를 로비로 덮음:** 배치 품질 권고(`src/ai/piAgent/layoutQuality.ts`)가 도로·교차로를 «빈 바닥 66%·빈 정사각형 12»로 세고, 칩셋에 방 사양이 있어 그 맵을 «실내»로 보고 `build_hand_interior_room replace:true` 를 시켰다 → 60×48 거리가 10×8 로비가 됐다.
+  고침: 구성기 건물 이름표에 `composed-layout` 태그(권고에서 빠진다, `qa/compose-street.mts` 가 확인), 실내 권고 문장에 «거리·야외 맵이면 부르지 마라».
+- **이은 실내를 다시 지으면 커밋 거부:** 문 맞춤(`fitDoorsToPlan`)이 v5 판타지 시트에서만 돌아, 거리와 이은 병동을 작게 다시 지으면 «transfer 목적지가 맵 경계 밖/벽»으로 두 번 거부 → 조수가 연결 이벤트를 지우다 멈췄다. 이제 모든 방 사양 칩셋에서 돈다(`qa/rebuild-linked.mts`).
+- **빈 기본값 경고:** 스키마 빈 값(`plan:[]`·`exit:{room:""}`)만 보낸 호출에 «layout 이 plan·rooms 를 버렸다» 경고가 떠서 조수가 편의점을 다시 지으려 했다 — 빈 값은 알리지 않는다.
+- 그 밖: 회의실 의자를 탁자 양옆에도, `mci-desk-pc` 의 짝이 빠진 `mci-chair-office-n` 을 가리키던 것 제거, 같은 종류 건물 이름에 번호(«편의점 2»).
+- 남은 것: program 9개 중 6개가 배치 품질 기준(빈 바닥 ≤30%·대칭 ≤2.2)을 넘는다(병동 41%·편의점 41%·아파트 43%…) — 권고가 한 번 «방을 줄여라»를 시킨다. 예제 방을 더 촘촘히(또는 작게) 다시 짜는 일이 다음 순서.
 
 ## 예제 도시 맵 (60×60, 시드 1)
 

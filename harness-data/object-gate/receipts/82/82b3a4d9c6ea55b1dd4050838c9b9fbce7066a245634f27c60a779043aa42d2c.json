@@ -1,0 +1,133 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "82b3a4d9c6ea55b1dd4050838c9b9fbce7066a245634f27c60a779043aa42d2c",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "나무 의자(남향)",
+ "label": "modern_city/interior/mci-chair-wood-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden chair",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn as a flat front elevation: the backrest, crossbars, seat, and legs are aligned vertically with no horizontal top surface visible on the seat or backrest. The seat is shaded as a front-facing cylinder/cushion with only 2 legs visible directly underneath the back posts, lacking any foreshortened top-down depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10343
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden chair seat and frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn in flat orthographic front elevation. The backrest has only a 1px outline at the top, the seat is shaded as a front-facing horizontal roll (specular highlight across the middle horizontal row with shading top and bottom) rather than a horizontal surface viewed from above, and the legs are drawn directly inline with the back posts with zero foreshortened depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12253
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden chair facing south (backrest at back, seat cushion/plank in front)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat surface is foreshortened and visible from above across rows 17-21 (approx. 5 pixel rows) before dropping into the front edge at row 22.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8351
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden chair",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn in pure 2D front elevation: only two legs are depicted, positioned directly in line with the backrest uprights. The seat cushion is shaded vertically from front view (highlighted horizontally across the front profile) with no horizontal top surface foreshortened into depth, and the seat does not project forward from the backrest.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13219
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:12.629Z",
+ "cells": {
+  "16": [
+   "22ada67324989072",
+   "6080eb6135ed7ee7"
+  ],
+  "24": [
+   "121cbdea89a00b79",
+   "80c491fd116f0d6d",
+   "9041b497234c2358",
+   "a37451070c7d82dd",
+   "a3f632971e0fa28f",
+   "ab98abdf9b2c5011",
+   "be9dda01e6247f72",
+   "e1c32313a7f575c5",
+   "fec05f4d36ff420a"
+  ],
+  "32": [
+   "0744ea0357509232",
+   "5a5f7b0803d0c015",
+   "94b1e62f60b0dd23"
+  ],
+  "48": [
+   "2d96a694962b78e7",
+   "54d862debe96c17a",
+   "674230d7c47522be",
+   "7aefba26ffb8aaa3",
+   "bcf9dd8acb5c6ee2",
+   "c7e30c403c2316e6"
+  ]
+ }
+}

@@ -1413,6 +1413,11 @@ CATS_OUT = finalize()
 import parking_bundle
 parking_reference = parking_bundle.references(ROOT)
 if parking_reference: CATS_OUT.append(parking_reference)
+# 실내 용도(mc-interior)는 scripts/content/modern-city-int/refs_interior.py 가 따로 만든다 — 이 굽기가 JSON 을 통째로 다시 써도 빠지지 않게 저장본을 다시 붙인다.
+sys.path.insert(0, os.path.join(ROOT, 'scripts/content/modern-city-int'))
+import refs_interior
+interior_reference = refs_interior.references(ROOT)
+if interior_reference: CATS_OUT.append(interior_reference)
 os.makedirs(MD_DIR, exist_ok=True)
 for fn in os.listdir(MD_DIR):
     if fn.endswith('.md'): os.remove(os.path.join(MD_DIR, fn))

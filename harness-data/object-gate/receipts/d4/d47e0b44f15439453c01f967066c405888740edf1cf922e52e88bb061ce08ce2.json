@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d47e0b44f15439453c01f967066c405888740edf1cf922e52e88bb061ce08ce2",
+ "width": 16,
+ "height": 32,
+ "kind": "round_body",
+ "name": "드럼통 둘",
+ "label": "modern_city/interior/mci-drums",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "oil drum (split blue and red)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The drum is drawn as a flat rectangle with completely straight horizontal top and bottom outlines. There is no elliptical top surface visible at all.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3810
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "oil drum (or two drums side-by-side)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The drum is drawn as a flat rectangle with completely straight horizontal outlines at row 10 and row 26, lacking any elliptical top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5398
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "oil drum (or two conjoined drums)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The drum has a completely flat horizontal top line at row 10 with no top elliptical surface visible, drawn purely as a front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3101
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "oil drums / cylinder",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The drums are drawn as a completely flat rectangle with straight horizontal top and bottom outlines (rows 10 and 27) and no visible elliptical top cap whatsoever.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3979
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:05.388Z",
+ "cells": {
+  "16": [
+   "b46a8b8bb1166b3f",
+   "fb26c29035e57fab"
+  ],
+  "24": [
+   "07c8e657ce345c63",
+   "3303d97867b346af",
+   "39ae2289e4e26b89",
+   "78bcdf48618fad4d",
+   "87759500fb43d66f",
+   "8f8a84c9da1d53f9",
+   "a482bb501dd93915",
+   "ca3d8baef7d0a141",
+   "f915f0d1e52eaaf2"
+  ],
+  "32": [
+   "2dbc0ed30942e426",
+   "3fb27f0e1a347d38",
+   "6ee23f51ed64bd83"
+  ],
+  "48": [
+   "1cec4a4c95363274",
+   "218548be007f8a44",
+   "583d6b9b3343e94f",
+   "8ff89cc7ae72ff35",
+   "9b37fb656076f3af",
+   "f5bea3c58fdf6c6c"
+  ]
+ }
+}

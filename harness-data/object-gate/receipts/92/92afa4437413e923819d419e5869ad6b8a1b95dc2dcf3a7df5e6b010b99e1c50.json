@@ -1,0 +1,153 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "92afa4437413e923819d419e5869ad6b8a1b95dc2dcf3a7df5e6b010b99e1c50",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "사무 칸막이",
+ "label": "modern_city/interior/mci-partition",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "office partition screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The partition is drawn straight-on in pure front elevation with a 1px top outline (row 6) and no visible top surface for the partition cap or frame.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5362
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "office partition panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The partition is drawn straight-on in pure front elevation with no visible top edge/cap thickness (row 6 is just a flat 1px outline). The legs and panels show only the south-facing surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7113
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "office partition panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The partition is drawn strictly in 2D front elevation with only a 1px outline across the top (row 6), no foreshortened top surface, and the feet at rows 26-29 are flat front-facing rectangles.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5365
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "office partition screen with feet",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The partition is drawn strictly in front elevation from rows 6 to 30. The top edge consists only of a single-pixel outline without any receding top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5362
+  }
+ ],
+ "decidedAt": "2026-10-14T01:18:07.275Z",
+ "cells": {
+  "16": [
+   "3427dd96451dc99f",
+   "592f17d1a6881b26",
+   "b0d55dc1e880caca",
+   "ef3da53c3d8d6c8c"
+  ],
+  "24": [
+   "082a4b4632550876",
+   "1e6e2a53b2e6be66",
+   "3a29516d5751fcbd",
+   "3de9ba5015bb5669",
+   "428a5c70ebd7fe3b",
+   "5246e80334c4a3e7",
+   "55d73a6e3f844553",
+   "628e4cde6d8dfc9a",
+   "66e73402a82e154a",
+   "6efc7f7d1f82abfd",
+   "6f4d491b147739ae",
+   "71fcb92728fd0f7a",
+   "7b54c409a6a41b11",
+   "86d1d10e78870ede",
+   "8ab1bb66940833b4",
+   "8f0386bd33a315e8",
+   "945055401b398c24",
+   "966ba6ace77bc90c",
+   "972a6bb2883b85eb",
+   "af23a1e8edf8d5cd",
+   "b206b4c0ea140097",
+   "b3524926530f63de",
+   "ec967ba1415b9ea5",
+   "f043841024b2661f"
+  ],
+  "32": [
+   "a3484f98ea98e69a"
+  ],
+  "48": [
+   "0861f72dc64df88b",
+   "189adbbaf8b8e77c",
+   "26b0e4f53289633c",
+   "b323f3ffb32b56f1",
+   "e6c468bbf0c0b7ff",
+   "fd832334fcec061d"
+  ]
+ }
+}

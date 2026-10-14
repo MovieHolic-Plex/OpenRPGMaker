@@ -1,0 +1,148 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "13ec24b9c376ec086fac378b66d551dde39e27663708b9305dc9344e87d77d18",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "서류철 서가",
+ "label": "modern_city/interior/mci-shelf-office",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall wooden bookshelf with three shelves of books and a top header panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire bookshelf is drawn in pure front elevation: the top section (rows 1-5) is a vertical wooden header/frieze with a label plate rather than a top horizontal surface seen from above. The shelves and books are completely flat front views with no visible depth or top surfaces on the shelves or book tops.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8211
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bookshelf",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bookshelf is visible across rows 1-4 (4 pixel rows deep) with a front edge on row 5. A stack of paper/files rests on top of this horizontal surface with a shadow cast onto row 4.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10557
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tall file bookshelf",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire bookshelf is drawn in pure front elevation with 0px of top surface visible. The upper section (rows 1-5) is a front-facing header board with a white label, the shelves are 1px flat horizontal lines, and the books are flat vertical rectangles with no top surfaces shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12783
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bookshelf / archival file shelf",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bookshelf is drawn in pure 2D front elevation: rows 1-5 form a flat vertical front header panel with a label card, shelf boards are drawn as 1-2px flat horizontal lines showing no interior shelf depth, books show only their vertical spines/fronts with no top page surfaces visible, and there is no visible top surface at row 1 (0px).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11877
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:11.885Z",
+ "cells": {
+  "16": [
+   "98fbac0a18bf10cd",
+   "d94bb533fa17780c",
+   "dd104b2f49ba7562",
+   "ee6896181a85b2a4"
+  ],
+  "24": [
+   "0f0f618ca37de731",
+   "130a5b79eff66e47",
+   "2677264052acdf49",
+   "501594ce243acdee",
+   "5f51de63dc4e9148",
+   "819858d0ac3ab09d",
+   "83afcfd170687b94",
+   "91e52c236f97cae6",
+   "91fa1dfa92a6ea4e",
+   "9c3d0e1094d2aa0e",
+   "9fd6427f171ff49e",
+   "a04e97bc6852f59e",
+   "a39297f4c37d61a4",
+   "a6e0d0801ae8c09f",
+   "aefe0d76c32ef385",
+   "be53d56d100877a1",
+   "c427ccd0960fd31c",
+   "c43e717fbb9a42a3",
+   "c60e1946a1192c6d",
+   "c97e6da0152de72b",
+   "cbd17272b7c6ae00",
+   "dcd64f4a37ca627e",
+   "e03a407249ad7467",
+   "fa2d7a285de4df48"
+  ],
+  "32": [
+   "44f00ba5aea2adf5"
+  ],
+  "48": [
+   "0e8475f0dfa22059",
+   "180089e428e6a95d",
+   "3cd2e059de625f16",
+   "a58f2910574eb8ed",
+   "c323d573f2d5ff96",
+   "fb6a1775dc0c9b24"
+  ]
+ }
+}

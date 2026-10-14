@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9bec8daeb956b1b37594ad7809c30ce6c4274f3240e3de9eb6304a5b2afb1069",
+ "width": 32,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "커튼 창",
+ "label": "modern_city/interior/mci-window-curtain",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "window with curtains and windowsill",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted window with draped curtains and bottom sill, viewed flat against the wall as appropriate for wall_mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4414
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "curtained window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Object is a window with curtains mounted flat on a south-facing wall (wall_mounted kind). Wall-mounted objects properly display directly in the vertical wall plane without requiring top foreshortening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8273
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "window with curtains",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted window with curtains and a protruding sill at the bottom; wall-mounted objects are viewed flat against the wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4030
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "curtained window",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted window with side curtains and a projecting bottom windowsill showing a 1-row top surface at row 24 with a front rim at row 25.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3549
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:02.401Z",
+ "cells": {
+  "16": [
+   "3c1e19a67fa89b5a",
+   "7cb2f0306eba901b",
+   "9e7a0e75767e2615",
+   "fa91660975e58004"
+  ],
+  "24": [
+   "1d513fcda1da8b0b",
+   "2cea880842c5f40a",
+   "331a7f8c7c890b9c",
+   "3614795cb473669e",
+   "5069566edab7946b",
+   "6aa2b01429473e7e",
+   "7037c13e9e8a6acc",
+   "74d35fa0592f9779",
+   "77a5e88e4d2024f9",
+   "847f6d646a70861c",
+   "864b61a763dd208b",
+   "9237be67ae7dae8e",
+   "9586384cd4d45a41",
+   "a367b80c14917808",
+   "a6d6a9fec820ad80",
+   "ad5724de001c568f",
+   "b2e55fa884f68e66",
+   "c3d04f91b8075862",
+   "cab631190c6e656b",
+   "cf4304cd65893d62",
+   "e1ecd6304d49d915",
+   "e2aa59f6a117274d",
+   "e6a66b48f8574adf",
+   "f81da21f17f2e7be"
+  ],
+  "32": [
+   "182047da06011f80"
+  ],
+  "48": [
+   "0dd64d678e7cef3d",
+   "24a4804c88b3e308",
+   "3c874ed24c4065d1",
+   "5167ba1d0bebca9e",
+   "71b34fd6c4a6c39e",
+   "ae97156bf27d5948"
+  ]
+ }
+}

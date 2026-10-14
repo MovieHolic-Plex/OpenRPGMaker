@@ -15,6 +15,7 @@ import wizardingSpec from "@/assets/wizardingRoomSpec.json";
 import sengokuSpec from "@/assets/sengokuEdoRoomSpec.json";
 import campusSpec from "@/assets/modernCampusRoomSpec.json";
 import gothicSpec from "@/assets/gothicManorRoomSpec.json";
+import modernCitySpec from "@/assets/modernCityRoomSpec.json";
 import { passabilityOf } from "@/project/collision";
 import type { TilesetDef } from "@/project/types";
 
@@ -74,11 +75,14 @@ export const CAMPUS_INTERIOR_SPEC = campusSpec as unknown as HandInteriorSpec;
 /** 고딕 저택(gothic_manor) — 바닥·벽면·천장 변형 칸만 scripts/content/gothic-manor/roomkit_gm.py 가 굽는다. 가구는 칩셋 조립 부품에서. */
 export const GOTHIC_INTERIOR_TILESET_ID = "gothic_manor";
 export const GOTHIC_INTERIOR_SPEC = gothicSpec as unknown as HandInteriorSpec;
+/** 도쿄풍 현대 도시(modern_city) — 사무실·편의점·아파트·병동·로비·카페·은행·대합실·창고 사양을 scripts/content/modern-city-int/bake_interior.py 가 굽는다. 조립 규칙은 같다. */
+export const MODERN_CITY_INTERIOR_TILESET_ID = "modern_city";
+export const MODERN_CITY_INTERIOR_SPEC = modernCitySpec as unknown as HandInteriorSpec;
 /** 실내를 지을 수 있는 칩셋 → 사양. */
 export const HAND_INTERIOR_SPECS: Readonly<Record<string, HandInteriorSpec>> = {
   [HAND_INTERIOR_TILESET_ID]: HAND_INTERIOR_SPEC, [JP_INTERIOR_TILESET_ID]: JP_INTERIOR_SPEC, [WIZARDING_INTERIOR_TILESET_ID]: WIZARDING_INTERIOR_SPEC,
   [SENGOKU_INTERIOR_TILESET_ID]: SENGOKU_INTERIOR_SPEC, [CAMPUS_INTERIOR_TILESET_ID]: CAMPUS_INTERIOR_SPEC,
-  [GOTHIC_INTERIOR_TILESET_ID]: GOTHIC_INTERIOR_SPEC,
+  [GOTHIC_INTERIOR_TILESET_ID]: GOTHIC_INTERIOR_SPEC, [MODERN_CITY_INTERIOR_TILESET_ID]: MODERN_CITY_INTERIOR_SPEC,
 };
 
 /**

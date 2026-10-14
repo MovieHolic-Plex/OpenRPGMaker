@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ce2087900616cfd61cc6d1b5132a3876e762d01f5eb791f8c685b47d053194aa",
+ "width": 16,
+ "height": 32,
+ "kind": "round_body",
+ "name": "드럼통 둘",
+ "label": "modern_city/interior/mci-drums",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "two oil drums side by side",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The drums are drawn in pure front elevation with completely flat horizontal top lines at row 8 and horizontal body ribs (rows 18 and 23). Neither drum shows an elliptical top cap surface seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7410
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "two drums / barrels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The drums are rendered as a pure flat front elevation with straight horizontal top and bottom outlines (rows 9 and 26) and no visible elliptical top surface for either cylinder.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6639
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two metal drums/gas cylinders",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylinders are drawn in flat front elevation with perfectly horizontal top and bottom outlines and horizontal rib lines (rows 18 and 23). Neither drum shows an elliptical top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6719
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "two side-by-side standing cylindrical drums",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Neither drum has an elliptical top cap; the vertical cylinder body and vertical shading run straight into the flat top outline (rows 8-9) with only tiny 1-2px spout/rim bumps, making this a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7004
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:59.362Z",
+ "cells": {
+  "16": [
+   "2c3cbe681379371b",
+   "d4f92406f3b9c0db"
+  ],
+  "24": [
+   "41ffef17a4638888",
+   "4f075dcd83cad514",
+   "716c36352933fc6e",
+   "a157996f1df18561",
+   "c0b895c9227863b2",
+   "c214d19d21094216",
+   "d51b27cf31649e64",
+   "db2e45d62dc6b1d0",
+   "e2de2f90e7402a69"
+  ],
+  "32": [
+   "9d1d6669b7c68461",
+   "dcf1fed94942bda7",
+   "ed856d42ccf8d92f"
+  ],
+  "48": [
+   "1ed9d658a147e721",
+   "3007829ebf5df15f",
+   "467a512c71dd8d16",
+   "5854b632239df375",
+   "7a482bf45bf30b95",
+   "90fb4a259b9c2503"
+  ]
+ }
+}

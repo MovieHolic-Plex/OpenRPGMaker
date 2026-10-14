@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1c7004e69c68ab56b7ef75b0bddcd1e8506bb6250e113065dde85a5affaa9053",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "지하 통로 타일 벽(청록 띠)",
+ "label": "modern_city/interior/mci-wall-tile",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tiled wall face with teal band",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall face terrain tile with subway tile pattern and a teal stripe; correctly represents a vertical wall surface in standard JRPG 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9134
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tiled wall face with teal horizontal stripe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall surface tile pattern with tiled brick texture and a teal accent strip, correctly categorized as terrain wall face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3345
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tiled wall surface with teal stripe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Underground passage wall face terrain tile with subway-style tiles, teal accent band, and dark baseboard; correctly drawn as vertical wall terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4230
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tiled wall face with cyan stripe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall face terrain tile with repeating brick pattern and decorative cyan horizontal band.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3185
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:02.401Z",
+ "cells": {
+  "16": [
+   "9f2123678f67e7d2",
+   "a53c97a828945d35"
+  ],
+  "24": [
+   "009302497b8e1a14",
+   "09ddc5d1d11d40ed",
+   "0c7cf0571a7d3f0b",
+   "158dc7740062d6c0",
+   "202f01271f855283",
+   "34061b7333e14590",
+   "427a702f414f0cd8",
+   "4586425a85f0e11b",
+   "46eb9d3010f7182c",
+   "76a215d1958cc67c",
+   "7c40f0e09a7fb187",
+   "7f67d8bb36a724a6",
+   "8d002155038e2b5f",
+   "9217d00d7d038831",
+   "b3b80cb338917f55",
+   "ba8d22acb4505d45",
+   "c6610f7dcc208d8e",
+   "c793a64429a52fbe",
+   "d4963dc8c9a91440",
+   "fc3295545051d8b2"
+  ],
+  "32": [
+   "eb4a9793c7cb418e"
+  ],
+  "48": [
+   "2f90176c7c6127f3",
+   "59ad7a9e501f73ae",
+   "6214ef64c5e0cf24",
+   "6620c51190ecdc14",
+   "697ee077708cf521",
+   "9303cfcfaf55f923"
+  ]
+ }
+}

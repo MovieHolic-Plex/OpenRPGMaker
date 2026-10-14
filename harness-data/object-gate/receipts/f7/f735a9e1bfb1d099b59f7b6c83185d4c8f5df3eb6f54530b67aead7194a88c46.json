@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f735a9e1bfb1d099b59f7b6c83185d4c8f5df3eb6f54530b67aead7194a88c46",
+ "width": 32,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "블라인드 창",
+ "label": "modern_city/interior/mci-window-blind",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "window with blinds",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Window with blinds mounted flat against the wall surface. Wall-mounted objects in 3/4 perspective correctly face south without a foreshortened top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6615
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "window with blinds",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Flat wall-mounted window with blinds; wall-mounted objects mounted flat against a north wall are permitted to be flat front elevations.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4438
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "window with horizontal blinds and sill",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Window with blinds is a wall-mounted fixture designed to sit flush on a vertical wall; valid flat presentation for wall_mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6669
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "window with blinds",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Window with blinds set flat against the wall; flat front elevation is appropriate for wall-mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4335
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:02.401Z",
+ "cells": {
+  "16": [
+   "12210c63959f3db0",
+   "627ac389dc83e891",
+   "6ccc5f17f3da0bec",
+   "8487b5b93e4d0bdc"
+  ],
+  "24": [
+   "0d34435dc2a02b78",
+   "179d0072cc4d13c9",
+   "21d444c95278797e",
+   "2919b800bba15ea9",
+   "4ede99865918e777",
+   "567c43a14aa00b7a",
+   "5c153afc66b41a62",
+   "6b0faf081e92436f",
+   "809edadca88fdf9b",
+   "8265e0fc9479c589",
+   "86004423fa00497e",
+   "86a206023e7b1164",
+   "93ae4597cd291de9",
+   "97b35348b1a6cc19",
+   "9a01551d0b06c19d",
+   "b2a74b64c4cde432",
+   "b3c75403320d84bc",
+   "c290c982b36f3499",
+   "c4b39f075122e736",
+   "d413453577a59850",
+   "e948070c920d21dd",
+   "f9a63a9237187121",
+   "fe1d4150b9cd1ad3"
+  ],
+  "32": [
+   "d63ecad2c5613063"
+  ],
+  "48": [
+   "29f7a4f4e88f13ab",
+   "2fe1deb3640c3ff9",
+   "30bd8cb09a402afb",
+   "5cc4931bda26659d",
+   "d5d2e517e154e67e",
+   "fe91e4303a4d3187"
+  ]
+ }
+}

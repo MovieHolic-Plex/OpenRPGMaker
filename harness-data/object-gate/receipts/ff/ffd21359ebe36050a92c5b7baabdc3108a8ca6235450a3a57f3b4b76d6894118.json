@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ffd21359ebe36050a92c5b7baabdc3108a8ca6235450a3a57f3b4b76d6894118",
+ "width": 64,
+ "height": 16,
+ "kind": "terrain",
+ "name": "아파트 마루(밝은 참나무)",
+ "label": "modern_city/interior/mci-wood-oak",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wood floor planks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Light oak wooden floor plank texture viewed from above, perfectly matching the terrain kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3578
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden floor planks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal wood floorboard pattern representing flat floor terrain viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3817
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden floor planks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Light oak wooden floor plank texture filling the tile, representing a flat floor surface seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3808
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden floor planks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tile showing light oak wooden planks viewed from above across the full 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2976
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:02.399Z",
+ "cells": {
+  "16": [
+   "1f4fc6bce364fb22",
+   "516da221e4fc765d",
+   "dec84e4a5d3f2cdf",
+   "f8c356125d39dc04"
+  ],
+  "24": [
+   "1f127033efbf6aa9",
+   "26664ba2e7491cdf",
+   "3210c7d2a6e353cc",
+   "41a9555099b7e735",
+   "42e6e31f48baa8df",
+   "5421d2c2ad11602d",
+   "613f363ee630244b",
+   "8bf394f2c2761777",
+   "8ce87f7c6de9a027",
+   "9134f83bc5a8f791",
+   "a234c9d3b71b3b17",
+   "a87e33355f05af1e",
+   "b0d243a3b402346e",
+   "c0137207db98ae4e",
+   "cc2d350a22b79366",
+   "d72621d92cfbc122",
+   "dcb42a0b6fa11460",
+   "fabb0924e7d0f00b"
+  ],
+  "32": [
+   "292e634adec4c9ce",
+   "33bb74cb6108c45e",
+   "9d382a620fc6312a",
+   "f1dba6f06c3d5339"
+  ],
+  "48": [
+   "0001450321949da4",
+   "260b0317a1fb7db7",
+   "3b8d63ac74ae0dd3",
+   "54eb27408873ddd3",
+   "5a0a722ee702fbc7",
+   "7eaf0d4bc95605db",
+   "7f687d1738a1d1d1",
+   "82720f90e7f7c67f",
+   "9a493369a550c1c5",
+   "be1520ef64cd365c",
+   "c7d2538fe1fa166a",
+   "d79ccb1c83e43ba6"
+  ]
+ }
+}

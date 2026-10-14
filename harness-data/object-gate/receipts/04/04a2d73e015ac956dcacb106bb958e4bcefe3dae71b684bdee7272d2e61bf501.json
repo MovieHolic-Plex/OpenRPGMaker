@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "04a2d73e015ac956dcacb106bb958e4bcefe3dae71b684bdee7272d2e61bf501",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "잡지 진열대",
+ "label": "modern_city/interior/mci-magazine",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "magazine display stand",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main rack features a clear foreshortened top surface across rows 11-15 with a front-edge highlight at row 16. The magazines inserted into the top slots cast shadows onto this horizontal top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8605
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "magazine display rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire magazine stand and the magazines displayed on it are drawn in a flat, orthographic front elevation with no visible horizontal top surfaces or visible magazine top edges.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12283
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "magazine display stand",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The magazine rack features a clearly foreshortened top shelf surface visible across rows 11-15 (5 rows deep) with magazines slotted into it, resting above the front-facing lower shelves.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8823
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "magazine display stand",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The display rack features a substantial foreshortened top/shelf surface spanning rows 11 to 16 (approx. 6 pixel rows) before transitioning into the front-facing lower display tiers, providing proper 3/4 view perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9673
+  }
+ ],
+ "decidedAt": "2026-10-14T01:20:31.481Z",
+ "cells": {
+  "16": [
+   "0cad7f9453361ac8",
+   "38c8197603f6cf27",
+   "822d48b7db7977dd",
+   "8da840c51cbf9474"
+  ],
+  "24": [
+   "0004f921cbb3952b",
+   "0ee0ce181b0dff6c",
+   "27485a92df0a1fa7",
+   "36887bfe9e687597",
+   "43d1c17d991447a2",
+   "4bc0910cd5f708a4",
+   "5da2e6015457dc9b",
+   "5f2d6c2459056ef6",
+   "678c26ad9810130c",
+   "767b5346912f0d92",
+   "78d1cf670433e077",
+   "7ed5d837bd860cf3",
+   "810f7fdb6fba2de2",
+   "85ded3ea823afc72",
+   "8974ef96f9a9c2e7",
+   "baaf4a1fc8ae101d",
+   "c6b792bdb85f0774",
+   "ce9bd0cea42def1c",
+   "d7352bb92a7a18b9",
+   "dcd16ec491ba2def",
+   "e059093f5ef26d95",
+   "e89f38081ce6a998",
+   "f8c9206e497b941e",
+   "fe58ebf6f11b6218"
+  ],
+  "32": [
+   "48cf8eaf1c5d1aa8"
+  ],
+  "48": [
+   "30e7bf63a3c74ebd",
+   "3c1be52a4827995b",
+   "bfa32e6996c7a193",
+   "c3d261c13258a10b",
+   "cc3c38951bda361c",
+   "df17747084664982"
+  ]
+ }
+}

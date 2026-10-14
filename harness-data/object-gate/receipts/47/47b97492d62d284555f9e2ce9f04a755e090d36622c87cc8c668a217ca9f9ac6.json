@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "47b97492d62d284555f9e2ce9f04a755e090d36622c87cc8c668a217ca9f9ac6",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "케이크 접시",
+ "label": "modern_city/interior/mci-g-cake",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cake display shelf / showcase",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The display case is drawn in pure front elevation with only a 1px wooden line at row 3 representing the top, lacking any foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 5000
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "display shelf with cakes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet/shelf is drawn straight-on in pure front elevation; the top surface is only 1 pixel high (row 3) which functions as a frame border rather than a foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5175
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cake display case / shelf",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet/shelf is drawn purely in front elevation as a flat 2px wooden frame around two compartments with rectangular cakes. Rows 3-4 are merely the front face of the upper beam, matching the 2px thickness of the side pillars and bottom shelf, with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4220
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cake display shelf",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The showcase/shelf is rendered in direct front elevation with no visible top surface (row 3 is merely a 1px frame border).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3783
+  }
+ ],
+ "decidedAt": "2026-10-14T01:18:12.126Z",
+ "cells": {
+  "16": [
+   "54beb03199e6555b"
+  ],
+  "24": [
+   "340ac76a23f7d183",
+   "9cb4668207930347",
+   "ac1baa2b0c32cc15",
+   "b545f78413b572c4",
+   "e61bb704ef074f01",
+   "ee397979ae12f1f2"
+  ],
+  "32": [
+   "0b4e83e7531df485",
+   "276322bcf693e468",
+   "4cbb4854fefb2af1",
+   "98a8aa945df21f96",
+   "a9add9365ba97723",
+   "f8cb59a51d96565a"
+  ],
+  "48": [
+   "3a4b32612b0c0e50",
+   "41c4452c43b5e6cf",
+   "841f02b7d8c0b936",
+   "a30786fca884b50b",
+   "b805b3e18637eda5",
+   "ea4ca167289d7609"
+  ]
+ }
+}

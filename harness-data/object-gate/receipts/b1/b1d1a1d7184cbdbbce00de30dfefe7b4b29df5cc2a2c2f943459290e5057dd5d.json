@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b1d1a1d7184cbdbbce00de30dfefe7b4b29df5cc2a2c2f943459290e5057dd5d",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "사무 칸막이",
+ "label": "modern_city/interior/mci-partition",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "office partition screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The partition is drawn as a flat 2D front elevation. Row 6 is merely a 1px outline with no visible top surface foreshortened from above, and the feet at the bottom are also rendered strictly from the front.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5527
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "office partition / room divider panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire partition and its feet are drawn in flat front elevation with a 1px outline along row 6 and no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5298
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "office partition screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The partition is drawn strictly in front elevation; the top rail has only a 1px outline at row 6 with no foreshortened top surface showing its depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5525
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "office partition screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The partition is drawn strictly in front elevation with no visible top surface or depth on the upper frame (only a 1px border at row 6) or feet.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5523
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:46.509Z",
+ "cells": {
+  "16": [
+   "0148abbc66bdd0c6",
+   "5226284f2994bdfc",
+   "6a62f3cc32406410",
+   "be76104b7d33abdf"
+  ],
+  "24": [
+   "015aa5fad69cbc11",
+   "089d770504058c00",
+   "39f2f38c1f911e9f",
+   "3a19c8fc480309d5",
+   "3ddeb0d439b159ae",
+   "4e910bd735a1e4d5",
+   "535e01d662a41652",
+   "53ecfe60e2ffad60",
+   "5b3f42919ee55fa5",
+   "6cba062e8a5a962d",
+   "7e71ccd81dd1773a",
+   "822f2d82c865464c",
+   "82d7c54dce5aa640",
+   "856bb1f3c3214747",
+   "8ed7848edbd884b7",
+   "930c9f41197367fc",
+   "96262d624b2a11b5",
+   "9e394cbf81f0295e",
+   "a965c482a5d513ee",
+   "b05a8cf46320e0cb",
+   "bdcbedc89da9ecd2",
+   "eec5ec03c4bc98c1",
+   "efc6d95b562b4a7f",
+   "fc4412ae9d3b797d"
+  ],
+  "32": [
+   "3c71144d39e01be4"
+  ],
+  "48": [
+   "01c8598623cccb49",
+   "20e85706282b2176",
+   "7efc28e55e9b8f7e",
+   "a7971d761df9ed03",
+   "ac244137a7f24b29",
+   "ec3a1875cf4764a7"
+  ]
+ }
+}

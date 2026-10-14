@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "10e7b6d1c0214f1c2e7176c899853ccbf3030791eb317c52ba02c0f7ff4b31a1",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "TV 장",
+ "label": "modern_city/interior/mci-tv-stand",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "TV stand / cabinet",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The TV stand features a 4-pixel deep horizontal top surface (rows 20-23) visible beneath the TV before the front drawer face begins at row 24.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4744
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "TV stand / cabinet",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The TV stand shows a 4-pixel-tall top surface from row 20 to 23, with the drawer front face visible below from row 24 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4623
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "TV stand table",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the TV stand is clearly visible across rows 20 to 23 (4 source pixels deep) before the drawer front face begins at row 24.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3317
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "TV stand cabinet",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden TV stand has a clearly visible top surface foreshortened across 4 pixel rows (rows 20-23) above the front drawer faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3135
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:12.629Z",
+ "cells": {
+  "16": [
+   "0039af749eb48f26",
+   "4dbaa7d88f4abe75",
+   "baed157e29c3d462",
+   "c43f0b80fe4519b6"
+  ],
+  "24": [
+   "0fc68c93ff33f293",
+   "219d87de4d3e206c",
+   "23886e17f92eb596",
+   "2d0d932209a648a5",
+   "2eab0ff85afcafd6",
+   "3200633c977677c8",
+   "5a3947d8773bbaa8",
+   "61d16f5014867c09",
+   "63f083a51239c27a",
+   "64e21872068f0abd",
+   "6af7f19420f4e6ef",
+   "6e9d64873e9fef12",
+   "82c54c3bdc32807e",
+   "875b735423b6987a",
+   "8d933b041ee65865",
+   "933e60a1766b6aea",
+   "a203534f47dce61f",
+   "a562b92368883e7d",
+   "b59fe9512db86cbb",
+   "c83f91b9a3e29e26",
+   "cb2c04ea60f2a821",
+   "dfa34a2407430c59",
+   "f00118a2c5643578",
+   "fe4e0986894c063a"
+  ],
+  "32": [
+   "e8e4aa13894f325d"
+  ],
+  "48": [
+   "21a7f6d0b7233919",
+   "8c6721184939f477",
+   "a400994fa783d25a",
+   "aa40c348a3d5007e",
+   "b2f7e16a235ea52f",
+   "e6c5eca8e7b21c63"
+  ]
+ }
+}

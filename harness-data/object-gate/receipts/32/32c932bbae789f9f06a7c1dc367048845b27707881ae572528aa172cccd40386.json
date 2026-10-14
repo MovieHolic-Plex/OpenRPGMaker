@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "32c932bbae789f9f06a7c1dc367048845b27707881ae572528aa172cccd40386",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "병상 칸막이 커튼",
+ "label": "modern_city/interior/mci-curtain",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "partition curtain frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire partition frame and lower panel are drawn in pure front elevation with no visible top surface on the top bar or lower section (only a 2px flat outline).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4034
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hospital partition curtain frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire partition screen is drawn in flat front elevation. The top horizontal frame bar is only 2px thick with no visible top surface, and the lower panel section also lacks any top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3553
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hospital bed partition curtain frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire partition screen is drawn in flat 2D front elevation. Neither the top horizontal beam (rows 2-3) nor the lower crossbeam/panel shows a visible top surface seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4128
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hospital bed partition curtain frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The curtain frame and lower panel are drawn as a completely flat 2D front elevation; the top rail is just a 2px outline bar with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4255
+  }
+ ],
+ "decidedAt": "2026-10-14T01:18:10.779Z",
+ "cells": {
+  "16": [
+   "3723189d367a36e9",
+   "ac4e3ee550fe1323",
+   "b1455603cf924ae2",
+   "ebf87ba92b01166d"
+  ],
+  "24": [
+   "00303576c6e8f243",
+   "056ff351dcd48cf3",
+   "08bad14e3f95833d",
+   "098d360583f838c6",
+   "117686d0b95daaba",
+   "1fb08de434fcd477",
+   "4172b0ddb1b27ff5",
+   "47ee512707a75231",
+   "50dcaf0ed561fd05",
+   "5559e48235a5f36f",
+   "575216baa4bfcc28",
+   "5783e9f2c384380f",
+   "69661104de08b388",
+   "6c06bd884e27e97b",
+   "74eed9b09b10a6f0",
+   "75cc084f1d6f00a6",
+   "84067f2274912c41",
+   "8a49e2c0192f413f",
+   "8a56366dbe65a542",
+   "9d21233405e51be7",
+   "a7fb18394f9e3df1",
+   "ec0fe2ef2f021aab",
+   "f66ee92f94845704",
+   "fc67836063b43c50"
+  ],
+  "32": [
+   "43912870058b8868"
+  ],
+  "48": [
+   "069ee6453fc17008",
+   "95b1fb502853bf16",
+   "a86abef2b758220d",
+   "a8e441762f773290",
+   "b75c344cb985a771",
+   "d8138e8e37d62514"
+  ]
+ }
+}
