@@ -20,7 +20,8 @@ import {
 import { AUTONOMY_LEVELS, resolveAutonomy, type AutonomyLevel } from "@/ai/autonomyLevels";
 import { MODEL_PRESETS, tierModelFor, type ModelPreset } from "@/ai/modelPresets";
 import { isModelValidForAuthMode, modelCatalogForAuthMode } from "@/ai/modelCatalog";
-import { OH_MY_PI_PROVIDERS, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
+import { getOhMyPiProvider, parseOhMyPiProvider, selectableOhMyPiProviders, type OhMyPiProvider } from "@/ai/ohMyPiProviders";
+import { OPENAI_COMPAT_CHANGED_EVENT, getKnownOpenAiCompatEndpoint, isOpenAiCompatProviderId, openAiCompatModelBlockReason } from "@/ai/openAiCompat";
 import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID, IMAGE_MODEL_CATALOG } from "@/ai/imageModelCatalog";
 import { CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
 import { configForProviderSelection, workProviderIds } from "@/ai/providerSelection";
@@ -47,6 +48,7 @@ import { dismissToastsByKey, toast } from "@/util/toast";
 
 const INVALID_MODEL_TOAST_KEY = Symbol("ai-settings-invalid-model");
 import { renderAiAuthSettings, type AiAuthStatusSnapshot } from "./aiAuthSettings";
+import { renderAiCompatSettings, type AiCompatRoleSlot } from "./aiCompatSettings";
 import { renderAiToolUsagePanel } from "./aiToolUsagePanel";
 import { deckIcon } from "./aiDeckIcons";
 import { installEventEditorCustomSelects } from "./eventEditor/customSelect";
@@ -317,8 +319,8 @@ export function renderAiSettingsForm(options: {
   const brainProvider = el("select", {
     class: "ai-config-select", dataset: { testid: "ai-config-ultrabrain-provider" },
     attrs: { "aria-label": "Ultrabrain 제공자" },
-    children: OH_MY_PI_PROVIDERS.map(p => el("option", { attrs: { value: p.id }, text: p.label })),
   }) as HTMLSelectElement;
+  fillProviderOptions(brainProvider, brainConfig.providerId!);
   brainProvider.value = brainConfig.providerId!;
   const brainModel = modelField("Ultrabrain 모델", brainConfig.model,
     "ai-config-ultrabrain-model", "ai-config-ultrabrain-model-preset", authMode, DEFAULT_ULTRABRAIN_MODEL, brainProvider.value);
@@ -332,8 +334,8 @@ export function renderAiSettingsForm(options: {
     const selected = modelForRole(config, role);
     const provider = el("select", { class: "ai-config-select", dataset: { testid: `ai-config-${role}-provider` },
       attrs: { "aria-label": `${role} 제공자` },
-      children: OH_MY_PI_PROVIDERS.map(p => el("option", { attrs: { value: p.id }, text: p.label })),
     }) as HTMLSelectElement;
+    fillProviderOptions(provider, selected.provider);
     provider.value = selected.provider;
     const field = role === "writer" ? model : role === "deep" ? liteModel
       : role === "build" ? modelField("시공 모델", selected.model, "ai-config-build-model", "ai-config-build-model-preset", authMode, selected.model, selected.provider)
@@ -366,6 +368,17 @@ export function renderAiSettingsForm(options: {
   }, (next) => {
     lastAuthStatus = next;
     pendingAuthStatus?.(next);
+  });
+  // 「사용자 지정 (OpenAI 호환)」 카드 — 로그인 카드 아래 같은 연결 탭에 둔다. 역할 칸에 꽂는 일은 아래 assignCompatRole 이 한다.
+  const compatSettings = renderAiCompatSettings({
+    getAssignment: (slot) => {
+      if (slot === "ultrabrain") return { provider: brainProvider.value, model: brainModel.input.value.trim() };
+      const control = specialistControls.find((entry) => entry.role === slot);
+      return { provider: control?.provider.value ?? providerId, model: control?.field.input.value.trim() ?? "" };
+    },
+    getMainProvider: () => providerId,
+    selectMain: (endpointId) => authSettings.selectProvider(endpointId),
+    assign: (slot, endpointId, endpointModel) => assignCompatRole(slot, endpointId, endpointModel),
   });
   const maxTokensDescription = `한 요청에서 AI가 쓸 수 있는 출력 토큰 예산입니다. 기본값은 ${DEFAULT_MAX_TOKENS}이며, 예산이 다 되면 그때까지의 변경을 제안하고 멈춥니다.`;
   const maxTokens = textField("최대 토큰", maxTokensDescription, String(config.maxTokens), "ai-config-maxtokens", "number");
@@ -570,6 +583,39 @@ export function renderAiSettingsForm(options: {
     piApply: normalizePiApplyMode(piApplySelect.value),
   });
 
+  /** 연결 카드의 「이 역할에 쓰기」 — 그 역할 칸만 이 엔드포인트·모델로 바꾸고 직접 지정으로 표시한다(다른 칸·기본 제공자는 그대로). */
+  const assignCompatRole = (slot: AiCompatRoleSlot, endpointId: string, endpointModel: string): void => {
+    if (slot === "ultrabrain") {
+      fillProviderOptions(brainProvider, endpointId);
+      brainProvider.value = endpointId;
+      brainModel.refresh(authMode, endpointId);
+      brainModel.setValue(endpointModel, authMode, endpointId);
+      brainProvider.dispatchEvent(new Event("input", { bubbles: true }));
+      modelSelectionOverrides.ultrabrain = true;
+    } else {
+      const control = specialistControls.find((entry) => entry.role === slot);
+      if (!control) return;
+      fillProviderOptions(control.provider, endpointId);
+      control.provider.value = endpointId;
+      control.field.refresh(authMode, endpointId);
+      control.field.setValue(endpointModel, authMode, endpointId);
+      control.provider.dispatchEvent(new Event("input", { bubbles: true }));
+      control.field.preset.dispatchEvent(new Event("input", { bubbles: true }));
+      modelSelectionOverrides[slot] = true;
+    }
+    persist(false);
+    updateReadiness();
+    void refreshAiConnectionStatus(updateReadiness);
+  };
+  // 엔드포인트를 만들고 지우면 제공자 선택지와 모델 목록을 다시 채운다.
+  const onCompatChanged = (): void => {
+    for (const select of [brainProvider, ...specialistControls.map((entry) => entry.provider)]) fillProviderOptions(select, select.value);
+    brainModel.refresh(authMode, brainProvider.value);
+    for (const entry of specialistControls) entry.field.refresh(authMode, entry.provider.value);
+    compatSettings.refresh();
+  };
+  window.addEventListener(OPENAI_COMPAT_CHANGED_EVENT, onCompatChanged);
+
   let autoSaveTimer: number | null = null;
   const persist = (showToast: boolean): void => {
     const next = collect();
@@ -661,6 +707,15 @@ export function renderAiSettingsForm(options: {
   // 않는 계약("자동 대체하지 않습니다")은 그대로다 — 이건 사용자 조작에 따른 교체다.
   const alignModelToProvider = (field: typeof brainModel, providerId: string, tier: "fast" | "strong"): void => {
     field.refresh(authMode, providerId);
+    if (isOpenAiCompatProviderId(providerId)) {
+      // 다른 제공자의 모델 ID(예: gemini-4-argon)는 이 서버에 없을 가능성이 크다. 시험에서 받은 목록이 있으면 그 밖의 값은
+      // 이 서버의 기본 모델로 맞추고, 목록이 없으면(직접 입력 서버) 사용자가 입력하도록 비운다.
+      const known = getKnownOpenAiCompatEndpoint(providerId);
+      const current = field.input.value.trim();
+      if (!known || known.models.includes(current) || known.defaultModel === current) return;
+      field.setValue(tierModelFor(providerId, tier) ?? "", authMode, providerId);
+      return;
+    }
     if (field.validate(authMode, providerId)) return;
     const next = tierModelFor(providerId, tier);
     if (next) field.setValue(next, authMode, providerId);
@@ -1003,6 +1058,7 @@ export function renderAiSettingsForm(options: {
     children: [
       pane("connection", [
         settingsSection("connection", "연결", "AI 제공자와 로그인 상태를 관리합니다.", [authSettings.element, modelConnectionHint, alignAccountButton]),
+        settingsSection("compat", "사용자 지정 연결", "OpenAI 호환 서버(CLIProxyAPI·LiteLLM·Ollama 등)를 직접 연결합니다. 기본 연결은 바꾸지 않아요.", [compatSettings.element]),
       ]),
       pane("models", [
         settingsSection("presets", "품질 프리셋", "역할별 모델과 추론 강도를 한 번에 맞춥니다.", [presetGroup]),
@@ -1055,6 +1111,8 @@ export function renderAiSettingsForm(options: {
     dispose: () => {
       win?.removeEventListener?.(AI_CONNECTION_STATUS_CHANGED_EVENT, updateReadiness);
       win?.removeEventListener?.(AI_CONFIG_CHANGED_EVENT, onConfigChanged);
+      window.removeEventListener(OPENAI_COMPAT_CHANGED_EVENT, onCompatChanged);
+      compatSettings.dispose();
       if (autoSaveTimer !== null) {
         if (typeof window !== "undefined") window.clearTimeout(autoSaveTimer);
         autoSaveTimer = null;
@@ -1188,8 +1246,10 @@ function modelField(
     // 소속**이다(modelCatalog.isModelValidForAuthMode). 그래서 gpt-5.1-codex-max 처럼 gpt- 로
     // 시작하는데도 거부되는 ID 에 "gpt- 는 괜찮다"고 안내하는 모순이 있었다. 게다가 remedy 로
     // 제시한 "연결 방식을 API/게이트웨이로 바꾸세요" 는 이제 존재하지 않는 경로다.
-    warning.textContent =
-      "현재 제공자에서 지원을 확인하지 못한 모델입니다. 다른 모델로 자동 대체하지 않습니다.";
+    const blockReason = providerId ? openAiCompatModelBlockReason(providerId, value) : null;
+    warning.textContent = blockReason
+      ? `${blockReason} 다른 모델로 자동 대체하지 않습니다.`
+      : "현재 제공자에서 지원을 확인하지 못한 모델입니다. 다른 모델로 자동 대체하지 않습니다.";
     return false;
   };
   // 값을 바꾸는 공개 수단. input.value 직접 대입은 드롭다운 하이라이트와 경고 표시가 어긋난다.
@@ -1209,4 +1269,18 @@ function modelField(
   });
   refresh(authMode, providerId);
   return { control, warning, input, preset, refresh, validate, setValue };
+}
+
+/**
+ * 역할 표의 제공자 선택지를 채운다 — 로그인 제공자 둘 뒤에 사용자 지정 엔드포인트가 이어진다.
+ * 저장돼 있는데 목록에 없는 값(지운 엔드포인트)은 그대로 보여 준다: 말없이 다른 제공자로 바꾸지 않고, 요청 시점에 「없는 엔드포인트」 오류가 말한다.
+ */
+function fillProviderOptions(select: HTMLSelectElement, current: string): void {
+  const rows: OhMyPiProvider[] = [...selectableOhMyPiProviders()];
+  if (current && !rows.some((row) => row.id === current)) {
+    const row = getOhMyPiProvider(current);
+    rows.push(row ? { ...row, label: `${row.label} (지워짐)` } : { id: current, label: current, defaultModel: "", envVars: [], authKind: "apiKey" });
+  }
+  select.replaceChildren(...rows.map((row) => el("option", { attrs: { value: row.id }, text: row.label })));
+  select.value = current;
 }

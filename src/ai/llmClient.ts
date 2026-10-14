@@ -18,6 +18,7 @@ import { DEFAULT_OH_MY_PI_PROVIDER, RECOMMENDED_OH_MY_PI_PROVIDER, getOhMyPiProv
 import { parseImageDelivery, type ImageDelivery } from "./imageDelivery";
 import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID, RECOMMENDED_IMAGE_MODEL, RECOMMENDED_IMAGE_PROVIDER_ID } from "@/ai/imageModelCatalog";
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
+import { getKnownOpenAiCompatEndpoint } from "@/ai/openAiCompat";
 import { companionTokenHeaders } from "@/ai/companionToken";
 
 // OpenAI 메시지 규약(우리가 쓰는 필드만).
@@ -624,7 +625,8 @@ export function providerCapability(
     supportsStreaming: true,
     supportsReasoningField: true,
     supportsMessageName: true,
-    maxTokensCeiling: config.providerId === ANTIGRAVITY_PROVIDER_ID ? GEMINI_MAX_OUTPUT_TOKENS : undefined,
+    maxTokensCeiling: config.providerId === ANTIGRAVITY_PROVIDER_ID ? GEMINI_MAX_OUTPUT_TOKENS
+      : getKnownOpenAiCompatEndpoint(config.providerId ?? "")?.maxOutputTokens,
   };
 }
 

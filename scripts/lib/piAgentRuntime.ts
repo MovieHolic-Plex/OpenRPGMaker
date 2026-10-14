@@ -64,6 +64,8 @@ import { applyMapDeltas, diffMapsForDelta } from "../../src/ai/piAgent/mapDelta.
 import { buildPiAgentSystemPrompt } from "../../src/ai/piAgent/systemPrompt.ts";
 import { gameDesignBriefContext } from "../../src/project/gameDesignBrief.ts";
 import { isTransientProviderStreamError, PI_PROVIDER_STREAM_RETRY_LIMIT, providerStreamResumePrompt } from "../../src/ai/piAgent/providerRetry.ts";
+import { explainOpenAiCompatRunError, guardedOpenAiCompatFetch, shapeOpenAiCompatCall } from "./openAiCompatModel.ts";
+import { isOpenAiCompatProviderId } from "../../src/ai/openAiCompat.ts";
 import { PLAN_EXECUTION_REKICK, ULTRABRAIN_PLAN_HEADING } from "../../src/ai/piAgent/planExecution.ts";
 import { addPiAgentUsage, changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, PI_MAP_LOSS_DECLINED_PREFIX, piMapScopeGuard, restoreCheckpointProject, slimCheckpointProject, slimProjectForWire, snapshotProjectKeepingHeavy, slimDoneEvent, unchangedHeavyKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiAgentUsage, type PiCheckpointHeavyKey } from "../../src/ai/piAgent/protocol.ts";
 import { normalizePiThinkingLevel } from "../../src/ai/piAgent/thinkingLevel.ts";
@@ -676,7 +678,13 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       : request.provider === "openai-codex"
         ? { streamFn: ((m: unknown, c: unknown, o?: Record<string, unknown>) =>
           streamSimple(m as never, c as never, { ...o, fetch: codexVersionFetch((o?.fetch as typeof fetch | undefined) ?? fetch) } as never)) as never }
-        : {}),
+        // 사용자 지정(OpenAI 호환): 리다이렉트를 따라가지 않고 사용자가 고른 호스트로만 보내는 fetch 를 끼운다.
+        : isOpenAiCompatProviderId(request.provider)
+          ? { streamFn: ((m: unknown, c: unknown, o?: Record<string, unknown>) => {
+            const shaped = shapeOpenAiCompatCall(request.provider, m as { id: string; name?: string }, { ...o });
+            return streamSimple(shaped.model as never, c as never, { ...shaped.options, fetch: guardedOpenAiCompatFetch((o?.fetch as typeof fetch | undefined) ?? fetch) } as never);
+          }) as never }
+          : {}),
     // 실행 하나 = 캐시 세션 하나. 제공자 프롬프트 캐시(prompt_cache_key 등)가 이 id 로 같은 접두부를 묶는다 —
     // 없으면 매 호출 도구 스키마·시스템 프롬프트 전체가 새로 과금됐다.
     sessionId: `oprn-${randomUUID()}`,
@@ -832,7 +840,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           emit({ type: "execution_status", name: "provider_retry", summary: `제공자 연결이 끊겨 이어서 진행합니다 (${providerRetries + 1}/${PI_PROVIDER_STREAM_RETRY_LIMIT}): ${message.errorMessage}` });
           return;
         }
-        fatal = fatal ?? message.errorMessage ?? "제공자 오류";
+        fatal = fatal ?? explainOpenAiCompatRunError(request.provider, message.errorMessage) ?? "제공자 오류";
         emit({ type: "error", message: fatal });
       }
     }

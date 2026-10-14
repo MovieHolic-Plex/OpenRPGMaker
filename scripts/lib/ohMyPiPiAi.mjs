@@ -21,6 +21,15 @@ import {
 } from "./aiAuthRuntime.ts";
 import { applyLegacyEnvAliases } from "./oprnEnv.mjs";
 import { piTimer } from "./piRunTiming.mjs";
+import { isOpenAiCompatProviderId } from "../../src/ai/openAiCompat.ts";
+import {
+  deleteOpenAiCompat,
+  listOpenAiCompatPublic,
+  assertOpenAiCompatModelsAllowed,
+  resolveOpenAiCompatRun,
+  saveOpenAiCompat,
+  testOpenAiCompat,
+} from "./openAiCompatRuntime.ts";
 
 applyLegacyEnvAliases();
 
@@ -233,8 +242,20 @@ export async function createOhMyPiAdapters() {
       seedOAuthForTests(provider, creds);
       return publicProviderStatus(provider);
     },
+    // 사용자 지정(OpenAI 호환) 엔드포인트 관리 — 키·헤더 값은 이 프로세스의 저장 파일(0600)에만 있고 응답에는 공개 보기만 나간다.
+    async compatList() { return { endpoints: listOpenAiCompatPublic() }; },
+    async compatSave(body) { return { endpoint: saveOpenAiCompat(body ?? {}), endpoints: listOpenAiCompatPublic() }; },
+    async compatDelete(id) { return deleteOpenAiCompat(String(id ?? "")); },
+    async compatTest(body) { return testOpenAiCompat(body ?? {}); },
     async complete(provider, body) {
+      // 호스트 직전 검사 — 차단·비허용 모델은 키를 꺼내거나 워커를 부르기 전에 거절한다(폴백 없음).
+      assertOpenAiCompatModelsAllowed([{ provider, model: body?.model }]);
       const apiKey = await resolveRequestApiKey(provider);
+      // 사용자 지정 엔드포인트는 워커가 주소·헤더를 알아야 모델을 만든다. 키는 apiKey 로 따로 간다.
+      if (isOpenAiCompatProviderId(provider)) {
+        const { endpoints } = await resolveOpenAiCompatRun([provider]);
+        return workerJson("/complete", { provider, body, apiKey, compatEndpoints: endpoints });
+      }
       return workerJson("/complete", { provider, body, apiKey });
     },
     /** Pi 에이전트 실행. 워커의 NDJSON 본문(web ReadableStream)을 그대로 넘긴다. */
@@ -245,8 +266,22 @@ export async function createOhMyPiAdapters() {
     /** runAgent 가 options.heavy(해시·글)를 받아 워커까지 해시째 넘긴다 — 중계가 프로젝트를 되살리지 않는다. */
     runAgentHeavyRefs: true,
     async runAgent(provider, body, options = {}) {
+      // 이 실행이 쓸 수 있는 모든 (제공자, 모델) 쌍 — 기본 모델과 역할 넷. 하나라도 막히면 모델·워커를 부르기 전에 끝낸다.
+      assertOpenAiCompatModelsAllowed([
+        { provider, model: body.model },
+        ...["deep", "writer", "vision", "build"].map((role) => ({ provider: body.roleModels?.[role]?.provider, model: body.roleModels?.[role]?.model })),
+      ]);
       const apiKey = await resolveRequestApiKey(provider);
       const providerApiKeys = { [provider]: apiKey };
+      // 사용자 지정 엔드포인트: 역할 넷 중 하나라도 쓰면 주소·헤더를 워커에 싣는다(없는 엔드포인트는 여기서 404 로 끝낸다).
+      const compat = await resolveOpenAiCompatRun([
+        provider,
+        ...["deep", "writer", "vision", "build"].map((role) => body.roleModels?.[role]?.provider),
+      ].filter((id) => typeof id === "string"));
+      for (const role of ["vision", "build"]) {
+        const selected = body.roleModels?.[role];
+        if (selected?.provider in compat.endpoints && !(selected.provider in providerApiKeys)) providerApiKeys[selected.provider] = compat.keys[selected.provider];
+      }
       for (const role of ["deep", "writer"]) {
         const selected = body.roleModels?.[role];
         if (selected?.provider && !(selected.provider in providerApiKeys)) {
@@ -280,7 +315,8 @@ export async function createOhMyPiAdapters() {
       const port = await startWorker();
       timer.mark("worker");
       const heavy = options.heavy?.refs && Object.keys(options.heavy.refs).length ? options.heavy : null;
-      const envelope = JSON.stringify({ apiKey, providerApiKeys, codexApiKey, request: { ...body, provider }, ...(heavy ? { heavy: heavy.refs } : {}) });
+      const compatEndpoints = Object.keys(compat.endpoints).length ? { compatEndpoints: compat.endpoints } : {};
+      const envelope = JSON.stringify({ apiKey, providerApiKeys, codexApiKey, ...compatEndpoints, request: { ...body, provider }, ...(heavy ? { heavy: heavy.refs } : {}) });
       timer.mark("stringify", `${Math.round(envelope.length / 1048576)}MB`);
       // 브라우저가 끊으면(중단 버튼) 그 신호를 워커까지 넘긴다 — 안 그러면 에이전트는 끝까지 돈다.
       const post = (raw) => fetch(`http://127.0.0.1:${port}/agent/run`, {
@@ -308,7 +344,7 @@ export async function createOhMyPiAdapters() {
         response = await fetch(`http://127.0.0.1:${port}/agent/run`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ apiKey, providerApiKeys, codexApiKey, request: { ...body, project, provider } }),
+          body: JSON.stringify({ apiKey, providerApiKeys, codexApiKey, ...compatEndpoints, request: { ...body, project, provider } }),
           ...(options.signal ? { signal: options.signal } : {}),
         });
       }

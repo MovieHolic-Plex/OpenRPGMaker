@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **174쪽 / 5830KB / 약 1,702,696 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **175쪽 / 5863KB / 약 1,712,621 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -17,8 +17,8 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 |---|---|---|---|---|
 | `openwiki/beodeul-city.md` | 118KB | 10KB | 680 | ~35,925 |
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,114 |
-| `openwiki/editor-ai-panel.md` | 658KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 4258 | ~192,984 |
-| `openwiki/editor-ai-tools.md` | 382KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 3110 | ~111,216 |
+| `openwiki/editor-ai-panel.md` | 668KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 4347 | ~195,996 |
+| `openwiki/editor-ai-tools.md` | 386KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 3143 | ~112,218 |
 | `openwiki/editor-database.md` | 414KB | 63KB ⚠상한 초과 — 절을 더 쪼개라 | 2475 | ~121,569 |
 | `openwiki/editor-event-authoring.md` | 180KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 1099 | ~52,499 |
 | `openwiki/editor-event-commands.md` | 68KB | 32KB | 303 | ~18,704 |
@@ -111,6 +111,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/harnesses/modern-chipset.md` | 3 | `.input.json`, `previous-tileset.json`, `public/assets/modern-exteriors/modern-city-atlas.png` |
 | `openwiki/harnesses/monster-collect-species.md` | 2 | `qa-runs/battle-anim3/anim.js`, `run.json` |
 | `openwiki/harnesses/native-space-installation.md` | 9 | `art-supplementary-evidence.json`, `authoring-input.json`, `canonical-proof.json`, `draft-project-proof.json`, `input-manifest.json`, `library.json`, `preparation-proof.json`, `project.oprn.json`, `stair-binding.json` |
+| `openwiki/harnesses/object-gate.md` | 1 | `.board.png` |
 | `openwiki/harnesses/pokemon-character-casting.md` | 15 | `changes.png`, `context.png`, `data/waves/full-cast-v1.json`, `harness-data/pokemon-character-casting/seed.json`, `harness-data/pokemon-character-casting/templates/full-cast-v1/README.md`, `harness-data/pokemon-character-casting/templates/theme-cast-v1/cast.json`, `naru.px.json`, `references/sources.json`, `register-pokemon-character-motion.mjs`, `template.png`, `verify-shots/pokemon-character-casting-full-cast/SUMMARY.md`, `verify-shots/pokemon-character-casting-naru/SUMMARY.md`, `verify-shots/pokemon-character-casting-template/SUMMARY.md`, `waves/theme-cast-v1.json`, `world-manifest.json` |
 | `openwiki/harnesses/pokemon-character-motion.md` | 16 | `SUMMARY.md`, `apply-emerald-native-motion.mjs`, `apply-pokemon-reviewed-hero.mjs`, `authoring.json`, `gate.json`, `hero/quality-gate.json`, `motion.json`, `portrait.png`, `register-pokemon-character-motion.mjs`, `scripts/asset-gen/pokemon-characters/references/ATTRIBUTION.md`, `verify-shots/emerald-native-motion-20261004/SUMMARY.md`, `verify-shots/pokemon-hand-pixels-20261004/SUMMARY.md`, `verify-shots/pokemon-hero-reference-revision/SUMMARY.md`, `verify-shots/pokemon-hero-refinement-2/SUMMARY.md`, `verify-shots/pokemon-hero-refinement/SUMMARY.md`, `verify-shots/pokemon-hero-shape-revision/SUMMARY.md` |
 | `openwiki/harnesses/romance-scene.md` | 2 | `verify-shots/romance-art/SUMMARY.md`, `verify-shots/romance-scene/SUMMARY.md` |
@@ -496,14 +497,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L62` 남은 일
 - `L70` 주의
 
-### `openwiki/delayed-tooltip.md` — 5KB · 81줄 · ~1,668 토큰
+### `openwiki/delayed-tooltip.md` — 6KB · 83줄 · ~1,735 토큰
 
 - `L11` 동작 계약
 - `L28` 문구 규칙
 - `L36` 맵 도구바·접이식 왼쪽 레일 (2026-09-18)
 - `L45` 1차 롤아웃 대상
-- `L60` 설치 지점
-- `L66` 테스트
+- `L62` 설치 지점
+- `L68` 테스트
 
 ### `openwiki/desert-east.md` — 7KB · 49줄 · ~2,146 토큰
 
@@ -514,7 +515,15 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L35` 조수 경로
 - `L39` 현황 (2026-10-14)
 
-### `openwiki/editor-ai-panel.md` — 658KB · 4258줄 · ~192,984 토큰 · 통째읽기 잘림 · 깨진 줄 26
+### `openwiki/desktop-window-controls.md` — 6KB · 69줄 · ~1,835 토큰
+
+- `L5` 한눈에
+- `L20` 코드 지도
+- `L33` 계약
+- `L47` 화면별 여백·끌기 (여기가 어긋나기 쉽다)
+- `L60` 실측 (이 저장소 Linux, xvfb + xfwm4, Electron 44.7.0)
+
+### `openwiki/editor-ai-panel.md` — 668KB · 4347줄 · ~195,996 토큰 · 통째읽기 잘림 · 깨진 줄 26
 
 - `L3` 조수 「턴 사이 기록」 (2026-10-05)
 - `L31` AI 존재감 — 지도 이름표 · 상태 줄 · 받은함 (2026-10-07)
@@ -648,8 +657,18 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L4236` 재현·증거
 - `L4249` 완료 음원 결과와 연결 재개 (2026-10-05)
 - `L4255` 응답 오류와 이미 반영된 변경의 분리 (2026-10-05)
+- `L4260` 조수 통째 교체 직후 쓰기가 「작업 중 프로젝트가 바뀌었습니다」로 거절되던 원인 (2026-10-14)
+- `L4279` 사용자 지정(OpenAI 호환) 연결 (2026-10-14)
+  - `L4283` 구성
+  - `L4295` 비밀 처리
+  - `L4301` 주소 안전
+  - `L4308` 모델 허용/차단 패턴 (비싼 모델 실수 호출 방지)
+  - `L4321` 추론 강도 세 방식 (엔드포인트별 `reasoningMode`)
+  - `L4331` 연결 시험과 오류
+  - `L4335` 초기 설정 메모
+  - `L4342` 검증 (2026-10-14)
 
-### `openwiki/editor-ai-tools.md` — 382KB · 3110줄 · ~111,216 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-ai-tools.md` — 386KB · 3143줄 · ~112,218 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` stamp_object 높이 단 규칙 · 트인 땅 배치 기준 (2026-10-11)
 - `L39` 출입구 도달·문앞 좌표 계약 (2026-10-07)
@@ -793,6 +812,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L3093` 오프닝 바이블·cast·화풍 기법 (2026-10-11)
   - `L3100` 오프닝 후보 생성 + 독립 판정자 (2026-10-11)
   - `L3106` 시연 오프닝 6컷 mp4 (2026-10-12)
+- `L3112` 몬스터 자유 경로 도구 (monster-free-b, 2026-10-14)
+- `L3121` 몬스터 캠페인 규모 인자화 · 정의 일치 검사 (2026-10-14, monster-free-a)
 
 ### `openwiki/editor-database.md` — 414KB · 2475줄 · ~121,569 토큰 · 통째읽기 잘림 · 깨진 줄 8
 
@@ -1272,12 +1293,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L29` Parent-owned verification (not run by this worker)
   - `L39` Fresh-project editor capture boot isolation
 
-### `openwiki/field-enemy.md` — 4KB · 51줄 · ~1,151 토큰
+### `openwiki/field-enemy.md` — 5KB · 64줄 · ~1,650 토큰
 
 - `L12` 다른 수단과의 구분
-- `L25` 이벤트 모양 (한 마리 = 이벤트 하나, 페이지 셋)
-- `L36` 안전 장치 (도구가 거절하는 것)
-- `L44` 알려진 한계
+- `L25` 필드 그림 = 전투 그림 (2026-10-14)
+- `L36` 이벤트 모양 (한 마리 = 이벤트 하나, 페이지 셋)
+- `L50` 안전 장치 (도구가 거절하는 것)
+- `L58` 알려진 한계
 
 ### `openwiki/getting-started.ko.md` — 20KB · 307줄 · ~6,290 토큰 · 깨진 줄 1
 
@@ -1567,7 +1589,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L199` Public draft deployment
   - `L215` Wand scene panels and trial timing
 
-### `openwiki/harnesses/object-gate.md` — 6KB · 85줄 · ~1,899 토큰
+### `openwiki/harnesses/object-gate.md` — 10KB · 110줄 · ~3,048 토큰
 
 - `L6` 왜
 - `L18` 구성
@@ -1576,6 +1598,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L55` 시트 칸 관문
 - `L62` 쓰는 법
 - `L79` 부품은 조립 건물로 (2026-10-13)
+- `L86` 2026-10-14 개편 — 한 번에 3/4 + 버들항 화풍
+  - `L99` 보정 결과(프로필 `473db36f963972c9`, rejected, 기록 `calibration/run-473db36f963972c9.json`)
 
 ### `openwiki/harnesses/pokemon-character-casting.md` — 25KB · 205줄 · ~6,489 토큰
 
@@ -1854,7 +1878,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L56` 활성화(2026-10-14 완료 — 아래는 한 일의 기록)
 - `L64` 관련
 
-### `openwiki/modern-campus.md` — 19KB · 184줄 · ~5,589 토큰
+### `openwiki/modern-campus.md` — 21KB · 195줄 · ~6,229 토큰
 
 - `L6` 목적
 - `L12` 3/4 계약 (AGENTS.md 「새 도트 그림은 3/4 탑뷰 관문」)
@@ -1870,6 +1894,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L105` 다시 그리기 (2026-10-14) — 지금 정본
 - `L162` quality-b 화풍 보정 (2026-10-14) — 버들항 수준 맞추기
 - `L172` 첫 판 기록 — 굽기·번들·조수 길 (2026-10-14, PR bake-themes, 반려된 그림)
+- `L185` 죽은 문 강제 (2026-10-14, known-bugs-fix)
 
 ### `openwiki/modern-city.md` — 17KB · 118줄 · ~5,184 토큰
 
@@ -1900,7 +1925,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L66` Authored field menu and assistant tools (2026-10-04)
 - `L95` Emerald authored presentation
 
-### `openwiki/monster-expedition.md` — 15KB · 218줄 · ~4,147 토큰
+### `openwiki/monster-expedition.md` — 21KB · 264줄 · ~5,868 토큰
 
 - `L6` Source and regeneration
 - `L41` Campaign metadata contract
@@ -1909,6 +1934,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L130` 실제 Pi 조수 제작 오프닝 · revision11 (2026-10-03)
 - `L159` Native creature refinement · 2026-10-04
 - `L200` 빈터 쓰임 채우기 · 타이틀/주민 테마 배선 (2026-10-14)
+- `L220` 자유 경로 · 대회형/탐험형 · 계통 일괄 도구 (monster-free-b, 2026-10-14)
+- `L253` 규모 인자 — 체육관 0~8관 (2026-10-14, monster-free-a)
 
 ### `openwiki/monster-kit-origin.md` — 45KB · 307줄 · ~13,457 토큰
 

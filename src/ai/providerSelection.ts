@@ -37,7 +37,7 @@ export function configForProviderSelection(config: AiConfig, providerId: string,
   const next = { ...config, providerId: parseOhMyPiProvider(providerId), roleModels: { ...config.roleModels } };
   const pinned = config.modelSelectionOverrides ?? {};
   const model = (oldProvider: string, oldModel: string): string =>
-    tierModelFor(next.providerId, oldModel === tierModelFor(oldProvider, "strong") ? "strong" : "fast")!;
+    tierModelFor(next.providerId, oldModel === tierModelFor(oldProvider, "strong") ? "strong" : "fast") ?? oldModel;
   const thinking = (role: SpecialistRole, old: RoleModel): RoleModel["thinkingLevel"] =>
     old.provider === next.providerId ? old.thinkingLevel : BALANCED.roles[role].thinking;
   for (const role of ["vision", "writer", "deep", "build"] as const) {

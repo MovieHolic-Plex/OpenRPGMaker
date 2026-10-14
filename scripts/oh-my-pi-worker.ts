@@ -20,6 +20,7 @@ import { holdWorkerKeys, refreshWorkerKeys } from "./lib/piWorkerKeys.ts";
 import type { PiAgentRequest } from "../src/ai/piAgent/protocol.ts";
 import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
 import { piTimer } from "./lib/piRunTiming.mjs";
+import { registerOpenAiCompatEndpoints } from "./lib/openAiCompatModel.ts";
 
 applyLegacyEnvAliases();
 
@@ -89,6 +90,7 @@ const server = Bun.serve({
         const provider = typeof body.provider === "string" ? body.provider : "google-antigravity";
         const payload = body.body && typeof body.body === "object" ? body.body as Record<string, unknown> : body;
         const apiKey = typeof body.apiKey === "string" ? body.apiKey : undefined;
+        registerOpenAiCompatEndpoints(body.compatEndpoints as never);
         return json(await completeProvider(provider, payload, { apiKey }));
       }
       if (request.method === "POST" && url.pathname === "/agent/render") {
@@ -109,8 +111,9 @@ const server = Bun.serve({
         // Pi 에이전트 실행. 진행 이벤트를 NDJSON 으로 흘리고 마지막 줄 `done` 에 결과 프로젝트를 싣는다.
         // 오류도 이벤트 줄로 보낸다 — 헤더가 이미 나간 뒤라 상태 코드로는 말할 수 없다.
         const timer = piTimer("worker /agent/run");
-        const body = await request.json() as { apiKey?: string; providerApiKeys?: Record<string, string | undefined>; codexApiKey?: string; request?: PiAgentRequest; heavy?: Record<string, string>; heavyRaw?: Record<string, unknown> };
+        const body = await request.json() as { apiKey?: string; providerApiKeys?: Record<string, string | undefined>; codexApiKey?: string; compatEndpoints?: Record<string, never>; request?: PiAgentRequest; heavy?: Record<string, string>; heavyRaw?: Record<string, unknown> };
         timer.mark("json");
+        registerOpenAiCompatEndpoints(body.compatEndpoints);
         const sentRequest = body.request;
         if (!sentRequest || typeof sentRequest !== "object" || typeof sentRequest.task !== "string" || !sentRequest.project) {
           return json({ error: "request.task 와 request.project 가 필요합니다" }, 400);
