@@ -53,12 +53,18 @@ const STEP_SCHEMA: JsonSchema = {
     dir: { type: "string", enum: ["left", "right", "top", "bottom", "up", "down"], description: "fling: 날아가는 방향 / turn: 바라볼 방향(up·down·left·right)" },
     animationId: { type: "string", description: "animate: 게임의 전투 애니메이션 id(database.battleAnimations, 예: anim_scarloxy_fire)" },
     direction: { type: "string", enum: ["in", "out"], description: "fade: 검정으로 사라짐(out)/나타남(in)" },
-    tintColor: { type: "string", description: "tint: 화면 색조 — 'night'류 이름 대신 '#rrggbb' 또는 'r,g,b,알파'(예: '20,30,80,0.45' 푸른 밤, '255,140,60,0.25' 노을, 'none' 해제)" },
+    tintColor: { type: "string", description: "tint: 화면 색조 — 이름 night(푸른 밤)·moonlit·dusk·dawn·storm·ember·sickly 를 쓰면 도구가 눈으로 맞춘 값(알파 0.3~0.55)을 넣는다. 직접 주려면 'r,g,b,알파'(예: '12,20,62,0.55'). 알파 0.2 미만은 화면이 안 바뀐다. 'none' 해제. 밤·황혼 같은 분위기를 요청받았으면 이름을 써라." },
     weather: { type: "string", enum: ["none", "rain", "storm", "snow", "fog"], description: "weather: 날씨(intensity 0~1)" },
     show: { type: "boolean", description: "letterbox: 영화식 위아래 띠 켜기/끄기" },
     mode: { type: "string", enum: ["pan", "follow", "fixed", "return"], description: "camera: 맵 카메라(x,y 맵 칸, zoom 배율)" }, zoom: { type: "number" },
     touching: { type: "array", items: { type: "string" }, description: "expect: 이 시점에 몸이 닿아야 하는 두 배우" }, min: { type: "number", minimum: 0, maximum: 1 },
   },
+};
+
+/** 이름 있는 화면 색조 — 값은 실제 맵 위에서 눈으로 맞춘 것이다(밤 0.55 는 푸른 어둠, 맵 형태는 읽힌다). */
+const TINT_PRESETS: Readonly<Record<string, string>> = {
+  night: "12,20,62,0.55", moonlit: "30,50,110,0.42", dusk: "70,34,86,0.36", dawn: "255,170,120,0.26",
+  storm: "20,28,40,0.46", ember: "255,110,40,0.3", sickly: "80,140,70,0.28",
 };
 
 const ACTOR_SCHEMA: JsonSchema = {
@@ -73,7 +79,7 @@ const ACTOR_SCHEMA: JsonSchema = {
     poses: { type: "array", items: { type: "object", additionalProperties: false, required: ["name", "resourceId"], properties: { name: { type: "string" }, resourceId: { type: "string" } } }, description: "이름 붙은 추가 그림(예: 놀란 자세)" },
     facing: { type: "string", enum: ["left", "right"], description: "그림이 바라보는 방향(기본: 캐릭터 right, 소품 left)" },
     at: PLACE_SCHEMA,
-    scale: { type: "number", minimum: 10, maximum: 300, description: "그림 크기 배율(%) — 큰 그림(병기·몬스터)을 화면 높이에 맞게 줄일 때. 풍경 속 작은 행렬은 화면 높이의 20% 안팎." },
+    scale: { type: "number", minimum: 10, maximum: 300, description: "그림 크기 배율(%) — 큰 그림(병기·몬스터)을 화면 높이에 맞게 줄일 때. 풍경 속 작은 행렬은 화면 높이의 20% 안팎. 캐릭터셋(24×32 도트) 배우는 100·200·300 으로만 맞춰진다(정수배 확대, 보통 200)." },
     z: { type: "integer", minimum: 2, maximum: 80, description: "겹침 순서(클수록 위)" },
     ghost: { type: "boolean", description: "맵 위에 실제로 서 있는 인물(주인공)을 배우로 삼는다 — 그림은 안 그리고 touch/at/expect·turn·animate 의 기준으로만 쓴다. 화면 자리는 tile 로 주면 도구가 카메라를 계산한다(at 직접 지정도 가능)." },
     event: { type: "string", description: "맵 위에 실제로 있는 NPC·몬스터 이벤트 id(place_npc 로 먼저 둔다) — 그림이 아니라 맵 걷기로 움직인다. move 의 to 는 {tile:{x,y}} 또는 {at:'주인공',side,gap(칸)}." },
@@ -121,6 +127,9 @@ function normalizeSteps(raw: unknown): TimedStep[] {
     }
     if (step.do === "tint" && typeof step.tintColor === "string") {
       // 런타임은 알파를 0~1 로 자르므로 «0.48» 대신 «48»·«255» 를 주면 알파 1 — 화면이 한 색으로 꽉 찬다(실측: 순파랑 화면).
+      // 이름 → 값: 모델이 «푸른 밤»을 매번 감으로 정해 알파 0.1~0.2 처럼 안 보이는 값을 내던 문제(2026-10-14 실행 5회)를 막는 어휘.
+      const named = TINT_PRESETS[step.tintColor.trim().toLowerCase()];
+      if (named) step.tintColor = named;
       const v = step.tintColor.trim();
       if (v && v !== "none" && v !== "neutral" && !v.startsWith("#")) {
         const parts = v.split(",").map((part) => Number(part.trim()));
@@ -226,7 +235,8 @@ const scriptCutsceneStaged: ToolDefinition = {
           draft.assets.uploaded[frame.id] = { id: frame.id, name: `컷신 캐릭터 프레임`, kind: "picture", dataUrl: frame.dataUrl, meta: { width: prepared.width, height: prepared.height } };
         }
         // 캐릭터셋 배우도 scale(%)을 따른다 — 24×32 칩을 화면에서 키우려면 필요하다(이전에는 무시되어 13% 크기로 나왔다).
-        const charScale = typeof raw.scale === "number" && raw.scale > 0 ? Math.max(10, Math.min(300, raw.scale)) : 100;
+        // 24×32 도트는 정수배(100·200·300)로만 키운다 — 265% 같은 값은 가장자리가 뭉개져 도트가 번진다(실행 2 프레임 40s).
+        const charScale = typeof raw.scale === "number" && raw.scale > 0 ? Math.max(1, Math.min(3, Math.round(raw.scale / 100))) * 100 : 100;
         const f = (role: string): string => prepared.frames[role]!.id;
         const trio = (d: string): readonly [string, string, string] => [f(`walk${d}0`), f(`walk${d}1`), f(`walk${d}2`)];
         return {

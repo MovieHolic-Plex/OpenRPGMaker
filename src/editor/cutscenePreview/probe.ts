@@ -95,6 +95,7 @@ export function probeCutscene(project: Project, commands: readonly Command[], vi
   const maxTintAlpha = tintAlphas.length ? Math.max(...tintAlphas) : 0;
 
   const issues: string[] = [];
+  const cameraMoves = commands.filter((c) => c.kind === "m2Command" && /camera/iu.test(String((c as { commandId?: string }).commandId ?? ""))).length;
   if (tintAlphas.length > 0 && maxTintAlpha < 0.2) issues.push(`장면 색조의 알파가 최대 ${maxTintAlpha}라 화면이 거의 안 바뀝니다(눈으로 구분 불가). 분위기를 바꾸려는 색조라면 알파를 0.3 이상으로 올리고 색도 목표 분위기에 맞게(어둡게 하려면 어두운 색) 다시 정하세요.`);
   if (subjects.length > 0) {
     if (timeline.durationMs < 6000) issues.push(`컷신이 ${(timeline.durationMs / 1000).toFixed(1)}초로 너무 짧습니다(6초 미만) — 도입은 분위기를 깔 시간이 필요합니다.`);
@@ -110,6 +111,8 @@ export function probeCutscene(project: Project, commands: readonly Command[], vi
     if (coverShare >= 0.4) issues.push(`전체 화면을 덮는 그림이 컷신의 ${Math.round(coverShare * 100)}% 동안 보입니다 — 실제 시작 맵이 가려집니다. 맵 위 장면이어야 하면 전체 화면 배경 그림을 쓰지 말고 맵·캐릭터셋으로 연출하세요.`);
     if (heroSamples > 0 && heroHitSamples / heroSamples >= 0.1) issues.push(`주체가 맵 위 주인공이 서 있는 자리를 ${Math.round((heroHitSamples / heroSamples) * 100)}% 동안 가립니다 — 주인공을 ghost 배우(character 로 hero:true)로 두고 이동 단계로 길 밖으로 비키게 하거나, 주체의 동선(fy)을 주인공 자리에서 떼세요.`);
     if (overlapShare >= 0.4) issues.push(`주체끼리 절반 넘게 겹친 채로 보이는 시간이 ${Math.round(overlapShare * 100)}%입니다 — 서로 다른 fx 로 간격을 벌리세요.`);
+    const travelling = subjects.some((s) => s.travelPx >= 100);
+    if (travelling && timeline.durationMs >= 8000 && cameraMoves === 0) issues.push("주체가 길게 이동하는데 카메라가 한 번도 안 움직입니다 — 고정 화면에서 가로지르면 밋밋합니다. camera 단계(pan 으로 목적지를 훑거나 follow)로 행군을 따라가고, 주체는 화면 안 같은 자리에서 걷게(트레드밀 연출) 하세요.");
     if (audioCount === 0) issues.push("컷신에 효과음·음악이 하나도 없습니다 — se/bgm 단계로 소리를 깔아야 합니다.");
   }
   const summary = `길이 ${(timeline.durationMs / 1000).toFixed(1)}s · 주체 ${subjects.map((s) => `${s.pictureId}(보임 ${(s.visibleMs / 1000).toFixed(1)}s, 키 ${Math.round(s.maxHeightRatio * 100)}%, 이동 ${s.travelPx}px)`).join(" ") || "없음"} · 겹침 ${Math.round(overlapShare * 100)}% · 색조 ${tintCount} · 날씨 ${weatherCount} · 소리 ${audioCount} · 글 ${sayCount}`;
