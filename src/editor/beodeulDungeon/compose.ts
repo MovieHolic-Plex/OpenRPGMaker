@@ -45,12 +45,8 @@ const WALL_ROWS = 3;
 const GAP = 4;
 const MARGIN = 2;
 
-const FLOOR_BY_KIND: Record<DungeonRoomKind, string> = {
-  entrance: "bd-pick-aqueduct-sewer-floor-cata", hall: "bd-pick-aqueduct-sewer-floor-cata", crypt: "bd-pick-aqueduct-sewer-floor-darkcata",
-  cell: "bd-pick-castle-catacombs-floor-cell", shrine: "bd-pick-castle-catacombs-floor-castle", boss: "bd-pick-castle-catacombs-floor-castle",
-  storage: "bd-pick-aqueduct-sewer-floor-cata", vault: "bd-pick-aqueduct-sewer-floor-bone",
-};
-const CORRIDOR_FLOOR = "bd-pick-aqueduct-sewer-floor-cata";
+// 바닥은 층 전체가 한 종류다(방마다 색이 다르면 한 층이 이어 붙인 조각처럼 보인다 — 사용자 스크린샷의 「바닥 톤 섞임」).
+const FLOOR_BY_STYLE: Record<DungeonStyle, string> = { catacomb: "bd-pick-aqueduct-sewer-floor-cata", castle: "bd-pick-castle-catacombs-floor-castle" };
 const K = {
   ceiling: "bd-pick-aqueduct-sewer-ceiling",
   stairsUp: "bd-pick-aqueduct-sewer-stairs-up-face", stairsDown: "bd-pick-temple-ruins-stairs-down",
@@ -219,8 +215,9 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
       floorMask[idx(x, y)] = 1; floorKitAt[idx(x, y)] = floorKit; if (roomIndex >= 0) roomAt[idx(x, y)] = roomIndex;
     }
   };
-  for (const c of corridors) markFloor(c.rect, CORRIDOR_FLOOR, -1);
-  rooms.forEach((room, i) => markFloor(room, FLOOR_BY_KIND[room.kind], i));
+  const floorKit = FLOOR_BY_STYLE[style];
+  for (const c of corridors) markFloor(c.rect, floorKit, -1);
+  rooms.forEach((room, i) => markFloor(room, floorKit, i));
   const isFloor = (x: number, y: number) => x >= 0 && y >= 0 && x < W && y < H && floorMask[idx(x, y)] === 1;
 
   // 바닥 칸 = 바닥 키트(2×2 반복 무늬)
