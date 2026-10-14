@@ -4,6 +4,13 @@ import { assert, requireArray, requireNumber, requireRecord, requireString } fro
 export function validateMonsterCampaign(value: unknown): void {
   const campaign = requireRecord("system.monsterCampaign", value);
   for (const key of ["id", "name"]) requireString(`monsterCampaign.${key}`, campaign[key]);
+  if (campaign.plan !== undefined) {
+    const plan = requireRecord("monsterCampaign.plan", campaign.plan);
+    for (const key of ["gyms", "species", "maps", "links"]) {
+      const n = requireNumber(`monsterCampaign.plan.${key}`, plan[key]);
+      assert(Number.isInteger(n) && n >= 0 && n <= 4096, `monsterCampaign.plan.${key} 는 0 이상의 정수여야 합니다`);
+    }
+  }
   const species = requireArray("monsterCampaign.speciesIds", campaign.speciesIds);
   species.forEach(id => requireString("monsterCampaign.speciesId", id));
   assert(new Set(species).size === species.length, "Duplicate campaign species id");

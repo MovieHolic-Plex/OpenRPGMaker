@@ -3115,3 +3115,28 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 `monsterBatchTools.ts`: `define_monster_families`(계통 최대 40, 계통별 원자적·부분 실패는 `data.failed`) · `rename_monster_species`(최대 60, 적·무리·대사·도감 설명까지 전파).
 `configure_monster_system` 에 `capture:false`(포획 없는 파티 전투 모드), `build_monster_game.startTheme` 에 `volcano`.
 요청 분류·키트 시작 맵 이동·한계는 `openwiki/monster-expedition.md` 「자유 경로 · 대회형/탐험형 · 계통 일괄 도구」 절.
+
+
+
+## 몬스터 캠페인 규모 인자화 · 정의 일치 검사 (2026-10-14, monster-free-a)
+
+2026-10-14 자유도 감사(`~/claude-viz/monster-free.html`)에서 `build_monster_game` 은 늘 72맵·60종·8체육관·142연결을 만들고
+검수(`monsterGameReview.ts`)도 그 상수로 막았다 — 「체육관 3개」「체육관 없이」를 말해도 8관 캠페인이 나왔다.
+
+- **규모 인자:** `build_monster_game(create)` 의 `gymCount`(0..8, 기본 8)·`speciesCount`(6..60, 기본 60). 기본(인자 없음)은 이전과
+  바이트 단위로 같다(여섯 옵션 변형 sha 비교로 확인). 만드는 쪽은 `src/project/examples/monsterExpedition/campaignPlan.ts`
+  (`campaignShape`·`campaignLevels`·`retellForGymCount`) 한 곳이 정한다 — N관은 마을 1..N, 4관부터 박물관, 5관부터 밤막회사 지부,
+  리그 방 7+→5·4+→3·1+→1·0관→없음(관측탑 보스가 엔딩), 0관은 체육관 없는 마을 둘에 「조련사 회관」. 레벨은 마지막 체육관에 맞춰 줄인다.
+- **계획(`system.monsterCampaign.plan`):** `{gyms,species,maps,links}`. 검수 하한(맵·종·배지·연결)은 이 계획에서 읽고
+  없으면 옛 상수(72/60/8/142). `shapeMonsterCampaign.ts` 가 모양을 검증한다.
+- **요청 문장 → 인자:** `monsterGameRequest.ts` 의 `parseMonsterCampaignScale`(한글 수사·「없이」·「8개를 5개로」·「4 gyms」).
+  `requestsEmeraldMonsterGame` 은 「포켓몬」 낱말이 없어도 「몬스터 수집/포획/육성 게임」 장르 낱말을 받는다(키워드 분기 제거).
+  규모 한 줄(`monsterScaleNote`)이 시스템 프롬프트·의도 메모에 붙고, `PiMonsterGameProduction` 은 요청한 체육관·종 수와
+  만든 캠페인이 다르면 완료를 막는다.
+- **`configure_monster_campaign` 재작성:** `definition` 안쪽 스키마(`speciesNotes` 는 `{speciesId,note}` 배열 — Gemini 는 자유 키
+  객체를 400 으로 거절), 병합 의미(준 칸만 바꿈), 항목 수를 줄이는 덮어쓰기는 `allowShrink:true` 가 없으면 거부,
+  `badgeCount` 는 `resizeCampaignGyms`(`resizeGyms.ts`)로 정의·관장 이벤트·잠금·서사를 함께 줄인다(늘리지는 못함).
+  새 blocker 를 만드는 변경은 거부(`monsterCampaignConsistency.ts`). 이 검사(`checkMonsterCampaignDefinition`)는
+  `qa:game check` 의 monster 검사(`src/qa/gameCheck/monster.ts`)에서도 돈다.
+- 남은 한계: 화산 같은 시작 풍경은 아직 meadow·desert·snow·coast 뿐(키트 적용·테마는 monster-free-b). 체육관 없는 마을의 회관은 체육관
+  모양 건물이다. `resizeCampaignGyms` 가 줄인 체육관 맵은 건물·퍼즐이 남은 빈 시험장이다(관장 대사만 정리).

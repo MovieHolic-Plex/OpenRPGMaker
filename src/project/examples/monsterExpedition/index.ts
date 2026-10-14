@@ -5,6 +5,8 @@ import { configureExpeditionAudio } from "./audio";
 import { configureExpeditionOpening } from "./opening";
 import { authorExpeditionWorld } from "./world";
 import type { StartTheme } from "./townLayouts";
+import { clampGymCount, FULL_GYMS, planFromBuilt, retellForGymCount } from "./campaignPlan";
+import { pruneUnusedSpecies } from "./campaignSpecies";
 import { deserialize, serialize } from "@/project/io";
 import { DEFAULT_ACTOR_ID } from "@/project/defaults/constants";
 import { prepareWebExport } from "@/project/webExport";
@@ -17,7 +19,9 @@ import { monsterTitleThemeFromStart } from "@/project/emeraldMonsterTitleArt";
 /** Complete, ordinary editable campaign: the player uses the shipping engine. */
 /** gymTypes: 기획서의 1~8관 타입(「바위 체육관」→rock) — 관장 동료만 그 타입으로 바꾼다. 맵·장치는 그대로. firstGymType 은 gymTypes[0] 의 옛 이름. */
 /** startTheme: 기획서의 시작 마을 풍경(사막·눈·바닷가). 생략하면 풀밭 별싹 마을. */
-export interface ExpeditionOptions { readonly firstGymType?: string; readonly gymTypes?: readonly (string | undefined)[]; readonly startTheme?: StartTheme }
+/** gymCount: 체육관(=배지) 수 0~8, 생략 = 8(본래 90맵 캠페인). 적으면 마을·길·리그를 앞에서부터 잘라 쓰고 정의에 plan(검수 하한)을 싣는다.
+ * speciesCount: 도감을 이 수 이상으로 줄인다(쓰지 않는 계통만 덜어 냄 — 실제 수는 plan.species). 생략 = 60종. */
+export interface ExpeditionOptions { readonly firstGymType?: string; readonly gymTypes?: readonly (string | undefined)[]; readonly startTheme?: StartTheme; readonly gymCount?: number; readonly speciesCount?: number }
 
 export function createMonsterExpedition(options: ExpeditionOptions = {}) {
   const project = createExpeditionSeed();
@@ -60,6 +64,18 @@ export function createMonsterExpedition(options: ExpeditionOptions = {}) {
   // Tiles stay on the bright monster_* kit (tone A, 2026-10-06); emerald_monster_* is kept only for projects already on it.
   configureEmeraldMonsterCast(project, { startTheme: options.startTheme });
   configureEmeraldMonsterOpening(project, { titleTheme: monsterTitleThemeFromStart(options.startTheme) });
+  // 체육관 수를 줄인 캠페인의 서사·타이틀 속 「여덟」을 그 수로 고친다(8관은 그대로).
+  retellForGymCount(project, options.gymCount ?? 8);
+  // 체육관 수·종 수를 요청한 캠페인은 만든 결과를 검수 하한(plan)으로 정의에 싣는다. 기본 캠페인은 plan 없이 옛 고정 계약(72/60/8/142) 그대로.
+  const gymCount = clampGymCount(options.gymCount);
+  const requestedSpecies = typeof options.speciesCount === "number" && Number.isFinite(options.speciesCount) ? Math.max(1, Math.round(options.speciesCount)) : undefined;
+  if (requestedSpecies !== undefined && requestedSpecies < project.system.monsterCampaign!.speciesIds.length) pruneUnusedSpecies(project, requestedSpecies);
+  if (gymCount < FULL_GYMS || requestedSpecies !== undefined) {
+    let links = 0;
+    const count = (value: unknown): void => { if (Array.isArray(value)) value.forEach(count); else if (value && typeof value === "object") { if ((value as { kind?: unknown }).kind === "transfer") links++; Object.values(value).forEach(count); } };
+    for (const map of Object.values(project.maps)) for (const e of map.events) count(e.pages ?? e.commands);
+    project.system.monsterCampaign!.plan = planFromBuilt({ gyms: gymCount, species: project.system.monsterCampaign!.speciesIds.length, maps: Object.keys(project.maps).length, links });
+  }
   // The canonical loader checks command IDs, tiles, assets and all DB references.
   const serialized = serialize(project);
   const reloaded = deserialize(serialized);

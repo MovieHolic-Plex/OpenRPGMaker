@@ -1,5 +1,5 @@
 import { PiMonsterGameProduction } from '../../src/ai/piAgent/monsterGameProduction.ts';
-import { requestsEmeraldMonsterGame, classifyMonsterGameRequest, MONSTER_GAME_INITIAL_TOOLS, MONSTER_GAME_PRODUCTION_PROMPT } from '../../src/ai/piAgent/monsterGameRequest.ts';
+import { requestsEmeraldMonsterGame, classifyMonsterGameRequest, MONSTER_GAME_INITIAL_TOOLS, MONSTER_GAME_PRODUCTION_PROMPT, monsterScaleNote } from '../../src/ai/piAgent/monsterGameRequest.ts';
 import { EMERALD_MONSTER_AUTHORING_GUIDE, isEmeraldMonsterStyle } from '../../src/project/emeraldMonsterStyle.ts';
 import { PiNpcLayoutProduction } from '../../src/ai/piAgent/npcLayoutProduction.ts';
 import { PiGameSystemProduction } from '../../src/ai/piAgent/gameSystemProduction.ts';
@@ -262,7 +262,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // 배열 교체(setTools)는 진행 중 루프에 닿지 않는다(컨텍스트가 같은 배열을 잡고 있어서다).
   const tools: PiToolShape[] = [];
   const exposed = new Set<string>();
-  const monsterGameProduction = new PiMonsterGameProduction(!request.readOnly && !options.readOnlyTools && (requestsEmeraldMonsterGame(request.task) || classifyMonsterGameRequest(request.task) === 'campaign'));
+  const monsterGameProduction = new PiMonsterGameProduction(!request.readOnly && !options.readOnlyTools && (requestsEmeraldMonsterGame(request.task) || classifyMonsterGameRequest(request.task) === 'campaign'), request.task);
   const gameSystemProduction = new PiGameSystemProduction();
   const npcLayoutProduction = new PiNpcLayoutProduction();
   const openingProduction = new PiOpeningProduction(!request.readOnly && !options.readOnlyTools && !monsterGameProduction.requested && (request.openingProduction ?? requestsOpeningProduction(request.task)), request.task);
@@ -642,7 +642,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     ? [...request.systemPrompt]
     : buildPiAgentSystemPrompt(base, request.mapIds, request.scopeStrict !== false, { spatialWork });
   if (openingProduction.requested) systemPrompt.push(OPENING_PRODUCTION_PROMPT);
-  if (monsterGameProduction.requested) systemPrompt.push(MONSTER_GAME_PRODUCTION_PROMPT, EMERALD_MONSTER_AUTHORING_GUIDE);
+  if (monsterGameProduction.requested) systemPrompt.push(MONSTER_GAME_PRODUCTION_PROMPT + monsterScaleNote(request.task), EMERALD_MONSTER_AUTHORING_GUIDE);
   else if (isEmeraldMonsterStyle(base)) systemPrompt.push(EMERALD_MONSTER_AUTHORING_GUIDE);
   if (/npc|주민|인물|배치|순찰|움직/iu.test(request.task)) systemPrompt.push('[NPC 저작] read_npc_layout으로 실제 좌표/외형/충돌을 읽는다. 주민 순찰은 configure_npc_patrol의 닫힌 안전 경로를 쓴다. 교수·상인·중요 이야기 인물은 접근 가능한 고정 자리로 둔다. 랜덤 이동을 전원에게 넣거나 캐릭터 시트 칸을 이름만 추측하지 않는다. 실제 그림을 확인한다.');
   if (/시스템|상점|shop|메뉴|포켓몬|몬스터/iu.test(request.task)) systemPrompt.push('[게임 시스템 저작] read_game_systems로 실제 전투 규칙·파티·ESC 항목·도감/지도/배지·음악을 함께 확인한다. configure_monster_system rules:gen1, presentation:collector 또는 configure_field_menu로 실제 기능 ID를 설정한다. 상점 스킨은 configure_shop_presentation preset:collector로 명시하고 실제 eventPresetCounts를 확인한다. 매입가는 sellPriceOverrides를 읽고 set_sell_prices로 명시한다. 0G는 실제 0G 매입이므로 가격표를 추측하지 않는다. status는 몬스터 상태이고 원정 수첩은 trainer-card다. 존재하지 않는 기능을 이름만 붙여서 구현했다고 하지 않는다. 마지막 설정 뒤 review_game_systems로 불일치를 확인한다. 설정/모델 검토는 출하 플레이·저장 검증과 구분한다.');

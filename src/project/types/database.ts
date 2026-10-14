@@ -1554,9 +1554,26 @@ export interface MakerDefinition {
   readonly durationMinutes: number;
 }
 
+/**
+ * 캠페인이 약속한 규모 — 검수(review_monster_game)와 점검(qa:game check)이 상수 대신 읽는 하한.
+ * 생략하면 옛 고정 계약(8관·60종·72맵·142연결). build_monster_game 의 gymCount·speciesCount 가 정한다.
+ */
+export interface MonsterCampaignPlan {
+  /** 체육관(=배지) 수. 0 이면 체육관 없는 캠페인. */
+  gyms: number;
+  /** 도감에 있어야 하는 고유 종 수(하한). */
+  species: number;
+  /** 맵 수 하한. */
+  maps: number;
+  /** 이동(transfer) 명령 수 하한. */
+  links: number;
+}
+
 export interface MonsterCampaignConfig {
   id: string;
   name: string;
+  /** 생략 = 옛 고정 계약. */
+  plan?: MonsterCampaignPlan;
   speciesIds: string[];
   speciesNotes: Record<string, string>;
   badges: { id: string; name: string; switchId: string; cityMapId: string }[];

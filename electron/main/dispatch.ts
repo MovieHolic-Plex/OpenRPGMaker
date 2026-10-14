@@ -414,11 +414,24 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
       }
       return handler(key, payload, context);
     };
-    const result = tail.then(run);
+    const isSave = channel === OPRN_CHANNELS.projectSave || channel === OPRN_CHANNELS.projectSaveMapPatch;
+    const settled = tail.then(run);
+    // 분리는 저장의 일부다 — 저장 응답이 분리 **뒤** 리비전을 싣는다. 응답이 분리 전 리비전을 싣고 분리가 뒤에서 다음 리비전을 만들면,
+    // 클라이언트는 그 리비전을 「남이 쓴 것」으로 보고 호스트 문서를 다시 받아 통째 교체(projectSwitch)한다 — 이 편집기가 쓴 것을 한 글자도
+    // 바꾸지 않았는데도. 조수 한 번의 통째 교체 직후 도구 쓰기가 「작업 중 프로젝트가 바뀌었습니다」로 거절되던 원인이다
+    // (2026-10-14 monster-free-a 실측: 저장 4 → 분리 5, 호스트 폴링이 5 를 받아 refreshFromHost).
+    const result = isSave
+      ? settled.then(async (value) => {
+        await separateMediaAfterSave(key).catch(() => {});
+        if (value && typeof value === "object" && (value as { kind?: unknown }).kind === "saved" && typeof (value as { revision?: unknown }).revision === "number") {
+          const info = store(key).info();
+          // 분리가 새 행을 썼으면 응답이 그 행(리비전·sha)을 가리킨다 — 클라이언트의 다음 저장 expectedSha 도 같이 맞는다.
+          if (info.revision !== (value as { revision: number }).revision) return { ...(value as object), revision: info.revision, ...(info.sha256 ? { sha256: info.sha256 } : {}) };
+        }
+        return value;
+      })
+      : settled;
     tail = result.catch(() => {});
-    if (channel === OPRN_CHANNELS.projectSave || channel === OPRN_CHANNELS.projectSaveMapPatch) {
-      tail = tail.then(() => separateMediaAfterSave(key)).catch(() => {});
-    }
     return result;
   }]));
   services.set(sessions, handlers);

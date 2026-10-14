@@ -6,7 +6,8 @@ import { charsetGraphic, demoEnemy, demoTroop } from "@/project/defaults/scarlox
 import { DEFAULT_ACTOR_ID } from "@/project/defaults/constants";
 import { EXPEDITION_AUDIO as audio } from "./audio";
 import { EXPEDITION_SPECIES, EXPEDITION_STARTERS, EXPEDITION_LEGENDARIES } from "./roster";
-import { EXPEDITION_TOWNS as towns, EXPEDITION_GYMS as gyms, EXPEDITION_ROUTES as planRoutes, EXPEDITION_SIDE_AREAS as sides } from "./worldPlan";
+import { EXPEDITION_TOWNS as allTowns, EXPEDITION_GYMS as gyms, EXPEDITION_ROUTES as planRoutes, EXPEDITION_SIDE_AREAS as allSides } from "./worldPlan";
+import { campaignLevels, campaignShape, clampGymCount, FULL_GYMS, gymWord } from "./campaignPlan";
 import markerAssets from "./markers.json";
 import templateData from "./mapTemplates.json";
 import { composeTown, START_ROUTES, START_TOWNS, TOWN_SKETCHES, type StartTheme } from "./townLayouts";
@@ -67,11 +68,24 @@ const GYM_KEY_BY_TYPE: Readonly<Record<string, string>> = {
   dragon: "dragon", steel: "dragon", flying: "dragon",
 };
 
-export function authorExpeditionWorld(project: Project, options: { readonly firstGymType?: string; readonly gymTypes?: readonly (string | undefined)[]; readonly startTheme?: StartTheme } = {}): ExpeditionManifest {
+export function authorExpeditionWorld(project: Project, options: { readonly firstGymType?: string; readonly gymTypes?: readonly (string | undefined)[]; readonly startTheme?: StartTheme; readonly gymCount?: number } = {}): ExpeditionManifest {
   // 화산 기획의 1관은 불 체육관이다 — 시작 마을이 재 마을 판(둘째 마을 ↔ 잿빛 온천 맞바꿈)이라 풀 관장이 서 있으면 어색하다. 기획서가 첫 관 타입을 정하면 그것이 이긴다.
   if (options.startTheme === "volcano" && !options.firstGymType && options.gymTypes?.[0] === undefined) options = { ...options, firstGymType: "fire" };
+  // 규모(체육관 수) — 기본 8관은 아래 모든 값이 본래 그대로다. 0~7관은 마을·길·부속 지역·리그를 앞에서부터 잘라 쓴다.
+  const gymCount = clampGymCount(options.gymCount);
+  const shape = campaignShape(gymCount);
+  const levels = campaignLevels(gymCount);
+  const towns = allTowns.slice(0, shape.finalTown + 1);
+  const finalKey = towns[shape.finalTown]!.key;
+  const townIndex = (key: string) => allTowns.findIndex(t => t.key === key);
+  // 체육관 수보다 큰 배지 번호는 이 캠페인에 없다 — 그 번호로 잠근 문은 앞 약속(마지막 배지, 0관은 스타터)으로 잠근다.
+  const gate = (switchId: string | undefined): string | undefined => {
+    const m = switchId && /^mx_badge_(\d+)$/.exec(switchId);
+    return m && Number(m[1]) > gymCount ? (gymCount >= 1 ? `mx_badge_${gymCount}` : "mx_starter") : switchId;
+  };
+  const sides = allSides.filter(s => towns.some(t => t.key === s.town)).map(s => ({ ...s, level: levels.side(townIndex(s.town), s.level) }));
   // 시작 테마의 1번길 이름도 그 땅으로 — 사막 모랫길 위에 「1번길 · 별싹 들판」 표지가 떴다(2026-10-07 사막 런타임 캡처).
-  const routes = planRoutes.map(r => r.key === "meadow" && options.startTheme ? { ...r, name: START_ROUTE_NAMES[options.startTheme] } : r);
+  const routes = planRoutes.slice(0, shape.finalTown).map((r, j) => ({ ...r, level: levels.route(j + 1), required: gate(r.required)!, ...(r.key === "meadow" && options.startTheme ? { name: START_ROUTE_NAMES[options.startTheme] } : {}) }));
   for (const [aid, asset] of Object.entries(markerAssets)) project.assets.uploaded[aid] = structuredClone(asset) as Project["assets"]["uploaded"][string];
   project.maps = {};
   project.mapConnections = [];
@@ -97,7 +111,7 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
   // 바닷가는 바꾸지 않는다 — 물결 항구는 잔교·배 출구 좌표가 그 판에 묶여 있고(harborExit), 바닷가 시작 마을도 풀밭 판이다.
   const swappedTown = options.startTheme === "desert" ? "dune" : options.startTheme === "snow" ? "frost" : options.startTheme === "volcano" ? "ember" : undefined;
   const lookOf = (key: string): string => !swappedTown ? key : key === "grove" ? swappedTown : key === swappedTown ? "grove" : key;
-  const lookTown = (t: (typeof towns)[number]) => towns.find(other => other.key === lookOf(t.key))!;
+  const lookTown = (t: (typeof allTowns)[number]) => allTowns.find(other => other.key === lookOf(t.key))!;
 
   function make(key: string, name: string, source: string, track: keyof typeof audio, role: "town" | "field" | "interior" | "dungeon"): GameMap {
     const look = role === "town" ? lookOf(key) : key;
@@ -232,7 +246,8 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     return event(map, suffix, at, [text(body, name), ...commands], { graphic: charsetGraphic("tex_easyrpg_charset_people1", index) });
   }
 
-  function portal(map: GameMap, target: GameMap, at: Point, landing: Point, required?: string, label = target.name): void {
+  function portal(map: GameMap, target: GameMap, at: Point, landing: Point, wantedRequired?: string, label = target.name): void {
+    const required = gate(wantedRequired);
     if (!isPassableLanding(project, map, at.x, at.y) || !isPassableLanding(project, target, landing.x, landing.y)) throw Error(`Blocked doorway ${map.name} → ${target.name}`);
     const go = transfer(target, landing);
     const commands: Command[] = required ? [{ kind: "fork", condition: condition(required), then: [go], else: [text(`${label}로 가는 길은 아직 열리지 않았다. 메뉴의 「배지·목표」에서 다음 약속을 확인하자.`)] }] : [go];
@@ -280,7 +295,16 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     const reachA = walkable(a);
     const ca = connected(a).filter(p => reachA.has(coord(p))), cb = connected(b);
     const harborExit = a.id === id("harbor") ? ({ mx_map_river: { x: 15, y: 9 }, mx_map_ship_deck: { x: 16, y: 9 }, mx_map_beach: { x: 8, y: 10 }, mx_map_sea_cave: { x: 23, y: 10 } }[b.id]) : undefined;
-    const atA = harborExit ?? anchor(a, { x: a.width >> 1, y: 2 }, ca);
+    // 작은 캠페인(마지막 마을이 항구 같은 옛 중간 마을)에서는 마지막 마을 북쪽에 문이 둘(관측탑·리그) 붙는다. 리그 문이 첫 문 뒤 골목에
+    // 갇히지 않게, 둘째 문은 그 아래 칸으로 걸어 닿는 자리에만 둔다(관측탑 문도 같다). 기본(8관) 캠페인과 그 밖의 연결은 한 칸도 달라지지 않는다.
+    const wantedA = { x: a.width >> 1, y: 2 };
+    const leagueDoor = shape.gyms < FULL_GYMS && !harborExit && a === townMaps.get(finalKey) && (b === observatory || b === league[0]);
+    const openA = leagueDoor
+      ? ca.filter(p => Math.abs(p.x - wantedA.x) + Math.abs(p.y - wantedA.y) <= 8
+        && a.events.every(e => !e.id.includes("_to_") || Math.max(Math.abs(e.x - p.x), Math.abs(e.y - p.y)) > 1))
+        .filter(p => { const below = { x: p.x, y: p.y + 1 }, open = walkable(a, p); return canMove(project, a, p.x, p.y, below.x, below.y) && open.has(coord(below)) && a.events.every(e => !e.id.includes("_to_") || open.has(coord(e))); })
+      : [];
+    const atA = harborExit ?? anchor(a, wantedA, openA.length ? openA : ca);
     const drawnDoor = doorSpots.get(b.id);
     const atB = drawnDoor ?? anchor(b, exitHints.get(b.id) ?? { x: b.width >> 1, y: b.height - 2 }, cb);
     reserve(a, atA); reserve(b, atB);
@@ -444,7 +468,8 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     return pool;
   }
 
-  function battle(map: GameMap, suffix: string, name: string, at: Point, ids: string[], level: number, winSwitch: string | undefined, before: string, win: Command[], required?: string, track: string = audio.trainerBattle): GameEvent {
+  function battle(map: GameMap, suffix: string, name: string, at: Point, ids: string[], level: number, winSwitch: string | undefined, before: string, win: Command[], wantedRequired?: string, track: string = audio.trainerBattle): GameEvent {
+    const required = gate(wantedRequired);
     const tid = troop(name, `${map.id}_${suffix}`, ids, level, true);
     const intro = [text(before, name), battleMusic(track)];
     const fight: Command = { kind: "battleProcessing", troopId: tid, canEscape: false, canLose: true, branchOnResult: true,
@@ -469,7 +494,7 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
   }
 
   function townFor(map: GameMap): string {
-    return towns.find(t => map.id.startsWith(id(t.key)))?.key ?? routes.find(r => id(r.key) === map.id)?.from ?? sides.find(s => id(s.key) === map.id)?.town ?? ({ mx_map_hideout: "prism", mx_map_observatory: "summit", mx_map_lab: "home", mx_map_museum: "prism", mx_map_school: "home" }[map.id] ?? (map.id.startsWith("mx_map_league_") ? "summit" : "home"));
+    return towns.find(t => map.id.startsWith(id(t.key)))?.key ?? routes.find(r => id(r.key) === map.id)?.from ?? sides.find(s => id(s.key) === map.id)?.town ?? ({ mx_map_hideout: "prism", mx_map_observatory: finalKey, mx_map_lab: "home", mx_map_museum: "prism", mx_map_school: "home" }[map.id] ?? (map.id.startsWith("mx_map_league_") ? finalKey : "home"));
   }
 
   const townMaps = new Map(towns.map(t => [t.key, make(t.key, lookTown(t).name, t.key === "home" && options.startTheme ? START_TOWNS[options.startTheme].template : lookTown(t).template, lookTown(t).music, "town")]));
@@ -482,23 +507,26 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
   // 이름·배지·대사도 판과 마을을 따른다 — 서리꽃 마을(판을 바꾼 둘째 마을) 얼음 체육관이 「새순 체육관」·「새잎 배지」였다.
   const gymPersonas = gyms.map((g, i) => {
     const type = gymType(i, g);
-    const town = lookTown(towns.find(t => t.key === g.town)!).name;
+    const town = lookTown(allTowns.find(t => t.key === g.town)!).name;
     const moved = lookOf(g.town) !== g.town || gymKeys[i] !== g.key;
     const name = moved ? `${town.replace(/ (마을|시티|항구|온천)$/u, "")} ${gymKeys[i] === "dojo" ? "도장" : "체육관"}` : g.name;
     // 타입을 맞바꾼 두 관은 관장도 맞바꾼다 — 서리꽃 1관 얼음 관장은 설아, 새순으로 간 풀 관장은 유림.
     const source = i === 0 && displaced >= 0 ? gyms[displaced]! : i === displaced ? gyms[0]! : g;
     const badge = type === source.type ? source.badge : TYPE_BADGE[type] ?? g.badge;
     const after = type === g.type ? g.after : `${source.after.split(/(?<=[.!?])\s/u)[0]} 이 ${badge}를 맡길게.`;
-    return { ...g, name, badge, after, leader: source.leader, before: source.before };
-  });
+    return { ...g, name, badge, after, leader: source.leader, before: source.before, level: levels.gym(i + 1) };
+  }).slice(0, gymCount);
   const gymMaps = new Map(gymPersonas.map((g, i) => [g.town, make(`${g.town}_gym`, g.name, `gyms/gym_${gymKeys[i]}`, "gym", "interior")]));
   const lab = make("lab", "천문박사의 연구소", "rooms/lab", "town", "interior");
-  const museum = make("museum", "별의 역사 박물관", "rooms/museum", "town", "interior");
+  const museum = shape.museum ? make("museum", "별의 역사 박물관", "rooms/museum", "town", "interior") : undefined;
   const school = make("school", "조련사 학교", "rooms/school", "town", "interior");
-  const hideout = make("hideout", "밤막회사 · 별빛 연구소", "dungeon/hideout", "cave", "dungeon");
+  const hideout = shape.hideout ? make("hideout", "밤막회사 · 별빛 연구소", "dungeon/hideout", "cave", "dungeon") : undefined;
   const observatory = make("observatory", "옛 별 관측탑", "dungeon/ruins", "league", "dungeon");
-  const leagueKeys = ["ice", "ghost", "dark", "dragon", "champ"] as const;
-  const league = leagueKeys.map((key, i) => make(`league_${i}`, i < 4 ? `별빛 리그 · 사천왕 ${i + 1}` : "별빛 리그 · 챔피언", `rooms/league_${key}`, "league", "interior"));
+  // 리그 방: 7·8관 사천왕 넷+챔피언, 4~6관 사천왕 둘+챔피언, 1~3관 챔피언만, 0관 없음(관측탑 보스가 엔딩).
+  const LEAGUE_ROOMS = [{ key: "ice", type: "ice", name: "사천왕 · 서리" }, { key: "ghost", type: "ghost", name: "사천왕 · 등불" }, { key: "dark", type: "fighting", name: "사천왕 · 기백" },
+    { key: "dragon", type: "dragon", name: "사천왕 · 용빛" }, { key: "champ", type: undefined, name: "챔피언 · 나루" }] as const;
+  const leagueRooms = (shape.leagueRooms >= 5 ? [0, 1, 2, 3, 4] : shape.leagueRooms >= 3 ? [1, 3, 4] : shape.leagueRooms >= 1 ? [4] : []).map(i => LEAGUE_ROOMS[i]!);
+  const league = leagueRooms.map((room, i) => make(`league_${i}`, room.key !== "champ" ? `별빛 리그 · 사천왕 ${i + 1}` : "별빛 리그 · 챔피언", `rooms/league_${room.key}`, "league", "interior"));
 
   for (const [i, t] of towns.entries()) {
     const map = townMaps.get(t.key)!;
@@ -518,7 +546,12 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     const residential = [others.find(d => d !== gymDoor), gymDoor].filter((d): d is NonNullable<typeof d> => d !== undefined);
     if (!centerDoor || !martDoor || residential.length < 2) throw Error(`Current references lack four public building entrances in ${map.id}: ${JSON.stringify(doors)}`);
     attachRoom(map, center, centerDoor); attachRoom(map, mart, martDoor);
-    attachRoom(map, home, residential[0]!); attachRoom(map, i === 0 ? lab : gymMaps.get(t.key as Exclude<typeof t.key, "home">)!, residential[1]!);
+    attachRoom(map, home, residential[0]!);
+    // 0관 캠페인의 마을에는 체육관이 없다 — 체육관 건물 문은 조련사 회관(작은 모임방)으로 잇는다.
+    const gymRoom = i === 0 ? lab : gymMaps.get(t.key as Exclude<typeof t.key, "home">)
+      ?? make(`${t.key}_hall`, `${lookTown(t).name} · 조련사 회관`, "rooms/school", "town", "interior");
+    attachRoom(map, gymRoom, residential[1]!);
+    if (i > 0 && !gymMaps.has(t.key as never)) npc(gymRoom, "host", "회관 관리인", "이곳은 조련사들이 쉬어 가는 모임방이에요. 이 섬에서는 체육관 대신 도감과 탐험이 여행의 중심이랍니다.", { x: gymRoom.width >> 1, y: 5 }, [{ kind: "recoverAll" }], 5);
     npc(center, "nurse", "센터 직원", "수고했어요. 몬스터의 체력·상태·기술 횟수를 모두 회복해 드릴게요.", { x: center.width >> 1, y: 5 },
       [{ kind: "recoverAll" }, { kind: "checkpointSave", label: `${lookTown(t).name} 회복 센터` }, text("회복 완료! 메뉴에서 파티와 보관함을 관리할 수 있어요.")], 3);
     npc(mart, "shop", "도구점 주인", "포획구슬과 회복 도구를 챙겨 가세요. 약은 메뉴에서 몬스터를 골라 사용할 수 있어요.", { x: mart.width >> 1, y: 5 },
@@ -569,10 +602,11 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
   }
 
   connect(townMaps.get("home")!, school);
-  connect(townMaps.get("prism")!, museum, "mx_badge_3");
-  connect(townMaps.get("prism")!, hideout, "mx_badge_4");
-  connect(townMaps.get("summit")!, observatory, "mx_badge_8");
-  connect(townMaps.get("summit")!, league[0]!, "mx_story_beacon");
+  if (museum) connect(townMaps.get("prism")!, museum, "mx_badge_3");
+  if (hideout) connect(townMaps.get("prism")!, hideout, "mx_badge_4");
+  const finalTownMap = townMaps.get(finalKey)!;
+  connect(finalTownMap, observatory, "mx_badge_8");
+  if (league[0]) connect(finalTownMap, league[0], "mx_story_beacon");
 
   const starterCommands: Command[] = [{ kind: "choices", prompt: "첫 동료를 선택하자", options: EXPEDITION_STARTERS.map(sid => ({ text: speciesById.get(sid)!.name,
     branch: [{ kind: "giveMonster", speciesId: sid, level: 5 }, sw("mx_starter"), sw(`mx_starter_${sid}`), gain("item_capture_orb", 10), gain("item_potion", 5),
@@ -580,9 +614,10 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
   npc(lab, "professor", "천문박사", "몬스터들은 오래전부터 별빛섬의 여덟 등불을 지켜 왔단다. 밤막회사가 빛을 가져가면서 섬의 균형이 무너지고 있어.", { x: 7, y: 5 },
     [{ kind: "fork", condition: condition("mx_starter"), then: [text("메뉴의 「도감」에서 만난 동료를, 「배지」에서 현재 목표를 볼 수 있단다. 여덟 관장의 약속을 모아 보렴.", "천문박사")], else: starterCommands }], 5);
   npc(school, "teacher", "선생님", "싸운다 → 기술 선택 → 상대 선택. 몬스터가 쓰러지면 교체해야 해요. 포획은 상대 체력을 낮춘 뒤 시도해 보세요. 메뉴의 몬스터 화면에서는 보관함 이동과 새 기술 교체도 할 수 있어요.", { x: 7, y: 5 }, [{ kind: "fork", condition: condition("mx_school_gift"), then: [], else: [gain("item_potion", 1), sw("mx_school_gift")] }], 5);
-  npc(museum, "curator", "학예사", "별빛은 섬의 생명을 빼앗아 만드는 에너지가 아니에요. 여덟 지역이 서로 돌볼 때 생겨나는 빛이지요. 밤막회사는 그 뜻을 잊었습니다.", { x: 9, y: 5 }, [], 5);
+  if (museum) npc(museum, "curator", "학예사", "별빛은 섬의 생명을 빼앗아 만드는 에너지가 아니에요. 여덟 지역이 서로 돌볼 때 생겨나는 빛이지요. 밤막회사는 그 뜻을 잊었습니다.", { x: 9, y: 5 }, [], 5);
 
-  for (const [key, level, count, required] of [["lab", 5, 1, "mx_starter"], ["prism", 24, 3, "mx_badge_3"], ["summit", 46, 4, "mx_badge_7"]] as const) {
+  const rivals = [["lab", 5, 1, "mx_starter"], ...(towns.some(t => t.key === "prism") && finalKey !== "prism" ? [["prism", levels.gym(4), 3, "mx_badge_3"]] : []), [finalKey, levels.endgame(46), 4, "mx_badge_7"]] as const;
+  for (const [key, level, count, required] of rivals) {
     const map = project.maps[id(key)]!;
     battle(map, "rival", "나루", nearest(map, { x: map.width - 5, y: map.height - 5 }, connected(map), true), pickSpecies("", level, undefined, count), level,
       `mx_rival_${key}`, key === "lab" ? "우리도 같은 날 출발하는구나! 첫 동료와 짧게 겨뤄 볼래?" : "다른 길을 걸었어도 같은 별을 보고 있었네. 지금의 우리를 확인하자!",
@@ -658,47 +693,59 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     npc(map, "gym_guide", "체육관 안내원", key === "psychic" ? "같은 무늬의 워프 판은 서로 이어집니다. 돌아온 방의 다른 판을 찾아보세요." : key === "ice" ? "얼음 위에서는 벽이나 바위에 닿을 때까지 미끄러집니다. 금 간 얼음은 피하세요." : key === "fire" ? "퀴즈 기계 둘을 풀면 셔터가 열립니다. 증기 구멍을 밟으면 입구로 돌아가니 벽돌 발판으로 돌아가세요." : "장치를 조작하면 관장에게 가는 길이 열립니다. 밸브, 문양, 수련판, 바위 앞에서 확인 버튼을 누르세요.", { x: 2, y: map.height - 3 }, [], 4);
   }
 
-  for (const [i, wanted] of [{ x: 4, y: hideout.height - 5 }, { x: hideout.width - 5, y: 7 }].entries()) {
-    battle(hideout, `company_${i}`, "밤막회사 연구원", nearest(hideout, wanted, connected(hideout), true), pickSpecies("ruins", 24, undefined, 2), 24,
-      `mx_company_${i}`, "허가받지 않은 출입은 금지다. 회사의 실험을 방해하지 마라!", [text("저들은 몬스터들을 자원으로만 보고 있어… 위쪽 실험실에서 장치를 멈추자.")], i === 0 ? "mx_badge_4" : "mx_company_0");
+  if (hideout) {
+    const hideLevel = levels.side(4, 24);
+    for (const [i, wanted] of [{ x: 4, y: hideout.height - 5 }, { x: hideout.width - 5, y: 7 }].entries()) {
+      battle(hideout, `company_${i}`, "밤막회사 연구원", nearest(hideout, wanted, connected(hideout), true), pickSpecies("ruins", hideLevel, undefined, 2), hideLevel,
+        `mx_company_${i}`, "허가받지 않은 출입은 금지다. 회사의 실험을 방해하지 마라!", [text("저들은 몬스터들을 자원으로만 보고 있어… 위쪽 실험실에서 장치를 멈추자.")], i === 0 ? "mx_badge_4" : "mx_company_0");
+    }
+    const rescueAt = nearest(hideout, { x: hideout.width >> 1, y: 3 }, connected(hideout), true);
+    battle(hideout, "boss", "밤막회사 지부장 · 서준", rescueAt, pickSpecies("ruins", hideLevel + 2, undefined, 3), hideLevel + 2, "mx_story_rescue",
+      "섬의 빛은 효율적인 자원이야. 몬스터들의 마음 같은 건 계산에 넣지 않아!",
+      [text("연구 장치의 전원을 끄자 갇힌 몬스터들이 풀려났다. 박사의 연구 기록도 되찾았다."), gain("item_capture_orb", 10), ...(towns.some(t => t.key === "dune") ? [text("이제 프리즘 시티의 서쪽, 유리모래 사막으로 갈 수 있다.")] : [])], "mx_company_1");
   }
-  const rescueAt = nearest(hideout, { x: hideout.width >> 1, y: 3 }, connected(hideout), true);
-  battle(hideout, "boss", "밤막회사 지부장 · 서준", rescueAt, pickSpecies("ruins", 26, undefined, 3), 26, "mx_story_rescue",
-    "섬의 빛은 효율적인 자원이야. 몬스터들의 마음 같은 건 계산에 넣지 않아!",
-    [text("연구 장치의 전원을 끄자 갇힌 몬스터들이 풀려났다. 박사의 연구 기록도 되찾았다."), gain("item_capture_orb", 10), text("이제 프리즘 시티의 서쪽, 유리모래 사막으로 갈 수 있다.")], "mx_company_1");
   const finaleAt = nearest(observatory, { x: observatory.width >> 1, y: 3 }, connected(observatory), true);
-  battle(observatory, "boss", "밤막회사 대표 · 무영", finaleAt, pickSpecies("", 50, undefined, 4), 50, "mx_story_beacon",
-    "세상이 흔들려도 빛만 모으면 내가 질서를 만들 수 있어. 그 여덟 약속으로 나를 막아 보아라!",
-    [text("여덟 배지의 빛과 동료들의 울음이 하나로 모였다. 오래된 등대가 다시 별빛섬을 비추기 시작했다."), text("빛은 누군가의 소유가 아니었어. 이제… 나도 섬을 다시 배워야겠군.", "무영"), { kind: "recoverAll" }, text("별빛 리그의 문이 열렸다. 용마루 시티에서 마지막 도전을 시작하자.")], "mx_badge_8", audio.league);
+  const finalName = lookTown(towns[shape.finalTown]!).name;
+  battle(observatory, "boss", "밤막회사 대표 · 무영", finaleAt, pickSpecies("", levels.endgame(50), undefined, 4), levels.endgame(50), "mx_story_beacon",
+    gymCount === 0 ? "세상이 흔들려도 빛만 모으면 내가 질서를 만들 수 있어. 이 섬을 걸어 다닌 네 동료들의 힘으로 나를 막아 보아라!" : "세상이 흔들려도 빛만 모으면 내가 질서를 만들 수 있어. 그 여덟 약속으로 나를 막아 보아라!",
+    [text(gymCount === 0 ? "섬을 걸으며 모은 동료들의 울음이 하나로 모였다. 오래된 등대가 다시 별빛섬을 비추기 시작했다." : "여덟 배지의 빛과 동료들의 울음이 하나로 모였다. 오래된 등대가 다시 별빛섬을 비추기 시작했다."), text("빛은 누군가의 소유가 아니었어. 이제… 나도 섬을 다시 배워야겠군.", "무영"), { kind: "recoverAll" },
+      ...(gymCount === 0
+        ? [text("등대가 환하게 켜졌다. 이 섬의 모험은 이제 여러분의 것이다!"), sw("mx_ending"), { kind: "checkpointSave", label: "별빛섬의 등대" } as Command, music(audio.ending), { kind: "triggerEnding", endingId: "mx_ending_starlight" } as Command]
+        : [text(`별빛 리그의 문이 열렸다. ${finalName}에서 마지막 도전을 시작하자.`)])], "mx_badge_8", audio.league);
 
   for (const [i, map] of league.entries()) {
-    const type = ["ice", "ghost", "fighting", "dragon", undefined][i];
+    const room = leagueRooms[i]!, last = i === league.length - 1;
     const at = nearest(map, { x: map.width >> 1, y: 4 }, connected(map), true);
     const won = `mx_league_${i + 1}`;
-    const reward: Command[] = [text(i < 4 ? "다음 방에서 더 큰 도전이 기다리고 있다." : "끝까지 동료들을 믿었구나. 이제 별빛섬의 챔피언은 너야!", i === 4 ? "나루" : "사천왕")];
-    if (i === 4) reward.push(sw("mx_ending"), { kind: "checkpointSave", label: "별빛섬 챔피언" }, music(audio.ending), { kind: "triggerEnding", endingId: "mx_ending_starlight" });
-    battle(map, "league_challenge", ["사천왕 · 서리", "사천왕 · 등불", "사천왕 · 기백", "사천왕 · 용빛", "챔피언 · 나루"][i]!, at,
-      pickSpecies("", 50 + i * 2, type, i === 4 ? 6 : 4), 50 + i * 2, won, i === 4 ? "같은 마을에서 출발한 우리가 여기서 다시 만났네. 마지막 한 번, 온 마음으로 싸우자!" : "여덟 지역의 약속을 지닌 여행자여, 리그의 시련을 받아라!", reward,
+    const reward: Command[] = [text(!last ? "다음 방에서 더 큰 도전이 기다리고 있다." : "끝까지 동료들을 믿었구나. 이제 별빛섬의 챔피언은 너야!", last ? "나루" : "사천왕")];
+    if (last) reward.push(sw("mx_ending"), { kind: "checkpointSave", label: "별빛섬 챔피언" }, music(audio.ending), { kind: "triggerEnding", endingId: "mx_ending_starlight" });
+    const leagueLevel = levels.endgame(50 + (shape.leagueRooms >= 5 ? i : leagueRooms.length === 3 ? [1, 3, 4][i]! : 4) * 2);
+    // 이 레벨에 그 타입의 종이 없으면(짧은 캠페인의 낮은 레벨) 타입 없이 고른다.
+    const type = room.type && EXPEDITION_SPECIES.some(sp => sp.stage > 0 && sp.types.includes(room.type!) && minimumLevel(sp.id) <= leagueLevel) ? room.type : undefined;
+    battle(map, "league_challenge", room.name, at,
+      pickSpecies("", leagueLevel, type, last ? 6 : 4), leagueLevel, won, last ? "같은 마을에서 출발한 우리가 여기서 다시 만났네. 마지막 한 번, 온 마음으로 싸우자!" : `${gymCount >= FULL_GYMS ? "여덟" : gymWord(gymCount)} 지역의 약속을 지닌 여행자여, 리그의 시련을 받아라!`, reward,
       i === 0 ? "mx_story_beacon" : `mx_league_${i}`, audio.league);
-    if (i < league.length - 1) connect(map, league[i + 1]!, won);
+    if (!last) connect(map, league[i + 1]!, won);
     else npc(map, "return_home", "리그 안내원", "챔피언이 되어도 모험은 계속됩니다. 고향으로 돌아가 희귀 몬스터와 도감을 탐험해 보세요.", { x: 3, y: map.height - 4 },
       [{ kind: "fork", condition: condition("mx_ending"), then: [transfer(townMaps.get("home")!, entries.get(id("home"))!)], else: [text("먼저 챔피언에게 도전해 주세요.")] }], 4);
   }
 
-  const deck = make("ship_deck", "별바람호 · 갑판", "rooms/ship_deck", "coast", "interior");
-  const corridor = make("ship_corridor", "별바람호 · 복도", "rooms/ship_corridor", "coast", "interior");
-  const cabin = make("ship_cabin", "별바람호 · 선실", "rooms/ship_cabin", "coast", "interior");
-  connect(townMaps.get("harbor")!, deck, "mx_badge_2"); connect(deck, corridor); connect(corridor, cabin);
-  npc(cabin, "captain", "별바람호 선장", "한 번 방문한 마을로 데려다줄게. 돌아가는 길에서도 새 친구를 만날 수 있지.", { x: 4, y: 4 },
-    [{ kind: "choices", prompt: "어디로 갈까?", options: [{ text: "서쪽 지역", branch: [{ kind: "choices", options: towns.slice(0, 5).map(t => ({ text: t.name, branch: [{ kind: "fork", condition: condition(`mx_visit_${t.key}`),
-      then: [transfer(townMaps.get(t.key)!, entries.get(id(t.key))!)], else: [text("아직 방문하지 않은 마을이야. 먼저 육로로 길을 열어 줘.", "선장")] }] })), cancelBehavior: "branch", cancelBranch: [] }] }, { text: "동쪽 지역", branch: [{ kind: "choices", options: towns.slice(5).map(t => ({ text: t.name, branch: [{ kind: "fork", condition: condition(`mx_visit_${t.key}`), then: [transfer(townMaps.get(t.key)!, entries.get(id(t.key))!)], else: [text("아직 방문하지 않은 마을이야.", "선장")] }] })), cancelBehavior: "branch", cancelBranch: [] }] }], cancelBehavior: "branch", cancelBranch: [] }], 7);
+  if (townMaps.has("harbor")) {
+    const deck = make("ship_deck", "별바람호 · 갑판", "rooms/ship_deck", "coast", "interior");
+    const corridor = make("ship_corridor", "별바람호 · 복도", "rooms/ship_corridor", "coast", "interior");
+    const cabin = make("ship_cabin", "별바람호 · 선실", "rooms/ship_cabin", "coast", "interior");
+    connect(townMaps.get("harbor")!, deck, "mx_badge_2"); connect(deck, corridor); connect(corridor, cabin);
+    npc(cabin, "captain", "별바람호 선장", "한 번 방문한 마을로 데려다줄게. 돌아가는 길에서도 새 친구를 만날 수 있지.", { x: 4, y: 4 },
+      [{ kind: "choices", prompt: "어디로 갈까?", options: [{ text: "서쪽 지역", branch: [{ kind: "choices", options: towns.slice(0, 5).map(t => ({ text: t.name, branch: [{ kind: "fork", condition: condition(`mx_visit_${t.key}`),
+        then: [transfer(townMaps.get(t.key)!, entries.get(id(t.key))!)], else: [text("아직 방문하지 않은 마을이야. 먼저 육로로 길을 열어 줘.", "선장")] }] })), cancelBehavior: "branch", cancelBranch: [] }] }, ...(towns.length > 5 ? [{ text: "동쪽 지역", branch: [{ kind: "choices", options: towns.slice(5).map(t => ({ text: t.name, branch: [{ kind: "fork", condition: condition(`mx_visit_${t.key}`), then: [transfer(townMaps.get(t.key)!, entries.get(id(t.key))!)], else: [text("아직 방문하지 않은 마을이야.", "선장")] }] })), cancelBehavior: "branch", cancelBranch: [] }] }] : [])], cancelBehavior: "branch", cancelBranch: [] }], 7);
+  }
 
   for (const [i, sid] of EXPEDITION_LEGENDARIES.entries()) {
     const record = EXPEDITION_SPECIES.find(s => s.id === sid)!;
     const candidates = Object.values(project.maps).filter(m => sources.get(m.id)?.tilesetId && (sides.find(s => id(s.key) === m.id)?.habitat === record.habitat));
     const map = candidates[0] ?? observatory;
     const at = nearest(map, { x: map.width - 4, y: 4 + i }, connected(map), true);
-    const tid = troop(`희귀 몬스터 · ${record.name}`, `legendary_${i}`, [sid], 55, false);
+    const tid = troop(`희귀 몬스터 · ${record.name}`, `legendary_${i}`, [sid], levels.endgame(55), false);
     const caught = `mx_legendary_${i}_encountered`;
     event(map, `legendary_${i}`, at, [{ kind: "fork", condition: condition("mx_ending"), then: [{ kind: "fork", condition: condition(caught), then: [text("별빛의 흔적이 남아 있다. 이 몬스터는 주변 서식지에서도 아주 드물게 나타난다.")], else: [text(`${record.name}이 별빛을 따라 모습을 드러냈다!`),
       { kind: "battleProcessing", troopId: tid, canEscape: true, canLose: true, branchOnResult: true,
@@ -717,13 +764,13 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     badges: gymPersonas.map((g, i) => ({ id: `badge_${i + 1}`, name: g.badge, switchId: `mx_badge_${i + 1}`, cityMapId: id(g.town) })),
     locations: [...towns.map(t => ({ mapId: id(t.key), name: lookTown(t).name, x: t.x, y: t.y, kind: "town" as const })),
       ...routes.map((r, i) => ({ mapId: id(r.key), name: r.name, x: (towns[i]!.x + towns[i + 1]!.x) / 2, y: (towns[i]!.y + towns[i + 1]!.y) / 2, kind: "route" as const })),
-      { mapId: observatory.id, name: observatory.name, x: 4, y: 2, kind: "dungeon" }, { mapId: league[0]!.id, name: "별빛 리그", x: 4, y: 0, kind: "league" }],
+      { mapId: observatory.id, name: observatory.name, x: 4, y: 2, kind: "dungeon" }, ...(league[0] ? [{ mapId: league[0].id, name: "별빛 리그", x: 4, y: 0, kind: "league" as const }] : [])],
     objectives: [{ id: "starter", title: "별싹 마을 북동쪽 연구소에서 천문박사와 첫 동료를 만나라.", switchId: "mx_starter" },
       ...gymPersonas.flatMap((g, i) => [ ...(i === 4 ? [{ id: "rescue", title: "프리즘 시티의 별빛 연구소에서 갇힌 몬스터를 구하라.", switchId: "mx_story_rescue", requiresSwitchId: "mx_badge_4" }] : []),
         { id: `gym_${i + 1}`, title: `${lookTown(towns[i + 1]!).name}의 ${g.name}에서 ${g.badge}를 받아라.`, switchId: `mx_badge_${i + 1}`, requiresSwitchId: i === 0 ? "mx_starter" : i === 4 ? "mx_story_rescue" : `mx_badge_${i}` } ]),
-      { id: "beacon", title: "용마루 시티의 옛 별 관측탑에서 밤막회사를 막고 등대를 복구하라.", switchId: "mx_story_beacon", requiresSwitchId: "mx_badge_8" },
-      { id: "league", title: "별빛 리그의 사천왕과 챔피언 나루에게 도전하라.", switchId: "mx_ending", requiresSwitchId: "mx_story_beacon" }] };
-  project.endings = [{ id: "mx_ending_starlight", name: "여덟 빛의 약속", conditions: [condition("mx_ending")], priority: 100,
+      { id: "beacon", title: `${finalName}의 옛 별 관측탑에서 밤막회사를 막고 등대를 복구하라.`, switchId: "mx_story_beacon", requiresSwitchId: gate("mx_badge_8")! },
+      ...(league[0] ? [{ id: "league", title: "별빛 리그의 사천왕과 챔피언 나루에게 도전하라.", switchId: "mx_ending", requiresSwitchId: "mx_story_beacon" }] : [])] };
+  project.endings = [{ id: "mx_ending_starlight", name: gymCount >= FULL_GYMS ? "여덟 빛의 약속" : gymCount > 0 ? `${gymWord(gymCount)} 빛의 약속` : "별빛섬의 등대", conditions: [condition("mx_ending")], priority: 100,
     presentation: { tone: "warm", musicResourceId: audio.ending, credits: "별빛섬 몬스터 원정\n기획·맵·이벤트: OPRN Studio\n몬스터·타일·음악: 오리지널 좌표 도트와 작곡\n함께 걸어 준 모든 동료에게" } }];
   // 야생에게 지면 원작처럼 마지막으로 들른 회복 센터(직원의 checkpointSave)에서 깨어난다. 들른 적이 없으면 집.
   project.system.gameOver = { outcome: "recover", presentation: "blackout", title: "다시 시작할 수 있어", message: "동료들과 함께 회복 센터에서 쉬었다." };
@@ -733,7 +780,7 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
   project.session.inventory = {}; project.session.gold = 1600;
   project.session.switches = Object.fromEntries(project.switches.map(s => [s.id, false]));
   const allSwitches = new Set<string>(["mx_starter", "mx_story_rescue", "mx_story_beacon", "mx_ending", ...towns.map(t => `mx_visit_${t.key}`),
-    ...gyms.flatMap((_, i) => [`mx_badge_${i + 1}`, `mx_gym_${i + 1}_puzzle`]), ...manifest.battles.flatMap(b => b.victorySwitch ? [b.victorySwitch] : [])]);
+    ...gymPersonas.flatMap((_, i) => [`mx_badge_${i + 1}`, `mx_gym_${i + 1}_puzzle`]), ...manifest.battles.flatMap(b => b.victorySwitch ? [b.victorySwitch] : [])]);
   for (const sid of allSwitches) if (!project.switches.some(s => s.id === sid)) project.switches.push({ id: sid, name: sid });
   event(hometown, "opening", start, [],
     { trigger: "auto", below: true, pages: [{ id: "mx_intro_page", name: "여행의 시작", conditions: [{ kind: "switch", switchId: "mx_intro", value: false }], graphic: invisible,
