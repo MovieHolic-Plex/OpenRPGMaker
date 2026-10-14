@@ -19,7 +19,7 @@ describe("execution role by kind of work", () => {
       roleModels: { deep: { provider: "openai-codex", model: "gpt-6.1-sol", thinkingLevel: "medium" } } } as unknown as AiConfig;
     expect(modelForRole(config, "build")).toEqual(modelForRole(config, "deep"));
     const seeded = configForProviderSelection(config, "openai-codex", true);
-    expect(seeded.roleModels?.build).toEqual({ provider: "google-antigravity", model: "gemini-3.8-flash", thinkingLevel: "medium" });
+    expect(seeded.roleModels?.build).toEqual({ provider: "google-antigravity", model: "gemini-4-argon", thinkingLevel: "medium" });
     expect(seeded.roleModels?.deep?.model).toBe("gpt-6.1-sol");
   });
 });

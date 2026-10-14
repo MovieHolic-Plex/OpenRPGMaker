@@ -17,10 +17,10 @@ describe("independent specialist selections", () => {
       .toMatchObject({ providerId: "openai-codex", model: "future-vision", reasoningEffort: "high", apiKey: "" });
     const config = { ...defaultAiConfig(), roleModels: { ...roleModels, deep: { provider: "openai-codex", model: "deep-selected", thinkingLevel: "high" as const } } };
     expect(resolveSurfaceAiConfig("tileset-analysis", config)).toMatchObject({ model: "future-vision", providerId: "openai-codex", reasoningEffort: "high" });
-    expect(resolveSurfaceAiConfig("structure-kit", config)).toMatchObject({ model: "gemini-3.8-flash", providerId: "google-antigravity" });
+    expect(resolveSurfaceAiConfig("structure-kit", config)).toMatchObject({ model: "gemini-4-argon", providerId: "google-antigravity" });
     expect(resolveSurfaceAiConfig("region", config)).toMatchObject({ model: "deep-selected", reasoningEffort: "high" });
     expect(configForLiteModel(config)).toMatchObject({ providerId: "openai-codex", model: "deep-selected", reasoningEffort: "high" });
-    expect(configForLegacySupervisor(config)).toMatchObject({ providerId: "google-antigravity", model: "gemini-3.8-flash", reasoningEffort: "high", maxTokens: config.maxTokens });
+    expect(configForLegacySupervisor(config)).toMatchObject({ providerId: "google-antigravity", model: "gemini-4-argon", reasoningEffort: "high", maxTokens: config.maxTokens });
     expect(parseRoleModels({ deep: { model: "", provider: 4 }, writer: null })).toEqual({});
   });
 });

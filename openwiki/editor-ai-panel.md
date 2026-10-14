@@ -1246,10 +1246,16 @@ Ultrabrain for supervisor surfaces. Cast-sheet prose uses Writer. The small inte
 classifier remains a non-reasoning, 4096-token routing call; it must not inherit
 Deep's expensive effort or the editor's 200000 output budget. Legacy/test configs
 without role selections retain their prior behavior.
+**조수 기본 = Google · Gemini 4 Argon · medium (사용자 결정 2026-10-14).** 새로 설정하는 사용자의 `defaultAiConfig()` 는 계획·실행(deep)·시각·작문·시공(build) 다섯 슬롯을
+전부 `google-antigravity` / `gemini-4-argon` / `medium` 으로 둔다(감독 ultrabrain 검수만 `high`). `RECOMMENDED_OH_MY_PI_PROVIDER` 는 Google 이고 제공자 목록도 Google 이 맨 앞이다.
+설정 모달 「역할별 모델 직접 지정」에서 모델(Argon 은 카탈로그 첫 항목)과 추론 강도를 슬롯마다 바꿀 수 있다. **이미 저장된 설정은 그대로 읽는다** — 옛 공장 기본(3.7/3.8-flash)만 Argon 으로 소급되고,
+사용자가 고른 ChatGPT(gpt-6.1-sol)와 직접 지정한 슬롯은 건드리지 않는다. ChatGPT 로 바꾸면 시공·작문은 여전히 Argon medium 이다. 실조수 시험(스크립트 `scripts/qa/*live*`·`assistant-*`)도 이 기본을 쓴다.
+옛 근거(2026-10-07 12과제: gpt-6.1-sol 11/12, gemini-3.8-flash 7/12)는 이력이다.
+
 **Build(시공) 역할 (2026-10-08).** 실행 모델을 일의 종류로 나눈다. `src/ai/buildRole.ts` 의 `executionRoleFor(task, initialToolNames)` 가
 장르 프리셋 기획(게임 전체 짓기)이거나 첫 노출 도구 중 tile·world 영역 또는 map 쓰기 도구가 있으면 `build`, 아니면 `deep` 을 고르고
 `runPiCommand` 가 그 역할 모델로 실행한다(`roleModels.build` 가 없으면 `deep` 과 같다 — 옛 설정은 동작이 그대로다).
-ChatGPT 계정을 연결하면 작문과 같이 시공도 `gemini-3.8-flash` 로 채운다(`providerSelection.ts` `BUILD_FOR_PROVIDER`).
+ChatGPT 계정을 연결하면 작문과 같이 시공도 `gemini-4-argon` 으로 채운다(`providerSelection.ts` `BUILD_FOR_PROVIDER`).
 설정 모달 「역할별 모델 직접 지정」에 「시공」 행이 있고, 시공 행이 실행 행과 같으면 저장하지 않는다(비우면 실행 모델을 따른다).
 근거: 장르 시험에서 같은 기획 전체 짓기가 Gemini 10분·자동 플레이 끝까지 통과, GPT 50분·보스 스위치에서 막힘. 작은 수정은 GPT 12/12·Gemini 11/12.
 판정은 Pi 워커의 `spatialWork`(지시문의 공간 줄을 싣는 판정)와 같지만, 도구 목록이 없을 때 지시문은 싣고 모델은 바꾸지 않는다. 스튜디오 레인(`aiLaneManager`)은 아직 deep 이다.
@@ -1325,14 +1331,14 @@ A/B(맵 id 해시로 자리 고정 섞기)로 보여 주고 `{"winner":"A"|"B"|"
 카드를 유지한다. 회귀: `test/ultrabrainReview.test.ts`(재시도·정확한 사유·재시도 안 하는 취소).
 
 AI settings exposes five role sections, including **Ultrabrain · 계획과 최종 판단**.
-`ultrabrainConfig.ts` defaults to Google Antigravity / `gemini-3.8-flash` / `high`.
+`ultrabrainConfig.ts` defaults to Google Antigravity / `gemini-4-argon` / `high` (migrated from `gemini-3.8-flash` on 2026-10-14).
 Writer model/provider changes and the autonomy dial do not overwrite it. These preferences
 live in `oprn:ai-config`, not the project database. No new credential store is used.
 
 The old 2026-09-10 claim that catalog absence proves Gemini 3.8 is unavailable is obsolete.
-OMP 17.4's bundled catalog is still missing it, but direct OAuth wire `gemini-3.8-flash-high`
-with `thinkingLevel: HIGH` returned OK on 2026-09-14. `scripts/lib/ohMyPiModel.ts` provides a
-narrow compatibility entry using 3.7's transport metadata until upstream includes 3.8.
+OMP 17.4's bundled catalog is still missing Gemini 3.8 Flash and Gemini 4 Argon, but direct OAuth wire `gemini-4-argon-{low,medium,high}` (2026-10-14) and `gemini-3.8-flash-high` (2026-09-14)
+with `thinkingLevel` returned OK. `scripts/lib/ohMyPiModel.ts` provides
+compatibility entries using 3.7's transport metadata until upstream includes them.
 Both Pi and completion use this exact resolver. Unknown explicit IDs now fail instead of
 silently changing models; `loadAiConfig` also preserves explicit IDs. Completion uses
 `completeSimple` and maps the envelope's reasoning effort and output limit into SDK options,

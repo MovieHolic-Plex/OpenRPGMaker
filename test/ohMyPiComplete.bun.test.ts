@@ -71,9 +71,23 @@ function responseWithUrl(body: string, url: string): Response {
 }
 
 describe("oh-my-pi complete (real pi-ai + mock fetch)", () => {
-  test("Gemini 3.8 high and image reach the exact wire without model substitution", async () => {
+  test("Gemini 4 Argon and 3.8 high and image reach the exact wire without model substitution", async () => {
     const payloads: Record<string, any>[] = [];
     const response = { response: { candidates: [{ content: { role: "model", parts: [{ text: "OK" }] }, finishReason: "STOP" }] } };
+    const argonResult = await completeProvider("google-antigravity", {
+      model: "gemini-4-argon", reasoning: { effort: "high" }, max_tokens: 256,
+      messages: [{ role: "user", content: [{ type: "text", text: "review" }, { type: "image_url", image_url: { url: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aY9sAAAAASUVORK5CYII=" } }] }],
+    }, { apiKey: JSON.stringify({ token: "test-access", projectId: "test-project" }),
+      fetch: async (_input, init) => {
+        payloads.push(JSON.parse(String(init?.body)));
+        return new Response(`data: ${JSON.stringify(response)}\n\n`, { headers: { "Content-Type": "text/event-stream" } });
+      },
+    });
+    expect(payloads[0]?.model).toBe("gemini-4-argon-high");
+    expect(payloads[0]?.request.generationConfig.thinkingConfig.thinkingLevel).toBe("HIGH");
+    expect(argonResult.completion).toMatchObject({ model: "gemini-4-argon", image_delivery: [{ messageIndex: 0, partIndex: 1 }] });
+
+    payloads.length = 0;
     const result = await completeProvider("google-antigravity", {
       model: "gemini-3.8-flash", reasoning: { effort: "high" }, max_tokens: 256,
       messages: [{ role: "user", content: [{ type: "text", text: "review" }, { type: "image_url", image_url: { url: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aY9sAAAAASUVORK5CYII=" } }] }],
