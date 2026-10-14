@@ -267,7 +267,118 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
         }),
       ] })] : []),
     );
+    renderResumeHero();
+    renderRailRecent();
   };
+  const resumeHero = el("section", { class: "cf-resume-hero", attrs: { "aria-label": "이어하기" } });
+  const railRecent = el("div", { class: "cf-rail-recent", attrs: { "aria-label": "최근 프로젝트" } });
+  const scrollBehavior = (): ScrollBehavior => window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+  const scrollBodyTo = (body: HTMLElement, top: number): void => { body.scrollTo({ top, behavior: scrollBehavior() }); };
+  const scrollBodyToElement = (body: HTMLElement, target: HTMLElement, offset = 16): void => {
+    const bodyRect = body.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
+    scrollBodyTo(body, Math.max(0, body.scrollTop + targetRect.top - bodyRect.top - offset));
+  };
+  const launcherRail = el("aside", {
+    class: "cf-rail",
+    attrs: { "aria-label": "주 탐색" },
+    children: [
+      el("div", { class: "cf-rail-brand", children: [
+        el("span", { class: "cf-rail-mark", text: "O", attrs: { "aria-hidden": "true" } }),
+        el("span", { children: [
+          el("strong", { text: "OPRN Studio" }),
+          el("small", { text: "게임을 만드는 홈" }),
+        ] }),
+      ] }),
+      el("nav", { class: "cf-rail-nav", attrs: { "aria-label": "시작 화면 메뉴" }, children: [
+        el("button", { class: "cf-rail-nav-item is-active", attrs: { type: "button", "aria-current": "page" }, text: "홈", on: { click: () => {
+          const body = host.querySelector<HTMLElement>(".cf-body");
+          if (body) { feed?.returnToFeed(); scrollBodyTo(body, 0); }
+        } } }),
+        el("button", { class: "cf-rail-nav-item", attrs: { type: "button" }, text: "탐색", on: { click: () => {
+          host.querySelector<HTMLInputElement>(".cf-search-input")?.focus();
+        } } }),
+        el("button", { class: "cf-rail-nav-item", attrs: { type: "button" }, text: "내 프로젝트", on: { click: () => {
+          const body = host.querySelector<HTMLElement>(".cf-body");
+          if (body && feed?.returnToFeed()) {
+            const chips = host.querySelector<HTMLElement>(".cf-chips");
+            scrollBodyToElement(body, continueRow, (chips?.getBoundingClientRect().height ?? 0) + 16);
+          }
+        } } }),
+        el("button", { class: "cf-rail-nav-item", attrs: { type: "button" }, text: "템플릿", on: { click: () => {
+          const body = host.querySelector<HTMLElement>(".cf-body");
+          const target = host.querySelector<HTMLElement>(".cf-quick");
+          if (body && target && feed?.returnToFeed()) scrollBodyToElement(body, target);
+        } } }),
+      ] }),
+      el("p", { class: "cf-rail-label", text: "최근 열기" }),
+      railRecent,
+      el("div", { class: "cf-rail-foot", children: [
+        el("span", { class: "cf-rail-foot-title", text: "로컬 워크스페이스" }),
+        el("span", { class: "cf-rail-foot-sub", text: "작업은 이 컴퓨터에 저장됩니다." }),
+      ] }),
+    ],
+  });
+
+  const renderResumeHero = (): void => {
+    const { visible } = partitionRecentEntries(state.entries);
+    const entry = visible[0];
+    resumeHero.replaceChildren();
+    resumeHero.hidden = false;
+    if (!state.loaded) {
+      resumeHero.classList.remove("is-empty");
+      resumeHero.setAttribute("aria-busy", "true");
+      resumeHero.append(
+        el("div", { class: "cf-resume-copy", children: [
+          el("span", { class: "cf-resume-kicker", text: "최근 작업" }),
+          el("h1", { text: "최근 프로젝트를 불러오는 중…" }),
+          el("p", { text: "작업 목록을 준비하고 있습니다." }),
+        ] }),
+      );
+      return;
+    }
+    resumeHero.removeAttribute("aria-busy");
+    if (!entry) {
+      resumeHero.classList.add("is-empty");
+      resumeHero.append(
+        el("div", { class: "cf-resume-copy", children: [
+          el("span", { class: "cf-resume-kicker", text: "새로운 작업" }),
+          el("h1", { text: "다시 만들 시간이에요." }),
+          el("p", { text: "컨셉을 골라 다음 게임의 출발점을 만들어 보세요." }),
+          el("button", { class: "cf-resume-action", attrs: { type: "button" }, text: "새 게임 시작", on: { click: createBlank } }),
+        ] }),
+      );
+      return;
+    }
+    resumeHero.classList.remove("is-empty");
+    resumeHero.append(
+      coverArt(entry, "cf-resume-art"),
+      el("div", { class: "cf-resume-copy", children: [
+        el("span", { class: "cf-resume-kicker", text: "최근 작업" }),
+        el("h1", { text: entry.title, attrs: { translate: "no" } }),
+        el("p", { text: entryMeta(entry) || "마지막으로 작업하던 프로젝트를 이어가세요." }),
+        el("button", { class: "cf-resume-action", attrs: { type: "button" }, text: "계속 편집하기", on: { click: () => openEntry(entry) } }),
+      ] }),
+    );
+  };
+
+  const renderRailRecent = (): void => {
+    const { visible } = partitionRecentEntries(state.entries);
+    railRecent.replaceChildren(...visible.slice(0, 4).map((entry, index) => el("button", {
+      class: "cf-rail-recent-item",
+      attrs: { type: "button", "aria-label": entry.title + " 열기" },
+      dataset: { testid: START_SCREEN_TESTIDS.recentCard + "-rail-" + index },
+      on: { click: () => openEntry(entry) },
+      children: [
+        coverArt(entry, "cf-rail-recent-art"),
+        el("span", { class: "cf-rail-recent-copy", children: [
+          el("strong", { text: entry.title, attrs: { translate: "no" } }),
+          el("small", { text: entryMeta(entry) }),
+        ] }),
+      ],
+    })));
+  };
+
 
   // ── 피드 ──────────────────────────────────────────────────────────────
   const topButton = (label: string, testid: string, icon: "folder" | "team", onClick: () => void): HTMLElement => el("button", {
@@ -284,6 +395,8 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     mode: "launcher",
     source,
     continueRow,
+    launcherRail,
+    launcherHero: resumeHero,
     topActions: [
       topButton("폴더 열기", START_SCREEN_TESTIDS.openFolder, "folder", openFolder),
       topButton("팀에 참여", START_SCREEN_TESTIDS.joinTeam, "team", () => showView("join")),
