@@ -4,6 +4,8 @@ export const OPRN_CHANNELS = {
   windowControl: "oprn:window.control",
   /** 데스크톱 앱 창의 네이티브 전체화면 여부(조회)와 변화 알림(푸시)을 같은 이름으로 오간다. */
   windowFullscreen: "oprn:window.fullscreen",
+  /** 최대화·전체화면 상태 조회(invoke)와 변화 알림(push). 같은 이름으로 오간다. */
+  windowState: "oprn:window.state",
   teamStatus: "oprn:team.status",
   teamInvite: "oprn:team.invite",
   teamRevoke: "oprn:team.revoke",

@@ -57,6 +57,8 @@
 **전면 자동 적용은 금지다.** 글자가 이미 보이는 버튼에 붙이면 소음이고, 806곳의 `title` 을
 일괄 변환하면 대화 상자 제목까지 끌려온다. 새 대상은 롤아웃 표에 줄을 더해 넣는다.
 
+데스크톱 창 단추(`src/start/windowControls.ts`)는 라벨이 상태에 따라 바뀌어(최대화↔이전 크기로) 롤아웃 표 대신 `attachDelayedTooltip` 을 직접 붙인다 — `openwiki/desktop-window-controls.md`.
+
 ## 설치 지점
 
 `renderTopbar`(`src/editor/panels/menu.ts`), `renderTilesetEditor`
