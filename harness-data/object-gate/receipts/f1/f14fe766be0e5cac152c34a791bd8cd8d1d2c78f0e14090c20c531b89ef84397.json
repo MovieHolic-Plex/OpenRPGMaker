@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f14fe766be0e5cac152c34a791bd8cd8d1d2c78f0e14090c20c531b89ef84397",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "prehistoric stone-age lava",
+ "label": "prehistoric/ph-lava-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lava terrain surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 terrain tile depicting lava/magma surface; fits top-down terrain perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3007
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lava ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting molten lava / magma ground surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2705
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lava terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain texture showing molten lava with patches of yellow glow, orange fluid, and darker crust across the full 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4495
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lava terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless lava ground texture filling the entire 16x16 tile, appropriate top-down floor terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3741
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.791Z",
+ "cells": {
+  "16": [
+   "ed0ef7e333ba6e47"
+  ],
+  "24": [
+   "5f76d9fae480940a",
+   "6e7a60960ed219de",
+   "7507b62dbb72b877",
+   "a1e0882e4fbe531e",
+   "bb26dbf74785c7a7",
+   "cbeb45f02cea211a"
+  ],
+  "32": [
+   "0cf5b78587cca6cf",
+   "2438262653f8c7d9",
+   "547675cd7e9b87f8",
+   "99cabf8ce0a4681e",
+   "bf329b717ce56a43",
+   "c707d21c50229017"
+  ],
+  "48": [
+   "176cced3faa25a8f",
+   "2a21b1a49cca4ac7",
+   "6236f06dd615e579",
+   "a3331a03ef46665a",
+   "c01d03f4472252d9",
+   "f0767d24edbc05b5"
+  ]
+ }
+}

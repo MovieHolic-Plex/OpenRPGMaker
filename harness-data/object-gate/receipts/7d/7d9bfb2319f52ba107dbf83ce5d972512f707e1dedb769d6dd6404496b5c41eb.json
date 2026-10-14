@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7d9bfb2319f52ba107dbf83ce5d972512f707e1dedb769d6dd6404496b5c41eb",
+ "width": 32,
+ "height": 16,
+ "kind": "organic",
+ "name": "prehistoric stone-age woodpile",
+ "label": "prehistoric/ph-woodpile",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pile of firewood logs aligned north-south",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The firewood logs are stacked pointing north-south, showing their foreshortened cylindrical lengths stepping downward/forward across rows 2–13 in proper 3/4 perspective rather than just circular front-facing cut ends.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7952
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "woodpile of stacked logs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The woodpile is drawn in flat front elevation with vertical segments/logs and no foreshortened top surfaces visible from the top-down 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4334
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "woodpile / stacked logs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stacked woodpile is rendered as a flat 2D silhouette/front elevation with no foreshortened top surfaces visible on the logs.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4262
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "woodpile / stacked logs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stacked woodpile is drawn entirely in front elevation with no visible top surface receding northward; the upper logs at rows 1-2 terminate with a 1px outline rather than foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5148
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.802Z",
+ "cells": {
+  "16": [
+   "0122fd0bdf530d24",
+   "fab8abae0c57a106"
+  ],
+  "24": [
+   "0af6b5d1814f2869",
+   "0fb49a174979ef53",
+   "350dc380715bc8d5",
+   "4f535a0bc4a6c0b7",
+   "6c54ea652da58dc1",
+   "6db2ef99f0d7a435",
+   "7ea64e395bf8d356",
+   "8d9ed17057c0a903",
+   "9893579fdb0364ad",
+   "ad68126664c4160b",
+   "e3fc55cdf8852072",
+   "f78de172cf541c22"
+  ],
+  "32": [
+   "6ddaf64fd6830a3a",
+   "97a015f9766a5d3d"
+  ],
+  "48": [
+   "04a24fc7d6b0d88b",
+   "1f69552713612245",
+   "36c5644114c91531",
+   "43b83d76a11ad9a1",
+   "c7ec30c0228194cb",
+   "e64eaa49a8fa8c07"
+  ]
+ }
+}

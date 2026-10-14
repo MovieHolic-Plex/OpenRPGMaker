@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0c7f2e9432a91aa91cd712216e1409a33ae490f7924090c7bb19140d60538078",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "prehistoric stone-age floor hut",
+ "label": "prehistoric/ph-floor-hut",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hut dirt floor",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground/floor terrain tile showing dirt and straw debris across the entire 16x16 surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3093
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "16x16 earthen floor surface with scattered straw fragments, properly drawn as flat terrain seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2618
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dirt/hut floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 dirt floor terrain tile with scattered straw and small stones, viewed as a top-down ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2835
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dirt/straw hut floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile depicting dirt and scattered straw/debris across the full 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4126
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.807Z",
+ "cells": {
+  "16": [
+   "a725b1c22f64dde3"
+  ],
+  "24": [
+   "7e0db271d21d28fe",
+   "a13e590399ce43d9",
+   "c6d2749d7fa0289d",
+   "cd8564082754d856",
+   "f49ed41c07ca6395",
+   "fd151ac0d0f3a901"
+  ],
+  "32": [
+   "040d11381f9ed423",
+   "0f492b766231975e",
+   "2172e888a9781fc9",
+   "7022dce3c10336e2",
+   "d5efb2b2788c3a2a",
+   "e7f872b182719617"
+  ],
+  "48": [
+   "2162bb8c6b17a50f",
+   "a65b9fcce3dc4564",
+   "bafb47d099fd29f3",
+   "d43f098181ca5bde",
+   "e06139de7e9e56d1",
+   "eac85ae4e99b3cb1"
+  ]
+ }
+}

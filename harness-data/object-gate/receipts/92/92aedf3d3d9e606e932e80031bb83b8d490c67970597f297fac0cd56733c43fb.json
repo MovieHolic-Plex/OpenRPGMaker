@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "92aedf3d3d9e606e932e80031bb83b8d490c67970597f297fac0cd56733c43fb",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "prehistoric stone-age stone seat",
+ "label": "prehistoric/ph-stone-seat",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone stool/seat",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone seat shows a large light-toned top surface (rows 2-8) spanning about 7 rows, followed by a shaded south-facing front edge/side (rows 9-13), properly angled in 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5560
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone seat / boulder stool",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top seating surface of the stone is clearly foreshortened and visible from above across rows 3-9 (~7 pixel rows), while rows 10-13 form the shaded south-facing front edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5514
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone seat",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone seat displays a clear top sitting surface spanning rows 3-8 (approx. 6 rows) viewed from above, with the darker front vertical face extending from row 9 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4645
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone stool / boulder seat",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the stone seat is clearly visible from row 3 to row 9 (approx. 7 rows), with the vertical south-facing front shaded below it across rows 10 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4658
+  }
+ ],
+ "decidedAt": "2026-10-14T00:39:52.942Z",
+ "cells": {
+  "16": [
+   "77a1f19a9bcfb37a"
+  ],
+  "24": [
+   "0443f7613d006298",
+   "3c5a11944d277532",
+   "5a6c7bdc7679a96e",
+   "c520c47059427b94",
+   "dd072fe0010247bf",
+   "de81ea3343afdbdb"
+  ],
+  "32": [
+   "0cce1afd7c1871a5",
+   "22d7b2e5a9a6ae39",
+   "324b685d484ed9d3",
+   "9be0a71991ec2577",
+   "b2d756d8090b53b6",
+   "c8b8987358ccebfc"
+  ],
+  "48": [
+   "08ab8fed9689cf8a",
+   "39d2faf44661f90a",
+   "910ea683dd242c6e",
+   "ad572f32ecf3915a",
+   "bf57fd6fcc8ea200",
+   "f8faf5e0e8f36f51"
+  ]
+ }
+}

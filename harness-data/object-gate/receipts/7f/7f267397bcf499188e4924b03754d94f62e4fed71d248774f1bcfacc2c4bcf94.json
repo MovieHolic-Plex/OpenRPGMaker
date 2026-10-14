@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7f267397bcf499188e4924b03754d94f62e4fed71d248774f1bcfacc2c4bcf94",
+ "width": 96,
+ "height": 48,
+ "kind": "debris",
+ "name": "prehistoric stone-age longneck",
+ "label": "prehistoric/ph-longneck",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fossilized dinosaur skeleton lying embedded in a patch of dirt",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fossil skeleton is viewed from above lying flat on the ground, showing limbs and ribs extending both north and south from the central spine across an excavated dirt bed spanning rows 12 to 36.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6581
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dinosaur skeleton embedded in dirt slab",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fossil skeleton is lying flat on the floor in a top-down splayed orientation, with opposing limbs extending north and south from the central spine across a 24-pixel-tall dirt slab.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7944
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fossilized dinosaur skeleton embedded in earth",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fossilized longneck skeleton lies flat on the ground plane in a top-down 3/4 perspective, with the spine running horizontally through the center and ribs/limbs splayed out to the north and south across roughly 24 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7274
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fossilised dinosaur skeleton embedded in a dirt patch lying flat on the ground",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The skeleton is splayed flat on the floor in a dorsal top-down view, with the spine running centrally and ribs/limbs extending both north and south across a horizontal dirt bed.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8814
+  }
+ ],
+ "decidedAt": "2026-10-14T00:39:52.943Z",
+ "cells": {
+  "16": [
+   "1e783b59e5a8501c",
+   "201efc8e5c807276",
+   "2356115f68771e3b",
+   "3cc4a23cf1693d8f",
+   "4951b082b669b164",
+   "4ec23441a407ca99",
+   "565c63cbd5688d81",
+   "6a7a3f921bfa2dce",
+   "7ed81b01a7e9fa28",
+   "86871748379fc318",
+   "8f62e788ed6c4fce",
+   "99c8b655f11eb37b",
+   "9fd82c311490464a",
+   "a46e42ba02c55399",
+   "bf0c5c68a229fd92",
+   "c41d6adeb4149e79"
+  ],
+  "24": [
+   "13d9b96ca5146033",
+   "36a63ea5bbe6ecc7",
+   "4ff1933e5e7a5f41",
+   "765fdb8131365846",
+   "82fabba736963018",
+   "bd2564caabb9b5ec",
+   "d843ecb35c82ecf7",
+   "ef96de00bd357943"
+  ],
+  "32": [
+   "00f0b5486301f224",
+   "084d0aae0ae3f02e",
+   "0f60dfebf0558555",
+   "12bab696043c8a72",
+   "3097e28d2e9c35fe",
+   "5b6cb45af19b907c",
+   "5e537b95918827f7",
+   "74e81611fe46ddba",
+   "84fcf4494e8d4030",
+   "978e1a05cc6847e6",
+   "a4b0e0538035ee5a",
+   "b659395e02000e8d"
+  ],
+  "48": [
+   "004b31669f495a3e",
+   "6159f4536feae039"
+  ]
+ }
+}

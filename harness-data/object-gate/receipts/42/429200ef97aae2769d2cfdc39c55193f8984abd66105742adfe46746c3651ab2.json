@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "429200ef97aae2769d2cfdc39c55193f8984abd66105742adfe46746c3651ab2",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "prehistoric stone-age hearth",
+ "label": "prehistoric/ph-hearth-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone ring hearth pit with fire",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": true,
+    "opening_rows": 13,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hearth is drawn in a clear 3/4 top-down view showing an elliptical stone ring whose interior pit and fire span roughly 13 source pixel rows between rows 12 and 24.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3460
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone ring hearth with interior fire pit",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 14,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hearth is drawn in top-down 3/4 perspective with a clear elliptical stone ring showing its interior fire pit spanning roughly rows 11 to 24 (14 rows tall) and a front stone rim of 3-4 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2972
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone hearth ring with fire pit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 13,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hearth is drawn in clear 3/4 perspective, showing a wide elliptical stone rim surrounding an open fire pit from row 11 to 24 with embers, logs, and a small pot.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4327
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone hearth ring with fire pit",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": true,
+    "opening_rows": 13,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone-ringed hearth is drawn in clear 3/4 top-down perspective with an elliptical opening (rows 11-24) showing the fire, embers, and pit interior.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3129
+  }
+ ],
+ "decidedAt": "2026-10-14T00:39:52.944Z",
+ "cells": {
+  "16": [
+   "6b74caf1bff9a336",
+   "a86f1b16b3c2e4d9",
+   "e5bc4eee7193d35c",
+   "ff368f093fd7aa46"
+  ],
+  "24": [
+   "03730218719b1ad3",
+   "0dbdffc5c93943ab",
+   "231fc2c4c4dd63b4",
+   "2454ec70fc6ff87c",
+   "3ae241c3396fdc2f",
+   "407eed13cb5191dc",
+   "4795863cf5b2b3ae",
+   "54f1e11b06b6f8a3",
+   "6c1af4ac2401c2b5",
+   "7154e5454c63c544",
+   "7563348a3aff90a2",
+   "7eba59228f9451d6",
+   "8365713deccf5dc5",
+   "9db9505cfdb8546d",
+   "b3883ab097b05fee",
+   "ba45a5dcd0bc9987",
+   "cf4891e33a0a0f6f",
+   "dd98db1faf10551c",
+   "df23b11e22c37978",
+   "e2b11da4de0961ec",
+   "f31f8b31adb4040d",
+   "fd26e9ee63be01ba"
+  ],
+  "32": [
+   "b5ccd1822169f669"
+  ],
+  "48": [
+   "21e56937d4e6d161",
+   "22074a777f47a9ed",
+   "2b83738d48f0d1f0",
+   "53981c0c6e268282",
+   "76a5d957937fcbe3",
+   "ea5f4e68b75b3088"
+  ]
+ }
+}

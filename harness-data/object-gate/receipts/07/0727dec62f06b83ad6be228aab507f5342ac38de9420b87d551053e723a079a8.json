@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0727dec62f06b83ad6be228aab507f5342ac38de9420b87d551053e723a079a8",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "prehistoric stone-age vent",
+ "label": "prehistoric/ph-vent-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone vent / volcanic fissure brazier",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The vent opening is rendered as an ellipse seen from above (rows 6-10, approx 5 rows deep), revealing the dark back interior wall and glowing lava floor, with the outer front stone face descending below row 11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6243
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone vent",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The vent is drawn in pure front elevation as an oven/cave-style mouth facing straight forward rather than an opening viewed from above. The glowing interior forms a horizontal bar with a dark arched ceiling/cavity above it, and there is no visible foreshortened top surface (0 rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 6077
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone-age geothermal vent cone",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The vent opening is drawn as an elliptical rim viewed from above (rows 6-10, ~5 rows tall), showing the interior cavity and glowing magma/heat at the bottom, with the outer front slope of the cone visible below it down to row 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11399
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone vent / geothermal mound emitting smoke",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The vent opening is viewed from above across rows 7-11 (5 rows tall), showing the dark interior back wall, orange glowing magma/heat in the middle, and the inner front lip, situated above the south-facing rock base (rows 12-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7544
+  }
+ ],
+ "decidedAt": "2026-10-14T00:42:49.786Z",
+ "cells": {
+  "16": [
+   "bd6a0f3227d1cc48"
+  ],
+  "24": [
+   "33b75030ab4ebcff",
+   "66489e65640848a3",
+   "a55ff90e768e1391",
+   "a91124d6d51ac3c5",
+   "b18844ce0beb7f6b",
+   "bd6e573e24dbc2b0"
+  ],
+  "32": [
+   "6b70ede0d97c5891",
+   "8f4b565e119821ab",
+   "9e644d89c81207f1",
+   "a74eee82dd0b0bb1",
+   "aa64f6eef7d27b8d",
+   "b71ad9945818bb9b"
+  ],
+  "48": [
+   "012ea0c4c7b9c45f",
+   "11a6e43eae235b84",
+   "8868596beff05183",
+   "91b6c385f190aba8",
+   "c2ae2d943d9f7222",
+   "fb12fe582778508e"
+  ]
+ }
+}

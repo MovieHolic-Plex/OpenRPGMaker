@@ -19,6 +19,7 @@ import { formatSkyIslandNote, type SkyIslandTarget } from "@/ai/skyIslandPolicy"
 import { formatSteampunkNote, type SteampunkTarget } from "@/ai/steampunkCityPolicy";
 import { formatCampusNote, type CampusTarget } from "@/ai/campusPolicy";
 import { formatSfStationNote, type SfStationTarget } from "@/ai/sfStationPolicy";
+import { formatPrehistoricNote, type PrehistoricTarget } from "@/ai/prehistoricPolicy";
 import type { AutonomyResolution } from "@/ai/autonomyLevels";
 import {
   formatIntentNote,
@@ -105,6 +106,8 @@ export interface PiIntentNoteInput {
   readonly campus?: CampusTarget | null;
   /** 요청·대상 맵이 SF 정거장·네온 거리(sf_station)면 그 대상(sfStationPolicy). jp_city·고딕보다 먼저 잡힌다. */
   readonly sfStation?: SfStationTarget | null;
+  /** 요청·대상 맵이 선사 원시 세계(prehistoric) 칩셋이고 프로젝트에 칩셋이 있으면 그 대상(prehistoricPolicy). jp_city 보다 먼저 판정한다. */
+  readonly prehistoric?: PrehistoricTarget | null;
   /**
    * 사용자 문장. 있으면 숲마을 노트에 요청에 가까운 완성 마을 사례([참고 마을])를 붙인다.
    * 2026-09-28: 사례 약 70곳이 Pi 프롬프트·노트·도구 결과 어디에도 없어 모델이 기본값(12채·강변촌)만 썼다.
@@ -129,15 +132,17 @@ export function buildPiIntentNote(input: PiIntentNoteInput): string | null {
   const conceptNote = formatConceptCardNote(conceptCardsForText(input.requestText));
   const worldmapNote = formatWorldmapChoiceNote(input.requestText, input.project, input.targetMap?.id);
   const intentNote = formatIntentNote(input.intent, { clarifyBypassed: true, targetMap: input.targetMap });
-  const villageNote = input.pirateIsles ? formatPirateIslesNote(input.pirateIsles, input.targetMap)
-    : input.beodeulTown ? formatBeodeulTownNote(input.beodeulTown, input.targetMap)
-    : input.sengoku ? formatSengokuNote(input.sengoku, input.targetMap)
+  // 노트는 하나만 — plainTurn 이 우선순위대로 하나만 채운다(나머지는 null).
+  const villageNote = input.sengoku ? formatSengokuNote(input.sengoku, input.targetMap)
     : input.steampunk ? formatSteampunkNote(input.steampunk, input.targetMap)
     : input.sfStation ? formatSfStationNote(input.sfStation, input.targetMap)
+    : input.prehistoric ? formatPrehistoricNote(input.prehistoric, input.targetMap)
     : input.jpCity ? formatJpCityNote(input.jpCity, input.targetMap)
     : input.gothic ? formatGothicNote(input.gothic, input.targetMap)
+    : input.pirateIsles ? formatPirateIslesNote(input.pirateIsles, input.targetMap)
     : input.skyIsland ? formatSkyIslandNote(input.skyIsland, input.targetMap)
     : input.campus ? formatCampusNote(input.campus, input.targetMap)
+    : input.beodeulTown ? formatBeodeulTownNote(input.beodeulTown, input.targetMap)
     : null;
   const scopeNote = input.selection
     ? formatScopeNote({ mapId: input.selection.mapId, region: input.selection }, input.intent)

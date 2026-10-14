@@ -1,0 +1,180 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "784bb8094ec21589f9928c566f9dca83df77c6d79fcf27493a49b390c78cdb94",
+ "width": 48,
+ "height": 80,
+ "kind": "structure",
+ "name": "prehistoric stone-age shaman tent",
+ "label": "prehistoric/ph-shaman-tent",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "conical hide tent / teepee",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tent is drawn from eye-level in a pure front elevation: the decorative orange band (rows 50-53), seam lines (row 41), and base outline are completely straight horizontal lines without the elliptical curvature required for a 3/4 top-down view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5286
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "conical hide tent / teepee",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tent is drawn in pure front elevation: the decorative horizontal band (rows 50-52) and the base contour (rows 74-76) are drawn completely straight across rather than curving forward into ellipses/arcs as required by a 45-degree top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5385
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "conical hide tent (tipi)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tent is drawn in flat front elevation: the base perimeter, seam lines (rows 42, 72), and decorative orange band (rows 50-52) are straight horizontal lines rather than elliptical curves bowing downward in 3/4 perspective. The entrance opening is also a flat 2D silhouette with no floor plane or interior depth visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7363
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "conical teepee tent",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The teepee is drawn as a flat front elevation. Horizontal features across the cone (the orange band at rows 50-52, the seam lines at rows 42 and 72) are drawn as dead-straight horizontal lines rather than downward-curving ellipses appropriate for a 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5782
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.795Z",
+ "cells": {
+  "16": [
+   "0ad5b06392879e3a",
+   "0e5312021f050926",
+   "204f539e0ff4c542",
+   "2195dfb9e016e6bf",
+   "4b352c567654e789",
+   "55c1cade48312905",
+   "8e06f29a4369f7a3",
+   "b28eb7bd9cebb1fc",
+   "bdebeff7fc4a2d45",
+   "e36136d978ee89d3",
+   "e8b97930bdb27341"
+  ],
+  "24": [
+   "0f9a96200aec0772",
+   "11870381c318849a",
+   "14356277e96ac1b8",
+   "21dd4ed0d26081cd",
+   "39de70be9435e48f",
+   "553c3e2345c0ac5e",
+   "5ec7320eef43bca3",
+   "5f781b80050ef1c3",
+   "6515ad8727c0e94c",
+   "889e75f45c5bdc55",
+   "938bee6c59416cf0",
+   "b1d211c4b29ec591",
+   "b79454ee5726201c",
+   "cb30fde77335761d",
+   "d0554376e854e3bc",
+   "f572e27e29ca99c7"
+  ],
+  "32": [
+   "0802a1af292c1c3f",
+   "0bcbcd3ffcec0957",
+   "0f92fe9f4091305e",
+   "2528033a96b8b5c0",
+   "2ca8baa89a7630fc",
+   "35927c6bc3a2bc56",
+   "3b627830e7ddbc09",
+   "3ea00d64649ec091",
+   "43ae6723a31a36d8",
+   "509369e182504078",
+   "5ad8238044e9fcf7",
+   "5fdd7aaf9139ebfc",
+   "66225adb3fccb180",
+   "76c320758222a7c7",
+   "77780c57fea5e52a",
+   "82c546436494c8df",
+   "8af5117be3dc5e4c",
+   "8ffd20ca86f49d49",
+   "92f895136e81cdf8",
+   "a3680d490f3466c3",
+   "a6424e31567851f7",
+   "a6d09ed84d3bc215",
+   "ad81519534998445",
+   "b5e7ce9bc7ec72fe",
+   "bef0be4cf18a8ba6",
+   "c78c3a2f3b7a2cf1",
+   "ca1daeb74d4e3698",
+   "d6258dd0af1d8fa2",
+   "da3d3ff21c136ce1",
+   "e828f74df2df9268",
+   "e859e2793fad130e",
+   "ea4727ea4974cde1"
+  ],
+  "48": [
+   "1ceed278e9e503d8",
+   "4d6ac2e22494dcd6",
+   "63db9fd6ba0352f2",
+   "bdb2d17f1c2299d0"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3d682aa8fca0081caa63daa01064b47763522be515c73a98a32330079bfd749e",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "prehistoric stone-age swamp",
+ "label": "prehistoric/ph-swamp",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "swamp terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 murky green swamp ground texture viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3813
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "swamp terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts top-down swamp water/ground terrain across the full 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2826
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "swamp ground surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless terrain ground tile depicting murky green swamp water or bog surface viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3993
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "swamp ground/water terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting murky swamp ground/water filling the 16x16 canvas.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2434
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.790Z",
+ "cells": {
+  "16": [
+   "9f5410a72b907944"
+  ],
+  "24": [
+   "1824411a88a5921d",
+   "279971b970eca2c2",
+   "78859e52f3e06ae0",
+   "993f2f52853e72ad",
+   "a40e8e166e9f0d74",
+   "c8319a9f6a95a261"
+  ],
+  "32": [
+   "48fbeb3b2386abbc",
+   "b2e455f7c0237547",
+   "c3e11cd37e38dffe",
+   "e519bb516cac53af",
+   "e96ea4196fd29981",
+   "f73c7df6bf41897a"
+  ],
+  "48": [
+   "12a4a329a3c6a9b8",
+   "174fe2bec12fb48c",
+   "713286beb0d6b93e",
+   "7dfcb316c3169bf4",
+   "88022f755e4608d4",
+   "93e5a7554d6057ad"
+  ]
+ }
+}

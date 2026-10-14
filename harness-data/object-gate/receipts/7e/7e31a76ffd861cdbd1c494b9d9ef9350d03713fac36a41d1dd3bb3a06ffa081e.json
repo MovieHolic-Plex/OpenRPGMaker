@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7e31a76ffd861cdbd1c494b9d9ef9350d03713fac36a41d1dd3bb3a06ffa081e",
+ "width": 32,
+ "height": 16,
+ "kind": "frame",
+ "name": "prehistoric stone-age spear rack",
+ "label": "prehistoric/ph-spear-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal support log and side posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire rack (horizontal beam, side posts, and feet) is drawn in pure front elevation with only a 1-2px top highlight on the bottom log and flat post caps, showing no horizontal top surface seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6114
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal beam and frame posts of the spear rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The spear rack is drawn as a flat 2D front elevation. Neither the side posts nor the horizontal beam have a visible top surface viewed from above (only a 1px highlight on the beam), and the rack has no ground depth or foreshortened base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5526
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal beam and frame posts of spear rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The spear rack is drawn in a pure front elevation. Both the horizontal beam (rows 8-12) and the side posts show only vertical front faces with standard edge shading, with 0 px of visible top depth receding into the scene.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7613
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal beam and upright posts of the spear rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire rack (upright posts, upper crossbar, and thick lower horizontal beam) is drawn in a pure front elevation with no visible top surface foreshortened from above, and no depth to the feet or horizontal surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6728
+  }
+ ],
+ "decidedAt": "2026-10-14T00:46:42.340Z",
+ "cells": {
+  "16": [
+   "568650f9277e10ff",
+   "b20f3a648ee5ae57"
+  ],
+  "24": [
+   "0c8fe88254321ea7",
+   "3258f7dcca703428",
+   "355589ed5eea12ec",
+   "44e921d6701f1c85",
+   "5863abf3bdbf985b",
+   "587741c02f2b49d1",
+   "8401146d149c5abb",
+   "91be37cf35f30c3e",
+   "a045cded60f6655d",
+   "c319ef167bc4a3ea",
+   "e055b8383fb42a87",
+   "ff2e4e59c7e5eb00"
+  ],
+  "32": [
+   "3e1f89e6a21b3b99",
+   "987b5f181b313cf6"
+  ],
+  "48": [
+   "14b6a25bbd671f5d",
+   "25d87dbbebf80d5b",
+   "631afeef3ba7c76b",
+   "83fff64396d51e98",
+   "d23c9205c438997a",
+   "e3a6e38f78590ff2"
+  ]
+ }
+}

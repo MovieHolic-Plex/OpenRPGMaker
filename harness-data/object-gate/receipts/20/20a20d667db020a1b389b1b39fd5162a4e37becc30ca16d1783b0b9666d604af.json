@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "20a20d667db020a1b389b1b39fd5162a4e37becc30ca16d1783b0b9666d604af",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "prehistoric stone-age ash b",
+ "label": "prehistoric/ph-ash-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ash ground terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile is a flat ash ground texture viewed from above with flecks of darker and lighter ash.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5118
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ash terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground texture covering the entire 16x16 tile without vertical face distortion.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6112
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ash ground terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 tile representing a flat ground/terrain texture of ash with small debris flecks.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4734
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ash ground terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 pixel flat ash terrain ground surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5019
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.790Z",
+ "cells": {
+  "16": [
+   "8ed75ed605b3497e"
+  ],
+  "24": [
+   "0cb03095fe23f65f",
+   "1da2e8c640c7c118",
+   "5cfdea7f8a70ccd2",
+   "9d0bc9922896a2bc",
+   "c093f24d80b68e84",
+   "c39436ac8fa39ee8"
+  ],
+  "32": [
+   "04ed376942a34fb4",
+   "5e39f0fe7439cd83",
+   "6babcc42c2d5b81a",
+   "8142b24a453ff938",
+   "adc31b938848794c",
+   "de40a13d37959e39"
+  ],
+  "48": [
+   "2f8da889be17b482",
+   "47b25a5c9cb8f1db",
+   "78c586718150f85c",
+   "999fc499f46043e8",
+   "a6f6bc1b1a27ddb6",
+   "ee9d417e023e1dca"
+  ]
+ }
+}

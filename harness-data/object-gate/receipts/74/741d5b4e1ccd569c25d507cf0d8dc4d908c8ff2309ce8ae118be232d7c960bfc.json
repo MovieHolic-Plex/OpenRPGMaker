@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "741d5b4e1ccd569c25d507cf0d8dc4d908c8ff2309ce8ae118be232d7c960bfc",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "prehistoric stone-age knap bench",
+ "label": "prehistoric/ph-knap-bench",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rectangular knapping workbench with tools on top",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bench is visible across rows 4-8 (5 pixels tall) with knapping stones resting on it, leading down to the darker south face on rows 9-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3660
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "knap bench table surface and front base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The knapping bench shows a clearly foreshortened top surface spanning rows 3-8 (6 rows) containing stones, and a vertical south face from row 9 to 13 with legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3097
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "knapping bench table",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bench spans rows 3 to 8 (6 rows tall) displaying stone knapping tools/materials, with the front face visible below from row 9 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4696
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "knapping bench",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from rows 3 to 8 (6 rows tall) displaying several knapped stones, above a 5-row south-facing front body (rows 9-13) and small legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2764
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.810Z",
+ "cells": {
+  "16": [
+   "025f373744981bcf",
+   "b3a9b0c9c5fed860"
+  ],
+  "24": [
+   "28d490822dddcb5e",
+   "358c38165203718f",
+   "3772d8ccbe1d8a29",
+   "3d515a22f8a81312",
+   "43c2c4dc763dda5b",
+   "47e729a3cea20b2d",
+   "4e491a6bec8aeda0",
+   "81e542b86d99cfbd",
+   "85fd468153a25160",
+   "abbfbc46077370ea",
+   "cf62bee4fe904aa1",
+   "cfbdc88ad782ceea"
+  ],
+  "32": [
+   "269653e13ca3e286",
+   "c84d2a96c1e45b30"
+  ],
+  "48": [
+   "0b95c3b93e775854",
+   "20c736cb9d6ba3b4",
+   "7640bcdaabf979f4",
+   "7ce7817c5efbce80",
+   "cc3607b008624533",
+   "e37642eabe0fe0f8"
+  ]
+ }
+}

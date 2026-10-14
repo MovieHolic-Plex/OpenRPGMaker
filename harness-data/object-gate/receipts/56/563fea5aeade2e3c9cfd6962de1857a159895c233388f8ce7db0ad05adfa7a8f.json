@@ -1,0 +1,138 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "563fea5aeade2e3c9cfd6962de1857a159895c233388f8ce7db0ad05adfa7a8f",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "prehistoric stone-age dolmen",
+ "label": "prehistoric/ph-dolmen",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone dolmen (capstone and upright pillars)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The dolmen is drawn entirely in flat front elevation like a 2D platformer asset. The horizontal capstone is drawn as a flat rounded slab from the side/front without any foreshortened top surface receding into the distance, and the vertical upright pillars terminate in flat horizontal lines with no visible ground-plane depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7822
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "prehistoric dolmen (stone capstone on two megalithic pillars)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The capstone is drawn straight from the front with vertical side edges (rows 6-11) and an entirely flat underside (row 14). There is no distinct horizontal top plane or front rim dividing top and front faces, rendering the dolmen as a pure 2D front elevation / side-scroller sprite.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10214
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "prehistoric stone dolmen (capstone and two upright support stones)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The capstone and vertical support pillars are drawn purely in front elevation with no visible horizontal top surface. The capstone is a flat rounded rectangle with mottled stone shading rather than distinct top and front faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8887
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "prehistoric stone-age dolmen (capstone and upright pillars)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The dolmen is drawn strictly in front elevation (side-scroller style). The capstone is depicted as a flat frontal rock slab spanning two vertical legs, with flat horizontal ground contacts at row 29 and no visible top surface foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8935
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.803Z",
+ "cells": {
+  "16": [
+   "31f25d778207bbda",
+   "476758758aee9a6b",
+   "81594b1481d04d17",
+   "aaf45886870abb47",
+   "ad29910dec423d84"
+  ],
+  "24": [
+   "20530172268fee53",
+   "4832509b55583c2b",
+   "4b274297b27595bb",
+   "5ebc3f19bfa04239",
+   "6209a765f8853684",
+   "bb7ea35ebd559e82",
+   "c5337ae01ba97b58",
+   "cf766473f357e7e1"
+  ],
+  "32": [
+   "209c9721556cfebd",
+   "57a1a06b5191642b",
+   "8d2719cb1e66b9b8",
+   "9e4036f523e4f8d6",
+   "b48b4e10501877aa",
+   "eb364d474bb17b50"
+  ],
+  "48": [
+   "9c822eef24ef9486",
+   "a3b80a5b874ac615"
+  ]
+ }
+}

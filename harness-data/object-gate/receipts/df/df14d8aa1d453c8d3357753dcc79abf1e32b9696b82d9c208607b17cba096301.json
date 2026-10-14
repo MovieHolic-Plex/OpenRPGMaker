@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "df14d8aa1d453c8d3357753dcc79abf1e32b9696b82d9c208607b17cba096301",
+ "width": 48,
+ "height": 16,
+ "kind": "container",
+ "name": "prehistoric stone-age canoe",
+ "label": "prehistoric/ph-canoe",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dugout canoe hull",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The dugout canoe shows its hollow interior opening seen from above across rows 4-9 (about 6 rows tall), complete with an interior feature/paddle, back rim at row 3, and front south hull face spanning rows 10-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5204
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dugout canoe hull",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The dugout canoe is properly depicted in 3/4 top-down perspective: the interior hollow/opening is visible for 6 pixel rows (rows 4-9) showing inside depth and an object resting inside, while the south exterior hull face is shown below on rows 10-12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6652
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dugout canoe hull",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The dugout canoe shows a clear 3/4 top-down view with an interior hollow opening of about 6 rows (rows 4-9) containing a paddle, resting above a 3-4 row front hull face (rows 10-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6827
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dugout canoe hull",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The canoe shows a clear 3/4 perspective with a 6-row deep hollow interior cavity (rows 4-9) visible between the back gunwale (row 3) and the front hull wall (rows 10-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5071
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.807Z",
+ "cells": {
+  "16": [
+   "505a8bd8625a10ab",
+   "53bb60b6210f5b52",
+   "a60f953b24c05521"
+  ],
+  "24": [
+   "0e6f07717aaa5eb0",
+   "1c7a23fc3f817dbf",
+   "296bc4e231a1e31f",
+   "f7ad08bcc5f16d97"
+  ],
+  "32": [
+   "16a932a6fd00193f",
+   "28961142abc368a8",
+   "41463c6ea7ec59e2",
+   "51739ee5eddad9f2",
+   "5f5f5f5642627931",
+   "80c7ba98ad39b05c",
+   "86e196ed5c66b71b",
+   "978898f8dee1782f",
+   "ce175c8cd5dbc4ef",
+   "d41e120af641984c",
+   "df8f741b2b8576f5",
+   "fcdac99749d78152"
+  ],
+  "48": [
+   "51c7176be6bdae40",
+   "7a77ca3ddd500be0"
+  ]
+ }
+}

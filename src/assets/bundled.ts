@@ -21,6 +21,7 @@ import steampunkCitySheet from "./steampunkCitySheet.json";
 import modernCampusSheet from "./modernCampusSheet.json";
 import sfStationSheet from "./sfStationSheet.json";
 import gothicManorSheet from "./gothicManorSheet.json";
+import prehistoricSheet from "./prehistoricSheet.json";
 import worldmapSelectedSheet from "./worldmapSelectedSheet.json";
 import worldmapAuthoringSheet from "./worldmapAuthoringSheet.json";
 import atlasBiomeInterior from "./atlasBiomeInteriorSheet.json";
@@ -173,6 +174,10 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   // 3/4 관문(object-gate) 영수증이 현재 그림 해시에 PASS 인 조각만 굽는다. 칸 번호는 덧붙이기 전용(자리 키 핀).
   // 재생성: scripts/content/gothic-manor/bake_gm.py, 정의는 project/defaults/gothicManor.ts, openwiki/gothic-manor.md.
   {textureKey:"tex_gothic_manor",path:"assets/gothic-manor/gothic-manor-chipset.png",name:"고딕 저택·묘지 · 호러 (손 도트)"},
+  // 선사 시대 원시 세계(2026-10) — 자체 잠금 팔레트 손 도트 야외(움집·가죽 천막·매머드 뼈 집·족장 긴 집·동굴 입구·모닥불·선돌·토템·고사리·소철·화산·용암·타르·공룡 화석·밧줄 다리,
+  // 꼭짓점 가장자리 바닥 9쌍)와 실내(동굴 거처·벽화 회랑·족장 집·무당 천막)를 48열 16px 칸으로 구운 시트. 칸 번호는 덧붙이기 전용(자리 키 핀).
+  // 재생성: scripts/content/prehistoric/bake_ph.py (object-gate 통과 조각만), 정의는 project/defaults/prehistoric.ts, openwiki/prehistoric.md.
+  {textureKey:"tex_prehistoric",path:"assets/prehistoric/prehistoric-chipset.png",name:"선사 시대 원시 세계 (손 도트)"},
   {textureKey:"tex_worldmap_selected",path:"assets/worldmap-icons/worldmap-selected.png",name:"월드맵 · 사람 선택 아이콘"},
   {textureKey:"tex_worldmap_authoring",path:"assets/worldmap-icons/worldmap-authoring.png",name:"월드맵 · 연결 지형 붓"},
   // 생성 칩셋(oprn-atlas) 공용 실내 — 손 도트 실내 v5 전용 시트(tiledata/hand-interior/v5, 가구·바닥·벽·천장·자동 타일·예제 26맵).
@@ -210,6 +215,7 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === "tex_modern_campus") return modernCampusSheet.count;
   if (key === "tex_sf_station") return sfStationSheet.count;
   if (key === "tex_gothic_manor") return gothicManorSheet.count;
+  if (key === "tex_prehistoric") return prehistoricSheet.count;
   const monsterKit = monsterKitSheet(key) ?? emeraldMonsterKitSheet(key);
   if (monsterKit) return monsterKit.count;
   if (key === "tex_worldmap_selected") return worldmapSelectedSheet.count;

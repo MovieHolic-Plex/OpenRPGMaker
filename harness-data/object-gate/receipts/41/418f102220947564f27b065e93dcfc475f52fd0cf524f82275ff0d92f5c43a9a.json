@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "418f102220947564f27b065e93dcfc475f52fd0cf524f82275ff0d92f5c43a9a",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "prehistoric stone-age menhir",
+ "label": "prehistoric/ph-menhir",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone menhir / standing pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The menhir is drawn in pure front elevation. The top end is capped with a flat horizontal line and beveled corners with vertical front cylindrical shading, showing no foreshortened top surface from the 3/4 overhead perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9212
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "standing stone / menhir",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The menhir is drawn in flat front elevation. The bottom edge (row 29) is a flat horizontal line, and the lighter cap/top section at rows 5-6 is separated from the shaft by a dead-straight horizontal line rather than an elliptical curve foreshortened from above. The 2px light band at rows 5-6 functions only as a flat cap or highlight, not a visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7787
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "menhir / standing stone",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The standing stone is drawn in pure front elevation. The top tip shows only a 2px tall rounded cap/highlight (rows 5-6) cut off by a horizontal line, rather than a foreshortened top surface or cut face visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6381
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "standing stone menhir",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The menhir is drawn in flat front elevation with a flat horizontal bottom and straight vertical sides. The top is rounded off like a bullet with only 2 pixel rows of highlight (rows 5-6) rather than a foreshortened top surface visible from 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6238
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.803Z",
+ "cells": {
+  "16": [
+   "02990169fa8cc88c",
+   "48cef4511bb4357b"
+  ],
+  "24": [
+   "1058d7faee4b21c1",
+   "334b7f64051224a9",
+   "49c8da2df27ab958",
+   "69389f1415f96fb8",
+   "73d24235028ee70b",
+   "86538cb2e973752c",
+   "ad3ba9a0bc8442db",
+   "ae2d315ceceb8c3b",
+   "c80b6a6fea47ffe0",
+   "cc2d891c6b697b70",
+   "d5f3549e241bbcd9",
+   "f6e860f51a785c6d"
+  ],
+  "32": [
+   "6a9b1d5871cec4a0",
+   "f46678234a10e358",
+   "f5c0a8bdfb727056"
+  ],
+  "48": [
+   "4273194b7efe0d79",
+   "430518e787d3f9ff",
+   "5bea4855855a65be",
+   "e3f6f99d90797b8b",
+   "ee365fdb76276f08",
+   "f37ae5350ed71e7e"
+  ]
+ }
+}

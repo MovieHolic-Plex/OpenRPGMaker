@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8865b9323778b943c74d49015d45b40d05586a9ec0cb8640a89afd0807b1def8",
+ "width": 48,
+ "height": 32,
+ "kind": "terrain",
+ "name": "prehistoric stone-age tarpit",
+ "label": "prehistoric/ph-tarpit-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tar pit pool with surrounding earthen rim and submerged bones",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": true,
+    "opening_rows": 20,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tar pit is viewed from top-down 3/4 perspective, showing a foreshortened elliptical depression filled with dark liquid tar spanning rows 6-25 with partially submerged bones.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3216
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tarpit pool and earthen rim",
+    "kind_matches": true,
+    "top_rows": 21,
+    "opening_visible": true,
+    "opening_rows": 21,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tar pit is depicted as an elliptical ground depression viewed from above at ~45 degrees, spanning rows 6 to 26 of visible dark tar surface with bones embedded.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3740
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tarpit pool",
+    "kind_matches": true,
+    "top_rows": 21,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tar pit is rendered as a foreshortened elliptical ground feature spanning rows 6 to 26 with proper top-down 3/4 perspective and submerged bones.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5371
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tar pit pool",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tar pit is depicted as an elliptical ground depression viewed from above at a 3/4 angle, with the dark tar surface visible across rows 6 to 26 (~20 rows tall) containing embedded bones.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3377
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.806Z",
+ "cells": {
+  "16": [
+   "042348348df009fe",
+   "8263496d9a98c8c9",
+   "a84442a4020ce9bb",
+   "c2a2d4ffaac55374",
+   "d5c8b352d856a823",
+   "e5d589ccd082b236"
+  ],
+  "24": [
+   "107ebd75a78116f1",
+   "4fc7a9cb5b882910",
+   "60a40f6d42f19380",
+   "670faa47d12f5026",
+   "6e1f304bb996822c",
+   "750615fb8c20a2cf",
+   "98ca746ff0c4da6e",
+   "c83b8c55e1085d46"
+  ],
+  "32": [
+   "17faf6fa6c7c087f",
+   "96da2f398dc0a118",
+   "b48212d60a07b07d",
+   "d48e6aa2dcdb99ce",
+   "d91039f15ee29448",
+   "ea58df89976b0f78"
+  ],
+  "48": [
+   "2111e0bf812bf6cc",
+   "c449c77eb51915e9"
+  ]
+ }
+}

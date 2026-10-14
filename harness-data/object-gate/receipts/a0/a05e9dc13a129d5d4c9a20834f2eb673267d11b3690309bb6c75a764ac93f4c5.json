@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a05e9dc13a129d5d4c9a20834f2eb673267d11b3690309bb6c75a764ac93f4c5",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "prehistoric stone-age floor straw",
+ "label": "prehistoric/ph-floor-straw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "straw floor terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 ground/floor texture depicting straw or thatch bedding viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3261
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "straw floor terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 flat ground/floor texture depicting straw bedding or floor thatch.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3438
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "straw floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless floor terrain texture representing ground/straw bedding filling the entire 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2482
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "straw floor terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 floor terrain texture representing ground/straw bedding seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2895
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.808Z",
+ "cells": {
+  "16": [
+   "5f9b56f186974cba"
+  ],
+  "24": [
+   "0048b84c3751d544",
+   "4a14d9175585d5a6",
+   "884ac4ef90e94c3e",
+   "b519ce010dc4cb5a",
+   "d0c1fb9927aa20e4",
+   "e858fd0f01edf450"
+  ],
+  "32": [
+   "03c9ddf0997ab1ac",
+   "24382478a2be62f2",
+   "5cfa29037687f64f",
+   "810eb22c379c7599",
+   "b08dd2995e44e953",
+   "ccb57cdadfd30412"
+  ],
+  "48": [
+   "157255fe00033d2e",
+   "4a4d7d80888b33b0",
+   "529beea8933bc522",
+   "d5bcc5823915c064",
+   "d6f397c8d001da3b",
+   "dae6ded44bb13822"
+  ]
+ }
+}

@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "51371389c31f44a8a54e0b231e5c63778a2c7304f855e7c38288362b0f8a9c97",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "prehistoric stone-age totem",
+ "label": "prehistoric/ph-totem",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden totem pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The totem pole is drawn in pure front elevation with completely flat horizontal lines across rows 6, 22, 33, and 44, showing no foreshortened top surface or curved cross-sections.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4711
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall carved wooden totem pole with three face segments",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The totem pole is drawn entirely in flat front elevation with straight horizontal segment dividers (rows 22, 33) and a flat horizontal base (row 44). The top features feathers and a crown/headdress viewed straight on, with no foreshortened top surface or cut face visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5498
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tall wooden totem pole with carved faces and a crowned top",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The totem pole is drawn as a flat rectangle with completely straight horizontal segment lines (rows 22, 33) and flat top and bottom edges (rows 6, 44). The top end of the column shows no cut face or foreshortened top surface, only a front-facing headdress/crown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5243
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall carved totem pole with three stacked sections and a crowned top",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The totem pole is drawn in pure flat front elevation. The top edge at row 6, segment dividing lines at rows 22 and 33, and bottom base at row 44 are all completely flat horizontal lines with no foreshortened elliptical top surface or curvature.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5216
+  }
+ ],
+ "decidedAt": "2026-10-14T00:39:52.942Z",
+ "cells": {
+  "16": [
+   "78f02145b455bb20",
+   "dfbe4fcdc7f3da8b",
+   "ecebb0e0b424c0f5"
+  ],
+  "24": [
+   "2d4345f5aa90e7cd",
+   "ad579afa19ca7050",
+   "cf290ac57ab9a6ee",
+   "dce074035b4d5561",
+   "dd359010ebd0de06",
+   "e15f16373cb14901"
+  ],
+  "32": [
+   "2eeca6a5b0b85423",
+   "3abd4bec7e85a1c1",
+   "3d7650f6c172115a",
+   "3daca3f8f12fcd6f",
+   "3f0c7443a7183fe6",
+   "405e69dcac158f42",
+   "4332ab7bb3817a79",
+   "61caac7105169396",
+   "622824022ba278d4",
+   "7138f02ce2ce0d5d",
+   "b652726431361636",
+   "f040ae4a3b1f2b2c"
+  ],
+  "48": [
+   "1c3656cf25ba81fc",
+   "4c332ddf0c6aa9db",
+   "983ae893d88df0a1"
+  ]
+ }
+}

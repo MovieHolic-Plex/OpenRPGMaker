@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e09aa684c12dbce4dda178d685474733e593d3d34753a051c29152de538eb4e5",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "prehistoric stone-age straw bed",
+ "label": "prehistoric/ph-straw-bed",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "straw mattress / bed roll",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed is shown in 3/4 view oriented east-west: the top sleeping surface spans rows 3 to 7 with a diagonal straw weave pattern and pillow, while the south vertical front edge is depicted on rows 8 to 10 with vertical weave shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4591
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "straw mattress / sleeping mat with pillow",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The straw bed is viewed from a 3/4 top-down angle, showing roughly 5 rows of top surface (rows 3-7) with a pillow, and a distinct 3-row front edge (rows 8-10) with vertical weave texture and bottom shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3348
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "straw mattress / bed",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed is shown in 3/4 perspective with a visible top surface (rows 3–7, approx 5 rows tall) featuring the pillow, and a distinct south-facing front thickness (rows 8–10).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4834
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "straw mattress / bed",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the straw bed is clearly visible from rows 3 to 8 (6 rows) with a pillow resting on it, and a south-facing edge/rim at rows 9-10.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4696
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.809Z",
+ "cells": {
+  "16": [
+   "63317bd781c6ba31",
+   "b726d7b89f361a6b"
+  ],
+  "24": [
+   "0e4f7f4f3b73b49a",
+   "32cf7a8102947af8",
+   "399e908356146c1a",
+   "49d856faa2a8b4a2",
+   "5b99879aed95f58b",
+   "7421d7040f55fbde",
+   "7a5591ac9e95d40d",
+   "91c2de95ac343a2a",
+   "9eebbe810803630f",
+   "c41d6d7d67873596",
+   "c7fbee2db0fa9cd8",
+   "c87c0d6a7fd66a4b"
+  ],
+  "32": [
+   "299cfec4097bb3d7",
+   "9fbca431ec8d7a8c"
+  ],
+  "48": [
+   "42b718c840a2a5b8",
+   "5f6cf08b668af6fa",
+   "7de07ad9ccd359ca",
+   "88462f21a34d4358",
+   "97ba8a6604004725",
+   "ec34d16f051b5ce8"
+  ]
+ }
+}

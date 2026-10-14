@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1a7258ff6ebdfb37ebc822170101cb4d3989984806bfd876df95de65c403251d",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "prehistoric stone-age totem b",
+ "label": "prehistoric/ph-totem-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden totem pole column",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut end of the log totem pole is clearly visible at rows 5-9 (5 pixel rows tall) displaying tree rings, with feathers planted at the back edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 16939
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "totem pole / carved wooden log",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut cross-section of the wooden totem is clearly visible across rows 5–9 (5 pixels tall) showing the tree rings from a 3/4 perspective above the carved faces on the south front.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5324
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden totem pole / post",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut surface of the post is clearly visible and foreshortened from rows 5 to 9 (5 pixels tall), displaying the cut end grain and concentric tree rings in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13206
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden totem pole",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the wooden pole is visible from row 5 to row 9 (about 5-6 rows tall) displaying the end grain in 3/4 perspective above the front-facing carvings.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3484
+  }
+ ],
+ "decidedAt": "2026-10-14T00:42:49.785Z",
+ "cells": {
+  "16": [
+   "08c7931dd665f1aa",
+   "2efdb9dda0d462c0",
+   "9df1273d7d8b0762"
+  ],
+  "24": [
+   "1ab625d590f60609",
+   "2631415c253dcd5c",
+   "30e67ef47f343071",
+   "5808709f79f5b209",
+   "918eabd57ae9f60a",
+   "cd1f0f4b831c6163"
+  ],
+  "32": [
+   "058003a9de01a39a",
+   "0df9f602182db526",
+   "100dd2c9de7234b3",
+   "1145a1910bacc26d",
+   "543e9c945f58b014",
+   "56889c246ac9a974",
+   "5c069da87428727a",
+   "727d24f27a6ca967",
+   "a60afc9e0e0e019e",
+   "a81bded5f66f1f26",
+   "ab17ebccc5823a4c",
+   "d1aff9d4d4eb4733"
+  ],
+  "48": [
+   "226ac533284af9cb",
+   "7d4107cab9fea63e",
+   "bae8aae8fc5cf071"
+  ]
+ }
+}

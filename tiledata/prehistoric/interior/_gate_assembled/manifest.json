@@ -1,0 +1,1422 @@
+{
+ "cave-gallery": {
+  "png": "tiledata/prehistoric/interior/_gate_assembled/ph-room-cave-gallery.png",
+  "parts": [
+   {
+    "id": "ceil",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 16,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 32,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 48,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 64,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 80,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 96,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 112,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 128,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 144,
+    "y": 0
+   },
+   {
+    "id": "ceil-e",
+    "x": 0,
+    "y": 16
+   },
+   {
+    "id": "wall-rock-u-l",
+    "x": 16,
+    "y": 16
+   },
+   {
+    "id": "paint-hands-u",
+    "x": 32,
+    "y": 16
+   },
+   {
+    "id": "paint-mammoth-0-u",
+    "x": 48,
+    "y": 16
+   },
+   {
+    "id": "paint-mammoth-1-u",
+    "x": 64,
+    "y": 16
+   },
+   {
+    "id": "paint-spiral-u",
+    "x": 80,
+    "y": 16
+   },
+   {
+    "id": "paint-deer-0-u",
+    "x": 96,
+    "y": 16
+   },
+   {
+    "id": "paint-deer-1-u",
+    "x": 112,
+    "y": 16
+   },
+   {
+    "id": "wall-rock-u-r",
+    "x": 128,
+    "y": 16
+   },
+   {
+    "id": "ceil-w",
+    "x": 144,
+    "y": 16
+   },
+   {
+    "id": "ceil-e",
+    "x": 0,
+    "y": 32
+   },
+   {
+    "id": "wall-rock-d-l",
+    "x": 16,
+    "y": 32
+   },
+   {
+    "id": "paint-hands-d",
+    "x": 32,
+    "y": 32
+   },
+   {
+    "id": "paint-mammoth-0-d",
+    "x": 48,
+    "y": 32
+   },
+   {
+    "id": "paint-mammoth-1-d",
+    "x": 64,
+    "y": 32
+   },
+   {
+    "id": "paint-spiral-d",
+    "x": 80,
+    "y": 32
+   },
+   {
+    "id": "paint-deer-0-d",
+    "x": 96,
+    "y": 32
+   },
+   {
+    "id": "paint-deer-1-d",
+    "x": 112,
+    "y": 32
+   },
+   {
+    "id": "wall-rock-d-r",
+    "x": 128,
+    "y": 32
+   },
+   {
+    "id": "ceil-w",
+    "x": 144,
+    "y": 32
+   },
+   {
+    "id": "ceil-e",
+    "x": 0,
+    "y": 48
+   },
+   {
+    "id": "floor-cave",
+    "x": 16,
+    "y": 48
+   },
+   {
+    "id": "floor-cave-b",
+    "x": 32,
+    "y": 48
+   },
+   {
+    "id": "floor-cave",
+    "x": 48,
+    "y": 48
+   },
+   {
+    "id": "floor-cave",
+    "x": 64,
+    "y": 48
+   },
+   {
+    "id": "floor-cave",
+    "x": 80,
+    "y": 48
+   },
+   {
+    "id": "floor-cave",
+    "x": 96,
+    "y": 48
+   },
+   {
+    "id": "floor-cave-b",
+    "x": 112,
+    "y": 48
+   },
+   {
+    "id": "floor-cave",
+    "x": 128,
+    "y": 48
+   },
+   {
+    "id": "ceil-w",
+    "x": 144,
+    "y": 48
+   },
+   {
+    "id": "ceil-e",
+    "x": 0,
+    "y": 64
+   },
+   {
+    "id": "floor-cave-b",
+    "x": 16,
+    "y": 64
+   },
+   {
+    "id": "floor-cave",
+    "x": 32,
+    "y": 64
+   },
+   {
+    "id": "floor-cave",
+    "x": 48,
+    "y": 64
+   },
+   {
+    "id": "floor-cave",
+    "x": 64,
+    "y": 64
+   },
+   {
+    "id": "floor-cave",
+    "x": 80,
+    "y": 64
+   },
+   {
+    "id": "floor-cave-b",
+    "x": 96,
+    "y": 64
+   },
+   {
+    "id": "floor-cave",
+    "x": 112,
+    "y": 64
+   },
+   {
+    "id": "floor-cave",
+    "x": 128,
+    "y": 64
+   },
+   {
+    "id": "ceil-w",
+    "x": 144,
+    "y": 64
+   },
+   {
+    "id": "ceil-e",
+    "x": 0,
+    "y": 80
+   },
+   {
+    "id": "floor-cave",
+    "x": 16,
+    "y": 80
+   },
+   {
+    "id": "floor-cave",
+    "x": 32,
+    "y": 80
+   },
+   {
+    "id": "floor-cave",
+    "x": 48,
+    "y": 80
+   },
+   {
+    "id": "floor-cave",
+    "x": 64,
+    "y": 80
+   },
+   {
+    "id": "floor-cave-b",
+    "x": 80,
+    "y": 80
+   },
+   {
+    "id": "floor-cave",
+    "x": 96,
+    "y": 80
+   },
+   {
+    "id": "floor-cave",
+    "x": 112,
+    "y": 80
+   },
+   {
+    "id": "floor-cave",
+    "x": 128,
+    "y": 80
+   },
+   {
+    "id": "ceil-w",
+    "x": 144,
+    "y": 80
+   },
+   {
+    "id": "ceil",
+    "x": 0,
+    "y": 96
+   },
+   {
+    "id": "ceil-n",
+    "x": 16,
+    "y": 96
+   },
+   {
+    "id": "ceil-n",
+    "x": 32,
+    "y": 96
+   },
+   {
+    "id": "ceil-ne",
+    "x": 48,
+    "y": 96
+   },
+   {
+    "id": "floor-cave",
+    "x": 64,
+    "y": 96
+   },
+   {
+    "id": "floor-cave",
+    "x": 80,
+    "y": 96
+   },
+   {
+    "id": "ceil-nw",
+    "x": 96,
+    "y": 96
+   },
+   {
+    "id": "ceil-n",
+    "x": 112,
+    "y": 96
+   },
+   {
+    "id": "ceil-n",
+    "x": 128,
+    "y": 96
+   },
+   {
+    "id": "ceil",
+    "x": 144,
+    "y": 96
+   }
+  ]
+ },
+ "cave-pillar": {
+  "png": "tiledata/prehistoric/interior/_gate_assembled/ph-room-cave-pillar.png",
+  "parts": [
+   {
+    "id": "ceil",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 16,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 32,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 48,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 64,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 80,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 96,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 112,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 128,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 144,
+    "y": 0
+   },
+   {
+    "id": "ceil-e",
+    "x": 0,
+    "y": 16
+   },
+   {
+    "id": "wall-rock-u-l",
+    "x": 16,
+    "y": 16
+   },
+   {
+    "id": "paint-dots-u",
+    "x": 32,
+    "y": 16
+   },
+   {
+    "id": "paint-bison-0-u",
+    "x": 48,
+    "y": 16
+   },
+   {
+    "id": "paint-bison-1-u",
+    "x": 64,
+    "y": 16
+   },
+   {
+    "id": "wall-rock-u",
+    "x": 80,
+    "y": 16
+   },
+   {
+    "id": "wall-rock-u",
+    "x": 96,
+    "y": 16
+   },
+   {
+    "id": "wall-rock-u",
+    "x": 112,
+    "y": 16
+   },
+   {
+    "id": "wall-rock-u-r",
+    "x": 128,
+    "y": 16
+   },
+   {
+    "id": "ceil-w",
+    "x": 144,
+    "y": 16
+   },
+   {
+    "id": "ceil-e",
+    "x": 0,
+    "y": 32
+   },
+   {
+    "id": "wall-rock-d-l",
+    "x": 16,
+    "y": 32
+   },
+   {
+    "id": "paint-dots-d",
+    "x": 32,
+    "y": 32
+   },
+   {
+    "id": "paint-bison-0-d",
+    "x": 48,
+    "y": 32
+   },
+   {
+    "id": "paint-bison-1-d",
+    "x": 64,
+    "y": 32
+   },
+   {
+    "id": "wall-rock-d",
+    "x": 80,
+    "y": 32
+   },
+   {
+    "id": "wall-rock-d",
+    "x": 96,
+    "y": 32
+   },
+   {
+    "id": "wall-rock-d",
+    "x": 112,
+    "y": 32
+   },
+   {
+    "id": "wall-rock-d-r",
+    "x": 128,
+    "y": 32
+   },
+   {
+    "id": "ceil-w",
+    "x": 144,
+    "y": 32
+   },
+   {
+    "id": "ceil-e",
+    "x": 0,
+    "y": 48
+   },
+   {
+    "id": "floor-cave",
+    "x": 16,
+    "y": 48
+   },
+   {
+    "id": "floor-cave-b",
+    "x": 32,
+    "y": 48
+   },
+   {
+    "id": "floor-cave",
+    "x": 48,
+    "y": 48
+   },
+   {
+    "id": "floor-cave",
+    "x": 64,
+    "y": 48
+   },
+   {
+    "id": "floor-cave",
+    "x": 80,
+    "y": 48
+   },
+   {
+    "id": "floor-cave",
+    "x": 96,
+    "y": 48
+   },
+   {
+    "id": "floor-cave-b",
+    "x": 112,
+    "y": 48
+   },
+   {
+    "id": "floor-cave",
+    "x": 128,
+    "y": 48
+   },
+   {
+    "id": "ceil-w",
+    "x": 144,
+    "y": 48
+   },
+   {
+    "id": "ceil-e",
+    "x": 0,
+    "y": 64
+   },
+   {
+    "id": "floor-cave-b",
+    "x": 16,
+    "y": 64
+   },
+   {
+    "id": "floor-cave",
+    "x": 32,
+    "y": 64
+   },
+   {
+    "id": "floor-cave",
+    "x": 48,
+    "y": 64
+   },
+   {
+    "id": "floor-cave",
+    "x": 64,
+    "y": 64
+   },
+   {
+    "id": "floor-cave",
+    "x": 80,
+    "y": 64
+   },
+   {
+    "id": "floor-cave-b",
+    "x": 96,
+    "y": 64
+   },
+   {
+    "id": "ceil-new",
+    "x": 112,
+    "y": 64
+   },
+   {
+    "id": "floor-cave",
+    "x": 128,
+    "y": 64
+   },
+   {
+    "id": "ceil-w",
+    "x": 144,
+    "y": 64
+   },
+   {
+    "id": "ceil-e",
+    "x": 0,
+    "y": 80
+   },
+   {
+    "id": "floor-cave",
+    "x": 16,
+    "y": 80
+   },
+   {
+    "id": "floor-cave",
+    "x": 32,
+    "y": 80
+   },
+   {
+    "id": "floor-cave",
+    "x": 48,
+    "y": 80
+   },
+   {
+    "id": "floor-cave",
+    "x": 64,
+    "y": 80
+   },
+   {
+    "id": "floor-cave-b",
+    "x": 80,
+    "y": 80
+   },
+   {
+    "id": "floor-cave",
+    "x": 96,
+    "y": 80
+   },
+   {
+    "id": "ceil-ew",
+    "x": 112,
+    "y": 80
+   },
+   {
+    "id": "floor-cave",
+    "x": 128,
+    "y": 80
+   },
+   {
+    "id": "ceil-w",
+    "x": 144,
+    "y": 80
+   },
+   {
+    "id": "ceil",
+    "x": 0,
+    "y": 96
+   },
+   {
+    "id": "ceil-n",
+    "x": 16,
+    "y": 96
+   },
+   {
+    "id": "ceil-n",
+    "x": 32,
+    "y": 96
+   },
+   {
+    "id": "ceil-ne",
+    "x": 48,
+    "y": 96
+   },
+   {
+    "id": "floor-cave",
+    "x": 64,
+    "y": 96
+   },
+   {
+    "id": "floor-cave",
+    "x": 80,
+    "y": 96
+   },
+   {
+    "id": "ceil-nw",
+    "x": 96,
+    "y": 96
+   },
+   {
+    "id": "ceil",
+    "x": 112,
+    "y": 96
+   },
+   {
+    "id": "ceil-n",
+    "x": 128,
+    "y": 96
+   },
+   {
+    "id": "ceil",
+    "x": 144,
+    "y": 96
+   }
+  ]
+ },
+ "hut-wattle": {
+  "png": "tiledata/prehistoric/interior/_gate_assembled/ph-room-hut-wattle.png",
+  "parts": [
+   {
+    "id": "ceil",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 16,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 32,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 48,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 64,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 80,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 96,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 112,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 128,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 144,
+    "y": 0
+   },
+   {
+    "id": "ceil-e",
+    "x": 0,
+    "y": 16
+   },
+   {
+    "id": "wall-wattle-u-l",
+    "x": 16,
+    "y": 16
+   },
+   {
+    "id": "wall-wattle-u",
+    "x": 32,
+    "y": 16
+   },
+   {
+    "id": "wall-wattle-u",
+    "x": 48,
+    "y": 16
+   },
+   {
+    "id": "wall-wattle-u",
+    "x": 64,
+    "y": 16
+   },
+   {
+    "id": "wall-wattle-u",
+    "x": 80,
+    "y": 16
+   },
+   {
+    "id": "wall-wattle-u",
+    "x": 96,
+    "y": 16
+   },
+   {
+    "id": "wall-wattle-u",
+    "x": 112,
+    "y": 16
+   },
+   {
+    "id": "wall-wattle-u-r",
+    "x": 128,
+    "y": 16
+   },
+   {
+    "id": "ceil-w",
+    "x": 144,
+    "y": 16
+   },
+   {
+    "id": "ceil-e",
+    "x": 0,
+    "y": 32
+   },
+   {
+    "id": "wall-wattle-d-l",
+    "x": 16,
+    "y": 32
+   },
+   {
+    "id": "wall-wattle-d",
+    "x": 32,
+    "y": 32
+   },
+   {
+    "id": "wall-wattle-d",
+    "x": 48,
+    "y": 32
+   },
+   {
+    "id": "wall-wattle-d",
+    "x": 64,
+    "y": 32
+   },
+   {
+    "id": "wall-wattle-d",
+    "x": 80,
+    "y": 32
+   },
+   {
+    "id": "wall-wattle-d",
+    "x": 96,
+    "y": 32
+   },
+   {
+    "id": "wall-wattle-d",
+    "x": 112,
+    "y": 32
+   },
+   {
+    "id": "wall-wattle-d-r",
+    "x": 128,
+    "y": 32
+   },
+   {
+    "id": "ceil-w",
+    "x": 144,
+    "y": 32
+   },
+   {
+    "id": "ceil-e",
+    "x": 0,
+    "y": 48
+   },
+   {
+    "id": "floor-hut",
+    "x": 16,
+    "y": 48
+   },
+   {
+    "id": "floor-straw",
+    "x": 32,
+    "y": 48
+   },
+   {
+    "id": "floor-hut",
+    "x": 48,
+    "y": 48
+   },
+   {
+    "id": "floor-hut",
+    "x": 64,
+    "y": 48
+   },
+   {
+    "id": "floor-hut",
+    "x": 80,
+    "y": 48
+   },
+   {
+    "id": "floor-hut",
+    "x": 96,
+    "y": 48
+   },
+   {
+    "id": "floor-straw",
+    "x": 112,
+    "y": 48
+   },
+   {
+    "id": "floor-hut",
+    "x": 128,
+    "y": 48
+   },
+   {
+    "id": "ceil-w",
+    "x": 144,
+    "y": 48
+   },
+   {
+    "id": "ceil-e",
+    "x": 0,
+    "y": 64
+   },
+   {
+    "id": "floor-straw",
+    "x": 16,
+    "y": 64
+   },
+   {
+    "id": "floor-hut",
+    "x": 32,
+    "y": 64
+   },
+   {
+    "id": "floor-hut",
+    "x": 48,
+    "y": 64
+   },
+   {
+    "id": "floor-hut",
+    "x": 64,
+    "y": 64
+   },
+   {
+    "id": "floor-hut",
+    "x": 80,
+    "y": 64
+   },
+   {
+    "id": "floor-straw",
+    "x": 96,
+    "y": 64
+   },
+   {
+    "id": "floor-hut",
+    "x": 112,
+    "y": 64
+   },
+   {
+    "id": "floor-hut",
+    "x": 128,
+    "y": 64
+   },
+   {
+    "id": "ceil-w",
+    "x": 144,
+    "y": 64
+   },
+   {
+    "id": "ceil-e",
+    "x": 0,
+    "y": 80
+   },
+   {
+    "id": "floor-hut",
+    "x": 16,
+    "y": 80
+   },
+   {
+    "id": "floor-hut",
+    "x": 32,
+    "y": 80
+   },
+   {
+    "id": "floor-hut",
+    "x": 48,
+    "y": 80
+   },
+   {
+    "id": "floor-hut",
+    "x": 64,
+    "y": 80
+   },
+   {
+    "id": "floor-straw",
+    "x": 80,
+    "y": 80
+   },
+   {
+    "id": "floor-hut",
+    "x": 96,
+    "y": 80
+   },
+   {
+    "id": "floor-hut",
+    "x": 112,
+    "y": 80
+   },
+   {
+    "id": "floor-hut",
+    "x": 128,
+    "y": 80
+   },
+   {
+    "id": "ceil-w",
+    "x": 144,
+    "y": 80
+   },
+   {
+    "id": "ceil",
+    "x": 0,
+    "y": 96
+   },
+   {
+    "id": "ceil-n",
+    "x": 16,
+    "y": 96
+   },
+   {
+    "id": "ceil-n",
+    "x": 32,
+    "y": 96
+   },
+   {
+    "id": "ceil-ne",
+    "x": 48,
+    "y": 96
+   },
+   {
+    "id": "floor-hut",
+    "x": 64,
+    "y": 96
+   },
+   {
+    "id": "floor-hut",
+    "x": 80,
+    "y": 96
+   },
+   {
+    "id": "ceil-nw",
+    "x": 96,
+    "y": 96
+   },
+   {
+    "id": "ceil-n",
+    "x": 112,
+    "y": 96
+   },
+   {
+    "id": "ceil-n",
+    "x": 128,
+    "y": 96
+   },
+   {
+    "id": "ceil",
+    "x": 144,
+    "y": 96
+   }
+  ]
+ },
+ "hut-hide": {
+  "png": "tiledata/prehistoric/interior/_gate_assembled/ph-room-hut-hide.png",
+  "parts": [
+   {
+    "id": "ceil",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 16,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 32,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 48,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 64,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 80,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 96,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 112,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 128,
+    "y": 0
+   },
+   {
+    "id": "ceil",
+    "x": 144,
+    "y": 0
+   },
+   {
+    "id": "ceil-e",
+    "x": 0,
+    "y": 16
+   },
+   {
+    "id": "wall-hide-u-l",
+    "x": 16,
+    "y": 16
+   },
+   {
+    "id": "wall-hide-u",
+    "x": 32,
+    "y": 16
+   },
+   {
+    "id": "wall-hide-u",
+    "x": 48,
+    "y": 16
+   },
+   {
+    "id": "wall-hide-u",
+    "x": 64,
+    "y": 16
+   },
+   {
+    "id": "wall-hide-u",
+    "x": 80,
+    "y": 16
+   },
+   {
+    "id": "wall-hide-u",
+    "x": 96,
+    "y": 16
+   },
+   {
+    "id": "wall-hide-u",
+    "x": 112,
+    "y": 16
+   },
+   {
+    "id": "wall-hide-u-r",
+    "x": 128,
+    "y": 16
+   },
+   {
+    "id": "ceil-w",
+    "x": 144,
+    "y": 16
+   },
+   {
+    "id": "ceil-e",
+    "x": 0,
+    "y": 32
+   },
+   {
+    "id": "wall-hide-d-l",
+    "x": 16,
+    "y": 32
+   },
+   {
+    "id": "wall-hide-d",
+    "x": 32,
+    "y": 32
+   },
+   {
+    "id": "wall-hide-d",
+    "x": 48,
+    "y": 32
+   },
+   {
+    "id": "wall-hide-d",
+    "x": 64,
+    "y": 32
+   },
+   {
+    "id": "wall-hide-d",
+    "x": 80,
+    "y": 32
+   },
+   {
+    "id": "wall-hide-d",
+    "x": 96,
+    "y": 32
+   },
+   {
+    "id": "wall-hide-d",
+    "x": 112,
+    "y": 32
+   },
+   {
+    "id": "wall-hide-d-r",
+    "x": 128,
+    "y": 32
+   },
+   {
+    "id": "ceil-w",
+    "x": 144,
+    "y": 32
+   },
+   {
+    "id": "ceil-e",
+    "x": 0,
+    "y": 48
+   },
+   {
+    "id": "floor-hut",
+    "x": 16,
+    "y": 48
+   },
+   {
+    "id": "floor-straw",
+    "x": 32,
+    "y": 48
+   },
+   {
+    "id": "floor-hut",
+    "x": 48,
+    "y": 48
+   },
+   {
+    "id": "floor-hut",
+    "x": 64,
+    "y": 48
+   },
+   {
+    "id": "floor-hut",
+    "x": 80,
+    "y": 48
+   },
+   {
+    "id": "floor-hut",
+    "x": 96,
+    "y": 48
+   },
+   {
+    "id": "floor-straw",
+    "x": 112,
+    "y": 48
+   },
+   {
+    "id": "floor-hut",
+    "x": 128,
+    "y": 48
+   },
+   {
+    "id": "ceil-w",
+    "x": 144,
+    "y": 48
+   },
+   {
+    "id": "ceil-e",
+    "x": 0,
+    "y": 64
+   },
+   {
+    "id": "floor-straw",
+    "x": 16,
+    "y": 64
+   },
+   {
+    "id": "floor-hut",
+    "x": 32,
+    "y": 64
+   },
+   {
+    "id": "floor-hut",
+    "x": 48,
+    "y": 64
+   },
+   {
+    "id": "floor-hut",
+    "x": 64,
+    "y": 64
+   },
+   {
+    "id": "floor-hut",
+    "x": 80,
+    "y": 64
+   },
+   {
+    "id": "floor-straw",
+    "x": 96,
+    "y": 64
+   },
+   {
+    "id": "floor-hut",
+    "x": 112,
+    "y": 64
+   },
+   {
+    "id": "floor-hut",
+    "x": 128,
+    "y": 64
+   },
+   {
+    "id": "ceil-w",
+    "x": 144,
+    "y": 64
+   },
+   {
+    "id": "ceil-e",
+    "x": 0,
+    "y": 80
+   },
+   {
+    "id": "floor-hut",
+    "x": 16,
+    "y": 80
+   },
+   {
+    "id": "floor-hut",
+    "x": 32,
+    "y": 80
+   },
+   {
+    "id": "floor-hut",
+    "x": 48,
+    "y": 80
+   },
+   {
+    "id": "floor-hut",
+    "x": 64,
+    "y": 80
+   },
+   {
+    "id": "floor-straw",
+    "x": 80,
+    "y": 80
+   },
+   {
+    "id": "floor-hut",
+    "x": 96,
+    "y": 80
+   },
+   {
+    "id": "floor-hut",
+    "x": 112,
+    "y": 80
+   },
+   {
+    "id": "floor-hut",
+    "x": 128,
+    "y": 80
+   },
+   {
+    "id": "ceil-w",
+    "x": 144,
+    "y": 80
+   },
+   {
+    "id": "ceil",
+    "x": 0,
+    "y": 96
+   },
+   {
+    "id": "ceil-n",
+    "x": 16,
+    "y": 96
+   },
+   {
+    "id": "ceil-n",
+    "x": 32,
+    "y": 96
+   },
+   {
+    "id": "ceil-ne",
+    "x": 48,
+    "y": 96
+   },
+   {
+    "id": "floor-hut",
+    "x": 64,
+    "y": 96
+   },
+   {
+    "id": "floor-hut",
+    "x": 80,
+    "y": 96
+   },
+   {
+    "id": "ceil-nw",
+    "x": 96,
+    "y": 96
+   },
+   {
+    "id": "ceil-n",
+    "x": 112,
+    "y": 96
+   },
+   {
+    "id": "ceil-n",
+    "x": 128,
+    "y": 96
+   },
+   {
+    "id": "ceil",
+    "x": 144,
+    "y": 96
+   }
+  ]
+ }
+}

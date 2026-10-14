@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e67fd827920e56dcceb5210bb5c6e9ad5142635e18f2b347f76ca78e54244ca2",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "prehistoric stone-age skull shelf",
+ "label": "prehistoric/ph-skull-shelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 1행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone shelf structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone shelf slabs and stone masonry walls are drawn in pure front elevation with no visible horizontal top surfaces (only a 1-2px slab edge/rim at rows 5-6 and 18-19 where skulls sit), lacking the required 3/4 top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5852
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone-age skull shelf",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire shelf unit is drawn in a pure front elevation: the stone slabs are only 2px thick (a 1px highlight and 1px shade) with no foreshortened top surface visible, and both the skulls and the stone pillar supports are rendered directly facing the viewer.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7618
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone shelf unit with stacked stone supports and horizontal slabs",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone shelves and supporting blocks are drawn almost entirely in flat front elevation. The upper stone slab only shows 1-2 source pixels of surface (rows 4-5) before its front lip (row 6), and the skulls and stone pillars face directly forward with no foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 8129
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone shelf with skulls",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure and the skulls on it are drawn in front elevation. The skulls face directly forward with eyes and mouths presented straight-on, and the stone shelf surfaces are rendered as only 1-2 pixel thick horizontal bands rather than showing foreshortened depth from a 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 7649
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.809Z",
+ "cells": {
+  "16": [
+   "2e679a970c93e49f",
+   "3b5858f49efd4e16",
+   "7e96e787bad2418c",
+   "cdb17db507e36022"
+  ],
+  "24": [
+   "0b6521f324f220b8",
+   "213b7eae16698edf",
+   "2aabe0543118b00f",
+   "2e6aa91fd6e5748a",
+   "41ccabf1bdcaf642",
+   "490d0e1cd07502b8",
+   "548cde5c02ed180d",
+   "5c0856e008be6a7e",
+   "5d34d3034aa76e9c",
+   "711d98ef4da6656a",
+   "816e1da2b423da42",
+   "8e85260066fd9c07",
+   "9c068b02ccc8bc1d",
+   "a0bdeb99e15242dc",
+   "a3bc60cd02d0927f",
+   "b67d991cb427fe2c",
+   "ccb89975317803fa",
+   "cd4bd845357e9ad0",
+   "d2d7d74038b3fbc3",
+   "dc1e7706b77ce068",
+   "e05d827351f94ff3",
+   "ecc5b3fc0a875287",
+   "f3e3d1522914a1aa",
+   "fa99def5d46186ea"
+  ],
+  "32": [
+   "9e195bdba7772da6"
+  ],
+  "48": [
+   "06e1495b4c89e30c",
+   "0872285e4c49d19f",
+   "2c0a4d7c5e3be2a6",
+   "861e954ac9d206ee",
+   "c056e9fd1abd3501",
+   "d69e430e24794232"
+  ]
+ }
+}

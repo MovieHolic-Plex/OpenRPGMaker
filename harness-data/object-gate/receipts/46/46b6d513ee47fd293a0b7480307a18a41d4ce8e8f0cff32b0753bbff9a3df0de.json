@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "46b6d513ee47fd293a0b7480307a18a41d4ce8e8f0cff32b0753bbff9a3df0de",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "prehistoric stone-age tipi",
+ "label": "prehistoric/ph-tipi",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "conical hide tipi",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tipi is drawn as a flat, straight-on front elevation without top-down perspective. The smoke hole at the apex is merely a 2px dark slit rather than an elliptical opening viewed from above, and the doorway and base have no foreshortened top-down depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10116
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "conical hide tent / tipi",
+    "kind_matches": true,
+    "top_rows": 45,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire tipi is a conical roof structure displaying its sloped surface to the 3/4 camera. The base rim curves down across 7-8 pixel rows (rows 54 to 61) showing clear top-down perspective, decorative bands curve downward across 5 rows, and the top smoke hole opening is visible as an ellipse at rows 18-19.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7641
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "conical hide tipi structure with support poles and stone skirt",
+    "kind_matches": true,
+    "top_rows": 22,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tipi is a conical roof structure viewed from a 3/4 angle; the upper slope spans rows 16 to 37 (22 rows) above the door frame, and the base exhibits clear elliptical curvature extending down to row 61 along with curved decorative banding.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10764
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "conical hide tipi / tent",
+    "kind_matches": true,
+    "top_rows": 45,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tipi is properly rendered in 3/4 top-down perspective: the circular base curves strongly downward toward the viewer (from row 53 at the sides down to row 61 at the front), the sloped cone roof extends from row 16 to 61, and the smoke-hole opening at the apex shows a foreshortened ellipse with an interior opening visible from rows 16 to 20 (5 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8406
+  }
+ ],
+ "decidedAt": "2026-10-14T00:41:00.197Z",
+ "cells": {
+  "16": [
+   "2be0280e2da142d9",
+   "3a996253dc54dee5",
+   "51b6a19d272e0a83",
+   "61a5d4dafca4adb2",
+   "932fd44f48b4e000",
+   "a577e715e4ec1559",
+   "a92c94e28fe93ff5",
+   "b17d102aec6bfbae",
+   "b1885bec5706fa4a",
+   "b349762951cb079b"
+  ],
+  "24": [
+   "01537e43e282dfa3",
+   "318236e8223b263f",
+   "67f0d3dca3d927e4",
+   "6d68fa20e1e87dde",
+   "9fab5991ea506dab",
+   "a54a819b2aab385f",
+   "b0b49b9d132d9942",
+   "bd0829c8c3f5ecaf",
+   "d76ae211ad1b6be8",
+   "e96a59c42126cc48",
+   "eb1bc5398cd01957",
+   "ed5504127a2643ac"
+  ],
+  "32": [
+   "04a5e402bcc47884",
+   "2a8c54296253b826",
+   "2ce958d34b3ec6c7",
+   "2da9b4beda8e21b2",
+   "389fb061f29c4f0a",
+   "4709150a752f0c76",
+   "6ea83b5f3d5dcce3",
+   "7bf21c14ff0e5050",
+   "806ddf6cc5031b39",
+   "ae432755fbb747e0",
+   "c6fe5eefc559692c",
+   "e509b10d9a1367c1"
+  ],
+  "48": [
+   "8e003f2860714a8b",
+   "902111cb9a4c4e07",
+   "d5973e98e2fa41fb",
+   "e08504fa4bb27d87"
+  ]
+ }
+}

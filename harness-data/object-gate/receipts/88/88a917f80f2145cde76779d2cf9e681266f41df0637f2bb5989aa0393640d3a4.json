@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "88a917f80f2145cde76779d2cf9e681266f41df0637f2bb5989aa0393640d3a4",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "prehistoric stone-age bone pile",
+ "label": "prehistoric/ph-bone-pile",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pile of bones / skull and skeletal remains",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bone pile/skull structure is drawn as a flat 2D side elevation with no visible horizontal top surfaces (0 px). It lacks top-down foreshortening required for 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5322
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bone pile with skull",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bone pile/skull stands nearly the full height of the tile (14px tall) and is drawn in flat front elevation with the skull face and bones facing straight at the camera, showing no foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 20001
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bone pile / animal skull assembly",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bones/skull are drawn in a flat upright 2D side elevation standing vertically from row 2 down to a flat baseline at row 15, showing no foreshortened top surfaces or depth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5781
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "prehistoric stone-age bone pile",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sprite depicts an object (resembling a stylized bird/duck or skull) in a flat side/front elevation rather than scattered floor debris. It has a flat cut-off base at row 15 and shows no top horizontal surfaces viewed from above (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 6442
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.804Z",
+ "cells": {
+  "16": [
+   "e65978338f6a1cb9"
+  ],
+  "24": [
+   "0475a805e0c05827",
+   "0638fd5911a99d2a",
+   "0c3c9bddfcaf18dd",
+   "6f56b48cf4fad2af",
+   "74b677e25041290f",
+   "99974351cfed4038"
+  ],
+  "32": [
+   "260eca51963de784",
+   "a72c07ae8f40d341",
+   "aa74a172100c9274",
+   "b15e5bc510a3844f",
+   "b9b4f43ff97a92df",
+   "c69294e964425123"
+  ],
+  "48": [
+   "0543cf2ec1facf61",
+   "38763f0fedf61db4",
+   "71f8274beeaa7a62",
+   "913659cb5bece5c5",
+   "a778a809f453007b",
+   "fab273a57a49e01e"
+  ]
+ }
+}

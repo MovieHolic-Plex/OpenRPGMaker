@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "04f81ce8c8133af83a00cbe95e8ab0d111cead023f88bcd4edcc2d3668d9b78b",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "prehistoric stone-age lean to",
+ "label": "prehistoric/ph-lean-to",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "thatched lean-to shelter",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The thatch roof slopes downward toward the viewer, displaying roughly 17 source pixel rows of tiered, textured roof surface (rows 2-18) in standard 3/4 top-down perspective over an open shelter space.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6690
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "thatched lean-to shelter with support posts",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The multi-tiered thatched roof displays its top slope facing the 3/4 overhead camera across rows 4 to 18 (approx. 15 rows tall), resting on front posts with an interior view underneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4277
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "thatched lean-to shelter with sloped roof and open front",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The multi-tiered thatched roof slope is clearly visible from above, occupying rows 4 through 18 (~15 pixel rows) before meeting the support beam and open interior.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4342
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "thatched lean-to roof and timber frame",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The multi-tiered thatched roof slope is clearly visible from above, spanning approximately 15 rows (rows 4 to 18) before meeting the front timber lintel and open shelter below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5825
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.797Z",
+ "cells": {
+  "16": [
+   "138c03ebe4285bc4",
+   "33a42d7479263d74",
+   "9a617dfaf77ce29c",
+   "bb343d0e91a8e7aa",
+   "c88706794b831908",
+   "da284c91a273bf05"
+  ],
+  "24": [
+   "139125250104bcd5",
+   "1fd6ccc56ac06220",
+   "339d4428b06fe725",
+   "4e3920bbc693a880",
+   "7c11b29822d2d0f5",
+   "812108920a454acb",
+   "df38fa60b8c3e832",
+   "f45f627855e98e00"
+  ],
+  "32": [
+   "2aabca19d99b65bb",
+   "326c4c2970486a3d",
+   "6dcdeb4595758f10",
+   "8855e6d509a3d30f",
+   "d7b98ed53cba21e1",
+   "e328229b16f63008"
+  ],
+  "48": [
+   "638d0d29639a184b",
+   "cc16804c9dcac102"
+  ]
+ }
+}

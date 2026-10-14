@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "98297818bc005c260938978a30fac68dffffce72ef7c06f23ff2c2bc8d212ed7",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "prehistoric stone-age herbs wall",
+ "label": "prehistoric/ph-herbs-wall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hanging herb bunches on wall beam",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted herb drying rack hanging flat against the wall, consistent with the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5446
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hanging herb bunches on wall rack",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted herb rack hanging flat against the wall surface, correctly categorized as wall_mounted where flat presentation is standard.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5253
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hanging bundles of herbs suspended from a wall-mounted horizontal rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted herb drying rack shown flat against the wall. Wall-mounted objects are permitted to be flat in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4309
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall-hanging herb drying rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is mounted flat against the wall (hanging dried herbs on a wall rod); as a wall-mounted fixture viewed flat against the north wall, no foreshortened top surface is required.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5278
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.810Z",
+ "cells": {
+  "16": [
+   "7be04e0ff6bcf887"
+  ],
+  "24": [
+   "309e5a5d529e2594",
+   "5b5d15fe87c8269d",
+   "5e061d2260a25f0e",
+   "83118cebbf2023d8",
+   "afc2cf31e2113790",
+   "bf1e04056961b2eb"
+  ],
+  "32": [
+   "479591496caff9df",
+   "92c5e6a8881c02f2",
+   "b5dc3ba27bf50628",
+   "cfe6f3aeafbc9f9a",
+   "d71ecfaa4cc388c1",
+   "e6cb37c62e7a6713"
+  ],
+  "48": [
+   "2d028cc8f08b01f3",
+   "3f3194a35d111c17",
+   "8efef26dd9547b45",
+   "d31649152b24ccb5",
+   "e5774bc3cb2ae84a",
+   "ee6fd0dae0a69dd9"
+  ]
+ }
+}

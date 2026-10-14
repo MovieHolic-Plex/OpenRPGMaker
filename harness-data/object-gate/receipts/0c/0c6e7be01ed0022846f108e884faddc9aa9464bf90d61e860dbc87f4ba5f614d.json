@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0c6e7be01ed0022846f108e884faddc9aa9464bf90d61e860dbc87f4ba5f614d",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "prehistoric stone-age stone",
+ "label": "prehistoric/ph-stone",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile is a seamless stone/rock ground or wall terrain texture.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3043
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone terrain texture",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 tile texture representing stone/rock terrain ground surface; terrain category applies.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3163
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a seamless/tiling texture of stone or rocky terrain, correctly categorized as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3649
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 stone/rock terrain tile representing ground or wall surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3159
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.788Z",
+ "cells": {
+  "16": [
+   "1e00a7f1aae4abd3"
+  ],
+  "24": [
+   "6a6319fa4cd3a5ff",
+   "791745d591df959b",
+   "82e11baafa9a26b8",
+   "979ae60ba19b187b",
+   "a901e14804a891e8",
+   "ceaf81b20e983d00"
+  ],
+  "32": [
+   "50da0d3fe3ad2321",
+   "784bd41f4086abfe",
+   "964dc3da5e5b5268",
+   "9a956270e4b3feee",
+   "e0f4fe34bb100c10",
+   "fdf47092ce00a298"
+  ],
+  "48": [
+   "5c27acc6fe842bfe",
+   "5d652461c2d52459",
+   "62b36274148ff9f1",
+   "798acba9705dc72a",
+   "82ada0b837713dd5",
+   "efd5b9724436fe00"
+  ]
+ }
+}

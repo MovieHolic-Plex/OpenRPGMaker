@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "53e1d7318ce8e954eae1148543da71db0c1cbb71c2ca57a836172f5e445e2d47",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "prehistoric stone-age skull pole",
+ "label": "prehistoric/ph-skull-pole",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "skull pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole and attached skull are drawn in pure front elevation. The top rounded cap/end has vertical side outlines from row 4 downward without any foreshortened top surface visible, and the horizontal band at rows 7-8 curves upward rather than downward, showing no 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9400
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden pole with skull and capped top",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole and top cap are drawn in pure front elevation with a 2D arched/bullet-shaped top and a completely flat horizontal bottom, showing no visible foreshortened top surface or cut face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5107
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden pole with skull ornament and bundled cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole and top cap are rendered in a flat 2D front elevation (rounded arch silhouette with completely straight horizontal banding at rows 8-10 and a flat horizontal base at row 31), showing no top cut face or foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5964
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "skull pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, skull, and top cap/wrap are drawn in pure front elevation: all wrapping bands (rows 8-10) and the base (row 31) are completely flat horizontal lines rather than downward curves, the skull faces directly forward, and there is no visible foreshortened top cut face or horizontal surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5777
+  }
+ ],
+ "decidedAt": "2026-10-14T00:42:49.785Z",
+ "cells": {
+  "16": [
+   "905b469c8e6aff53",
+   "aa764e0ae65f70c3"
+  ],
+  "24": [
+   "35afedb55b02c428",
+   "382a0b2ab46d4e0b",
+   "5d3e4725fab4dca4",
+   "61a8108a777af91f",
+   "61f22f37efec98ef",
+   "66e72d7b2deea79f",
+   "737e843a29152f8c",
+   "928c897e78c10ab3",
+   "aa32ca4800e2b408",
+   "b608a400407c3cef",
+   "cee23061dd2cbfb4",
+   "d2d3ce370166a9c8"
+  ],
+  "32": [
+   "3037412e1bbfceda",
+   "6833dd1e94c832e1",
+   "a8298153119819e9"
+  ],
+  "48": [
+   "11fac12d96102f0d",
+   "5ba7706b0e7786e2",
+   "75b8f9531fe5a480",
+   "cf1c34d3e7d47f49",
+   "eacb70e0e0b801ca",
+   "eff9d3ead5a7720f"
+  ]
+ }
+}

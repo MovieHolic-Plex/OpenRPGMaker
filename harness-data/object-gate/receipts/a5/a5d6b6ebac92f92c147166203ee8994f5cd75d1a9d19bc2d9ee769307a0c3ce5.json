@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a5d6b6ebac92f92c147166203ee8994f5cd75d1a9d19bc2d9ee769307a0c3ce5",
+ "width": 48,
+ "height": 32,
+ "kind": "terrain",
+ "name": "prehistoric stone-age tarpit",
+ "label": "prehistoric/ph-tarpit-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tarpit pool",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tarpit is drawn as an elliptical ground feature in 3/4 top-down perspective, with roughly 20 rows of visible liquid tar surface and surrounding earthen rim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4426
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tarpit pool",
+    "kind_matches": true,
+    "top_rows": 22,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tarpit is a flat terrain pool drawn as a foreshortened ellipse spanning approximately 22 vertical rows with visible liquid surface and embedded bones.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6593
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tarpit pool with bones",
+    "kind_matches": true,
+    "top_rows": 22,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tarpit is a flat terrain feature viewed correctly from above as a foreshortened ellipse spanning roughly 22 pixel rows vertically, with submerged bones rendered at a matching 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3760
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tarpit pool",
+    "kind_matches": true,
+    "top_rows": 21,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Foreshortened elliptical ground pool / tarpit spanning rows 6 to 26 (~21 rows) viewed from above in proper 3/4 top-down perspective with bones sticking out.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4763
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.806Z",
+ "cells": {
+  "16": [
+   "042348348df009fe",
+   "4599291f9fa7eb17",
+   "8263496d9a98c8c9",
+   "a43c80b07bb7b1cf",
+   "a84442a4020ce9bb",
+   "fa4f5f68dc47ef9e"
+  ],
+  "24": [
+   "4e26e01efa3420a6",
+   "4fc7a9cb5b882910",
+   "670faa47d12f5026",
+   "750615fb8c20a2cf",
+   "800fea5084b1fa74",
+   "c0b2c01e6587aca5",
+   "c83b8c55e1085d46",
+   "ec72ace2baffb79f"
+  ],
+  "32": [
+   "17faf6fa6c7c087f",
+   "334e6516d992d83e",
+   "6a81ca5e9da2242c",
+   "6d21b178333220f0",
+   "6f73ef8e0807889b",
+   "e516dabc85034c5e"
+  ],
+  "48": [
+   "4f588d4160b88885",
+   "c73717b5666f056d"
+  ]
+ }
+}

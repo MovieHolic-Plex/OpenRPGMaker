@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4531c0a2333518142aade42a4a33843b6360fca62544fda97856a263a94b9150",
+ "width": 32,
+ "height": 16,
+ "kind": "frame",
+ "name": "prehistoric stone-age spear rack",
+ "label": "prehistoric/ph-spear-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal crossbeam and posts of the spear rack",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "While the two vertical post caps show ~3px tops, the primary horizontal crossbeam (rows 6-9) is drawn in pure front elevation with only a 1px highlight along row 6 rather than a visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 7344
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal crossbeam and vertical posts of spear rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal crossbeam is drawn as a flat front-facing cylinder with only a 1px top highlight (row 6) and no visible top surface depth. For kind 'frame', horizontal beams must show top faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6511
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal rack beam and vertical posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal beam of the frame is drawn as a flat front elevation spanning rows 6-9 with cylindrical front-view shading (highlight on row 6-7, shadow on row 8-9) and no top surface visible from above. The frame also lacks any visible ground base/depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5023
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden rack frame with horizontal crossbeam and vertical posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Although the vertical post tops display 3-row circular log cross-sections, the horizontal crossbeam is drawn purely as a flat front-facing bar (rows 6-9) with no foreshortened top surface, and the posts touch the ground with no visible base depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6995
+  }
+ ],
+ "decidedAt": "2026-10-14T00:39:52.941Z",
+ "cells": {
+  "16": [
+   "985a3a52f273c9cf",
+   "cb2343deb54260f3"
+  ],
+  "24": [
+   "05f17f269d81c66b",
+   "0bc8f5c3281bf667",
+   "18ddca3352944fe2",
+   "39384d83c9b4561d",
+   "3bd5aadc417588b4",
+   "47e70483e464505a",
+   "5b8fbeb09aa0dae2",
+   "61e5ad939ef41f06",
+   "66bc895c2f739554",
+   "ba3f57fe2ed57a4c",
+   "cc2a3f8ad37eb070",
+   "ecd01f7d0eacbc3f"
+  ],
+  "32": [
+   "3f3709fc269c8d53",
+   "f32a17d83aed26c7"
+  ],
+  "48": [
+   "2c189aaddfdc3a57",
+   "2e9ddb4dfaa0bb4f",
+   "515d07b22624b166",
+   "6821ff81cfd05cfa",
+   "6ec0c62a4a454396",
+   "a2a8099fc655b831"
+  ]
+ }
+}

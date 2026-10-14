@@ -1,0 +1,22 @@
+{"png": "ph-fern-giant.png", "kind": "organic", "name": "큰 고사리 포기", "label": "prehistoric/ph-fern-giant"}
+{"png": "ph-fern-s.png", "kind": "organic", "name": "작은 고사리", "label": "prehistoric/ph-fern-s"}
+{"png": "ph-cycad.png", "kind": "organic", "name": "소철(굵은 비늘 줄기 + 뻣뻣한 잎)", "label": "prehistoric/ph-cycad"}
+{"png": "ph-tree-fern.png", "kind": "organic", "name": "나무고사리(가는 줄기 + 우산 잎)", "label": "prehistoric/ph-tree-fern"}
+{"png": "ph-jungle-tree.png", "kind": "organic", "name": "정글 나무(넓은 잎 덩이)", "label": "prehistoric/ph-jungle-tree"}
+{"png": "ph-araucaria.png", "kind": "organic", "name": "아라우카리아(층층 가지 침엽수)", "label": "prehistoric/ph-araucaria"}
+{"png": "ph-swamp-tree.png", "kind": "organic", "name": "늪 나무(버팀 뿌리 + 늘어진 이끼)", "label": "prehistoric/ph-swamp-tree"}
+{"png": "ph-dead-tree.png", "kind": "organic", "name": "타 죽은 고목(화산)", "label": "prehistoric/ph-dead-tree"}
+{"png": "ph-horsetail.png", "kind": "organic", "name": "속새 무리(마디 줄기)", "label": "prehistoric/ph-horsetail"}
+{"png": "ph-reeds.png", "kind": "organic", "name": "늪 갈대", "label": "prehistoric/ph-reeds"}
+{"png": "ph-bush.png", "kind": "organic", "name": "덤불", "label": "prehistoric/ph-bush"}
+{"png": "ph-berry-bush.png", "kind": "organic", "name": "열매 덤불", "label": "prehistoric/ph-berry-bush"}
+{"png": "ph-mushrooms.png", "kind": "organic", "name": "버섯 무리", "label": "prehistoric/ph-mushrooms"}
+{"png": "ph-rock-s.png", "kind": "organic", "name": "둥근 돌", "label": "prehistoric/ph-rock-s"}
+{"png": "ph-rock-l.png", "kind": "organic", "name": "큰 바위", "label": "prehistoric/ph-rock-l"}
+{"png": "ph-rock-mossy.png", "kind": "organic", "name": "이끼 낀 바위", "label": "prehistoric/ph-rock-mossy"}
+{"png": "ph-rock-outcrop.png", "kind": "organic", "name": "바위 언덕(풀 윗면)", "label": "prehistoric/ph-rock-outcrop"}
+{"png": "ph-basalt-columns.png", "kind": "organic", "name": "현무암 기둥 무리(육각 윗면)", "label": "prehistoric/ph-basalt-columns"}
+{"png": "ph-lava-spire.png", "kind": "organic", "name": "용암 바위 첨탑", "label": "prehistoric/ph-lava-spire"}
+{"png": "ph-obsidian.png", "kind": "debris", "name": "흑요석 조각", "label": "prehistoric/ph-obsidian"}
+{"png": "ph-lily.png", "kind": "flat", "name": "연잎(물 위)", "label": "prehistoric/ph-lily"}
+{"png": "ph-footprints.png", "kind": "flat", "name": "큰 짐승 발자국(세 발가락)", "label": "prehistoric/ph-footprints"}

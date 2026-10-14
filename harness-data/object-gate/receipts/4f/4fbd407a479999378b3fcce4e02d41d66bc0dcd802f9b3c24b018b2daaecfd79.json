@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4fbd407a479999378b3fcce4e02d41d66bc0dcd802f9b3c24b018b2daaecfd79",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "prehistoric stone-age hearth",
+ "label": "prehistoric/ph-hearth-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "아가리 안쪽이 안 보임",
+  "아가리 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "clay hearth pot / kiln cone",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The central clay pot/kiln is drawn in pure front elevation with vertical lighting bands. Its top opening at row 7 is only a 1px flat line/sliver with no foreshortened elliptical interior visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 6633
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "clay pot/oven on a stone fire hearth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 1,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The central conical vessel/oven is drawn in near-pure front elevation; its top opening is represented by only a 1-pixel dark sliver (row 7) rather than a visible foreshortened ellipse.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 6599
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "conical clay hearth/pot over a stone fire pit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The central conical hearth pot is rendered from a pure front view. The chimney/pot opening at rows 6-7 is only a 2px-tall flat block rather than an elliptical opening viewed from above, and the pot body shows no foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 10065
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "central clay pot / kiln vessel on stone hearth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The central vessel's top opening is rendered as a nearly flat 1px dark slit at row 7 with no visible interior depth or foreshortened elliptical opening into the container.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 5976
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.808Z",
+ "cells": {
+  "16": [
+   "84b6b32570dd0c71",
+   "9213b444938d170d",
+   "a09473dc119b7673",
+   "ae6c88ce8dd261fa"
+  ],
+  "24": [
+   "12de7e6f05ecfd65",
+   "2abcfc9212128bc7",
+   "2b92eb1525c72312",
+   "478ae243dd276b84",
+   "55e05f3e01627e19",
+   "72819d6b9299dffd",
+   "76ce1d8b021a93f2",
+   "803c992bf6344c0e",
+   "87cb0fa5aca5cd5a",
+   "96e3c69a779ede1c",
+   "a2f2ea02efcfbfcd",
+   "ad859aa63187213c",
+   "b1809d9373c97000",
+   "b6276d81c5ffe9ff",
+   "c8542c9031beb8af",
+   "d1bc88dd38ce9b07",
+   "d9249d0a244b44c3",
+   "e0983e2f647b00c3",
+   "edd565d2a1818790",
+   "eece90d3730f699c",
+   "f673411358147152",
+   "fc5cb4701306e9c4"
+  ],
+  "32": [
+   "4d41d8b6d25ed6d2"
+  ],
+  "48": [
+   "438881095233ea93",
+   "50973e02c8220415",
+   "52927d5731901657",
+   "58818a40ee17c627",
+   "ee122bb6ea0ebd4a",
+   "fedeeb562b725108"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "512abcde02bc2899ee7223c628f4305172a1d49cd77d581d9fb447d645533577",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "prehistoric stone-age lava",
+ "label": "prehistoric/ph-lava",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lava terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting molten lava texture seen from top-down perspective across the entire 16x16 grid.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2524
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lava tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 flat terrain tile representing lava liquid surface seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2860
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lava terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image shows a continuous 16x16 texture of molten lava suitable as a flat ground/liquid terrain tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2693
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lava ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 molten lava terrain surface texture viewed entirely from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2543
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.791Z",
+ "cells": {
+  "16": [
+   "87f69409ed404202"
+  ],
+  "24": [
+   "04374c3a2360e1f7",
+   "1a39e60b9c05e431",
+   "3a0ba1487c24622e",
+   "abb78fd2f73bf789",
+   "c668a995aa0d7261",
+   "d47a79bf772d43d0"
+  ],
+  "32": [
+   "37b1b722477b602a",
+   "616efdb097f55c0b",
+   "61ed416240e9260e",
+   "8709e619d5789672",
+   "b54d6a6aaa2759f2",
+   "df560dc032966232"
+  ],
+  "48": [
+   "05bf958779a0e813",
+   "0c4ff542f1c8e1a7",
+   "23d986ba5f62e8da",
+   "314befed3d3ea9e9",
+   "a554d71bd2acb6c9",
+   "ec8dfa3222709ce9"
+  ]
+ }
+}

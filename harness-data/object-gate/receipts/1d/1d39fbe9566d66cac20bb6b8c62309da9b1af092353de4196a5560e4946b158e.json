@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1d39fbe9566d66cac20bb6b8c62309da9b1af092353de4196a5560e4946b158e",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "prehistoric stone-age pigment pots",
+ "label": "prehistoric/ph-pigment-pots",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone-age pigment bowls",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pigment bowls clearly display wide open elliptical interiors viewed from above (rows 3-7 for the pale pigment bowl and rows 5-8 for the red ochre bowl, each around 4-5 source pixel rows tall), showing both the rims and pigment contents in standard 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4258
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone pigment bowls/mortar cluster",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pigment pots/bowls show clear elliptical openings seen from above filled with red and white pigment (4-5 rows tall) above their south rims/front bases.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4788
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cluster of pigment pots",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pots clearly show their interior openings filled with pigment (red pigment pot opening is 4 rows tall, white pigment opening is 4-5 rows tall) alongside south-facing front walls and the front face of the lower vessel.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8972
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cluster of pigment pots / stone bowls",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pigment pots show wide elliptical openings viewed from above (red pigment spans rows 4-7, white spans rows 3-7) resting over visible front rims/bases.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3667
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.809Z",
+ "cells": {
+  "16": [
+   "b5434aef9b4b7e7b"
+  ],
+  "24": [
+   "2e93d97ffe3a79a8",
+   "5bbdb64055aaaa2d",
+   "734408b40eabac08",
+   "bc7c745682fee735",
+   "d21a77ad739e70f7",
+   "f9940ea265886aca"
+  ],
+  "32": [
+   "54e7778f0f70c05b",
+   "54fc80a745106eab",
+   "6d2c7870a18acbe9",
+   "d0635e1ccebe0f3d",
+   "d68a873e80c08412",
+   "dd6a06fbed782caa"
+  ],
+  "48": [
+   "3ed89695a00ee40d",
+   "5965c0189a40baba",
+   "6b6d20cf6cdd4f32",
+   "ad3dfb18c33d6a37",
+   "bcc38b4e9a547886",
+   "d629846f870cf589"
+  ]
+ }
+}

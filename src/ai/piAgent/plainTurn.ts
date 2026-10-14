@@ -31,6 +31,7 @@ import { SKY_ISLAND_EXPOSED_TOOLS, skyIslandTargetFor } from '../skyIslandPolicy
 import { STEAMPUNK_EXPOSED_TOOLS, steampunkTargetFor } from '../steampunkCityPolicy';
 import { CAMPUS_EXPOSED_TOOLS, campusTargetFor } from '../campusPolicy';
 import { SF_STATION_EXPOSED_TOOLS, sfStationTargetFor } from '../sfStationPolicy';
+import { PREHISTORIC_EXPOSED_TOOLS, prehistoricTargetFor } from '../prehistoricPolicy';
 import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
 import { KIT_AREA_EXPOSED_TOOLS, kitAreaNote } from "@/editor/tools/kitAreaTools";
 import { PLAN_EXECUTION_PREAMBLE, ULTRABRAIN_PLAN_HEADING } from "./planExecution";
@@ -166,27 +167,28 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     // 일본 도시(jp_city) — 대상 맵이 jp_city 이거나 사용자가 칩셋·일본 거리를 말했을 때. 숲마을 계약·버들항 노트 대신 jp_city 노트가 간다(jpCityPolicy).
     // 실측(2026-10-04): 새 프로젝트(버들항 맵)에서 「일본 상가 거리」+author_village 선언이면 버들항 마을 노트가 먼저 잡아 jp_city 는 어디에도 안 나왔다 — 그래서 버들항보다 앞선다.
     // PAW 전용 게이트·팩 도시 타일셋(Rasak·REFMAP) 마을 노트는 2026-10-07 저작권 정리로 지웠다.
-    // 칩셋별 길잡이는 «먼저 잡은 쪽이 이긴다» — 각 정책이 자기 낱말·대상 맵이 분명할 때만 켜지고, 뒤 정책은 앞이 잡았으면 꺼진다.
-    // 전국·에도(sengoku_edo) — 시대 낱말(전국시대·에도 시대·사무라이·성하마을 …)이 분명할 때만(sengokuEdoPolicy). 「일본 전통 마을」이 jp_city 현대 거리로 새지 않게 jp_city 보다 먼저.
+    // 테마 칩셋 노트는 하나만 간다. 순서가 곧 우선순위다 — 앞이 잡으면 뒤는 보지 않는다(각 정책은 그 칩셋이 프로젝트에 있을 때만 잡는다).
+    // 시대·세계 낱말이 분명한 테마(전국·에도, 스팀펑크, SF, 선사)는 jp_city 보다 먼저 본다 — «일본 전통 마을»·«증기기관 도시 거리»·«네온 거리»가
+    // jp_city 의 «도시 거리» 낱말로 새지 않게. 고딕·해적 군도·하늘섬·캠퍼스는 jp_city 가 이긴다. 다 아니고 대상 계열이 버들항이면 author_beodeul_town.
+    // 전국·에도(sengoku_edo) — 전국시대·에도 시대·사무라이·성하마을·일본 전통 …(sengokuEdoPolicy).
     const sengoku = sengokuTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
-    // 스팀펑크 도시(steampunk_city) — 「증기기관 도시 거리」는 jp_city 의 «도시 거리» 낱말에도 걸려서, 스팀펑크·증기·공장 지대·보일러실 낱말이나 대상 맵이 스팀펑크면 먼저 잡는다(steampunkCityPolicy).
+    // 스팀펑크 도시(steampunk_city) — 스팀펑크·증기·공장 지대·보일러실 낱말이나 대상 맵이 스팀펑크(steampunkCityPolicy).
     const steampunk = sengoku ? null : steampunkTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
-    // SF 정거장·네온 거리(sf_station) — 우주 정거장·연구 기지·달 기지·사이버펑크 거리. jp_city 보다 먼저 본다(«네온 거리»·«미래 도시»가 일본 도시로 새지 않게, sfStationPolicy).
+    // SF 정거장·네온 거리(sf_station) — 우주 정거장·연구 기지·달 기지·사이버펑크 거리(sfStationPolicy).
     const sfStation = sengoku || steampunk ? null : sfStationTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
-    // 일본 도시(jp_city) — 대상 맵이 jp_city 이거나 사용자가 칩셋·일본 거리를 말했을 때. 숲마을 계약·버들항 노트 대신 jp_city 노트가 간다(jpCityPolicy).
-    // 실측(2026-10-04): 새 프로젝트(버들항 맵)에서 「일본 상가 거리」+author_village 선언이면 버들항 마을 노트가 먼저 잡아 jp_city 는 어디에도 안 나왔다 — 그래서 버들항보다 앞선다.
-    const jpCity = sengoku || steampunk || sfStation ? null : jpCityTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
-    // 고딕 저택(gothic_manor) — 칩셋이 프로젝트에 있을 때만(gothicPolicy). jp_city·위 특화 칩셋이 이긴다.
-    const gothic = jpCity || sengoku || steampunk || sfStation ? null : gothicTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
-    // 열대 군도·해적 항구(pirate_isles) — 해적·열대·군도·보물섬·난파선 낱말이나 대상 맵이 pirate_isles 일 때(pirateIslesPolicy). 버들항보다 먼저 본다:
-    // «해적 항구 마을»이 로마풍 버들항 author_beodeul_town 으로 가지 않게. «항구»만 말하면 버들항 그대로다.
-    const pirateIsles = jpCity || gothic || sengoku || steampunk || sfStation ? null : pirateIslesTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
-    // 하늘섬(sky_island) — 앞 칩셋이 잡지 않았고 프로젝트에 칩셋이 있을 때만(skyIslandPolicy). 하늘섬·구름 위·비공정 낱말.
-    const skyIsland = jpCity || gothic || sengoku || steampunk || sfStation || pirateIsles ? null : skyIslandTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
-    // 캠퍼스(modern_campus) — 앞 칩셋이 잡지 않았고 프로젝트에 칩셋이 있을 때만(campusPolicy). 일본풍 학교는 jp_city, 마법 학교는 wizarding_world 가 이긴다.
-    const campus = jpCity || gothic || sengoku || steampunk || sfStation || pirateIsles || skyIsland ? null : campusTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
-    // 위 어느 칩셋도 아니고 대상 계열이 버들항이면 author_beodeul_town(beodeulTownRoute).
-    const beodeulTown = jpCity || gothic || sengoku || steampunk || sfStation || pirateIsles || skyIsland || campus ? null
+    // 선사 원시 세계(prehistoric) — 선사·원시·석기·공룡·동굴 부족 낱말이나 대상 맵이 선사 칩셋(prehistoricPolicy). 그냥 동굴·던전은 잡지 않는다.
+    const prehistoric = sengoku || steampunk || sfStation ? null : prehistoricTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
+    const eraTheme = sengoku || steampunk || sfStation || prehistoric;
+    const jpCity = eraTheme ? null : jpCityTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
+    // 고딕 저택(gothic_manor) — gothicPolicy.
+    const gothic = eraTheme || jpCity ? null : gothicTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
+    // 해적 군도(pirate_isles) — pirateIslesPolicy.
+    const pirateIsles = eraTheme || jpCity || gothic ? null : pirateIslesTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
+    // 하늘섬(sky_island) — 하늘섬·구름 위·비공정 낱말(skyIslandPolicy).
+    const skyIsland = eraTheme || jpCity || gothic || pirateIsles ? null : skyIslandTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
+    // 캠퍼스(modern_campus) — 일본풍 학교는 jp_city, 마법 학교는 wizarding_world 가 이긴다(campusPolicy).
+    const campus = eraTheme || jpCity || gothic || pirateIsles || skyIsland ? null : campusTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
+    const beodeulTown = eraTheme || jpCity || gothic || pirateIsles || skyIsland || campus ? null
       : beodeulTownTargetFor(project, declared.intent, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
     intentNote = buildPiIntentNote({
       project,
@@ -199,6 +201,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
       steampunk,
       campus,
       sfStation,
+      prehistoric,
       requestText: text,
       intent: declared.intent,
       targetMap: noteTargetMap
@@ -213,9 +216,9 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
       && declared.intent.clarify === null };
     // 숲마을 author_village 의 「마을 계약」은 2026-10-07 저작권 정리로 시공기와 함께 지웠다 — 마을은 author_beodeul_town 이 짓는다.
     routingAudit = `${formatIntentAudit(declared.intent, declared.elapsedMs)}${declared.error ? ` — 선언 오류: ${declared.error}` : ""}`
-      + (beodeulTown ? " → 버들항 마을" : jpCity ? " → 일본 도시 맵" : gothic ? " → 고딕 저택 맵" : pirateIsles ? " → 해적 군도 맵"
-        : sengoku ? " → 전국·에도 맵" : skyIsland ? ` → 하늘섬 맵(${skyIsland.style})` : steampunk ? " → 스팀펑크 도시 맵"
-        : campus ? " → 캠퍼스 맵" : sfStation ? " → SF 맵" : "");
+      + (sengoku ? " → 전국·에도 맵" : steampunk ? " → 스팀펑크 도시 맵" : sfStation ? " → SF 맵" : prehistoric ? " → 선사 원시 세계 맵"
+        : jpCity ? " → 일본 도시 맵" : gothic ? " → 고딕 저택 맵" : pirateIsles ? " → 해적 군도 맵" : skyIsland ? ` → 하늘섬 맵(${skyIsland.style})`
+        : campus ? " → 캠퍼스 맵" : beodeulTown ? " → 버들항 마을" : "");
     if (declared.intent.mode === "question") {
       plan = { ...plan, readOnly: true };
       questionPromoted = true;
@@ -233,6 +236,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
         ...(steampunk ? STEAMPUNK_EXPOSED_TOOLS : []),
         ...(campus ? CAMPUS_EXPOSED_TOOLS : []),
         ...(sfStation ? SF_STATION_EXPOSED_TOOLS : []),
+        ...(prehistoric ? PREHISTORIC_EXPOSED_TOOLS : []),
       ])];
       // 개념 카드 노트가 붙는 요청이면 예제를 짓는 도구를 처음부터 쥐여 준다 — 노트가 이 도구 이름을 부른다.
       if (conceptCardsForText(text).length && !initialToolNames.includes("build_concept_example")) initialToolNames = [...initialToolNames, "build_concept_example"];
