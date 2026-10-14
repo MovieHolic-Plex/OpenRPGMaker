@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b3f3ce839d35be895d9d49a31d0eff5fbbec1967770bdab50d4ce6678b8fa4cf",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "소나무",
+ "label": "modern-campus/mc-tree-pine",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pine tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn in a pure front elevation typical of a side-scroller: the canopy rises vertically to an apex at row 0, its underside is visible exposing the top of the trunk (rows 31-34), and the trunk meets the base with a flat horizontal cut without any top-down foreshortening of the canopy masses (top_rows: 0).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 32704
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "foliage canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn as a flat side-scroller front elevation. The trunk is a vertical rectangle with a straight horizontal base, and the foliage clumps are rendered entirely from the side rather than viewed from a 45-degree downward angle. Only the grass patch at the bottom suggests a top-down ground plane.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9573
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pine tree (canopy and trunk)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree canopy and trunk are drawn in pure front elevation with a pointed apex at row 0 and horizontally tiered foliage clumps. The trunk is a straight vertical rectangle with a flat bottom edge, showing no 3/4 downward perspective on the main body despite the oval grass patch at the base.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11839
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pine tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn from a flat side/front elevation typical of a 2D platformer. The canopy tapers to a point at the top with no foreshortened top surface (top_rows = 0), and the trunk is a straight frontal cylinder. The small elliptical grass base at the bottom does not grant credit for the main body.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7730
+  }
+ ],
+ "decidedAt": "2026-10-14T08:06:14.290Z",
+ "cells": {
+  "16": [
+   "3abf6ab49a441237",
+   "5379fda934a09367",
+   "a7b8f131af87afdc",
+   "b49c22b1cea0e08b",
+   "d18efb85964c4c39",
+   "eb16b4656eaa3fdd"
+  ],
+  "24": [
+   "23e0a09535a6ffdd",
+   "39fdb54fc320c027",
+   "423fde8789594d61",
+   "68f273a81ba62463",
+   "77d353c74b9c2724",
+   "7a69e72779eb4da2",
+   "ac28ac00e53a5162",
+   "bc0686dbad0f518d",
+   "bdd09ddb4cce1779",
+   "c5fe68caf705deff",
+   "cc2ec2b085ce2209",
+   "de9ab9093cc8e6ea"
+  ],
+  "32": [
+   "3860239d5f0b23d6",
+   "46524bf111f67ffc",
+   "80ed4b9a1f991caa",
+   "b29cd8b61dd57a41"
+  ],
+  "48": [
+   "077de969cf0b7542",
+   "5f3b8dbb1d6a3aa9",
+   "6e12e3a7f3db7673"
+  ]
+ }
+}

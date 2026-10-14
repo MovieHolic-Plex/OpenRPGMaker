@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7c3c79ac814c678e42ea312d109699f38a19315742cc231705b21331f4192e2f",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "대추야자(큰)",
+ "label": "desert-east/de-palm-date",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "palm tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The palm tree is drawn in a flat 2D side/front elevation typical of a platformer, with horizontal trunk segments and a flat-topped canopy (cut straight across row 10) showing no top-down foreshortening or radial frond spread seen from above.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6699
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "palm tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The palm tree is drawn from a direct side/front elevation: the canopy shows a side silhouette of drooping fronds and fruits hanging from underneath, with a flat horizontal cut-off at row 10 and no top-down view into the fronds or crown.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5561
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "palm tree (canopy and trunk)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The palm tree is drawn in a pure front elevation typical of a 2D side-scroller: the fronds form an umbrella silhouette drooping left, right, and forward with no fronds spreading northward/backward, and the dates hang underneath facing forward. No top surface or top-down view of the crown center is shown.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8352
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "date palm tree (canopy and trunk)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The palm tree is drawn in pure front elevation (side-scroller style). The fronds arch strictly left and right across the 2D plane with no foreshortening towards or away from the camera, and the top of the canopy is an abrupt flat line at row 10. Furthermore, the trunk segments and base are delineated with completely flat horizontal lines rather than curved elliptical rings characteristic of the top-down 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7073
+  }
+ ],
+ "decidedAt": "2026-10-14T08:01:48.462Z",
+ "cells": {
+  "16": [
+   "25b4041184ff6e4b",
+   "26afecca513600aa",
+   "2ebf805a817f5a83",
+   "da8dccf440fa62a3",
+   "e6eddfb4030484fb",
+   "fe5fe18d52801604"
+  ],
+  "24": [
+   "0abe5850ddf8f23c",
+   "251efbc52ca8db96",
+   "5716f98367557987",
+   "78e12d3ed33a4b64",
+   "962728ef7dae0d1d",
+   "a6dce4b1210fdf9c",
+   "a713c5c3202684d7",
+   "ac1867c35caf2847",
+   "ae210e13e4eb3f1b",
+   "df8c5152ff3f6143",
+   "f51c3bcaeaac3c66",
+   "f69d2aa07bc655b7"
+  ],
+  "32": [
+   "2ac9b4a90ec7b197",
+   "2d6862c1790dd686",
+   "6f37699ce4ad7c8b",
+   "78d66a80f7b6fc89"
+  ],
+  "48": [
+   "a7afdac471247db9",
+   "c862e9d8e6c3bfce",
+   "da81de8ad860c32d"
+  ]
+ }
+}

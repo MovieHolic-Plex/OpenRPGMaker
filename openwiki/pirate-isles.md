@@ -48,7 +48,7 @@
 - 다음 낱말이면 이 칩셋으로 간다: 해적·열대·군도·카리브·야자·보물 섬/동굴·난파·무인도·pirate·tropical.
   - 「항구」 하나만으로는 오지 않는다. 로마풍 항구는 버들항이다.
 - 경로를 고르는 순서: `plainTurn.ts` 에서 jp·gothic 다음, beodeul 앞이다. `executionRoute.ts` 의 안내는 beodeul 보다 앞선다.
-- `layoutQuality.ts` 는 pirate-area 이름표가 있는 맵을 건너뛴다(구성기가 이미 검사한다).
+- 배치 품질 권고는 `composed-layout` 표식(`labelPirateAreas` 가 단다, 단일 판정 `isComposedLayoutMap`)이 있는 맵을 건너뛴다(구성기가 이미 검사한다).
 - 실조수 시험: gemini-3.8-flash high 로 「해적 항구 마을 만들어줘」「열대 섬 해변 마을」「난파선과 보물 동굴 섬」을 돌린다.
   - 재현 스크립트 `/tmp/ai-pirate/rerun.sh` 는 /tmp/ai-gemini 패턴을 따른다. 저장소 밖에 있고, 깨끗한 기본 프로젝트에서 실제 입력창 경로를 탄다.
 

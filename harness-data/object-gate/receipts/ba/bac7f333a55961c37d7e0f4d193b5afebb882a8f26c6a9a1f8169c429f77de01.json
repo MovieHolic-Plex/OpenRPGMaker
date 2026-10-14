@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bac7f333a55961c37d7e0f4d193b5afebb882a8f26c6a9a1f8169c429f77de01",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "포장마차(작은 지붕 + 솥 + 그릇, 야타이)",
+ "label": "sengoku-edo/se-stall-food",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "food cart counter and roof",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter table top is prominently visible across rows 20-25 (approx. 6 rows) holding a cooking pot and bowls, above a 5-row front face (rows 26-30). The roof slope also faces the 3/4 camera appropriately.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8903
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "food stall counter and roof",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall counter shows a generous 6-row top surface (rows 20-25) displaying a cooking pot and food bowls, leading down to a front south face (rows 26-30). The roof/awning also shows a foreshortened top slope from rows 1-10.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4838
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "food cart counter and roof",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof shows a substantial sloped top surface from rows 1 to 10, and the counter table features a clearly foreshortened top surface across rows 21-25 with dishes and a cooking container placed on it, above a front vertical face (rows 26-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5115
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "street food stall counter and roof",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter clearly displays a 6-pixel-tall horizontal tabletop surface (rows 20-25) with items placed on it, above a front-facing panel (rows 26-30). The roof canopy also properly shows its sloped surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4477
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:28.010Z",
+ "cells": {
+  "16": [
+   "3d91c817a7e42def",
+   "56182b3f8e767c0c",
+   "5b781b165688bf89",
+   "dbb3e9f84b0345b4"
+  ],
+  "24": [
+   "03075e6f6c2dc70c",
+   "067941ed7bcfc8e8",
+   "24864bb18117684b",
+   "35821f07a6131f00",
+   "3c1e15e71a69bced",
+   "40fc490d9e5c08d1",
+   "5d6898b0492051c5",
+   "6dfbd5f7b5aafa2b",
+   "75be2b7c550e6a2e",
+   "7b1ffdc769c9ccb9",
+   "7bf6520baa6f02d4",
+   "7fb5841e94b15a5e",
+   "8339797f72aca99e",
+   "835ec96bae8aeb52",
+   "86c5fb62fd6afbbe",
+   "8b7168e9dcb318a4",
+   "a0759ba158fd3329",
+   "ac6ebaf5da8a2d1b",
+   "bcdf553dd4fa9308",
+   "cdf0d988edff9cac",
+   "cf61bac7dc4505b4",
+   "e1c168626712870d",
+   "fbb30e7e4072102c",
+   "fca5a776dbba92a0"
+  ],
+  "32": [
+   "39ad7b56d0831fd3"
+  ],
+  "48": [
+   "3f56e03fed11532c",
+   "5ae20b7b7b061e02",
+   "81b9a412dcdf5180",
+   "85b379629a5b22de",
+   "b784dbb64bf6932d",
+   "f85c3bb9b0638258"
+  ]
+ }
+}

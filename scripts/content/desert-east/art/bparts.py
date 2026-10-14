@@ -54,20 +54,41 @@ def wall_tex(c, x, y, w, h, mat, kind=None, s=1):
 def flat_roof(c, x, y, w, h, mat, s=1, jars=(), hatch=None, rug=None):
     """평지붕: 난간 테(뒤·좌·우·앞) + 안쪽 슬래브(다진 진흙/회칠). x,y,w,h = 지붕 칸 영역(화소). 앞 난간 테는 h-3..h-1 줄."""
     T = top(mat); rb = ROOF[mat] if T >= 6 else ROOF[mat] - 1
-    # 슬래브
+    # 슬래브(2판): 빛 기울기(왼위 밝게 → 오른아래 어둡게, 체크 디더) + 덧바른 미장 조각(윗·왼 테 밝게, 밑·오른 테 어둡게)
+    #   + 빗물 얼룩 덩이 + 잔금 → 넓은 윗면이 한 색 판으로 읽히지 않게 4~5단
+    patches = []
+    for k in range(max(2, (w * h) // 260)):
+        pw, ph = 6 + h32(k, 1, s + 60) % 8, 4 + h32(k, 2, s + 60) % 4
+        px_ = x + 5 + h32(k, 3, s + 60) % max(1, w - pw - 9); py_ = y + 5 + h32(k, 4, s + 60) % max(1, h - ph - 9)
+        patches.append((px_, py_, pw, ph))
     for j in range(h):
         for i in range(w):
             X, Y = x + i, y + j
             t = rb
-            # 큰 덩이 얼룩(미장 덧바름 자리) — 넓은 슬래브가 한 색으로 보이지 않게
+            g = (i / max(1, w)) * 0.55 + (j / max(1, h)) * 0.45
+            chk = (X + Y) % 2 == 0
+            if g < 0.22 and chk and rb + 1 <= T: t = rb + 1
+            elif g > 0.78 and chk: t = rb - 1
+            for (px_, py_, pw, ph) in patches:
+                ex = (X + 0.5 - px_ - pw / 2) / (pw / 2); ey = (Y + 0.5 - py_ - ph / 2) / (ph / 2)
+                e = ex * ex + ey * ey
+                if e <= 1.0:                                              # 덧바른 미장 덩이: 둥근 밝은 얼룩(가장자리는 디더로 번진다)
+                    if e < 0.55 or chk: t = min(T, rb + 1) if g < 0.6 else rb
+                    if ey > 0.75 and e > 0.6 and not chk: t = rb - 1         # 덩이 밑 가장자리 그늘
+                    break
             q = rnd(X // 3, Y // 2, s + 40) * 0.6 + rnd((X + 1) // 4, (Y + 1) // 3, s + 41) * 0.4
-            if q < 0.12: t = rb - 1
-            elif q > 0.93 and rb + 1 <= T: t = rb + 1
+            if q < 0.1 and chk: t = rb - 1                                    # 빗물 얼룩(디더)
             r = rnd(X, Y, s + 21)
-            if r < 0.06: t = rb - 1
-            elif r > 0.96: t = rb + 1
-            if (X * 3 + Y * 5) % 23 == 0 and rnd(X, Y, s) < 0.5: t = rb - 1      # 미장 갈라짐 점
-            c.P(X, Y, mat, min(T, t))
+            if r < 0.05: t = rb - 1
+            elif r > 0.965: t = min(T, rb + 1)
+            if (X * 3 + Y * 5) % 23 == 0 and rnd(X, Y, s) < 0.5: t = rb - 2      # 미장 갈라짐 점
+            c.P(X, Y, mat, max(0, min(T, t)))
+    # 잔금(짧게 꺾인 어두운 선 + 바로 밑 밝은 턱)
+    for k in range(max(1, w // 24)):
+        cx_ = x + 8 + h32(k, 7, s + 70) % max(1, w - 18); cy_ = y + 7 + h32(k, 8, s + 70) % max(1, h - 14)
+        for m_ in range(5):
+            xx = cx_ + m_; yy = cy_ + (1 if m_ in (2, 3) else 0) + (1 if m_ == 4 else 0)
+            c.P(xx, yy, mat, max(0, rb - 2)); c.P(xx, yy + 1, mat, min(T, rb + 1))
     # 안쪽 그늘(뒤 난간 밑·왼 난간 옆)
     c.HL(x + 3, y + 4, w - 6, mat, rb - 1); c.HL(x + 3, y + 5, w - 6, mat, rb - 1) if h > 24 else None
     c.VL(x + 4, y + 4, h - 7, mat, rb - 1)

@@ -399,82 +399,171 @@ for f in (1, 2):
 
 
 # ═══════════════ 식물 ═══════════════
+def canopy(c, clumps, ramp, s=0, rim=('ki', 1), leaf=3, spikes=True):
+    """수관(quality-b): 덩이 합집합 + 덩이마다 법선 명암 5단(ramp = 어두움→밝음 (mat,t) 5개) + 잎 비늘(leaf px 격자, 왼위 밝게·오른아래 어둡게)
+    + 덩이 사이 갈라짐 그늘 + 톱니 윤곽(rim). 빛은 왼쪽 위."""
+    pts = {}
+    for k, (cx, cy, r) in enumerate(clumps):
+        for y in range(int(cy - r - 1), int(cy + r + 2)):
+            for x in range(int(cx - r - 1), int(cx + r + 2)):
+                if not (0 <= x < c.w and 0 <= y < c.h): continue
+                dx, dy = (x + 0.5 - cx) / r, (y + 0.5 - cy) / r
+                d = dx * dx + dy * dy
+                if d <= 1: pts[(x, y)] = (k, dx, dy, d)
+    lv = {}
+    for (x, y), (k, dx, dy, d) in pts.items():
+        nz = math.sqrt(max(0, 1 - d))
+        l = -(dx * -0.6 + dy * -0.75) * 0.75 + nz * 0.45 + 0.05
+        # 잎송이: pitch=leaf+1 격자에 흔들린 작은 원(반지름 ~leaf/2+0.7). 송이 안은 송이 법선으로 밝기, 송이 사이 틈은 어둡게.
+        P = leaf + 1; best = None
+        gx0, gy0 = x // P, y // P
+        for gy in (gy0 - 1, gy0, gy0 + 1):
+            for gx in (gx0 - 1, gx0, gx0 + 1):
+                lx = gx * P + rnd(gx, gy, s + 41) * P; ly = gy * P + rnd(gx, gy, s + 43) * P
+                rr = leaf * 0.5 + 0.8
+                ex, ey = (x + 0.5 - lx) / rr, (y + 0.5 - ly) / rr
+                dd = ex * ex + ey * ey
+                if dd <= 1 and (best is None or ly > best[2]): best = (ex, ey, ly)
+        if best is None: l -= 0.42
+        else:
+            ex, ey, _ = best
+            l += -(ex * -0.6 + ey * -0.8) * 0.42
+        l += (rnd(x // 2, y // 2, s + k) - 0.5) * 0.12
+        lv[(x, y)] = 4 if l > 0.62 else 3 if l > 0.30 else 2 if l > -0.02 else 1 if l > -0.35 else 0
+    for (x, y), (k, dx, dy, d) in pts.items():
+        up = pts.get((x, y - 1)); lf = pts.get((x - 1, y))
+        if (up and up[0] < k and d > 0.55 and dy < 0) or (lf and lf[0] < k and d > 0.7 and dx < 0):
+            lv[(x, y)] = max(0, min(lv[(x, y)], 1))
+    for (x, y), t in lv.items(): c.P(x, y, *ramp[t])
+    # 톱니 윤곽: 바깥 가장자리는 rim, 윗가장자리는 띄엄띄엄 바깥으로 한 칸 돋운다
+    edge = [(x, y) for (x, y) in pts if any((x + a, y + b) not in pts for a, b in ((1, 0), (-1, 0), (0, 1), (0, -1)))]
+    for (x, y) in edge:
+        c.P(x, y, *rim)
+    if spikes:
+        for (x, y) in edge:
+            if (x, y - 1) not in pts and rnd(x, y, s + 91) < 0.35 and y > 0:
+                c.P(x, y - 1, *rim); c.P(x, y, *ramp[min(4, lv[(x, y)] + 1)])
+            if (x - 1, y) not in pts and rnd(x, y, s + 93) < 0.25 and x > 0:
+                c.P(x - 1, y, *rim); c.P(x, y, *ramp[lv[(x, y)]])
+            if (x + 1, y) not in pts and rnd(x, y, s + 95) < 0.25 and x < c.w - 1:
+                c.P(x + 1, y, *rim); c.P(x, y, *ramp[max(0, lv[(x, y)] - 1)])
+    return pts
+
+
+RAMP = {
+    'shiba': [('ki', 2), ('shiba', 0), ('shiba', 1), ('shiba', 2), ('shiba', 3)],
+    'shiba-hi': [('shiba', 0), ('shiba', 1), ('shiba', 2), ('shiba', 3), ('shiba', 4)],
+    'kii': [('daidai', 1), ('kii', 1), ('kii', 2), ('kii', 3), ('kii', 4)],
+    'pinku': [('pinku', 0), ('pinku', 1), ('pinku', 2), ('pinku', 3), ('pinku', 4)],
+    'pine': [('ki', 1), ('ki', 2), ('ki', 3), ('ki', 4), ('shiba', 2)],
+}
+
+
+def tree_trunk(c, x, y0, y1, w=4, mat='ita'):
+    """짧은 줄기 + 뿌리 퍼짐(왼쪽 밝게 · 오른쪽 어둡게) + 수관 밑 그늘(윗부분 어둡게)."""
+    c.R(x, y0, w, y1 - y0, mat, 2); c.VL(x, y0, y1 - y0, mat, 4); c.VL(x + 1, y0, y1 - y0, mat, 3); c.VL(x + w - 1, y0, y1 - y0, mat, 1)
+    c.HL(x, y0, w, mat, 0); c.HL(x, y0 + 1, w, mat, 1)
+    c.P(x - 1, y1 - 1, mat, 3); c.P(x - 1, y1 - 2, mat, 2); c.P(x + w, y1 - 1, mat, 1); c.P(x + w, y1 - 2, mat, 1)
+    c.HL(x - 1, y1, w + 2, mat, 0)
+
+
 def tree(c, kind, s=0):
+    """2×3 칸 나무(quality-b): 수관이 폭을 거의 다 채우고 줄기는 짧게(버들항 활엽수 비례). 발밑 그늘은 오른쪽 아래로."""
     W = c.w
     cx = W / 2
     if kind == 'zelkova':
-        mat, base = 'ki', 4
-        clumps = [(cx - 7, 13, 7), (cx + 7, 12, 7), (cx, 7, 8), (cx - 9, 21, 6.5), (cx + 9, 21, 6.5), (cx - 2, 18, 8), (cx + 3, 25, 7)]
-        trunk_x, ty0, ty1 = int(cx) - 2, 28, 45
+        ramp, rim = RAMP['shiba'], ('ki', 1)
+        clumps = [(cx - 1, 9, 9), (cx - 8, 15, 7.5), (cx + 8, 14, 7.5), (cx - 9, 24, 7), (cx + 9, 24, 7), (cx - 2, 21, 9), (cx + 3, 30, 7.5), (cx - 5, 31, 6.5)]
+        tx, ty0, ty1 = int(cx) - 2, 34, 44
     elif kind == 'ginkgo':
-        mat, base = 'kii', 3
-        clumps = [(cx, 6, 5), (cx - 3, 13, 6), (cx + 4, 15, 6), (cx - 5, 21, 6.5), (cx + 5, 23, 6.5), (cx, 27, 7)]
-        trunk_x, ty0, ty1 = int(cx) - 1, 31, 45
+        ramp, rim = RAMP['kii'], ('daidai', 0)
+        clumps = [(cx, 6, 6), (cx - 4, 12, 7), (cx + 4, 13, 7), (cx - 7, 21, 7.5), (cx + 7, 22, 7.5), (cx, 19, 8), (cx - 3, 30, 7.5), (cx + 4, 31, 7)]
+        tx, ty0, ty1 = int(cx) - 2, 35, 44
     elif kind == 'cherry':
-        mat, base = 'pinku', 3
-        clumps = [(cx - 8, 15, 7), (cx + 8, 14, 7), (cx, 9, 8), (cx - 5, 22, 7), (cx + 6, 22, 7), (cx, 20, 7)]
-        trunk_x, ty0, ty1 = int(cx) - 2, 27, 45
+        ramp, rim = RAMP['pinku'], ('pinku', 0)
+        clumps = [(cx - 1, 9, 8.5), (cx - 9, 16, 7), (cx + 9, 15, 7), (cx - 8, 25, 7), (cx + 8, 25, 7), (cx, 20, 9), (cx + 2, 30, 7), (cx - 4, 30, 6.5)]
+        tx, ty0, ty1 = int(cx) - 2, 33, 44
     elif kind == 'pine':
-        mat, base = 'ki', 3
-        clumps = [(cx + 2, 6, 5), (cx - 6, 11, 5), (cx + 5, 14, 6), (cx - 4, 18, 6), (cx + 7, 22, 5), (cx - 8, 24, 5), (cx, 26, 5.5)]
-        trunk_x, ty0, ty1 = int(cx) - 1, 28, 45
+        ramp, rim = RAMP['pine'], ('ki', 0)
+        clumps = [(cx + 1, 5, 5), (cx - 5, 10, 5.5), (cx + 6, 12, 6), (cx - 2, 15, 6), (cx - 9, 20, 6), (cx + 9, 21, 6), (cx + 1, 24, 7), (cx - 6, 29, 5.5), (cx + 7, 30, 5)]
+        tx, ty0, ty1 = int(cx) - 2, 31, 44
+    elif kind == 'zelkova-l':
+        ramp, rim = RAMP['shiba'], ('ki', 1)
+        clumps = [(cx - 2, 11, 10), (cx + 10, 15, 9), (cx - 12, 18, 9), (cx + 1, 22, 11), (cx - 13, 31, 8.5), (cx + 13, 30, 8.5),
+                  (cx - 4, 35, 10), (cx + 8, 38, 8.5), (cx - 12, 41, 6.5)]
+        tx, ty0, ty1 = int(cx) - 3, 46, 60
     else:
-        mat, base = 'ki', 4
+        ramp, rim = RAMP['shiba'], ('ki', 1)
         clumps = [(cx, 8, 6), (cx - 4, 12, 5), (cx + 4, 12, 5)]
-        trunk_x, ty0, ty1 = int(cx) - 1, 14, 15
-    ground_disc(c, cx, 44, 10, 3.2, 'ki', 2)
-    trunk(c, trunk_x, ty0, ty1, 4 if kind in ('zelkova', 'cherry') else 3, 'ita')
-    if kind == 'pine':   # 휜 줄기
-        c.R(trunk_x, ty0, 3, ty1 - ty0, 'kawara', 2); c.VL(trunk_x, ty0, ty1 - ty0, 'kawara', 3); c.VL(trunk_x + 2, ty0, ty1 - ty0, 'kawara', 1)
-    rim = 0 if mat in ('ki',) else 0
-    blob(c, clumps, mat, base, s=s, rim=rim)
+        tx, ty0, ty1 = int(cx) - 1, 14, 15
+    # 발밑 그늘(오른쪽 아래로 치우침, 불투명 짙은 풀)
+    gy_ = c.h - 3.5
+    c.ell(cx + 3, gy_, 12 if c.w < 40 else 18, 3.2 if c.w < 40 else 4, lambda x, y, dx, dy, d: ('shiba', 0) if d < 0.5 else ('shiba', 1))
+    if kind == 'pine':
+        c.R(tx, ty0, 4, ty1 - ty0, 'kawara', 2); c.VL(tx, ty0, ty1 - ty0, 'kawara', 4); c.VL(tx + 1, ty0, ty1 - ty0, 'kawara', 3); c.VL(tx + 3, ty0, ty1 - ty0, 'kawara', 1)
+        for yy in range(ty0 + 2, ty1, 3): c.P(tx + 2, yy, 'kawara', 1)
+        c.HL(tx - 1, ty1, 6, 'kawara', 0); c.P(tx - 1, ty1 - 1, 'kawara', 3); c.P(tx + 4, ty1 - 1, 'kawara', 1)
+    else:
+        tree_trunk(c, tx, ty0, ty1, 4 if c.w < 40 else 6)
+    canopy(c, clumps, ramp, s=s, rim=rim, leaf=3 if kind != 'pine' else 2)
     if kind == 'cherry':
-        for k in range(26):
-            x = int(rnd(k, 1, s + 5) * (W - 6)) + 3; y = int(rnd(k, 2, s + 5) * 26) + 3
-            if c.on(x, y) and c.get(x, y)[0] == 'pinku': c.P(x, y, 'shiro', 4)
+        for k in range(40):
+            x = int(rnd(k, 1, s + 5) * (W - 4)) + 2; y = int(rnd(k, 2, s + 5) * 34) + 2
+            g = c.get(x, y)
+            if g and g[0] == 'pinku' and g[1] >= 2: c.P(x, y, 'shiro', 4)
     if kind == 'zelkova':
+        for k in range(14):
+            x = int(rnd(k, 1, s + 9) * (W - 8)) + 4; y = int(rnd(k, 2, s + 9) * 30) + 3
+            g = c.get(x, y)
+            if g and g == ('shiba', 3): c.P(x, y, 'shiba', 4)
+    if kind == 'ginkgo':
         for k in range(10):
-            x = int(rnd(k, 1, s + 9) * (W - 8)) + 4; y = int(rnd(k, 2, s + 9) * 22) + 4
-            if c.on(x, y) and c.get(x, y)[1] >= 5: c.P(x, y, 'midori', 4)
+            x = int(rnd(k, 1, s + 9) * (W - 8)) + 4; y = int(rnd(k, 2, s + 9) * 30) + 3
+            g = c.get(x, y)
+            if g and g[0] == 'kii' and g[1] <= 1: c.P(x, y, 'daidai', 2)
 
 
 A('tree-zelkova', '느티나무(큰 활엽수)', 2, 3, 'organic', ['나무', '교정', '그늘'], '쿼드 가장자리·운동장 둘레, 3~4칸 간격. 발밑 칸은 lawn-shade.')(lambda c: tree(c, 'zelkova', 1))
 A('tree-ginkgo', '은행나무(가을 노랑)', 2, 3, 'organic', ['나무', '가로수', '가을'], '길 따라 가로수로 한 줄.')(lambda c: tree(c, 'ginkgo', 2))
 A('tree-cherry', '벚나무(봄 꽃)', 2, 3, 'organic', ['나무', '벚꽃', '봄'], '정문 길·쿼드 산책로 양쪽.')(lambda c: tree(c, 'cherry', 3))
 A('tree-pine', '소나무', 2, 3, 'organic', ['나무', '소나무'], '교명석 둘레·언덕 비탈.')(lambda c: tree(c, 'pine', 4))
+A('tree-zelkova-l', '큰 느티나무(넓은 수관, 3×4)', 3, 4, 'organic', ['나무', '교정', '그늘', '큰나무'], '잔디 숲 덩이·운동장 가장자리 그늘. 둘레 1칸 비움, 발밑은 lawn-shade.')(lambda c: tree(c, 'zelkova-l', 6))
 
 
 @A('shrub', '둥근 회양목', 1, 1, 'organic', ['관목', '화단'], '화단 안·건물 앞 기단 따라 2~3칸 간격.')
 def _(c):
-    c.ell(8, 13, 7, 2.5, lambda x, y, dx, dy, d: ('ki', 2))
-    blob(c, [(8, 8, 6.5), (5, 10, 4.5), (11, 10, 4.5)], 'ki', 4, s=7)
+    c.ell(9, 13.5, 7, 2.3, lambda x, y, dx, dy, d: ('shiba', 0) if d < 0.5 else ('shiba', 1))
+    canopy(c, [(8, 7, 6), (5, 10, 4.5), (11, 10, 4.5)], RAMP['shiba-hi'], s=7, rim=('ki', 1), leaf=2, spikes=False)
 
 
 @A('azalea', '철쭉 덤불(분홍 꽃)', 1, 1, 'organic', ['관목', '꽃', '화단'], '화단 가장자리 한 줄.')
 def _(c):
-    c.ell(8, 13, 7, 2.5, lambda x, y, dx, dy, d: ('ki', 2))
-    blob(c, [(8, 8, 6.5), (4, 10, 4.5), (12, 10, 4.5)], 'ki', 3, s=11)
-    for k in range(22):
+    c.ell(9, 13.5, 7, 2.3, lambda x, y, dx, dy, d: ('shiba', 0) if d < 0.5 else ('shiba', 1))
+    canopy(c, [(8, 7, 6), (4, 10, 4.5), (12, 10, 4.5)], RAMP['shiba'], s=11, rim=('ki', 1), leaf=2, spikes=False)
+    for k in range(26):
         x = int(rnd(k, 3, 2) * 14) + 1; y = int(rnd(k, 4, 2) * 11) + 2
-        if c.on(x, y) and c.get(x, y)[0] == 'ki' and c.get(x, y)[1] >= 2:
+        g = c.get(x, y)
+        if g and g[0] == 'shiba' and g[1] >= 1:
             c.P(x, y, 'pinku', 3 if rnd(k, 5, 2) < 0.5 else 4)
+            if c.get(x + 1, y + 1) and c.get(x + 1, y + 1)[0] == 'shiba': c.P(x + 1, y + 1, 'pinku', 2)
 
 
 @A('hedge', '생울타리(네모 다듬은 회양목, 2칸)', 2, 1, 'organic', ['생울타리', '화단', '경계'], '길과 잔디 사이·주차장 둘레 한 줄로 이어 쓴다.')
 def _(c):
-    # 다듬은 윗면(밝게 6행) + 앞면(어둡게)
+    # 다듬은 윗면(밝게 6행, 잎 결) + 앞면(어둡게, 잎 덩이) — quality-b: shiba 램프로 잔디와 같은 연두 계열
     for y in range(1, 15):
         for x in range(32):
             r = rnd(x // 2, y // 2, 13); q = rnd(x, y, 14)
-            if y < 7: t = 5 if r > 0.25 else 4
-            else: t = 3 if r > 0.3 else 2
-            if q < 0.08: t += 1
-            if q > 0.94: t -= 1
-            c.P(x, y, 'ki', t)
-    c.HL(0, 1, 32, 'ki', 2); c.HL(0, 7, 32, 'ki', 3); c.HL(0, 14, 32, 'ki', 1); c.HL(0, 15, 32, 'yoru', 2)
+            if y < 7: t = 3 if r > 0.3 else 2
+            else: t = 1 if r > 0.35 else 0
+            if (x + (y // 2) * 2) % 3 == 0 and q < 0.5: t += 1
+            if q > 0.93: t -= 1
+            c.P(x, y, 'shiba', max(0, min(4, t)))
+    c.HL(0, 1, 32, 'ki', 2); c.HL(0, 2, 32, 'shiba', 4) if False else None
+    c.HL(0, 7, 32, 'shiba', 4); c.HL(0, 8, 32, 'ki', 2); c.HL(0, 14, 32, 'ki', 1); c.HL(0, 15, 32, 'yoru', 2)
     for y in range(1, 15):
-        if rnd(0, y, 3) < 0.4: c.P(0, y, 'ki', 1)
-        if rnd(1, y, 3) < 0.4: c.P(31, y, 'ki', 1)
+        if rnd(0, y, 3) < 0.4: c.P(0, y, 'ki', 2)
+        if rnd(1, y, 3) < 0.5: c.P(31, y, 'ki', 1)
 
 
 @A('planter', '콘크리트 화분대(꽃·관목)', 2, 1, 'container', ['화단', '광장'], '광장 가장자리·건물 현관 양쪽.')

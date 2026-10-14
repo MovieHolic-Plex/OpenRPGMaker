@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ba0ab9117f72feed0e2129dc382f6d5d763a537d30a31b282ca75ff1d2b94f80",
+ "width": 48,
+ "height": 64,
+ "kind": "organic",
+ "name": "마른 수양버들(늘어진 가지)",
+ "label": "gothic_manor/gm-willow-dead",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "weeping willow tree with drooping branches",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn entirely in 2D side-scroller/platformer elevation with no top-down perspective: the drooping branches hang on a flat vertical plane, there is no foreshortening, and the base/roots sit on a flat horizontal line at rows 61-63 with zero ground-plane depth visible.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4593
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "trunk and hanging branches of a weeping willow",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree and hanging branches are rendered in pure front elevation as if for a side-scroller; the root base is drawn on a flat horizontal line (rows 61-62) with no elliptical footprint or depth, and the branches show no top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4476
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "trunk and drooping branches of a weeping tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn entirely in flat 2D side elevation, suited for a side-scroller rather than top-down 3/4 perspective. The base roots sit on a flat baseline (rows 61-62) with no top-down ground footprint, and the canopy/branches hang vertically in a flat silhouette with 0px of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4605
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "trunk and hanging branches of a weeping willow tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn entirely in front elevation as for a 2D side-scroller: the hanging branches and trunk have no top-down foreshortening or visible crown depth, and the base roots terminate in a flat horizontal ground line at rows 62-63.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4961
+  }
+ ],
+ "decidedAt": "2026-10-14T07:55:00.837Z",
+ "cells": {
+  "16": [
+   "0345b09768f72ca7",
+   "0c1a06dd66b42b78",
+   "14a51d1bc86f7409",
+   "16f5dc53ea8b3b99",
+   "42cc00a2f313aa1a",
+   "935b2f5d9d3465c1",
+   "b0f6aa7626dca563",
+   "c0c391255c79d6ea",
+   "d6b99a925f2c678c",
+   "e005cc7f25f739ad",
+   "f124c1a9a80445d3",
+   "fdfa79c8af5d56d4"
+  ],
+  "24": [
+   "01f9dd66efc3231d",
+   "58ab5dbc431a3ee4",
+   "65a457e0510cd5a9",
+   "752e5c2ee3bd8441",
+   "760c745685ab704f",
+   "7847294d13985a1d",
+   "83881834229e0940",
+   "963d95ca5efb724d",
+   "b323953bade15a22",
+   "b3eba68eaf1b0634",
+   "e4798826fe140fb2",
+   "f0e994f76117a6cc"
+  ],
+  "32": [
+   "3c0f0c79a265f4d7",
+   "3c363dfc8c311bfb",
+   "42f243a46901d3b6",
+   "439324d69e71d4f1",
+   "51d82de21d1eb52a",
+   "64aa46d377f08177",
+   "6889281c3bb7ef8b",
+   "82a48fccaefcd6e6",
+   "86392c453554e762",
+   "a3455af23bd6c68c",
+   "a58aa23660d4d88c",
+   "bc9014d634f7dac9"
+  ],
+  "48": [
+   "09d97d1805f1319a",
+   "3e1829ff5588bdc2",
+   "e937b419d2833f35",
+   "ff83f96d0f4d1853"
+  ]
+ }
+}

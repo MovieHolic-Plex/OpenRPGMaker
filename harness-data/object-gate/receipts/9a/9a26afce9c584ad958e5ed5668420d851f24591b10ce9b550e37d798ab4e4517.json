@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9a26afce9c584ad958e5ed5668420d851f24591b10ce9b550e37d798ab4e4517",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "생선 말리는 덕장(대구 줄줄이, 작은 박공 지붕)",
+ "label": "snow-north/sn-fish-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fish drying rack with snow-covered roof",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The small gabled roof is clearly seen from a 3/4 overhead perspective, showing approximately 8 rows of snow-covered roof surface (rows 1-8) before the eaves and hanging fish.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4504
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fish drying rack with snow-covered roof",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The small roof covering the drying rack clearly shows its foreshortened top surface covered in snow from row 1 to row 8 (approx 8 rows), matching standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7065
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fish drying rack with snow-covered roof",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered roof plane spans rows 1 to 8 (~8 rows) showing a foreshortened top/sloped surface in top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4161
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fish drying rack with snow-covered roof",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered gable roof pitch clearly faces the camera in 3/4 view across rows 1-8, with drying cod hanging beneath and an open timber frame.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4458
+  }
+ ],
+ "decidedAt": "2026-10-14T08:02:24.503Z",
+ "cells": {
+  "16": [
+   "6dea5dc61ca9695e",
+   "d85f71b66a81e5bc",
+   "f6759d71040f6f35",
+   "fcf7bb7b9d22e388"
+  ],
+  "24": [
+   "04a79aa7c3be5859",
+   "0c2c798fe23e87c4",
+   "0e870b9531504fb2",
+   "0ebce31044938510",
+   "193cca0e5125d882",
+   "4b9b75f8d1a3ce8a",
+   "4ebd3cb45ae21afb",
+   "655511a6070e74d0",
+   "7d5593dcb157debc",
+   "890c966e339d021c",
+   "9f0cb1f3848360b3",
+   "a38b50ef650bd7e3",
+   "a9d3cd2e3c587dfe",
+   "ac02de29eeba5822",
+   "ae3630fbf390cb53",
+   "bcd437c8bdf4b46c",
+   "c92f7e9dfee6aead",
+   "ce3655510f645e7c",
+   "d8d2c547843e4e13",
+   "e2d0702db59219b5",
+   "e3a0cfb4d5955cfc",
+   "f7ad4d7fa8a843e2",
+   "fd4d319b181e4afb",
+   "ff9f5dbb890c31ff"
+  ],
+  "32": [
+   "adb82a9e56c61c6b"
+  ],
+  "48": [
+   "058211718f90d5bd",
+   "069ff4ea5bf72e24",
+   "48facbcb0f7ce4d0",
+   "90ac7add29746e10",
+   "9c6a55f3fae5868e",
+   "e3951577eee6290e"
+  ]
+ }
+}

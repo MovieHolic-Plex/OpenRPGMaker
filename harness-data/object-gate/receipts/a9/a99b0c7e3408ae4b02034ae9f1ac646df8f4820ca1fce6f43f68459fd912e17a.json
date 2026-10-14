@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a99b0c7e3408ae4b02034ae9f1ac646df8f4820ca1fce6f43f68459fd912e17a",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "들꽃 풀밭",
+ "label": "sengoku-edo/se-grass-flower",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wildflower grassy terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 ground terrain tile representing grass with scattered yellow and pink wildflowers viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3880
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wildflower meadow terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 grass ground tile with scattered small yellow and pink wildflowers; valid terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3592
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wildflower grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a full 16x16 pixel top-down ground terrain texture depicting grass with small wildflower accents.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2927
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wildflower meadow ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 flat grass ground terrain tile with scattered small wildflower pixels, representing horizontal ground viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2888
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:28.012Z",
+ "cells": {
+  "16": [
+   "8f59e929d4f4b52a"
+  ],
+  "24": [
+   "0156513330a02cab",
+   "20112c9b016f2b1e",
+   "3c18472b611ec353",
+   "45374a6790de9168",
+   "60b1cecabeb3c004",
+   "b516078e5b56862a"
+  ],
+  "32": [
+   "0814862392bf4398",
+   "8cb3de65e104fe23",
+   "b27fb515728c81f0",
+   "c0d092ee80eac8c2",
+   "daa6c7140e65765b",
+   "e6059433f1e7c3d3"
+  ],
+  "48": [
+   "10703f3e97015d3a",
+   "4a8ef3240c44b9d0",
+   "6cc5345ca174d377",
+   "a623c12ab91fd7d4",
+   "a80bfd3b714da4ea",
+   "d0c433f92962ce7c"
+  ]
+ }
+}

@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e29cf883b360d0110728b775fdba701992d4b7b3f6584c36f10369105e74e47f",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "작은 통나무 오두막(폭 3, 붉은 덧문·돌 굴뚝)",
+ "label": "snow-north/sn-cabin-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "log cabin with snow-covered roof and front facade",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered roof slope occupies rows 8 through 35 (~28 rows) representing the foreshortened top surface facing the camera, while rows 36 to 63 show the front log wall with door and shuttered windows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7147
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "small log cabin with snow-covered roof",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a large south-facing snow-covered roof slope visible from row 8 down to row 36 (28 rows) above the vertical front log wall, correctly rendered in 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6078
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "small log cabin with snow-covered roof",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered roof slope facing the viewer spans rows 8 through 35 (~28 source pixels) before meeting the eaves over the front wall, providing ample top-down foreshortening standard for JRPG structures.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5671
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "log cabin with snow-covered roof slope, door, and windows",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabin has an expansive south-facing roof slope covered in snow spanning rows 8 to 36 (about 28 source pixel rows) visible from above at the standard 3/4 top-down angle over the front log facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6024
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:35.379Z",
+ "cells": {
+  "16": [
+   "11af7aa256a9b1f0",
+   "26d750d6aeb2e034",
+   "4e354449505a7a9d",
+   "8fbf308cb13a705b",
+   "a95cedc9a1b064f0",
+   "b7fbe9d1232d4b75",
+   "c6eb28c1746372b7",
+   "d19a5f1215ee4caa",
+   "d32e1da012ad55eb",
+   "d9090dea7b8e5480",
+   "e9275fa2841598f8",
+   "feb5f5ab586009b4"
+  ],
+  "24": [
+   "137e3a365baea634",
+   "2dee3f73104a0b9e",
+   "50295f819b6b9dcd",
+   "6033968e1b494281",
+   "6ed06b5596e11475",
+   "966f79702875bf84",
+   "b340ccac9931dcce",
+   "ce2618a528445dc4",
+   "eda587e07e4e3f11",
+   "ee253c3ad12100c0",
+   "f681af35652b1f0d",
+   "fcfb1deaa69d3263"
+  ],
+  "32": [
+   "0a1bd5fb500c41f0",
+   "0b7733d07bb66a91",
+   "16e0889f729f2693",
+   "18a6a78eae2c18c0",
+   "2a1e6648d4044f6e",
+   "6b7cbd63c210c8ae",
+   "7445b0de65796944",
+   "aa2c37c888c52b01",
+   "b26eca1ce0dbbe6a",
+   "da88d011a82c5a3b",
+   "ecdda3f9e9b33825",
+   "fd08c5d632a33984"
+  ],
+  "48": [
+   "47f6001efe6bd0a5",
+   "a3fc43531c3a9672",
+   "ec026b4c438807ac",
+   "f0f5d75dfc6f062a"
+  ]
+ }
+}

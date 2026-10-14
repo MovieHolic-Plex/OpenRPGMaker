@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e63841c835bdc4b7fbfb2c00905f486101845d21c950cca7644573a548d49bdf",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "느티나무(큰 활엽수)",
+ "label": "modern-campus/mc-tree-zelkova",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "foliage canopy and trunk of tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn in pure front elevation: the canopy has a flat horizontal underside (rows 35-36), the trunk is a flat vertical rectangle with a straight horizontal base (row 44), and no foreshortened top surface of the canopy is visible (the crown is cut off flat at row 0).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8417
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn in a pure front elevation: the bottom of the foliage canopy is a flat horizontal line (rows 35-36), the trunk connects and terminates with flat horizontal edges (row 36 and row 44), and no top surface of the canopy or trunk is visible (top_rows=0).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7087
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tree canopy",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree canopy is drawn in a flat side-scroller front elevation with a nearly flat horizontal bottom edge (rows 35-36) directly meeting the trunk, with no visible top surface or downward-curving foreshortening of foliage clumps.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7341
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is rendered in a flat 2D front elevation: the canopy is cut off at the top border and has a flat horizontal bottom edge (row 35), and the trunk is a straight vertical rectangle with a flat horizontal base (row 44). There is no visible top surface foreshortened from a 3/4 downward angle.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7883
+  }
+ ],
+ "decidedAt": "2026-10-14T08:06:14.290Z",
+ "cells": {
+  "16": [
+   "06e2cdaf2e53ea29",
+   "24bc481a15daf718",
+   "7981cadbdbff77e9",
+   "9633fa89940fc663",
+   "b04c18437f7a0dc1",
+   "b7d66598ebc47a75"
+  ],
+  "24": [
+   "01ccdf6f2e28e386",
+   "153c55cd1f3468ef",
+   "2ca25d5fb929049b",
+   "34ca6442641b7f04",
+   "3cac2b88c6c942d8",
+   "53772f45302da38b",
+   "68698245723b711a",
+   "70b4634c295a8683",
+   "95d24a550bf8e3a7",
+   "ad7cd4ff37f873e6",
+   "c0a9469505c08d12",
+   "ecdebd3c40223f4d"
+  ],
+  "32": [
+   "2ddf2ddd847a0244",
+   "4a254cbe431a436d",
+   "d7cfed1d4718c07d",
+   "d8a22efee51336a7"
+  ],
+  "48": [
+   "471a99c966506416",
+   "7c35fe60b64056b1",
+   "93839d1b4cd67517"
+  ]
+ }
+}

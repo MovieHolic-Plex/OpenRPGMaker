@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9dfe0ef7e0f7b39c8fb72b5f0131994f1fc1181ff69925d854457655205cf1f7",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "잔디 경계석(안쪽 북동 변)",
+ "label": "modern-campus/mc-curb-in-ne",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass terrain tile with corner stone paving",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing grass surface and a small stone corner transition in the northeast.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3531
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass terrain tile with corner stone paving",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile showing grass with an inner corner section of stone pavement; correctly categorized as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4340
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass terrain tile with corner stone paving",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing grass ground meeting stone paving in the top-right corner; flat ground tile with no standing volume.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3353
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass ground tile with stone border corner",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing flat ground (grass with corner curbstone), viewed from above as a top-down ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4952
+  }
+ ],
+ "decidedAt": "2026-10-14T08:06:14.287Z",
+ "cells": {
+  "16": [
+   "0cb4eb2610fecdfa"
+  ],
+  "24": [
+   "2a84aa01e611c938",
+   "4bc26d846e393c0e",
+   "6e716fcc0e3aae8b",
+   "ee394ee9f8709395",
+   "f885e602f3c90260",
+   "fbd115412a769b88"
+  ],
+  "32": [
+   "175d0e4b071128ee",
+   "69f3c37006c9b85e",
+   "aa4bfd21643fa022",
+   "bc582a1fbff0d93b",
+   "bee3592159809672",
+   "e2ae86d1227d921a"
+  ],
+  "48": [
+   "6843a3688d53155c",
+   "883ca375552f13cc",
+   "926ad423d0066533",
+   "9befcfbd9d0e720b",
+   "cf2929b5e66d7592",
+   "f2ffc52a47397d5d"
+  ]
+ }
+}

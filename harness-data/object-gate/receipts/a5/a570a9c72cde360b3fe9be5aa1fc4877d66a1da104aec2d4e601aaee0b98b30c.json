@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a570a9c72cde360b3fe9be5aa1fc4877d66a1da104aec2d4e601aaee0b98b30c",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "잔잔한 모래(변주)",
+ "label": "desert-east/de-sand-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sand ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground sand terrain tile occupying the full 16x16 tile area viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10742
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sand ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 terrain tile representing a textured sand ground surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10087
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sand ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "16x16 ground terrain tile representing a horizontal sandy surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8716
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sand ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing a continuous sand texture from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7873
+  }
+ ],
+ "decidedAt": "2026-10-14T08:01:48.456Z",
+ "cells": {
+  "16": [
+   "a76172110bf018f0"
+  ],
+  "24": [
+   "1a1df329fac0608f",
+   "296e0f34a183f0f5",
+   "2d212741b7964b3d",
+   "5e48c32bb45a99ec",
+   "6bb3e3dc64f34bbf",
+   "b5af4a676d378d9c"
+  ],
+  "32": [
+   "02f954d8f449e91a",
+   "3f9d6d8ff9f6085f",
+   "517f134f4629b76c",
+   "8d1e8c635f9b62d2",
+   "8e278c06c976c164",
+   "eb6ed8fa28ef58de"
+  ],
+  "48": [
+   "1b02e47989ec0ec5",
+   "33fece04635a4bea",
+   "4f9f61611de99a47",
+   "82996515d572b89e",
+   "a560cd243de10af7",
+   "d22023eb01456d95"
+  ]
+ }
+}

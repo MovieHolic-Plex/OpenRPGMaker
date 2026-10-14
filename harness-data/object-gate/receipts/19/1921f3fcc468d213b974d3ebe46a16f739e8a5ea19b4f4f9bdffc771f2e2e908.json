@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1921f3fcc468d213b974d3ebe46a16f739e8a5ea19b4f4f9bdffc771f2e2e908",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "서리 풀",
+ "label": "snow-north/sn-frost",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "frost grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Tile depicts frosted grass patches on snow/ground seen from a top-down ground-plane perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4332
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "frost grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile depicting frost and grass patches across the entire surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7899
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "frost grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 ground terrain tile representing frost-covered grass on snow.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5183
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "frost grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts flat frost and grass ground texture viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4906
+  }
+ ],
+ "decidedAt": "2026-10-14T08:00:44.468Z",
+ "cells": {
+  "16": [
+   "0987f731668ff9f1"
+  ],
+  "24": [
+   "2a0d8e61a254d07e",
+   "5034646224c2e40a",
+   "5157554dbbb82521",
+   "7884856ba53d95ab",
+   "78deae3a6971aecb",
+   "aa735e51610f5a00"
+  ],
+  "32": [
+   "0982ec271afcb434",
+   "2f63761465e93aa9",
+   "4d58ceae81567e53",
+   "6bb724ee00d6ada9",
+   "d6c8a65a241c2304",
+   "f93d56d005103fe0"
+  ],
+  "48": [
+   "0631e156b6bece38",
+   "31330a4efe820c24",
+   "33a6908053038bb2",
+   "748dcb91387598ab",
+   "97fd3301d54e7ed0",
+   "aefc2e9c8ea4b78a"
+  ]
+ }
+}

@@ -1,2 +1,12 @@
-{"png": "sn-banner-aurora.png", "kind": "wall_mounted", "name": "벽걸이 오로라 깃발(청록·보라 물결)", "label": "snow-north/sn-banner-aurora"}
-{"png": "sn-banner-aurora-b.png", "kind": "wall_mounted", "name": "벽걸이 오로라 깃발(보라·청록 물결, 반대 무늬)", "label": "snow-north/sn-banner-aurora-b"}
+{"png": "sn-pine-s.png", "kind": "organic", "name": "어린 가문비(눈 덮임)", "label": "snow-north/sn-pine-s"}
+{"png": "sn-pine-m.png", "kind": "organic", "name": "가문비(눈 덮임, 중간)", "label": "snow-north/sn-pine-m"}
+{"png": "sn-pine-l.png", "kind": "organic", "name": "큰 가문비(눈 덮임)", "label": "snow-north/sn-pine-l"}
+{"png": "sn-pine-pair.png", "kind": "organic", "name": "가문비 두 그루(겹침)", "label": "snow-north/sn-pine-pair"}
+{"png": "sn-birch.png", "kind": "organic", "name": "잎 진 자작(눈 얹힌 잔가지)", "label": "snow-north/sn-birch"}
+{"png": "sn-birch-s.png", "kind": "organic", "name": "어린 자작(가는 줄기 둘)", "label": "snow-north/sn-birch-s"}
+{"png": "sn-bush.png", "kind": "organic", "name": "눈 덮인 덤불", "label": "snow-north/sn-bush"}
+{"png": "sn-boulder-s.png", "kind": "organic", "name": "눈 덮인 바위(작음)", "label": "snow-north/sn-boulder-s"}
+{"png": "sn-boulder-l.png", "kind": "organic", "name": "눈 덮인 큰 바위", "label": "snow-north/sn-boulder-l"}
+{"png": "sn-woodpile.png", "kind": "structure", "name": "장작더미(처마 지붕 밑, 단면 나이테)", "label": "snow-north/sn-woodpile"}
+{"png": "sn-fish-rack.png", "kind": "frame", "name": "생선 말리는 덕장(대구 줄줄이, 작은 박공 지붕)", "label": "snow-north/sn-fish-rack"}
+{"png": "sn-well.png", "kind": "structure", "name": "우물(돌 둘레·눈 지붕·두레박)", "label": "snow-north/sn-well"}

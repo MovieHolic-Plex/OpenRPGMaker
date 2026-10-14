@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "21ff5b767e14f6719e61e7316c7a845cc82f254a40a4aac25ae58403c684b217",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "가시나무 덤불",
+ "label": "gothic_manor/gm-thornbush",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "thorn bush clump",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The thorn bush is drawn as a rounded mound viewed from 3/4 top-down perspective, with the upper surface spanning rows 2-6 highlighted with lighter brown tones and thorns protruding across the top before sloping down into the darker southern face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4103
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "thorn bush cluster",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush forms a rounded organic mass viewed from top-down 3/4 perspective, with the upper surface lit across rows 1-6 and thorns projecting upward and outward.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5534
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "thorn bush clump",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bramble mound has visible upper surfaces illuminated from rows 1 to 6 (about 5 pixel rows) before transitioning into shaded southern front slopes, consistent with 3/4 top-down projection.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4520
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "thorn bush mound",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bramble mound has a clearly rounded 3/4 volume with the top surface lit across rows 1-6 before curving down into shaded front rows (rows 7-14), with thorns protruding outwards.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3335
+  }
+ ],
+ "decidedAt": "2026-10-14T07:55:00.836Z",
+ "cells": {
+  "16": [
+   "f3bf34ee864f718f"
+  ],
+  "24": [
+   "038680cd6c3c9149",
+   "222b81ecb5308daa",
+   "76ce5387d8066f67",
+   "8853dd6f9f33ce66",
+   "a8ad39c4fa8eca9a",
+   "da89533ad8cfcace"
+  ],
+  "32": [
+   "054821e2493486af",
+   "21d42a34a7919603",
+   "4f3462e60d057a6e",
+   "81d10057e8b1dbfe",
+   "dbac238f7c1bf901",
+   "e0cf5c6a9a76759d"
+  ],
+  "48": [
+   "1dca8b182133975d",
+   "4e98bb2c9d5dc884",
+   "b0c38093f3f372b1",
+   "d1bd053cfbc1e130",
+   "de91989d06418d02",
+   "e8c2d7a24eddc3f1"
+  ]
+ }
+}

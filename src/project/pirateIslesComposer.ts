@@ -16,7 +16,7 @@
 // 이 파일은 순수 함수다: GameMap·TilesetDef 를 받아 칸을 쓴다(도구 compose_pirate_isles_map 이 복제본에서 부른다).
 
 import { setLayerTileAt, layerTileAt } from "@/project/mapLayers";
-import { addMapLocation } from "@/project/mapNamedLocations";
+import { addMapLocation, COMPOSED_LAYOUT_TAG } from "@/project/mapNamedLocations";
 import type { GameMap, StructureKitDef, TilesetDef } from "@/project/types";
 
 export type PirateMapKind = "harbor" | "beach" | "fort" | "wreck" | "ship" | "tavern" | "hut" | "cave";
@@ -1299,7 +1299,7 @@ export function labelPirateAreas(map: GameMap, areas: readonly PirateArea[]): st
   const lines: string[] = [];
   for (const a of areas) {
     const note = a.door && a.access ? `문 (${a.door.x},${a.door.y}) · 문 앞 접근칸 (${a.access.x},${a.access.y})` : a.access ? `접근칸 (${a.access.x},${a.access.y})` : "구역";
-    const added = addMapLocation(map, { name: a.name, x: a.x, y: a.y, w: a.w, h: a.h, note, tags: ["pirate-area", a.tag] });
+    const added = addMapLocation(map, { name: a.name, x: a.x, y: a.y, w: a.w, h: a.h, note, tags: ["pirate-area", COMPOSED_LAYOUT_TAG, a.tag] });
     if (added.ok) lines.push(a.access ? `${a.name} 접근칸 (${a.access.x},${a.access.y})` : a.name);
   }
   return lines;

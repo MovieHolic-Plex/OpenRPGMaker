@@ -1,0 +1,33 @@
+{
+ "gate": {
+  "prov": 14,
+  "blocked": 0,
+  "profile": "uncalibrated → pass 영수증을 임시통과(provisional)로 센다"
+ },
+ "count_before": 10743,
+ "count_after": 10812,
+ "added_cells": 69,
+ "owned_cells": 69,
+ "kits": [
+  "mc-prop-keyaki-a",
+  "mc-prop-keyaki-b",
+  "mc-prop-ginkgo-big-a",
+  "mc-prop-park-tree-a",
+  "mc-prop-azalea-a",
+  "mc-prop-azalea-b"
+ ],
+ "lawn": [
+  10743,
+  10744,
+  10745,
+  10746,
+  10747,
+  10748,
+  10749,
+  10750
+ ],
+ "sheet": [
+  768,
+  3616
+ ]
+}

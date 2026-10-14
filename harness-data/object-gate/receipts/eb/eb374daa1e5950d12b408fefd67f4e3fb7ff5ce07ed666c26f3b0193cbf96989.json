@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "eb374daa1e5950d12b408fefd67f4e3fb7ff5ce07ed666c26f3b0193cbf96989",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "잔디 경계석(동 변)",
+ "label": "modern-campus/mc-curb-e",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flat grass ground tile with eastern stone curb transition",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a standard top-down ground terrain transition consisting of grass and a stone border edge viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9968
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass terrain tile with stone curb border on east edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile showing top-down grass surface bordered by a curb strip on the east edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4770
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass to stone border terrain transition",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ground terrain tile showing grass with an eastern stone boundary curb/pavement edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3728
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass ground with stone curb border on east side",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a terrain tile depicting top-down ground cover (grass) transitioning to an east border stone curb; the entire surface is a horizontal plane viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5348
+  }
+ ],
+ "decidedAt": "2026-10-14T08:06:14.286Z",
+ "cells": {
+  "16": [
+   "17e65ddd034fd9c3"
+  ],
+  "24": [
+   "48981e31bc2e18e7",
+   "9096f1b9d6ee8af4",
+   "bd3f3b2e6f8e0b34",
+   "d173c6c2c2f7c14c",
+   "de4a85bdad7051fd",
+   "fe4cd96015d2723c"
+  ],
+  "32": [
+   "3117434ac0e347d2",
+   "692b3a433a2abe6c",
+   "98a8fba75d787e38",
+   "9fd1c7e6176a1a0e",
+   "e9b9f33a1056a937",
+   "ea19b29d33468f71"
+  ],
+  "48": [
+   "1296ba6040dcfa11",
+   "3b9b80d195bd8e98",
+   "51de2ac592ba03ad",
+   "5705e82d7e7c3acb",
+   "7d10bbbc54eb0572",
+   "9bb4eb40b380b869"
+  ]
+ }
+}
