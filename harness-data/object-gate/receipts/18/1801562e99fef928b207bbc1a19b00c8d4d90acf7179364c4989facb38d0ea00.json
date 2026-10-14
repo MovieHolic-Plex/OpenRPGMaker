@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1801562e99fef928b207bbc1a19b00c8d4d90acf7179364c4989facb38d0ea00",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "prehistoric stone-age totem b",
+ "label": "prehistoric/ph-totem-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "carved totem pole column",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The totem pole is drawn in pure front elevation with straight horizontal segment lines and a flat top line at row 6 with no elliptical or foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4020
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "totem pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The totem pole is drawn in pure front elevation with completely flat horizontal section dividers and top/bottom edges. The yellow section at rows 6-11 is a front-facing crown/headdress with no top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4826
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "totem pole column",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The totem pole is drawn completely flat in pure front elevation; all segment dividers and the top edge at row 6 are straight horizontal lines with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3706
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden totem pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The totem pole is drawn in pure front elevation: all section boundaries and the bottom edge are completely straight horizontal lines, and the top terminates in a flat front-facing headdress/crown without any visible top surface showing the circular cut of the log.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3990
+  }
+ ],
+ "decidedAt": "2026-10-14T00:39:52.942Z",
+ "cells": {
+  "16": [
+   "15edbe640e9b198c",
+   "35a13ff63806d169",
+   "7271dd40df8bda86"
+  ],
+  "24": [
+   "07866a4643cab12b",
+   "09b0aa073012b59c",
+   "2eb5cf0a4c5f9cbd",
+   "44b2c9f974932d02",
+   "c338c0838f2f96b0",
+   "d0b27ffd577f1356"
+  ],
+  "32": [
+   "07683bf26d848fbe",
+   "0afdf0e96baa9fd4",
+   "18df9cd9d9641b9b",
+   "386cffe9c0e0ada5",
+   "3e51b74c5502944d",
+   "44f8f9215de3f510",
+   "52cb8d91b0e19f23",
+   "84c9ff76cf1584df",
+   "8f639fd71808ff90",
+   "9bdb87b512b55c02",
+   "cdcd345b51e0b3fb",
+   "d12f9cddcf28b1f7"
+  ],
+  "48": [
+   "3f9a8b73513ee4b8",
+   "54be1be688db4410",
+   "7e0e358bc60d46ee"
+  ]
+ }
+}

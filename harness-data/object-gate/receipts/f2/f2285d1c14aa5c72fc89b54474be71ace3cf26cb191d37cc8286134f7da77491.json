@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f2285d1c14aa5c72fc89b54474be71ace3cf26cb191d37cc8286134f7da77491",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "prehistoric stone-age drying rack",
+ "label": "prehistoric/ph-drying-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden rack frame with hanging hides",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire frame is drawn in flat 2D front elevation. Horizontal crossbeams are only 2-3 pixels tall total with no visible top surface, the post joints are drawn as flat circular shapes, and the legs drop straight down to a flat baseline without depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5064
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden drying rack frame with hanging pelts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden frame is drawn in flat front elevation; the horizontal crossbeams (rows 4-7 and 15-17) and vertical posts lack visible horizontal top surfaces or end-grain ellipses seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4161
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden drying rack with hanging hides",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden frame and crossbeams are drawn in flat front elevation with 2px-thick beams and no visible top surface on the beams, posts, or joints.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3461
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden frame rack with hanging pelts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden frame and its crossbeams are drawn in pure front elevation with no visible top surfaces (post caps are rounded 1-2px edges, crossbeams show no horizontal top depth, and posts terminate flatly at the bottom).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3972
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.801Z",
+ "cells": {
+  "16": [
+   "1d5de02bdbc1b837",
+   "31f785417bdaefef",
+   "d3fc912a06f95e93",
+   "fbbeedfcbb6c8af8"
+  ],
+  "24": [
+   "135ba5e0e5802533",
+   "1890f6d14bb26015",
+   "19e653d7930137c5",
+   "2fd8bfea9fbbc186",
+   "76bebe2c2541409c",
+   "7b9e1927c5023f25",
+   "7cdc20a6ac12727a",
+   "7f8fd7291f8efe76",
+   "87c4418f3651c336",
+   "8f367b182819efec",
+   "8f6b4df83410139e",
+   "9030114ededa988f",
+   "919b3564f273c8aa",
+   "959a921a43a5c50c",
+   "99b7009c53fe506e",
+   "9aaf569a667dbaa0",
+   "adc020538c27c95e",
+   "b04836a57c85375f",
+   "b5f13d0a3619aaac",
+   "c875927a61e76a3c",
+   "d1acfcfc4662d614",
+   "e5313c3d17623dfd",
+   "edea11ff52ec97b1",
+   "f2bda51480114f78"
+  ],
+  "32": [
+   "336abac872bf88a7"
+  ],
+  "48": [
+   "75603d6549061284",
+   "896d675e77180af1",
+   "91268bc518338e5c",
+   "b8a5fac03590d0a8",
+   "d69488348e968619",
+   "d9acc2da98fcac4e"
+  ]
+ }
+}

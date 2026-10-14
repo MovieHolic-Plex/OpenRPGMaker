@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "92d222f79fb8d368ba7c7277c2ac4e6329d7e4751145a5dc1757e3f813d0dee3",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "prehistoric stone-age bridge post",
+ "label": "prehistoric/ph-bridge-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bridge post / log",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The post is rendered entirely in front elevation with vertical cylinder shading from row 6 to 29. The top is drawn as a rounded dome/arch seen from the side rather than a top-down cut face or foreshortened top ellipse.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7379
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden bridge post / pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The post is drawn in pure front elevation with straight horizontal bands (rope bindings and base) and no elliptical top surface showing the cut face or top end of the column. The rounded cap/tip at rows 4-9 is rendered from a straight-on profile rather than an oblique top-down plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9057
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden bridge post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The post is drawn in pure front elevation: the bottom base, all rope wrappings, and the seam below the rounded cap are completely flat horizontal lines with no 45-degree elliptical curvature, and no top cut face is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8207
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden bridge post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The post is drawn in pure front elevation: all horizontal features (rope wrappings, bottom base, and cap boundary) are completely straight horizontal lines rather than elliptical curves, and the top end is drawn as a flat rounded silhouette with no visible elliptical top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7269
+  }
+ ],
+ "decidedAt": "2026-10-14T00:39:52.943Z",
+ "cells": {
+  "16": [
+   "310bece3e5529e12",
+   "ee8b99630fb6a970"
+  ],
+  "24": [
+   "1bd984be171e0f36",
+   "339635e3213d8891",
+   "3c79cc3ae4093674",
+   "3f006b50a3e688a9",
+   "3f209fc8608c7721",
+   "40dd3ddd09cb9d1a",
+   "6716411d64e3048c",
+   "726e13879837f8cf",
+   "bbff35c2807bf4ad",
+   "c54e484a51f727a3",
+   "e0443ee123b609dc",
+   "e84f564e2e837fd5"
+  ],
+  "32": [
+   "890156535cf65d3e",
+   "a9d0f7b4da89eccb",
+   "d58f08cc6dad0157"
+  ],
+  "48": [
+   "413ef418734f11c4",
+   "7224ec404fa0c0cc",
+   "7a60ab79d092fcb4",
+   "7c23a1b6e970142c",
+   "99468653b556c8f2",
+   "f31fcace8dc82c15"
+  ]
+ }
+}

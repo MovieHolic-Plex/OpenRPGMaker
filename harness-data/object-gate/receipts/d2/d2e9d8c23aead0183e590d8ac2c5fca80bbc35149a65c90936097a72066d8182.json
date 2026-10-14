@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d2e9d8c23aead0183e590d8ac2c5fca80bbc35149a65c90936097a72066d8182",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "prehistoric stone-age tipi",
+ "label": "prehistoric/ph-tipi",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "conical hide tent / tipi",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tipi is drawn as a flat front elevation: horizontal bands (such as the orange wrap at rows 40-42 and hide seams at row 31) are rendered completely straight across rather than curving downward as foreshortened circular cross-sections in 3/4 top-down perspective, and the bottom base rim is virtually flat across rows 59-60.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5596
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "conical tipi / tent",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tipi is drawn as a flat front elevation: the decorative orange band at row 41, the seam lines, and the base are drawn straight horizontally across rather than curving into ellipses as circular cross-sections of a cone must in 3/4 top-down view. The smoke hole at the apex also shows no top opening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7721
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "conical hide tipi",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tipi is drawn as a flat 2D front elevation: the decorative horizontal band (rows 40-42) and horizontal seams are completely straight horizontal lines rather than elliptical curves, the base is flat, and the crossing poles at the top show no 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5473
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "conical tipi tent",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tipi is drawn in pure 2D front elevation: the orange decorative band (rows 40-42), horizontal seams, and the interior floor line are completely flat straight horizontal lines rather than elliptical downward curves resulting from looking down at a cone from a 45-degree angle. Additionally, no top opening or smoke hole is visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6473
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.795Z",
+ "cells": {
+  "16": [
+   "0ab61eeec452b3dd",
+   "1291d497bfb0b85e",
+   "2a5e5247c96e4eb6",
+   "5a405803370df3d6",
+   "96e251f9a6584eaa",
+   "b4ee956647dbacd5",
+   "e900c3540f4f110d",
+   "ed5b75676f17a70d",
+   "fbd0b2536f2ffbce",
+   "fe245caa686bee79"
+  ],
+  "24": [
+   "03b89aceec681dcf",
+   "0bd0ee61f5cdec3c",
+   "0c3f7095293bd0db",
+   "20dc1ee752ce5078",
+   "32d01d15048efbc5",
+   "39f8a39ce5646308",
+   "4a86e2b9e2c2f2f8",
+   "4ef7cb1a8c995916",
+   "6944f30ff2a661fc",
+   "86802909e175d377",
+   "b4edb9101e68355c",
+   "d961421af39d16aa"
+  ],
+  "32": [
+   "0f5ea41c826e7323",
+   "172c5f4173749b8f",
+   "17e166701436e701",
+   "4202d2b7afdd1985",
+   "593d32a5788cee97",
+   "622ddf14d4f7bb57",
+   "6b58ee5d7ddc9f01",
+   "752dffc63b88a5e8",
+   "7d1ede524ba41bef",
+   "8127f9a9594c6d75",
+   "899346edb4133889",
+   "b620370502eb31bc"
+  ],
+  "48": [
+   "17ac3b92a549ed46",
+   "acfc7dd87a441983",
+   "d30a457f242cba17",
+   "e1e6258ce6dcd61f"
+  ]
+ }
+}

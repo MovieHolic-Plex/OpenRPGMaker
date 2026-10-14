@@ -10,6 +10,7 @@
 import os, sys, math
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from pelt import pelt  # noqa: E402
+from topview import cut_face, post_top, log_beam, slab  # noqa: E402
 from px import C, rnd, h32, NT, MI
 from kit import Reg, contact, OUT
 from shapes import seeds, near2, rock_px, rock_hill, lit, tusk_arc
@@ -129,12 +130,16 @@ for base, nm, fn, w, h, kind, tags, rules in (
 
 
 def torch(c, f=0):
-    post(c, 6, 12, 30, w=4)
-    # 횃불 머리: 감은 짚 + 불
-    for y in range(9, 14):
-        for x in range(5, 11): c.P(x, y, 'thatch', 3 if x < 8 else 2)
-    c.HL(5, 11, 6, 'bark', 1)
-    flame(c, 8, 9, 8, 2.6, f=f, s=3)
+    # 굵은 말뚝 + 꼭대기 넓은 짚 불 그릇: 그릇 아가리(숯불 바닥) 타원이 위에서 들여다보이고 불꽃은 그 뒤쪽에서 작게 솟는다
+    post_top(c, 5, 16, 30, w=6)
+    for y in range(8, 18):
+        for x in range(1, 15):
+            dx = (x + 0.5 - 8) / 7; dy = (y + 0.5 - 13) / 4.6
+            if dx * dx + dy * dy > 1: continue
+            c.P(x, y, 'thatch', 4 if dx < -0.3 else 3 if dx < 0.4 else 2)
+    c.ell(8, 12, 5.6, 3.4, lambda x, y, dx, dy, d: ('fire', 3 if d < 0.25 else 2 if dy > -0.3 else 1) if d < 0.75 else ('thatch', 1))
+    for x in range(2, 14): c.P(x, 17, 'thatch', 1)
+    flame(c, 8, 10, 6, 2.2, f=f, s=3)
     done(c)
 
 
@@ -150,102 +155,156 @@ ANIM.append(('torch', '횃불 말뚝', ids, 6))
 @R.add('spit-roast', '고기 꼬치 굽기(Y 기둥 + 꼬챙이)', 2, 1, 'frame', tags=['불', '요리', '고기'], rules='모닥불 곁. 사람이 둘러앉을 칸을 남긴다.')
 def _(c):
     stone_ring(c, 16, 11, 9, 4, s=4, inner=lambda x, y, dx, dy: ('fire', 2 if rnd(x, y, 1) < 0.5 else 1) if dy < 0.3 else ('ash', 2))
-    for x in (3, 26):
-        post(c, x, 2, 14, w=3)
-        c.P(x - 1, 1, 'bark', 4); c.P(x + 3, 1, 'bark', 3)
-    beam(c, 3, 29, 3, th=2)
-    # 고기 덩이(위가 노릇하게 구워졌다)
-    for y in range(4, 10):
-        for x in range(10, 23):
-            dx = (x + 0.5 - 16.5) / 6.5; dy = (y + 0.5 - 6.5) / 3
-            if dx * dx + dy * dy <= 1: c.P(x, y, 'ochre', 4 if dy < -0.3 else 3 if dx < 0.3 else 2)
-    c.HL(12, 5, 6, 'thatch', 4); c.P(14, 7, 'feather', 1); c.P(19, 6, 'feather', 1)
+    for x in (0, 25):
+        post_top(c, x, 1, 15, w=7, ry=2.6)
+    # 굵은 꼬챙이(통나무 윗면) + 고기 덩이(위가 노릇하게, 위에서 보이는 둥근 등)
+    log_beam(c, 2, 30, 4, top=2, front=1, ends=False)
+    for y in range(2, 11):
+        for x in range(9, 24):
+            dx = (x + 0.5 - 16.5) / 7.5; dy = (y + 0.5 - 6.5) / 4.2
+            if dx * dx + dy * dy <= 1: c.P(x, y, 'ochre', 4 if dy < -0.25 and dx < 0.4 else 3 if dy < 0.35 else 2)
+    c.HL(12, 4, 6, 'thatch', 4); c.P(14, 7, 'feather', 1); c.P(19, 6, 'feather', 1)
     done(c)
 
 
-def rack(c, items, w=32, s=0):
-    """건조대: 양 끝 기둥 둘 + 위 들보 + 걸린 것들(items: (x, kind))."""
-    post(c, 2, 4, 30, w=3); post(c, w - 5, 4, 30, w=3)
-    beam(c, 1, w - 2, 5, th=3)
-    beam(c, 1, w - 2, 16, th=2)
-    for (x, kind) in items:
-        if kind == 'hide':
-            for y in range(8, 22):
-                k = y - 8
-                for i in range(7):
-                    if (k > 11 and i in (0, 6)) or (k > 12 and i in (1, 5)): continue
-                    c.P(x + i, y, 'hide', 4 if i < 2 else 3 if i < 5 else 2)
-            c.HL(x, 8, 7, 'hide', 5)
-        elif kind == 'fish':
-            for j in range(3):
-                fx = x + j * 3
-                for y in range(18, 27): c.P(fx, y, 'water', 4 if y < 21 else 3); c.P(fx + 1, y, 'water', 2)
-                c.P(fx, 27, 'water', 1); c.P(fx + 1, 27, 'water', 1); c.P(fx, 17, 'bark', 2)
-        elif kind == 'fur':
-            for y in range(8, 18):
-                for i in range(6): c.P(x + i, y, 'fur', 4 if i < 2 else 3 if (i + y) % 2 else 2)
-        elif kind == 'herb':
-            for y in range(18, 25):
-                for i in range(4): c.P(x + i, y, 'grass', 4 if i < 2 else 2) if (y + i) % 3 else c.P(x + i, y, 'thatch', 3)
-
-
-@R.add('drying-rack', '가죽 말리는 건조대', 2, 2, 'frame', tags=['건조대', '가죽', '마을'], rules='움집 곁·동굴 앞. 앞 한 칸을 비운다.')
+@R.add('drying-rack', '가죽 말리는 시렁(장대 둘 위에 펼쳐 넌 가죽)', 2, 2, 'frame', tags=['건조대', '가죽', '마을'], rules='움집 곁·동굴 앞. 앞 한 칸을 비운다.')
 def _(c):
-    rack(c, [(7, 'hide'), (18, 'fur'), (8, 'fish'), (19, 'herb')]); done(c)
+    """가죽 말리는 시렁(2×2): 앞뒤 두 장대를 네 갈래 기둥에 걸고 그 위로 가죽을 넓게 펼쳐 널었다 — 장대 사이 펼친 가죽 윗면이 위에서 보인다."""
+    for (x, top, bot) in ((2, 3, 17), (25, 3, 17)):        # 뒤 기둥(멀리, 짧게 보인다)
+        post_top(c, x, top, bot, w=5, ry=2.2)
+    for (x, top, bot) in ((0, 11, 30), (26, 11, 30)):      # 앞 기둥
+        post_top(c, x, top, bot, w=6, ry=2.4)
+    log_beam(c, 3, 29, 5, top=2, front=1, ends=False)       # 뒤 장대
+    # 널어 둔 가죽: 뒤 장대 → 앞 장대 사이 윗면(밝게, 털결) + 앞 장대 아래로 늘어진 자락
+    for y in range(7, 15):
+        for x in range(5, 27):
+            if (x < 7 or x > 24) and y > 12: continue
+            t = 5 if y < 9 else 4 if x < 16 else 3
+            if (x + y) % 5 == 0: t -= 1
+            c.P(x, y, 'hide', t)
+    log_beam(c, 1, 31, 14, top=3, front=2, ends=False)      # 앞 장대
+    for y in range(19, 25):
+        for x in range(8, 24):
+            if y > 22 and (x < 10 or x > 21): continue
+            c.P(x, y, 'hide', 3 if x < 15 else 2)
+    for (x, y) in ((12, 10), (19, 9), (15, 12)): c.P(x, y, 'ochre', 2)
+    done(c)
 
 
-@R.add('fish-rack', '생선 말리는 건조대', 2, 2, 'frame', tags=['건조대', '생선', '물가'], rules='물가 마을.')
-def _(c):
-    rack(c, [(6, 'fish'), (16, 'fish'), (6, 'herb'), (20, 'hide')]); done(c)
+def trap_deck(c, yt, yb, xl_t, xr_t, xl_b, xr_b, paint, edge=3, legs=4, leg_w=3, mat='bark'):
+    """원근 사다리꼴 평상: 뒤(yt)는 좁고 앞(yb)은 넓은 윗면(paint(x,y,u,v) 가 칠함) — 양옆 통나무 테(윗면 밝게)는 앞으로 벌어지고,
+    앞 테는 통나무 윗등 + 앞면 edge 줄, 그 밑 짧은 다리 legs 줄(앞 둘은 또렷, 뒤 둘은 윗면 밑에 숨는다)."""
+    n = NT[MI[mat]]
+    for y in range(yt, yb + 1):
+        v = (y - yt) / max(1, yb - yt)
+        xl = xl_t + (xl_b - xl_t) * v; xr = xr_t + (xr_b - xr_t) * v
+        for x in range(int(round(xl)), int(round(xr)) + 1):
+            u = (x - xl) / max(1, xr - xl)
+            paint(x, y, u, v)
+        # 옆 테(앞뒤로 누운 통나무 — 윗등 밝게 2화소)
+        L, Rr = int(round(xl)), int(round(xr))
+        c.P(L - 2, y, mat, n - 1); c.P(L - 1, y, mat, n - 2); c.P(L, y, mat, n - 4)
+        c.P(Rr, y, mat, n - 3); c.P(Rr + 1, y, mat, n - 2); c.P(Rr + 2, y, mat, n - 4)
+    # 뒤 테(가늘게 — 멀리)
+    for x in range(int(xl_t) - 2, int(xr_t) + 3):
+        c.P(x, yt - 1, mat, n - 2); c.P(x, yt - 2, mat, n - 1)
+    # 앞 테: 윗등 2줄 + 앞면 edge 줄
+    for x in range(int(xl_b) - 2, int(xr_b) + 3):
+        c.P(x, yb + 1, mat, n - 1); c.P(x, yb + 2, mat, n - 2)
+        for j in range(edge):
+            c.P(x, yb + 3 + j, mat, n - 4 if j < edge - 1 else n - 5)
+    for cxx in (int(xl_b) - 2, int(xr_b) + 3 - leg_w):
+        for y in range(yb + 3 + edge, yb + 3 + edge + legs):
+            for i in range(leg_w): c.P(cxx + i, y, mat, n - 3 if i == 0 else n - 4)
+    # 뒤 다리(윗면 밑 그늘 속 — 앞 다리보다 안쪽, 짧게)
+    for cxx in (int(xl_b) + 3, int(xr_b) - 3):
+        for y in range(yb + 3 + edge, yb + 3 + edge + legs - 2):
+            c.P(cxx, y, mat, 1); c.P(cxx + 1, y, mat, 0)
 
 
-@R.add('hide-frame', '가죽 펴는 틀', 2, 2, 'frame', tags=['가죽', '작업'], rules='작업터. 앞 한 칸을 비운다.')
-def _(c):
-    # 네모 틀(위·아래 들보 윗면이 보인다) + 끈으로 당긴 가죽
-    post(c, 2, 3, 30, w=3); post(c, 27, 3, 30, w=3)
-    beam(c, 1, 30, 4, th=3); beam(c, 1, 30, 25, th=3)
-    for y in range(9, 24):
-        for x in range(7, 25):
-            dx = (x + 0.5 - 16) / 9; dy = (y + 0.5 - 16) / 7.5
-            if dx * dx * 0.7 + dy * dy > 1: continue
-            c.P(x, y, 'hide', 4 if dx + dy < -0.6 else 3 if dx < 0.4 else 2)
-    for (x0, y0, x1, y1) in ((5, 8, 8, 10), (27, 8, 24, 10), (5, 24, 8, 22), (27, 24, 24, 22), (16, 7, 16, 9), (16, 24, 16, 23)):
-        c.line(x0, y0, x1, y1, 'thatch', 2)
-    # 추상 물감 무늬(동그라미 셋)
-    for (x, y) in ((12, 14), (16, 18), (20, 14)): c.P(x, y, 'ochre', 2); c.P(x + 1, y, 'ochre', 3)
+def arc_band(c, x, y, w, mat, t, depth=1.4):
+    """기둥을 감은 끈(위에서 비스듬히 본 원통 둘레라 가운데가 아래로 휜다)."""
+    for i in range(w):
+        u = (i + 0.5 - w / 2) / (w / 2)
+        yy = y + round(depth * (1 - u * u))
+        c.P(x + i, yy, mat, t + (1 if u < -0.3 else 0)); c.P(x + i, yy + 1, mat, t - 2)
+
+
+def _fish_rack(c):
+    """생선 말리는 평상(2×2): 낮은 다리 위 통나무 테 평상(뒤가 좁고 앞이 넓다) — 갈대 발은 앞뒤로 깔려 원근으로 모이고, 그 위에 생선을 비스듬히 누여 널었다."""
+    def paint(x, y, u, v):
+        k = int(u * 9)
+        t = 4 if k % 2 == 0 else 3
+        if v < 0.2: t += 1
+        if u > 0.8: t -= 1
+        c.P(x, y, 'thatch', max(1, min(5, t)))
+    trap_deck(c, 6, 20, 7, 24, 3, 28, paint, edge=2, legs=4)
+    for (fx, fy) in ((8, 8), (16, 9), (6, 14), (14, 15), (21, 13)):
+        for i in range(5):
+            x, y = fx + i, fy + i // 2
+            c.P(x, y, 'water', 5 if i < 2 else 4); c.P(x, y + 1, 'water', 2)
+        c.P(fx + 5, fy + 2, 'water', 3); c.P(fx + 6, fy + 1, 'water', 3); c.P(fx + 6, fy + 3, 'water', 3)
+        c.P(fx + 1, fy, 'ink', 1)
+    done(c)
+
+
+@R.add('fish-rack', '생선 말리는 평상(갈대 발 위 생선)', 2, 2, 'low_furniture', tags=['건조대', '생선', '물가'], rules='물가 마을.')
+def _(c): _fish_rack(c)
+
+
+def _hide_frame(c):
+    """가죽 펴는 틀(2×2): 낮은 말뚝 위에 눕힌 통나무 네모 틀(원근으로 뒤가 좁다) — 그 안에 가죽을 끈으로 팽팽히 당겨 펼쳤다. 가죽 윗면이 위에서 보인다."""
+    def paint(x, y, u, v):
+        inner = 0.08 < u < 0.92 and 0.1 < v < 0.9
+        if not inner:
+            c.P(x, y, 'thatch', 3 if (x + y) % 2 else 1); return
+        t = 5 if v < 0.3 else 4 if u < 0.5 else 3
+        if (x * 3 + y) % 11 == 0: t -= 1
+        c.P(x, y, 'hide', t)
+    trap_deck(c, 5, 20, 8, 23, 3, 28, paint, edge=2, legs=4)
+    for (x, y) in ((12, 11), (17, 14), (21, 11)):
+        c.P(x, y, 'ochre', 2); c.P(x + 1, y, 'ochre', 3)
+    done(c)
+
+
+@R.add('hide-frame', '가죽 펴는 틀(낮은 통나무 틀 안 가죽)', 2, 2, 'frame', tags=['가죽', '작업'], rules='작업터. 앞 한 칸을 비운다.')
+def _(c): _hide_frame(c)
+
+
+def _pots(c):
+    # 넓은 흙 단지: 큰 타원 아가리 속(어두운 안벽 + 바닥)이 위에서 7줄 넘게 들여다보인다, 몸은 짧고 배가 부르다
+    cx = 8
+    for y in range(8, 16):
+        k = (y - 8) / 7
+        half = 7.0 * (0.85 + 0.18 * math.sin(math.pi * min(1, k * 1.2)))
+        for x in range(int(cx - half), int(cx + half) + 1):
+            u = (x - (cx - half) + 0.5) / (2 * half + 1)
+            t = 3 + lit(u)
+            if y == 15: t = 1
+            c.P(x, y, 'ochre', max(0, min(4, t)))
+    c.ell(cx, 6.5, 7.6, 5.6, lambda x, y, dx, dy, d: ('ochre', 4 if dx < 0.3 else 3) if d > 0.78 else ('ochre', 1) if dy < -0.35 else ('ink', 2) if d > 0.3 else ('ink', 1))
     done(c)
 
 
 @R.add('pots', '흙 항아리 셋', 1, 1, 'container', tags=['항아리', '살림'], rules='움집 곁·동굴 안 벽가.')
-def _(c):
-    for (cx, by, r, h) in ((5, 14, 3.6, 8), (11, 14, 3.2, 7), (8, 15, 3, 5)):
-        for y in range(by - h, by + 1):
-            k = (y - (by - h)) / h
-            half = r * (0.75 + 0.35 * math.sin(math.pi * k))
-            for x in range(int(cx - half), int(cx + half) + 1):
-                u = (x - (cx - half) + 0.5) / (2 * half + 1)
-                c.P(x, y, 'ochre', max(0, min(4, 3 + lit(u))))
-        # 아가리(위에서 본 타원, 안 어둡게)
-        top = by - h
-        for x in range(int(cx - r * 0.7), int(cx + r * 0.7) + 1):
-            c.P(x, top - 1, 'ochre', 4); c.P(x, top, 'ink', 1); c.P(x, top + 1, 'ochre', 1)
-        c.P(int(cx - r * 0.7), top, 'ochre', 3); c.P(int(cx + r * 0.7), top, 'ochre', 2)
-        c.HL(int(cx - r * 0.5), by - h // 2, int(r), 'ochre', 1)
-    done(c)
+def _(c): _pots(c)
 
 
 @R.add('basket', '곡식 바구니', 1, 1, 'container', tags=['바구니', '살림', '채집'], rules='움집 곁·건조대 곁.')
 def _(c):
-    cx, top, by = 8, 4, 14
-    for y in range(top + 2, by + 1):
-        k = (y - top) / (by - top)
-        half = 6 - k * 1.5
+    # 넓은 바구니: 아가리 속에 담긴 열매·낟알이 위에서 보인다(속 깊이 5줄), 앞면 엮은 결
+    cx = 8
+    for y in range(7, 16):
+        k = (y - 7) / 8
+        half = 7.2 - k * 1.6
         for x in range(int(cx - half), int(cx + half) + 1):
             u = (x - (cx - half) + 0.5) / (2 * half + 1)
             t = 3 + lit(u) - (1 if (x + y) % 2 == 0 else 0)
-            if (y - top) % 3 == 0: t -= 1
+            if (y - 7) % 3 == 0: t -= 1
+            if y == 15: t = 1
             c.P(x, y, 'thatch', max(0, min(5, t)))
-    c.ell(cx, top + 2, 6, 2.6, lambda x, y, dx, dy, d: ('thatch', 5) if d > 0.6 else ('bloom', 2 if (x + y) % 2 else 3) if dy > -0.4 else ('thatch', 1))
+    c.ell(cx, 6, 7.4, 4.2, lambda x, y, dx, dy, d: ('thatch', 5 if dx < 0.3 else 4) if d > 0.66 else
+          ('bloom', 2 if (x + y) % 3 else 3) if (x * 3 + y) % 5 else ('feather', 2) if dy > -0.3 else ('thatch', 1))
     done(c)
 
 
@@ -267,15 +326,25 @@ def _(c):
     done(c)
 
 
-@R.add('spear-rack', '창 걸이(돌창)', 2, 1, 'frame', tags=['창', '사냥', '무기'], rules='족장 집·사냥꾼 움집 앞 벽가.')
-def _(c):
-    post(c, 2, 4, 15, w=3); post(c, 27, 4, 15, w=3)
-    beam(c, 1, 30, 5, th=3)
-    for k, x in enumerate((7, 11, 15, 19, 23)):
-        c.VL(x, 0, 15, 'bark', 4 if k % 2 else 3)
-        c.P(x, 0, 'basalt', 4); c.P(x - 1, 1, 'basalt', 3); c.P(x + 1, 1, 'basalt', 2); c.P(x, 1, 'basalt', 5); c.P(x, 2, 'basalt', 2)
-        c.P(x, 4, 'thatch', 3)
+def _spear_rack(c):
+    """창 평상(2×1): 낮은 통나무 테 평상(뒤가 좁다) 윗면에 털가죽을 깔고 돌창 세 자루를 비스듬히 눕혀 얹었다(촉은 오른쪽 뒤)."""
+    def paint(x, y, u, v):
+        t = 3 if v < 0.3 else 2 if u < 0.55 else 1
+        if (x * 3 + y) % 7 == 0: t -= 1
+        c.P(x, y, 'fur', max(0, t))
+    trap_deck(c, 2, 9, 6, 25, 3, 28, paint, edge=1, legs=2, leg_w=2)
+    for k, (x0, y0) in enumerate(((5, 4), (6, 6), (7, 8))):
+        for i in range(17):
+            x, y = x0 + i, y0 - i // 6
+            c.P(x, y, 'thatch', 5 if k % 2 == 0 else 4); c.P(x, y + 1, 'ink', 1)
+        x, y = x0 + 17, y0 - 3
+        c.P(x, y, 'basalt', 5); c.P(x + 1, y, 'basalt', 4); c.P(x + 1, y - 1, 'basalt', 3); c.P(x, y + 1, 'basalt', 2)
+        c.P(x0 + 3, y0 - 1, 'ochre', 3)
     done(c)
+
+
+@R.add('spear-rack', '창 평상(털가죽 위 돌창 셋)', 2, 1, 'low_furniture', tags=['창', '사냥', '무기'], rules='족장 집·사냥꾼 움집 앞 벽가.')
+def _(c): _spear_rack(c)
 
 
 @R.add('quern', '맷돌(갈판 + 갈돌)', 1, 1, 'low_furniture', tags=['맷돌', '살림', '곡식'], rules='움집 앞 작업터.')
@@ -304,20 +373,25 @@ def _(c):
 
 @R.add('log-seat', '통나무 의자', 2, 1, 'seat', tags=['의자', '모닥불'], rules='모닥불 둘레(불에서 한 칸 띄워).')
 def _(c):
-    for x in range(1, 31):
-        for y in range(5, 12):
-            t = 5 if y == 5 else 4 if y < 8 else 3 if y < 10 else 1
-            if y in (6, 7) and (x * 3) % 7 == 0: t = 3
-            c.P(x, y, 'bark', t)
-    c.ell(2.5, 8.5, 2.4, 3.5, lambda x, y, dx, dy, d: ('thatch', 4 if d < 0.4 else 3) if d < 0.75 else ('bark', 2))
-    c.ell(29.5, 8.5, 2.4, 3.5, lambda x, y, dx, dy, d: ('bark', 2))
-    for (x, y) in ((8, 12), (22, 12)): c.P(x, y, 'bark', 1)
+    # 반으로 쪼갠 통나무: 위에서 보이는 평평한 쪼갠 면(밝은 나무, 결) 4줄 + 둥근 껍질 앞면 + 양 끝 반달 단면
+    for x in range(2, 30):
+        for j, y in enumerate(range(4, 9)):
+            t = 5 if j == 0 else 4 if j < 4 else 3
+            if (x * 2 + j) % 7 == 0: t -= 1
+            c.P(x, y, 'thatch', t)
+        c.P(x, 3, 'bark', 4)
+        for j, y in enumerate(range(9, 13)):
+            c.P(x, y, 'bark', 4 if j == 0 else 3 if j < 2 else 2 if j < 3 else 1)
+    for ex, sh in ((1, 4), (30, 2)):
+        for y in range(3, 13): c.P(ex, y, 'bark', sh if 4 < y < 11 else sh - 1)
+    for (x, y) in ((8, 13), (23, 13)): c.P(x, y, 'bark', 1)
     done(c)
 
 
 @R.add('stone-seat', '돌 의자', 1, 1, 'seat', tags=['의자', '돌'], rules='모닥불·화톳불 둘레.')
 def _(c):
-    boulder(c, 8, 9, 6.5, 5.2, s=7, top=0.75); done(c)
+    slab(c, 8, 6.5, 6.8, 4.2, 4, mat='stone', s=7, rough=0.08)
+    done(c)
 
 
 # ═══════════════════════ 선돌·고인돌·토템 ═══════════════════════
@@ -341,78 +415,92 @@ def standing_stone(c, cx, top, bot, w, s=0, mat='stone', carve=False, clean=Fals
         c.ell(cx, top + 18, 2.4, 2, lambda x, y, dx, dy, d: ('ochre', 2) if d > 0.45 else None)
 
 
+def menhir_stone(c, cx, top, bot, w, s=0, carve=False):
+    """선돌: 꼭대기는 비스듬히 잘린 넓은 윗면 판(위에서 보인다, 가장자리 또렷), 몸은 앞면(왼쪽 빛)."""
+    n = NT[MI['stone']]
+    ry = 3.2
+    for y in range(int(top + ry), bot + 1):
+        k = (y - top) / max(1, bot - top)
+        half = w / 2 * (0.9 + 0.1 * k) + (0.5 if 0.25 < k < 0.7 else 0)
+        for x in range(int(round(cx - half)), int(round(cx + half)) + 1):
+            u = (x - (cx - half) + 0.5) / (2 * half + 1)
+            t = n - 4 + (1 if u < 0.3 else 0 if u < 0.65 else -1)
+            if rnd(x // 2, y // 3, s) < 0.12: t -= 1
+            c.P(x, y, 'stone', max(1, min(n - 1, t)))
+    for y in range(top, int(top + 2 * ry) + 1):
+        for x in range(int(cx - w / 2 - 1), int(cx + w / 2 + 2)):
+            dx = (x + 0.5 - cx) / (w / 2 + 0.3); dy = (y + 0.5 - top - ry) / ry
+            if dx * dx + dy * dy > 1: continue
+            t = n - 1 if dx + dy < -0.5 else n - 2 if dx < 0.5 else n - 3
+            if dy > 0.7: t = n - 2
+            c.P(x, y, 'stone', t)
+    for x in range(int(cx - w / 2), int(cx + w / 2) + 1):
+        ys = [y for y in range(int(top), int(top + 2 * ry) + 2) if c.get(x, y)]
+        if ys: c.P(x, max(ys) + 1, 'stone', n - 5)
+    if carve:
+        for (dx, dy) in ((0, 0), (1, 1), (0, 2), (-1, 3), (0, 4), (1, 5)): c.P(int(cx) + dx, top + 10 + dy, 'ochre', 2)
+        c.ell(cx, top + 20, 2.4, 2, lambda x, y, dx, dy, d: ('ochre', 2) if d > 0.45 else None)
+
+
 @R.add('menhir', '선돌', 1, 2, 'column', tags=['선돌', '돌', '의식'], rules='돌 둘레·길목·무덤 곁.')
 def _(c):
-    standing_stone(c, 8, 4, 29, 10, s=1); done(c)
+    menhir_stone(c, 8, 3, 29, 12, s=1); done(c)
 
 
 @R.add('menhir-tall', '큰 선돌(황토 무늬)', 1, 3, 'column', tags=['선돌', '돌', '의식'], rules='마을 입구·의식터.')
 def _(c):
-    standing_stone(c, 8, 3, 45, 12, s=2, carve=True); done(c)
+    menhir_stone(c, 8, 3, 45, 12, s=2, carve=True); done(c)
 
 
 @R.add('stone-circle', '돌 둘레(환상 열석)', 4, 3, 'structure', tags=['선돌', '의식', '돌 둘레'], rules='의식터 가운데. 가운데 칸은 걸을 수 있다(바닥 위층 조각).')
 def _(c):
-    cx, cy, rx, ry = 32, 26, 26, 14
+    cx, cy, rx, ry = 32, 27, 26, 13
+    # 가운데 다진 땅(타원) — 돌 둘레가 땅 위에 둥글게 놓였다는 것이 위에서 보인다
+    c.ell(cx, cy, rx - 3, ry - 2, lambda x, y, dx, dy, d: ('dirt', 4 if rnd(x, y, 2) > 0.1 else 3) if d < 0.92 else ('dirt', 3))
     order = sorted(range(10), key=lambda k: math.sin(2 * math.pi * k / 10))
     for k in order:
         a = 2 * math.pi * k / 10 + 0.15
         sx, sy = cx + math.cos(a) * rx, cy + math.sin(a) * ry
-        hgt = 14 + h32(k, 3, 4) % 5
-        standing_stone(c, sx, int(sy - hgt), int(sy), 7, s=k, clean=True)
+        hgt = 11 + h32(k, 3, 4) % 4
+        menhir_stone(c, sx, int(sy - hgt), int(sy), 7, s=k)
     done(c)
 
 
 @R.add('dolmen', '고인돌', 3, 2, 'structure', tags=['고인돌', '돌', '무덤'], rules='언덕·의식터 가장자리.')
 def _(c):
-    for x in (6, 36):
-        standing_stone(c, x + 3, 12, 30, 7, s=x)
-    # 덮개돌: 넓은 윗면(위에서 보인다) + 두꺼운 앞면
-    for y in range(3, 16):
-        for x in range(1, 47):
-            e = abs((x + 0.5 - 24) / 23)
-            if y < 3 + int(e ** 3 * 4) or y > 15 - int(e ** 3 * 3): continue
-            top = y < 11 - int(e ** 3 * 3)
-            u = x / 47
-            t = (6 if u < 0.4 else 5) if top else (3 if u < 0.4 else 2)
-            if top and (y == 3 + int(e ** 3 * 4)): t = 4
-            if not top and y == 11 - int(e ** 3 * 3): t = 5
-            if rnd(x // 3, y // 2, 8) < 0.1: t -= 1
-            c.P(x, y, 'stone', t)
+    for x in (8, 38):
+        menhir_stone(c, x, 13, 30, 6, s=x)
+    # 덮개돌: 넓고 울퉁불퉁한 윗면 판(이끼·금) + 앞 두께
+    slab(c, 24, 9, 22.5, 6.5, 4, mat='stone', s=5, rough=0.1)
+    for (x, y) in ((12, 7), (13, 7), (13, 8), (30, 10), (31, 10)): c.P(x, y, 'grass', 3)
+    c.line(20, 5, 24, 11, 'stone', 3)
     done(c)
 
 
 def totem(c, s=0, faces=('owl', 'beast', 'eye')):
-    """나무 토템 기둥: 추상 얼굴 셋을 층층이 새기고 황토·흰 물감으로 칠했다. 맨 위에 펼친 날개 판(윗면이 보인다)."""
-    x0, w = 4, 9
+    x0, w = 2, 12
     for y in range(10, 46):
         for i in range(w):
             u = (i + 0.5) / w
             c.P(x0 + i, y, 'bark', max(0, min(5, 3 + lit(u))))
     for k, kind in enumerate(faces):
-        y = 12 + k * 11
-        c.HL(x0, y + 9, w, 'bark', 1)
+        y = 15 + k * 10
+        c.HL(x0, y + 8, w, 'bark', 1)
+        cx = x0 + w / 2
         if kind == 'owl':
-            for (i, j) in ((2, 2), (6, 2)):
+            for (i, j) in ((3, 2), (8, 2)):
                 c.ell(x0 + i + 0.5, y + j + 0.5, 1.8, 1.8, lambda X, Y, dx, dy, d: ('bone', 5) if d > 0.4 else ('ink', 1))
-            c.P(x0 + 4, y + 4, 'ochre', 4); c.P(x0 + 4, y + 5, 'ochre', 3)
+            c.P(int(cx), y + 4, 'ochre', 4); c.P(int(cx), y + 5, 'ochre', 3)
         elif kind == 'beast':
-            c.HL(x0 + 1, y + 2, 3, 'ochre', 3); c.HL(x0 + 5, y + 2, 3, 'ochre', 3)
-            c.P(x0 + 2, y + 3, 'ink', 1); c.P(x0 + 6, y + 3, 'ink', 1)
-            for i in range(1, 8): c.P(x0 + i, y + 6, 'bone', 5 if i % 2 else 2)
+            c.HL(x0 + 2, y + 2, 3, 'ochre', 3); c.HL(x0 + 7, y + 2, 3, 'ochre', 3)
+            c.P(x0 + 3, y + 3, 'ink', 1); c.P(x0 + 8, y + 3, 'ink', 1)
+            for i in range(2, 10): c.P(x0 + i, y + 6, 'bone', 5 if i % 2 else 2)
         else:
-            c.ell(x0 + 4.5, y + 4, 3, 2, lambda X, Y, dx, dy, d: ('feather', 2) if d > 0.5 else ('bone', 5) if d > 0.15 else ('ink', 0))
-    # 날개 판(위)
-    for y in range(2, 11):
-        half = 3 + (y - 2) * 1.0 if y < 6 else 8 - (y - 6) * 0.5
-        for x in range(int(8.5 - half), int(8.5 + half) + 1):
-            u = (x - (8.5 - half)) / (2 * half + 1)
-            t = 4 if y < 7 else 2
-            if y < 7 and u > 0.6: t = 3
-            if (x + y) % 4 == 0 and y < 7: t -= 1
-            c.P(x, y, 'bark', t)
-    c.HL(1, 7, 15, 'feather', 2)
-    c.P(8, 1, 'bark', 4); c.P(9, 1, 'bark', 3)
+            c.ell(cx, y + 4, 3, 2, lambda X, Y, dx, dy, d: ('feather', 2) if d > 0.5 else ('bone', 5) if d > 0.15 else ('ink', 0))
+    cut_face(c, x0 + w / 2, 8, w / 2 + 0.4, 4.2, 'bark')
+    # 깃털은 단면 뒤 테에서 위로(단면은 가리지 않는다)
+    for (fx, lean) in ((4, -1), (8, 0), (12, 1)):
+        for j in range(4): c.P(fx + (lean * j) // 2, 4 - j, 'feather', 3 if j < 2 else 2)
     done(c)
 
 
@@ -424,22 +512,24 @@ def _(c): totem(c)
 def _(c): totem(c, s=3, faces=('beast', 'eye', 'owl'))
 
 
-@R.add('skull-pole', '머리뼈 장대', 1, 2, 'column', tags=['머리뼈', '주술', '경계'], rules='마을 경계·무당 천막 앞·사냥터 입구.')
-def _(c):
-    post(c, 7, 12, 30, w=3)
-    # 뿔 짐승 머리뼈(위에서 보이는 둥근 정수리)
-    for y in range(4, 13):
+def _skull_pole(c):
+    post_top(c, 3, 1, 31, w=10, ry=4.2)
+    arc_band(c, 3, 11, 10, 'thatch', 4)
+    for y in range(13, 22):
         for x in range(3, 14):
-            dx = (x + 0.5 - 8.5) / 5; dy = (y + 0.5 - 8) / 4.4
+            dx = (x + 0.5 - 8.5) / 4.8; dy = (y + 0.5 - 17.5) / 3.8
             if dx * dx + dy * dy > 1: continue
-            t = 5 if dy < -0.35 else 4 if dx < 0.3 else 3
-            c.P(x, y, 'bone', t)
-    for (x, y) in ((6, 8), (11, 8)): c.P(x, y, 'ink', 0); c.P(x, y + 1, 'ink', 1)
-    c.P(8, 11, 'bone', 1); c.P(9, 11, 'bone', 1)
-    for (pts, t) in (([(3, 6), (1, 4), (1, 1), (2, 0)], 4), ([(13, 6), (15, 4), (15, 1), (14, 0)], 3)):
+            c.P(x, y, 'bone', 5 if dy < -0.25 and dx < 0.4 else 4 if dx < 0.35 else 3)
+    for (x, y) in ((6, 17), (11, 17)): c.P(x, y, 'ink', 0); c.P(x, y + 1, 'ink', 1)
+    c.P(8, 20, 'bone', 1); c.P(9, 20, 'bone', 1)
+    for (pts, t) in (([(4, 15), (2, 13), (1, 11)], 4), ([(13, 15), (15, 13), (15, 11)], 3)):
         for a, b in zip(pts, pts[1:]): c.line(a[0], a[1], b[0], b[1], 'bone', t)
-    for j in range(4): c.P(5, 14 + j, 'feather', 3 - j // 2); c.P(11, 14 + j, 'feather', 2)
+    for j in range(4): c.P(5, 23 + j, 'feather', 3 - j // 2); c.P(11, 23 + j, 'feather', 2)
     done(c)
+
+
+@R.add('skull-pole', '머리뼈 장대(기둥 앞에 묶은 머리뼈)', 1, 2, 'column', tags=['머리뼈', '주술', '경계'], rules='마을 경계·무당 천막 앞·사냥터 입구.')
+def _(c): _skull_pole(c)
 
 
 @R.add('drum', '가죽 북', 1, 1, 'round_body', tags=['북', '의식', '광장'], rules='화톳불 곁.')
@@ -550,33 +640,59 @@ def _(c):
     c.outline(bottom=('ink', 1))
 
 
-@R.add('longneck', '긴 목 공룡 뼈대(누운 화석)', 6, 3, 'debris', tags=['화석', '공룡', '뼈대'], rules='화석 계곡의 큰 볼거리. 통째로 막힌다 — 둘레를 걸어 돈다.')
+@R.add('longneck', '긴 목 공룡 뼈대(땅에 누운 화석, 위에서 본 모습)', 6, 3, 'debris', tags=['화석', '공룡', '뼈대'], rules='화석 계곡의 큰 볼거리. 통째로 막힌다 — 둘레를 걸어 돈다.')
 def _(c):
-    # 등뼈 곡선(긴 목 → 몸 → 꼬리), 척추 마디마다 돌기 + 갈비 + 다리뼈
-    spine = []
-    for k in range(80):
-        t = k / 79
-        x = 4 + t * 88
-        y = 30 - 18 * math.exp(-((t - 0.12) / 0.12) ** 2) - 6 * math.sin(t * 3.14) + 4 * t
-        spine.append((x, y))
-    for k, (x, y) in enumerate(spine):
-        r = 1 + (1 if 0.2 < k / 79 < 0.75 else 0) + (1 if 0.3 < k / 79 < 0.6 else 0)
+    """누운 긴 목 공룡 뼈대를 위에서 내려다본 모습(6×3): 등뼈가 S 자로 누웠고 갈비는 양옆으로 벌어졌다,
+    네 다리뼈는 몸 양옆으로 뻗고, 목 끝에 머리뼈, 꼬리는 가늘어진다. 군데군데 흙에 묻혀 끊긴다."""
+    W, H = 96, 48
+    # 반쯤 드러난 흙 구덩이 자국(뼈 밑 어두운 흙 테두리)
+    pts = []
+    for k in range(120):
+        t = k / 119
+        x = 6 + t * 86
+        y = 24 + 7 * math.sin(t * 5.2 + 0.4) * (1 - 0.4 * t)
+        pts.append((x, y))
+    def body_r(t): return 1.2 + 6.5 * math.exp(-((t - 0.52) / 0.2) ** 2)
+    for k, (x, y) in enumerate(pts):
+        t = k / 119
+        r = body_r(t) + 2.5
+        for yy in range(int(y - r), int(y + r) + 1):
+            for xx in range(int(x - 1), int(x + 2)):
+                if 0 <= xx < W and 0 <= yy < H and not c.get(xx, yy): c.P(xx, yy, 'dirt', 2 if rnd(xx, yy, 4) > 0.2 else 1)
+    # 갈비(몸통 구간, 등뼈에서 양옆으로 휘어 벌어진다)
+    for k in range(48, 80, 4):
+        x, y = pts[k]; t = k / 119
+        L = body_r(t) + 3
+        for side in (-1, 1):
+            for j in range(int(L) + 1):
+                xx = round(x + j * 0.35 * (1 if k > 64 else -1) * 0.5 + (j * j) * 0.02 * (1 if k > 64 else -1))
+                yy = round(y + side * j)
+                c.P(xx, yy, 'bone', 5 if side < 0 and j < L * 0.6 else 4 if j < L * 0.8 else 3)
+                c.P(xx + 1, yy, 'bone', 2)
+    # 다리뼈 넷(어깨·엉덩이에서 앞뒤 대각으로)
+    for k, side, dx in ((54, -1, -6), (54, 1, -6), (76, -1, 5), (76, 1, 5)):
+        x, y = pts[k]
+        x1, y1 = x + dx, y + side * 15
+        bone(c, round(x), round(y + side * 4), round(x1), round(y1), t=4, th=2)
+        for (fx, fy) in ((-1, 1), (0, 2), (1, 1)): c.P(round(x1) + fx * 2, round(y1) + side * fy, 'bone', 3)
+    # 등뼈 마디(위에서 본 마디 둥근 혹 + 마디 사이 틈)
+    for k, (x, y) in enumerate(pts):
+        t = k / 119
+        r = 1 if t < 0.32 or t > 0.82 else 2
+        if k % 4 == 3: continue
         for d in range(-r, r + 1):
-            c.P(round(x), round(y) + d, 'bone', 5 if d < 0 else 4 if d == 0 else 2)
-        if k % 3 == 0: c.P(round(x), round(y) - r - 1, 'bone', 5); c.P(round(x), round(y) - r - 2, 'bone', 4)
-    # 머리
-    hx, hy = spine[0]
-    c.ell(hx + 1, hy - 2, 4, 2.6, lambda X, Y, dx, dy, d: ('bone', 5 if dy < 0 else 3)); c.P(round(hx) + 2, round(hy) - 2, 'ink', 0)
-    # 갈비
-    for k in range(26, 56, 3):
-        x, y = spine[k]
-        c.line(round(x), round(y) + 2, round(x) - 3, round(y) + 13, 'bone', 5)
-        c.line(round(x) + 1, round(y) + 2, round(x) - 2, round(y) + 13, 'bone', 3)
-        c.line(round(x) + 2, round(y) + 2, round(x) - 1, round(y) + 13, 'bone', 1)
-    # 다리뼈 넷
-    for k in (30, 36, 50, 56):
-        x, y = spine[k]
-        bone(c, round(x), round(y) + 4, round(x) + 3, 43, t=4, th=3)
+            c.P(round(x), round(y) + d, 'bone', 5 if d < 0 else 4 if d == 0 else 3)
+    # 머리뼈(목 끝, 위에서 본 길쭉한 머리, 눈구멍 둘)
+    hx, hy = pts[0]
+    c.ell(hx - 1, hy, 4.2, 3, lambda X, Y, dx, dy, d: ('bone', 5 if dx + dy < -0.3 else 4 if dx < 0.4 else 3))
+    c.P(round(hx) - 2, round(hy) - 1, 'ink', 0); c.P(round(hx) - 2, round(hy) + 1, 'ink', 0)
+    c.P(round(hx) - 5, round(hy), 'bone', 3)
+    # 발굴 흔적: 작은 뼈 조각 몇·묻혀 끊긴 등뼈 두 군데
+    for (x, y) in ((30, 10), (62, 40), (84, 12)): bone(c, x, y, x + 4, y + 1, t=3, knob=False, th=1)
+    for k in (40, 96):
+        x, y = pts[k]
+        for d in range(-2, 3):
+            for e in range(-1, 2): c.P(round(x) + e, round(y) + d, 'dirt', 3 if d < 0 else 2)
     c.outline(bottom=('ink', 1))
 
 
@@ -632,15 +748,16 @@ ANIM.append(('tarpit', '타르 웅덩이', ids, 3))
 
 
 def vent(c, f=0):
-    # 갈라진 바위 테 구멍(위에서 보이는 아가리) + 피어오르는 김
-    c.ell(8, 12, 6.5, 3.6, lambda x, y, dx, dy, d: ('basalt', 4 if dy < -0.3 else 3 if dx < 0.3 else 2) if d > 0.45 else ('lava', 2 if d < 0.15 else 1) if dy > -0.2 else ('basalt', 0))
-    c.HL(4, 15, 9, 'basalt', 1)
-    for k in range(5):
-        y = 9 - k * 2 - (f % 3)
-        if y < 0: continue
-        r = 1.4 + k * 0.6
-        cx = 8 + math.sin(k + f) * 1.2
-        c.ell(cx, y, r, r * 0.8, lambda x, yy, dx, dy, d: ('smoke', 4 if dx + dy < -0.3 else 3 if d < 0.6 else 2))
+    # 땅에 뚫린 분화구: 큰 타원 테(밝은 윗면 띠가 한 바퀴) 안쪽 — 뒤 안벽 밝게·앞 안벽 어둡게·바닥 빛나는 용암. 김은 뒤 테 왼쪽 위로 작게.
+    c.ell(8, 9, 7.8, 5.8, lambda x, y, dx, dy, d: ('basalt', 5 if dx + dy < -0.3 else 4 if dx < 0.4 else 3) if d > 0.62 else
+          ('basalt', 3) if dy < -0.3 else ('lava', 3 if d < 0.1 else 2) if d < 0.3 else ('basalt', 1))
+    for x in range(2, 15):
+        if c.get(x, 15): c.P(x, 15, 'basalt', 1)
+    for k in range(2):
+        y = 2 - k * 2 - (f % 2)
+        r = 1.6 + k * 0.5
+        cx = 5 + k + (f % 3) * 0.6
+        c.ell(cx, y, r, r * 0.75, lambda x, yy, dx, dy, d: ('smoke', 4 if dx + dy < -0.3 else 3 if d < 0.6 else 2))
 
 
 ids = []
@@ -716,9 +833,9 @@ def _(c): bridge_tile(c, False)
 
 @R.add('bridge-post', '다리 기둥(밧줄 감은 말뚝 한 쌍)', 1, 2, 'column', tags=['다리', '밧줄'], rules='밧줄 다리 양 끝 둑(땅) 칸에 위아래로 하나씩.')
 def _(c):
-    post(c, 6, 4, 30, w=4)
-    for y in (9, 12, 15): c.HL(5, y, 6, 'thatch', 4); c.HL(5, y + 1, 6, 'thatch', 2)
-    c.line(10, 10, 15, 13, 'thatch', 3)
+    post_top(c, 4, 4, 30, w=8, ry=3.6)
+    for y in (16, 19, 22): c.HL(4, y, 8, 'thatch', 4); c.HL(4, y + 1, 8, 'thatch', 2)
+    c.line(12, 17, 15, 20, 'thatch', 3)
     done(c)
 
 
@@ -758,15 +875,11 @@ def _(c):
 
 @R.add('palisade', '통나무 울타리(한 칸)', 1, 2, 'column', tags=['울타리', '통나무', '마을'], rules='마을 둘레 동서 울타리. 칸마다 이어 놓는다(사이 틈은 길).')
 def _(c):
-    for k, x in enumerate((0, 4, 8, 12)):
-        top = 4 + (h32(k, 1, 9) % 3)
-        for y in range(top + 3, 31):
-            for i in range(4):
-                c.P(x + i, y, 'bark', 4 if i == 0 else 3 if i == 1 else 2 if i == 2 else 1)
-        for i in range(4):
-            c.P(x + i, top, 'bark', 4); c.P(x + i, top + 1, 'thatch', 3 if i < 2 else 2); c.P(x + i, top + 2, 'bark', 5 if i < 3 else 3)
-        c.P(x + 1, top + 1, 'thatch', 4)
-    c.HL(0, 14, 16, 'thatch', 3); c.HL(0, 15, 16, 'thatch', 1)
+    for k, x in enumerate((0, 8)):
+        top = 3 + (h32(k, 1, 9) % 3)
+        post_top(c, x, top, 31, w=8, ry=3.6)
+    for y, t in ((17, 4), (18, 2), (25, 4), (26, 2)):
+        for x in range(16): c.P(x, y, 'thatch', t if x % 4 else t - 1)
     done(c)
 
 

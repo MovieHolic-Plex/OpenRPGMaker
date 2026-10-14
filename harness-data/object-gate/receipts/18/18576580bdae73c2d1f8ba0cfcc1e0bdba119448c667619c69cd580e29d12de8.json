@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "18576580bdae73c2d1f8ba0cfcc1e0bdba119448c667619c69cd580e29d12de8",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "prehistoric stone-age ash",
+ "label": "prehistoric/ph-ash",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ash ground terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ash terrain ground surface spanning the entire 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4383
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ground texture",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 ash ground terrain tile viewed top-down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3501
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ground texture",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting ash/dust ground seen from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3037
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ash ground terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ash/stone ground terrain texture covering the full 16x16 tile, viewed top-down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2612
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.789Z",
+ "cells": {
+  "16": [
+   "23c3dbe3cd5d5d89"
+  ],
+  "24": [
+   "1db7442af24f0a59",
+   "7712415366234dd2",
+   "a83b5839ac2fd62b",
+   "a8ab2e337240925a",
+   "bfab925f98936f91",
+   "e3733379b041125b"
+  ],
+  "32": [
+   "4cc333b935616143",
+   "6b3bd3636ad6a173",
+   "80b89aba836e3aa0",
+   "8138974b37a59188",
+   "8994813451724fd1",
+   "c2a3b34b74cdbfd5"
+  ],
+  "48": [
+   "06461ae8efa97dee",
+   "5645b2035fc53e81",
+   "6ea8758a64bbf59e",
+   "a3d2cd80cc7bc483",
+   "ba01f264ce815458",
+   "c29954ebbd2408cc"
+  ]
+ }
+}

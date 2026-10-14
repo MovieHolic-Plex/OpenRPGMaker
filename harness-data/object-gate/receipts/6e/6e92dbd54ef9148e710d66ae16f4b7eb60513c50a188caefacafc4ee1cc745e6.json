@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6e92dbd54ef9148e710d66ae16f4b7eb60513c50a188caefacafc4ee1cc745e6",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "prehistoric stone-age palisade",
+ "label": "prehistoric/ph-palisade",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden palisade logs",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tops of the vertical logs show foreshortened elliptical cut faces visible from above across rows 6-10 (approx. 5 pixel rows).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3753
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "two lashed wooden palisade logs",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tops of the two vertical logs show clear, foreshortened cut cross-sections (rows 6-10, ~5 rows tall) rendered in lighter wood tones with visible end-grain, correctly angled for 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4805
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two bound wooden logs / palisade section",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tops of both logs clearly show their top foreshortened end surfaces (rows 6-10, approx 5 rows tall) angled toward the camera.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4418
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "palisade logs with caps and horizontal bindings",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The palisade posts and their caps/tops are drawn in pure front elevation with no visible horizontal top surface seen from above. The horizontal lashings are straight horizontal 2-pixel bars with no top face, and the bottom ends on a flat horizontal line.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9614
+  }
+ ],
+ "decidedAt": "2026-10-14T00:42:49.786Z",
+ "cells": {
+  "16": [
+   "e020b85868c310f5",
+   "fc71c7fba708773d"
+  ],
+  "24": [
+   "07ace4b640f43373",
+   "2b8656d3683567cb",
+   "73b724d2ff1270fd",
+   "7a0b305a8d7c4ac2",
+   "86bb2093c3e127df",
+   "a07de1a0e8019d8f",
+   "a871bf3c4be20d3a",
+   "af0101095efb3743",
+   "b1dac3624c2d2474",
+   "cb327bf3e8140b71",
+   "d3a73c1c8d2fa926",
+   "fa324491e2ae813d"
+  ],
+  "32": [
+   "b21e52130697cbf0",
+   "c636b89d14bda1b6",
+   "f9dfe8d76673965c"
+  ],
+  "48": [
+   "219497d9576d8809",
+   "625b43f2c5d67362",
+   "7af083534ec25f08",
+   "b1963cbfe79b733d",
+   "e95f7ee4b33ab390",
+   "f7d8c36f95dcfd7e"
+  ]
+ }
+}

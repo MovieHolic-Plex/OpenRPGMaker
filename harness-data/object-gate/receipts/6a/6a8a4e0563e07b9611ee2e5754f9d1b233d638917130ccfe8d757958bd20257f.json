@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6a8a4e0563e07b9611ee2e5754f9d1b233d638917130ccfe8d757958bd20257f",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "prehistoric stone-age menhir",
+ "label": "prehistoric/ph-menhir",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "standing stone menhir",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the standing stone is visible from rows 4 to 8 (about 5 rows) in a lighter stone tone, foreshortened from above before transitioning to the vertical south face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3510
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone menhir / standing stone pillar",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top end of the menhir is rendered as a foreshortened top surface spanning rows 4-8 (5 pixel rows), illuminated brightly from above and separated from the darker vertical front face (rows 10-29) by a distinct transition boundary.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4482
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "standing stone menhir",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the stone is clearly rendered in 3/4 view across rows 4 to 8 (approx 5 pixel rows) with lighter top-down illumination above the front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4511
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "prehistoric stone menhir",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The menhir is drawn in flat front elevation with an arched top rim (rows 3-4) and vertical sides running straight down. There is no visible horizontal top surface or foreshortened top plane shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7629
+  }
+ ],
+ "decidedAt": "2026-10-14T00:42:49.785Z",
+ "cells": {
+  "16": [
+   "316dbf5928da3405",
+   "8a27b9fc10a8f20a"
+  ],
+  "24": [
+   "39d732a6e2fe6d99",
+   "5b15a32129254612",
+   "5fdd556c00394b70",
+   "7210ee8ec18b2265",
+   "9db313c38e95885b",
+   "a0755417a5be6582",
+   "b20c1f6bcc744937",
+   "cf4e8f3dffac3d3a",
+   "d10e0c3643acc002",
+   "dc69c7913f7b7d7f",
+   "e64827b22fcd5d68",
+   "f2fe0785ed772d7b"
+  ],
+  "32": [
+   "663f1aae2b3d0dc5",
+   "94631fc4ca400952",
+   "9cb7cf8d97abf5fb"
+  ],
+  "48": [
+   "29a0fbba8961b5fa",
+   "4f026f636033878c",
+   "64ee7e9f12379635",
+   "abd7f9059a25f0b0",
+   "bbe8e40272e3f3ea",
+   "f43fd1716f416fde"
+  ]
+ }
+}

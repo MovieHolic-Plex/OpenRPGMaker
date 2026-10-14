@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f55bf2262b66f26b5825eb71bfe0477bcba1a3a98691e68c8f9733cf620603e8",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "prehistoric stone-age granary",
+ "label": "prehistoric/ph-granary",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "thatched granary hut on wooden stilts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The granary is drawn in a pure front/side elevation view suitable for a 2D side-scroller: the roof eaves (rows 14-16), thatched body base (row 25), wooden platform (rows 26-28), and ladder rungs are all drawn as perfectly flat horizontal lines with no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5760
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "thatched granary hut on wooden stilt platform",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The granary, its domed roof tiers, cylindrical woven body, platform, and ladder are drawn in pure front elevation with straight horizontal bands and base lines, showing no curved 3/4 elliptical foreshortening or visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4719
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "thatched stilt granary",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The granary is drawn in a pure front architectural elevation. The platform deck has no top surface visible (only the 2px front edge of the plank is drawn), the cylindrical woven body has a perfectly flat horizontal base, and all bands across the dome roof are drawn as straight horizontal lines rather than downward-curving ellipses expected in 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6984
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "thatched granary structure on wooden stilts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure front elevation: all circular horizontal features (roof tier dividing lines, granary base, platform beam, ladder rungs) are flat, straight horizontal lines with no curvature or top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6072
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.797Z",
+ "cells": {
+  "16": [
+   "13aa753e437f703b",
+   "39d46a11144c1066",
+   "5897d6f92aa82195",
+   "6325c133c84a07a1",
+   "6e99307c1ef90b60",
+   "b590c3a513f5d02f"
+  ],
+  "24": [
+   "1b3de9922b0fb136",
+   "252989be503deee4",
+   "3c63e3fdb2895c57",
+   "4e9e0ed5f4654089",
+   "54aa5a4da69617bb",
+   "852cc42363eb964b",
+   "917df3789a0b227b",
+   "9795d1980b5f7481",
+   "a40724f8918c2fac",
+   "c40056d35f2e4d10",
+   "dfcda5c7262080be",
+   "ee17a1513205a09b"
+  ],
+  "32": [
+   "10242a2710e2d38f",
+   "53af0068f656f600",
+   "b3e62d4ff5486d01",
+   "b766606e7e46ba59"
+  ],
+  "48": [
+   "01dcbd3962da9d70",
+   "9cc323c28d3da53b",
+   "b9a666d4faf26551"
+  ]
+ }
+}

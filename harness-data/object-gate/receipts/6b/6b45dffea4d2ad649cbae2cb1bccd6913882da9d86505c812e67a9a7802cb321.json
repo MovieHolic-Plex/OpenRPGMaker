@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6b45dffea4d2ad649cbae2cb1bccd6913882da9d86505c812e67a9a7802cb321",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "prehistoric stone-age water",
+ "label": "prehistoric/ph-water-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water surface tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain water surface spanning the full 16x16 tile with horizontal ripple details.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2922
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water surface tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a water surface viewed from above with ripple/wave details spanning the 16x16 grid.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3187
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water surface tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile representing water surface with horizontal ripple marks viewed from above, covering the full 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5517
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water surface tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain water surface tile viewed from the top-down perspective with horizontal wave/ripple highlights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2870
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.790Z",
+ "cells": {
+  "16": [
+   "d5930ce697c15431"
+  ],
+  "24": [
+   "0d8704847fae520e",
+   "5a7390bd446a6abf",
+   "96dbbb5ae08e5039",
+   "98d3f371ed1e43bb",
+   "ab660012a248c88a",
+   "bdc3091da5459ac9"
+  ],
+  "32": [
+   "233f692328924f00",
+   "4b91b2abee62ab08",
+   "ae98d2dffe8e8180",
+   "b649fb4dc88b0f46",
+   "e04bb98ad0cf3b63",
+   "e51d953867a5e846"
+  ],
+  "48": [
+   "135c54fa9ead6e37",
+   "4700d97b1fd3d178",
+   "4e862b5fd3f74f77",
+   "604c5004966a2fb3",
+   "a7aa80b030fa1a9f",
+   "b99798eff17bb8bf"
+  ]
+ }
+}

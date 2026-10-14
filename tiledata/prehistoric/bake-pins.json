@@ -671,7 +671,22 @@
 "out/ph-mud-b/0.0": 735,
 "out/ph-ash-b/0.0": 736,
 "out/ph-stone-b/0.0": 737,
-"out/ph-path-b/0.0": 738
+"out/ph-path-b/0.0": 738,
+"out/ph-hut-log/0.0": 739,
+"out/ph-hut-log/1.0": 740,
+"out/ph-hut-log/2.0": 741,
+"out/ph-hut-log/0.1": 742,
+"out/ph-hut-log/1.1": 743,
+"out/ph-hut-log/2.1": 744,
+"out/ph-hut-log/1.2": 745,
+"out/ph-shaman-tent/0.1": 746,
+"out/ph-shaman-tent/2.1": 747,
+"out/ph-dolmen/1.1": 748,
+"out/ph-longneck/2.0": 749,
+"out/ph-longneck/3.0": 750,
+"out/ph-longneck/4.0": 751,
+"out/ph-longneck/5.0": 752,
+"out/ph-longneck/0.2": 753
 },
 "strips": {
 "out/ph-swamp/0.0": [

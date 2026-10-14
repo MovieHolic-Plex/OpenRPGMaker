@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "62963df2cf383c9376d1dffcf536b64e7fa314a224a78314c885c1bbfa708534",
+ "width": 32,
+ "height": 16,
+ "kind": "frame",
+ "name": "prehistoric stone-age spit roast",
+ "label": "prehistoric/ph-spit-roast",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden spit frame with roasting meat over fire pit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The spit frame is drawn in flat front elevation: the horizontal spit bar is a single 1px black line with no visible top surface, and the two upright support poles show only front faces with no perspective depth or top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5254
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden spit roast frame over a fire pit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The spit frame is drawn entirely in flat 2D front elevation. The horizontal spit bar is rendered as a 1-pixel black line with no visible top surface (0 source pixel rows), and the vertical uprights have flat profiles with no foreshortened top or base surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4224
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "spit frame with roasted meat over fire pit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden frame, spit rod, meat, and stone hearth are all drawn in pure flat front elevation. Neither the horizontal spit bar nor the side posts show any foreshortened top surfaces (0 px).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3612
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden spit frame and roasting meat",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The spit crossbar is drawn as a single 1px black line with no top surface, and the two upright wooden posts are flat 2D vertical bars shown in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4680
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.801Z",
+ "cells": {
+  "16": [
+   "44b322870cdf0478",
+   "8e19590328e290b8"
+  ],
+  "24": [
+   "05d12ed9df3a792f",
+   "05f3d68f958c8a77",
+   "06025311e9a8825d",
+   "0fc82358ebf32fee",
+   "13ee25ec87672dad",
+   "17ea1e1453f60c06",
+   "2c3b8965aaf9048e",
+   "32fc60a561e664f4",
+   "3c4fd53546e4ee6e",
+   "53fae536d3d7ce06",
+   "5ec25605361c807f",
+   "8f8ee966f45f2661"
+  ],
+  "32": [
+   "34b88a944508783d",
+   "4a2b65710f2c848d"
+  ],
+  "48": [
+   "380dec3b616fc6b6",
+   "5c8ce0167b78e7ae",
+   "9f1109784bf1e4b5",
+   "d6a4c817ece7fb23",
+   "e6dfc42414773954",
+   "fbc63bc499d9c857"
+  ]
+ }
+}

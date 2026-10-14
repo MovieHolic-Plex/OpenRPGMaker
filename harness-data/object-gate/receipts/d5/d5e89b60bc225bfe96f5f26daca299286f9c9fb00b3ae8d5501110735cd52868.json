@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d5e89b60bc225bfe96f5f26daca299286f9c9fb00b3ae8d5501110735cd52868",
+ "width": 16,
+ "height": 32,
+ "kind": "organic",
+ "name": "prehistoric stone-age stalagmite",
+ "label": "prehistoric/ph-stalagmite",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stalagmite spire",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stalagmite is drawn as a flat 2D side/front elevation silhouette with vertical tiers and a flat black tip; it exhibits no visible top surfaces or top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3429
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stalagmite rock pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stalagmite is drawn in straight side/front elevation with no top-down foreshortened surfaces on any ledges, tips, or at the base, which terminates in a flat straight line on row 31.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3538
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tall rock stalagmite",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stalagmite is drawn in straight side elevation with a completely flat horizontal bottom baseline at row 30 and vertical stacked tiers showing no top surfaces viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5395
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stalagmite spire and rocky base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stalagmite is drawn as a purely flat side/front elevation. The spire and tiered rocky ledges show no foreshortened top surfaces, and the base sits flat along the bottom edge without ground contact curvature or top-down depth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4273
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.810Z",
+ "cells": {
+  "16": [
+   "54132182b827d7a5",
+   "5701e5618d978f06"
+  ],
+  "24": [
+   "09d77c7e986333b1",
+   "18c3568c5dd8fee7",
+   "19e9438c1b66e649",
+   "27c306495ec20308",
+   "3626faa84423b29a",
+   "56296b79783c19c2",
+   "6f5c56e3e4453c0b",
+   "7c4d8c23cad6413e",
+   "96513f390442bcce",
+   "b3561d9c284f2bdf",
+   "b7dfb40a205492ad",
+   "d702d8ee5f851a43"
+  ],
+  "32": [
+   "1d273ab622476f6c",
+   "d248b0cd43d0e720",
+   "da8c6095dccccb86"
+  ],
+  "48": [
+   "286e919803a349bb",
+   "36333d81504eabaf",
+   "4c7dc0828fc619f1",
+   "4f4ca1fef15bd8a7",
+   "b4f90f63417b8d26",
+   "f11fa1e916ea8c8d"
+  ]
+ }
+}

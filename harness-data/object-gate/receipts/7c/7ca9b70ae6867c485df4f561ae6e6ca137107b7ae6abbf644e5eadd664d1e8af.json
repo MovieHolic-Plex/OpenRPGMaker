@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7ca9b70ae6867c485df4f561ae6e6ca137107b7ae6abbf644e5eadd664d1e8af",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "prehistoric stone-age mushrooms",
+ "label": "prehistoric/ph-mushrooms",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mushroom cap and stem",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mushrooms are drawn in a flat side/front elevation profile (resembling a side-scroller asset) with vertical stems and a profile cap silhouette, showing no foreshortened top surface visible from a 45-degree downward angle.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7886
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "mushroom cap and stem",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mushroom is drawn in a pure 2D side-view/front elevation typical of platformers. The cap underside is a completely straight horizontal line (rows 8-9) with the stem extending straight down, showing no foreshortened circular/elliptical cap top or 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7534
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "mushroom cap",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mushroom is drawn in side profile / front elevation: the cap has a flat horizontal bottom edge (rows 8-9) with a straight vertical stalk beneath, showing no 3/4 perspective foreshortening or rounded elliptical underside.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8031
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "mushroom cap and stem",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mushroom is drawn in a 2D side-scroller profile/elevation with vertical stems and a side silhouette of the cap, lacking a 3/4 top-down foreshortened surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5641
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.798Z",
+ "cells": {
+  "16": [
+   "674012a2f1ef64a1"
+  ],
+  "24": [
+   "07e6fbd0b2ab57e7",
+   "0cb17c07a6f7c1ba",
+   "3b261c1578ea0dcb",
+   "58620ee0975b4a61",
+   "9e2852a189754056",
+   "ad267e8a82b18928"
+  ],
+  "32": [
+   "3c0a0e74f42a44cf",
+   "48ea7fbd9f358c0a",
+   "5deab7b9d4e0f782",
+   "99af26f677ab6b01",
+   "b4faea441834c493",
+   "e19541ac09a14e0b"
+  ],
+  "48": [
+   "0c0c2c2f37d97892",
+   "1abc4d1c4890fbb6",
+   "3ad43bbd0e86a1ee",
+   "6e4e0ed2099fa140",
+   "8bc4763c5886911e",
+   "bc96a78cfca90b72"
+  ]
+ }
+}

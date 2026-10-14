@@ -362,11 +362,7 @@ def _(c):
     c.P(11, 9, 'bloom', 3); c.P(12, 9, 'bloom', 2); c.P(11, 8, 'bone', 5)
 
 
-@R.add('flowers', '들꽃 덧그림', 1, 1, 'flat', tags=['꽃', '풀'], rules='풀밭 위층 덧그림. 드문드문.')
-def _(c):
-    for (x, y, m) in ((3, 4, 'bloom'), (10, 3, 'feather'), (6, 9, 'bloom'), (12, 11, 'bloom'), (2, 13, 'feather'), (9, 14, 'bloom')):
-        tt = 3 if m == 'bloom' else 3
-        c.P(x, y, m, tt); c.P(x + 1, y, m, tt - 1); c.P(x, y + 1, 'grass', 1); c.P(x - 1, y, m, tt - 1); c.P(x, y - 1, m, tt)
+# 들꽃 덧그림(flowers)은 뺐다 — object-gate 에서 «flat(깔개·바닥 무늬)» 종류가 아니라고 판정됐다(2026-10-14). 풀밭 무늬(grass bloom 점)로 대신한다.
 
 
 @R.add('footprints', '큰 짐승 발자국(세 발가락)', 1, 1, 'flat', tags=['발자국', '공룡', '흙'], rules='흙·진흙 바닥 덧그림. 줄지어 두세 개.')

@@ -16,6 +16,10 @@ OUT = os.path.join(HERE, '..', '..', '..', 'tiledata', 'prehistoric')
 EN = {
     'hut': 'round prehistoric hut', 'tipi': 'hide tipi tent', 'cave': 'cave entrance in rocky hill', 'bone-hut': 'mammoth bone hut',
 }
+# 낱말만으로 잘못 읽히는 조각(「rack」= 세운 걸이로 읽힌다)에 실제 생김새를 적는다. 이미 받은 영수증의 이름은 바꾸지 않는다.
+DESC = {
+    'spear-rack': 'low log bench with a fur pad and spears lying on top',
+}
 only = set(sys.argv[1:])
 for g, R in REGS.items():
     if only and g not in only: continue
@@ -23,7 +27,8 @@ for g, R in REGS.items():
         if it['id'].startswith('w-'): continue
         if g == 'interior' and it['id'].startswith(('wall-', 'paint-', 'ceil')): continue
         png = os.path.abspath(os.path.join(OUT, g, '_gate', 'ph-%s.png' % it['id']))
-        name = 'prehistoric stone-age ' + re.sub(r'-f\d+$', '', it['id']).replace('-', ' ')
+        base = re.sub(r'-f\d+$', '', it['id'])
+        name = 'prehistoric stone-age ' + DESC.get(base, base.replace('-', ' '))
         print(json.dumps(dict(png=png, kind=it['kind'], name=name, label='prehistoric/ph-' + it['id'])))
     if g == 'terrain' or (g == 'interior' and 'interior' in REGS):
         d = os.path.join(OUT, g, '_gate_assembled')

@@ -1,0 +1,145 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "84b35fedd1a4ac0178a22624b70f4e4b71d9ef51865bfbd3dd0b83352d14a230",
+ "width": 64,
+ "height": 48,
+ "kind": "debris",
+ "name": "prehistoric stone-age ribcage",
+ "label": "prehistoric/ph-ribcage",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ribcage skeleton arch",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ribcage is drawn as a flat 2D side elevation/silhouette. The spine forms an arch across the image with vertical spinous processes pointing straight up, showing no foreshortened top surface (0px). It is also misclassified as scattered floor debris rather than a large standing bone structure.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 5599
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "standing arched ribcage",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The spine and ribs are drawn in pure side elevation with only 1px edge highlights and spinous processes pointing straight up, showing no foreshortened top surface across the horizontal span.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7868
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "prehistoric ribcage arch",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire ribcage and spine are drawn in flat side elevation with dorsal spines sticking straight up in 2D silhouette and no visible top surface of the vertebrae or horizontal depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 6467
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "large ribcage archway / skeletal spine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ribcage and its supporting base are drawn in flat side/front elevation, typical of a 2D side-scroller. The horizontal spine has no top surface visible from a 45-degree angle (dorsal processes point straight up in profile), and the brown base at rows 40-45 is a flat front-facing rectangular strip.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6509
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.805Z",
+ "cells": {
+  "16": [
+   "0567144347cda8c1",
+   "20e6246845976e70",
+   "26ff2d7ae5733a70",
+   "3d3b31b673349e60",
+   "62fb06c4e03f4318",
+   "67c7472bbc95aedd",
+   "8e32565606e4fe9d",
+   "b025c7a1a50c376c",
+   "b96cec7decf4f520",
+   "c383de50aa569d81",
+   "e2ede864712a4383",
+   "ea281e4d0f3c72e6"
+  ],
+  "24": [
+   "05ed26d46bda09ac",
+   "3b3ab39f6e65c414",
+   "691e5f62c582d9ea",
+   "754fc45669d02cc0",
+   "785876b42202bcd8",
+   "80d3401642e89834",
+   "8707b4bebca5daf4",
+   "9d770b17cd6b0a03",
+   "a119e65f2e1b40f5",
+   "d2bdb341bd3a2440",
+   "d51fbccc056e0b9c",
+   "e4754247781d5226",
+   "e88a0f6d94e758eb",
+   "edfecd1da0f23982",
+   "f0cdb33b40ad237b",
+   "f11ff996c72be271",
+   "f5751e649405aad5",
+   "f98bee0d0dd48f37"
+  ],
+  "32": [
+   "1135c01643bcbdbf",
+   "39946f279d4c7dad",
+   "4a22dec3648d67f0",
+   "5b2066871583bf88",
+   "68810ff00fec16f9",
+   "6dc4970ef5e636c2",
+   "76785811de2ac0f0",
+   "9774920dbbb86073"
+  ],
+  "48": [
+   "16efd7e552ce960d",
+   "28b56845061285f9",
+   "32421ccc3e571f76",
+   "56763543326480b3",
+   "744452dba04b8d13",
+   "f62c5e0d925dbffe"
+  ]
+ }
+}

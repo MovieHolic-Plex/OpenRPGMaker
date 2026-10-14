@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "652801d468c5b8361977d89f95d413100c421459c76eefc9799550955c4053db",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "prehistoric stone-age hide frame",
+ "label": "prehistoric/ph-hide-frame",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden frame holding stretched hide",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden frame is drawn in pure front elevation; neither the top horizontal beam nor the bottom crossbeam/base show any foreshortened top surfaces (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6431
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden frame stretching a hide",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden frame is drawn in straight orthographic front elevation. Neither the top horizontal beam nor the bottom horizontal beam displays a visible top surface (only tiny 2px cut-end highlights on the post corners), making the frame completely flat.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6257
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden frame stretching a hide",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden frame and crossbeams are drawn as a flat front elevation with no visible top surface on either the upper or lower horizontal beams.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7855
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden frame stretching a hide",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden frame and its horizontal crossbeams are drawn completely flat from the front, with no visible horizontal top faces on either the top beam or the bottom base beam/feet.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5094
+  }
+ ],
+ "decidedAt": "2026-10-14T00:42:49.784Z",
+ "cells": {
+  "16": [
+   "0eff5dcda29a5e61",
+   "115753109db6aefb",
+   "8a6c6102f40ae9ff",
+   "a3d716cedeedad23"
+  ],
+  "24": [
+   "0cfc18b32cebde91",
+   "2a80ec116fa03d3d",
+   "459b13bd59820198",
+   "51fe93829c326456",
+   "606976df234d9ff3",
+   "62c9fdf574135964",
+   "6fb2d44c9188524d",
+   "864b55131e42859f",
+   "86d81fbdf986e48f",
+   "89cedb88700a151c",
+   "901574ce494a2e1a",
+   "9291a3ab087c6f41",
+   "9783d33a2670e3bd",
+   "98fb827f801e7b0c",
+   "a3aa5a4a382d11de",
+   "ae9c96b8c890a56b",
+   "c163a18dd6e2e957",
+   "cc636a8092eee36c",
+   "cefa59f8fd3a46a9",
+   "cf4912a47fb02395",
+   "ddbf392eb33d4dc6",
+   "e487001ef2bf0b43",
+   "eb07d5135380b1a8",
+   "fba6bcc9e32feb98"
+  ],
+  "32": [
+   "1429a14114e6dbb1"
+  ],
+  "48": [
+   "55d04407e4839efc",
+   "79ce1486b453cc4a",
+   "836f608626cc6550",
+   "c676111db2b3862f",
+   "d405b69138f3b814",
+   "fea2f08a999518ef"
+  ]
+ }
+}

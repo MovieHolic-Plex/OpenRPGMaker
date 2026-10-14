@@ -13,6 +13,7 @@
 import os, sys, math, json
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from pelt import pelt  # noqa: E402
+from topview import slab  # noqa: E402
 from px import C, rnd, h32, NT, MI, save
 from kit import Reg, contact, OUT
 from shapes import seeds, near2, rock_px, lit, tusk_arc
@@ -260,29 +261,30 @@ for key in CEIL_KEYS:
 
 # ═══════════════════════ 가구 ═══════════════════════
 def hearth(c, f=0):
-    cx, cy = 16, 20
-    stone_ring(c, cx, cy, 13, 8, s=9, inner=lambda x, y, dx, dy: ('ash', 1 if dy < 0 else 2) if rnd(x, y, 3) > 0.3 else ('fire', 1 + (rnd(x, y, 4) > 0.6)))
-    flame(c, cx - 5, cy + 3, 9, 3, f=f, s=1); flame(c, cx + 5, cy + 3, 8, 2.6, f=f + 1, s=2)
-    # 세 발 받침 위 흙 냄비(아가리 안 끓는 국)
-    for (x0, x1) in ((8, 13), (24, 19)):
-        c.line(x0, 26, x1, 8, 'bark', 3); c.line(x0 + 1, 26, x1 + 1, 8, 'bark', 1)
-    for y in range(10, 22):
-        k = (y - 10) / 12
-        half = 6 * (0.75 + 0.35 * math.sin(math.pi * k))
-        for x in range(int(cx - half), int(cx + half) + 1):
-            u = (x - (cx - half) + 0.5) / (2 * half + 1)
-            c.P(x, y, 'ochre', max(0, min(4, 2 + lit(u))))
-    c.ell(cx, 10, 5.5, 2.6, lambda x, y, dx, dy, d: ('ochre', 4) if d > 0.6 else ('dirt', 3 + ((x + f) % 3 == 0)) if dy > -0.3 else ('dirt', 1))
+    """화덕(2×2): 큰 돌 테 아가리 속이 위에서 훤히 보인다 — 재·숯·엇갈린 장작·작은 불꽃. 뒤쪽 테 위 돌 셋에 작은 흙 냄비(아가리가 보인다)."""
+    cx, cy = 16, 19
+    stone_ring(c, cx, cy, 14.5, 10, s=9, inner=lambda x, y, dx, dy: ('basalt', 1 if dy < -0.35 else 2) if rnd(x, y, 3) > 0.3 else ('ash', 1) if rnd(x, y, 5) > 0.5 else ('fire', 1 + (rnd(x, y, 4) > 0.55)))
+    for (dx0, dy0, dx1, dy1) in ((-6, 3, 5, -1), (-5, -1, 6, 3)):
+        c.line(cx + dx0, cy + dy0, cx + dx1, cy + dy1, 'bark', 3); c.line(cx + dx0, cy + dy0 + 1, cx + dx1, cy + dy1 + 1, 'bark', 1)
+        c.P(cx + dx0, cy + dy0, 'basalt', 1); c.P(cx + dx1, cy + dy1, 'fire', 3)
+    flame(c, cx - 1, cy + 2, 7, 2.6, f=f, s=1); flame(c, cx + 3, cy + 2, 5, 1.8, f=f + 1, s=2)
+    # 뒤 테 위 작은 냄비(아가리 타원 속 끓는 국)
+    px_, py_ = 25, 9
+    for y in range(py_, py_ + 6):
+        for x in range(px_ - 4, px_ + 5):
+            dx = (x + 0.5 - px_) / 4.2; dy = (y + 0.5 - py_ - 2.5) / 3.4
+            if dx * dx + dy * dy <= 1: c.P(x, y, 'ochre', 3 if dx < 0 else 2)
+    c.ell(px_, py_, 3.6, 2.2, lambda x, y, dx, dy, d: ('ochre', 4) if d > 0.55 else ('dirt', 3 + ((x + f) % 3 == 0)))
     for k in range(3):
-        y = 6 - k * 2 - (f % 2)
-        c.ell(cx - 2 + k * 2 + (f % 2), y, 1.5, 1.2, lambda x, yy, dx, dy, d: ('smoke', 4 if dx < 0 else 3))
+        y = py_ - 3 - k * 2 - (f % 2)
+        c.ell(px_ - 1 + k + (f % 2), y, 1.3, 1, lambda x, yy, dx, dy, d: ('smoke', 4 if dx < 0 else 3))
     done(c)
 
 
 ids = []
 for fr in range(3):
     i = 'hearth' if fr == 0 else 'hearth-f%d' % fr
-    R.add(i, '화덕(돌 테 + 끓는 흙 냄비)' + ('' if fr == 0 else ' (프레임 %d)' % (fr + 1)), 2, 2, 'container', tags=['실내', '불', '화덕', '요리'],
+    R.add(i, '화덕(큰 돌 테 + 숯불 + 뒤 테 위 작은 냄비)' + ('' if fr == 0 else ' (프레임 %d)' % (fr + 1)), 2, 2, 'container', tags=['실내', '불', '화덕', '요리'],
           rules='방 가운데 또는 벽에서 두 칸 띄워. 둘레 한 칸을 비우고 털 깔개·걸상을 둘러 둔다.')(lambda c, fr=fr: hearth(c, fr))
     ids.append(i)
 ANIM.append(('hearth', '화덕', ids, 6))
@@ -398,18 +400,13 @@ def _(c):
 
 @R.add('stone-table', '돌 탁자(넓은 돌판)', 2, 1, 'low_furniture', tags=['실내', '탁자', '돌'], rules='방 가운데·화덕 곁. 둘레 한 칸 비움.')
 def _(c):
-    for y in range(2, 14):
-        for x in range(1, 31):
-            if y < 9:
-                t = 6 if y == 2 else 5 if x < 15 else 4
-                if (x * 7 + y) % 11 == 0: t -= 1
-            else:
-                t = 3 if x < 12 else 2
-                if y == 13: t = 1
-                if 6 < x < 25 and y > 10: continue
-            c.P(x, y, 'stone', t)
+    # 넓은 돌판(위에서 보이는 울퉁불퉁한 윗면 + 앞 두께) + 앞 받침돌 둘
+    for x0 in (5, 22):
+        for y in range(9, 15):
+            for x in range(x0, x0 + 5): c.P(x, y, 'stone', 3 if x < x0 + 2 else 2 if y < 14 else 1)
+    slab(c, 16, 6, 15, 4.6, 3, mat='stone', s=21, rough=0.08)
     c.ell(10, 5, 2.5, 1.4, lambda x, y, dx, dy, d: ('ochre', 4) if d > 0.5 else ('bloom', 1))
-    bone(c, 18, 5, 25, 5, t=4)
+    bone(c, 18, 5, 24, 4, t=4, th=1)
     done(c)
 
 
@@ -425,22 +422,17 @@ def _(c):
 
 @R.add('skull-shelf', '머리뼈 바위 턱(두 단)', 2, 2, 'tall_furniture', tags=['실내', '무당', '선반', '동굴'], rules='벽(북쪽) 앞.')
 def _(c):
-    # 벽에서 튀어나온 거친 바위 덩이: 위 턱·가운데 턱(윗면 밝게)에 머리뼈를 얹었다. 윤곽은 울퉁불퉁.
+    # 벽 앞에 쌓은 바위 턱 두 단: 단마다 넓은 판돌(윗면이 위에서 보인다) 뒤쪽에 머리뼈를 얹고 앞쪽 윗면은 비워 둔다. 단 사이는 거친 바위 받침.
     sd = seeds(0, 0, 32, 32, 8, 53)
-    for y in range(2, 31):
-        for x in range(1, 31):
-            e = 1.5 * math.sin(y * 0.9) + 1.2 * math.sin(y * 0.37 + 1)
-            if x < 2 + e or x > 29 - e * 0.8: continue
+    for y in range(8, 31):
+        for x in range(3, 29):
+            if (x < 6 or x > 25) and y < 14: continue
             u = (x + 0.5) / 32
             m, t = rock_px(x, y, sd, u, 'stone', base=3, cell=8, depth=0.3)
-            c.P(x, y, m, t)
-    for ty, x0, x1 in ((3, 3, 29), (16, 2, 30)):
-        for x in range(x0, x1):
-            for j in range(4):
-                if c.get(x, ty + j) is None: continue
-                c.P(x, ty + j, 'stone', 6 if j == 0 else 5 if j < 3 else 4)
-            if c.get(x, ty + 4): c.P(x, ty + 4, 'stone', 1)
-    for (cx, cy) in ((8, 3), (16, 2), (24, 3), (11, 16), (21, 16)):
+            c.P(x, y, m, max(1, t - 1))
+    slab(c, 16, 18.5, 14.5, 4.2, 3, mat='stone', s=31, rough=0.08)
+    slab(c, 16, 6, 11.5, 3.6, 3, mat='stone', s=33, rough=0.08)
+    for (cx, cy) in ((10, 4), (16, 3), (22, 4), (11, 16), (20, 16)):
         skull_small(c, cx, cy)
     done(c)
 

@@ -1,0 +1,161 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9abad2739eb9663a575703d35818d15063fdb1911fd50fdef1fb2bc31fe05c92",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "prehistoric stone-age stone circle",
+ "label": "prehistoric/ph-stone-circle",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "circle of standing stones (megaliths)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The standing stones are drawn in side/front elevation with flat horizontal baselines and 1-2px rounded cap silhouettes rather than foreshortened top surfaces. The top-center stone has a completely flat horizontal top and bottom with 0px top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5683
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "standing stones in a circle",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The standing stones are drawn in side/front elevation. The top center stone has no visible top surface at all (0px), while the other megaliths only have a 2px domed tip/cap line rather than foreshortened top surfaces visible from a 3/4 overhead perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5397
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "standing stones / megaliths in a circle",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The standing stones are drawn in side/front elevation with rounded or flat top silhouettes rather than foreshortened top surfaces. The top-center stone has a flat 1px edge with no visible top, and the other stones merely have 2px rounded arch tops without depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4159
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "standing stones of stone circle",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The monoliths are drawn in pure front elevation with flat horizontal bottom baselines and vertical pill-shaped profiles. The top-center stone has no visible top surface at all (0px), while the other stones only have 1-2px rounded cap highlights rather than foreshortened top surfaces viewed from a 45-degree angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5367
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.803Z",
+ "cells": {
+  "16": [
+   "13f2d1a34273a071",
+   "46865ec522d49dd0",
+   "6e09aadf86171e8d",
+   "75ad2018d6666410",
+   "7663e681805e95cb",
+   "830c28736f0398ec",
+   "8ef5ddca2d54f851",
+   "9188ce8447995331",
+   "aca3c0ebde7ab4bd",
+   "af206a98bf6e63e5",
+   "b7cf1086801b528a",
+   "ba4cf7ee43d03063"
+  ],
+  "24": [
+   "0e808fc530b4c59f",
+   "1627d81198d7f238",
+   "2485e1549ad712c4",
+   "24a645c5ee417b02",
+   "4ac6e67848d60aa1",
+   "5ea5786dde22ef76",
+   "679673cdac50e14c",
+   "76ea70d816b493ea",
+   "7eb276ea6bf2be0d",
+   "af8a9383556e37ca",
+   "b2b313e77c46acc2",
+   "b41c47baf3a5c29b",
+   "b869b7b05b90d8ab",
+   "ba6e8a9ca3a535d9",
+   "bb9324daec1edda4",
+   "bf212c87f3ade991",
+   "e94e46103a32c528",
+   "f6271a3461fc8a4d"
+  ],
+  "32": [
+   "051c7d5a3b587d94",
+   "1e81f08316f4234f",
+   "349becc069c61176",
+   "5f85bd328f5dbfd3",
+   "63f26b16eac15607",
+   "ccce0235835d7d9c",
+   "d408644c8e4845ac",
+   "edbf989dbdb19ed9"
+  ],
+  "48": [
+   "1845d223f1b20c3c",
+   "2c1268840be4a9d2",
+   "4272c58383ab167a",
+   "496a756bf00c09c8",
+   "d758c334814ba5d4",
+   "d7b90cd6acdbb428"
+  ]
+ }
+}

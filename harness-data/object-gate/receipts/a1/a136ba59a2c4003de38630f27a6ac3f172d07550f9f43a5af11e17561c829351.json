@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a136ba59a2c4003de38630f27a6ac3f172d07550f9f43a5af11e17561c829351",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "prehistoric stone-age hut log",
+ "label": "prehistoric/ph-hut-log",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "conical thatched roof and cylindrical log walls",
+    "kind_matches": true,
+    "top_rows": 42,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Conical thatched roof clearly presents its foreshortened downward slope from apex (row 0) to front eaves (row 42) using downward-curving thatch tiers, and the circular base wraps in an elliptical arc consistent with 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4931
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "conical thatched hut with wooden log walls",
+    "kind_matches": true,
+    "top_rows": 41,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large conical thatched roof clearly slopes downward towards the camera across rows 1-41 with curved tiers, and the circular base plinth is drawn with a foreshortened elliptical curve fitting the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 17283
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "conical thatched roof and cylindrical log-walled hut",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hut is drawn in consistent 3/4 top-down perspective: the conical thatched roof exhibits downward-curving horizontal ring contours from row 1 to row 40, and the circular stone base curves downward from row 46 at the sides to row 61 at the front, forming a foreshortened ellipse.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5508
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "conical thatched roof over cylindrical log hut",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The conical thatched roof is viewed from above with concentric curved tiers (rows 1-42), and the cylindrical base sits on an elliptical stone foundation ring curving toward the viewer.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4951
+  }
+ ],
+ "decidedAt": "2026-10-14T00:41:00.197Z",
+ "cells": {
+  "16": [
+   "0b890e6763f4b4fe",
+   "156a52212015b6f0",
+   "1eb64799b651602e",
+   "6a575bc3b02c11cf",
+   "7689be281eaa5b34",
+   "a1878c102c5708cf",
+   "ba2074df1bfac53d",
+   "c118e2dd74d4217d",
+   "da38cf7de7c41c8e",
+   "e6e927a94574c545",
+   "e8d975c5a09162f9",
+   "f67229b840dbfd81"
+  ],
+  "24": [
+   "169364d867c264fb",
+   "201b96194760f123",
+   "270378ebe99c295c",
+   "2f453f7b63ed3d4b",
+   "333ab2f3b656110f",
+   "813c318805e3ced8",
+   "8d04ef4a66da3dee",
+   "903debffb82b72ae",
+   "b7a4480c3e4d82af",
+   "baccc905bf71931a",
+   "bb75de5b698c1c09",
+   "e1aeed340caa5cf3"
+  ],
+  "32": [
+   "08199f8b542a152c",
+   "2fa8b7fd3ca7305f",
+   "392dae8dd007886b",
+   "4d72926b00a15f45",
+   "58a364148e6fad80",
+   "5eca87e6db652ee3",
+   "8c363a6ae1ac1fc5",
+   "9ca6f0cc6c8d290b",
+   "a8492479e569faa0",
+   "f77fdfc2813bf923",
+   "fc1c43e71e93c49e",
+   "fcf4d1ec1b8c46b4"
+  ],
+  "48": [
+   "88c2e7c871ede7a6",
+   "cfbdb6241c14dda2",
+   "d28370ef5849ac1e",
+   "f6fc9b0f22620eb9"
+  ]
+ }
+}

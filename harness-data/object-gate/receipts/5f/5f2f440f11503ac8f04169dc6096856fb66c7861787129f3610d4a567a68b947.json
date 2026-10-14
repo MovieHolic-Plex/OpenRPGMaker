@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5f2f440f11503ac8f04169dc6096856fb66c7861787129f3610d4a567a68b947",
+ "width": 32,
+ "height": 16,
+ "kind": "flat",
+ "name": "prehistoric stone-age mat reed",
+ "label": "prehistoric/ph-mat-reed",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "reed mat",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Woven reed mat lying flat on the ground spanning rows 2 to 14 viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3345
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "woven reed mat lying flat on ground",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mat is viewed from above lying flat on the floor across rows 2-14 (13 rows tall) with woven texture and vertical bindings.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3319
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "woven reed mat lying flat on the floor",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat woven reed mat extending from row 2 to row 14 (13 rows total), viewed from above as a floor surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2667
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "woven reed mat lying flat",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mat is completely flat on the floor, showing its entire woven surface spanning rows 2 to 14 in top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3314
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.808Z",
+ "cells": {
+  "16": [
+   "36566e0aabfd2a1c",
+   "ca59297ffdb0f0c8"
+  ],
+  "24": [
+   "1bca8ca78a609d26",
+   "31a742e27f3304ad",
+   "923d0ea57a447928",
+   "963c3b3b84bb7735",
+   "a53b10cc20316c93",
+   "a80f0a1b29259ba1",
+   "b824de5cfeddeeb9",
+   "c55e7dba58b6d4d5",
+   "d88ea5b9c60d9db6",
+   "e3e14961835f9ac4",
+   "eb04627d6c68013e",
+   "f43d6550d43fce78"
+  ],
+  "32": [
+   "93f8f4c9fb8615cc",
+   "b1f4cbed19d2d228"
+  ],
+  "48": [
+   "10850ab0dc15c68c",
+   "4d2ddd92d1aff3c5",
+   "5c2d1b6d695239a7",
+   "a957ed97dc5fefba",
+   "ca25486293d846a1",
+   "e15dd6c67a35dac3"
+  ]
+ }
+}

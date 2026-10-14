@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "66787ae031b4a85972c1799a7be3ecf7f9d99a12f473788599a3ae276118980c",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "prehistoric stone-age hearth",
+ "label": "prehistoric/ph-hearth",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "아가리 3행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "clay cooking pot over a stone fire pit",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening of the pot is drawn as an ellipse showing the shaded interior cavity across rows 8-11 between the back and front rims, with a south-facing body and fire pit below.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 4460
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "clay vessel/oven sitting in a stone hearth",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The vessel has an elliptical top opening visible between rows 7 and 11, with 3 rows of interior shading (rows 8-10) seen from above before the front face descends to the fire base.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 4217
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "clay cooking pot/furnace set on a stone hearth",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening of the vessel is clearly drawn as an ellipse from rows 8 to 12, showing 3 rows of interior between rims, with the front face extending down to row 22 over a stone firepit.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 3017
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "clay hearth pot / oven",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening of the central clay vessel/oven is rendered as an ellipse from row 8 to row 11 (approx. 3-4 rows of interior/opening visible), and the stone base and ash pit below are also foreshortened in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 4536
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.808Z",
+ "cells": {
+  "16": [
+   "4df92afc26b23ddc",
+   "7fa4052e959ef601",
+   "bcb7d42435fe0139",
+   "c7d07c7692af1572"
+  ],
+  "24": [
+   "083902382a621a46",
+   "09914a045d5c471b",
+   "12de7e6f05ecfd65",
+   "21be80ca666d793f",
+   "3df031533d200dfb",
+   "478ae243dd276b84",
+   "4887a6e44fad0a8b",
+   "647e3b8794ec6860",
+   "7399c597bb75f93b",
+   "803c992bf6344c0e",
+   "91fbebbc1ba0ab0e",
+   "ad859aa63187213c",
+   "b6276d81c5ffe9ff",
+   "bb5671f789fa2b17",
+   "bfd54a763766c44c",
+   "d1bc88dd38ce9b07",
+   "d85b5037c9b110a6",
+   "d9cbc1361b17367c",
+   "e73bfd4ebd3cec06",
+   "edd565d2a1818790",
+   "eece90d3730f699c",
+   "f167f64e93b5105d"
+  ],
+  "32": [
+   "fbc4d6d8719b57f3"
+  ],
+  "48": [
+   "074669ff3e20c8fe",
+   "51aaeec168c5b722",
+   "6a79849559ccaac1",
+   "833ef416ca461df5",
+   "d8bd6392b1d2af61",
+   "e8e58e370dc02063"
+  ]
+ }
+}

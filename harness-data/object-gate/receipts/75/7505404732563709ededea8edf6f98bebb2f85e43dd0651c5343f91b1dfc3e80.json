@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7505404732563709ededea8edf6f98bebb2f85e43dd0651c5343f91b1dfc3e80",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "prehistoric stone-age stone b",
+ "label": "prehistoric/ph-stone-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile represents a stone/rock ground surface viewed from above with no standing elevation profile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3448
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image is a full 16x16 stone/rock ground terrain tile, viewed from above as continuous ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3849
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone ground terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 textured stone ground terrain tile viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2926
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a full 16x16 textured stone ground/wall terrain block, not a standing object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4110
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.789Z",
+ "cells": {
+  "16": [
+   "1a8a75b3a1024a1f"
+  ],
+  "24": [
+   "0bb981cfa86d910a",
+   "674489a34e555587",
+   "d31c2ac7e7c886b7",
+   "d570dc95361e447c",
+   "e79fc974eb66a19e",
+   "efc56529b6742853"
+  ],
+  "32": [
+   "2f5fe0cdf77ade71",
+   "71584503dad117cc",
+   "9dab02fb39031492",
+   "b45504d0e4d2cd31",
+   "c9a373cdca6bcbe3",
+   "d3f7ab06cc1d8c73"
+  ],
+  "48": [
+   "069a85ebfbe11906",
+   "24eed0aff630cdec",
+   "30ac6e2819874e5a",
+   "35eb07b39cd0cb0f",
+   "48ead046852bd857",
+   "eceba5cc0ed628a8"
+  ]
+ }
+}

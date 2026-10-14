@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0689976ebd63182beb1bff34bc98b0b64df0205cb85a3182394c27f7b2589863",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "prehistoric stone-age torch",
+ "label": "prehistoric/ph-torch-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "standing torch / pole brazier",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The torch bowl opening at the top is drawn with clear 3/4 perspective, showing a 4-row deep elliptical basin (rows 9-12) containing the glowing fire bed.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5855
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "torch bowl atop wooden post",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The torch bowl opening is drawn as an ellipse from row 9 to 12 (approx. 4 rows tall) displaying the burning interior embers from a 3/4 top-down angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5141
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "torch post with stone bowl head",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the stone bowl / torch head shows a 4-pixel-tall foreshortened elliptical burning surface (rows 9-12) above the front face of the bowl and wooden post.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4972
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "torch pole and stone bowl",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The torch is drawn in a pure front elevation. The bowl has no visible top rim or top surface, no back rim is shown, and the wooden shaft is a straight vertical rectangle with a flat bottom edge at row 30.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14514
+  }
+ ],
+ "decidedAt": "2026-10-14T00:39:52.940Z",
+ "cells": {
+  "16": [
+   "637fce7d97f1d919",
+   "c502bdbb155c8475"
+  ],
+  "24": [
+   "0bd78d4ae7373086",
+   "1f2e3ef3d21a53b8",
+   "3703b40285bb4033",
+   "4637f7e0f9b49a16",
+   "745106c2441f7baf",
+   "925fe061d49556ec",
+   "9b1a2bb56268ee63",
+   "c11b91287b7c352f",
+   "c991f2d5fc56f71a",
+   "cde0534f5a591aa5",
+   "d942ea6db3cdf12c",
+   "fa882403014eb6d6"
+  ],
+  "32": [
+   "44b034452b85bc85",
+   "a30968a44f2fe8db",
+   "b8532d392bb6b2ef"
+  ],
+  "48": [
+   "04d336370d913b2a",
+   "80f372c2cd461bd1",
+   "8c28534b14bb3663",
+   "b8e998cb8f99808b",
+   "bc95d3aa5470ff1b",
+   "eafedc1d4fcc788a"
+  ]
+ }
+}

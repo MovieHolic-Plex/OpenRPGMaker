@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "aedaa2ad423feb4d964429d6123f897ff3592f7724aa33d496b26acfa2e8e431",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "prehistoric stone-age lamp",
+ "label": "prehistoric/ph-lamp-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone bowl lamp",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone lamp is drawn with a foreshortened elliptical basin opening (rows 9-12, ~4 rows deep) showing the oil and flame inside viewed from above, with the south stone wall visible below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4853
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "shallow carved stone lamp dish with burning oil or fat",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The carved stone lamp is rendered from a 3/4 top-down angle, clearly displaying an elliptical interior basin (rows 9-12, 4 rows tall) filled with fuel and a flame, bordered by a stone rim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9546
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone bowl / oil basin",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basin interior containing fuel and the flame base is clearly drawn as an ellipse visible from above across rows 9-12 (4 rows tall), with the stone rim surrounding it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6731
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone lamp bowl",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone lamp is viewed from above at a 3/4 angle. The reservoir opening is clearly visible as an ellipse spanning rows 9-12 (4 rows deep) filled with oil and the base of the flame, surrounded by stone rims, making a total top depth of 6 rows (rows 8-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9106
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.808Z",
+ "cells": {
+  "16": [
+   "48502e4b484d3d25"
+  ],
+  "24": [
+   "2be2a4de180db172",
+   "2ef5a8017436777b",
+   "34b2ee0a6c1f8554",
+   "840a2aef24792a13",
+   "a376f3ffd975262f",
+   "d57ede7f7a15914f"
+  ],
+  "32": [
+   "a30945e927cc51c7",
+   "c16e439c6853723c",
+   "cf738cd62a78f5f1",
+   "cfcf286f0a60cc9b",
+   "f41dc94357acf549",
+   "f850185362b38c92"
+  ],
+  "48": [
+   "09c9b1da8791739c",
+   "5f06dd470eea94d3",
+   "823d1a6345440711",
+   "b63ff250526ed087",
+   "b9e9aca759e722cd",
+   "ddd6e55315b9c435"
+  ]
+ }
+}

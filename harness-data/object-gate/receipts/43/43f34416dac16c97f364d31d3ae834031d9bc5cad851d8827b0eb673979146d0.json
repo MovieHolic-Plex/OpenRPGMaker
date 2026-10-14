@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "43f34416dac16c97f364d31d3ae834031d9bc5cad851d8827b0eb673979146d0",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "prehistoric stone-age bridge post",
+ "label": "prehistoric/ph-bridge-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden bridge post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The post is rendered as a flat vertical rectangle with a straight horizontal outline at row 4 and no cut face or top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5514
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden post with rope bindings",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The column/post terminates at row 4 with a flat 1px horizontal outline; there is no circular or elliptical top cut face shown for the pole. The entire post is drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5678
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden post with rope bindings",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the wooden post is drawn completely flat with a horizontal outline at row 3 and no visible cut top face or ellipse; it is a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5206
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden bridge post / pole with rope bindings",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the pole terminates in a flat 1-pixel horizontal outline at row 4 without any foreshortened circular/elliptical top cut face shown; it is drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4715
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.807Z",
+ "cells": {
+  "16": [
+   "8f19b88186f2ae1c",
+   "9cde125b9ad354f9"
+  ],
+  "24": [
+   "0b68dbc7b61c1209",
+   "343c0a3c7b2a628a",
+   "5712d376ce63d9fd",
+   "6e418b74a796aeb5",
+   "755289f365feee57",
+   "7ced30cf93b3cfff",
+   "9b127d2ed0da8273",
+   "a0670a35197caf84",
+   "a7e74f0c12e2dbbc",
+   "efc204e8033ca21c",
+   "f07d6e77f8239a7c",
+   "f5795d478c55a981"
+  ],
+  "32": [
+   "40d7bcf1bfbfac08",
+   "c46c9e433b308dcd",
+   "e22a6116a384c4b6"
+  ],
+  "48": [
+   "5949225da6761fa0",
+   "b56407a1ecf44d27",
+   "b967c47b6f99ce39",
+   "e0e40269288ec789",
+   "ef1773cda535809a",
+   "f1b4f1f54dbf4c18"
+  ]
+ }
+}

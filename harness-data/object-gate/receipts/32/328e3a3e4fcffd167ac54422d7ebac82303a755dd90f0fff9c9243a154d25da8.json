@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "328e3a3e4fcffd167ac54422d7ebac82303a755dd90f0fff9c9243a154d25da8",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "prehistoric stone-age bridge post",
+ "label": "prehistoric/ph-bridge-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bridge post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The post is drawn in a pure side/front elevation: the bottom base and the rope wraps across the trunk are completely flat horizontal lines, and the top is drawn as a rounded 2D dome/arch with no visible top horizontal surface or foreshortened cut face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9110
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden bridge post / log pillar",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut surface of the wooden post is rendered as an ellipse across rows 5-9/10 (about 5-6 source pixel rows tall), clearly showing the cross-section from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5467
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden post",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut surface of the wooden post is clearly visible from rows 5 to 9 (approx. 5 pixel rows tall) as a foreshortened top plane, while the south vertical cylindrical face extends below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5056
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden bridge post / log",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the log (lighter wood end grain) is rendered as an ellipse curving downward toward the viewer across rows 5 to 10 (approx. 6 rows tall), clearly showing the horizontal top surface from the 3/4 angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5383
+  }
+ ],
+ "decidedAt": "2026-10-14T00:42:49.786Z",
+ "cells": {
+  "16": [
+   "4eb99af7e423880d",
+   "f5103f33f3e45e6a"
+  ],
+  "24": [
+   "22eefddf9e0e75a8",
+   "339635e3213d8891",
+   "349e43d5390ec790",
+   "363bb01ad27bb454",
+   "3c79cc3ae4093674",
+   "46d2e732ed946758",
+   "726e13879837f8cf",
+   "7a5a4bf731217c11",
+   "9866ff5043d63431",
+   "9ad6f953afd5e915",
+   "b1cbfda704f13e23",
+   "d08981a265977e59"
+  ],
+  "32": [
+   "0e09fb59aaff86d9",
+   "9a0408d611300ab8",
+   "c1ceeffadebed180"
+  ],
+  "48": [
+   "32f634bbcb16e6a0",
+   "4720b6f93fa4fa85",
+   "6dbfcc1fd0b74b1d",
+   "72c8632a14458deb",
+   "a2e62a058ee3cfc6",
+   "b1f8559c04c50c73"
+  ]
+ }
+}

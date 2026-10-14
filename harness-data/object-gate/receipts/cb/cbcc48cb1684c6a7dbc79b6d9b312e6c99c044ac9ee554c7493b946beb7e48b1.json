@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cbcc48cb1684c6a7dbc79b6d9b312e6c99c044ac9ee554c7493b946beb7e48b1",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "prehistoric stone-age basalt columns",
+ "label": "prehistoric/ph-basalt-columns",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cluster of basalt columns",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Multiple basalt columns show clear foreshortened horizontal top faces (e.g. rightmost column top spans rows 6-9, center column top spans rows 16-19) looking down into the 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3062
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cluster of vertical basalt columns",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Multiple basalt columns show foreshortened polygonal horizontal top surfaces (e.g. rows 7-10 on the tallest column, rows 11-13 on the left column, rows 16-20 in the center), measuring 3-5 rows tall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3067
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cluster of basalt rock columns",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basalt columns have clearly rendered polygonal top surfaces (e.g. rows 7-9 on the tallest column, rows 16-19 on the central column) angled in 3/4 view above vertical column faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4345
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cluster of basalt columns",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The columns each terminate in clearly defined foreshortened polygonal top faces (e.g. top of tallest column spans rows 7-10, middle column spans rows 17-20), correctly displaying top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3866
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.799Z",
+ "cells": {
+  "16": [
+   "150c820308d512ff",
+   "607ae56e8982c110",
+   "7718ae7d1f609774",
+   "7bf38496939dec84",
+   "806bb01cb780d98d",
+   "9df61d285fe17c0f"
+  ],
+  "24": [
+   "1ad8f3b938188dc6",
+   "23d5acc45cf9bc43",
+   "2b260b925df2da31",
+   "4cf10ab36e2a695d",
+   "5242c08f7d7fada4",
+   "771851c4ed70b7c3",
+   "7b34bf14dd866a99",
+   "8d1543e8aec0333e",
+   "a1208e43bf07124b",
+   "a7e66331937e4921",
+   "c8d47f42d64e377a",
+   "edf071219edf1239"
+  ],
+  "32": [
+   "1e6c244760828699",
+   "7df2a11ea8f1505f",
+   "a75f61592857f5b1",
+   "ac5f6bdf24af082a"
+  ],
+  "48": [
+   "0828e18f88869860",
+   "1fc1aec03ce582e1",
+   "9d703a4104e6a7a2"
+  ]
+ }
+}

@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ae965e5099354c4eaa5991e5ed7930a2d2781e399dd19f894cc23c005b06f43a",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "prehistoric stone-age basket",
+ "label": "prehistoric/ph-basket",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "아가리 안쪽이 안 보임",
+  "아가리 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "woven basket with top handle",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The basket is drawn in pure front elevation with a flat horizontal top edge at row 4 and a handle at rows 2-3. There is no visible top surface or opening into the interior.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 6148
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "woven basket",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The basket is drawn in pure front elevation with a flat horizontal top edge at row 4 and a handle on top at rows 2-3. No opening ellipse or interior into the container is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 6702
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "woven basket",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The basket is drawn in pure front elevation with a flat horizontal top edge and a small handle/tab on row 2-3. There is no visible interior opening or foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 4638
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "woven basket",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The basket is drawn in pure front elevation with a flat horizontal top edge and an upright handle at rows 2-3. No opening interior or top surface is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 5122
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.802Z",
+ "cells": {
+  "16": [
+   "4992d9f233c2db4c"
+  ],
+  "24": [
+   "5b5f5f6772218a64",
+   "5d9913b996f0a53e",
+   "8fa9450a8137fa82",
+   "c23c58bed3f56284",
+   "dbaa96239a5ce4ee",
+   "edf018ce34080bde"
+  ],
+  "32": [
+   "0c210c7d2a6a202a",
+   "157ceec861ae50f0",
+   "2664e0412fb611a2",
+   "c4b83500b6e70755",
+   "d743cf566e57a851",
+   "e46e31edf06d6ef4"
+  ],
+  "48": [
+   "1355f89a079df6fb",
+   "23d170b83efad0a1",
+   "46aa16f6553ab317",
+   "569220f4b6f38e8a",
+   "677d2ad8e1b4457b",
+   "f87aa2fe04565107"
+  ]
+ }
+}

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fc086d0150f4fe913ea9164c0dee3fcdc42bff0013491919079b0bde578dec42",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "prehistoric stone-age torch",
+ "label": "prehistoric/ph-torch",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "torch shaft and bowl",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Every horizontal line on the object—from the bottom of the pole (row 30) to the post joints (rows 15-16) and the bowl rim (row 13)—is drawn as a completely flat horizontal line with no curve or foreshortened top surface visible. This is a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9960
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "torch holder bowl and pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The torch is drawn in pure front elevation: the bowl rim is completely flat horizontally across rows 12-13 with no elliptical curve or depth, the bowl tiers and base are horizontal bands, and the bottom of the wooden post at row 30 is a flat horizontal line with no cylindrical curvature or base perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6377
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "torch pole and bowl",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The torch is drawn in pure side/front elevation. The bowl rim at row 13 is a flat horizontal line with no elliptical opening, and the bottom of the pole at row 30 is completely flat.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7603
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "torch pole and bowl",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The torch bowl and pole are drawn in pure front elevation: the rim of the bowl forms a completely flat horizontal line at row 13, the collar at row 16 is flat, and the base of the pole at row 30 is a flat horizontal line with no elliptical foreshortening or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9017
+  }
+ ],
+ "decidedAt": "2026-10-14T00:39:52.939Z",
+ "cells": {
+  "16": [
+   "637fce7d97f1d919",
+   "7ac362ff9213a038"
+  ],
+  "24": [
+   "2fb1bce6d33b3121",
+   "32d92745749f6f6a",
+   "3703b40285bb4033",
+   "4d0286cbc4fef499",
+   "6a18d2a032e034c5",
+   "9634a23923fd69ac",
+   "9b1a2bb56268ee63",
+   "cde0534f5a591aa5",
+   "e9de9f6e6d2c246c",
+   "eb0f169545e4b468",
+   "fe5228888e30a98f",
+   "fe663d17cb612e0f"
+  ],
+  "32": [
+   "0b745a7c32d11bf8",
+   "79c5a9ab4c697ced",
+   "de6efeec01961ad3"
+  ],
+  "48": [
+   "0a0eed6c36abc911",
+   "396f7af8f218c25d",
+   "3d471aabbd7bb81d",
+   "6e889be392be425e",
+   "8b3ce718d002bf53",
+   "925c5d8a6cf5c30e"
+  ]
+ }
+}

@@ -1,0 +1,128 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "33d2be02d88fa4de1187737d8ace8532df2404500b2f012c1208463aa8873d24",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "prehistoric stone-age vent",
+ "label": "prehistoric/ph-vent-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "아가리 2행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone vent body",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone vent is drawn in pure front elevation: the glowing opening (rows 10-13) faces directly south toward the camera rather than being viewed from above as an ellipse on a horizontal top surface, and the top of the structure (row 8) has only 1-2px of depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 18294
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone fire vent / brazier bowl",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The vent/brazier is viewed from above with a clear 7x4 pixel elliptical opening showing glowing lava/fire and interior shadow (rows 10-13) enclosed by stone rims.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10249
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone vent / furnace base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main stone structure is drawn as a flat front elevation. The glowing opening is situated on the south/vertical front face rather than seen from above, and the top of the body has no foreshortened horizontal surface (0 rows of top surface). Smoke emerges directly from a flat top edge.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 7861
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone vent / brazier basin",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The vent basin opening is rendered as an elliptical bowl (rows 10-13, 4px tall) showing the glowing interior/magma from above, with steam/smoke rising from it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8283
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.806Z",
+ "cells": {
+  "16": [
+   "1adc1f3deaaaa53e"
+  ],
+  "24": [
+   "82dc51f96a4d4f90",
+   "8529c525b014d49a",
+   "cac91373ffdb0ae1",
+   "ce72c7d8a548fd84",
+   "f6e285442d9fcbef",
+   "f9e3aeed27c647c0"
+  ],
+  "32": [
+   "01d19c9334b02070",
+   "094246f38999276e",
+   "44e6ec694bd23852",
+   "85debfecbe92a939",
+   "d33ff7361b2e3c59",
+   "d5c5dad0f92fb6c3"
+  ],
+  "48": [
+   "01ee761a01ced942",
+   "8ff18e87c9cecd67",
+   "9079bab66993f1f0",
+   "c39ca30a9d7f3c98",
+   "d69b71eb2497bfaf",
+   "e0112b2a61404ec2"
+  ]
+ }
+}

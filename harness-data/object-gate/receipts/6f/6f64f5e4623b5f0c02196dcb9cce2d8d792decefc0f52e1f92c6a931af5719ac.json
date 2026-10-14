@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6f64f5e4623b5f0c02196dcb9cce2d8d792decefc0f52e1f92c6a931af5719ac",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "prehistoric stone-age fern s",
+ "label": "prehistoric/ph-fern-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fern plant",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fern is drawn as a flat 2D front silhouette with fronds extending upwards and outwards in pure elevation, showing no top-down foreshortening or top surface (0 rows).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6192
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fern plant",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fern is drawn as a flat 2D front silhouette of fronds with vertical cross-like shapes, showing no foreshortened top surface or overhead perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6994
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fern plant",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The small fern shows layered fronds viewed from a 3/4 perspective, with top-facing highlighted leaf surfaces across rows 7-9 (approx 3-4 rows) curving forward toward the lower foreground fronds.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4158
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fern frond cluster",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The small fern shows layered fronds visible from an elevated angle, with upward-facing upper fronds spanning rows 7-10 layered over darker lower and background fronds down to row 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4573
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.797Z",
+ "cells": {
+  "16": [
+   "49c79d9e4a2b21ef"
+  ],
+  "24": [
+   "1e6de8051f544fe7",
+   "29ec705aa6f24878",
+   "3ae6f10ff8082fcd",
+   "bd346c6be7ce0554",
+   "d7e67efa8c0e63bb",
+   "f9f46c7b7d473bba"
+  ],
+  "32": [
+   "1066c7acaa26c7e8",
+   "255ad8aabf01bcce",
+   "5493c34fd8d14294",
+   "750f8adee0b2353a",
+   "97b6fe3f54560caa",
+   "b62db83033ed8894"
+  ],
+  "48": [
+   "04f8d6c1421666fb",
+   "1b8593fdbe82c472",
+   "6bb7cf67de309935",
+   "b3466f997c379e3c",
+   "d693912fd1b5c81e",
+   "f41cfa9d81044c72"
+  ]
+ }
+}

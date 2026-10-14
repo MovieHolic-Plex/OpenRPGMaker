@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ea2926c80074193bfd0045b533957a9331c9596520e9d2f5dbcc9c5aee3d7632",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "prehistoric stone-age antler wall",
+ "label": "prehistoric/ph-antler-wall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall-mounted antler mount",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted trophy plaque correctly shown mounted flat against a vertical south-facing wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6464
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "mounted antler trophy",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted antler mount correctly depicted flat on the vertical wall plane as permitted for wall_mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5831
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "mounted skull plaque with antlers",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted trophy plaque with antlers, correctly depicted flat against the wall plane as allowed for wall_mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3636
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "skull/plaque with antlers",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted antler plaque drawn flat against the wall, which is valid for wall-mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5213
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.810Z",
+ "cells": {
+  "16": [
+   "a8a2190e8fc90abb"
+  ],
+  "24": [
+   "3aeb673935dcb61b",
+   "6c1a28a020a01816",
+   "79fd3ce7b99e9544",
+   "9c9cd4fe9d2a32ff",
+   "aed5393dc82150b4",
+   "f1a695dc1aabef1c"
+  ],
+  "32": [
+   "1cfb475c921b1d9e",
+   "94f329ac46a6154d",
+   "9b0cc255e59884c0",
+   "aa151ff87c48cf5d",
+   "aeab80121fee7bee",
+   "b41d2cec82ca6268"
+  ],
+  "48": [
+   "12120e27ad1d733b",
+   "93ab340ab12a1ccf",
+   "9dd61fa451b7aeed",
+   "bc49293f99a0b335",
+   "bfa12d1d23de9d1b",
+   "ef8f0142a109147d"
+  ]
+ }
+}

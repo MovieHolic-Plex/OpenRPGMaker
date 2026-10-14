@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bb473b8526b39c2ecf51f0ef80b86d7e30ac2d10c1a86feff02044e606304e9b",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "prehistoric stone-age palisade",
+ "label": "prehistoric/ph-palisade",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "palisade logs",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut faces (end-grain) of the vertical palisade logs are clearly rendered in a lighter wood tone across rows 7-10 (4 source pixel rows), showing the foreshortened top surfaces under 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9094
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "two lashed palisade logs / fence posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The palisade posts and horizontal lashings are drawn completely flat from the front. The tops of the posts are rounded front-elevation silhouettes without any visible foreshortened top surfaces or cut faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6058
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two vertical wooden palisade logs lashed together with horizontal ropes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The palisade posts are drawn entirely in front elevation: the rounded top ends (rows 6-10) have vertical sides and a flat horizontal bottom edge rather than an elliptical top surface, the horizontal rope lashings (rows 16-17, 24-25) are perfectly straight horizontal bars with no downward curvature, and the base (row 31) is completely flat.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7140
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "palisade logs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The palisade posts are drawn in a flat front elevation. The tops (rows 6-10) are drawn as 2D rounded picket arches ending in a perfectly straight horizontal line at row 11, showing no foreshortened top cut or elliptical top surface. Additionally, the horizontal binding ropes (rows 16-17 and 24-25) are rendered as completely flat horizontal bands.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5126
+  }
+ ],
+ "decidedAt": "2026-10-14T00:39:52.943Z",
+ "cells": {
+  "16": [
+   "bb44c3ca46084bdc",
+   "f2ae723df739e05a"
+  ],
+  "24": [
+   "06d413c52c386ea4",
+   "558479b13b84c8f4",
+   "657742c8b0dc0aae",
+   "727bf3776276ea53",
+   "781fbc8f2400c279",
+   "99460c1c613e50a8",
+   "b33ca813e6bc9b77",
+   "b48f6952183623f7",
+   "b965748c9c462a7d",
+   "e9905aaf7aabffb3",
+   "e993e9db55d38a86",
+   "f063f1a6bcebc52e"
+  ],
+  "32": [
+   "1f1721d94eaee581",
+   "676ad21c0dcfaf35",
+   "796f09037970acb5"
+  ],
+  "48": [
+   "084dbcf94af0e4c1",
+   "33d918a8a6571e31",
+   "48ec2302ef7052af",
+   "c0d71c9bb66c8dd0",
+   "d5c3692366fe1834",
+   "fbfe7f128a65ca99"
+  ]
+ }
+}

@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "01ce8be15a3918efa88bae3fa158c68c0591aa6759cca055cedf92941c35b26b",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "prehistoric stone-age rock l",
+ "label": "prehistoric/ph-rock-l",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "large rounded boulder with attached smaller rock",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The boulder clearly displays a top-down lit upper surface across rows 12-19 (~8 rows) descending into shaded front-facing sides, consistent with standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3228
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "large boulder",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main boulder has a clearly defined top surface lit from above spanning rows 11 to 19 (about 8-9 rows), with shading on the south-facing lower section (rows 20-27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3252
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "large boulder",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The boulder clearly shows a broad, top-lit upper surface spanning rows 12-19 before transitioning into the shadowed south-facing front slope across rows 20-27.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3686
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "boulder",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large boulder clearly shows its top illuminated planes spanning rows 11 to 19, descending to the shaded south-facing front wall in typical 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4218
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.799Z",
+ "cells": {
+  "16": [
+   "481251af7f2e898a",
+   "9328d1390b7044bc",
+   "c04d052edb3c6039",
+   "e43b9883bf0112c6"
+  ],
+  "24": [
+   "0fbed605fe2d97de",
+   "1d31c96a8652b1c3",
+   "2481d712541a5db5",
+   "26fa45dd5dd9308b",
+   "276976a5e61e9d49",
+   "28ae85fe59a95559",
+   "3845a6e24fbc0adc",
+   "3a46c7b1c304677a",
+   "424a51c7828f40e9",
+   "4c6e85f19691bada",
+   "50d99e1b7569a06a",
+   "5d765906d4d0d884",
+   "6fad988a01460dbd",
+   "7ec017f7690fb40a",
+   "8f3144897d620ea0",
+   "9dae45fc70c7c5f5",
+   "ad3f6b970e8063ea",
+   "cc4166fd3ad0180f"
+  ],
+  "32": [
+   "0d385f0b44d23795"
+  ],
+  "48": [
+   "0fe314d44fd29831",
+   "263d98d7cba86bc0",
+   "2ec247807377a929",
+   "7e05b2baf9195398",
+   "a2117eb36ba99760",
+   "c6048dc872b6c5fa"
+  ]
+ }
+}

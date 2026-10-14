@@ -1,8 +1,8 @@
 {"png": "ph-rug-fur.png", "kind": "flat", "name": "털 깔개(짐승 가죽 모양)", "label": "prehistoric/ph-rug-fur"}
 {"png": "ph-mat-reed.png", "kind": "flat", "name": "갈대 자리", "label": "prehistoric/ph-mat-reed"}
-{"png": "ph-hearth.png", "kind": "container", "name": "화덕(돌 테 + 끓는 흙 냄비)", "label": "prehistoric/ph-hearth"}
-{"png": "ph-hearth-f1.png", "kind": "container", "name": "화덕(돌 테 + 끓는 흙 냄비) (프레임 2)", "label": "prehistoric/ph-hearth-f1"}
-{"png": "ph-hearth-f2.png", "kind": "container", "name": "화덕(돌 테 + 끓는 흙 냄비) (프레임 3)", "label": "prehistoric/ph-hearth-f2"}
+{"png": "ph-hearth.png", "kind": "container", "name": "화덕(큰 돌 테 + 숯불 + 뒤 테 위 작은 냄비)", "label": "prehistoric/ph-hearth"}
+{"png": "ph-hearth-f1.png", "kind": "container", "name": "화덕(큰 돌 테 + 숯불 + 뒤 테 위 작은 냄비) (프레임 2)", "label": "prehistoric/ph-hearth-f1"}
+{"png": "ph-hearth-f2.png", "kind": "container", "name": "화덕(큰 돌 테 + 숯불 + 뒤 테 위 작은 냄비) (프레임 3)", "label": "prehistoric/ph-hearth-f2"}
 {"png": "ph-lamp.png", "kind": "container", "name": "돌 등잔", "label": "prehistoric/ph-lamp"}
 {"png": "ph-lamp-f1.png", "kind": "container", "name": "돌 등잔 (프레임 2)", "label": "prehistoric/ph-lamp-f1"}
 {"png": "ph-lamp-f2.png", "kind": "container", "name": "돌 등잔 (프레임 3)", "label": "prehistoric/ph-lamp-f2"}

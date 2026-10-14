@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "39df078f9aba1bcc45351cb5e3b2f584a7e8c6e7e739dd53881fefb3abef0365",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "prehistoric stone-age bush",
+ "label": "prehistoric/ph-bush",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bush foliage clump",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush is rendered with distinct foliage tiers; the upper crown surface spans rows 2 to 6 (about 4 rows) before reaching the horizontal shadow crease, showing the top of the plant viewed from above in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5483
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bush foliage canopy",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush canopy displays light-toned upper foliage tiers spanning rows 2-6 with clear top-down shading transitioning to darker south-facing undersides and a short base stem.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3671
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bush foliage mass",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush is rendered with a distinct upper foliage cluster across rows 2-6 that sits atop the lower front volume, displaying the top surface in 3/4 perspective without isometric side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4804
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bush foliage canopy",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The foliage canopy is layered with the upper/back leaf cluster visible on rows 2-5 above and behind the forward lower clusters, giving the organic volume proper 3/4 top-down depth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5898
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.798Z",
+ "cells": {
+  "16": [
+   "9ed7f87b646e94e1"
+  ],
+  "24": [
+   "65ae6b2f431cc488",
+   "68ec5e09b04c55a1",
+   "73cc36c6a9f8d316",
+   "8183f9a81fa3155f",
+   "8780721c6d05b858",
+   "fcb6f746d063a051"
+  ],
+  "32": [
+   "66012c3f9cc1b6eb",
+   "6f143726b7dcd9e9",
+   "79469f35f59ca15f",
+   "9600314e11fe071b",
+   "a1724b1af12ab9f7",
+   "d079454453a57c5f"
+  ],
+  "48": [
+   "056ae4fc2c81a6d4",
+   "4e159055d0d85bd3",
+   "5f8aab4beda5a065",
+   "916230c0aaaade80",
+   "c821ff4e4b3daf76",
+   "d3e735ff1bc05b09"
+  ]
+ }
+}

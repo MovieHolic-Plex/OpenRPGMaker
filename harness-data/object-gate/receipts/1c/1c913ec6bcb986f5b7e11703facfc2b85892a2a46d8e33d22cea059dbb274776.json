@@ -1,0 +1,153 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1c913ec6bcb986f5b7e11703facfc2b85892a2a46d8e33d22cea059dbb274776",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "prehistoric stone-age hut log",
+ "label": "prehistoric/ph-hut-log",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "thatched conical hut with log walls",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hut is drawn in pure front elevation (or even low-angle perspective): the base is a completely straight horizontal line (rows 61-62), the door frame and lintel show no top surface, and the horizontal thatch tiers curve upward in the center (frown curves) rather than downward (smile curves) as required for horizontal circles viewed from a top-down 45-degree angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8250
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "thatched hut with conical roof and log walls",
+    "kind_matches": true,
+    "top_rows": 45,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The conical thatched roof dominates the structure from rows 1 to 46, displaying its sloping exterior surface and stepped thatch tiers foreshortened in standard 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4552
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "thatched conical hut",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hut is drawn as a flat 2D side-scroller front elevation. The base foundation at rows 61-62 is completely straight horizontal rather than curved/foreshortened for a cylindrical structure. The concentric thatch tiers (e.g. rows 14, 18, 22, 26, 30) are drawn straight across rather than bowing downward in elliptical perspective, and the door frame has a flat orthogonal lintel with zero top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7724
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "thatched round hut",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hut is drawn in pure architectural front elevation: the ground base is a completely flat horizontal line (rows 60-62) rather than an ellipse, and the thatch tiers curve upward in the middle (frown-shaped) rather than dipping down toward the viewer as horizontal cross-sections of a cone viewed from above at 45 degrees must.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10261
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.794Z",
+ "cells": {
+  "16": [
+   "01684a40beccc965",
+   "064fc8aefbb2615f",
+   "11bd299e84a8822c",
+   "17cfffb55691e1a6",
+   "1d9c26a6a02d6de8",
+   "491957baf625e0c4",
+   "519e113c4021a622",
+   "76a9efec9cb64e80",
+   "b885e7bcf29a4e06",
+   "b9255296ef5ab41c",
+   "ea626bb02bfee9ef",
+   "fc3dc8e9f10fa294"
+  ],
+  "24": [
+   "3aed5c89b95f53d0",
+   "4c9226142aa9017b",
+   "4e61a57a131406be",
+   "502df2cae76d804b",
+   "57cb7aadbfcebe58",
+   "7a873a7046a2e8a8",
+   "98bebddacfec9454",
+   "99724505f6ae5074",
+   "b1b1481cf2cab893",
+   "db7d410e458f64a1",
+   "e17b802cf4a85add",
+   "fe5d58ba351dd795"
+  ],
+  "32": [
+   "08438e26e16459de",
+   "193a93dd6b80fa98",
+   "1c3a3b04991427d8",
+   "2d627b5321ba402a",
+   "2e48a56a01c3a9cc",
+   "4b9a0a0bd888b8fd",
+   "512293cb7902d789",
+   "5b28203877e4d579",
+   "5c6e927576c2064f",
+   "6b71ba02f32335b8",
+   "c936b36884c474e2",
+   "f8f528fffd6e2458"
+  ],
+  "48": [
+   "6c6683431f1af0bb",
+   "97df4f95ad889f7c",
+   "c97583dc7bd64e98",
+   "f22f66d595eb4d2c"
+  ]
+ }
+}

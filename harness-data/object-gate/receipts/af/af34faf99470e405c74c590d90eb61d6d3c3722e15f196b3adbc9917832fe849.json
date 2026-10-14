@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "af34faf99470e405c74c590d90eb61d6d3c3722e15f196b3adbc9917832fe849",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "prehistoric stone-age fish rack",
+ "label": "prehistoric/ph-fish-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fish drying rack frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fish drying rack is drawn in pure front elevation: the lower crossbeam (rows 14-19) and top beam (rows 4-5) show only vertical front faces with no visible top surfaces (0 top_rows), and the legs extend straight down without depth or bases showing top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7245
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden fish drying rack with legs, horizontal crossbeams, and woven mat",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire rack is drawn in pure flat front elevation. Both horizontal beams (rows 3-5 and rows 15-19) and the legs (rows 20-30) show only their vertical front faces with no foreshortened top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5529
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fish drying rack frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fish drying rack is drawn as a flat front elevation. Neither the lower crossbeam (rows 15-19) nor the top beam/posts show any foreshortened top surfaces visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9117
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden fish drying rack frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire wooden frame and crossbeams are drawn straight from the front with no visible top surfaces on the horizontal beams or posts.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6263
+  }
+ ],
+ "decidedAt": "2026-10-14T00:46:42.339Z",
+ "cells": {
+  "16": [
+   "21a2289f725ea489",
+   "31e9df17d51254de",
+   "439493be0540c009",
+   "4eb05eacb2ab771a"
+  ],
+  "24": [
+   "0548d13135acb839",
+   "0579c95de96c1e8a",
+   "09438375afdd0a42",
+   "0cf341c78b5db43c",
+   "11be986ba0217169",
+   "25640d256dab18df",
+   "26b0f768d2078278",
+   "2db441c63f3e8e93",
+   "4ded09cdc43ac7c4",
+   "5e982b3dd027e290",
+   "67724add99fa30a3",
+   "714a4788230c8928",
+   "7df9ca232b60adf3",
+   "9c137aadcb0259af",
+   "9d3da0f54dc247cb",
+   "aee780e86adc6615",
+   "c4a20fdcfce61cfc",
+   "cb7d43c2accf51cb",
+   "cf57a83db8a0d311",
+   "cfb6ee4c9bc5ac72",
+   "dae4fe44ec20d466",
+   "dd89cbf5605a9a55",
+   "ea980192b886dc0c",
+   "f2600e4c161c639a"
+  ],
+  "32": [
+   "b2b6f0d346328102"
+  ],
+  "48": [
+   "267eb132764ebdb0",
+   "5ed4b54982f02e9a",
+   "616435544551d1b4",
+   "8ca7cac0a8761ccc",
+   "a1278344c4caab01",
+   "e5c28ad416cef288"
+  ]
+ }
+}

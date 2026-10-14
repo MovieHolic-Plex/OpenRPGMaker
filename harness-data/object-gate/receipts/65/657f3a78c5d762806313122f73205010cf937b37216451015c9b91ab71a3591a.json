@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "657f3a78c5d762806313122f73205010cf937b37216451015c9b91ab71a3591a",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "prehistoric stone-age drum",
+ "label": "prehistoric/ph-drum",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical drum body with stretched hide drumhead",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top drumhead membrane is drawn as a foreshortened ellipse spanning rows 4 to 7 (4 pixel rows tall), sitting above the vertical drum body (rows 8 to 13) decorated with diagonal lacing.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5734
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "drum",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top skin/head of the drum is drawn as a clearly visible foreshortened ellipse spanning approximately 4-5 pixel rows (rows 4 to 8 at center) above the front cylindrical body with diagonal lashings.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5793
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cylindrical stone-age drum",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The drum head (taut skin cap) is clearly visible from above, spanning roughly rows 4 to 8 (about 5 pixel rows tall) above the south-facing drum body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5037
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylinder drum with stretched skin head",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stretched drum skin on top is shown foreshortened as an ellipse occupying rows 3-7 (approx 4-5 rows tall), clearly presenting the top surface above the cylindrical drum base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4103
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.804Z",
+ "cells": {
+  "16": [
+   "0cd4d1c38ee4d6f6"
+  ],
+  "24": [
+   "3019521004d163bd",
+   "7e470d7fbdf03e58",
+   "c062944e754360df",
+   "d908ff425260b842",
+   "f0602c68f71b6f9d",
+   "f431c7e09e5c8d04"
+  ],
+  "32": [
+   "04806a120020a851",
+   "361949cda06c0aa1",
+   "45a8d5fbcd16923d",
+   "c3b7b5c7606e33b4",
+   "ca553c101092603d",
+   "f9d44b4de4504d70"
+  ],
+  "48": [
+   "1cbc318574efd0e0",
+   "40d1978df4dd0fc8",
+   "4d91c52598e11cfb",
+   "65ac05d6edacd824",
+   "d660fc643c65f3b2",
+   "e87282467bb173ad"
+  ]
+ }
+}

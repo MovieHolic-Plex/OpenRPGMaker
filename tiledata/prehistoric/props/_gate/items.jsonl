@@ -8,13 +8,13 @@
 {"png": "ph-torch-f1.png", "kind": "column", "name": "횃불 말뚝 (프레임 2)", "label": "prehistoric/ph-torch-f1"}
 {"png": "ph-torch-f2.png", "kind": "column", "name": "횃불 말뚝 (프레임 3)", "label": "prehistoric/ph-torch-f2"}
 {"png": "ph-spit-roast.png", "kind": "frame", "name": "고기 꼬치 굽기(Y 기둥 + 꼬챙이)", "label": "prehistoric/ph-spit-roast"}
-{"png": "ph-drying-rack.png", "kind": "frame", "name": "가죽 말리는 건조대", "label": "prehistoric/ph-drying-rack"}
-{"png": "ph-fish-rack.png", "kind": "frame", "name": "생선 말리는 건조대", "label": "prehistoric/ph-fish-rack"}
-{"png": "ph-hide-frame.png", "kind": "frame", "name": "가죽 펴는 틀", "label": "prehistoric/ph-hide-frame"}
+{"png": "ph-drying-rack.png", "kind": "frame", "name": "가죽 말리는 시렁(장대 둘 위에 펼쳐 넌 가죽)", "label": "prehistoric/ph-drying-rack"}
+{"png": "ph-fish-rack.png", "kind": "low_furniture", "name": "생선 말리는 평상(갈대 발 위 생선)", "label": "prehistoric/ph-fish-rack"}
+{"png": "ph-hide-frame.png", "kind": "frame", "name": "가죽 펴는 틀(낮은 통나무 틀 안 가죽)", "label": "prehistoric/ph-hide-frame"}
 {"png": "ph-pots.png", "kind": "container", "name": "흙 항아리 셋", "label": "prehistoric/ph-pots"}
 {"png": "ph-basket.png", "kind": "container", "name": "곡식 바구니", "label": "prehistoric/ph-basket"}
 {"png": "ph-woodpile.png", "kind": "organic", "name": "장작더미", "label": "prehistoric/ph-woodpile"}
-{"png": "ph-spear-rack.png", "kind": "frame", "name": "창 걸이(돌창)", "label": "prehistoric/ph-spear-rack"}
+{"png": "ph-spear-rack.png", "kind": "low_furniture", "name": "창 평상(털가죽 위 돌창 셋)", "label": "prehistoric/ph-spear-rack"}
 {"png": "ph-quern.png", "kind": "low_furniture", "name": "맷돌(갈판 + 갈돌)", "label": "prehistoric/ph-quern"}
 {"png": "ph-log-seat.png", "kind": "seat", "name": "통나무 의자", "label": "prehistoric/ph-log-seat"}
 {"png": "ph-stone-seat.png", "kind": "seat", "name": "돌 의자", "label": "prehistoric/ph-stone-seat"}
@@ -24,14 +24,14 @@
 {"png": "ph-dolmen.png", "kind": "structure", "name": "고인돌", "label": "prehistoric/ph-dolmen"}
 {"png": "ph-totem.png", "kind": "column", "name": "토템 기둥(새·짐승·눈)", "label": "prehistoric/ph-totem"}
 {"png": "ph-totem-b.png", "kind": "column", "name": "토템 기둥(짐승 넷)", "label": "prehistoric/ph-totem-b"}
-{"png": "ph-skull-pole.png", "kind": "column", "name": "머리뼈 장대", "label": "prehistoric/ph-skull-pole"}
+{"png": "ph-skull-pole.png", "kind": "column", "name": "머리뼈 장대(기둥 앞에 묶은 머리뼈)", "label": "prehistoric/ph-skull-pole"}
 {"png": "ph-drum.png", "kind": "round_body", "name": "가죽 북", "label": "prehistoric/ph-drum"}
 {"png": "ph-altar.png", "kind": "box", "name": "제단 돌(납작한 돌판)", "label": "prehistoric/ph-altar"}
 {"png": "ph-bone-pile.png", "kind": "debris", "name": "뼈 더미", "label": "prehistoric/ph-bone-pile"}
 {"png": "ph-bone-pile-l.png", "kind": "debris", "name": "큰 뼈 더미(엄니 하나)", "label": "prehistoric/ph-bone-pile-l"}
 {"png": "ph-ribcage.png", "kind": "debris", "name": "거대 갈비뼈 화석(땅에서 솟은 아치)", "label": "prehistoric/ph-ribcage"}
 {"png": "ph-dino-skull.png", "kind": "debris", "name": "공룡 머리뼈 화석", "label": "prehistoric/ph-dino-skull"}
-{"png": "ph-longneck.png", "kind": "debris", "name": "긴 목 공룡 뼈대(누운 화석)", "label": "prehistoric/ph-longneck"}
+{"png": "ph-longneck.png", "kind": "debris", "name": "긴 목 공룡 뼈대(땅에 누운 화석, 위에서 본 모습)", "label": "prehistoric/ph-longneck"}
 {"png": "ph-fossil-rock.png", "kind": "organic", "name": "화석 박힌 바위(암모나이트)", "label": "prehistoric/ph-fossil-rock"}
 {"png": "ph-tarpit.png", "kind": "terrain", "name": "타르 웅덩이(거품·빠진 뼈)", "label": "prehistoric/ph-tarpit"}
 {"png": "ph-tarpit-f1.png", "kind": "terrain", "name": "타르 웅덩이(거품·빠진 뼈) (프레임 2)", "label": "prehistoric/ph-tarpit-f1"}

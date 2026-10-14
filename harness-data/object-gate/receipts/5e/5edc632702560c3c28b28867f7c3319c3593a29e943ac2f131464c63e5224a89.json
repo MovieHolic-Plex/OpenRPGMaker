@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5edc632702560c3c28b28867f7c3319c3593a29e943ac2f131464c63e5224a89",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "prehistoric stone-age totem b",
+ "label": "prehistoric/ph-totem-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "totem pole with decorative cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The totem pole and its biconical cap are drawn in flat front elevation; the equator band at row 7 and the segment dividers at rows 21 and 32 are completely straight horizontal lines with no 3/4 foreshortening or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5700
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "totem pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The totem pole is drawn in pure front elevation: all segment dividing lines and the bottom base are completely flat 1px horizontal lines, and the diamond-shaped cap at the top is drawn from a side/front view showing its underside (rows 8-10) tapering back to the pole with no 3/4 downward curvature or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5502
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "totem pole column with conical/mushroom cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire totem is drawn in flat front elevation. All horizontal dividers, the red cap band (row 7), and the base (row 45) are perfectly straight horizontal lines. Additionally, the cap shows an undercut (rows 8-10) visible from below/front rather than a top surface seen from a 45-degree downward angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6563
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "carved wooden totem pole with pointed cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, its sectional dividers, base, and the cap's red band are all drawn with flat horizontal lines with no 3/4 perspective curve or foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4349
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.804Z",
+ "cells": {
+  "16": [
+   "8cac1d54160219ab",
+   "d53842f6687faa4d",
+   "e3ec2bc3149054d6"
+  ],
+  "24": [
+   "15b0b532144125b7",
+   "2665ffe47cbc3b78",
+   "3ecc6474967d1d64",
+   "3f37d26173ff4467",
+   "f2ef94586a2867e4",
+   "f362d8a4de1bb97e"
+  ],
+  "32": [
+   "25ba426adaab00f7",
+   "2c0ed2f571253c67",
+   "30c200d73d0721ab",
+   "383652bbf4a10a4c",
+   "506d7699b2ee377b",
+   "747db11e695ee9d6",
+   "8019e839efa644f8",
+   "ab6037ebf1dd76fc",
+   "b0893c191250fa4a",
+   "f09c8ed7ea27fcf5",
+   "f10ed05a7b3969b9",
+   "fe601aaaf5f0f465"
+  ],
+  "48": [
+   "7304d3910462e799",
+   "aa2462920d8e1abd",
+   "e1f2d70d21b1e49a"
+  ]
+ }
+}
