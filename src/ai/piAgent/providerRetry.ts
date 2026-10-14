@@ -22,6 +22,8 @@ const TRANSIENT_PATTERNS: readonly RegExp[] = [
   /\boverloaded\b|\bUNAVAILABLE\b/i,
   /returned an empty response/i,
   // 2026-10-14 gpt-6-astra 오프닝 시험: OpenAI 쪽 「An error occurred while processing your request … (upstream_server_error)」 로 6·17턴째에 끝났다 — 재요청하면 풀리는 서버 오류.
+  // 2026-10-15 Argon 8318 프록시 경로: 계정 승격 순간 「unknown provider for model」, 소켓 끊김, 일회성 400 — 같은 요청을 다시 보내면 풀린다.
+  /socket connection was closed unexpectedly|unknown provider for model|400 Request contains an invalid argument/i,
   /upstream_server_error|An error occurred while processing your request/i,
   // 2026-10-14 Argon 오프닝 px4: 20분 실행 중 「OAuth token expired before request — please retry; AuthStorage will refresh on the next attempt」
   // 로 28턴째에 끝났다. 다음 시도에서 토큰이 갱신된다고 스스로 말하는 오류라 이어 가면 풀린다.
