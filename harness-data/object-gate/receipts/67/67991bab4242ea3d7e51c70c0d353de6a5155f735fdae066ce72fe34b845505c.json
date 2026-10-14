@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "67991bab4242ea3d7e51c70c0d353de6a5155f735fdae066ce72fe34b845505c",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "네온 노점 B(시안 차양 + 꼬치 진열 + 앞 판 네온 띠)",
+ "label": "sf-station/sf-street-market-stall-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "food stall counter",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter top surface is clearly visible from rows 17 to 22 (about 6 px deep) displaying four plates of food viewed from above, above the south-facing front counter panel (rows 23-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4659
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "street stall counter",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter table top is visibly foreshortened across rows 18-22 (about 5 pixel rows) displaying plates of food, with the front face of the stall extending below it (rows 23-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4126
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "market stall counter and awning",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter top surface is clearly visible from above at rows 18-22 (approx. 5 pixel rows) displaying food plates, above a vertical front face with a neon strip (rows 23-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5757
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "market stall counter and canopy",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter surface is clearly visible from above across rows 17-22 (6 source pixel rows) displaying plates of food, and the canopy roof also shows its sloped top surface across rows 1-9.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6563
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.248Z",
+ "cells": {
+  "16": [
+   "1b9bbfea6e3473c8",
+   "8ef6f78c2339a921",
+   "d9bf928e36462a2a",
+   "f4f5eade1ccb9335"
+  ],
+  "24": [
+   "0c032859387e62d2",
+   "126e6c8776fa0c61",
+   "1897f11a7c652cc6",
+   "2586410749670099",
+   "38bf04823df95b79",
+   "3cde6265cb9d7d68",
+   "3cf0b59a7cea285e",
+   "3fd084415faf7bde",
+   "5340598c3efe694b",
+   "5d7c94acd554b88d",
+   "5e571cb528e8b181",
+   "6463ebacc8aaddcb",
+   "7b09dc48e653fde0",
+   "81c712146e32d19b",
+   "8767780f86b42969",
+   "91aae64388554fb1",
+   "bc9ba69b6577a37f",
+   "c29df53c9a6f1e38",
+   "c3b7ac32f3ec4610",
+   "c9d9b98174e16908",
+   "cac63748cd495607",
+   "e1d856d2df964e0f",
+   "f72b17d74929c92b",
+   "fe3e70894d64f9b3"
+  ],
+  "32": [
+   "0757127d1c0ee214"
+  ],
+  "48": [
+   "2b13a4884bf376cb",
+   "461ba680ff15f21a",
+   "73a9ebe3352006b4",
+   "99d22320e6a5a982",
+   "c884e2b2df98bce0",
+   "fbac6e24a2eef8b2"
+  ]
+ }
+}

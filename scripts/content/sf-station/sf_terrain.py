@@ -353,6 +353,14 @@ def wall_face(c, mat):
             for x in range(16):
                 t = -1 if y < 22 else -2
                 if y >= 29: t = -3
+                # 화풍 정렬 2026-10-14: 단색 판 → 위는 빛 받는 결(한 단 밝은 짧은 솔결), 아래로 갈수록 때 점, 아래 판은 드문 밝은 긁힘
+                n = hsh(ox + x, y, 211 + v) % 100
+                if 7 <= y < 21:
+                    if n < max(0, 12 - (y - 7)) or (n == 50 and (x + y) % 3 == 0): t = 0
+                    elif n > 97 - (y - 7) // 3: t = -2
+                elif 23 <= y < 28:
+                    if n < 6: t = -1
+                    elif n > 94: t = -3
                 c.P(ox + x, y, K(base, t))
         c.HL(ox, 0, 16, K(base, 1)); c.HL(ox, 1, 16, K(base, -3))                 # 천장 밑 그늘
         c.HL(ox, 5, 16, K(acc, 1 if mat == 'hull' else 2)); c.HL(ox, 6, 16, K(acc, -1))   # 띠

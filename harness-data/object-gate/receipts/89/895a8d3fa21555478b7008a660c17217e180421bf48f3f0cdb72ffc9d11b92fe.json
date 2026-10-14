@@ -1,0 +1,143 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "895a8d3fa21555478b7008a660c17217e180421bf48f3f0cdb72ffc9d11b92fe",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "에어록 모듈(사다리꼴 지붕 + 회전 경고등 + 미닫이 문 + 위험 띠)",
+ "label": "sf-station/sf-airlock",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "airlock module building with sliding door and trapezoidal upper section",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure 2D front elevation (side-scroller style). The trapezoidal upper section terminates at row 3 with a 1px outline/highlight and shows no horizontal roof deck or top surface. All horizontal features (the yellow hazard bar, door lintel, and bottom hazard threshold) are flat 1-2px vertical front bands with zero visible depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10442
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "airlock module structure",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper section (rows 3-17) depicts a foreshortened trapezoidal/mansard roof slope (15 rows tall) showing the top surface of the structure above the vertical front wall and sliding door.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6919
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "airlock module",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in a pure front elevation (architectural elevation). The upper trapezoidal section represents a chamfered bulkhead/facade seen straight on, with lights and vents facing the camera at eye level, and has 0px of visible top roof deck. No horizontal top surfaces (roof top, lintel top, or ground plane) are rendered in 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13808
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "airlock module structure with trapezoidal roof and sliding door",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features a prominent trapezoidal roof slope visible from rows 3 to 17 (15 rows) above the vertical door section, matching top-down 3/4 RPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6566
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.236Z",
+ "cells": {
+  "16": [
+   "002cf51e6f008d3b",
+   "049a97203752c46e",
+   "203874164a26bd54",
+   "38913738784c2037",
+   "3a86b08654beab45",
+   "7608fbb87e3c48e6",
+   "871f654188cf1b70",
+   "96588f86011ae9d6",
+   "cdba73eed5729434"
+  ],
+  "24": [
+   "12d41b3b1cd19d21",
+   "26c3fc037875e906",
+   "7860f9714004f7ca",
+   "a72a99804fade660"
+  ],
+  "32": [
+   "0b357b93118a24ec",
+   "0bb3081d8595327a",
+   "1d74b945b1f60c42",
+   "1e74a9d007cacc49",
+   "25e3341b4ec33225",
+   "2691571bc1e0847c",
+   "2f8d57d5a9500b8e",
+   "52e62bacc5f275e0",
+   "5f1f38e6429ac4c1",
+   "610a6d2a338161db",
+   "82ed1079f44f5b3f",
+   "93e26d7a6e2eaaf0",
+   "a215cc7e838c12f7",
+   "acd62944c2768c3a",
+   "add435a20f3f66b6",
+   "c4f75189e308a8ff",
+   "d425873711c55ea3",
+   "d5049b9086f0d037",
+   "dab4596bd452c368",
+   "e2eabe9f8825c9e5",
+   "e5ab245366e0b5da",
+   "f16518eaee93e00e",
+   "f66722ace758e328",
+   "f91ed5e8f670207e"
+  ],
+  "48": [
+   "de01b9301875e0b4"
+  ]
+ }
+}

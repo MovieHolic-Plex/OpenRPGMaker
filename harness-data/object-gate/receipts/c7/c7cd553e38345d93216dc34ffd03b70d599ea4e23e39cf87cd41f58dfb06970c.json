@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c7cd553e38345d93216dc34ffd03b70d599ea4e23e39cf87cd41f58dfb06970c",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "화물 컨테이너(주름 판 앞면 + 윗면 이음 + 잠금 손잡이)",
+ "label": "sf-station/sf-cargo-container-int",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cargo container",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cargo container shows a clear top surface spanning rows 1 to 10 with roof seams, and a vertical front corrugated door face from row 11 to 30, perfectly matching the 3/4 top-down JRPG view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4112
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "shipping cargo container",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof surface of the container is clearly visible from rows 2 to 10 (approx. 9 rows tall) with structural ribs, above the corrugated front face extending from row 11 to row 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7348
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "shipping container",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The container roof/top surface is clearly rendered across rows 1-10 with longitudinal ribs and highlights, while the vertical front face with corrugated door panels and handles occupies rows 12-29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6142
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cargo container",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof of the container spans roughly rows 1 to 10 (10 pixel rows tall) with foreshortened seam lines, before transitioning to the vertical corrugated south face from row 11 downwards.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5635
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.256Z",
+ "cells": {
+  "16": [
+   "617dc9f36ef5d0c3",
+   "9623bb3e11e369ed",
+   "acccee138ae629ce",
+   "cd91a319c249e7b0"
+  ],
+  "24": [
+   "05fe5979c0232aea",
+   "077a77a8e72580fe",
+   "14282c15ad6c71d9",
+   "1f4eb866b15ea53c",
+   "1f78464e1f7eaa84",
+   "2b77e021149bf066",
+   "2d4e8e3a1ed2c5d0",
+   "356e23dc6e7c8714",
+   "37f1db7a4db4d68c",
+   "56c5c5a2e5bb44c6",
+   "62228aadf0931f7d",
+   "6e9e51db5ea5612c",
+   "89b261eb6cf3ec6c",
+   "958f54f8d64adcc5",
+   "a08116e471bf32a3",
+   "ac03369512de0808",
+   "afb3f4f9fb453a66",
+   "b33c71ceeb872b04",
+   "bb86fd642f809961",
+   "d17cde4f85888cae",
+   "d4427a20babbfdde",
+   "d5179031a58990b8",
+   "ecf0859038fcde63",
+   "f48cd0d2724972c8"
+  ],
+  "32": [
+   "8ab052dc1e292377"
+  ],
+  "48": [
+   "0ccc48048f8c368a",
+   "20395b83bcc96007",
+   "4bfb6e4463f4a59a",
+   "877373958841bcf4",
+   "9db779717961d977",
+   "a92798f7341508ed"
+  ]
+ }
+}

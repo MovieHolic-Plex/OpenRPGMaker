@@ -1,0 +1,127 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f559f1fa83020261190b2d018a9530a2ae3e1f7884a313c5ca6bc4477c5b00aa",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "호버 포드(사다리꼴 지붕 윗면 + 유리 돔 캐노피 + 지붕 짐 받침대 + 짧은 옆판 + 밑 추진 빛 + 그림자)",
+ "label": "sf-station/sf-pod-car",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hover pod vehicle body",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pod features a clearly foreshortened trapezoidal top/roof surface spanning rows 2 to 14 on which the glass dome canopy and roof rack are mounted, transitioning to a vertical front bumper face from rows 15 to 24.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8272
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hover pod vehicle",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hover pod is drawn as a pure front elevation. The central glass dome canopy has a completely straight horizontal base (row 14) and 2D semicircle outline rather than an elliptical footprint on a receding top surface. The thrusters, bumper, and panels are all projected straight on with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8953
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hover pod vehicle body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hover pod is drawn as a flat front elevation: the glass dome canopy has a completely straight flat base (row 14) and vertical semicircular arch, the roof rack at rows 0-3 is seen directly from the front on two upright posts, the lower light bar (rows 20-21) and thrusters (rows 25-26) are drawn straight-on with no horizontal top surfaces shown foreshortened.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8066
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hover pod vehicle/structure",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body clearly depicts a top-down 3/4 view: the sloped trapezoidal roof deck spans rows 2 to 15 (~13 pixel rows) bearing a glass dome canopy and roof rack, above a visible south front face (rows 15 to 24) with light strips and underside thrusters.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8280
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.238Z",
+ "cells": {
+  "16": [
+   "273eb20a62767343",
+   "7865612875c5936a",
+   "8b567a807b5d3862",
+   "c5af67b2d858c144",
+   "d418c138b55cec8d",
+   "e5085955dede4dd0"
+  ],
+  "24": [
+   "0c7ebb5ea91ac6f1",
+   "311f0ab185329818",
+   "625ae28286a57790",
+   "801fa18826c0352d",
+   "8b7c5ab228be4f4f",
+   "92da4e55e29940a0",
+   "a49a4d056353e771",
+   "d6a3f52ed7c6eeab"
+  ],
+  "32": [
+   "28f851ec72a24151",
+   "3c1b80f266a2bcce",
+   "4924238e07728612",
+   "76b734bfdec31fdc",
+   "94ee4159ed30029e",
+   "a98dcf85d52484cf"
+  ],
+  "48": [
+   "2451fe621e92df1a",
+   "f896d5d447c364a1"
+  ]
+ }
+}

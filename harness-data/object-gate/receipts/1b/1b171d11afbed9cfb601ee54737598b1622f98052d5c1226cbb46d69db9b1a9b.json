@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1b171d11afbed9cfb601ee54737598b1622f98052d5c1226cbb46d69db9b1a9b",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "3D 프린터(유리 덮개 상자 + 출력 베드 위 물체 + 윗면 필라멘트 실패)",
+ "label": "sf-station/sf-3d-printer",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "3D printer housing",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 2 to 10 form the top surface of the printer (9 rows tall) with a filament spool lying flat on it, meeting the south face chamber below at row 11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8694
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "enclosed 3D printer",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the printer is clearly visible from rows 2 to 10 (9 pixel rows deep) with a filament spool resting on it, meeting the 3/4 top-down perspective requirement.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5851
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "3D printer enclosure",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the printer cabinet is clearly visible from row 2 to row 10 (9 rows tall) featuring a top-mounted filament spool drawn in 3/4 perspective, followed by the front face with the print chamber and base below row 11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9408
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "3D printer enclosure",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 2–10 form a distinct 9-pixel-tall top surface holding a horizontal filament spool, clearly separated from the front face (rows 12–31) by a horizontal border line at row 11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5276
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.255Z",
+ "cells": {
+  "16": [
+   "67a045ba7b4ed132",
+   "8b2398902efe3dc5",
+   "9e820039de6ef0f7",
+   "d0ecc62ac29a9fd0"
+  ],
+  "24": [
+   "0fc71f95027474e3",
+   "1693579a962fe2cb",
+   "2974cd5e83f4801c",
+   "2c878a502ccd7017",
+   "541fa3802d6e2059",
+   "563d5904678f0a98",
+   "5b6e995fc0dc299c",
+   "60f3c714781aac36",
+   "67cdc1c8fcc7a5f6",
+   "6ebbcd83738ab589",
+   "80f9613a324c28a7",
+   "84d7ee73eab9fb3c",
+   "97f1c262cb785897",
+   "a78a3e8513594aa6",
+   "b6295a475e4dc111",
+   "bb824364a4d28a9e",
+   "be72a9203f5f5f69",
+   "d1934566dc530a48",
+   "d77cc96f0957c19e",
+   "e54d4a5c2c39dbfe",
+   "e72e0a5db3f85195",
+   "e8df517d48136d93",
+   "f152363b55aa1b01",
+   "f92828260f936a2e"
+  ],
+  "32": [
+   "27f370001382689e"
+  ],
+  "48": [
+   "06c71ae378f408fe",
+   "40f452eb8b1fadcb",
+   "5fe9adebaaba346a",
+   "6220d62460dbe6a8",
+   "92d7ec14ce807a76",
+   "af361d20478abc33"
+  ]
+ }
+}

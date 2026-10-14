@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "656f28c25264e0f01fb7067b4bf188bd3754d2ad938cc94097124c3b4356afe3",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "전력 도관 상자(윗면 굵은 케이블 둘 + 번개 경고 램프)",
+ "label": "sf-station/sf-power-conduit",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "power conduit box",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 2–8 clearly show the top surface of the conduit box with two horizontal cables and a yellow warning box, while rows 9–14 form the front face with indicator LEDs and vents.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4483
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "power conduit box",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface is clearly depicted from row 2 to row 8 (7 rows tall) showing two horizontal cables and a yellow warning box, while the south front face occupies rows 9 to 14 with status indicator lights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7289
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "power conduit box",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface spans rows 2 to 8 (approx. 7 pixels tall) clearly showing cables and a yellow junction box from above, while the south front face occupies rows 9 to 15 with indicator lights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3291
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "power conduit box",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the conduit box is clearly visible across rows 2-8 (~7 rows tall) showing two thick cables and a yellow lightning warning plate, atop a front face with indicator lights on rows 9-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6943
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.256Z",
+ "cells": {
+  "16": [
+   "251fe856e56602e1",
+   "550c335cfbf737af"
+  ],
+  "24": [
+   "5163ee9bf1ac412f",
+   "60984d217f63435e",
+   "701edf6d5aa9a184",
+   "772b6cb0c308c8bc",
+   "7f8c55c91d348d59",
+   "9515b6a23c2540bd",
+   "981113af02d7dcd8",
+   "9ce1b2594ac6e010",
+   "a0f57c7a9a6570a4",
+   "c3fd0d3c5006a671",
+   "c5d62c0c91860a5e",
+   "f66e15c45d61bf56"
+  ],
+  "32": [
+   "5ad2c8f49f76e3b7",
+   "5c515bdb0d40babb"
+  ],
+  "48": [
+   "293fa738bb4fba1b",
+   "5fd3c751ad02e79d",
+   "6844e8b9ca0a6505",
+   "bfe8e7a4215f4bcc",
+   "df89c1256011ac87",
+   "f5570021fe344082"
+  ]
+ }
+}

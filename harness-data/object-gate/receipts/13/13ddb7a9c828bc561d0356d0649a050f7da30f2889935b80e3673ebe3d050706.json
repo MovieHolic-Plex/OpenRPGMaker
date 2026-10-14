@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "13ddb7a9c828bc561d0356d0649a050f7da30f2889935b80e3673ebe3d050706",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "실내 자판기(윗면 + 음식 진열창 + 버튼 줄 + 투입구)",
+ "label": "sf-station/sf-vending-int",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "indoor vending machine",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the vending machine is clearly rendered across rows 1-5 (5 source pixel rows tall) with depth shading from back to front, positioned above the south-facing front display and dispenser panel.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11424
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "indoor vending machine",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the vending machine is clearly rendered across rows 1 to 5 (about 5px tall) with top-down shading (darker toward the back, lighter highlight toward the front edge) before transitioning to the front face at row 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6218
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "indoor vending machine",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the vending machine is clearly drawn across rows 1 to 5 (5 pixels tall) with top-down shading and front-edge overhang highlight above row 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8847
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall indoor vending machine with top surface, glass display window, buttons, and dispenser slot",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-5 show a clear 5-row foreshortened top surface drawn in a lighter wood/amber tone lit from above, distinct from the darker vertical front face below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12619
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.255Z",
+ "cells": {
+  "16": [
+   "2b7627ea0cc212a7",
+   "f13daf76167a71ef"
+  ],
+  "24": [
+   "2f2eec7bb97099b3",
+   "5209bed895a7633b",
+   "57bad5dba7590f3e",
+   "8390984f72f6fc2a",
+   "8bc561488e31ad87",
+   "8defd5643b797902",
+   "94fe9a10a5e4f853",
+   "aae641099f788418",
+   "cc3a9c8aa35c7ea0",
+   "f878ce7b358c3afd",
+   "fb25e465af3fdbfe",
+   "ff37dfce5a112d05"
+  ],
+  "32": [
+   "1044f11cec956f00",
+   "3fc49d7b8d360a73",
+   "e7888b728060f379"
+  ],
+  "48": [
+   "0542e5448dc11402",
+   "120fc54870bb8fcb",
+   "18730f23e146eb2c",
+   "2005073421ea4d09",
+   "5c081b41ac1f9e8b",
+   "ca16bf2e9374d3a0"
+  ]
+ }
+}

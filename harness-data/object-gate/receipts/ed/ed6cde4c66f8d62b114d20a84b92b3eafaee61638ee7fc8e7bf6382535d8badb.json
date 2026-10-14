@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ed6cde4c66f8d62b114d20a84b92b3eafaee61638ee7fc8e7bf6382535d8badb",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "냉동 수면 포드(넓은 윗판 윗면 6줄(환기·램프) + 서리 유리 앞문 + 받침 상태 램프)",
+ "label": "sf-station/sf-cryo-pod",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cryo-sleep pod",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the pod is clearly drawn across rows 0–5 (6 source pixel rows) showing a top-down view with a ventilation slot and lamp panel, before the front face drops down at row 6 with the window and base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5431
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cryo-sleep pod",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-5 depict the top surface of the pod with a vent slot and status lamp, followed by a dark dividing seam at row 6 and the vertical front face below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3019
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cryo sleep pod",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Top panel of the pod is clearly drawn across rows 0-5 (6 rows) with top-down details (vent line and cyan display), followed by the vertical front face and frosted glass window below row 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3299
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cryo sleep pod",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the pod occupies rows 0-5 (6 rows) featuring a vent slot and status screen seen from above, resting atop the front vertical door assembly and base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4231
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.253Z",
+ "cells": {
+  "16": [
+   "596d832063c94969",
+   "dd538e4bc175ecb2"
+  ],
+  "24": [
+   "008033db80e1894a",
+   "320fe7b80dcec472",
+   "7f3bea616ab742d9",
+   "859f233881ec91e7",
+   "a0ae19a9b011db6d",
+   "a9f40add7e7ffbf1",
+   "b71b28dd466c3ca6",
+   "baf41fa9168b51f2",
+   "c1e8d8013803e83b",
+   "cf6e7061762c6041",
+   "ec806c44d536bd2f",
+   "fca0bf320e5d1ab7"
+  ],
+  "32": [
+   "1d5ab528a5b78221",
+   "23d1c11f1f03ead5",
+   "c438feea528e67ad"
+  ],
+  "48": [
+   "2b6496a068374a81",
+   "652e12992544270a",
+   "6a6f2f14e5ec4200",
+   "706e638c4ed84cc1",
+   "a92eb67f161cc6d8",
+   "f234c71ce68483d5"
+  ]
+ }
+}

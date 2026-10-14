@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dc1c5c5ec228cfc9dedf41562bb13db162e284077d71126da80af505c7352b8f",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "줄무늬 차단 바리케이드(두꺼운 가로대 윗면 + 위험 사선 앞면 + 다리 + 경광등)",
+ "label": "sf-station/sf-street-barrier-stripe",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "crossbar of barricade",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the horizontal crossbar is visible from row 1 to row 5 (5 rows tall, including an orange stripe), above the 5-row diagonal hazard-striped front face at rows 6-10.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4534
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "crossbar of barricade",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-5 form the top surface of the barricade's main beam (featuring an orange stripe and highlight), while rows 6-10 form the vertical front face with yellow and black hazard stripes, followed by dark legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3521
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal barricade crossbeam with warning lights and legs",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The crossbeam clearly shows a foreshortened top surface spanning rows 1-5 above the hazard-striped front face spanning rows 6-10.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4736
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "traffic barricade horizontal beam",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main horizontal beam clearly displays a 5-row deep top surface (rows 1–5) viewed from above, with warning lights mounted at the back edge, above a 5-row vertical front face with hazard stripes (rows 6–10) and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5979
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.251Z",
+ "cells": {
+  "16": [
+   "7102b73060d90b57",
+   "8b9713a61953fcf6"
+  ],
+  "24": [
+   "145d4ec5611dff60",
+   "15048252f0865fa8",
+   "299595fb671d0f9f",
+   "2e1077794b5945ac",
+   "6cc3ad3c890427b2",
+   "717d82757f4cda54",
+   "8fca997738c48252",
+   "90b198a86c020b79",
+   "a3de678af80f4290",
+   "cec9bc442f5f672c",
+   "d03f6ad40d9ab617",
+   "ee4cd2acd63e6215"
+  ],
+  "32": [
+   "536a9ff836490d9a",
+   "89284ed383c0a303"
+  ],
+  "48": [
+   "3b92b542ce52ac76",
+   "55d3bed291419c63",
+   "8b3007528cb12da8",
+   "b5ce09d2676f0d0f",
+   "bbf3babf7ec2ef80",
+   "cb20329e170291be"
+  ]
+ }
+}

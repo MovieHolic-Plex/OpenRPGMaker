@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "338740f5f32633f57aefb18d47f463eac0b7f5ea1577506622f9d633ba57815e",
+ "width": 64,
+ "height": 32,
+ "kind": "terrain",
+ "name": "white lab wall front face strip under the ceiling autotile: upper and lower face rows, four variants",
+ "label": "sf-station/sf-wall-face-white",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall face panels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is terrain (wall face strip autotile), representing the vertical south-facing surface of a laboratory wall. As a terrain wall face, it correctly displays vertical paneling without standing object perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12075
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sci-fi/lab wall front face strip (terrain autotile/variants)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tiles correctly depict vertical south-facing wall surfaces under the ceiling in standard 3/4 RPG Maker perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12202
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall front face strip",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a vertical wall front face with panels, conduit pipes, and a vent. As a wall front face terrain element, it correctly depicts the vertical south-facing plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11562
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall front face tiles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile strip depicting a vertical lab wall front face with paneling, trim, pipes, and a vent; wall faces are terrain surfaces rather than standing objects and correctly do not show top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11838
+  }
+ ],
+ "decidedAt": "2026-10-14T08:11:38.267Z",
+ "cells": {
+  "16": [
+   "1ac75af7f8799814",
+   "218fe48c422ad392",
+   "3d649805e673f4f4",
+   "6074387e7b602bd4",
+   "8a82ec0fae10c227",
+   "a5dd331175859464",
+   "b8adc75d9648e295",
+   "f06d17545d25a331"
+  ],
+  "24": [
+   "082ee22ec145c910",
+   "08d7237a4bde9557",
+   "09f000e27c659be3",
+   "11be5a9644cc181e",
+   "162722bdc399dbf5",
+   "20d3391efecaa7fb",
+   "2f5d3cf524e6402e",
+   "35bbf841f1b40242",
+   "42db5b4cb06e79ef",
+   "4e5ee5b4a9287528",
+   "537f09474fc7a3c5",
+   "5cc323f5b6fdb108",
+   "60e08747fd2f0f1c",
+   "71d039e7432e73f9",
+   "7ff6e723c4aaa4e6",
+   "91a60c1de34906a1",
+   "93406d5c5ba4ad07",
+   "a3b33f7037b6b1ec",
+   "a7e3632b6fe6d06a",
+   "a8951c54ccc22079",
+   "acd4a829fcf004f2",
+   "ae6fb2a36839cfd5",
+   "aeb66bbddd96b5bd",
+   "b1a236e3a1751f29",
+   "ba8513bece3c409b",
+   "d5a17e9294a79a4b",
+   "dcaa3fb8248144de",
+   "de18a05357a78316",
+   "e82f09fca520777d",
+   "e891422992a15bb5",
+   "eb438b63a911fdba",
+   "ebbcecb77bae4890",
+   "ec8068b7eb4c1e82",
+   "f7f9becf06be736b",
+   "f84976015c0b0810",
+   "fad75a28ddc49026"
+  ],
+  "32": [
+   "2533ce3f5257e64b",
+   "f2065c44d3f80231"
+  ],
+  "48": [
+   "237b50540ea05999",
+   "3018493742145e72",
+   "44c25e276dc2d394",
+   "46c004bbf5ed2cb0",
+   "4ccc58fe2c55e574",
+   "4ce9fa3184c706e0",
+   "4f96a6e89395caca",
+   "574e3dd173fac65b",
+   "8f8ce14e2e289eab",
+   "972ba44dc2fd0453",
+   "b4f4ce0fa11b6d57",
+   "fcbec00f052c32e0"
+  ]
+ }
+}

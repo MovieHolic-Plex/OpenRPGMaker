@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1673026fb61871ec3901b6bc5a4e0d31170bddee858a73380c7932e73a2784da",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "사물함 두 칸 열(윗면 + 문 둘)",
+ "label": "sf-station/sf-locker-row",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "two-door locker unit",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the lockers is clearly visible across rows 1-5 (approx. 4-5 pixel rows deep with front highlight at row 5), transitioning to the front door faces below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3494
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "two-door locker unit",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the locker unit is clearly drawn from rows 1 to 5 (5 source pixel rows tall) above the front locker doors which begin at row 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3397
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two-door locker cabinet",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the locker cabinet is clearly visible across rows 1 to 5 with proper foreshortening and highlight/shadow edges before the front doors start at row 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3484
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "metal two-door locker unit",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the locker unit is clearly foreshortened and visible across rows 1 to 5 (about 4-5 source pixel rows), with front faces and doors extending below from row 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2906
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.255Z",
+ "cells": {
+  "16": [
+   "166ad84f952725ae",
+   "417ada19834a63da",
+   "8ac1ca75edcd3f2a",
+   "b181cfefc74f77bd"
+  ],
+  "24": [
+   "0671b580f79b0c68",
+   "19536d57f58d6f20",
+   "1962c3a74d48f29d",
+   "1d70527f017149ba",
+   "2bbe99f2781250f6",
+   "41e269243549f4a9",
+   "438ebb185b1f7ff0",
+   "468eddda6e5ab170",
+   "4758943b578bd2d8",
+   "4ec02fe0181b77ca",
+   "50b2c94f27e81619",
+   "5f25923e1fd5e430",
+   "7019b44288476b18",
+   "97d968362061449a",
+   "9e4c1e3f249c36bb",
+   "a52adbc8b49180df",
+   "bf5416249dedc36f",
+   "bfbc7f20afde985d",
+   "c9800f77050863d4",
+   "ca07c7db4db66048",
+   "e631674de9f70896",
+   "e6c6dd829afd7b16",
+   "e9220d6b71eb1ca9",
+   "ee356dc4c07b5732"
+  ],
+  "32": [
+   "e4fa95aceff12732"
+  ],
+  "48": [
+   "0efc3e19174d44c9",
+   "58ee7d65ee2fbe3e",
+   "83973dcc9e786444",
+   "8e492d1b4fcfca6b",
+   "944fbb94156fbda3",
+   "c39b11307a82a89b"
+  ]
+ }
+}

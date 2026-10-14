@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "60062ae86d620425657516b3b831dc5ee8b9386906e3bdcd8ab459694d558bc3",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "시안 자판기(깊은 윗면 + 빛나는 진열창 + 색 캔 + 버튼)",
+ "label": "sf-station/sf-street-vending-cyan",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the vending machine is clearly drawn from rows 0 to 5 (about 5-6 pixel rows tall), properly foreshortened in 3/4 view above the front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4029
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vending machine body",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the vending machine is clearly drawn from rows 1 to 6 (about 6 pixels deep) with shading and an edge highlight before the front face begins at row 7.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3311
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cyan vending machine",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the vending machine is clearly rendered across rows 0–5 (approx. 6 rows tall) with foreshortened top detail, separated by an edge highlight at row 6 from the vertical front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4857
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cyan vending machine",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the vending machine spans rows 1 to 6 (about 5-6 pixel rows tall) with foreshortened top detailing before transitioning to the south-facing front facade at row 7.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3952
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.250Z",
+ "cells": {
+  "16": [
+   "0025386db859dbcd",
+   "834d799159f3c610"
+  ],
+  "24": [
+   "0a749a9cebeceefb",
+   "0c61cf435fa76f6c",
+   "16cfb139e2761e3c",
+   "1f1a3ab1f982c3a8",
+   "3fe541718ecf2326",
+   "42134a7030a131df",
+   "8349f1656652310f",
+   "8d7f3f42178bb916",
+   "bf03baf3c2abdf21",
+   "c7e3a0d328365434",
+   "f55ecd26136be1b9",
+   "feabd3a338294f13"
+  ],
+  "32": [
+   "a6e2a89869cf3ff4",
+   "b708ae66538c37cd",
+   "d6aa0691bd6ac50f"
+  ],
+  "48": [
+   "0757e9d1dac87b8b",
+   "0caac4ebda6ff65d",
+   "3fccb53f019bdfd4",
+   "7cb3123256c89097",
+   "98a634b5d5c34e9f",
+   "98bd00d5cc577ad6"
+  ]
+ }
+}

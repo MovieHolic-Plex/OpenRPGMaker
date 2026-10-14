@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8d1d5108cfd15288d3b2e39addef690d7b505af3d3a37bd30837bb800892abb1",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "발광 볼라드(위에서 보이는 넓은 둥근 윗면 + 테 램프 고리 + 짧은 원통)",
+ "label": "sf-station/sf-street-bollard",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "illuminated bollard with round top cap and cylindrical base",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top illuminated cap is rendered as a prominent ellipse spanning rows 1-10, showing a wide surface seen from above, sitting atop the front face of the cylindrical post (rows 11-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4165
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "illuminated bollard cylinder",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap is drawn as a large visible ellipse spanning rows 2 to 10 with a luminous lens and gold rim, while rows 11 to 15 form the front cylindrical body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5381
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "glowing bollard with top lamp lens and cylindrical base",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the bollard features a large, clearly visible elliptical glowing lens with yellow rim spanning rows 1 to 9, sitting above a 5-6 pixel tall front cylindrical base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3826
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "illuminated bollard top cap and cylindrical post",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bollard is rendered as a large elliptical lens/cap spanning rows 1-10 (roughly 9 rows tall) with yellow rim and glossy reflection, clearly visible from above, resting on a south-facing cylindrical base (rows 11-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3508
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.251Z",
+ "cells": {
+  "16": [
+   "1b972615387e0926"
+  ],
+  "24": [
+   "3ab9a178d0b8a637",
+   "57935409ab05c9fc",
+   "827005b8694723d7",
+   "cd689bb0f8c1e3ec",
+   "cf11540ebc7c32ed",
+   "d502fe171e8d6ed0"
+  ],
+  "32": [
+   "146f91ed7756fda8",
+   "343d730b03da1261",
+   "4b3c8b0d050f1df7",
+   "53308ef440b63c80",
+   "5570036b805be196",
+   "c059c2f4d3c79176"
+  ],
+  "48": [
+   "05149b933c8c4790",
+   "37e8b8cde30040f3",
+   "3c26bfd791078fce",
+   "57646aeb252cd8c5",
+   "6c40eb23f6bebc7f",
+   "904e0634bfba5f8b"
+  ]
+ }
+}

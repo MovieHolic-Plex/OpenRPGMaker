@@ -1,0 +1,127 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1a08359bfb953012976dc03b2575bd8af25ea1cd87e6898d66d42e7cd57b1b11",
+ "width": 48,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "냉동 수면 포드 세 기 묶음(공용 윗판 윗면 + 둥근 뚜껑 셋 + 서리 유리문 + 제어 띠)",
+ "label": "sf-station/sf-cryo-bank",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cryo-sleep pod trio with common top deck, frosted windows, and lower control plinth",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-6 depict a distinct 5-6px deep top deck/cap surface seen from above, featuring three foreshortened oval caps/windows before dropping into the front-facing glass tubes and control panels below row 7.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5170
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cryosleep pods unit (trio)",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top canopy/caps (rows 0-6) are drawn in pure front elevation with cyan indicator displays facing directly south. The horizontal top surface above this structure is only 1-2px of outline/rim (rows 0-1), lacking the required 3/4 foreshortened top view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 6255
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "three cryogenic sleep pods in a shared unit",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0 to 6 depict the foreshortened top surface of the shared top plate, featuring three round pod lids with 2:1 foreshortened elliptical cyan viewports (rows 2-5). The vertical front face with frosted glass doors extends below from row 7 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10298
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cryo sleep pod unit (three-pod bank)",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire assembly is drawn in pure front elevation. The shared top plate visible behind the lids (rows 0-1) is only 1-2px tall, which constitutes a rim line rather than a true foreshortened top surface. The lids, glass chambers, and bottom control bases are all depicted as flat frontal projections with no visible horizontal planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 20532
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.253Z",
+ "cells": {
+  "16": [
+   "02ac54694fb4e4b0",
+   "032ee02afd4f8ff7",
+   "120a716fcd366696",
+   "40e04e8073c0d166",
+   "48f7210a161028fa",
+   "8ed11a1e660e3560"
+  ],
+  "24": [
+   "004b142ac930198a",
+   "0b86f7aa35dbeeea",
+   "5bbaec4ddc3de404",
+   "7350299fef055a1c",
+   "83e1bc7d1a788569",
+   "b198f05381f652dc",
+   "d7a4b34c81bd0733",
+   "e427d3640c12fe08"
+  ],
+  "32": [
+   "61b736d772477fe0",
+   "753d5e7cc0bcfa7b",
+   "804cda6b9625e6f3",
+   "9a13d5340f098106",
+   "d6946421c724798f",
+   "e794a33a9bad0f09"
+  ],
+  "48": [
+   "042cc174961bf8d0",
+   "f3356894001cc324"
+  ]
+ }
+}

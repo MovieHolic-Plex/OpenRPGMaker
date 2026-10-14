@@ -22,21 +22,43 @@ def soft(c, ox, oy, mat, t0, seed, w=16, h=16, lo=1, hi=1):
 
 # ───────── 갑판 판
 def deck_plate(c, ox, v, oy=0):
-    """청회 갑판 판(16×16): 솔결 + 위·왼 이음 + 판 안 둘로 나눈 반판 이음(변형마다 방향 다름) + 모서리 볼트 + 긁힘."""
-    soft(c, ox, oy, 'hull', -1, 31 + v, lo=1, hi=0)
-    for j in range(3, 15, 5):
-        k = hsh(j, v, 4) % 6
-        c.HL(ox + 2 + k, oy + j, 2 + hsh(j, v, 5) % 3, K('hull', 0))
-    c.HL(ox, oy, 16, K('hull', -3)); c.VL(ox, oy, 16, K('hull', -3))
-    c.HL(ox + 1, oy + 1, 15, K('hull', 1)); c.VL(ox + 1, oy + 1, 15, K('hull', 0))
-    for (x, y) in ((3, 3), (13, 3), (3, 13), (13, 13)): c.P(ox + x, oy + y, K('hull', 2)); c.P(ox + x + 1, oy + y + 1, K('hull', -3))
-    if v == 1:                                           # 눌린 점검 판
+    """청회 갑판 판(16×16), 화풍 정렬 2026-10-14(버들항 포석 문법): 판 몸 3단 잔결(왼쪽 위 밝고 오른쪽 아래 어둡게 흐르는 점) +
+    위 이음(어두운 한 줄)·바로 밑 윗면 빛 턱 / 왼 이음·왼 빛 / 오른·아래 모서리 그늘 + 모서리 리벳(빛점+그림자점) + 긁힘·때.
+    이음은 선체 -2(#2a3345) 한 줄 — 검정 줄 없음. 변형 1 눌린 점검 판, 2 반판 이음, 3 바닥 등."""
+    P = lambda x, y, col: c.P(ox + x, oy + y, col)
+    for y in range(16):
+        for x in range(16):
+            g = (x + y) / 30.0                                    # 0 왼쪽 위 → 1 오른쪽 아래
+            n = hsh(x + 3 * v, y, 131) % 100
+            b = hsh((x + v) // 3, y // 3, 137 + v) % 4
+            t = -1
+            if n < 14 - 10 * g: t = 0                             # 위·왼에 밝은 결이 많다
+            elif n > 88 - 14 * g: t = -2                          # 아래·오른에 어두운 결이 많다
+            if b == 0 and t == -1 and n % 3 == 0: t = 0
+            P(x, y, K('hull', t))
+    for x in range(16): P(x, 0, K('hull', -2))                  # 위 이음
+    for y in range(16): P(0, y, K('hull', -2))                  # 왼 이음
+    P(0, 0, K('hull', -3))
+    for x in range(1, 15): P(x, 1, K('hull', 1 if hsh(x, v, 141) % 6 else 0))   # 윗면 빛 턱
+    for y in range(2, 15): P(1, y, K('hull', 0))                                # 왼 빛
+    for x in range(2, 16): P(x, 15, K('hull', -2 if hsh(x, v, 143) % 4 else -1))  # 아래 모서리 그늘
+    for y in range(2, 15): P(15, y, K('hull', -2 if hsh(y, v, 147) % 3 else -1))  # 오른 모서리 그늘
+    for (x, y) in ((3, 3), (12, 3), (3, 12), (12, 12)):
+        P(x, y, K('hull', 2)); P(x + 1, y, K('hull', 0)); P(x, y + 1, K('hull', 0)); P(x + 1, y + 1, K('hull', -3))
+    # 긁힘(빛 받는 짧은 사선)과 때(이음 가까운 어두운 점)
+    k = hsh(v, 1, 151) % 5
+    c.line(ox + 5 + k, oy + 9, ox + 8 + k, oy + 7, K('hull', 0)); P(9 + k, 7, K('hull', 1))
+    for (x, y) in ((2 + hsh(v, 2, 153) % 10, 14), (14, 4 + hsh(v, 3, 155) % 8), (6 + hsh(v, 4, 157) % 6, 13)):
+        P(x, y, K('hull', -3))
+    if v == 1:                                           # 눌린 점검 판(안쪽 위·왼 그늘, 아래·오른 빛 턱, 손잡이 홈)
         c.R(ox + 5, oy + 5, 7, 7, K('hull', -2)); c.HL(ox + 5, oy + 5, 7, K('hull', -3)); c.VL(ox + 5, oy + 5, 7, K('hull', -3))
-        c.HL(ox + 6, oy + 11, 6, K('hull', 1)); c.VL(ox + 11, oy + 6, 6, K('hull', 0)); c.HL(ox + 7, oy + 8, 3, K('hull', -3))
-    if v == 2:                                           # 반판 이음(가로)
-        c.HL(ox + 1, oy + 8, 15, K('hull', -3)); c.HL(ox + 1, oy + 9, 15, K('hull', 1))
-    if v == 3:                                           # 바닥 작은 시안 등 + 긁힘
+        c.HL(ox + 6, oy + 6, 5, K('hull', -1)) 
+        c.HL(ox + 6, oy + 11, 6, K('hull', 1)); c.VL(ox + 11, oy + 6, 6, K('hull', 0)); c.HL(ox + 7, oy + 8, 3, K('hull', -3)); c.HL(ox + 7, oy + 9, 3, K('hull', 0))
+    if v == 2:                                           # 반판 이음(가로): 어두운 줄 + 밑 빛 턱 + 윗판 아래 그늘
+        c.HL(ox + 1, oy + 7, 15, K('hull', -2)); c.HL(ox + 1, oy + 8, 15, K('hull', -3)); c.HL(ox + 2, oy + 9, 13, K('hull', 1))
+    if v == 3:                                           # 바닥 작은 시안 등(빛 번짐) + 긁힘
         c.R(ox + 7, oy + 7, 3, 2, K('cyan', 1)); c.HL(ox + 7, oy + 7, 3, K('cyan', 3)); c.HL(ox + 6, oy + 9, 5, K('hull', -3))
+        for (x, y) in ((6, 7), (10, 8), (8, 6)): P(x, y, K('cyan', -2))
         c.line(ox + 3, oy + 12, ox + 6, oy + 11, K('hull', 1))
 
 
@@ -89,6 +111,10 @@ def lab_floor(c, ox, v):
         c.HL(ox, k, 16, K('white', -1)); c.VL(ox + k, 0, 16, K('white', -1))
     for (tx, ty) in ((0, 0), (8, 0), (0, 8), (8, 8)):
         c.P(ox + tx + 2, ty + 2, K('white', 3)); c.P(ox + tx + 3, ty + 2, K('white', 3)); c.P(ox + tx + 2, ty + 3, K('white', 3))
+        b = 2 if (hsh(tx // 8, ty // 8, v) % 3) else 1             # 타일 아래·오른 안쪽 한 단 그늘(유약 두께) + 드문 때 점
+        for k in range(2, 8): c.P(ox + tx + k, ty + 7, K('white', b - 1)); c.P(ox + tx + 7, ty + k, K('white', b - 1))
+        g = hsh(tx, ty, 191 + v) % 5
+        c.P(ox + tx + 3 + g // 2, ty + 5, K('white', b - 1))
     if v:
         c.line(ox + 10, 5, ox + 13, 4, K('white', 0)); c.P(ox + 4, 12, K('white', 0))
 
@@ -253,14 +279,21 @@ def at_wall(c, m, ox, oy, mat='hull'):
     base, acc = {'hull': ('hull', 'orange'), 'white': ('white', 'cyan'), 'viewport': ('hull', 'cyan')}[mat]
     t0 = -1 if base == 'hull' else 0
     P = lambda x, y, col: c.P(ox + x, oy + y, col)
-    for y in range(16):
+    for y in range(16):                                   # 판 몸: 판마다 한 단 차이 + 잔결(판 안 왼위 밝은 점·오른아래 어두운 점)
         for x in range(16):
             b = hsh((ox + x) // 8, (oy + y) // 8, 5) % 3
-            P(x, y, K(base, t0 + (1 if b == 2 else 0)))
-    for k in (0, 8):
-        for x in range(16): P(x, k, K(base, t0 - 2))
+            t = t0 + (1 if b == 2 else 0); px, py = x % 8, y % 8
+            n = hsh(ox + x, oy + y, 171) % 100
+            q = 1 if base == 'hull' else 2                # 흰 세라믹은 램프 간격이 넓어 결을 절반으로
+            if n < (10 - (px + py)) // q: t += 1
+            elif n > 100 - (10 + (px + py)) // q: t -= 1
+            P(x, y, K(base, t))
+    for k in (0, 8):                                      # 이음: 어두운 한 줄(최암 아님) + 다음 줄 빛 턱 + 이음 앞 그늘
+        for x in range(16): P(x, k, K(base, t0 - 2)); P(x, k + 1, K(base, t0 + 1)); P(x, k + 7, K(base, t0 - 1))
         for y in range(16): P(k, y, K(base, t0 - 2))
-    for (x, y) in ((2, 2), (10, 2), (2, 10), (10, 10)): P(x, y, K(base, t0 + 2))
+        for y in range(16):
+            if y % 8 not in (0, 7): P(k + 1, y, K(base, t0 + 1))
+    for (x, y) in ((2, 2), (10, 2), (2, 10), (10, 10)): P(x, y, K(base, t0 + 2)); P(x + 1, y + 1, K(base, t0 - 2))
     caph = 16 if m & S else 13
     if not m & N:
         for x in range(16): P(x, 0, K(base, t0 - 3)); P(x, 1, K(base, t0 + 3)); P(x, 2, K(base, t0 + 1))

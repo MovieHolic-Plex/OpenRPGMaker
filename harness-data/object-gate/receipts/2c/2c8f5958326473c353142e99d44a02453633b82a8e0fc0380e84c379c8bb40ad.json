@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2c8f5958326473c353142e99d44a02453633b82a8e0fc0380e84c379c8bb40ad",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "호버 택시(노란 넓은 지붕 윗면 + 가운데 캐노피 + 지붕 표지 상자 + 옆 체크 띠)",
+ "label": "sf-station/sf-street-pod-taxi",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hover taxi body with central cockpit canopy",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hover taxi shows a wide foreshortened top/roof surface extending from row 2 to 14 upon which the cockpit canopy rests, above the vertical front fascia, bumper, and hover pads (rows 15-27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4188
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hover taxi body",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hover taxi shows a large foreshortened yellow top roof deck from row 2 to row 14 (~13 pixel rows) with a central canopy dome and taxi sign, above a south-facing front band (rows 15-19) and hover skirt.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4335
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hover taxi body",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hover taxi shows a wide top surface/hood (rows 2-14) upon which the central dome canopy sits, looking down from above, with the south bumper/fascia and repulsors below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5122
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hover taxi body",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hover taxi shows a large foreshortened top roof deck (rows 2-14) with a central canopy dome, transitioning down to the south-facing front bumper and hover skirts below row 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3355
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.249Z",
+ "cells": {
+  "16": [
+   "549b9062bf3b1b2b",
+   "6ff88aadc0799108",
+   "8c607cc044150620",
+   "946ca2107f698383",
+   "c9f1816172b9c546",
+   "cf119409194f1ed1"
+  ],
+  "24": [
+   "07ebab942cbb7d9d",
+   "477c319807c3c4d4",
+   "4b63552116eeeb12",
+   "721466d1ac56c6ba",
+   "a5bf2b16d7a2e134",
+   "c45cc143584ba184",
+   "d4ca44304de3760d",
+   "f0f0547b23f9f03b"
+  ],
+  "32": [
+   "0d409fb05b789a11",
+   "54ceac9d7adbe7fd",
+   "9c087f6f502e0606",
+   "a4ca7ec0b1910083",
+   "b83242eb9295feab",
+   "e7515fdc8aab9393"
+  ],
+  "48": [
+   "0c766baa4e68b9fe",
+   "dbf0f3d961486e7c"
+  ]
+ }
+}

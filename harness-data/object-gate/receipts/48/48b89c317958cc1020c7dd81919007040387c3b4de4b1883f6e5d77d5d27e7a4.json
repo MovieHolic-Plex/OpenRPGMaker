@@ -1,0 +1,159 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "48b89c317958cc1020c7dd81919007040387c3b4de4b1883f6e5d77d5d27e7a4",
+ "width": 96,
+ "height": 64,
+ "kind": "structure",
+ "name": "대형 주거 모듈(긴 지붕 + 해치·배관 + 두 줄 창 + 가운데 문)",
+ "label": "sf-station/sf-hab-module-3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "large residential module building with sloped roof",
+    "kind_matches": true,
+    "top_rows": 21,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof shows a large, clearly foreshortened top/sloped surface spanning rows 4 to 24 (~21 source pixel rows) above the vertical front facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3412
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "large residential module building",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building has a large, clearly foreshortened sloped metal roof spanning rows 4 to 24 (~20 pixel rows) positioned above the front facade, typical of 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3320
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "residential building module with slanted panel roof and two-story facade",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building has a large, foreshortened south-facing roof slope extending from row 4 to row 24 (approx 20 pixel rows) complete with roof details (vents, piping, hatch) before meeting the vertical front wall with windows and entrance.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9560
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "large residential module building with sloped panel roof and two-story facade",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building has a large foreshortened roof surface occupying rows 4 to 24 with rooftop modules, pipes, and vents, sitting atop a south-facing front facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4483
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.240Z",
+ "cells": {
+  "16": [
+   "1b16e666f6cf9c8b",
+   "29c635c2f3a126aa",
+   "2e717ca773d3690f",
+   "2e7a478e153d291e",
+   "2fcb026356cb7687",
+   "38b3c7c7ca9ba4c3",
+   "3b2b02049507602e",
+   "3d904d4df8b97b71",
+   "3dd3a58194ff90a8",
+   "48450ab7452be3ed",
+   "56d909dc02392e59",
+   "6792515e1e00bbaa",
+   "9db2062e2978ad32",
+   "a2277199a5ce18a6",
+   "a9f19180e589912b",
+   "ac874c5a12a74f2d",
+   "ae6a52b9f2599107",
+   "b977f538cf1a7822",
+   "c3452afbe6ecae97",
+   "da5fe1c5beb3cb18",
+   "e84aa2849be3f84e",
+   "e9fe1d4e0a8ffb76",
+   "ed36ea010f693998",
+   "fa1f868759db1ef8"
+  ],
+  "24": [
+   "0484430636802f6b",
+   "12dc9d18e0d5df3b",
+   "210f8ce7ebdf96cc",
+   "2320c17a5c412fae",
+   "2fc860b5ddd14064",
+   "39a33e4c9fc3aaa5",
+   "4b8e072b6462533f",
+   "50f443eb25f6f97f",
+   "5337ec7d995b3d65",
+   "536af5ac033916c9",
+   "58deed2762fcc830",
+   "5a03d0a4351920bf",
+   "6e59d6ce6e1e5bc7",
+   "7993c64380496832",
+   "833b59bb48cbc4b5",
+   "8363a6eb3c4bac6d",
+   "889a490c99da07b5",
+   "9626d4ffbc9aa5ac",
+   "96e9ab8288140e80",
+   "9b8bf2f7a0f74782",
+   "ae61fc375b82af89",
+   "b047d914707f4965",
+   "b15ec8ef1a0e70cc",
+   "bad3e9b23c6fa6df"
+  ],
+  "32": [
+   "3572059d33021864",
+   "459428ac417ddd8d",
+   "560f3b7617b68374",
+   "64db1d9cc016b40e",
+   "a62abe4013f47067",
+   "d98673d5d9f1c2b2"
+  ],
+  "48": [
+   "0a9ff57a2e2edb10",
+   "218dd12a9ad0fcdd",
+   "399ce43d2e1254eb",
+   "8eaa4e9f87085d81",
+   "95ff48c0c2736dbb",
+   "c18926fd06e92afb",
+   "c7d270eaf19222f0",
+   "ea988b8023e275b4"
+  ]
+ }
+}

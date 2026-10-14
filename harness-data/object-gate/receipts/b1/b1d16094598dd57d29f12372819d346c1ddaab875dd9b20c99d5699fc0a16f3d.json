@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b1d16094598dd57d29f12372819d346c1ddaab875dd9b20c99d5699fc0a16f3d",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "화살표 간판 상자(윗면 + 어두운 앞판 위 주황 램프 화살표 도형 + 받침)",
+ "label": "sf-station/sf-street-neon-arrow",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rectangular arrow sign box",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the box is clearly depicted from row 0 to row 4 (5 rows tall), resting above the dark front face displaying the orange arrow graphic (rows 5-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5852
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "arrow sign box",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The box enclosure has a clearly visible top surface spanning rows 0 to 4 (5 rows tall), with the front face displaying an illuminated arrow graphic spanning rows 5 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5568
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "arrow sign box",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the sign box is visible across rows 1 to 4 (4 pixel rows tall) above the dark front face displaying the arrow graphic.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4912
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "arrow sign box",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sign box has a clearly defined top surface occupying rows 0-4 (5 pixels tall) viewed from above, followed by a south front face on rows 5-13 displaying an illuminated arrow symbol, resting on a base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5273
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.248Z",
+ "cells": {
+  "16": [
+   "9a3a01282105fd05"
+  ],
+  "24": [
+   "012c4f8d36562ebe",
+   "03cff08c89322e25",
+   "16d98b0715e72ca9",
+   "444c36088960a88a",
+   "4e520d9c42c5090f",
+   "be628ebf3828f054"
+  ],
+  "32": [
+   "306b92e7e7dac560",
+   "311cd963ab9a3a1e",
+   "6a5ee5ee90ac8b7f",
+   "78018f2865983870",
+   "a52633f3a0d0dad1",
+   "c532357a81e15080"
+  ],
+  "48": [
+   "114c6ea0ea20e2cc",
+   "223d3783b243b909",
+   "35cf6b1aff7c507e",
+   "4a0529849a40dee3",
+   "7d1693693de1f7c3",
+   "e3dc53f29e574a13"
+  ]
+ }
+}

@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0d2577ef1e6a1b37635cce74bc6f733bc9968d7643d8dc4a699de4a2d9bc3c04",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "위험 차단벽(노랑 윗면 + 노랑·검정 사선 앞면)",
+ "label": "sf-station/sf-barrier",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hazard barricade block",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The yellow top surface spans rows 2 to 9 (8 rows tall), and the front face shows yellow-and-black hazard diagonal stripes from row 10 downward.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5976
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hazard barrier",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The yellow top surface spans rows 2 to 9 (8 rows tall), and the south front face with yellow and black hazard stripes occupies rows 10 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6082
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hazard barrier",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The yellow top surface is clearly visible from above spanning rows 2 to 9 (8 rows tall), resting above the front face featuring yellow and black hazard stripes (rows 10 to 13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6171
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hazard barrier",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object clearly displays a large top surface spanning rows 2 to 9 (8 pixel rows) and a south-facing front surface with yellow and black hazard stripes across rows 10 to 12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5911
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.245Z",
+ "cells": {
+  "16": [
+   "7cdd0c65391549e4",
+   "8840b3c5d314c486"
+  ],
+  "24": [
+   "1ed11f1262b63a62",
+   "3690d8a649bd5fc8",
+   "3c6960b97911a720",
+   "6163f25f7b9d3ea7",
+   "65890dc70ebfac40",
+   "675c4a99993dc122",
+   "69c4320c1bd1dab5",
+   "728d2722327026c0",
+   "884efd2d4ed0dcbf",
+   "9455c7212b2e4c3c",
+   "df082040c57bf9b9",
+   "edd65582c7f17fb2"
+  ],
+  "32": [
+   "9930754e2fdaaa9a",
+   "a3448472fa883dad"
+  ],
+  "48": [
+   "296fbc43a4ca49f7",
+   "44697662b3b9f983",
+   "581c24a13cfb6504",
+   "75f47a4489214a74",
+   "d8efdeef056edd1d",
+   "fc267553b671cb3b"
+  ]
+ }
+}

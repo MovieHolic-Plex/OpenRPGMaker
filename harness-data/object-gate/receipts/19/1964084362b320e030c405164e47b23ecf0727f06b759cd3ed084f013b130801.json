@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1964084362b320e030c405164e47b23ecf0727f06b759cd3ed084f013b130801",
+ "width": 48,
+ "height": 32,
+ "kind": "box",
+ "name": "네온 광고판(두꺼운 판 윗면 + 램프 테 + 도형 광고(산·해·띠) + 두 다리 기단)",
+ "label": "sf-station/sf-street-neon-billboard",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "neon billboard display board",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The billboard features a distinct top surface at rows 0-5 showing top-mounted lamp fixtures and hardware across 5 pixel rows before transitioning to the south-facing display screen and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5536
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "neon billboard sign housing",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the billboard housing is clearly visible across rows 1–5 (with mounted lamp fixtures) above the south-facing display screen at rows 7–21.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7872
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "neon billboard housing",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The billboard's main housing shows a clearly rendered top surface across rows 1–5 (5 rows deep) with mounted fixtures above the vertical front display screen (rows 6–21).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5926
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "neon billboard",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main signboard body displays a clearly foreshortened top surface across rows 1–5 (approx. 5 pixel rows tall) complete with top-mounted fixtures, meeting the 3/4 top-down perspective requirement.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4862
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.248Z",
+ "cells": {
+  "16": [
+   "2c3164b0e5de1b6a",
+   "7b4cc7fffc33d955",
+   "875f29324c02a104",
+   "9a12611b1706209f",
+   "9b8d414a07e0f7a4",
+   "d4d43b202c1cab4c"
+  ],
+  "24": [
+   "0af87662cefce75d",
+   "3dcfc74df6183260",
+   "4d5634edb21afa6d",
+   "92331bc867b4fab5",
+   "a2683b1cd4276d26",
+   "affc73d99665e69f",
+   "d0098c3b340d7e7d",
+   "e0700cb19439e009"
+  ],
+  "32": [
+   "23f58360898f645d",
+   "3ee07f86e8aa5f3b",
+   "51b89110e38803e7",
+   "61f169d0c9c3a702",
+   "c6b298fb42249f4e",
+   "da102e7b5c524e00"
+  ],
+  "48": [
+   "1d933b4a7b301e8a",
+   "290570ab1da6d85b"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "222ceffee9d968f97b88a6407d46e506924c65eb6b5d1f64f4bb4173d38daa8b",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "벽 환기 격자(네모 틀 + 가로 살)",
+ "label": "sf-station/sf-vent-grill",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ventilation grille frame and louvers",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted ventilation grille correctly depicted flat against a north wall; as a wall-mounted fixture, it properly shows its front surface without receding top perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 16953
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "square wall ventilation grille with horizontal slats",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted vent grille correctly rendered flat facing the camera for placement on a vertical wall surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3633
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ventilation grille frame and slats",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a flat wall-mounted metal ventilation grille with horizontal louvers, appropriately drawn flat on the wall plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2534
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "square metal vent frame with horizontal slats",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Flat wall-mounted ventilation grille mounted flush on the wall, showing an outer frame with horizontal louvers. Wall-mounted objects are permitted to be flat front elevations.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9203
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.258Z",
+ "cells": {
+  "16": [
+   "16d32fb02c8acc0d"
+  ],
+  "24": [
+   "14eaa4c4fa46200a",
+   "35b805649f83c9be",
+   "4a735236fe1db550",
+   "78a2e4dd63b55287",
+   "c3b155fc7d6409a8",
+   "d9f3e4c178948ed4"
+  ],
+  "32": [
+   "1b6bd74ae7d33f72",
+   "60569a2f624ecb4a",
+   "6f1d77c3be0ecce0",
+   "83e5cd316d1833bf",
+   "afab814a6b60364f",
+   "dd4c5ff18d0367b9"
+  ],
+  "48": [
+   "06f11fcce4ba68c5",
+   "14331dc4be73a111",
+   "3940412cfa43cda7",
+   "5e38bab681131a05",
+   "8ed82f11acdef5f2",
+   "e4b9d0abf97f6dcd"
+  ]
+ }
+}

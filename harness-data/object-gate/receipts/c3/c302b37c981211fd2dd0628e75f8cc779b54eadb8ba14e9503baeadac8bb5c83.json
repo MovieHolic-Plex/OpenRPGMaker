@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c302b37c981211fd2dd0628e75f8cc779b54eadb8ba14e9503baeadac8bb5c83",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "네온 노점(줄무늬 차양 지붕 윗면 + 매달린 전구 + 진열대 위 그릇 + 앞 판)",
+ "label": "sf-station/sf-street-market-stall-a",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stall counter",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Counter surface spans rows 18 to 22 displaying bowls in top-down perspective, atop a front-facing base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14876
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "market stall counter and awning",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter display surface spans rows 18-22 with items placed on top, and the awning displays a clear angled surface above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14250
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "market stall counter and awning",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Visible counter top surface spans rows 18 to 22 with displayed items, and the awning displays a sloped top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14040
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "neon market stall counter",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Visible top counter surface spanning rows 18-22 with placed dishes, positioned above front wooden panel.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14807
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.248Z",
+ "cells": {
+  "16": [
+   "31f70e9713267917",
+   "73f4552ccf52ae2b",
+   "7acafa7d70457ec5",
+   "7d378807982be7e7"
+  ],
+  "24": [
+   "00d24edba75735df",
+   "0664bb8f4285af4b",
+   "07f8ba1085e395a7",
+   "158b0f69fec59bfb",
+   "1a5b0398816bb398",
+   "1b8f7291865f46bf",
+   "2a50cfb4ce013e59",
+   "5c4056c0dd175780",
+   "65579c68a06f3e28",
+   "66ccd7b5cb414fc4",
+   "7ceb5503e7f2702a",
+   "885acd5929a61618",
+   "954d37f563080ab9",
+   "96d6d8e60f09d855",
+   "9d1a6bf28fb51805",
+   "9f00328e74f9229c",
+   "a31d3e9cfb1c87c4",
+   "a75c43c514bc185f",
+   "b2c44b36fbf498bf",
+   "c02b96d0474c0fdd",
+   "c4a232311daa7409",
+   "cade1801f1fd6710",
+   "cf9e8002d194ecc0",
+   "da56f0bbd2800cf6"
+  ],
+  "32": [
+   "6ae06e9c22d64cfc"
+  ],
+  "48": [
+   "35276d88d7d0e16b",
+   "4da12034875fb203",
+   "58503a8a2cd53842",
+   "cda8b0f2617c5e7e",
+   "d5fb2c25a441a028",
+   "da5a6f35a1044f0d"
+  ]
+ }
+}

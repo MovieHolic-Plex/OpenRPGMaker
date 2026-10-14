@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d07840ba37de2cd23fb0039c16286c03b7010835f96b3779e30f56427f3861b6",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "작은 달 바위(회색 돌덩이)",
+ "label": "sf-station/sf-rock-regolith-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grey rock / boulder",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rock is drawn in pure front elevation as a vertically symmetrical sphere/dome. Row 10 is a perfectly straight horizontal dividing line across the equator, and rows 4 and 14 form flat horizontal top and bottom caps with no 3/4 top-down foreshortening or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11009
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grey rock / boulder",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock is divided into a clearly defined, illuminated top surface (rows 5-9, 5 rows tall) and a darker, shaded south-facing front vertical face (rows 10-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6311
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rounded moon rock boulder",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock has a clearly distinguished, illuminated top surface spanning rows 5–9 (5 rows) resting above a shaded south-facing lower section (rows 10–13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8496
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rock",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn in a flat side/front elevation with a completely straight horizontal dividing line at row 10 spanning 11 pixels without any elliptical curvature or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9164
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.245Z",
+ "cells": {
+  "16": [
+   "efe726c9e6e2b939"
+  ],
+  "24": [
+   "68b5adbd6dfa8a2c",
+   "8eee6033bb3f27ce",
+   "ce570e08b0000050",
+   "e317e6c48b84678f",
+   "e3fd971aa0f78804",
+   "f282fe858a518b3d"
+  ],
+  "32": [
+   "35af34b104807c08",
+   "4bc1ef52f3c8234d",
+   "7a973534a49dcecf",
+   "7eba62b29ba5a016",
+   "92d06b6536f22ba0",
+   "b5801546ea720b75"
+  ],
+  "48": [
+   "0345def698808e0b",
+   "092e4e10f23e91b7",
+   "12faa42c9252edc5",
+   "73d451e1169636ef",
+   "952eceda9c969be2",
+   "a5f8474ad3033938"
+  ]
+ }
+}

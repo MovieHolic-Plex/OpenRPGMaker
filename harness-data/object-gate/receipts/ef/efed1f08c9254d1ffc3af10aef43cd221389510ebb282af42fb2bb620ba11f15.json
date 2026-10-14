@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "efed1f08c9254d1ffc3af10aef43cd221389510ebb282af42fb2bb620ba11f15",
+ "width": 64,
+ "height": 32,
+ "kind": "terrain",
+ "name": "hull bulkhead wall front face strip under the ceiling autotile: upper and lower face rows, four variants",
+ "label": "sf-station/sf-wall-face-hull",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bulkhead wall face autotile strip",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Legitimate terrain wall face tiles representing vertical bulkhead surfaces (including pipes and vent variants). As a south-facing vertical wall surface, it appropriately shows the wall front elevation without a top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11061
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bulkhead wall face autotile strip",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall face terrain autotile representing the south-facing vertical bulkhead surface beneath a ceiling.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9814
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bulkhead wall face strip",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain wall face strip designed for vertical surface tiling under ceilings; as standard JRPG wall terrain, it correctly depicts vertical south-facing wall panels and fixtures without isometric distortion.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 17000
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bulkhead wall front face strip",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile representing a vertical bulkhead wall front face for a top-down JRPG map.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9520
+  }
+ ],
+ "decidedAt": "2026-10-14T08:11:38.266Z",
+ "cells": {
+  "16": [
+   "1828469cc7318d02",
+   "2af04cc9b5509e24",
+   "30cc55743bec1d3a",
+   "61a49af75879df65",
+   "65b107937ffa9afe",
+   "77562c727c6ff39c",
+   "dc3125411cc4de18",
+   "eab137a0dee310dd"
+  ],
+  "24": [
+   "06d188a017e6f9ba",
+   "0ba1e9bfa795ee47",
+   "10fab3bcb1d2e227",
+   "116020635fb2386a",
+   "1bc7e9f57c977708",
+   "1d7690f31d142bc3",
+   "215703b5c5afe2e7",
+   "25616091e621c99c",
+   "27167a4534b7cd82",
+   "28c44f710769ef61",
+   "2985302e14f4ce55",
+   "3671bcf855e0ab0f",
+   "3bb598e5fe1ac8e5",
+   "465b9381ec8b3b10",
+   "490bb117c6baa5d7",
+   "5199f143665e8ef5",
+   "588110f13032f12d",
+   "5b3358924e8aa992",
+   "5d2545bb070fbd2b",
+   "6c514b60bd9bcd9c",
+   "6e65d45416f39294",
+   "71653b689df992a0",
+   "739ae72656cddfa3",
+   "75978b0516b7cd23",
+   "7c7b4dfbda7506c6",
+   "8d560ed0b70e0f3f",
+   "9888a9a5cb0b4f5f",
+   "a7792851f16a911b",
+   "adbb23da8cb4edb1",
+   "b10ed243c78c1ade",
+   "b47774df8c3d0844",
+   "d1a0c9ba95fc0e2f",
+   "d4edc67697d7aa82",
+   "ed836a6f66831718",
+   "efceb0e8f2a5bf57",
+   "fd81ed02ade66c63"
+  ],
+  "32": [
+   "3c313e9e1f434a0d",
+   "45d780586fbccef6"
+  ],
+  "48": [
+   "23a88b0b7ec44059",
+   "2e3c1a8e41032878",
+   "2eff7dd8ef31c0d8",
+   "441a1399ce2d9851",
+   "4edcdca912c12c86",
+   "58558b77e43d0f1e",
+   "902a32b7863add12",
+   "ab9cf73cb6695553",
+   "d008ca668e4b2a3f",
+   "e3fb8306af97568a",
+   "eaa4711f63cf1232",
+   "fd92750415a50144"
+  ]
+ }
+}
