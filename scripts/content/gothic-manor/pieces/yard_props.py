@@ -39,13 +39,23 @@ def _hearse(c):
 def _willow(c):
     rnd = random.Random(21)
     dead_tree(c, 24, 61, 40, .7, seed=21, th=8, depth=1)
-    for k in range(26):                                       # 늘어진 가지
-        x = rnd.uniform(4, 44); y0 = rnd.uniform(8, 22)
-        L = rnd.randint(16, 32)
-        for s in range(L):
-            yy = int(y0 + s); xx = int(x + math.sin(s * .2 + k) * 1.2 + (s * .08 if x > 24 else -s * .08))
-            c.P(xx, yy, K('bark', 3 if s < 3 else 2 if s % 4 else 4))
-    finish(c)
+    strands = []
+    for k in range(30):                                       # 늘어진 가지: 뒤 줄(어둡게) 먼저, 앞 줄(밝게) 나중
+        x = rnd.uniform(4, 44); y0 = rnd.uniform(8, 22); L = rnd.randint(16, 32)
+        strands.append((k % 3 == 0, x, y0, L, k))
+    for front in (False, True):
+        for (fr, x, y0, L, k) in strands:
+            if fr != front: continue
+            for s_ in range(L):
+                yy = int(y0 + s_); xx = int(x + math.sin(s_ * .2 + k) * 1.2 + (s_ * .08 if x > 24 else -s_ * .08))
+                lit = x < 24                                   # 왼쪽 다발이 빛을 받는다
+                if front: t = 5 if s_ < 2 else 4 if (lit and s_ % 5) else 3
+                else: t = 2 if s_ % 4 else 1
+                if s_ > L - 3: t = max(1, t - 1)              # 끝은 가늘고 어둡게
+                c.P(xx, yy, K('bark', t))
+                if front and s_ % 6 == 3 and hsh(xx, yy, 23) < .5:   # 말라 붙은 잎 몇
+                    c.P(xx + (1 if x > 24 else -1), yy, K('gold', 2) if hsh(xx, yy, 24) < .4 else K('ivy', 3))
+    finish(c, soft=True)
 
 
 @REG.piece('gm-bush-dead', '마른 관목', 1, 1, ['S'], 'nature', SP, role='prop', kind='organic', tags=['덤불', '관목'],

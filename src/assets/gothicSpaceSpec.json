@@ -1,7 +1,7 @@
 {
  "version": 1,
  "tilesetId": "gothic_manor",
- "tileCount": 1604,
+ "tileCount": 1605,
  "note": "scripts/content/gothic-manor/space_recipes_gm.py 가 굽는다(손 편집 금지). 조립 규칙 src/editor/wizarding/builder.ts.",
  "wallsets": {
   "manor": {

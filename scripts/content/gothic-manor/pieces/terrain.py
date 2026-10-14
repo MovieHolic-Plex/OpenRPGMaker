@@ -14,18 +14,43 @@ def h16(x, y, s=0): return hsh(x % 16, y % 16, s)
 
 
 # ───────────────────────── 바탕 질감(16 주기) ─────────────────────────
+def _vn(x, y, cell, seed, v=0):
+    """16 주기 값 잡음(부드러운 덩이). 격자 테두리(ix 또는 iy 가 0)의 값은 변형끼리 같아 A·B·C·D 를 섞어 깔아도 이음새가 없다."""
+    n = 16 // cell
+    gx, gy = (x % 16 + .5) / cell, (y % 16 + .5) / cell
+    ix, iy = int(gx), int(gy); fx, fy = gx - ix, gy - iy
+    fx, fy = fx * fx * (3 - 2 * fx), fy * fy * (3 - 2 * fy)
+
+    def L(i, j):
+        i, j = i % n, j % n
+        if i == 0 or j == 0: return .5 + (hsh(i, j, seed) - .5) * .3       # 테두리는 가운데 값 근처(격자 줄무늬 방지)
+        return hsh(i, j, seed + 101 * (v + 1))
+    a = L(ix, iy) * (1 - fx) + L(ix + 1, iy) * fx
+    b = L(ix, iy + 1) * (1 - fx) + L(ix + 1, iy + 1) * fx
+    return a * (1 - fy) + b * fy
+
+
+def grass_field(x, y, v=0):
+    return _vn(x, y, 8, 11, v) * .6 + _vn(x, y, 4, 13, v) * .4
+
+
+def _gblade(lx, ly, v):
+    """풀잎 자리: 덩이 밝은 쪽에 1×2 잎(끝 밝고 밑 그늘)."""
+    return hsh(lx, ly, 17 + v * 5) < .075
+
+
 def grass_px(x, y, v=0):
-    """마른 올리브 풀밭: 바탕 3, 풀 포기(밝은 끝 + 어두운 밑), 드문 흙 점·낙엽(v=1)·돌(v=2)."""
+    """마른 올리브 풀밭(버들항 문법을 어두운 톤으로): 부드러운 덩이 명암 5단(짙은 풀 덩이 2 · 바탕 3·4 · 볕 든 끝 5, 경계는 체크 디더),
+    풀잎 1×2(끝 밝음·밑 그늘)·드문 마른 짚·흙 점. v: 0 기본 · 1 낙엽 몇 장 · 2 돌멩이 · 3 짙은 풀 덩이 많음."""
     lx, ly = x % 16, y % 16
-    t = 3
-    if h16(lx // 2, ly // 2, 1 + v) < .22: t = 2
-    # 풀 포기: 정해진 자리에 2~3px 잎
-    tufts = ((2, 4), (9, 2), (13, 9), (5, 11), (10, 14), (0, 8)) if v != 1 else ((3, 3), (12, 6), (7, 12))
-    for (tx, ty) in tufts:
-        if lx == tx and ly in (ty, ty + 1): return K('grass', 5 if ly == ty else 4)
-        if lx == tx + 1 and ly == ty + 1: return K('grass', 4)
-        if lx == tx - 1 and ly == ty + 1: return K('grass', 4)
-        if lx in (tx - 1, tx, tx + 1) and ly == ty + 2: return K('grass', 1)
+    f = grass_field(lx, ly, v)
+    if v == 3:                       # 짙은 풀 덩이: 칸 가운데로 갈수록 그늘이 깊어진다(테두리는 바탕과 같아 둥근 덩이로 읽힌다)
+        f -= .62 * (math.sin(math.pi * (lx + .5) / 16) * math.sin(math.pi * (ly + .5) / 16)) ** 1.2
+    # 3·4 의 부드러운 덩이, 볕 든 끝만 5, 짙은 덩이는 2(밝은 덩이가 칸마다 같은 자리에 반복되지 않게 바탕 대비는 낮게)
+    bands = ((.10, 2, 2), (.20, 2, 3), (.36, 3, 3), (.48, 3, 4), (.78, 4, 4), (.86, 4, 5), (9, 5, 5))
+    d = (lx + ly) % 2
+    for (lim, ta, tb) in bands:
+        if f < lim: t = tb if d else ta; break
     if v == 1:
         for (fx, fy, m) in ((6, 6, 'bark'), (13, 13, 'velvet'), (1, 13, 'bark'), (10, 9, 'gold')):
             if (lx, ly) == (fx, fy): return K(m, 4)
@@ -35,20 +60,38 @@ def grass_px(x, y, v=0):
             if (lx, ly) == (sx, sy): return K('stone', 5)
             if (lx, ly) in ((sx + 1, sy), (sx, sy + 1)): return K('stone', 3)
             if (lx, ly) == (sx + 1, sy + 1): return K('stone', 1)
-    if h16(lx, ly, 9) < .04: return K('dirt', 3)
+    if _gblade(lx, ly, v): return K('grass', min(6, t + 2 if t >= 4 else t + 1))
+    if _gblade(lx, (ly - 1) % 16, v): return K('grass', t + 1 if t >= 3 else t)
+    if _gblade(lx, (ly - 2) % 16, v): return K('grass', t - 1)
+    if t <= 2 and hsh(lx, ly, 19 + v) < .12: return K('grass', 1)          # 짙은 덩이 속 깊은 그늘 점
+    h = hsh(lx, ly, 23 + v)
+    if h < .005: return K('gold', 3)                                     # 마른 짚
+    if h < .012: return K('dirt', 3)
     return K('grass', t)
 
 
+_PEB = ((3, 8, 2), (14, 14, 1), (6, 13, 1), (11, 7, 1))
+
+
 def dirt_px(x, y):
-    """진흙 길: 흙 3 바탕에 불규칙한 밝은·어두운 덩이, 바퀴 자국 짧은 끊긴 줄, 자갈 몇."""
+    """진흙 길: 부드러운 덩이 명암 4단(디더 경계), 바퀴 자국 두 줄(패인 그늘 + 아래 밝은 턱), 윗면 빛을 받은 잔돌(밝은 왼위·그늘 오른아래), 어두운 흙 알갱이."""
     lx, ly = x % 16, y % 16
-    v = h16(lx // 3 + (ly // 3) * 2, ly // 3, 21) * .6 + h16(lx // 2, ly // 2, 24) * .4
-    t = 4 if v > .68 else 2 if v < .22 else 3
-    if ly == 4 and 2 <= lx <= 6 or ly == 11 and 9 <= lx <= 14: t = 2
-    if ly == 5 and 2 <= lx <= 6 or ly == 12 and 9 <= lx <= 14: t = 4
-    for (sx, sy) in ((3, 8), (11, 1), (14, 14), (7, 14), (12, 7)):
-        if (lx, ly) == (sx, sy): return K('stone', 4)
-        if (lx, ly) == (sx + 1, sy + 1): return K('dirt', 1)
+    f = _vn(lx, ly, 8, 31) * .55 + _vn(lx, ly, 4, 37) * .45
+    d = (lx + ly) % 2
+    t = 2 if f < .28 else (2 if d else 3) if f < .36 else 3 if f < .58 else (3 if d else 4) if f < .66 else 4 if f < .84 else 5 if d else 4
+    # 수레 자국: 짧게 끊긴 패임(가로·세로 길 어디에 깔려도 어색하지 않게 길이 3 이하)
+    for (ux, uy) in ((2, 4), (9, 11), (12, 3)):
+        if ly == uy and ux <= lx < ux + 3: return K('dirt', 2 if t >= 3 else 1)
+        if ly == uy + 1 and ux <= lx < ux + 3: return K('dirt', min(6, t + 1))
+    for (sx, sy, r) in _PEB:
+        if (lx, ly) == (sx, sy): return K('stone', 5 if r == 2 else 4)
+        if r == 2 and (lx, ly) == (sx + 1, sy): return K('stone', 4)
+        if r == 2 and (lx, ly) == (sx, sy + 1): return K('stone', 3)
+        if (lx, ly) == (sx + r, sy + 1) or (r == 2 and (lx, ly) == (sx + 1, sy + 1)): return K('stone', 2 if r == 2 else 1)
+        if (lx, ly) == (sx + r, sy + 2) and r == 2: return K('dirt', 1)
+    h = hsh(lx, ly, 45)
+    if h < .07: return K('dirt', t - 1)
+    if h > .965: return K('dirt', t + 1)
     return K('dirt', t)
 
 
@@ -113,15 +156,15 @@ def water_px(x, y, f=0):
 
 
 # ───────────────────────── 1×1 반복 바닥 ─────────────────────────
-for _v, _nm in ((0, 'a'), (1, 'b'), (2, 'c')):
+for _v, _nm in ((0, 'a'), (1, 'b'), (2, 'c'), (3, 'd')):
     def _mk(v):
         def _g(c):
             for y in range(16):
                 for x in range(16): c.P(x, y, grass_px(x, y, v))
         return _g
-    REG.piece(f'gm-ground-grass-{_nm}', '마른 풀밭 ' + _nm.upper() + (' (낙엽)' if _v == 1 else ' (돌멩이)' if _v == 2 else ''), 1, 1, ['F'], 'surfaces', SP,
+    REG.piece(f'gm-ground-grass-{_nm}', '마른 풀밭 ' + _nm.upper() + (' (낙엽)' if _v == 1 else ' (돌멩이)' if _v == 2 else ' (짙은 풀 덩이)' if _v == 3 else ''), 1, 1, ['F'], 'surfaces', SP,
               role='terrain', kind='terrain', repeat=True, tags=['풀밭', '바탕', '땅'],
-              desc='고딕 저택·묘지의 공용 바탕 땅: 마른 올리브 풀밭(16 주기, 이음새 없음).' + (' 낙엽 몇 장.' if _v == 1 else ' 작은 돌멩이.' if _v == 2 else ''),
+              desc='고딕 저택·묘지의 공용 바탕 땅: 마른 올리브 풀밭(16 주기, 이음새 없음).' + (' 낙엽 몇 장.' if _v == 1 else ' 작은 돌멩이.' if _v == 2 else ' 짙은 풀 덩이가 많다.' if _v == 3 else ''),
               rules='맵 전체 바탕을 A 로 깔고 B·C 를 드문드문 섞는다(띠 전체를 한 변형으로 칠하지 않는다).')(_mk(_v))
 
 
