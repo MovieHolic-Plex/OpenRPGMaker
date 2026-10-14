@@ -3,7 +3,7 @@
 
 import { PNG } from "pngjs";
 import { cellPassability } from "../../../src/project/collision.ts";
-import { offendingVoidBlobs, VOID_DARK_LUMA, voidFinding, type VoidCell } from "../../../src/qa/gameCheck/visualVoid.ts";
+import { flatMapFinding, offendingVoidBlobs, VOID_DARK_LUMA, voidFinding, type VoidCell } from "../../../src/qa/gameCheck/visualVoid.ts";
 import type { Finding } from "../../../src/qa/gameCheck/types.ts";
 import type { GameMap, Project } from "../../../src/project/types.ts";
 
@@ -13,6 +13,8 @@ export async function checkVisualVoids(project: Project, log: (line: string) => 
   for (const map of Object.values(project.maps)) {
     const tileset = project.tilesets[map.tilesetId];
     if (!tileset) continue;
+    const flat = flatMapFinding(map);
+    if (flat) findings.push(flat);
     const { png: bytes, note } = renderMapPng(project, map, 1);
     if (note) { log(`[visual-void] ${map.id}: ${note} — 건너뜀`); continue; }
     const png = PNG.sync.read(bytes);

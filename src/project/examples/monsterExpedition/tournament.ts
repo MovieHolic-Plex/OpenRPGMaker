@@ -181,7 +181,7 @@ export function authorTournamentWorld(project: Project, options: TournamentOptio
   function portal(map: GameMap, target: GameMap, at: Point, landing: Point, required?: string, label = target.name): void {
     if (!isPassableLanding(project, map, at.x, at.y) || !isPassableLanding(project, target, landing.x, landing.y)) throw Error(`Blocked doorway ${map.name} → ${target.name}`);
     const go = transfer(target, landing);
-    const commands: Command[] = required ? [{ kind: "fork", condition: condition(required), then: [go], else: [text(`${label}로 가는 길은 아직 열리지 않았다. 메뉴의 「배지·목표」에서 다음 약속을 확인하자.`)] }] : [go];
+    const commands: Command[] = required ? [{ kind: "fork", condition: condition(required), then: [go], else: [text(`${label}로 가는 길은 아직 열리지 않았다. 메뉴의 「원정 수첩」에서 다음 약속을 확인하자.`)] }] : [go];
     // Travel is shown by authored doors, paths and stairs; transfer events do not
     // draw a navigation arrow over the native tiles.
     const e = event(map, `to_${target.id}`, at, commands, { trigger: "playerTouch", below: true, graphic: invisible });

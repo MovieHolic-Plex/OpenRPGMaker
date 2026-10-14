@@ -274,4 +274,7 @@ It requires an existing catalog; full generation without the option remains supp
 - **0관 캠페인:** 「조련사 회관」이 교실 방(`${key}_hall`)을 재사용하던 것을 몬스터 키트 집 실내(`${key}_annex` + 2층 `${key}_annex_2f`, `attachStairs`)로 바꾸고 마을 건물은 일반 집(`gable_a`)으로 둔다. 체육관 키트는 쓰지 않는다.
 - **`resizeCampaignGyms`(configure_monster_campaign badgeCount):** 줄일 때 체육관 건물 발자국·내부 맵·연결·맵 트리 노드를 함께 지운다(`removeGymBuilding`). 건물 키트가 `gym_*` 와 안 맞는 마을은 문만 막고 안내 문구를 둔다.
   결과에 `removedGyms` 가 담긴다. **늘리기는 하지 않는다** — 새 체육관 마을·퍼즐 방·리그 연결을 안전하게 짜는 일이라 오류 문구가 `build_monster_game mode:create replace:true gymCount:N` 으로 안내한다.
+- **개선 한 판(2026-10-14):** 화산 길 판에 큰 소품(재 나무·원뿔 바위)을 길마다 9곳 더 흩는다(`variantSketch` `plan.big`). 화산에서 풀 마을 판을 쓰는 「새순 마을」은 「재싹 마을」로 이름을 바꾼다(`VOLCANO_TOWN_RENAME`, 체육관 이름·별바람호 선장 목록도 같은 이름).
+  대회형·탐험형(`createMonsterTournament`)은 필드 메뉴에서 「배지」 칸을 뺀다 — 배지가 없는 게임에서 빈 배지 화면이 열렸다. `check` 의 `visual-flat` 은 빈 판 마을을 잡는다.
+- **알려진 한계(미해결):** 이미 지은 캠페인에 마을·체육관을 **더하는** 전용 도구가 없다 — 조수가 `create_map`+낱개 도구로 지으면 빈 회색 판 한 장이 된다(`visual-flat` 이 이제 경고). `configure_monster_campaign definition` 을 통째로 주면 `plan`(검수 하한)이 0 으로 덮여 구조 검수가 느슨해진다.
 

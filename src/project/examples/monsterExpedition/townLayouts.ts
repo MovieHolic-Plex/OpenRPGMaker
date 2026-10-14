@@ -598,7 +598,7 @@ function freeSpot(grid: string[][], variant: number, salt: number, w: number, h:
   return undefined;
 }
 
-function variantSketch(base: readonly string[], kits: TownSketch["kits"], kitSizes: Record<string, number>, variant: number, plan: { stamps: number; props: number }, seed = variant): TownSketch {
+function variantSketch(base: readonly string[], kits: TownSketch["kits"], kitSizes: Record<string, number>, variant: number, plan: { stamps: number; props: number; big?: number }, seed = variant): TownSketch {
   const grid = base.map(r => [...r]);
   // 번호 판마다 옛 장식(재 더미·바위·증기구멍·재 풀 덩이)은 걷어 다시 흩는다. 길(=)·벼랑(#^)·샘(~)·표지판(S)·꼭대기 원뿔(Z C)은 그대로.
   for (const row of grid) for (let x = 0; x < row.length; x++) if ("prvA".includes(row[x]!)) row[x] = ".";
@@ -612,6 +612,13 @@ function variantSketch(base: readonly string[], kits: TownSketch["kits"], kitSiz
   for (let n = 0; n < plan.stamps; n++) {
     const at = freeSpot(grid, seed, salt++, 7, 4, 3, boxes);
     if (at) { grid[at[1]]![at[0]] = "A"; for (let dy = 0; dy < 4; dy++) for (let dx = 0; dx < 7; dx++) if (dx || dy) grid[at[1] + dy]![at[0] + dx] = "*"; }
+  }
+  // 큰 소품(재 나무 2×4·화산 원뿔 2×2)을 먼저 흩고 작은 것(재 더미·바위·증기구멍)을 그 틈에 채운다 — 길 판이 빈 회색 평지로 보이던 것을 줄인다.
+  const bigMarks: readonly (readonly [string, number, number])[] = [["C", 2, 2], ["C", 2, 2], ["T", 2, 4]];
+  for (let n = 0; n < (plan.big ?? 0); n++) {
+    const [mark, w, h] = bigMarks[variantHash(seed, 300 + n) % bigMarks.length]!;
+    const at = freeSpot(grid, seed, 400 + n, w, h, 2, boxes);
+    if (at) { grid[at[1]]![at[0]] = mark; for (let dy = 0; dy < h; dy++) for (let dx = 0; dx < w; dx++) if (dx || dy) grid[at[1] + dy]![at[0] + dx] = "*"; }
   }
   const marks = ["p", "r", "v"];
   for (let n = 0; n < plan.props; n++) {
@@ -680,5 +687,5 @@ const ASH_ROUTE_C: readonly string[] = [...ASH_ROUTE_B.slice(0, 4), ...ASH_ROUTE
 /** 화산 캠페인의 길 판 — 같은 문법에서 굽이(A·B·C)·좌우·재 풀 덩이(A)·소품 자리를 길마다 다르게 한다. index 1~5 = 2·3·5·6·7번길. */
 export function volcanoRouteSketch(index: number): TownSketch {
   const [rows, flip]: [readonly string[], boolean] = ([[ASH_ROUTE_B, false], [ASH_ROUTE_C, false], [ASH_ROUTE_B, true], [ASH_ROUTE_C, true], [START_ROUTES.volcano!.sketch.rows, true]] as const)[(index - 1) % 5]!;
-  return variantSketch(rows, [], {}, flip ? 1 : 0, { stamps: 6, props: 14 }, index);
+  return variantSketch(rows, [], {}, flip ? 1 : 0, { stamps: 6, props: 14, big: 9 }, index);
 }

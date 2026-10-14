@@ -82,3 +82,28 @@ export function voidFinding(map: { readonly id: string; readonly name?: string }
     where: { mapId: map.id, ...(map.name ? { mapName: map.name } : {}), x: blob.x0, y: blob.y0 },
   };
 }
+
+/** 한 가지 바닥 타일이 맵의 대부분을 덮고 그 위에 아무것도 없다 — 「새로 지은 마을」이 회색 판 한 장에 집 하나로 남는 식의 빈 판. */
+export const FLAT_MIN_CELLS = 100;
+export const FLAT_DOMINANT_RATIO = 0.8;
+export const FLAT_DECOR_RATIO = 0.1;
+
+export function flatMapFinding(map: { readonly id: string; readonly name?: string; readonly width: number; readonly height: number; readonly lowerTiles: readonly number[]; readonly upperTiles: readonly number[]; readonly lowerOverlayTiles?: readonly number[]; readonly upperOverlayTiles?: readonly number[] }): Finding | undefined {
+  const total = map.width * map.height;
+  if (total < FLAT_MIN_CELLS) return undefined;
+  const counts = new Map<number, number>();
+  for (const t of map.lowerTiles) counts.set(t, (counts.get(t) ?? 0) + 1);
+  let dominant = 0, tile = -1;
+  for (const [t, n] of counts) if (n > dominant) { dominant = n; tile = t; }
+  let decor = 0;
+  for (let i = 0; i < total; i++) {
+    const others = [map.upperTiles[i], map.lowerOverlayTiles?.[i], map.upperOverlayTiles?.[i]];
+    if (others.some((t) => t !== undefined && t >= 0) || map.lowerTiles[i] !== tile) decor += 1;
+  }
+  if (dominant / total < FLAT_DOMINANT_RATIO || decor / total > FLAT_DECOR_RATIO) return undefined;
+  return {
+    severity: "warning", code: "visual-flat",
+    message: `시각 공백: 바닥 타일 ${tile} 한 가지가 맵의 ${Math.round(dominant / total * 100)}%를 덮고 그 위 장식은 ${Math.round(decor / total * 100)}% 뿐입니다 — 플레이어에게는 「무늬 없는 빈 판」입니다. 길·나무·건물·물을 더하거나 마을 판(composeTown)을 쓰세요`,
+    where: { mapId: map.id, ...(map.name ? { mapName: map.name } : {}) },
+  };
+}

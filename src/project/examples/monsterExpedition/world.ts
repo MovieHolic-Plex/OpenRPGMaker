@@ -117,7 +117,9 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
   // 바닷가는 바꾸지 않는다 — 물결 항구는 잔교·배 출구 좌표가 그 판에 묶여 있고(harborExit), 바닷가 시작 마을도 풀밭 판이다.
   const swappedTown = options.startTheme === "desert" ? "dune" : options.startTheme === "snow" ? "frost" : options.startTheme === "volcano" ? "ember" : undefined;
   const lookOf = (key: string): string => !swappedTown ? key : key === "grove" ? swappedTown : key === swappedTown ? "grove" : key;
-  const lookTown = (t: (typeof allTowns)[number]) => allTowns.find(other => other.key === lookOf(t.key))!;
+  // 화산 캠페인에서 풀 마을 판을 쓰던 마을 이름(새순)이 재 땅에 남지 않게 한다 — 재를 뚫고 나는 싹이라는 본래 소개 문장은 그대로 맞는다.
+  const VOLCANO_TOWN_RENAME: Readonly<Record<string, string>> = { "새순 마을": "재싹 마을" };
+  const lookTown = (t: (typeof allTowns)[number]) => { const look = allTowns.find(other => other.key === lookOf(t.key))!; return volcano && VOLCANO_TOWN_RENAME[look.name] ? { ...look, name: VOLCANO_TOWN_RENAME[look.name]! } : look; };
   const gymPlanTowns = new Set<string>(gyms.slice(0, gymCount).map(g => g.town));
 
   function make(key: string, name: string, source: string, track: keyof typeof audio, role: "town" | "field" | "interior" | "dungeon"): GameMap {
@@ -757,8 +759,8 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     const cabin = make("ship_cabin", "별바람호 · 선실", "rooms/ship_cabin", "coast", "interior");
     connect(townMaps.get("harbor")!, deck, "mx_badge_2"); connect(deck, corridor); connect(corridor, cabin);
     npc(cabin, "captain", "별바람호 선장", "한 번 방문한 마을로 데려다줄게. 돌아가는 길에서도 새 친구를 만날 수 있지.", { x: 4, y: 4 },
-      [{ kind: "choices", prompt: "어디로 갈까?", options: [{ text: "서쪽 지역", branch: [{ kind: "choices", options: towns.slice(0, 5).map(t => ({ text: t.name, branch: [{ kind: "fork", condition: condition(`mx_visit_${t.key}`),
-        then: [transfer(townMaps.get(t.key)!, entries.get(id(t.key))!)], else: [text("아직 방문하지 않은 마을이야. 먼저 육로로 길을 열어 줘.", "선장")] }] })), cancelBehavior: "branch", cancelBranch: [] }] }, ...(towns.length > 5 ? [{ text: "동쪽 지역", branch: [{ kind: "choices", options: towns.slice(5).map(t => ({ text: t.name, branch: [{ kind: "fork", condition: condition(`mx_visit_${t.key}`), then: [transfer(townMaps.get(t.key)!, entries.get(id(t.key))!)], else: [text("아직 방문하지 않은 마을이야.", "선장")] }] })), cancelBehavior: "branch", cancelBranch: [] }] }] : [])], cancelBehavior: "branch", cancelBranch: [] }], 7);
+      [{ kind: "choices", prompt: "어디로 갈까?", options: [{ text: "서쪽 지역", branch: [{ kind: "choices", options: towns.slice(0, 5).map(t => ({ text: lookTown(t).name, branch: [{ kind: "fork", condition: condition(`mx_visit_${t.key}`),
+        then: [transfer(townMaps.get(t.key)!, entries.get(id(t.key))!)], else: [text("아직 방문하지 않은 마을이야. 먼저 육로로 길을 열어 줘.", "선장")] }] })), cancelBehavior: "branch", cancelBranch: [] }] }, ...(towns.length > 5 ? [{ text: "동쪽 지역", branch: [{ kind: "choices", options: towns.slice(5).map(t => ({ text: lookTown(t).name, branch: [{ kind: "fork", condition: condition(`mx_visit_${t.key}`), then: [transfer(townMaps.get(t.key)!, entries.get(id(t.key))!)], else: [text("아직 방문하지 않은 마을이야.", "선장")] }] })), cancelBehavior: "branch", cancelBranch: [] }] }] : [])], cancelBehavior: "branch", cancelBranch: [] }], 7);
   }
 
   for (const [i, sid] of EXPEDITION_LEGENDARIES.entries()) {
