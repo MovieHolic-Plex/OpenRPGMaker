@@ -417,7 +417,8 @@ class Board {
       } else if (g === "snow") {
         // 눈밭 변주: 큰 덩이 잡음으로만(자잘한 점 금지). 그늘 눈(snow-shade)은 낱칸이라 네모가 드러나 쓰지 않는다(자체 검수).
         const n = vnoise(x + 7, y + 7, 5, this.seed + 17);
-        out[k] = n > 0.66 && snowAlt.length ? snowAlt[Math.floor(vnoise(x, y, 4, this.seed + 29) * snowAlt.length) % snowAlt.length]! : snow;
+        // 변주는 덩이 안에서도 칸마다 섞는다 — 한 덩이를 한 변주로 채우면 같은 점박이 띠가 생겼다(적대 검수 V6).
+        out[k] = n > 0.7 && snowAlt.length && hash2(x, y, this.seed + 29) < 0.55 ? snowAlt[Math.floor(hash2(x, y, this.seed + 31) * snowAlt.length) % snowAlt.length]! : snow;
       } else out[k] = this.repTile(g);
     }
     return out;
@@ -465,7 +466,7 @@ function breakEmpty(b: Board, rng: () => number, win = 6, allow: readonly Use[] 
     let kind = Math.floor(rng() * kinds.length); if (kind === last) kind = (kind + 1) % kinds.length; last = kind;
     const ox = Math.floor(rng() * 2), oy = Math.floor(rng() * 2);
     const r = { x: x0 + ox, y: y0 + oy, w: win - 2, h: win - 2 };
-    if (rng() < 0.3) b.blob("frost", x0 + win / 2, y0 + win / 2, win / 2 - 1, win / 2 - 1.5, 0.25, null, allow, x0 * 7 + y0);
+    if (rng() < 0.15) b.blob("frost", x0 + win / 2, y0 + win / 2, win / 2 - 1, win / 2 - 1.5, 0.25, null, allow, x0 * 7 + y0);
     b.cluster(r, kinds[kind]!, allow, 0, TREE_GROUNDS);
     made.push([x0, y0]);
   }
@@ -476,11 +477,12 @@ function breakEmpty(b: Board, rng: () => number, win = 6, allow: readonly Use[] 
  * 생선 말리는 터 · 돌무더기 고갯마루 · 자작 숲 · 가문비 숲). 덩이끼리는 창 크기만큼 띄우고, 구역 이름을 남긴다(빈 땅마다 쓰임 — 적대 검수 규칙).
  */
 function vignettes(b: Board, rng: () => number, allow: readonly Use[], cap: number, region?: Rect): number {
-  const V: { name: string; use: string; kits: string[]; trees?: boolean; patch?: string }[] = [
-    { name: "가죽 말리는 터", use: "사냥꾼 작업터", kits: ["sn-hide-rack", "sn-chopping-block", "sn-logs", "sn-stump"], patch: "frost" },
-    { name: "나무꾼 터", use: "장작 패기", kits: ["sn-woodpile", "sn-chopping-block", "sn-sled-wood", "sn-stump", "sn-logs"] },
-    { name: "짐 부리는 터", use: "썰매 짐·상자", kits: ["sn-sled", "sn-crates", "sn-barrels", "sn-sacks"] },
-    { name: "생선 말리는 터", use: "덕장·통", kits: ["sn-fish-rack", "sn-barrel", "sn-barrel", "sn-sacks"] },
+  // 일터 마당(work)은 밟힌 땅(다진 눈·진창)을 깔고 가까운 길에 잇는다 — 맨 눈밭 위 상자 무더기는 «흩어진 쓰레기»로 읽혔다(적대 검수 V2·C6).
+  const V: { name: string; use: string; kits: string[]; trees?: boolean; patch?: string; work?: boolean }[] = [
+    { name: "가죽 말리는 터", use: "사냥꾼 작업터", kits: ["sn-hide-rack", "sn-chopping-block", "sn-logs", "sn-stump"], patch: "pack", work: true },
+    { name: "나무꾼 터", use: "장작 패기", kits: ["sn-woodpile", "sn-chopping-block", "sn-sled-wood", "sn-stump", "sn-logs"], patch: "pack", work: true },
+    { name: "짐 부리는 터", use: "썰매 짐·상자", kits: ["sn-sled", "sn-crates", "sn-barrels", "sn-sacks"], patch: "pack", work: true },
+    { name: "생선 말리는 터", use: "덕장·통", kits: ["sn-fish-rack", "sn-barrel", "sn-barrel", "sn-sacks"], patch: "pack", work: true },
     { name: "돌무더기 고갯마루", use: "이정 돌·새김 돌", kits: ["sn-rune-stone", "sn-cairn", "sn-boulder-l", "sn-boulder-s", "sn-bush"], patch: "frost" },
     { name: "자작 숲", use: "잎 진 자작 덩이", kits: ["sn-birch", "sn-birch-s", "sn-birch", "sn-bush", "sn-boulder-s"], trees: true },
     { name: "가문비 숲", use: "가문비 덩이", kits: ["sn-pine-l", "sn-pine-m", "sn-pine-s", "sn-pine-m", "sn-bush"], trees: true },
@@ -502,32 +504,37 @@ function vignettes(b: Board, rng: () => number, allow: readonly Use[], cap: numb
     if (!empty) continue;
     const v = V[order[vi % order.length]!]!; vi++;
     const r = { x: x0, y: y0, w: ww, h: hh };
-    if (v.patch) b.blob(v.patch, x0 + ww / 2, y0 + hh / 2, ww / 2 - 0.8, hh / 2 - 0.6, 0.25, null, allow, x0 * 13 + y0);
-    const n = b.cluster(r, v.kits, allow, 0, v.trees ? TREE_GROUNDS : undefined);
-    if (n >= 2) { b.zone(v.name, v.use, r); made.push(r); }
+    if (v.patch) b.blob(v.patch, x0 + ww / 2, y0 + hh / 2, ww / 2 - 0.3, hh / 2 - 0.3, 0.25, v.work ? "yard" : null, allow, x0 * 13 + y0);
+    const n = b.cluster(r, v.kits, v.work ? [...allow, "yard"] : allow, 0, v.trees ? TREE_GROUNDS : undefined);
+    if (n >= 2) {
+      b.zone(v.name, v.use, r); made.push(r);
+      if (v.work) { const ex = x0 + Math.floor(ww / 2), ey = y0 + hh; if (b.in(ex, ey) && b.walk(ex, ey)) b.connect({ x: ex, y: ey }); }
+    }
   }
   return made.length;
 }
 
 /** 툰드라·서리 풀 덩이를 들판(wild) 여기저기 — 넓은 흰 판을 깬다. */
-function wildPatches(b: Board, rng: () => number, n: number, r: Rect): void {
+function wildPatches(b: Board, rng: () => number, n: number, r: Rect, allowTundra = true): void {
+  // 마을·장터 안의 툰드라(갈색) 덩이는 «파헤친 무덤·밭»으로 읽혔다(적대 검수 V3·M2) — 숲가·들판에만 둔다.
   for (let i = 0; i < n; i++) {
     const cx = r.x + 2 + rng() * (r.w - 4), cy = r.y + 2 + rng() * (r.h - 4);
-    const tundra = rng() < 0.3;
+    const tundra = allowTundra && rng() < 0.3;
     b.blob(tundra ? "tundra" : "frost", cx, cy, (tundra ? 1.6 : 2.2) + rng() * 1.6, 1.4 + rng() * 1.1, 0.25, null, ["wild", "open", "forest"], i * 31);
   }
 }
 /** 얼음 호수: 얼음 덩이 + 열린 물 구멍(2×2 이상) + 물가 용도. 반환: 얼음 칸 집합. */
 function lake(b: Board, cx: number, cy: number, rx: number, ry: number, holes: number, rng: () => number, salt = 0): Set<number> {
-  const ice = b.blob("ice", cx, cy, rx, ry, 0.22, "ice", ["open", "wild", "forest", "shore"], salt);
+  const ice = b.blob("ice", cx, cy, rx, ry, rx < 6 ? 0.4 : 0.22, "ice", ["open", "wild", "forest", "shore"], salt);
   // 열린 물: 얼음 속(가장자리에서 2칸 이상 안쪽)에 2×2~3×2 구멍
-  const deep = [...ice].filter((k) => { const x = k % b.W, y = (k - x) / b.W; for (let dy = -2; dy <= 3; dy++) for (let dx = -2; dx <= 4; dx++) if (!ice.has(b.k(x + dx, y + dy))) return false; return true; });
+  const deep = [...ice].filter((k) => { const x = k % b.W, y = (k - x) / b.W; for (let dy = -2; dy <= 4; dy++) for (let dx = -2; dx <= 4; dx++) if (!ice.has(b.k(x + dx, y + dy))) return false; return true; });
   for (let i = 0, tries = 0; i < holes && tries < 40 && deep.length; tries++) {
-    const k = pick(rng, deep), x = k % b.W, y = (k - x) / b.W, w = rng() < 0.5 ? 1 : 2;
+    // 구멍은 2×2 — 1칸·2×1 구멍은 둑 모양이 안 서서 얼음 위 검은 네모 틈으로 읽혔다(적대 검수 L1).
+    const k = pick(rng, deep), x = k % b.W, y = (k - x) / b.W, w = 2;
     let ok = true;
-    for (let dy = -2; dy <= 2 && ok; dy++) for (let dx = -2; dx <= w + 1 && ok; dx++) if (b.ground[b.k(x + dx, y + dy)] === "water") ok = false;
+    for (let dy = -3; dy <= 4 && ok; dy++) for (let dx = -3; dx <= w + 2 && ok; dx++) if (b.ground[b.k(x + dx, y + dy)] === "water") ok = false;
     if (!ok) continue;
-    b.paint("water", { x, y, w, h: 1 }, "water"); i++;
+    b.paint("water", { x, y, w, h: 2 }, "water"); i++;
   }
   // 물가: 얼음 둘레 한 칸 눈밭
   for (const k of ice) {
@@ -546,7 +553,9 @@ function shoreline(b: Board, rng: () => number, n: number): void {
   let reeds = 0;
   for (const [x, y] of shuffle(rng, shore)) {
     if (reeds >= n) break;
-    if (b.prop("sn-reeds", x, y, 0, ["shore"])) { reeds++; b.propNear("sn-reeds", [[x + 1, y], [x - 1, y], [x, y + 1]], 0, ["shore"]); }
+    // 갈대는 덩이로 — 옆 칸에 나란히 두면 물가를 따라 줄지어 «울타리»처럼 보였다(적대 검수 V1·L5).
+    if (shore.length && reeds && rng() < 0.4) continue;
+    if (b.prop("sn-reeds", x, y, 0, ["shore"])) { reeds++; if (rng() < 0.5) b.propNear("sn-reeds", shuffle(rng, [[x + 1, y + 1], [x - 1, y + 1], [x, y + 1]] as [number, number][]), 0, ["shore"]); }
   }
   let k = 0;
   for (const [x, y] of shuffle(rng, shore)) { if (k >= Math.ceil(n / 3)) break; if (b.prop(pick(rng, ["sn-birch-s", "sn-boulder-s", "sn-bush"]), x, y - 2 < 0 ? y : y, 0, ["shore", "wild", "open"], TREE_GROUNDS)) k++; }
@@ -690,11 +699,12 @@ function composeVillage(b: Board, rng: () => number): SnowNorthCell {
   shoreline(b, rng, 4);
   b.cluster({ x: 0, y: 0, w: W, h: H }, ["sn-trough", "sn-hay", "sn-hay"], ["pen"], 0);
   // 11) 숲·빈 땅
-  wildPatches(b, rng, 3, { x: ix0, y: iy0, w: ix1 - ix0, h: iy1 - iy0 });
+  wildPatches(b, rng, 2, { x: ix0, y: iy0, w: ix1 - ix0, h: iy1 - iy0 }, false);
   grove(b, rng, { x: 0, y: 0, w: W, h: fh + 1 }, 0.6, 0.1);
   // 목책 밖 남쪽 띠: 눈더미·덤불·어린 가문비(길은 비운다)
-  b.cluster({ x: 0, y: py + 1, w: gx - 1, h: H - py - 1 }, ["sn-pine-s", "sn-drift", "sn-bush", "sn-pine-s"], OPEN_USES, 0, TREE_GROUNDS);
-  b.cluster({ x: gx + 5, y: py + 1, w: W - gx - 5, h: H - py - 1 }, ["sn-pine-s", "sn-bush", "sn-drift", "sn-boulder-s"], OPEN_USES, 0, TREE_GROUNDS);
+  // 목책 밖 남쪽 띠는 숲 덩이로 — 덤불 몇 개만 두면 빈 띠로 남았다(적대 검수 V7).
+  grove(b, rng, { x: 0, y: py + 1, w: gx - 1, h: H - py - 1 }, 0.35, 0.2);
+  grove(b, rng, { x: gx + 5, y: py + 1, w: W - gx - 5, h: H - py - 1 }, 0.35, 0.2);
   // 목책 안 동서 가장자리 띠(목책과 집 사이)
   vignettes(b, rng, OPEN_USES, 6);
   breakEmpty(b, rng, 5);
@@ -711,7 +721,7 @@ function composeLake(b: Board, rng: () => number): SnowNorthCell {
     if (d < 3) b.use[b.k(x, y)] = "forest";
   }
   // 호수: 가운데에서 약간 북쪽, 큰 덩이 + 물 구멍
-  const cx = W / 2 + (rng() - 0.5) * 4, cy = H * 0.42, rx = W * 0.3, ry = H * 0.26;
+  const cx = W / 2 + (rng() - 0.5) * 4, cy = H * 0.4, rx = W * 0.25, ry = H * 0.23;
   lake(b, cx, cy, rx, ry, 3, rng, 1);
   b.zone("얼어붙은 호수", "얼음 낚시터(구멍·낚시 오두막)", { x: Math.floor(cx - rx), y: Math.floor(cy - ry), w: Math.ceil(rx * 2), h: Math.ceil(ry * 2) });
   // 들어오는 길: 남쪽 끝 → 호숫가
@@ -746,8 +756,11 @@ function composeLake(b: Board, rng: () => number): SnowNorthCell {
   b.start = start;
   for (const bl of b.buildings) for (const a of bl.access) if (b.ground[b.k(a.x, a.y)] !== "ice") b.connect(a);
   // 얼음 위 낚시 자리 3~5(서로 2칸 이상), 물 구멍 곁
+  // 낚시 자리는 물 구멍 바로 곁에만 — 아무 얼음에 흩으면 같은 소품이 격자처럼 늘어섰다(적대 검수 L2).
   let spots = 0;
-  for (const [x, y] of shuffle(rng, iceCells)) { if (spots >= 4) break; if (b.prop("sn-fishing-spot", x, y, 1, ["ice"], ["ice"])) spots++; }
+  const holes: [number, number][] = [];
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (b.ground[b.k(x, y)] === "water" && b.ground[b.k(x - 1, y)] !== "water" && b.ground[b.k(x, y - 1)] !== "water") holes.push([x, y]);
+  for (const [hx, hy] of shuffle(rng, holes)) { if (spots >= 3) break; if (b.propNear("sn-fishing-spot", shuffle(rng, [[hx - 2, hy + 1], [hx + 2, hy + 1], [hx, hy + 2], [hx, hy - 1]] as [number, number][]), 1, ["ice"], ["ice"])) spots++; }
   b.zone("낚시 자리", "얼음 구멍 낚시", { x: Math.floor(cx - rx * 0.7), y: Math.floor(cy - ry * 0.7), w: Math.ceil(rx * 1.4), h: Math.ceil(ry * 1.4) });
   // 물가: 배(눈밭, 물가와 평행), 썰매, 장작, 덕장
   for (const bl of b.buildings) {
@@ -786,8 +799,8 @@ function composeCave(b: Board, rng: () => number): SnowNorthCell {
   if (fallX >= 0) {
     // 개울: 폭포 밑에서 남서/남동으로 구불구불
     let x = fallX + 1;
-    for (let y = ridge + 2; y < H - 3; y++) {
-      x += Math.round((vnoise(0, y, 4, b.seed + 77) - 0.5) * 2);
+    for (let y = ridge + 1; y < H - 3; y++) {
+      if (y > ridge + 2) x += Math.round((vnoise(0, y, 4, b.seed + 77) - 0.5) * 2);
       x = Math.max(2, Math.min(W - 4, x));
       b.paint("ice", { x, y, w: 2 + (y > H / 2 ? 1 : 0), h: 1 }, "ice", ["open", "wild", "forest", "rock"]);
     }
@@ -827,7 +840,7 @@ function composeCave(b: Board, rng: () => number): SnowNorthCell {
   b.cluster({ x: camp.x, y: camp.y + 3, w: camp.w, h: 4 }, ["sn-sled-wood", "sn-woodpile", "sn-cauldron", "sn-hide-rack"], ["camp"], 0);
   b.cluster({ x: 0, y: 0, w: W, h: H }, ["sn-fishing-spot"], ["ice"], 1, ["ice"]);
   shoreline(b, rng, 5);
-  wildPatches(b, rng, 4, { x: 2, y: ridge + 2, w: W - 4, h: H - ridge - 4 });
+  wildPatches(b, rng, 2, { x: 2, y: ridge + 2, w: W - 4, h: H - ridge - 4 });
   // 남쪽 들: 가문비 덩이 몇 + 바위
   grove(b, rng, { x: 0, y: H - 6, w: Math.max(4, sx - 3), h: 6 }, 0.45, 0.25);
   grove(b, rng, { x: sx + 4, y: H - 6, w: W - sx - 4, h: 6 }, 0.45, 0.25);
@@ -868,11 +881,14 @@ function composeMarket(b: Board, rng: () => number): SnowNorthCell {
   const stalls = shuffle(rng, ["sn-stall-fish", "sn-stall-fur", "sn-stall-wares", "sn-stall-fish", "sn-stall-wares", "sn-stall-fur"]);
   const rowsY = [mk.y + 2, mk.y + mk.h - 4];
   let si = 0;
+  // 줄을 엇갈린다: 칸마다 한두 칸 띄움·위아래 한 칸 흔들림·가끔 빈 자리 — 좌우 거울 격자는 «주차장»처럼 읽혔다(적대 검수 M1).
   for (const y of rowsY) {
-    for (let x = mk.x + 1; x + 3 <= mk.x + mk.w - 1; x += 4) {
+    for (let x = mk.x + 1 + Math.floor(rng() * 2); x + 3 <= mk.x + mk.w - 1; x += 4 + (rng() < 0.4 ? 1 : 0)) {
       if (x <= gx + 2 && x + 3 >= gx - 1) continue;           // 가운데 길 비움
+      if (rng() < 0.2) continue;
       const id = stalls[si % stalls.length]!;
-      if (b.prop(id, x, y, 0, ["market"])) { si++; b.reserve({ x, y: y + 2, w: 3, h: 1 }); }
+      const yy = y + (rng() < 0.5 ? 0 : y === rowsY[0] ? 1 : -1);
+      if (b.prop(id, x, yy, 0, ["market"])) { si++; b.reserve({ x, y: yy + 2, w: 3, h: 1 }); }
     }
   }
   // 가운데: 우물 + 모닥불, 모퉁이 불바구니 기둥
@@ -892,7 +908,7 @@ function composeMarket(b: Board, rng: () => number): SnowNorthCell {
     for (const y of XS(mk.y + mk.h + 1, H - s.h - 3)) { for (const x of xs) if (b.canBuild(id, x, y)) { const h = b.building(id, x, y); b.connect(h.access[0]!, ["path", "market"]); homestead(b, rng, h); done = true; break; } if (done) break; }
   }
   grove(b, rng, { x: 0, y: 0, w: W, h: fh + 1 }, 0.6, 0.15);
-  wildPatches(b, rng, 3, { x: 2, y: mk.y + mk.h, w: W - 4, h: H - mk.y - mk.h - 1 });
+  wildPatches(b, rng, 1, { x: 2, y: mk.y + mk.h, w: W - 4, h: H - mk.y - mk.h - 1 }, false);
   vignettes(b, rng, OPEN_USES, 6);
   breakEmpty(b, rng, 5);
   return start;
@@ -957,8 +973,14 @@ function composeRoom(b: Board, rng: () => number, style: SnowNorthRoomStyle): Sn
       // 벽난로는 북쪽 벽 한쪽, 침대·이층 침대는 반대쪽 벽, 가운데 깔개 + 걸상, 궤짝은 모퉁이, 벽에 선반·사슴뿔·등
       backWall("sn-hearth", leftFirst ? XS(fx0 + 1, cx - 1) : XS(cx, fx1 - 2).reverse());
       backWall(pick(rng, ["sn-bunk-bed", "sn-bed-fur"]), leftFirst ? XS(cx + 1, fx1 - 1).reverse() : XS(fx0, cx - 2));
-      b.propNear("sn-rug-fur", [[cx - 1, fy0 + 3], [cx, fy0 + 3], [cx - 1, fy0 + 2]], 0, ["floor"]);
-      anywhere("sn-stool", 2, 0);
+      // 식탁 + 걸상 — 탁자 없이 걸상만 벽에 붙은 방은 쓰임이 없어 보였다(적대 검수 K2). 깔개는 벽난로 앞.
+      if (b.propNear("sn-long-table", [[cx - 1, fy0 + 3], [cx - 2, fy0 + 3], [cx, fy0 + 3], [cx - 1, fy0 + 2]], 0, ["floor"])) {
+        const t = b.props[b.props.length - 1]!;
+        b.propNear("sn-stool", [[t.x - 1, t.y + 1], [t.x - 1, t.y]], 0, ["floor"]);
+        b.propNear("sn-stool", [[t.x + 3, t.y + 1], [t.x + 3, t.y]], 0, ["floor"]);
+      } else anywhere("sn-stool", 2, 0);
+      const hearth = b.props.find((p) => p.kit === "sn-hearth");
+      if (hearth) b.propNear("sn-rug-fur", [[hearth.x, hearth.y + 2], [hearth.x + 1, hearth.y + 2]], 0, ["floor"]);
       corner("sn-chest");
       wall("sn-shelf", XS(fx0, fx1)); wall("sn-antler-mount", XS(fx0, fx1).reverse(), "u"); wall("sn-lantern", XS(fx0 + 1, fx1 - 1), "d");
       wall("sn-drying-herbs", XS(fx0, fx1).reverse());
