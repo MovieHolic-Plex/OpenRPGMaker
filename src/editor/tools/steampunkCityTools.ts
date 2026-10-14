@@ -13,6 +13,7 @@ import {
   STEAMPUNK_MIN_SIZE, STEAMPUNK_OUTDOOR_STYLES, STEAMPUNK_ROOM_STYLES, composeSteampunkCity, steampunkPaletteFromTileset, type SteampunkStyle,
 } from "@/project/steampunkCityComposer";
 import type { GameEvent, GameMap, MapId, Project } from "@/project/types";
+import { claimStartIfBlank } from "./composerStart";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
@@ -139,12 +140,14 @@ export const COMPOSE_STEAMPUNK_CITY_MAP_TOOL: ToolDefinition = {
     if (created) { draft.maps[mapId] = target; draft.mapTree = next.mapTree; }
     else draft.maps[mapId] = target;
     const indoor = (STEAMPUNK_ROOM_STYLES as readonly string[]).includes(style);
+    const startClaim = indoor ? { claimed: false, note: "" } : claimStartIfBlank(draft, mapId, r.start);
     return {
       summary: `${STYLE_KO[style]}를 ${map.width}×${map.height} 맵 '${target.name}'(${mapId})에 짰다(seed ${seed}${created ? ", 새 맵" : ""}) — 건물 ${r.buildings.length}채, 소품 ${r.props.length}개, 구역 ${r.zones.map((z) => z.name).join("·")}. `
         + (indoor ? `출구 ${r.exits.map((c) => `(${c.x},${c.y})`).join(" ")} 에서 방 안 모든 바닥에 닿음(엔진 통행). 건물 문과 잇기: link_steampunk_interior({mapId:<야외>, door, width, interiorMapId:"${mapId}"}).`
           : `시작 칸 (${r.start.x},${r.start.y}) 에서 모든 문 접근칸에 닿음(엔진 통행). 건물 문: ${r.buildings.map((d) => `${d.name} (${d.doors.map((c) => `${c.x},${c.y}`).join(" · ")})`).join(" · ")}.`)
+        + startClaim.note
         + (r.notes.length ? ` 참고: ${r.notes.join(" / ")}.` : "") + (blocked.length ? ` 경고: 막힌 칸 위 이벤트 ${blocked.join(", ")}.` : ""),
-      data: { mapId, created: !!created, style, seed, start: r.start, exits: r.exits, zones: r.zones, buildings: r.buildings.map((d) => ({ name: d.name, kit: d.kit, rect: d.rect, doors: d.doors, access: d.access })), props: r.props.length },
+      data: { mapId, created: !!created, style, seed, start: r.start, startClaimed: startClaim.claimed, exits: r.exits, zones: r.zones, buildings: r.buildings.map((d) => ({ name: d.name, kit: d.kit, rect: d.rect, doors: d.doors, access: d.access })), props: r.props.length },
     };
   },
 };

@@ -33,6 +33,27 @@ function reachable(project: Project, map: GameMap, from: Cell): Set<number> {
   return seen;
 }
 
+/**
+ * 구성기가 낸 건물 문 중 아직 실내로 이어지지 않은 것(문 앞 접근칸에 이동 이벤트가 없다).
+ * 2026-10-14 실조수 검증: 모델이 본관 하나만 잇고 체육관·별관 문(13,13)·(39,13)은 말없이 죽은 문으로 남겼다 —
+ * 연결은 link_campus_interior 호출이 전부라 빠져도 어느 도구도 알려 주지 않았다. 건물 위치(location)의 note 에 문 좌표가 있다.
+ */
+function unlinkedBuildingDoors(outer: GameMap): { name: string; x: number; y: number }[] {
+  const out: { name: string; x: number; y: number }[] = [];
+  for (const loc of outer.locations ?? []) {
+    if (!(loc.tags ?? []).includes("campus-building")) continue;
+    const m = /문 \((\d+),(\d+)\)(?: 외 (\d+)칸)?/.exec(loc.note ?? "");
+    if (!m) continue;
+    const x0 = Number(m[1]), y = Number(m[2]), extra = Number(m[3] ?? 0);
+    let linked = false;
+    for (let i = 0; i <= extra && !linked; i++) {
+      linked = (outer.events ?? []).some((e) => e.x === x0 + i && e.y === y + 1 && JSON.stringify(e).includes('"kind":"transfer"'));
+    }
+    if (!linked) out.push({ name: String(loc.name).replace(/ 건물$/, ""), x: x0, y });
+  }
+  return out;
+}
+
 export const COMPOSE_CAMPUS_GROUNDS_TOOL: ToolDefinition = {
   name: "compose_campus_grounds",
   mode: "write",
@@ -106,7 +127,7 @@ export const COMPOSE_CAMPUS_GROUNDS_TOOL: ToolDefinition = {
     draft.maps[mapId] = target;
     return {
       summary: `${style === "school" ? "학교 교정" : "대학 캠퍼스"}를 ${map.width}×${map.height} 맵(${mapId})에 짰다(seed ${seed}) — 건물 ${r.buildings.length}채, 소품 ${r.props.length}개, 시작 칸 (${r.start.x},${r.start.y}) 에서 모든 문 접근칸에 닿음(엔진 통행). `
-        + `건물 문: ${r.buildings.map((d) => `${d.name} (${d.doors.map((c) => `${c.x},${c.y}`).join(" · ")})`).join(" · ")}. 문마다 실내를 build_hand_interior_room 으로 짓고 link_campus_interior 로 잇는다.`
+        + `건물 문: ${r.buildings.map((d) => `${d.name} (${d.doors.map((c) => `${c.x},${c.y}`).join(" · ")})`).join(" · ")}. 문마다 실내를 build_hand_interior_room 으로 짓고 link_campus_interior 로 잇는다 — 문만 있고 안이 없는 건물을 남기지 않는다(이 요청이 안까지 걷기를 원하지 않는 건물은 final 답에 「문만 있음」이라고 밝힌다).`
         + (r.notes.length ? ` 참고: ${r.notes.join(" / ")}.` : "") + (blocked.length ? ` 경고: 막힌 칸 위 이벤트 ${blocked.join(", ")}.` : ""),
       data: { mapId, style, seed, start: r.start, gate: r.gate, buildings: r.buildings.map((d) => ({ name: d.name, kit: d.kit, rect: d.rect, doors: d.doors, access: d.access })), props: r.props.length },
     };
@@ -205,9 +226,13 @@ export const LINK_CAMPUS_INTERIOR_TOOL: ToolDefinition = {
     for (const c of exit.cells) { const id = uniqueEventId(draft, `ev_mc_exit_${interiorId.replace(/[^a-z0-9]+/gi, "_")}`); leave.push(id); interior.events = [...(interior.events ?? []), gateEvent(id, `${outer.name} 로 나가기`, c, { mapId, ...outLanding })]; }
     const node = extractTreeNode(draft.mapTree, interiorId as MapId);
     if (node && !insertTreeNode(draft.mapTree, node, mapId as MapId)) insertTreeNode(draft.mapTree, node, "");
+    const unlinked = unlinkedBuildingDoors(outer);
     return {
-      summary: `${outer.name} 문 앞 ${fronts.map((c) => `(${c.x},${c.y})`).join(" ")} ↔ ${interior.name}: 들어가면 실내 (${inLanding.x},${inLanding.y}), 실내 출입구 ${exit.cells.map((c) => `(${c.x},${c.y})`).join(" ")} 에서 나오면 야외 (${outLanding.x},${outLanding.y})`,
-      data: { mapId, fronts, interiorMapId: interiorId, enterEventIds: enter, exitEventIds: leave, entryLanding: inLanding, exitCells: exit.cells, exitLanding: outLanding },
+      summary: `${outer.name} 문 앞 ${fronts.map((c) => `(${c.x},${c.y})`).join(" ")} ↔ ${interior.name}: 들어가면 실내 (${inLanding.x},${inLanding.y}), 실내 출입구 ${exit.cells.map((c) => `(${c.x},${c.y})`).join(" ")} 에서 나오면 야외 (${outLanding.x},${outLanding.y})`
+        + (unlinked.length
+          ? `. 아직 실내에 안 이어진 건물 문 ${unlinked.length}곳: ${unlinked.map((u) => `${u.name} (${u.x},${u.y})`).join(" · ")} — 걸어가면 아무 일도 없는 죽은 문이다. 요청이 그 건물 안까지 걷게 하는 것이면 각각 build_hand_interior_room 으로 짓고 link_campus_interior 로 잇는다. 이번 요청이 본관 하나만 원하면 그대로 두되 final 답에 「문만 있고 안은 없음」이라고 밝힌다`
+          : ". 건물 문은 모두 실내에 이어졌다"),
+      data: { mapId, unlinkedDoors: unlinked, fronts, interiorMapId: interiorId, enterEventIds: enter, exitEventIds: leave, entryLanding: inLanding, exitCells: exit.cells, exitLanding: outLanding },
     };
   },
 };

@@ -43,3 +43,5 @@
 - 조수 실제 입력창(gemini-3.8-flash high, `assistant-capability` 실행기 복제): 오아시스 7 · 바자르 6.5 · 피라미드+묘실 6 (연결까지 성공). 피라미드 판에서 배치 품질 권고를 받은 조수가 석재를 낱개로 덧찍어서
   구성기 맵·방에 `composed-layout` 이름표를 달았다(`scripts/lib/piAgentRuntime.ts` 가 그 맵을 권고에서 뺀다). 이 고침 뒤 실조수 재확인은 할당량 소진으로 못 했다.
 - 남은 일: 오벨리스크 관문, 바자르 격자 단조로움, 조수 재확인.
+
+- **시작 위치 (2026-10-14):** `compose_desert_east_map` 이 빈 시작 맵을 이 맵의 시작 칸으로 옮긴다(`src/editor/tools/composerStart.ts`; 실내 `compose_desert_east_room`·작가가 정한 시작은 제외). 모델이 `set_start_position` 을 안 부르면 시작 맵이 빈 맵으로 남던 결함.
