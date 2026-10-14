@@ -3,7 +3,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createBeodeulCityTileset } from "@/project/defaults/beodeulCity";
-import { composeDungeon, type DungeonSpec } from "@/editor/beodeulDungeon/compose";
+import { composeDungeon, type DungeonSpec } from "@/editor/dungeonKit/beodeul/compose";
 
 const out = process.argv[2] ?? "/tmp/dq/run";
 fs.mkdirSync(out, { recursive: true });

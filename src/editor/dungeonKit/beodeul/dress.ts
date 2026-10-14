@@ -2,8 +2,7 @@
 // 놓기는 전부 ctx.put 을 거친다: 받침 규칙(groundSupport)·액체/다리 위 금지·문 앞 금지·길 막으면 되돌림이 거기서 걸린다.
 // true 를 돌려주면 그 방은 이 파일이 다 꾸민 것이고, false 면 compose 의 공통 방 규칙(홀·묘실·감방·제단·창고·보물 방)이 그 종류의 테마 키트로 이어서 꾸민다.
 import type { StructureKitDef } from "@/project/types";
-import type { PlacedCorridor, PlacedRoom } from "./compose";
-import type { DungeonType } from "./profiles";
+import type { DungeonType, PlacedCorridor, PlacedRoom } from "../types";
 
 export interface DressCtx {
   W: number; H: number;

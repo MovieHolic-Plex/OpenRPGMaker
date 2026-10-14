@@ -4,9 +4,9 @@
 //   · carveSewer  : 사각 방 배치 위에 수로·저수조를 판다(양옆 보행로가 남는다)
 // 모두 Grid(바닥·방 번호·액체·다리)를 만들고, 벽 두께 규칙·연결은 grid.settle 이 고정점까지 맞춘다.
 import { DungeonComposeError } from "./errors";
-import type { DungeonLayout, DungeonSpec, PlacedCorridor, PlacedRoom } from "./compose";
+import type { DungeonLayout, DungeonRoomKind, DungeonSpec, PlacedCorridor, PlacedRoom } from "./types";
 import { Grid, carveDisc, edgeDistance, rng, smooth, vnoise, type Rect } from "./grid";
-import type { DungeonRoomKind, TypeProfile } from "./profiles";
+import type { GrammarInfo } from "./grammar";
 
 const MARGIN = 2;
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, Math.round(v)));
@@ -131,7 +131,7 @@ export function layoutMaze(spec: DungeonSpec): DungeonLayout & { grid: Grid } {
 
 interface Chamber { cx: number; cy: number; rx: number; ry: number; kind: DungeonRoomKind; index: number }
 
-export function layoutBlob(spec: DungeonSpec, profile: TypeProfile): DungeonLayout & { grid: Grid } {
+export function layoutBlob(spec: DungeonSpec, profile: GrammarInfo): DungeonLayout & { grid: Grid } {
   const seed = spec.seed ?? 7;
   const random = rng(seed * 40503 + 17);
   const si = sizeIndex(spec);

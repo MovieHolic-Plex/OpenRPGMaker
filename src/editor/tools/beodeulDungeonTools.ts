@@ -6,8 +6,8 @@ import { groundSupportIssues } from "@/project/groundSupport";
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { addMapLocation, COMPOSED_LAYOUT_TAG } from "@/project/mapNamedLocations";
 import type { GameMap, Project } from "@/project/types";
-import { composeDungeon, DUNGEON_DIRS, DUNGEON_ROOM_KINDS, DUNGEON_SIZES, DUNGEON_STYLES, DUNGEON_TYPES, DungeonComposeError, type DungeonRoomInput, type DungeonSpec } from "../beodeulDungeon/compose";
-import { PROFILES } from "../beodeulDungeon/profiles";
+import { composeDungeon, DUNGEON_DIRS, DUNGEON_ROOM_KINDS, DUNGEON_SIZES, DUNGEON_STYLES, DUNGEON_TYPES, DungeonComposeError, type DungeonRoomInput, type DungeonSpec } from "../dungeonKit/beodeul/compose";
+import { BEODEUL_TYPES, PROFILES, type BeodeulDungeonType } from "../dungeonKit/beodeul/profiles";
 import { assertMapIdAvailable } from "./mapHelpers";
 import { MAP_TOOLS } from "./mapTools";
 import { ToolError, type ToolDefinition } from "./types";
@@ -20,7 +20,7 @@ const ROOM_LABEL: Record<string, string> = {
   entrance: "입구 홀", hall: "큰 홀", crypt: "묘실", cell: "감방", shrine: "제단 방", boss: "보스방", storage: "창고", vault: "보물 방",
   channel: "수로 방", cistern: "저수조", pump: "펌프실", cavern: "동굴 방", lake: "호수 동굴", grotto: "이끼 동굴", forge: "옛 대장간", nave: "신랑", junction: "갈림 갱도", stope: "채굴장", depot: "광산 창고",
 };
-const TYPE_LIST = DUNGEON_TYPES.map((t) => `${t} ${PROFILES[t].label}`).join(" · ");
+const TYPE_LIST = BEODEUL_TYPES.map((t) => `${t} ${PROFILES[t].label}`).join(" · ");
 
 function isBlankMap(map: GameMap): boolean {
   if (map.events.length > 0 || (map.structurePlacements?.length ?? 0) > 0) return false;
@@ -83,10 +83,9 @@ export const AUTHOR_BEODEUL_DUNGEON_TOOL: ToolDefinition = {
     const rooms = Array.isArray(args.rooms) ? (args.rooms as DungeonRoomInput[]) : [];
     const int = (v: unknown) => (Number.isInteger(v) && (v as number) > 0 ? (v as number) : undefined);
     const typeArg = (DUNGEON_TYPES as readonly string[]).includes(String(args.type)) ? (args.type as DungeonSpec["type"]) : undefined;
-    const iceNote = typeof args.type === "string" && /ice|얼음|빙/i.test(args.type) ? "얼음 동굴은 이 타일셋에 그림이 없어 자연 동굴(cave)로 지었다 — 사용자에게 알린다." : "";
-        const spec: DungeonSpec = {
+    const spec: DungeonSpec = {
       ...(rooms.length ? { rooms } : {}),
-      ...(typeArg ? { type: typeArg } : iceNote ? { type: "cave" as const } : {}),
+      ...(typeArg ? { type: typeArg } : {}),
       style: (DUNGEON_STYLES as readonly string[]).includes(String(args.style)) ? (args.style as DungeonSpec["style"]) : undefined,
       seed: Number.isInteger(args.seed) ? (args.seed as number) : 7,
       size: (DUNGEON_SIZES as readonly string[]).includes(String(args.size)) ? (args.size as DungeonSpec["size"]) : undefined,
@@ -104,7 +103,7 @@ export const AUTHOR_BEODEUL_DUNGEON_TOOL: ToolDefinition = {
     if (composed.width > MAX_TOOL_MAP_DIMENSION || composed.height > MAX_TOOL_MAP_DIMENSION) {
       throw new ToolError(`방 배치가 ${composed.width}×${composed.height} 라 한 맵 한도(${MAX_TOOL_MAP_DIMENSION})를 넘는다 — 방 수나 크기를 줄여라.`, { code: "invalid-args" });
     }
-    const notes: string[] = iceNote ? [iceNote] : [];
+    const notes: string[] = [];
     let mapId = typeof args.mapId === "string" && args.mapId.trim() ? args.mapId.trim() : "";
     if (mapId) {
       const existing = draft.maps[mapId];
@@ -158,7 +157,7 @@ export const AUTHOR_BEODEUL_DUNGEON_TOOL: ToolDefinition = {
     };
     const dressed = Object.values(composed.counts).reduce((a, b) => a + b, 0);
     return {
-      summary: `${notes.join(" ")} ${PROFILES[composed.type].label} 던전 ${mapId} ${composed.width}×${composed.height}: 방 ${composed.rooms.length}개를 통로 ${composed.corridors.length}개로 이었다(장식 ${dressed}점, 받침 없는 물체 0${composed.liquid.kind ? `, ${composed.liquid.kind === "lava" ? "용암" : "물"} ${composed.liquid.cells}칸은 걸을 수 없고 다리 ${composed.liquid.bridges}칸` : ""}, 입구에서 모든 방 도달${composed.anchors.boss ? `, 보스방 ${composed.anchors.boss}` : ""}${composed.anchors.treasure ? `, 보물 방 ${composed.anchors.treasure}` : ""}${composed.anchors.gate ? `, 잠긴 문 자리 (${composed.anchors.gate.x},${composed.anchors.gate.y})` : ""}). 이벤트·적·상자는 data.rooms[].spots 좌표에만 둔다.`.trim(),
+      summary: `${notes.join(" ")} ${PROFILES[composed.type as BeodeulDungeonType].label} 던전 ${mapId} ${composed.width}×${composed.height}: 방 ${composed.rooms.length}개를 통로 ${composed.corridors.length}개로 이었다(장식 ${dressed}점, 받침 없는 물체 0${composed.liquid.kind ? `, ${composed.liquid.kind === "lava" ? "용암" : "물"} ${composed.liquid.cells}칸은 걸을 수 없고 다리 ${composed.liquid.bridges}칸` : ""}, 입구에서 모든 방 도달${composed.anchors.boss ? `, 보스방 ${composed.anchors.boss}` : ""}${composed.anchors.treasure ? `, 보물 방 ${composed.anchors.treasure}` : ""}${composed.anchors.gate ? `, 잠긴 문 자리 (${composed.anchors.gate.x},${composed.anchors.gate.y})` : ""}). 이벤트·적·상자는 data.rooms[].spots 좌표에만 둔다.`.trim(),
       data,
       warnings: composed.warnings.length ? composed.warnings : undefined,
     };
