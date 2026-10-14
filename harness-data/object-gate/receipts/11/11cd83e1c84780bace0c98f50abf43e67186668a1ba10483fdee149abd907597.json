@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "11cd83e1c84780bace0c98f50abf43e67186668a1ba10483fdee149abd907597",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "market stall with striped red awning and fruit baskets on the counter",
+ "label": "pirate-isles/pi-stall-fruit",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "market stall counter and awning",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter top surface spans rows 15 to 20 (about 6 px deep) on which the fruit baskets rest, with the south counter face below spanning rows 23 to 31. The awning canopy also slopes down towards the viewer in standard 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5885
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "market stall counter and sloped awning",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The striped awning roof slopes down over rows 0-13, and the counter displays a clear 6-row horizontal top surface (rows 16-21) upon which the fruit crates sit, before dropping into the vertical front panel (rows 22-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8264
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "market stall counter and awning",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter surface is visible from row 16 to row 21 (around 5-6 rows of depth) where three fruit crates/baskets sit, with a front rim at row 21-22 and a vertical front face extending to row 31. The awning slopes down toward the viewer.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4506
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "market stall counter and canopy",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter table top is visible across rows 16-21 (approx. 6 rows of depth) where fruit crates rest, above a vertical south-facing wooden panel front (rows 22-31). The canopy roof also shows its sloping top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8213
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.580Z",
+ "cells": {
+  "16": [
+   "241d6037bd383627",
+   "6b7adfe8cc6f68c4",
+   "82f3326416666c8f",
+   "9550604dea380dbe"
+  ],
+  "24": [
+   "04a564918f90dce8",
+   "06b07fc321542781",
+   "0b76c2716ec02eb2",
+   "10ff1262dc3b4b14",
+   "445467b17ab37d03",
+   "50d59ec1d381cff2",
+   "51c4dea917a1155c",
+   "53b62213deebdeb7",
+   "561727364d615690",
+   "58caa5871aff58f5",
+   "780ef21dd430d8d4",
+   "79a3806791ac2a11",
+   "7e15f336d74779d8",
+   "8cb998ee1f09296b",
+   "98d139f83b4e0393",
+   "a0e38ce0bf455039",
+   "a475216cc6f5b237",
+   "aaa7db6d9fff3e2b",
+   "c7b2412d7278989a",
+   "ce21e2ce5f122879",
+   "ea62f33c1c76e3ef",
+   "eb01e4ccaf3c67e4",
+   "ed57761d1f4cbdfa",
+   "f2ff54686d87c69c"
+  ],
+  "32": [
+   "df033f1088b39ffd"
+  ],
+  "48": [
+   "05394c613ff26d28",
+   "78f8da45434b27d9",
+   "7bb811c89ef36887",
+   "d76581d456b1b0a4",
+   "ef44f1bb1b71a34a",
+   "ff332d9c07c64e9f"
+  ]
+ }
+}

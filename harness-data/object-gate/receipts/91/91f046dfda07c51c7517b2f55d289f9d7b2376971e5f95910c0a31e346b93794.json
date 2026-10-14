@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "91f046dfda07c51c7517b2f55d289f9d7b2376971e5f95910c0a31e346b93794",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "scattered seashells and a starfish on the sand",
+ "label": "pirate-isles/pi-shells",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "starfish and seashells lying flat on the ground",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The starfish and two seashells are debris lying flat on the floor plane, fully visible from above across rows 3-7 (shells) and 9-14 (starfish).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6405
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "starfish and two shells lying on the ground",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The starfish and seashells lie flat on the ground plane, viewed from above/3/4 perspective without vertical projection issues.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4456
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "starfish and seashells lying on the floor",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The starfish and two seashells lie flat on the ground, fully seen from the top-down 3/4 perspective across rows 3-7 (shells) and 9-14 (starfish).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4069
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "starfish and seashells lying flat on the ground",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The starfish and seashells are drawn flat on the ground viewed from above in top-down 3/4 perspective, with the starfish spread out over rows 9-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6037
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.577Z",
+ "cells": {
+  "16": [
+   "3d38dec021e8ab50"
+  ],
+  "24": [
+   "0ab817a81a3dbd2f",
+   "195e407ff9860f04",
+   "91f0a29d285c7320",
+   "9594c6b32cbbccc1",
+   "c051d57a3cdd9158",
+   "eea8e90c92c51178"
+  ],
+  "32": [
+   "4f04f0e76dc7c6cf",
+   "760d223b3853ab52",
+   "94c04200d20f25f0",
+   "a4aef06007407f77",
+   "e655a1811543a3b7",
+   "eed5817600f129c9"
+  ],
+  "48": [
+   "55b094e312096ab7",
+   "d1e9b90d16bb3241",
+   "d3aaf8b88812f1e7",
+   "d83daafd006fb17e",
+   "dcfc7802e3a5f081",
+   "e6bbf826abf81d88"
+  ]
+ }
+}

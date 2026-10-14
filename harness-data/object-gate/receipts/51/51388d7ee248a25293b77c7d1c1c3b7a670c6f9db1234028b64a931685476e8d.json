@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "51388d7ee248a25293b77c7d1c1c3b7a670c6f9db1234028b64a931685476e8d",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "tall iron candle stand seen from above at 3/4: a wide round drip tray on top holding three fat lit candles, round base dish",
+ "label": "pirate-isles/pi-candelabra",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall iron candle stand with wide drip tray and round base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the upper drip tray (rows 9-13) and the round base dish (rows 26-29) are drawn with clear foreshortened 3/4 ellipses showing their top surfaces from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5007
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron candle stand with drip tray and base dish",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the upper drip tray (rows 10-13) and the round base dish (rows 26-28) clearly display elliptical top/interior surfaces foreshortened in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8521
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tall iron candle stand with drip tray and base dish",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the upper drip tray holding the candles (rows 9-13) and the round base dish (rows 25-28) are drawn as foreshortened ellipses visible from above in proper 3/4 perspective, not as flat front horizontal strips.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8720
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "candle stand with drip tray and base dish",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the base dish (rows 26-29) and the upper drip tray (rows 10-14) are rendered as 3/4 top-down foreshortened ellipses with clear top surface/interior depth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5099
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.594Z",
+ "cells": {
+  "16": [
+   "2bcf98c508a9d777",
+   "770f7884f9c0d1a4"
+  ],
+  "24": [
+   "26013f38de476c7f",
+   "45e05fbfce6e014f",
+   "5d41ce7ef9bea3e1",
+   "6350321a339dc921",
+   "852966909bb27109",
+   "9a309829fded0e89",
+   "ac3302ea0ed9dcce",
+   "b5dedfd41476fe29",
+   "d313d0437c03e9ca",
+   "d4f0bb8e2be9592b",
+   "eeaa35b205d3273a",
+   "f6281c68604d5218"
+  ],
+  "32": [
+   "09fdd9a390e4838d",
+   "279df5fb51a3fc02",
+   "431e6b251c975879"
+  ],
+  "48": [
+   "1685c272ce520e4d",
+   "4e6cd5b3dfc8296f",
+   "5804cfd980cf5beb",
+   "872cfc7e817382da",
+   "9542655d4b797c63",
+   "c25f118e7c3d38df"
+  ]
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "eafe00802bf84eb5911bffe777f735b95bb6f0aec8432c88cdb8d7406eb54a65",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "square wooden signpost seen from above at an angle: thick post with flat light top face, three blank arrow boards, stone foot",
+ "label": "pirate-isles/pi-signpost",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden post of the signpost",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the wooden post is clearly visible from rows 2 to 5 (4 pixels tall). The projecting sign boards and stone foot also show foreshortened horizontal top faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3415
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden signpost with stone foot",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the main post is clearly visible across rows 2-5 (4 rows tall) in a lighter wood tone, and the stone base also shows a 3-row top surface (rows 25-27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4738
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden signpost",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the wooden post is clearly visible on rows 2-5 (4 rows tall), and the signboards and stone foot also show their respective top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3477
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "central square wooden post",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The post has a 4-row light wood top surface visible from y=2 to y=5 above its vertical south face. The horizontal signboards and stone foot also have clearly visible top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4720
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.586Z",
+ "cells": {
+  "16": [
+   "48658df9e14ab099",
+   "bd47362fc558e895"
+  ],
+  "24": [
+   "0200d2f489fac942",
+   "06a599507ebecd6f",
+   "0f519ba9fae5f18c",
+   "3ae1b324a095c4ae",
+   "455b2ba763161216",
+   "48b666e8a3a2a267",
+   "6289397d689399ba",
+   "6dc95d17eaea8701",
+   "6dd358e951a09bd3",
+   "b4f5ad8f67c5827a",
+   "bcca04958a1ca7d2",
+   "d5171811c1c5430b"
+  ],
+  "32": [
+   "5f42f8d73c82799d",
+   "6ced684f63e4c2e3",
+   "dab8c90c319dcf49"
+  ],
+  "48": [
+   "53e8c2d432e76a0b",
+   "540ebfeda46bd9fe",
+   "55fbc52e02325080",
+   "6a9b7a2f258054d5",
+   "c0fc1ee6f5c3b580",
+   "ced77b20753ab66b"
+  ]
+ }
+}

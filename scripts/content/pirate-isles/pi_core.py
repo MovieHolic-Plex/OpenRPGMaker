@@ -60,6 +60,31 @@ RAMPS = {
 OL = RAMPS['shadow'][0]
 ALLOWED = {c for r in RAMPS.values() for c in r}
 
+# 화풍 2판(2026-10-14, 버들항 정렬): 바깥 윤곽 = 맞닿은 재질 램프의 어두운 톤. 검정(V<30)은 쓰지 않는다.
+# 밝은 램프(모래·회벽·범포·뼈·거품)는 같은 색 기운의 짝 램프 어두운 톤을 빌린다.
+OUTLINE_PARTNER = {'sand': 'wood', 'plaster': 'stone', 'cloth': 'wood', 'bone': 'rock', 'foam': 'shallow', 'shadow': 'shadow'}
+STYLE = {'outline': 'material'}          # 'black' = 1판(관문에서 떨어진 조각을 1판 그림으로 되돌릴 때)
+
+
+def _v(h): return max((h >> 16) & 255, (h >> 8) & 255, h & 255)
+
+
+def _ramp_dark(name):
+    r = RAMPS[OUTLINE_PARTNER.get(name, name)]
+    for c in r:
+        if _v(c) >= 30: return c
+    return r[-1]
+
+
+_RAMP_OF = {}
+for _n, _r in RAMPS.items():
+    for _c in _r: _RAMP_OF.setdefault(_c, _n)
+
+
+def outline_for(col):
+    n = _RAMP_OF.get(col)
+    return _ramp_dark(n) if n else RAMPS['shadow'][2]
+
 
 def K(name, t=0):
     r = RAMPS[name]; mid = len(r) // 2
@@ -142,7 +167,9 @@ class Cv:
                     if col is not None: s.P(x, y, col)
 
     def outline(s, col=None, inner=False):
-        """불투명 덩이 바깥 4이웃 투명 화소에 윤곽. inner=True 면 덩이 가장자리 화소 자체를 칠한다(크기 유지)."""
+        """불투명 덩이 바깥 4이웃 투명 화소에 윤곽. inner=True 면 덩이 가장자리 화소 자체를 칠한다(크기 유지).
+        col 이 없으면 화풍 2판(2026-10-14): 윤곽은 검정이 아니라 맞닿은 재질 램프의 어두운 톤(OUTLINE_OF)."""
+        if col is None and STYLE['outline'] == 'material': return s._mat_outline(inner)
         col = OL if col is None else col; m = s.a[..., 3] == 255; out = []
         for y in range(s.h):
             for x in range(s.w):
@@ -156,6 +183,24 @@ class Cv:
                         xx, yy = x + dx, y + dy
                         if 0 <= xx < s.w and 0 <= yy < s.h and m[yy, xx]: out.append((x, y)); break
         for x, y in out: s.P(x, y, col)
+
+    def _mat_outline(s, inner=False):
+        m = s.a[..., 3] == 255; out = []
+        for y in range(s.h):
+            for x in range(s.w):
+                if inner:
+                    if not m[y, x]: continue
+                    edge = any(not (0 <= x + dx < s.w and 0 <= y + dy < s.h) or not m[y + dy, x + dx] for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))
+                    if edge: out.append((x, y, outline_for(s.get(x, y))))
+                elif not m[y, x]:
+                    best = None
+                    for dx, dy in ((0, 1), (1, 0), (-1, 0), (0, -1)):
+                        xx, yy = x + dx, y + dy
+                        if 0 <= xx < s.w and 0 <= yy < s.h and m[yy, xx]:
+                            o = outline_for(s.get(xx, yy))
+                            if best is None or _v(o) < _v(best): best = o
+                    if best is not None: out.append((x, y, best))
+        for x, y, c in out: s.P(x, y, c)
 
     def paste(s, o, x, y):
         for j in range(o.h):
@@ -213,17 +258,23 @@ def stones(c, x, y, w, h, mat='stone', t=0, bh=5, blen=(6, 9), s=0, moss=0.0, mo
 
 
 def straw(c, x, y, w, h, t=0, s=0, tier=5, mat='thatch'):
-    """짚 지붕 결: tier 행마다 한 단(위 밝은 끝 → 아래 그늘), 세로 짚 가닥(밝·어두운 짧은 줄)."""
+    """짚 지붕 결(화풍 2판 — 버들항 기와 문법의 짚 버전): tier 행마다 볏짚 다발 한 줄.
+    줄 안에서 위→아래로 한 단씩 내려가는 램프(+1 → 0 → -1 → -2), 다발(폭 3, 줄마다 엇갈림)마다 왼쪽 빛면·오른쪽 그늘면,
+    줄 아래 끝은 짚 끝이 들쭉날쭉 늘어지며 다음 줄에 그늘을 드리운다."""
+    ramp = {4: (1, 0, -1, -2), 5: (1, 1, 0, -1, -2), 6: (1, 1, 0, 0, -1, -2)}.get(tier) or tuple([1] + [0] * (tier - 3) + [-1, -2])
     for j in range(h):
         row = j // tier; vv = j % tier
         for i in range(w):
-            base = t + (1 if vv == 0 else 0 if vv < tier - 2 else -1 if vv == tier - 2 else -2)
-            r = hsh(i, row, s) % 7
-            if r == 0: base += 1
-            elif r == 1: base -= 1
-            # 아래 끝 들쭉날쭉(짚 다발 끝)
-            if vv == tier - 1 and hsh(i, row, s + 3) % 3 == 0: base = t
-            c.P(x + i, y + j, K(mat, base))
+            u = (i + (row * 2) % 3) % 3
+            k = (i + (row * 2) % 3) // 3
+            base = t + ramp[vv]
+            if u == 0 and vv < tier - 1: base += 1                            # 다발 빛면
+            elif u == 2 and tier - 3 <= vv < tier - 1: base -= 1              # 다발 그늘면(아래쪽만)
+            if hsh(k, row, s) % 9 == 0 and vv < tier - 1: base -= 1           # 바랜·젖은 다발
+            if hsh(i, j, s + 5) % 17 == 0 and vv < tier - 2: base += 1        # 짚 가닥 반짝
+            # 아래 끝 들쭉날쭉(다발 끝이 늘어짐)
+            if vv == tier - 1 and hsh(i, row, s + 3) % 3 == 0: base = t + ramp[tier - 2]
+            c.P(x + i, y + j, K(mat, max(-3, min(3, base))))
 
 
 def leafy(c, cx, cy, rx, ry, mat='grass', t=0, s=0, lumps=4.0, shade=True):
@@ -372,20 +423,29 @@ def hip_roof(c, x, y, w, h, mat='thatch', inset=None, s=0, ridge=True, eave=3, t
     for i in range(x, x + w):
         jag = hsh(i, 0, s + 7) % 2
         c.P(i, y + h - 1, K(mat, -2 if jag else -1))
-        if mat == 'thatch' and jag and hsh(i, 1, s) % 2: c.P(i, y + h, K(mat, -2))
+        if mat == 'thatch' and jag and hsh(i, 1, s) % 2:
+            c.P(i, y + h, K(mat, -2))
+            if hsh(i, 2, s) % 3 == 0: c.P(i, y + h + 1, K(mat, -3))           # 처마 끝 늘어진 짚(화풍 2판)
     return lx, rx
 
 
 def roof_tiles(c, x, y, w, h, mat='terra', t=0, s=0, course=4, tw=4):
-    """기와(둥근 기와 줄): course 행마다 한 줄, 기와 폭 tw — 기와 볼록면 왼쪽 밝게, 줄 밑 그늘."""
+    """기와(둥근 기와 줄, 화풍 2판 — 버들항 기와 문법): course 행마다 한 줄, 한 줄 안에서 위→아래로 한 단씩 내려가는 램프
+    (윗 끝 빛 +1/+2 → 몸 0 → 아랫 턱 -1 → 다음 줄 밑 그늘 -2), 기와 볼록면 왼쪽 밝고 이음 오른쪽 -2, 드문 바랜·짙은 기와."""
     for j in range(h):
         row = j // course; vv = j % course
         for i in range(w):
             u = (i + (tw // 2 if row % 2 else 0)) % tw
-            tt = t + (1 if u == 0 else 0 if u < tw - 1 else -2)
-            if vv == course - 1: tt = t - 2
-            elif vv == 0: tt += 1
-            if hsh(i // tw, row, s) % 9 == 0: tt -= 1
+            k = (i + (tw // 2 if row % 2 else 0)) // tw
+            var = 0
+            q = hsh(k, row, s + 1) % 13
+            if q == 0: var = -1
+            elif q == 1: var = 1
+            if vv == 0: tt = t - 2                                       # 위 줄 기와 턱이 드리운 그늘
+            elif vv == 1: tt = t + (2 if u == 0 else 1 if u < tw - 1 else -1) + var
+            elif vv == 2: tt = t + (1 if u == 0 else 0 if u < tw - 1 else -2) + var
+            else: tt = t + (0 if u == 0 else -1 if u < tw - 1 else -2) + var
+            if vv == 0 and u == tw - 1: tt = t - 3
             c.P(x + i, y + j, K(mat, tt))
 
 
@@ -405,15 +465,21 @@ def shade_rect(c, x, y, w, h, dt):
             if col is not None: c.P(x + i, y + j, shift_col(col, None, dt))
 
 
+def _p16(v, ph, a, b):
+    return a * math.sin(2 * math.pi * v / 16 + ph) + b * math.sin(2 * math.pi * v / 8 + ph * 1.7)
+
+
 def water_px(x, y, mat='shallow', t=0, s=0):
-    """물 무늬(16 주기, 이음 없음): 바탕 + 가로로 긴 잔물결 반짝임(밝은 2~4px 줄 + 밑 어두운 줄)."""
+    """물 무늬(16 주기, 이음 없음, 화풍 2판): 바탕 + 짧은 짙은 골 띠(-1) + 길이가 제각각인 잔물결
+    (밝은 줄 +1, 가운데 반짝 +2, 밑 -1 그늘) + 드문 반짝 점."""
     xx, yy = x % 16, y % 16
     base = t
-    # 잔물결: 주기 16 안에서 고정 위치 몇 줄
-    for (rx0, ry0, ln) in ((2, 2, 4), (10, 5, 3), (5, 9, 4), (12, 12, 3), (0, 14, 2)):
-        if yy == ry0 and (xx - rx0) % 16 < ln: return K(mat, base + 2)
-        if yy == ry0 + 1 and (xx - rx0 - 1) % 16 < ln: return K(mat, base - 1)
-    if hsh(xx, yy, s + 3) % 29 == 0: return K(mat, base + 1)
+    if (yy in (6, 7) and 3 <= (xx + 4) % 16 < 9) or (yy == 15 and 9 <= xx < 14): base = t - 1        # 잔물결 골(짧은 짙은 띠)
+    for (rx0, ry0, ln) in ((2, 2, 5), (10, 5, 3), (5, 9, 4), (12, 12, 6), (0, 14, 2), (8, 1, 2)):
+        d = (xx - rx0) % 16
+        if yy == ry0 and d < ln: return K(mat, base + (2 if d == ln // 2 and ln > 3 else 1))
+        if yy == ry0 + 1 and 0 < d <= ln - 1: return K(mat, base - 1)
+    if hsh(xx, yy, s + 3) % 37 == 0: return K(mat, base + 1)
     return K(mat, base)
 
 
@@ -452,7 +518,12 @@ def piece(id_, name, w, h, kind, group='props', solid=(), tags=(), desc='', entr
     return deco
 
 
+# 화풍 2판 윤곽을 받지 못한(관문 FAIL) 조각 — 1판 검정 윤곽 그림으로 둔다(1판 영수증이 그대로 유효).
+OLD_OUTLINE = {'crab', 'hammock', 'chest-big', 'hut-round'}
+
+
 def render(p, f=0):
+    STYLE['outline'] = 'black' if p['id'] in OLD_OUTLINE else 'material'
     c = Cv(p['w'] * T, p['h'] * T)
     if p['frames'] > 1: p['draw'](c, f)
     else: p['draw'](c)

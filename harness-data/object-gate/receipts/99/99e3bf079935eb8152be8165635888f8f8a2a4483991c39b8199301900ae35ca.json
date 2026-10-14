@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "99e3bf079935eb8152be8165635888f8f8a2a4483991c39b8199301900ae35ca",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "round stone well with wooden roof and bucket",
+ "label": "pirate-isles/pi-well",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round stone well cylinder",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The well opening is clearly rendered as an ellipse viewed from above (rows 15-20, showing water inside) surrounded by an elliptical stone rim (rows 13-21) atop a vertical front cylinder wall (rows 21-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5009
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round stone well",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone well opening is drawn as an ellipse from row 12 to 21 with a clear 6-row deep view inside showing water and bucket, atop a front-facing cylindrical stone wall (rows 22-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3974
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone well cylinder",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The well opening is rendered as an ellipse from row 12 to row 21 with a visible inner opening showing dark depth and blue water across rows 15 to 20 (6 rows tall), viewed from an angle above the front stone wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3490
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round stone well",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The well opening and interior water are clearly visible from above as an ellipse spanning rows 15-20 (6 rows tall), with a foreshortened circular stone rim extending from row 13 to row 21 above the vertical front stone wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5220
+  }
+ ],
+ "decidedAt": "2026-10-14T08:46:20.697Z",
+ "cells": {
+  "16": [
+   "7f8f03c9648608ee",
+   "b0f5a31081119784",
+   "b3db9ae3392b1c6b",
+   "d08122c84eb71cb2"
+  ],
+  "24": [
+   "0b17b97ddf66da99",
+   "0b6c884a7cbac057",
+   "0e8a488f8140683d",
+   "12d5031ccfc950b1",
+   "1d5496575d4b5b81",
+   "23a30e5489566b12",
+   "262d803067925655",
+   "3096c779be008bfb",
+   "31bf1238ca72f77b",
+   "3220fabc063c7e0a",
+   "34cdd50ae26fd645",
+   "38bb82bdcef9a6e5",
+   "3b67fda2ca4ea6a3",
+   "4488d234acae32e5",
+   "4eafc3c332b12c57",
+   "59c5ffd40a6356e9",
+   "641cfc67e07f1491",
+   "6cccbeec9ec3437a",
+   "74d9885815752ccc",
+   "8c8e94675b72978e",
+   "9958b7c9cef2d66f",
+   "cdb92101ab5c1d71",
+   "e03c010accbab4fe",
+   "f3ffa31140ef2e01"
+  ],
+  "32": [
+   "9cf937b56f5e01bb"
+  ],
+  "48": [
+   "04da2a6679eefea2",
+   "081cf53ee0b1d364",
+   "634b598c2f2771a2",
+   "84705f1ee6c44243",
+   "b3a0fae7a3381eb8",
+   "e9d633bfe562b3e6"
+  ]
+ }
+}

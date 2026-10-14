@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fd1c1b801d0796127f4c063aa62c2f54cb0b54d59210fb193a5afd2b6762a8c0",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "black powder keg seen from above at an angle: round lid disk with rim and fuse plug on top, red band below",
+ "label": "pirate-isles/pi-keg-powder",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical powder keg with round top lid",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top circular lid surface is prominently visible from row 1 to row 6 (approx 6 rows tall) showing a foreshortened round top with a plug detail, sitting above the cylindrical body and red band.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3666
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "powder keg / barrel",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid of the keg is clearly drawn as a foreshortened ellipse spanning rows 1-6 (about 6 rows tall) complete with rim and fuse plug, while the cylindrical front face shows properly downward-curving bands below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5625
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "powder keg cylinder",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid disk is clearly drawn as a foreshortened ellipse spanning rows 1 to 6 (6 pixel rows tall), with the cylindrical body and banded front face visible below down to row 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8451
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "powder keg / barrel",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid is rendered as a large elliptical surface spanning roughly 5 pixel rows (rows 2-6), and the red bands on the south face curve downwards correctly for 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7076
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.583Z",
+ "cells": {
+  "16": [
+   "638c25b08330b085"
+  ],
+  "24": [
+   "00cb826fa23883ae",
+   "1e001618c7504f57",
+   "624d18ff11692438",
+   "83419da56509194b",
+   "9059301078a79e1c",
+   "f5b98608b551d0e1"
+  ],
+  "32": [
+   "2c19b7a8a91c59bd",
+   "51b88bcc6e4597a0",
+   "5f4d720a1f7cddaa",
+   "711bcea6213cc8c1",
+   "8d9b711fe448d7b3",
+   "d0a34e121cd75ec6"
+  ],
+  "48": [
+   "3e3d58d5855054a7",
+   "519c390b422462ad",
+   "86f9679d036b186a",
+   "b5af508084b8cfa5",
+   "df9710eab6354a41",
+   "e36a543ca102764e"
+  ]
+ }
+}

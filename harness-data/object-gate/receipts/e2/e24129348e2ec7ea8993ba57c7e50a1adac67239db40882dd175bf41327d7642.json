@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e24129348e2ec7ea8993ba57c7e50a1adac67239db40882dd175bf41327d7642",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "captain's large wooden bed seen from above at 3/4: carved headboard against the north wall, two pillows, red blanket with gold trim, footboard",
+ "label": "pirate-isles/pi-captain-bed",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "large wooden bed with pillows and red blanket",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mattress, pillows, and blanket form an extensive horizontal surface viewed from above across rows 9-26, flanked by a headboard at the north and footboard rail at the south.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3747
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "large wooden bed with pillows and red blanket",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mattress and blanket surface is clearly seen from above across rows 9-26 (18 source pixels tall), with two pillows and a footboard at the south end showing both its top rail (rows 27-28) and front face (rows 29-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3623
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bed mattress and bedding",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed surface is extensively visible from above across rows 9-26, displaying pillows, folded sheet, and red blanket in classic 3/4 top-down perspective, ending in a foreshortened footboard with visible top edge and front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2887
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "large wooden bed with pillows and blanket",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed shows an extensive top horizontal surface (rows 9-26, ~18 rows tall) displaying the pillows, sheet, and red blanket, with the footboard rail and south face below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3515
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.594Z",
+ "cells": {
+  "16": [
+   "223fc58de1c2fc18",
+   "47f4ef4e96388a18",
+   "56250f4c743bab43",
+   "924dc9fb314f9628"
+  ],
+  "24": [
+   "0776f0151dc91a04",
+   "08c6143013c0c385",
+   "2232510ae4fdfb4e",
+   "3537f5cf24c1e918",
+   "3c4fb60fda35969d",
+   "4a4b55abd0cdcd4c",
+   "4e584279100a87bd",
+   "63af50f4e9f3ad34",
+   "69e27ae26182f644",
+   "6fd936dc0b8eb61b",
+   "798da04a26f69d02",
+   "7ae025ab92fd903b",
+   "7dd3ade7d88f0c6d",
+   "aebb0d5bcc19451e",
+   "b8a74ef4f3a5cacd",
+   "b9e651d88ec6fe7b",
+   "baf5c1b30629914a",
+   "c09bede1a7dfc478",
+   "c5258e23e0c12192",
+   "ca82e7126ea64f0c",
+   "e5032fce4a24d197",
+   "e915f2781490b3cc",
+   "eb27fc79ee057167",
+   "f0e922b2684b00fd"
+  ],
+  "32": [
+   "a013e4683231e767"
+  ],
+  "48": [
+   "60c4e5cf1f23a361",
+   "82fea24484f0ebaf",
+   "8de32922a5888891",
+   "ab313b950133771e",
+   "b4bb0f72c9ef8cbf",
+   "d29870a63548beb6"
+  ]
+ }
+}

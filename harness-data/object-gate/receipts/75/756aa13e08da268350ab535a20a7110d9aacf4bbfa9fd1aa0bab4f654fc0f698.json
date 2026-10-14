@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "756aa13e08da268350ab535a20a7110d9aacf4bbfa9fd1aa0bab4f654fc0f698",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "wooden cargo crate with cross brace",
+ "label": "pirate-isles/pi-crate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden cargo crate",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The crate shows a clearly foreshortened, brightly lit top lid surface spanning rows 2 to 7 (6 rows tall), above the darker front face with diagonal cross-bracing spanning rows 8 to 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8704
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden cargo crate",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the crate is clearly depicted and foreshortened across rows 2-7 (6 pixels tall) with bright top-down lighting, above a shaded south-facing front face with cross bracing spanning rows 8-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12042
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden cargo crate",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The crate is drawn in standard 3/4 view: the brightly lit top lid occupies rows 2–7 (6px tall), while the darker front face with wooden framing and cross bracing occupies rows 8–15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7078
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden cargo crate",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The crate is drawn in standard 3/4 view: the brightly lit top lid occupies rows 2-7 (6 rows tall), and the south-facing front face with the cross brace occupies rows 8-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 24344
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.583Z",
+ "cells": {
+  "16": [
+   "c16b94809d45486f"
+  ],
+  "24": [
+   "0b7a2e49e4568c1a",
+   "1897801bc54ddd73",
+   "54fa8bca22d55143",
+   "6c0dde348797a0c3",
+   "a55db186038dc803",
+   "d649543fc472c3ee"
+  ],
+  "32": [
+   "1812e51f5ce00b14",
+   "5311f93f21805ec4",
+   "8eb31d25690c7ba1",
+   "b026e5a78960f8f7",
+   "be98738f2ef32011",
+   "f35a42d2836ee231"
+  ],
+  "48": [
+   "11f82c93247b73e6",
+   "771d82f24051d95e",
+   "95c85dec216f68a8",
+   "ad656b1e9a812487",
+   "bfa78c4514105d20",
+   "c0bdfa1434ea6ea5"
+  ]
+ }
+}

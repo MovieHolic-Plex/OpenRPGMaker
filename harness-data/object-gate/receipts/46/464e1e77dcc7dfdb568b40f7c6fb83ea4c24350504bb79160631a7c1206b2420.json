@@ -1,0 +1,134 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "464e1e77dcc7dfdb568b40f7c6fb83ea4c24350504bb79160631a7c1206b2420",
+ "width": 32,
+ "height": 16,
+ "kind": "frame",
+ "name": "woven rope hammock strung between two posts, deep hollow cloth bed seen from above",
+ "label": "pirate-isles/pi-hammock",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail",
+  "윗면 2.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "woven rope hammock between posts",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A suspended cloth hammock is a bed/sling rather than an open frame or rack (kind mismatch). Furthermore, neither post shows a top surface and there are no horizontal frame beams or base plinth present.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12319
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hammock bed strung between side posts",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hammock is viewed in 3/4 top-down perspective, clearly showing the 5-row recessed interior/opening (rows 1-5) above the front draping cloth surface (rows 6-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5927
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "woven rope hammock bed",
+    "kind_matches": false,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 11,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a hammock/hanging bed, not a rigid open frame or rack (kind mismatch). Furthermore, it is drawn in an almost pure overhead top-down perspective rather than the 3/4 JRPG view, lacking any visible outer south hanging face or post top caps.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail"
+   ],
+   "ms": 8373
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hammock",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a cloth hammock bed, not a rigid frame or rack. Evaluated as a frame, it lacks horizontal beams or a base with top surfaces. While the interior hollow is visible from above (rows 1-5, 5px deep), the caller-supplied kind 'frame' does not match a hanging cloth hammock.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12545
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.586Z",
+ "cells": {
+  "16": [
+   "8944a86346ad1f54",
+   "9495c79394a001dc"
+  ],
+  "24": [
+   "0438cd06b542c9e4",
+   "451af7f7f779e7c0",
+   "89d8f1bacb62e99b",
+   "97d7b4972dbe1fe4",
+   "9ac02bf219b2c16a",
+   "a521fcf7a4f988a3",
+   "ad880f020560e3c4",
+   "c37e2c872f5983ff",
+   "d11816c4fea6638b",
+   "dc6e96c5126ec102",
+   "df0546a77b0e935f",
+   "f94c39fe196c0af8"
+  ],
+  "32": [
+   "3ef1fd47caa1f802",
+   "76cd9f27776341a1"
+  ],
+  "48": [
+   "1c2a5bffdb1389c6",
+   "36ee2eaaf1fc37be",
+   "859ae3ddec0f30bf",
+   "8918d20af0caab8d",
+   "abfafc6d3de6ec2a",
+   "c942dfe95d03707c"
+  ]
+ }
+}

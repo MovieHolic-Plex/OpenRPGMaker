@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ce04e584bd530c2276b08ef76417b585dd0dd498d45b5d0b6753cdf1c6c10b37",
+ "width": 32,
+ "height": 32,
+ "kind": "round_body",
+ "name": "stack of three wooden barrels, two below and one on top",
+ "label": "pirate-isles/pi-barrels",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stack of three wooden barrels",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top barrel displays a clear 5-row elliptical wooden cap (rows 2-6), and the lower barrels also show foreshortened top surfaces flanking the top barrel.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4480
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stack of three wooden barrels",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top barrel clearly displays an elliptical wooden lid spanning rows 2 to 6 (5 rows tall), and the two lower barrels also show their elliptical tops flanking the upper barrel.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4850
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stack of wooden barrels",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top barrel has a clearly drawn elliptical top cap spanning rows 1-5 (~5 px tall), and the two lower barrels also display their elliptical top surfaces on either side of the top barrel.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3856
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stack of three wooden barrels",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top barrel has a clear elliptical top face visible from rows 2 to 6 (approx 5 rows tall). The two lower barrels also clearly show their top surfaces extending to the left and right.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3263
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.583Z",
+ "cells": {
+  "16": [
+   "0b1b530d0457868f",
+   "23086c82a7160153",
+   "34351a29110c880d",
+   "4c06101e8ea5e167"
+  ],
+  "24": [
+   "021179c3a5dfa9ac",
+   "07be6a8068e136c0",
+   "0e7aac988b4630f9",
+   "173877cf971c9095",
+   "1e008232e9d7f84e",
+   "2c32be72f39ea4df",
+   "380ae8c9e62361c1",
+   "4720567b20da8799",
+   "48e5a24041964cb8",
+   "531915613d1dd78a",
+   "56d2ab25e051af18",
+   "63d29586f0e02aee",
+   "69e09ff3c6792d91",
+   "6a6cdd0004225011",
+   "8bdcc63e45ece0dd",
+   "904d9c1b9670db7c",
+   "983da85058680db2",
+   "acad08cd194a7c18",
+   "adc9033349ce511e",
+   "b18c01807e99ad5b",
+   "bf1e492285de3616",
+   "eb177d3afdc207db",
+   "f26b6aaa6b4966c6",
+   "fbd9addf27fdc242"
+  ],
+  "32": [
+   "6e1486d9f6140fc7"
+  ],
+  "48": [
+   "00269bf59f875a0f",
+   "4ae82132c247decc",
+   "574c3d251a2cc051",
+   "74184b8e69f3d754",
+   "989f118b0831c157",
+   "e60f31cbe1fad44a"
+  ]
+ }
+}

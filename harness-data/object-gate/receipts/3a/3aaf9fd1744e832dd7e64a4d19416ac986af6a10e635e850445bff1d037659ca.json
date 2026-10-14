@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3aaf9fd1744e832dd7e64a4d19416ac986af6a10e635e850445bff1d037659ca",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "wooden barrel seen from above at an angle: big light elliptical lid on top, curved iron hoops",
+ "label": "pirate-isles/pi-barrel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top circular lid of the barrel is drawn as a clear foreshortened ellipse spanning rows 1 to 6 (6 source pixel rows tall), showing plank texture from above, resting above the curved south face of the barrel.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6285
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A large foreshortened elliptical lid of light wooden planks occupies rows 1-6 (about 5-6 rows tall), while the front curved body with iron hoops spans rows 7-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4769
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid is prominently drawn as an ellipse occupying rows 1-6 (about 6 pixel rows tall) with vertical plank markings, sitting atop the front face of the barrel with downward-curving iron hoops.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4809
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A clear elliptical wooden lid/top cap occupies rows 2 to 6 (approx 5 rows tall), resting above the south-facing curved belly of the barrel with iron hoops (rows 7-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3899
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.583Z",
+ "cells": {
+  "16": [
+   "9b660d72ffdd279e"
+  ],
+  "24": [
+   "8556fb9ea1769b30",
+   "9eafde919afe44b1",
+   "a498ffe79ec39ba8",
+   "c93c277788c67af9",
+   "cc294c7097f3219d",
+   "d2376a8a1fbc4f6f"
+  ],
+  "32": [
+   "07c73817e6f11cca",
+   "5cd755da48b01e6c",
+   "8617acb0b24dda36",
+   "8d6ccba0bb165a5c",
+   "927171a5ec6c4c6d",
+   "dc0d58d4cd11f1a5"
+  ],
+  "48": [
+   "4e41e46722c496d6",
+   "6877f92fe45f7ce3",
+   "9c059d9db4d74c6d",
+   "ce349bf4d9d0cc7a",
+   "e78e3a1bb5eabac3",
+   "fa5f04945a22d7c5"
+  ]
+ }
+}

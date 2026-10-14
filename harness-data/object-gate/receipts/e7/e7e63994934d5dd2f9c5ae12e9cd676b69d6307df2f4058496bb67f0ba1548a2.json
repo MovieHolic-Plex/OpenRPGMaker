@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e7e63994934d5dd2f9c5ae12e9cd676b69d6307df2f4058496bb67f0ba1548a2",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "thick round wooden pier post, sawn top end with tree rings seen from above, rope wrap",
+ "label": "pirate-isles/pi-pier-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round wooden pier post",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the pier post is rendered as a foreshortened ellipse spanning rows 1 through 6, displaying wood grain/rings, atop a cylindrical front-facing post body with rope wraps.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 22648
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden pier post",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut surface of the post is clearly drawn as a foreshortened ellipse spanning rows 1 to 6 (about 6 rows tall) showing the wood cross-section, with the cylindrical front face descending below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3618
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden pier post",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut end of the wooden post is drawn as a clearly foreshortened circular/oval top surface spanning rows 1 to 6, with the front cylindrical shaft continuing down below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4301
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden pier post",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the wooden post clearly shows a foreshortened elliptical sawn face (approx 6 rows tall, rows 1-6) with tree ring details above the cylindrical front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3386
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.586Z",
+ "cells": {
+  "16": [
+   "6f94372b0d9ee3a1"
+  ],
+  "24": [
+   "1502ebea668d0a11",
+   "1fe43a9974e13b66",
+   "40bd4b1527b227e9",
+   "af9dbb479dda8fd3",
+   "b511afe67eefdf1a",
+   "f8585eded942bf25"
+  ],
+  "32": [
+   "0c768c25bf7a99cc",
+   "18f562614e96634f",
+   "25b71e7737164ac3",
+   "80d0acd963d5bd03",
+   "9b90bc8e8a1b7f34",
+   "ace38c4c1fda6876"
+  ],
+  "48": [
+   "67adc5ddcc64510f",
+   "7fe6cbde2a85d205",
+   "b23fced614d89194",
+   "b89531e85301215f",
+   "e11f7265c68a8857",
+   "f66b06835fe2002b"
+  ]
+ }
+}

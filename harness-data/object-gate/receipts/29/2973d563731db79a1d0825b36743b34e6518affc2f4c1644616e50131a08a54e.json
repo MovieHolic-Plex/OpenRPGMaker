@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2973d563731db79a1d0825b36743b34e6518affc2f4c1644616e50131a08a54e",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "small rock tide pool with clear water and a starfish, flat on the beach",
+ "label": "pirate-isles/pi-tide-pool",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "elliptical rock tide pool with water and starfish",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tide pool is rendered as an elliptical flat ground feature spanning rows 3-13, with clear water (rows 5-12) and a starfish fully visible from the top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3694
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "elliptical rock tide pool with water and starfish",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tide pool is rendered as a foreshortened ellipse spanning rows 3-14, viewed from above at a 3/4 perspective with clear interior water and a visible starfish on the pool bed.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5663
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flat elliptical rock tide pool with water surface and starfish",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tide pool is rendered as an elliptical flat feature on the ground showing clear water spanning rows 4-12 (9 rows tall) with a starfish inside, viewed at the correct 3/4 top-down angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4104
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flat rock tide pool",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Elliptical pool viewed foreshortened from above spanning rows 3-13, with clear water surface showing a starfish across 8 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4381
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.588Z",
+ "cells": {
+  "16": [
+   "43984a098288dad3"
+  ],
+  "24": [
+   "6541efc3f553f341",
+   "8a3a34fe11c00bfb",
+   "be815de88b859ce7",
+   "c98b5c4e9066fc30",
+   "d6461fd6182c5639",
+   "fc7c3afdee30671a"
+  ],
+  "32": [
+   "00c0f23e257b0e1a",
+   "628842bb86328d6b",
+   "6d157861c09b1a9a",
+   "6ea8d37a73b179b7",
+   "6ffce5aceb41d30b",
+   "73bbed4ac983f2fa"
+  ],
+  "48": [
+   "3fbde8009d8a70b5",
+   "65a86d78b84a9bd0",
+   "8204156df37029a2",
+   "cec837d8688caaa0",
+   "e18dc2f539745bce",
+   "f517c5ea46653e02"
+  ]
+ }
+}

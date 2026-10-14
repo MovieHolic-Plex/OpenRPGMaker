@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d94b4a926566341544074bee56a15faa067ec4306148db4ce962edf7f3f01dd9",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "large mossy coastal boulder cluster",
+ "label": "pirate-isles/pi-rock-large",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "large mossy boulder cluster",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main upper boulder shows an upward-facing top plane spanning rows 5 to 13 with moss and highlight pixels, sloping down into vertical shaded faces and lower foreground boulders.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5461
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "large mossy coastal boulder cluster",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The boulder cluster shows broad top planes visible from above (rows 5 to 13 on the main rock, plus distinct top-lit surfaces on the foreground stones) transitioning to shaded south faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5718
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cluster of rounded boulders",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large main boulder clearly shows its upward-facing top surface from row 5 down to row 12 with top-down lighting and moss patches, transitioning into shaded front faces below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5243
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "boulder cluster",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The boulder cluster is layered in depth with front and rear rocks; the main upper boulder shows an expansive top surface spanning rows 5 through 13 with top-down lighting and moss patches before dropping into shaded south-facing planes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4879
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.576Z",
+ "cells": {
+  "16": [
+   "628658832b0797b8",
+   "63cf3cdb7754d0dc",
+   "858d73b180d7b278",
+   "e7dab00080b27447"
+  ],
+  "24": [
+   "00dc4fd1c35d3e8f",
+   "0490cb9654699d89",
+   "0986aec610ba4e92",
+   "0b92b8b4f10507f7",
+   "10207a5c3e79db63",
+   "1d71c4b1186a7f93",
+   "21ccec8e45495209",
+   "342664f95558f683",
+   "3b0803ad7b172cf5",
+   "3e0a3f927987e980",
+   "4f1a51e9f4758a90",
+   "51952cf4eee1feae",
+   "6a1d17aecd60bb39",
+   "6f7826bd24df7e35",
+   "7a50e64751f15ad2",
+   "81aad830fa0fea60",
+   "8a04facc75d34c4f",
+   "8d45c49846a1454a",
+   "9c3ed66838d4f73a",
+   "b1b4a0f2d635e191",
+   "ba02ef8b200ac669",
+   "dc46d015f9a330c8",
+   "f1f577fa22e6de27"
+  ],
+  "32": [
+   "633a8b60770e64da"
+  ],
+  "48": [
+   "0be47d2345526a1e",
+   "14768ed844ca9e6f",
+   "26ca124a658d4ee7",
+   "74c59c15ac337f9a",
+   "ab6b5f16d454a77e",
+   "cb808b7b128a9877"
+  ]
+ }
+}

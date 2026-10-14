@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cf75a4509974d4a1162d2ce413e44a26f21007f4ba86a205b861ae70b87d7255",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "wooden ship deck planking floor tiles, 2 variants",
+ "label": "pirate-isles/pi-deck",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden deck plank floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles depicting wooden deck planks laid out horizontally with seams and wood grain texture.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3855
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden plank floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor texture representing horizontal wooden ship deck planks viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4424
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden deck planking floor tile pattern",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor/deck planking terrain texture viewed from top-down; kind accurately classifies this as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3954
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden deck floor planks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles representing horizontal wooden deck planking viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3237
+  }
+ ],
+ "decidedAt": "2026-10-14T08:46:20.694Z",
+ "cells": {
+  "16": [
+   "a15215db33884e5d",
+   "b1b6b235e6720b62"
+  ],
+  "24": [
+   "3e1b727b31a1c6c9",
+   "69712943f5ba3cb0",
+   "70a66aeb6bbe5df4",
+   "7a4a216d81aa9da2",
+   "8995ed7181b74d4a",
+   "9f7a3449f48fc53f",
+   "adaa99818f8f82b8",
+   "b3914d53a87f2538",
+   "c192920dc8499858",
+   "e0da5673eff94665",
+   "ed9b727ba69360fd",
+   "f237d8df3d3794c2"
+  ],
+  "32": [
+   "0a373e50a4988bd9",
+   "c4a69c9a09fb3a97"
+  ],
+  "48": [
+   "1992bd6a7b2c3391",
+   "60a6362402c615aa",
+   "6b1cbdf77f17b397",
+   "6fc57e3fe682ab4c",
+   "a767529fa948bdea",
+   "a80fabbeaa844557"
+  ]
+ }
+}

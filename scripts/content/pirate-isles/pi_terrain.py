@@ -67,8 +67,9 @@ def auto4_piece(id_, name, fn, desc='', tags=(), kind='terrain'):
 # ================================================================== 낱칸 무늬(16 주기)
 def sand_px(x, y, v=0):
     x %= 16; y %= 16
-    t = 1
-    r = hsh(x, y, 11 + v) % 61
+    q = hsh(x // 2, y // 2, 13 + v) % 9                           # 2×2 모래 결 덩이(화풍 2판)
+    t = 2 if q == 0 and (x + y) % 2 else 0 if q == 1 and (x + y) % 2 == 0 else 1
+    r = hsh(x, y, 11 + v) % 41
     if r < 3: t = 2
     elif r < 5 and hsh(x + 1, y, 11 + v) % 3: t = 0
     elif r == 5: t = 3 if v == 2 else 2
@@ -80,25 +81,73 @@ def sand_px(x, y, v=0):
     return K('sand', t)
 
 
+# 풀(화풍 2판 2차, 2026-10-14 감독 판정 「잔 점 반복이 번잡」): 바탕은 조용한 면, 명암은 여러 칸에 걸친 큰 그늘 덩이
+# (at-grassshade 4이웃 오토타일, 구성기가 잡음으로 몰아 깐다)와 드문 풀포기(변형 2~5).
+GRASS_TUFTS = {2: ((5, 9),), 3: ((11, 6),), 4: ((4, 4), (12, 12)), 5: ((9, 11),)}
+
+
+def _tuft(x, y, tx, ty):
+    """풀포기 하나(폭 5, 높이 4): 잎 끝 밝게, 밑 짙게. 없으면 None."""
+    dx, dy = x - tx, y - ty
+    if dy == 0 and dx in (-2, 0, 2): return -1
+    if dy == 1 and -2 <= dx <= 2: return 1 if dx == -1 else 0 if dx in (-2, 0) else -1
+    if dy == 2 and -2 <= dx <= 2: return 0 if dx < 0 else -1
+    if dy == 3 and -1 <= dx <= 1: return -2
+    if dy == -1 and dx in (-1, 1): return 1 if dx < 0 else 0
+    return None
+
+
 def grass_px(x, y, v=0):
+    """밀림 풀 바탕: 0단 조용한 면 + 아주 드문 풀잎 점(±1). 변형 2~5 는 풀포기 하나둘."""
     x %= 16; y %= 16
-    f = per16(x, 0.4 + v, 0.7, 0.5) + per16(y, 3.1 + v, 0.7, 0.4)
-    t = -1 if f < -1.45 else 0
-    q = hsh(x, y, 23 + v) % 17
-    if q == 0: t += 1
-    elif q == 1: t -= 1
-    if hsh(x, (y - 1) % 16, 23 + v) % 17 == 0: t -= 1        # 풀잎 밝은 점 밑 그늘
-    return K('grass', max(-2, min(2, t)))
+    for (tx, ty) in GRASS_TUFTS.get(v, ()):
+        r = _tuft(x, y, tx, ty)
+        if r is not None: return K('grass', r)
+    t = 0
+    q = hsh(x, y, 23 + v) % 97
+    if q == 0: t = 1
+    elif q == 1: t = -1
+    return K('grass', t)
+
+
+def grass_shade_px(x, y):
+    """큰 그늘 덩이 속: -1 단 면 + 드문 -2 풀잎 그늘·0 단 잎 끝."""
+    x %= 16; y %= 16
+    q = hsh(x, y, 211) % 61
+    return K('grass', -2 if q == 0 else 0 if q == 1 else -1)
+
+
+def _pebble(x, y, s):
+    """잔돌(2×2 남짓): 0 없음, 1 윗 밝은 화소, 2 아랫 그늘 화소, 3 몸."""
+    for k in range(3):
+        px, py = 2 + hsh(k, s, 401) % 12, 2 + hsh(k, s, 403) % 12
+        if hsh(k, s, 405) % 3 == 0: continue
+        if (x, y) == (px, py): return 1
+        if (x, y) == (px + 1, py): return 3
+        if (x, y) == (px, py + 1) or (x, y) == (px + 1, py + 1): return 2
+    return 0
+
+
+def path_px(x, y, v=0, mat='sand', t0=0):
+    """다져진 길 몸(화풍 2판): 2×2 결 덩이로 두 단 섞임 + 잔 알갱이 ±1 + 짙은 흙점 + 잔돌(밝은 머리·밑 그늘) + 짧은 발자국·바퀴 자국."""
+    x %= 16; y %= 16
+    t = t0 + (1 if hsh(x // 2, y // 2, 301 + v) % 5 < 2 else 0)
+    r = hsh(x, y, 311 + v) % 19
+    if r < 2: t += 1
+    elif r < 4: t -= 1
+    if hsh(x, y, 313 + v) % 41 == 0: t = t0 - 2                               # 짙은 흙점
+    if y in (5, 11) and (x + hsh(y, v, 317)) % 7 < 3 and hsh(x // 3, y, 319 + v) % 3 == 0: t = t0 - 1   # 자국
+    pb = _pebble(x, y, v + 7)
+    if pb == 1: return K('stone', 2)
+    if pb == 3: return K('stone', 1)
+    if pb == 2: return K(mat, t0 - 2)
+    return K(mat, t)
 
 
 def dirt_px(x, y, v=0):
     x %= 16; y %= 16
-    t = 0
-    r = hsh(x, y, 31 + v) % 23
-    if r < 3: t = -1
-    elif r < 5: t = 1
-    if hsh(x // 3, y // 2, 33) % 11 == 0: t = -1
-    return K('sand', t - 1) if t >= 0 or hsh(x, y, 35) % 2 else K('wood', 0)
+    if hsh(x, y, 35 + v) % 5 == 0: return K('wood', -1 if hsh(x, y, 36) % 2 else 0)      # 흙 속 짙은 흙
+    return path_px(x, y, v + 20, 'sand', -1)
 
 
 def rockfloor_px(x, y, v=0):
@@ -127,17 +176,21 @@ def cobble_px(x, y, v=0):
 
 
 def deck_px(x, y, v=0, mat='wood', t=0):
-    """갑판·마루: 가로 판자 폭 4(이음 1), 판 끝 엇갈림, 못."""
+    """갑판·마루(화풍 2판): 가로 판자 폭 4 — 판 윗 턱 빛(+1)·몸·결 줄(-1, 짧은 가로 획)·이음 그늘(-2),
+    판 끝 이음은 -2 와 그 앞 -1 그늘, 못은 판 끝 이음 곁에만(-2 점 + 0 점, 한 판에 한 쌍)."""
     x %= 16; y %= 16
     row = y // 4; vv = y % 4
-    off = (row * 5) % 16
+    off = (row * 5 + v * 3) % 16
     uu = (x + off) % 16
     tone = t + ((hsh(row, (x + off) // 16, 61 + v) % 3) - 1)
     if vv == 3: return K(mat, t - 2)
-    if uu == 15: return K(mat, t - 1)
-    if vv == 0: tone += 1
-    if uu in (1, 13) and vv == 1: return K(mat, t - 3)
-    if hsh(x, y, 63 + v) % 17 == 0: tone -= 1
+    if uu == 15: return K(mat, t - 2)
+    if uu == 14 and vv > 0: return K(mat, tone - 1)
+    if uu == 0 and vv == 0: return K(mat, tone + 2)
+    if vv == 0: return K(mat, tone + 1)
+    if uu in (1, 13) and vv == 1 and row % 2 == 0: return K(mat, t - 2 if uu == 1 else t)
+    if vv == 2 and (uu + hsh(row, 0, 65 + v)) % 9 < 3 and hsh(row, uu // 4, 67 + v) % 2: return K(mat, tone - 1)
+    if hsh(x, y, 63 + v) % 23 == 0: return K(mat, tone - 1)
     return K(mat, tone)
 
 
@@ -170,8 +223,45 @@ def _sand_shells(x, y):
 
 PIECES['sand']['draw'] = lambda c: [fill_px(c, i * 16, 0, f) for i, f in enumerate([lambda x, y: sand_px(x, y, 0), lambda x, y: sand_px(x, y, 1), _sand_shells])]
 
-tile_row('grass', 'tropical jungle grass floor tiles, 2 variants (plain, small flowers)',
-         [lambda x, y: grass_px(x, y, 0), lambda x, y: _grass_flowers(x, y)], desc='밀림 풀밭(변형 2: 맨 풀·작은 꽃).', tags=['풀'])
+tile_row('grass', 'tropical jungle grass floor tiles, 6 variants (plain, small flowers, four with small grass tufts)',
+         [lambda x, y: grass_px(x, y, 0), lambda x, y: _grass_flowers(x, y)] + [(lambda v: lambda x, y: grass_px(x, y, v))(v) for v in (2, 3, 4, 5)],
+         desc='밀림 풀밭(변형 6: 맨 풀·작은 꽃·풀포기 4). 3~6열은 드문 풀포기 — 넓은 풀밭에 가끔 섞는다. 큰 명암은 at-grassshade.', tags=['풀'])
+
+
+# 큰 풀 그늘 덩이(여러 칸에 걸친 한 덩이, 불투명 바닥 칸): 테두리는 grass_px 와 같은 바탕이라 옆 맨 풀 칸과 이음이 없다.
+# (cx, cy, rx, ry) 타원 몇 개의 합집합 + 들쭉날쭉한 테. 구성기가 풀밭 속(둘레까지 모두 풀)에 잡음으로 몰아 찍는다.
+GRASS_PATCHES = {
+    'grass-shade-a': (3, 2, ((17, 15, 13, 8), (31, 13, 9, 6), (12, 20, 7, 5))),
+    'grass-shade-b': (2, 2, ((15, 16, 11, 9), (21, 12, 7, 6))),
+    'grass-shade-c': (4, 2, ((18, 16, 14, 8), (40, 15, 13, 7), (30, 11, 10, 5))),
+    'grass-shade-d': (3, 3, ((22, 20, 15, 11), (30, 30, 11, 8), (14, 28, 8, 7))),
+}
+
+
+def _patch_draw(blobs, w, h, s):
+    def draw(c):
+        W, H = w * 16, h * 16
+        for y in range(H):
+            for x in range(W):
+                d = min(((x + .5 - cx) / rx) ** 2 + ((y + .5 - cy) / ry) ** 2 for (cx, cy, rx, ry) in blobs)
+                d += (per16(x, 1.3 + s, 0.25, 0.15) + per16(y, 2.9 + s, 0.25, 0.15)) * 0.5 + (hsh(x // 2, y // 2, 230 + s) % 3 - 1) * 0.06
+                if d < 0.72: col = grass_shade_px(x, y)
+                elif d < 1.0: col = grass_shade_px(x, y) if hsh(x, y, 231 + s) % 3 else grass_px(x, y)
+                else: col = grass_px(x, y)
+                c.P(x, y, col)
+        # 덩이 남쪽 테 = -2 (덩이 밑 그늘), 북쪽 테 위 = 드문 짙은 풀잎 삐침
+        shade = {K('grass', -1), K('grass', -2)}
+        for y in range(H):
+            for x in range(W):
+                col = c.get(x, y)
+                if col in shade and y + 1 < H and c.get(x, y + 1) not in shade and hsh(x, y, 233 + s) % 3: c.P(x, y, K('grass', -2))
+                if col not in shade and y + 1 < H and c.get(x, y + 1) in shade and hsh(x, 0, 235 + s) % 4 == 0: c.P(x, y, K('grass', -1))
+    return draw
+
+
+for _k, (_w, _h, _b) in GRASS_PATCHES.items():
+    piece(_k, f'large dark grass shade patch over jungle grass floor, {_w}x{_h} tiles, organic outline', _w, _h, 'terrain', group='terrain',
+          tags=['풀', '그늘'], desc=f'풀밭의 큰 그늘 덩이({_w}×{_h} 칸 한 덩이, 불투명 바닥). 둘레가 모두 풀인 곳에 통째로 깐다. 걷는다.')(_patch_draw(_b, _w, _h, len(_k)))
 
 
 def _grass_flowers(x, y):
@@ -251,31 +341,25 @@ def at_deep(c, m, ox, oy):
 
 
 def at_path(c, m, ox, oy):
-    """흙길(풀밭 위, 이웃 = 길). 가장자리는 풀이 길 위로 삐져나온다."""
-    s = shore_field(m, R=6)
-    for y in range(16):
-        for x in range(16):
-            e = s[y, x] + min(1.0, s[y, x] / 3.0) * (0.8 * per16(x, 0.9) + 0.8 * per16(y, 2.7)) - 2.6
-            tuft = hsh(x, y // 2, 81) % 4 == 0
-            if e < -0.8: col = dirt_px(x, y)
-            elif e < 0.2: col = K('wood', 0) if not tuft else K('grass', 1)
-            elif e < 1.0: col = K('grass', -2) if not tuft else K('grass', 0)
-            else: col = grass_px(x, y)
-            c.P(ox + x, oy + y, col)
+    """흙길(풀밭 위, 이웃 = 길). 가장자리는 짙은 흙 테 위로 풀이 삐져나온다."""
+    _path_edge(c, m, ox, oy, dirt_px, 'sand', -1, 0.9, 2.7)
 
 
 def at_sandpath(c, m, ox, oy):
-    """다져진 모래길(풀밭 위, 이웃 = 모래길). 마을 안 길 — 밝은 모래 + 바퀴·발자국 결."""
+    """다져진 모래길(풀밭 위, 이웃 = 모래길). 몸 = path_px(잔돌·흙점·자국), 가장자리 = 거친 모래 결 → 짙은 테 → 풀 턱(풀잎 삐침)."""
+    _path_edge(c, m, ox, oy, lambda x, y: path_px(x, y, 0, 'sand', 0), 'sand', 0, 2.2, 0.2)
+
+
+def _path_edge(c, m, ox, oy, body, mat, t0, ph1, ph2):
     s = shore_field(m, R=6)
     for y in range(16):
         for x in range(16):
-            e = s[y, x] + min(1.0, s[y, x] / 3.0) * (0.8 * per16(x, 2.2) + 0.8 * per16(y, 0.2)) - 2.6
+            e = s[y, x] + min(1.0, s[y, x] / 2.5) * (1.3 * per16(x, ph1, 0.8, 0.6) + 1.3 * per16(y, ph2, 0.8, 0.6) + (hsh(x // 2, y // 2, 93) % 3 - 1) * 0.35) - 2.6
             tuft = hsh(x, y // 2, 91) % 4 == 0
-            if e < -0.8:
-                col = sand_px(x, y, 0)
-                if hsh(x, y, 93) % 13 == 0: col = K('sand', -1)
-            elif e < 0.2: col = K('sand', -1) if not tuft else K('grass', 1)
-            elif e < 1.0: col = K('grass', -2) if not tuft else K('grass', 0)
+            if e < -1.1: col = body(x, y)
+            elif e < -0.3: col = K(mat, t0 - 1) if hsh(x, y, 95) % 3 else body(x, y)          # 거친 가장자리 결
+            elif e < 0.25: col = K(mat, t0 - 2) if not tuft else K('grass', -1)                  # 짙은 테(풀 턱 그늘)
+            elif e < 0.9: col = K('grass', -1 if hsh(x, y, 97) % 3 else -2) if not tuft else K('grass', 1)
             else: col = grass_px(x, y)
             c.P(ox + x, oy + y, col)
 

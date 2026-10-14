@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "20fa7bc0991f44d5c3e141c4edd2ade6af903018807522876d903e838892625b",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "fish market stall with blue striped awning, fish on ice and baskets",
+ "label": "pirate-isles/pi-stall-fish",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "market stall with striped awning and counter",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The striped awning clearly displays its sloped top surface across rows 0-13, and the counter top displays a 6-row foreshortened horizontal ice surface with fish (rows 17-22) above the vertical front wooden paneling (rows 24-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5117
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "market stall with striped awning and counter",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall counter shows a 6-row deep horizontal top surface (rows 17-22) filled with ice and fish viewed from above, resting on top of the vertical front face (rows 23-31). The awning also shows its sloping upper fabric surface across rows 0-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7093
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "market stall with awning and counter",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The striped awning clearly shows 13 rows of downward-sloping roof surface (rows 0-12), and the counter below displays a 6-row deep top surface of ice with fish laid out above the vertical front wooden panels (rows 24-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7880
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "market stall with striped awning and fish counter",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sloping awning is viewed from above across rows 0-13, and the counter's horizontal display bed of fish on ice is visible from above across rows 16-22 (6 rows) atop the front wooden counter wall (rows 23-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4456
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.580Z",
+ "cells": {
+  "16": [
+   "338ed3ecae3b89ff",
+   "61eb9df433d0be18",
+   "ddc11fb88a8d6c76",
+   "f21638a45bd907ea"
+  ],
+  "24": [
+   "0b76c2716ec02eb2",
+   "31b45813f76dd2d8",
+   "4a6b05f3d10493ab",
+   "50d59ec1d381cff2",
+   "541a0e38a9a4b5bd",
+   "544141452760038f",
+   "58caa5871aff58f5",
+   "6b277ca55c0fb144",
+   "80c214533c0c0766",
+   "81651edcfa3f7a5c",
+   "82fc188250a924c3",
+   "9367be0e4cadea07",
+   "972e9fd3e51dcc3f",
+   "9a5dd5d687dd8bbd",
+   "a475216cc6f5b237",
+   "a745a63318d4e102",
+   "a892720c7f1d655f",
+   "aaa7db6d9fff3e2b",
+   "b0a75896060f44f3",
+   "be31ab1e597f9a62",
+   "c1b1811ce6666268",
+   "c7b2412d7278989a",
+   "cab8ddd2ed32654d",
+   "cde75adf2a72018d"
+  ],
+  "32": [
+   "5fdfb823e095f397"
+  ],
+  "48": [
+   "033d400acfd988fc",
+   "0631d000fa2cb16b",
+   "1ab5170ccfd93612",
+   "2d4e31fc5c7f3b98",
+   "3bc0c183a139e1c2",
+   "dadd1da66cef8f31"
+  ]
+ }
+}

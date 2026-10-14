@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "93f894c72c543bfc4b178b57dd29a981eefe4b6f203affb7d83f9f767a61109f",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "open treasure chest overflowing with gold coins and jewels",
+ "label": "pirate-isles/pi-chest-open",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "open treasure chest",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The opening filled with gold coins and jewels is viewed from above across rows 6-9 (4 rows tall), positioned between the open lid at the back and the front face of the chest at the bottom.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3693
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "open treasure chest",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chest interior opening is visible from above across rows 6-9 (4 pixel rows tall), showing gold coins and jewels between the back lid (rows 0-5) and the front face (rows 10-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6427
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "chest base with opened lid",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chest shows the lid tilted back (rows 0-4), an interior opening filled with coins and jewels visible from above across rows 6-9 (4 rows tall), and the south front face of the chest base below (rows 10-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6314
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "open treasure chest",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The interior cavity of the chest filled with gold coins and jewels is clearly visible from above across rows 6-9 (4 pixel rows tall), situated between the open lid and the south front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4553
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.585Z",
+ "cells": {
+  "16": [
+   "908ecda5eb7c0d70"
+  ],
+  "24": [
+   "2211adb3841ee5b6",
+   "44704f5446ad609f",
+   "4b6ce7e31fd1d2d6",
+   "7afbfafc9eec6135",
+   "c1d0a5b2e631b246",
+   "d022df8d57959a04"
+  ],
+  "32": [
+   "1ab6215118a0f3e8",
+   "30cf00a03fc820b6",
+   "8114e858ad39b09d",
+   "811b6af2057d114b",
+   "e45ab0a52dc7d728",
+   "f6578d5d02062df5"
+  ],
+  "48": [
+   "8ad187fdb7114469",
+   "96e23fa1fd3b544a",
+   "a073e707953fc6ca",
+   "aa74e94abc02bbca",
+   "c7b17d9b4fcec25e",
+   "f758271c8942edf2"
+  ]
+ }
+}

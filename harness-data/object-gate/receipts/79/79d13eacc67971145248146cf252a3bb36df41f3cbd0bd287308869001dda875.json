@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "79d13eacc67971145248146cf252a3bb36df41f3cbd0bd287308869001dda875",
+ "width": 16,
+ "height": 32,
+ "kind": "organic",
+ "name": "young short palm tree",
+ "label": "pirate-isles/pi-palm-young",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "trunk and palm frond canopy",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The palm tree is drawn entirely in front elevation: the trunk segments and base are perfectly flat horizontal bands with no downward curvature, and the canopy shows a side profile of drooping fronds with no top surface or crown viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6382
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "trunk and palm frond canopy",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The palm tree is drawn entirely in 2D side-scroller elevation: the trunk is a straight vertical pillar with flat horizontal bandings and a flat horizontal cut-off base at row 30, and the fronds drape strictly in a flat frontal silhouette rather than radiating in a 3/4 top-down ellipse.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5769
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "canopy of palm fronds and trunk",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The canopy shows the upper dome of radiating fronds foreshortened from above (rows 7-14) with highlighted top surfaces, and front fronds draping over and around the trunk in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8154
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "young palm tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn entirely in 2D side/front elevation: the trunk rings and base are perfectly flat horizontal lines with no perspective curve, and the canopy is rendered as a flat side-view umbrella rather than showing the circular top-down spread of palm fronds from a 45-degree angle.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6479
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.575Z",
+ "cells": {
+  "16": [
+   "3dcd7abcf7f17129",
+   "7ab8696d4b89fb35"
+  ],
+  "24": [
+   "115f5d8972bd9248",
+   "13e62a5e3baa710b",
+   "23057813f6d4d76b",
+   "33937a8f110d7c11",
+   "40a33ad37c49cace",
+   "48f88161b6b9d49e",
+   "5bbf01fe7702eab1",
+   "68925ea7fa1e5fcd",
+   "7f8caf2566059df8",
+   "9628f50bdba98ff4",
+   "9724fab48d8a52ad",
+   "a9be77e477e8e60a"
+  ],
+  "32": [
+   "45271fd9c52942d7",
+   "805bf5110bccef3a",
+   "9d72bb71fc9748f6"
+  ],
+  "48": [
+   "1d0fa5bbf053e6e3",
+   "263ff4722a44cc4c",
+   "766b11abc0fe91b5",
+   "832f2d9d870f630f",
+   "aaa1a7e9bf241bad",
+   "aed1b7a50223c178"
+  ]
+ }
+}

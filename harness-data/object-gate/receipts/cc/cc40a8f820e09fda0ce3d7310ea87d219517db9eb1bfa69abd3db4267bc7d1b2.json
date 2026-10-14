@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cc40a8f820e09fda0ce3d7310ea87d219517db9eb1bfa69abd3db4267bc7d1b2",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "small clay smokehouse with smoke vent and stacked firewood",
+ "label": "pirate-isles/pi-smokehouse",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "thatched roof smokehouse",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The thatched roof slopes down towards the viewer over rows 0 to 24 (approx 25 rows of sloped roof surface), and the smoke vent near the top has a visible interior cavity opening (rows 2-3). South wall with door and firewood extends below from row 26 to 47.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3995
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "thatched roof smokehouse",
+    "kind_matches": true,
+    "top_rows": 26,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The thatched roof slopes down towards the viewer across rows 0-25 (26 rows of top surface/slope), and the smoke vent opening is visible into its interior at rows 2-3.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3316
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "thatched roof and clay smokehouse structure",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a large south-sloping thatched roof showing over 24 rows of foreshortened top surface above the vertical front wall, along with a top-down visible smoke vent opening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3720
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "building with thatched roof, smoke vent, wooden door, and clay wall with firewood",
+    "kind_matches": true,
+    "top_rows": 26,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The thatched roof provides a substantial foreshortened top slope covering rows 0 to 25, and the smoke vent shows a clear 2-row deep top opening at rows 2-3. The front elevation below the eaves extends from row 26 down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3427
+  }
+ ],
+ "decidedAt": "2026-10-14T08:46:20.697Z",
+ "cells": {
+  "16": [
+   "561076dabbdaddc4",
+   "950417cb56275ae5",
+   "a5d15d0fd50787cb",
+   "b70d6e61a2919b0f",
+   "f038f52f0aba572a",
+   "f61ae36855f1c510"
+  ],
+  "24": [
+   "0210b2a24bf63287",
+   "057eed8c3675b2c9",
+   "100712c5c0da7ba6",
+   "1a2db5374ccda760",
+   "200eaac00e109b1e",
+   "5ffba52887cae7e6",
+   "608e77cb7bc8b727",
+   "70f5839aaf51f68d",
+   "748704405ee11ca5",
+   "8d11cd6a4d5371c4",
+   "9aafdbdaf688796c",
+   "d17856ad25c6d58b"
+  ],
+  "32": [
+   "2265768e5a942179",
+   "333a1dce490753e3",
+   "9503b61ae9beb09f",
+   "e8d80e58f8a0b3e2"
+  ],
+  "48": [
+   "31048024cc16db84",
+   "60bcad36f73e0da1",
+   "85f6c7f257c49971"
+  ]
+ }
+}

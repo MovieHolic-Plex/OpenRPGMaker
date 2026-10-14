@@ -1,0 +1,153 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "15e9483e2a3d99b521032a1235c5eceb7949b87616b5599b119e7a77e291e9c6",
+ "width": 64,
+ "height": 32,
+ "kind": "terrain",
+ "name": "large dark grass shade patch over jungle grass floor, 4x2 tiles, organic outline",
+ "label": "pirate-isles/pi-grass-shade-c",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dark grass shade patch on grass ground",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain shade patch laid flat on the ground plane, spanning roughly rows 5 to 22.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2731
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass shade patch on jungle floor",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain patch representing shaded ground/floor across 4x2 tiles seen from above; no standing volume or vertical elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3068
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dark grass shade patch on ground",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain patch viewed entirely from above on the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3179
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dark grass shade patch on ground",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain overlay/shade patch drawn flat on the ground plane, entirely viewed from above as appropriate for floor terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3311
+  }
+ ],
+ "decidedAt": "2026-10-14T08:46:20.694Z",
+ "cells": {
+  "16": [
+   "36bd8fce340e1e13",
+   "3f6a2917b3fd6fac",
+   "4044af677026c4fe",
+   "5be954a79f30269a",
+   "5d467503f40a1009",
+   "b6e8d4a6ba8b1afc",
+   "e88f4b2c8017835a",
+   "f2296c2899b86e16"
+  ],
+  "24": [
+   "10aac1ef701ad3ad",
+   "19809bc6af2750e9",
+   "253b86484b5cf029",
+   "2a6c70e79efe39ab",
+   "32708ac0b2556dfc",
+   "3dc74677adecbab0",
+   "4a2a315333dc476f",
+   "4d20951eef1cf06d",
+   "5aec1c667044318e",
+   "5c4dfe6af475fc59",
+   "69ef017d2563751e",
+   "6c1b01f953b53665",
+   "7b727b8c45ed2597",
+   "7e41c94c3028fb17",
+   "826e14f5bd1217d1",
+   "82b8c6c75c278192",
+   "85bea8e7d98202c5",
+   "8b934092ea4e2163",
+   "8feaacaabe2bda79",
+   "9720e5e832b2aab6",
+   "a9bebc5213303cf9",
+   "aed6d3f679d05e0f",
+   "c12f2e0366d38791",
+   "c139081cfab9eb01",
+   "c2191992876d534c",
+   "cb9769cf109e743f",
+   "cca0416adb052359",
+   "d296e284508cf0ac",
+   "d9c8a1c802340d2a",
+   "dbcb3303fe81b29f",
+   "de53132ec8f8433d",
+   "dff19aa0bfb31b2b",
+   "e20b2f5c0a43b4ad",
+   "fc3c2a69c3131a96"
+  ],
+  "32": [
+   "4fbd80fd21b27b6d",
+   "c718eff07af3dc35"
+  ],
+  "48": [
+   "0b8f958255e6fa37",
+   "2fa1a64bc834ebe1",
+   "3f1297f57966c711",
+   "6891fe6402c1240d",
+   "79f0532a3c838c7d",
+   "7e7ce6c5ea17566d",
+   "8347d6b4f59ba2a1",
+   "afcdde370937acc7",
+   "b27b798428f90803",
+   "be0ef428133beac1",
+   "cbbe719ee7704a20",
+   "cd4556dcbd5a25c4"
+  ]
+ }
+}

@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6c6d0b085feca77454b078bec6b77e5c4d046582cba3fadf1a9c41bb08757a69",
+ "width": 96,
+ "height": 16,
+ "kind": "terrain",
+ "name": "tropical jungle grass floor tiles, 6 variants (plain, small flowers, four with dark grass clumps and light patches)",
+ "label": "pirate-isles/pi-grass",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tropical jungle grass floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tiles viewed top-down with grass texture, small flowers, and foliage clumps.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4876
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tropical jungle grass floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles viewed from above covering the full 16x16 tile areas with grass texture, flowers, and foliage patches.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4458
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tropical jungle grass floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles covering the entire 16x16 area per variant, appropriately viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3332
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tropical grass floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Six 16x16 terrain floor tiles representing tropical jungle grass with flowers and grass tuft variations viewed top-down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3573
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:32.183Z",
+ "cells": {
+  "16": [
+   "2a3928570a0e1fea",
+   "2de20ab5dbbdba12",
+   "7669b41dfef8c05f",
+   "7a122046d7ccbb51",
+   "99e5194de36d2aab",
+   "ac5e925ff57a4bb2"
+  ],
+  "24": [
+   "034dbf1b7a3234e0",
+   "0e85024a92a86270",
+   "1f94720182bd7444",
+   "746ddcd6e4c661ac",
+   "d2ad036a25d2a00e",
+   "dbd258c3fc293456",
+   "dd81335a8d6198f2",
+   "ded0a3530d21bd36"
+  ],
+  "32": [
+   "075beaca404ea1a6",
+   "5659c91a838ec654",
+   "9c5512bab647fdff",
+   "d230aed86d3e21a5",
+   "d9554add740193f4",
+   "ffd27cb265d63a28"
+  ],
+  "48": [
+   "78457773583e2424",
+   "b622eb5e14eba3a0",
+   "d2ad40874da08e39",
+   "f7da829664708138"
+  ]
+ }
+}

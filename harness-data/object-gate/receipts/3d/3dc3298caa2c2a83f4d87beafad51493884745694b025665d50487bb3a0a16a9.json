@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3dc3298caa2c2a83f4d87beafad51493884745694b025665d50487bb3a0a16a9",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "small thatched village hut with bamboo walls and wooden door",
+ "label": "pirate-isles/pi-hut-thatch",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "thatched roof and bamboo hut",
+    "kind_matches": true,
+    "top_rows": 36,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The thatched roof shows a south-facing slope spanning rows 0 to 36, correctly displaying the top surface foreshortened above the front bamboo wall in classic 3/4 JRPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3481
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "thatched roof and bamboo front wall of a hut",
+    "kind_matches": true,
+    "top_rows": 36,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large thatched roof slopes toward the camera across rows 0-36 (36 source pixel rows of thatch), clearly showing the foreshortened south-facing roof plane above the front wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4151
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "thatched roof and bamboo hut walls",
+    "kind_matches": true,
+    "top_rows": 36,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large thatched roof properly displays its southward slope across rows 0 to 36 in standard top-down 3/4 perspective above the front wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4635
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "thatched hut building",
+    "kind_matches": true,
+    "top_rows": 36,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features an extensive south-facing thatched roof slope covering rows 0 to 36, showing the downward-sloping top surface viewed from above over the vertical bamboo front walls (rows 37-63).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4331
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.578Z",
+ "cells": {
+  "16": [
+   "126d16231b895e90",
+   "3d92ec34253756bc",
+   "3f4f04f4475e349f",
+   "5400176ce85d6b7d",
+   "5efc8315fff85c42",
+   "8d532b56bb2db974",
+   "a37eac64fc29479d",
+   "a95baf79af96353c",
+   "bc404eb9bff6f9eb",
+   "bd177d2fed9b3668",
+   "dc42051983b8d1b6",
+   "eafe5643cdf0515b"
+  ],
+  "24": [
+   "1ce6f4515ddc6267",
+   "29178df706bd072a",
+   "515200f2962cea1e",
+   "5ea94bd33744e698",
+   "6a4c0081dfc36b62",
+   "6dc26728e71d3a71",
+   "9189367e0c03aea3",
+   "ab6505cf64b7fc01",
+   "bb83770dddf704b4",
+   "bd90cbb609f25414",
+   "d9462c9b17241bb7",
+   "fe5a53834a70c2a1"
+  ],
+  "32": [
+   "10bcd0f1773a204f",
+   "2ff5367f776cff93",
+   "5b01a7a32e4fff00",
+   "5c2d73ae4840ebee",
+   "648e3334334bcefc",
+   "6cdd3bdebc857484",
+   "908444d2b97aff84",
+   "9c8075a780c58119",
+   "9efe6138e17c23b7",
+   "a619f2c4fda73966",
+   "c8269971d9434acf",
+   "ed478740248291fb"
+  ],
+  "48": [
+   "361bafc1ae17ef00",
+   "54de00a2be88821b",
+   "6d2989e7c486ef4f",
+   "a09e11a805b15099"
+  ]
+ }
+}

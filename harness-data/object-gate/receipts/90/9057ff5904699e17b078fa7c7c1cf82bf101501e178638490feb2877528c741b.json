@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9057ff5904699e17b078fa7c7c1cf82bf101501e178638490feb2877528c741b",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "open square deck hatch with a wooden ladder going down into the dark hold",
+ "label": "pirate-isles/pi-ladder-hatch",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "square wooden deck hatch frame with ladder descending into the hold",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The deck hatch lies flat on the floor/deck plane, showing the square coaming frame seen from above and looking directly down into the opening at the ladder descending into the dark hold.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10440
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "open square deck hatch with wooden frame and ladder",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The deck hatch lies flat on the floor plane across all 16 rows, showing the wooden coaming and a clear view straight down into the hold with ladder rungs descending into the darkness.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5039
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "square wooden deck hatch opening with ladder",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": true,
+    "opening_rows": 9,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hatch lies flat in the deck floor, viewed from above at the standard 3/4 angle, looking down into the opening (rows 3-11) where a wooden ladder descends into darkness.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4613
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "open wooden deck hatch frame with ladder",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": true,
+    "opening_rows": 9,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hatch is correctly viewed from above as a flat floor feature, showing the square opening into the hold (rows 2-10) with ladder rungs descending into the darkness.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3749
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.591Z",
+ "cells": {
+  "16": [
+   "5e3a4f41432933e4"
+  ],
+  "24": [
+   "010c358c91ff2a53",
+   "36b8a1e3d85261af",
+   "524747fa13a0b300",
+   "964f6e9107d6e7a8",
+   "c797317d0f519e69",
+   "dc222a3b7df1635d"
+  ],
+  "32": [
+   "01775466f03af78c",
+   "067952dee63eaad6",
+   "10d554635ff7d731",
+   "23373db199344cb9",
+   "346abf437a02dc8c",
+   "a11377637a669c82"
+  ],
+  "48": [
+   "356f91fa143c7dbb",
+   "37f213601b07cb45",
+   "85be9c3aa883e15b",
+   "b33113b8854ef674",
+   "ba84f8b9dbccea70",
+   "c75c915bf1163e2f"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "33a50f0e9faefe5fb049ab304e5297b4debb4bb7343e3536c7d4e09847f68351",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "cut palm tree stump with ringed bark and a flat sawn top seen from above",
+ "label": "pirate-isles/pi-palm-stump",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cut palm tree stump",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The flat sawn top of the stump is drawn as an elliptical surface spanning rows 3 to 7 (5 source pixel rows tall), showing both the outer wood ring and inner cut face above the front trunk.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5198
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cut palm tree stump",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The flat sawn top surface of the stump is depicted from above as a clear foreshortened elliptical face spanning rows 3 to 6 (4 rows tall), with ringed trunk bark visible below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5910
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cut palm tree stump",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The flat sawn top is rendered as a foreshortened ellipse spanning rows 2-6 (approx. 5 pixel rows) above the vertically ringed cylinder trunk.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8043
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cut palm tree stump",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The flat sawn cross-section at the top is clearly rendered as a foreshortened ellipse spanning rows 3-7 (~5 source pixels tall), with the ringed trunk body descending below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3713
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.588Z",
+ "cells": {
+  "16": [
+   "b10d05473c0116be"
+  ],
+  "24": [
+   "34e20f3901a84ee6",
+   "d496a69d61962a30",
+   "d727432d0a76984c",
+   "e04e36ac4baef888",
+   "e12dcca85c9bf20a",
+   "f1158e66f4a61c86"
+  ],
+  "32": [
+   "14184a320658f6e1",
+   "417c7817b37852ef",
+   "63b37bc400d888c0",
+   "b9c766ce0638fcb9",
+   "bf46449da4214e25",
+   "e1c44f7ded725470"
+  ],
+  "48": [
+   "1dcb32272c24043b",
+   "251477519e51c188",
+   "5ae21d9ad85aeb3c",
+   "8568da9318f7ff1e",
+   "d36dad77ef95d706",
+   "e695df52b10ddc98"
+  ]
+ }
+}

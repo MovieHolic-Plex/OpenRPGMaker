@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8bad74b4c0e9468e5c9c7857db5039d6e4857f362b1b5bbc061f76812fc8337b",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "round wooden table with two stools",
+ "label": "pirate-isles/pi-table-stools",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round wooden tabletop",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round tabletop surface is shown as a foreshortened ellipse spanning roughly rows 6-13 (8 pixel rows) with a beer mug resting on it, supported by a central leg. The accompanying stools also show ellipse tops.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4264
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round wooden table",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round tabletop has an 8-row foreshortened elliptical top surface (rows 6-13) with a beer mug sitting on it, plus front-facing rim and base. Flanking stools also have visible elliptical seats.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5177
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round wooden table",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round tabletop is rendered as a foreshortened ellipse spanning roughly 8 pixel rows (rows 6-13) showing its top surface clearly, with the front rim and central leg/base extending below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3534
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round wooden tabletop and pedestal",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round tabletop has an 8-row visible elliptical top surface (rows 6-13) before the front edge thickness (rows 14-16), and both stools clearly show foreshortened circular tops as well.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2654
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.585Z",
+ "cells": {
+  "16": [
+   "3863e9520ed1ddd6",
+   "e1e95548ce3325bd",
+   "e7c5468f02f597ec",
+   "fef65ae2c7353d8a"
+  ],
+  "24": [
+   "03ea4e39909d8abd",
+   "10d5b270dc574391",
+   "1428fb8179f660b7",
+   "15af644dd91acda2",
+   "16f62d3f801d1c9b",
+   "20c414ed4349f6fa",
+   "2a224743a4007a37",
+   "2ff0b80e975e6524",
+   "4c536b9a212d43b2",
+   "56d2ab25e051af18",
+   "5c9ca4e1b8b4b653",
+   "5fef2f55b13400ef",
+   "69e09ff3c6792d91",
+   "78782955187088d5",
+   "8772190e324d7bd5",
+   "a47e023b50a1663c",
+   "aa35152c548d4899",
+   "bae4d1a06c541574",
+   "cb52f6f4e2857271",
+   "cdc1c4afa505ba0d",
+   "ce091d17c73e2c76",
+   "e09d1ed53621e099",
+   "e8c46561220d176b",
+   "f0d2168f1c2d85a2"
+  ],
+  "32": [
+   "01c5da7c667011a4"
+  ],
+  "48": [
+   "1f24fbb63b9f0bdf",
+   "1f69a2678840983a",
+   "609c82dd9f817d63",
+   "725310454f801554",
+   "8e5bb489fc13cab5",
+   "fbac3dfb61b93928"
+  ]
+ }
+}

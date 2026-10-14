@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bf1b780b82416b87a7963bc8b9c445b32e75fb9fe7509a1e5f389cfa005799aa",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "golden tiki idol statue with ruby eyes sitting on a carved stone pedestal",
+ "label": "pirate-isles/pi-idol-pedestal",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tiki idol statue on carved stone pedestal",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone pedestal clearly shows a foreshortened top surface across rows 20-22 (3 source pixel rows tall) upon which the idol stands, before dropping down to the carved front face from row 23 onward.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6977
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "golden tiki idol statue on stone pedestal",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone pedestal plinth clearly displays a 3-row top surface plane (rows 20-22) supporting the statue, and the idol head also features a foreshortened top surface (rows 2-3) below the headdress.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5887
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "golden tiki idol on stone pedestal",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The carved stone pedestal shows a clear 3-row top surface plane (rows 20-22) upon which the idol stands, meeting the figure/statue requirement for a visible base/plinth top.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5767
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tiki idol statue on stone pedestal",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The carved stone pedestal shows a clear 3-row top surface (rows 20-22) upon which the golden idol sits, correctly establishing 3/4 top-down perspective without isometric side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5732
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.594Z",
+ "cells": {
+  "16": [
+   "3b36fb84ff6cd7c5",
+   "5f4ab03ded658d17"
+  ],
+  "24": [
+   "18c0b5c88c790ff8",
+   "31bd27489559a2fc",
+   "4268043d13336497",
+   "516e8b0ffdeb8974",
+   "91c777bc13ffa2d9",
+   "b1f8bd18b7a1bff1",
+   "d20501e80fb23792",
+   "d8767822e78cade6",
+   "df53a8ed0ccc05ef",
+   "e4d192a29e948c31",
+   "f77b49d7411e563d",
+   "fd8852a503a22ede"
+  ],
+  "32": [
+   "08097be87694449c",
+   "613b68bed561640c",
+   "6349d94fda6ee4d2"
+  ],
+  "48": [
+   "061cf7f6c65abcb1",
+   "11539070ee4479ad",
+   "116743cd26cf7e8d",
+   "2564b425d24256ff",
+   "903db45ab0581902",
+   "fee4cf5897a0589b"
+  ]
+ }
+}

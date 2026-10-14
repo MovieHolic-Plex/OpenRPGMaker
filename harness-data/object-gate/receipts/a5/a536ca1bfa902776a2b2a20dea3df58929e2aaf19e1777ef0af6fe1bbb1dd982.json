@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a536ca1bfa902776a2b2a20dea3df58929e2aaf19e1777ef0af6fe1bbb1dd982",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "mango tree with round canopy and orange fruit",
+ "label": "pirate-isles/pi-tree-fruit",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn as a flat side-scroller elevation: the canopy is a direct circular silhouette with the vertical trunk attaching directly to its bottom silhouette edge rather than underneath/behind in a 3/4 top-down perspective, showing no distinct foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12587
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn entirely in front elevation (side-scroller style): the canopy is a flat 2D circle with the trunk protruding straight out the bottom, and the trunk base ends in a flat horizontal line (rows 45-46) with no elliptical ground footprint or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9494
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn in flat side-scroller / 2D elevation style: a circular canopy sits directly atop a straight vertical trunk with no 3/4 downward perspective or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6292
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "mango tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn in flat front elevation (side-scroller style): the canopy is a flat circle, the trunk is a straight vertical column with a flat horizontal base at row 46, and there is no 3/4 top-down perspective or foreshortening showing the top of the canopy or trunk.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6827
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.575Z",
+ "cells": {
+  "16": [
+   "00d46280297f2cdd",
+   "457b97c2c9848cf7",
+   "46db89fd8b689da7",
+   "507722a34e795c76",
+   "5f14418d6b681c7d",
+   "a1ab5343d74e8e10"
+  ],
+  "24": [
+   "084acaf0587bf721",
+   "20a2410b39464316",
+   "42479352d3a06b97",
+   "489104c8f51a150d",
+   "95b157d0afe6bdf0",
+   "c07f1a1dbd0b6aac",
+   "c18454f56e8b2ad6",
+   "c19b65b7de918819",
+   "c5ba03ea0125d5c3",
+   "ca78f5955b4de366",
+   "d4f8e71fdb637fce",
+   "d606d74997e0b22d"
+  ],
+  "32": [
+   "2fa7ca27348707cb",
+   "51bca6e843b4eabe",
+   "5ed104b95d2fbf67",
+   "82b3e0a844fe49cd"
+  ],
+  "48": [
+   "2e2e90181de94365",
+   "412ef816d29bbfb6",
+   "9ac32b4459f520d3"
+  ]
+ }
+}
