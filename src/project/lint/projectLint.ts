@@ -26,6 +26,7 @@ import { lintHorrorAuthoring } from "./horrorAuthoringLint";
 //  - map-location-degenerate  (warning) 맵 축소로 경계 1×1 까지 눌린 로케이션
 //  - map-location-duplicate-name (warning) 같은 맵 안 로케이션 표시명 중복
 //  - cluster-rule:*        (error|warning|info) 타일 그룹 규칙 강도별 위반
+//  - ground-support        (error|warning) 던전 키트 맵: 천장·벽 위에 놓인 물체/이벤트, 바닥에 걸린 벽 횃불(error), 허공을 향한 벽(warning)
 //  - world-graph/world-transfer/world-adjacent:* (error|warning) 선언형 월드 그래프/맵 경계/transfer 정합 문제
 
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
@@ -58,6 +59,7 @@ import { lintWorldGraph } from "../worldGraph";
 import { clusterRuleLintIssues } from "./clusterRuleLint";
 import { checkReachability, isAdjacentOrOn, type ReachabilitySpec } from "./reachability";
 import { activeTileGrafts } from "@/assets/tileGrafts";
+import { groundSupportIssues } from "../groundSupport";
 import { collectMapLocationReferenceIssues } from "../mapLocationReferences";
 import { troopAfterBattleLists } from "@/project/troopAfterBattle";
 
@@ -99,6 +101,7 @@ export function projectLint(project: Project, opts: LintOptions = {}): LintIssue
   checkStoryFlags(project, issues);
   checkQuestGraphs(project, issues);
   checkClusterRules(project, issues, opts.clusterMapIds);
+  checkGroundSupport(project, issues, opts.clusterMapIds);
   issues.push(...lintWorldGraph(project));
   issues.push(...lintHorrorAuthoring(project));
   checkCharacterIdSocial(project, issues);
@@ -681,6 +684,26 @@ function checkQuestGraphs(project: Project, issues: LintIssue[]): void {
 
 function checkClusterRules(project: Project, issues: LintIssue[], mapIds?: readonly string[]): void {
   for (const issue of clusterRuleLintIssues(project, mapIds)) issues.push(issue);
+}
+
+/**
+ * 받침 없는 물체·이벤트(error)와 허공을 향한 벽(warning) — 던전 키트가 있는 타일셋의 맵만 본다(project/groundSupport.ts).
+ * 타일이 바뀐 맵(mapIds)만 훑되 이벤트는 모든 맵의 위치를 본다(이벤트는 타일을 안 바꾸고 천장 칸에 놓일 수 있다).
+ * 2026-10-14 사용자 스크린샷: 던전 층에서 횃불·화로·상자·기둥이 허공에 뜨고 상자 이벤트가 천장 칸에 놓여도 run_lint 가 0건이었다.
+ */
+function checkGroundSupport(project: Project, issues: LintIssue[], mapIds?: readonly string[]): void {
+  const scoped = mapIds ? new Set(mapIds) : null;
+  for (const [mapId, map] of Object.entries(project.maps)) {
+    const tileset = project.tilesets[map.tilesetId];
+    const full = !scoped || scoped.has(mapId);
+    const found = groundSupportIssues(map, tileset, { events: true, tiles: full });
+    for (const issue of found) {
+      issues.push({
+        severity: issue.severity, code: issue.code, mapId, x: issue.x, y: issue.y,
+        ...(issue.eventId ? { eventId: issue.eventId } : {}), message: issue.message,
+      });
+    }
+  }
 }
 
 // (g) opts.reachability 지정 시 도달 불가 = error.
