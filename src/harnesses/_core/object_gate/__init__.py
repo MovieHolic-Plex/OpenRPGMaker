@@ -79,7 +79,7 @@ def refusal(img, *, kind: str | None, context: str) -> str | None:
     sha = pixel_sha256(img)
     receipt = read_receipt(sha)
     if not receipt:
-        return "3/4 시점 판정 영수증이 없다 — object-gate review 를 먼저 받아라"
+        return "3/4·화풍 판정 영수증이 없다 — object-gate review 를 먼저 받아라"
     if kind and receipt.get("kind") != kind:
         return f"영수증 종류({receipt.get('kind')})가 요청 종류({kind})와 다르다"
     if receipt.get("profileHash") not in calibrated_profiles():
@@ -90,8 +90,8 @@ def refusal(img, *, kind: str | None, context: str) -> str | None:
         return None
     why = " · ".join(receipt.get("reasons") or []) or "fail"
     if context == "workshop-local":
-        return f"3/4 시점 판정 불합격({why}) — 다시 그리거나 사람이 「그래도 넣기」를 눌러야 한다"
-    return f"3/4 시점 판정 불합격({why}) — {context} 출구는 예외 없이 막는다"
+        return f"판정 불합격({why}) — 다시 그리거나 사람이 「그래도 넣기」를 눌러야 한다"
+    return f"판정 불합격({why}) — {context} 출구는 예외 없이 막는다"
 
 
 def require_pass(img, *, kind: str, context: str, label: str = "") -> str:

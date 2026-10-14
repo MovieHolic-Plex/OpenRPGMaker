@@ -8,11 +8,23 @@
  * Python 쪽 같은 규칙: src/harnesses/_core/object_gate/__init__.py. 둘을 같이 고친다.
  */
 
-import { OBJECT_GATE_PROFILE, type ObjectGateJudgeAnswer, type ObjectGateKind } from './rules';
+import { OBJECT_GATE_PROFILE, type ObjectGateJudgeAnswer, type ObjectGateKind, type ObjectGateStyleKind } from './rules';
 
 export type ObjectGateContext = 'bundle' | 'shared' | 'store' | 'workshop-local';
 
-export type ObjectGateRun = { judge: string; run: number; answer: ObjectGateJudgeAnswer | null; pass: boolean; reasons: string[]; ms?: number; error?: string };
+export type ObjectGateHalf = { pass: boolean; reasons: string[] };
+
+export type ObjectGateRun = {
+  judge: string; run: number; answer: ObjectGateJudgeAnswer | null; pass: boolean; reasons: string[]; ms?: number; error?: string;
+  /** 규칙 v4: 이 판정 한 번의 3/4 · 화풍 반쪽. 옛 영수증에는 없다. */
+  view34?: ObjectGateHalf; style?: ObjectGateHalf;
+};
+
+/** 보조 지표(통과 근거 아님): 칸당 고유색 중앙값·p90, 가장 어두운 5% 화소의 V, 근흑 윤곽 비율. 보고서에서 어느 쪽이 얕은지 보는 용도다. */
+export type ObjectGateAuxMetrics = { tileColorsMedian: number; tileColorsP90: number; darkV5: number; nearBlackEdge: number; opaqueTiles: number };
+
+/** 한쪽 판정 요약. 영수증은 3/4 와 화풍을 따로 적고, 둘 다 pass 일 때만 최상위 verdict 가 pass 다. */
+export type ObjectGateHalfVerdict = { verdict: 'pass' | 'fail'; reasons: string[] };
 
 export type ObjectGateReceipt = {
   schema: 'oprn-object-gate-receipt/1';
@@ -23,8 +35,13 @@ export type ObjectGateReceipt = {
   name: string;
   label?: string;
   profileHash: string;
+  /** 3/4 와 화풍 둘 다 pass 일 때만 pass. reasons 는 두 반쪽의 이유를 「3/4: …」「화풍: …」 머리말로 합친 것. */
   verdict: 'pass' | 'fail';
   reasons: string[];
+  /** 규칙 v4 부터. 보고서가 어느 반쪽이 떨어졌는지 말할 수 있도록 따로 적는다. */
+  view34?: ObjectGateHalfVerdict;
+  style?: ObjectGateHalfVerdict & { styleKind: ObjectGateStyleKind; refs: string[]; scale: number; score?: number };
+  metrics?: ObjectGateAuxMetrics;
   runs: ObjectGateRun[];
   decidedAt: string;
   /** 판정한 원본 PNG 를 칸 크기별로 자른 칸 해시(정렬 변형 포함). 시트 칸 관문이 이걸로 「판정받은 그림의 칸」을 알아본다. */
@@ -33,13 +50,20 @@ export type ObjectGateReceipt = {
   override?: { by: 'human'; at: string; note?: string };
 };
 
+export type ObjectGateConfusion = { badTotal: number; caught: number; missed: string[]; goodTotal: number; passed: number; falseFail: string[] };
+
 export type ObjectGateProfileRecord = {
   schema: 'oprn-object-gate-profile/1';
   profileHash: string;
   status: 'calibrated' | 'rejected';
   calibratedAt: string;
+  /** 3/4 반쪽(옛 필드 이름 유지). */
   bad: { total: number; caught: number; missed: string[] };
   good: { total: number; passed: number; falseFail: string[] };
+  /** 규칙 v4 의 화풍 반쪽. 둘 다 기준을 넘어야 calibrated 다. 옛 프로필 기록에는 없다. */
+  style?: ObjectGateConfusion & { groups?: Record<string, { total: number; passed: number }> };
+  judge?: string;
+  note?: string;
 };
 
 const hex = (buffer: ArrayBuffer) => [...new Uint8Array(buffer)].map(b => b.toString(16).padStart(2, '0')).join('');
@@ -92,7 +116,7 @@ export function objectGateRefusal(input: {
   calibratedProfiles: ReadonlySet<string>;
 }): string | null {
   const { receipt, pixelSha256, kind, context } = input;
-  if (!receipt) return '3/4 시점 판정 영수증이 없다 — object-gate review 를 먼저 받아라';
+  if (!receipt) return '3/4·화풍 판정 영수증이 없다 — object-gate review 를 먼저 받아라';
   if (receipt.pixelSha256 !== pixelSha256) return '영수증의 그림 해시가 지금 그림과 다르다 — 고친 뒤 다시 판정받아라';
   if (kind && receipt.kind !== kind) return `영수증 종류(${receipt.kind})가 요청 종류(${kind})와 다르다`;
   if (!input.calibratedProfiles.has(receipt.profileHash)) return `판정 프로필 ${receipt.profileHash} 가 보정되지 않았다(위반 표본을 다 잡지 못했거나 보정 전)`;
@@ -100,6 +124,6 @@ export function objectGateRefusal(input: {
   if (context === 'workshop-local' && receipt.override?.by === 'human') return null;
   const why = receipt.reasons.length ? receipt.reasons.join(' · ') : 'fail';
   return context === 'workshop-local'
-    ? `3/4 시점 판정 불합격(${why}) — 다시 그리거나 사람이 「그래도 넣기」를 눌러야 한다`
-    : `3/4 시점 판정 불합격(${why}) — ${context} 출구는 예외 없이 막는다`;
+    ? `판정 불합격(${why}) — 다시 그리거나 사람이 「그래도 넣기」를 눌러야 한다`
+    : `판정 불합격(${why}) — ${context} 출구는 예외 없이 막는다`;
 }
