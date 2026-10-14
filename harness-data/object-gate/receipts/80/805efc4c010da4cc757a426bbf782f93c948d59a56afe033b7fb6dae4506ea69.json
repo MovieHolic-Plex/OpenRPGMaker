@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "805efc4c010da4cc757a426bbf782f93c948d59a56afe033b7fb6dae4506ea69",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "cobblestone plaza edge on grass (terrain)",
+ "label": "sky-island/si-plaza-sw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cobblestone plaza corner edge on grass terrain",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile showing cobblestone paving meeting grass on the south and west edges viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4760
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cobblestone plaza pavement with grass border",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile showing cobblestone paving meeting grass on the west and south edges, rendered from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3966
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ground terrain tile showing cobblestone plaza bordered by grass",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ground terrain tile showing cobblestone paving meeting grass on the south and west edges.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3558
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cobblestone ground tile with grass edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tile showing flat cobblestone paving transitioning to grass at the left and bottom edges.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4047
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.889Z",
+ "cells": {
+  "16": [
+   "bde398f3ad0a574a"
+  ],
+  "24": [
+   "21bd67e5396f70fa",
+   "2328edaacffa84b5",
+   "2df4be107ec4a309",
+   "426f4b371fe9e348",
+   "a1d908cb6b4d8b16",
+   "ffce709a20885af6"
+  ],
+  "32": [
+   "2a033ca45ba14bfb",
+   "744ce6e79b2f44b4",
+   "8993a8cee908202d",
+   "8a771c4a058e692d",
+   "c5347a15630c1a71",
+   "e7f6ec9db9be42d7"
+  ],
+  "48": [
+   "12e34888ccf71978",
+   "1a18364d3d646e77",
+   "22d6140074ce9efa",
+   "82b96d20a40000b6",
+   "efeac9e9e719c694",
+   "f4924193c3e90629"
+  ]
+ }
+}

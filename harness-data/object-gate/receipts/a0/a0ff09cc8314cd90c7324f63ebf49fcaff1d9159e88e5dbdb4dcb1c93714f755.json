@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a0ff09cc8314cd90c7324f63ebf49fcaff1d9159e88e5dbdb4dcb1c93714f755",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "cobblestone plaza edge on grass (terrain)",
+ "label": "sky-island/si-plaza-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cobblestone plaza pavement with lower edge meeting grass",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile showing cobblestone plaza surface with a kerb edge transitioning to grass at rows 14-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5352
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cobblestone plaza ground and curb edge",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile displaying top-down cobblestone paving from rows 0 to 11 with a low curb edge in rows 12-13 meeting green grass in rows 14-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4000
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cobblestone plaza surface and grass edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing cobblestone ground meeting grass at rows 14-15; viewed from above as a standard ground tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4233
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cobblestone pavement meeting grass edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting cobblestone plaza paving running south into a grass border, viewed from above as a ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4599
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.888Z",
+ "cells": {
+  "16": [
+   "41d0f87d0c2257f2"
+  ],
+  "24": [
+   "1e5096c117456e56",
+   "34cfab1c3bc13dcb",
+   "4fb1ac3ede59e6d0",
+   "58d80ba749f2c710",
+   "61b4e17e5014e35a",
+   "d30f36a7b38e3515"
+  ],
+  "32": [
+   "13146e6b59d0e07c",
+   "2d5715975d770f96",
+   "36315253f5abdc58",
+   "487a49e885a42b62",
+   "9d8e02e2defa6e92",
+   "ed239d372081293a"
+  ],
+  "48": [
+   "069a81bc9dd6955d",
+   "4e92f4569ad1f54e",
+   "8a204ff2e586d6de",
+   "a4a33ce835d1f38a",
+   "b7ccc732a2f76fe1",
+   "cf16d36697a5f5f7"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "054b84edff0d49788fbf0cd99ea3365e50e83a3f27472e1268de69f99ebf97e3",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "rock cliff face tile with a tapered side (terrain)",
+ "label": "sky-island/si-face-mid-or",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rock cliff face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image depicts a vertical rock cliff face tile (terrain wall surface) tapering off at the lower right. As a vertical wall terrain tile rather than a freestanding object, it legitimately represents a vertical surface in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5650
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rock cliff face tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain cliff wall face tile with diagonal rock edge overlooking water; represents a vertical wall segment in standard JRPG autotile layout.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4826
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rock cliff face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a vertical rock cliff face with a tapered edge against water/background; wall and cliff face tiles are inherently vertical surfaces in top-down JRPG autotile sets.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3900
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rock cliff face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a vertical terrain cliff face tile tapering into background space on the lower right, functioning as a standard vertical wall tile in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4723
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.884Z",
+ "cells": {
+  "16": [
+   "c9bba1a51be4e987"
+  ],
+  "24": [
+   "082d1cade6c9a276",
+   "19a2c54d0c50d59d",
+   "282516a3423c6e25",
+   "7dff0e3580fc1431",
+   "b6358d76af1821f8",
+   "fbbf6a390626d3cf"
+  ],
+  "32": [
+   "4e1e2d7da4dc3f41",
+   "74b549d42d0a87bf",
+   "7a23c29c325389e2",
+   "7ff222ed9ad25c61",
+   "8e3db7c908cc3ad1",
+   "af8f73abbbf94e61"
+  ],
+  "48": [
+   "033fb43c8897dc82",
+   "31399d090e6b102d",
+   "402f0834a0b37747",
+   "5e0f19d98dccc92b",
+   "910034bc86633e7c",
+   "e28b4f988165bd93"
+  ]
+ }
+}

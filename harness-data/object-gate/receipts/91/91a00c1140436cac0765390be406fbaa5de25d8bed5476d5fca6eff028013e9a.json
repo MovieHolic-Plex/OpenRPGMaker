@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "91a00c1140436cac0765390be406fbaa5de25d8bed5476d5fca6eff028013e9a",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass ground tile with a small grass tuft",
+ "label": "sky-island/si-grass-tuft-a",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a flat grass terrain ground surface spanning the full 16x16 tile with standard top-down texture and a small tuft.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5372
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground tile depicting grass terrain with subtle texture and a small darker tuft detail; functions as a flat surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3834
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts flat ground terrain viewed from above with surface texture and a small tuft detail.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5112
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flat grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a horizontal terrain surface (ground plane) viewed from above, covering the full 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3985
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.878Z",
+ "cells": {
+  "16": [
+   "8e4cda1686314dbd"
+  ],
+  "24": [
+   "6087686ede18eed8",
+   "8c60f6b478f1d026",
+   "a57f449504946ad7",
+   "c64e153db3e11475",
+   "d5ce7bb53ca475b7",
+   "d656b6c3a8f2c87d"
+  ],
+  "32": [
+   "1e1a6083322a6b05",
+   "432a264074766231",
+   "6e3e21186ee2cc0e",
+   "b9e7cd9c2285b8ed",
+   "bf3be1e3b859b131",
+   "f1a1bcead6d91c7c"
+  ],
+  "48": [
+   "4e302ceaba4726f1",
+   "5cdb01ad8f9651e3",
+   "6239cffd6f133cb5",
+   "c5a7165cea85fd82",
+   "dc72e1e01e8ffdfd",
+   "defb84240e21d757"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "152f8d6c753a092cb1eaeee50f8d26e45619e0090a5d62e58f468d57b8b47243",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass to cloud floor transition tile (terrain)",
+ "label": "sky-island/si-gc-e",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ground transition tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a transition from grass surface on the left to cloud ground on the right, fully viewed from above as floor surface across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4404
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ground transition tile (grass to cloud floor)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain transition tile viewed from above in standard top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4033
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "terrain transition tile between grass and cloud floor",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts ground/floor terrain viewed from above with grass meeting cloud edges; full 16 rows represent floor plane surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3206
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "terrain transition tile (grass to cloud floor)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile showing a transition between green grass surface and cloud/floor surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3561
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.885Z",
+ "cells": {
+  "16": [
+   "3559d8c244264bb2"
+  ],
+  "24": [
+   "19e7eac3248828c3",
+   "1b3ebc33ea09bf57",
+   "35e2753d87895bf2",
+   "beb8d06e3d49d06a",
+   "e332558783f13031",
+   "e570691efa9ccfcf"
+  ],
+  "32": [
+   "2e7ce43b392aedc2",
+   "503ac0f5f87b3d15",
+   "a2160e110d04a511",
+   "a5c062be47f3351e",
+   "ce1f4b01f52a03a7",
+   "f6ab8e73ae7938e7"
+  ],
+  "48": [
+   "518ab4dfc9b330a8",
+   "7462e704127e6043",
+   "8c764cd452555b1e",
+   "c06bde18475c45cd",
+   "c09336406aa0443b",
+   "ecb025d574b9d2d4"
+  ]
+ }
+}

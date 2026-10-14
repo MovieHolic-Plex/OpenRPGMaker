@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "062522e30b4123740034913833f07f6c2c94593d31bf5d749ba6c23dfe7606ba",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass island edge tile against sky (terrain)",
+ "label": "sky-island/si-gs-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass terrain edge tile with top surface and south cliff face",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-11 form the top-down grass surface, while rows 12-15 depict the south edge cliff face with grass overhang in proper 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3470
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass ground to cliff edge terrain tile",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing ~12 rows of horizontal grass surface viewed from above, transitioning along rows 12-15 into an overhanging south-facing cliff/dirt edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4524
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass island terrain tile with top-down grass surface and southern cliff/overhang edge",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0 to 11 represent the foreshortened top ground surface (12 rows tall), while rows 12 to 15 represent the front/south cliff edge with overhanging grass fringe and dirt.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4070
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass ground surface with dirt cliff/overhang south edge",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-11 depict the horizontal grass ground plane viewed from above, with rows 12-15 forming the south edge overhang and exposed dirt face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4551
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.879Z",
+ "cells": {
+  "16": [
+   "20b988840250cdf3"
+  ],
+  "24": [
+   "013ccafb1fb557e8",
+   "2c0203610a14e7d7",
+   "62330002ba3189b5",
+   "8e7d87fcbc8ff3a8",
+   "e53d8e71c0de91b6",
+   "fdadc6a6975d3e10"
+  ],
+  "32": [
+   "12066c4e2618a689",
+   "82f360dbe995e091",
+   "c0e11fa811b21637",
+   "cc24060412478900",
+   "f07cf6adf09f4d4f",
+   "fa4e0cf056b25049"
+  ],
+  "48": [
+   "2300f89977628b82",
+   "69202c438605b012",
+   "70147c868eeaf475",
+   "8f87174758fcf4b4",
+   "92f3fffc0b32de65",
+   "f7d73003f270fbd1"
+  ]
+ }
+}

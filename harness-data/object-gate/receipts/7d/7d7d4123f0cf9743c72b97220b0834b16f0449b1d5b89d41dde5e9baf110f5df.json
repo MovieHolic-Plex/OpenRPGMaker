@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7d7d4123f0cf9743c72b97220b0834b16f0449b1d5b89d41dde5e9baf110f5df",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass ground tile",
+ "label": "sky-island/si-grass",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass ground surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 pixel terrain tile depicting flat grass ground seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5986
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flat grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 grass ground terrain texture viewed from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4719
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flat grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 green grass terrain texture seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4467
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 grass ground terrain tile viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6301
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.877Z",
+ "cells": {
+  "16": [
+   "cee0911ae834f553"
+  ],
+  "24": [
+   "05cb2968f7493a7a",
+   "270f883893fc7ab2",
+   "3cbc31b56868b1a0",
+   "70e25dc3aff1d584",
+   "7b7273cb573b0be5",
+   "fd15a6282e22851f"
+  ],
+  "32": [
+   "1d6f4003d8545b6f",
+   "55805dbdd8a08b5c",
+   "5b2d4a6376ae6ea8",
+   "bf9690257af6c38e",
+   "df92c08776bf453b",
+   "f304154cff77b462"
+  ],
+  "48": [
+   "0c75983e39caaa3c",
+   "35c3239c1707262b",
+   "728524da764c6eed",
+   "83af93e042739919",
+   "e52054ac9e060dbf",
+   "eccfaa4675266d03"
+  ]
+ }
+}

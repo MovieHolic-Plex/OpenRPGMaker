@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e7a256ad8bfc6a0a7a6c93418810c4fc9607efc5085dfa7515ed3593c1fbda1d",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "paved cobblestone road tile with curb (terrain)",
+ "label": "sky-island/si-road-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cobblestone road tile with curb",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing cobblestone paving seen from above with a south-facing curb edge along rows 13-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6078
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cobblestone road tile with bottom curb edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting cobblestone pavement viewed from above, terminating with a horizontal curb edge along the bottom rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3335
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "paved cobblestone road with curb",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting cobblestone pavement seen from above with a curb along rows 13-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2875
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cobblestone ground tile with curb",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid top-down terrain tile showing cobblestone road surface with curb along the bottom edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3038
+  }
+ ],
+ "decidedAt": "2026-10-14T08:41:08.374Z",
+ "cells": {
+  "16": [
+   "7e43f4164abdb358"
+  ],
+  "24": [
+   "19291b9b42963991",
+   "3248817964dbf5e9",
+   "3cf147d8cebed13c",
+   "3f3ed39e4d522101",
+   "54f4916a29aa378a",
+   "e279e4cb4594dfda"
+  ],
+  "32": [
+   "242675ce469de98e",
+   "4da5c17f79b3867d",
+   "840e385e40bfdbc2",
+   "bc72f9e384fc85dc",
+   "cd517a908a55cf74",
+   "e8d6d7348b6e7cfc"
+  ],
+  "48": [
+   "126d16e7843fe840",
+   "2d3024dafc420b5e",
+   "50a5b2902cdf402a",
+   "8d9dbeba09787c88",
+   "9990435ce4821ca9",
+   "eee7a929c9c0603e"
+  ]
+ }
+}

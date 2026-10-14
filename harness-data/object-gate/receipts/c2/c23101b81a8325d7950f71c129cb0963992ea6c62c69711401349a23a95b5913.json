@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c23101b81a8325d7950f71c129cb0963992ea6c62c69711401349a23a95b5913",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass ground tile",
+ "label": "sky-island/si-grass-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing grass surface covering the entire 16x16 tile area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3903
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass ground surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile filling the full 16x16 area, showing top-down grass texture.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3826
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "16x16 flat ground terrain tile showing a horizontal grassy surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6022
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass ground surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile filling the 16x16 grid, correctly represented as a top-down ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3307
+  }
+ ],
+ "decidedAt": "2026-10-14T08:41:08.372Z",
+ "cells": {
+  "16": [
+   "4109e4111cf24c60"
+  ],
+  "24": [
+   "089bda75cef6bea6",
+   "6c5a6ae46f7e1da3",
+   "a552b8721aa77c1f",
+   "b78d360155525b57",
+   "d921dc0ed082d501",
+   "de5980e612fcba2c"
+  ],
+  "32": [
+   "0954d90a75bd022a",
+   "5442ff5662409275",
+   "b631c0d283c2ec5a",
+   "cd430ec0ea43d7c9",
+   "e434123c06c71bc2",
+   "fd491f4cc8887ef8"
+  ],
+  "48": [
+   "14d1814d2b980a49",
+   "52e14ce6210634a1",
+   "6607a57a24993fdb",
+   "b3abe7c74f7effb6",
+   "ced54dc44cbcc556",
+   "d6594ef8d7f8bca9"
+  ]
+ }
+}

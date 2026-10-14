@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "94b7b612b32575c057332d91f9b294179148a3472075792e3740ca9d3c788d65",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "rock cliff face tile with small embedded crystals (terrain)",
+ "label": "sky-island/si-face-top-crystal",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rock cliff face tile with upper ground ledge",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a terrain cliff tile; rows 0-3 show the brown upper ground/cliff top surface, transitioning to the vertical dark rock face below with embedded crystal formations.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5367
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rock cliff face with top ledge",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a cliff face with 4 rows of the top ground surface visible at rows 0-3, conforming to standard top-down cliff autotile perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13570
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rock cliff face tile with cliff-top ground edge and crystals",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-3 show the top plateau surface of the cliff in brown tones (4 source pixel rows tall), stepping down at row 4 into the vertical dark cliff face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4170
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rock cliff face with upper ground surface",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a cliff wall with its top ground surface visible across rows 0-3 (4 source pixel rows tall), correctly conveying the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4174
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.881Z",
+ "cells": {
+  "16": [
+   "54421395b0ad9e2e"
+  ],
+  "24": [
+   "200fc62e37615a95",
+   "2ae9a9b6128de9d3",
+   "2bd5314347a787bb",
+   "945c48fbcb4de331",
+   "ae5219592854a404",
+   "ca1d8b406cb4382b"
+  ],
+  "32": [
+   "1828529ef58c65c7",
+   "28c79634ed1c3831",
+   "2ba6dd313564b7ef",
+   "d0a82a6c83b3ea59",
+   "e53984f253836271",
+   "fa8cffd121c2b8a6"
+  ],
+  "48": [
+   "4290473d49ef9dc8",
+   "7c28f45464fd73e6",
+   "961cf1bb174be381",
+   "9db3f10e14e9a7f8",
+   "c639708a257d517c",
+   "e05662c86dcde50c"
+  ]
+ }
+}

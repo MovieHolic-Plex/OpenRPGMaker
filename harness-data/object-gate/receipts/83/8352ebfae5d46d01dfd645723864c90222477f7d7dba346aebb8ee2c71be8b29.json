@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8352ebfae5d46d01dfd645723864c90222477f7d7dba346aebb8ee2c71be8b29",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass to cloud floor transition tile (terrain)",
+ "label": "sky-island/si-gc-ne",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass ground patch",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing top-down grass ground meeting cloud/sky backdrop, properly rendered as ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3612
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass terrain edge meeting cloud floor",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a flat ground terrain transition tile showing grass border against clouds/sky; ground surface fills the lower-left area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4878
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass terrain edge on sky/cloud ground",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile showing the edge of a grassy surface transitioning to sky/cloud ground, properly viewed from above as top-down ground terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4459
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass ground surface",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting grass meeting cloud floor; flat ground surface viewed top-down across approximately 14 rows with no standing elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4236
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.886Z",
+ "cells": {
+  "16": [
+   "c12051c7b10262ea"
+  ],
+  "24": [
+   "0979c5009d7880e1",
+   "5097a0ba708b6bb2",
+   "5487c336b89ea351",
+   "b10e87f0b6447b99",
+   "bb11c06892534762",
+   "dbb7e12baa231f44"
+  ],
+  "32": [
+   "0caec3b3fd1b31cb",
+   "5701c09a28abbf99",
+   "7cb204532917dd6b",
+   "89aa795c678d634b",
+   "c1eb6a06d8052fd7",
+   "f7dc4fa2f668edce"
+  ],
+  "48": [
+   "37f75331c0047838",
+   "647329c4d74c96bd",
+   "94da1ae9b1e10c32",
+   "d86c0c9231baf76c",
+   "e073490f319f9f05",
+   "f54c5ed3d069416d"
+  ]
+ }
+}

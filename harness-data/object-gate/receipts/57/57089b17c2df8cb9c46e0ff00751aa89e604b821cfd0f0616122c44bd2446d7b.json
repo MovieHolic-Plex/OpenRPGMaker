@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "57089b17c2df8cb9c46e0ff00751aa89e604b821cfd0f0616122c44bd2446d7b",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "flowing stream channel on grass (terrain)",
+ "label": "sky-island/si-stream-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stream channel and grass terrain",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a vertical water channel between grassy banks viewed top-down; correctly represents 3/4 ground terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11809
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stream channel with grass banks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting an overhead/foreshortened view of a water channel running vertically through grass banks.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4060
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water channel with banks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a flowing stream channel bordered by banks and grass viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4241
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flowing stream channel on grass terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a flowing stream channel between grass banks, viewed top-down across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3613
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.892Z",
+ "cells": {
+  "16": [
+   "3867ce6bc81c7882"
+  ],
+  "24": [
+   "032b96417dac5469",
+   "135096039bc5fcfb",
+   "3be626f71a1b71bf",
+   "565fd364a32fa83a",
+   "8d1a09f14ebe4d60",
+   "90a994782e5c8167"
+  ],
+  "32": [
+   "014a2c75d02f4411",
+   "4fa1f7dcf1c39ca0",
+   "916874553f1e971a",
+   "9f0c40a6dc0769e5",
+   "aec8f036eee79777",
+   "e3001fae5e4a6d35"
+  ],
+  "48": [
+   "088d075056222007",
+   "12f76bd9532e8643",
+   "3f900667d7e88ae5",
+   "443fa6bc214f267a",
+   "67f1ad25766a62cb",
+   "ba3db486d75bb8b6"
+  ]
+ }
+}

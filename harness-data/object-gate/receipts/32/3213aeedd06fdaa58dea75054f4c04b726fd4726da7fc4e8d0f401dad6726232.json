@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3213aeedd06fdaa58dea75054f4c04b726fd4726da7fc4e8d0f401dad6726232",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "cobblestone plaza edge on grass (terrain)",
+ "label": "sky-island/si-plaza-se",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cobblestone plaza terrain edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Cobblestone ground tile meeting green grass at bottom and right edge; flat horizontal ground terrain surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5605
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cobblestone plaza ground with grass edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile showing cobblestone paving meeting grass at the bottom and right edges, correctly depicted from a top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3787
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cobblestone plaza pavement with grass edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing cobblestone paving meeting grass at the bottom and right edges, seen from top-down 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3634
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cobblestone plaza ground with grass border",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing cobblestone pavement bordering grass at the bottom and right edges in standard top-down RPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3611
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.889Z",
+ "cells": {
+  "16": [
+   "c2fa3a1b66d59ce2"
+  ],
+  "24": [
+   "0c13d8acea7cf5bb",
+   "52c89fe5c4297df7",
+   "7990f895b8a93491",
+   "a1e5870f91bf9cd3",
+   "c7aa6c00f40e0d86",
+   "ff0f0334b893a510"
+  ],
+  "32": [
+   "51890603e0623750",
+   "55c08fa50cea637f",
+   "b4c1752edc2b0fc9",
+   "ba0ec45ea01b38f8",
+   "d101fa166f1b0246",
+   "f5df1c17ab2380f3"
+  ],
+  "48": [
+   "36a7c865c00f2880",
+   "759154acf3c06c22",
+   "8ef5abd5097930d7",
+   "963cc7c447222c80",
+   "c85c4d489878eac9",
+   "f7aed696b5258873"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6dc76a0fe4b92db31198ba403d6750544afbfc0882406507ddfc484d82b1a68e",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass island edge tile against sky (terrain)",
+ "label": "sky-island/si-gs-isw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass island terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing a grass surface with corner edge against sky/water, correctly presented from the top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12095
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flat grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ground terrain tile showing grass with an edge cutout showing sky/water in the lower-left corner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5704
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a grassy island surface viewed from above with an edge cutout showing sky in the bottom-left corner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4530
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass island terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing top-down grass surface with an edge cut-out at the bottom left, consistent with top-down 3/4 perspective terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5673
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.881Z",
+ "cells": {
+  "16": [
+   "72167b75f8647d88"
+  ],
+  "24": [
+   "13b45eeb165b6e6f",
+   "1af844da2545f4c9",
+   "25f8b1e7ea55e0bd",
+   "303c476ac89f817f",
+   "b8566cede47ed0ec",
+   "dd9641e0941c3f65"
+  ],
+  "32": [
+   "1e3b39ba4c2e0e11",
+   "2ef5f876748d5253",
+   "7f001ddffa6d3b7f",
+   "99a4b551b3ad8a52",
+   "a80e66e71f67b95a",
+   "db399376166ed372"
+  ],
+  "48": [
+   "04c3fa36505ee236",
+   "0ac150d958c24f68",
+   "7d050e2660eabb1b",
+   "a41b2f01916f4a1c",
+   "b91af831f84dc102",
+   "e859ddfbee351b05"
+  ]
+ }
+}

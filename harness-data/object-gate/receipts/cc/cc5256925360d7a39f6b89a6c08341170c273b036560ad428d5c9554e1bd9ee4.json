@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cc5256925360d7a39f6b89a6c08341170c273b036560ad428d5c9554e1bd9ee4",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass ground tile with darker grass patch",
+ "label": "sky-island/si-grass-shade-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass ground surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing a patch of darker green grass across the top-down surface; entire tile is ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4716
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ground terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile viewed from above with darker grass patches across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2949
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass ground surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile representing grass with a darker green patch viewed from above, covering the full 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4305
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ground terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground tile depicting grass texture with a darker green patch, correctly filling the 16x16 terrain space.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3887
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.878Z",
+ "cells": {
+  "16": [
+   "f953c9d5cbeca680"
+  ],
+  "24": [
+   "33edcbdb64657a70",
+   "3f17b415d4e6165a",
+   "53899621335bd49a",
+   "61627f6c1b43152a",
+   "77b668fc617a0a18",
+   "966c5f47f1601029"
+  ],
+  "32": [
+   "126be40576717616",
+   "25828f0bdc66293b",
+   "3998d9b1209dacdc",
+   "6b5a8c0506115a96",
+   "7e98d1ea01de630e",
+   "c7fa2e72b794dd0f"
+  ],
+  "48": [
+   "5962c454258d0029",
+   "5a1114a52e7247de",
+   "7a7e6f1a8b325e6a",
+   "9cccc0dfa9a84952",
+   "e92e0abf4e2a113d",
+   "f37ac418591a2dc4"
+  ]
+ }
+}

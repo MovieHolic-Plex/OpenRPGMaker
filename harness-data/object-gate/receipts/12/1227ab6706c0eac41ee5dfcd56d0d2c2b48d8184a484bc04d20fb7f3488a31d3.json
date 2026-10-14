@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1227ab6706c0eac41ee5dfcd56d0d2c2b48d8184a484bc04d20fb7f3488a31d3",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass to cloud floor transition tile (terrain)",
+ "label": "sky-island/si-gc-inw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ground terrain tile (grass with cloud/floor edge)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing flat ground surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5044
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ground tile depicting grass with a cloud transition patch in the upper-left corner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4071
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "terrain tile (grass with cloud/floor transition corner)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile viewed from above; entire 16x16 pixel area is floor surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3956
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "terrain tile (grass with cloud corner)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing top-down grass surface with a cloud floor patch in the upper-left corner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4927
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.886Z",
+ "cells": {
+  "16": [
+   "199c5eaf3d7502ae"
+  ],
+  "24": [
+   "17bcfcfbc6edb50c",
+   "1ca13c37736d006a",
+   "7f2136a036b9484a",
+   "85543ff9f8cc50fb",
+   "9b973ad42bc8ec84",
+   "af4158ae6b6dda4a"
+  ],
+  "32": [
+   "11ebb8f22699cec6",
+   "1cdb5b69da291b64",
+   "22acaef934dba82e",
+   "59e78ef8eb8d4865",
+   "a8859747e3f4bdc3",
+   "cc444fcc2e4b9875"
+  ],
+  "48": [
+   "327ccef47f16f9eb",
+   "33976393d8200bba",
+   "79dba00105683d83",
+   "8532c6ea07497f4a",
+   "e4edbf5d972d0b92",
+   "f3ec33b25b66104c"
+  ]
+ }
+}

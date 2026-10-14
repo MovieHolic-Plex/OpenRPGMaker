@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4b115c51bc5942046d8c49af6102dcb4cdfa2eb58066d3eed9bbd9544737737f",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "bottom tip of a floating island rock underside (terrain)",
+ "label": "sky-island/si-tip-c",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floating island rock underside tip",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile showing the craggy underside and bottom taper of a floating island against open sky.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7183
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "floating island rock underside",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Underside terrain tile representing the bottom rocky tip of a floating landmass against a sky background. Valid terrain element with no standing-object top surface expected.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5085
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bottom tip of floating island rock underside",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing the underside/bottom tip of a floating rock formation against the sky, functioning as vertical cliff terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3500
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bottom tip of a floating island rock underside",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts the rocky bottom tip and underside of a floating island terrain formation against a sky background. As a vertical/underside cliff terrain tile, it seamlessly fits standard top-down RPG cliff/wall conventions.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6231
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.883Z",
+ "cells": {
+  "16": [
+   "101a2c0c70f7ebf9"
+  ],
+  "24": [
+   "49838e6bab3ad96f",
+   "55f93ea7c3568f8c",
+   "56efc5c48a3cb5a1",
+   "df4029c8689f5413",
+   "e48244bd4a8ad808",
+   "fc170bfad397b874"
+  ],
+  "32": [
+   "370adb2d6b86f703",
+   "509b781c250a1e4d",
+   "67b0de1ec6c0c379",
+   "c63ec58ff65cabac",
+   "e2b1d41c1dc1fd18",
+   "e4352a89398e13ee"
+  ],
+  "48": [
+   "027049dab3d74231",
+   "3b7c60690acddeb5",
+   "4fe90091f8ad9fca",
+   "87e62ad1ec2f0242",
+   "8ef571cd7fa203c8",
+   "f6c446d5d7ec50d3"
+  ]
+ }
+}

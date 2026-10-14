@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "780281fc6501ad35f4e2b34345c566f23d3e0170c934521022ed80bb331c4944",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "flagstone path on grass (terrain)",
+ "label": "sky-island/si-path-1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flagstone path on grass",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting flagstones on grass viewed from the standard 3/4 top-down perspective. Each stone displays a wide foreshortened top surface with subtle southern shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9558
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flagstones on grass",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting flagstones embedded in grass, viewed top-down with each stone showing foreshortened top surfaces and subtle southern shaded edges.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5286
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flagstone stepping stones on grass",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tile depicting flagstones embedded in grass viewed from above, with each stone displaying a foreshortened top face and south edge shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5326
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flagstones on grass terrain",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting stepping stones embedded in grass; stones show wide top surfaces (4-5 rows) with south-facing drop shadows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5099
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.887Z",
+ "cells": {
+  "16": [
+   "5acc617f3c867932"
+  ],
+  "24": [
+   "2a478db77193b820",
+   "6f273053de8502d1",
+   "86140451d5e7a48b",
+   "995056e08a686a7e",
+   "b91afb31db956208",
+   "bb03ca363396ccec"
+  ],
+  "32": [
+   "12a580d220592a0c",
+   "1f47c2443f654d1e",
+   "831bab34fe11f5ec",
+   "b00eda6add64e19e",
+   "d8db37e6e58743ea",
+   "ea471b79f75713fb"
+  ],
+  "48": [
+   "3666caf75732c311",
+   "3c27549d6c7f5473",
+   "42746e7121ad3db4",
+   "448add41108fd016",
+   "8579ba539b7948c7",
+   "bda01f4210f46c88"
+  ]
+ }
+}
