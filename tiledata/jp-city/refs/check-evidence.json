@@ -103,7 +103,7 @@
    "name": "일본 도시 · 일본 병원·학교 별관·IT 사옥 실내 (3곳, 맵 5장)",
    "documents": 6,
    "images": 5,
-   "chars": 62934
+   "chars": 62940
   },
   {
    "id": "jp-errors",
@@ -117,7 +117,7 @@
   "categories": 16,
   "documents": 151,
   "images": 274,
-  "chars": 1806767,
+  "chars": 1806773,
   "maxDocChars": 52857,
   "maxImagePx": 820
  },
@@ -276,7 +276,7 @@
   "jp-transit-rules:jp-truck-kei"
  ],
  "sha256": {
-  "json": "2c7c8673ee8a06fc5f45446247688f17ff0baa5bf89e7e5b84f2b1a863d92f52",
-  "images": "6b3e20e819a97751a4d796581b23d8d9b7b8ca34e158c91d9b5e3064d61445d6"
+  "json": "ac82d52d0407e68da89a5e7a2ce290df5ddb2394542ec20ea1de2dba4b00bb9e",
+  "images": "f39177685765e74daa239675f4ce573761616bd1065747885bc50c2f609c9a50"
  }
 }

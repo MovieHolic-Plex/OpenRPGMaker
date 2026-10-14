@@ -78,7 +78,7 @@ g[11][6] = '.'; g[11][10] = '.'; g[11][18] = g[11][19] = '.'
 o('of-window-blind', 5, 1); o('of-window-blind', 9, 1); o('of-window-blind', 13, 1); o('ox-whiteboard-wall', 18, 1)
 o('of-cabinet', 1, 3); o('of-cabinet', 2, 3); o('of-plant-big', 3, 3)
 o('ox-shredder', 6, 3); o('of-copier', 7, 3); o('of-cabinet', 10, 3); o('of-cabinet', 11, 3); o('ox-planter-box', 14, 3); o('of-server-rack', 17, 3)
-o('of-plant-big', 20, 3)
+o('ox-planter-box', 19, 3)
 o('ox-bar-stool', 18, 6); o('ox-standing-table', 19, 6); o('ox-bar-stool', 21, 6); o('ox-bar-stool', 19, 7); o('ox-bar-stool', 20, 7)
 # 자유석 긴 책상 세 섬(남북으로 마주 앉는다)
 for x0 in (4, 9, 14):
