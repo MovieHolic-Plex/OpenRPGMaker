@@ -70,7 +70,7 @@ const STEP_SCHEMA: JsonSchema = {
 const TINT_PRESETS: Readonly<Record<string, string>> = {
   // 눈·흰 벽 위에 파란 막을 씌우면 «어두워지는» 게 아니라 «연보라로 바래는» 것이다(r1 실측: moonlit 30,50,110,0.42 가 낮처럼 보임).
   // 밤은 아주 어두운 색을 높은 알파로 — 흰색 바탕이 섞인 뒤에도 중간 회색 아래로 내려가야 한다.
-  night: "8,14,44,0.62", moonlit: "14,24,70,0.52", dusk: "70,34,86,0.4", dawn: "255,170,120,0.26",
+  night: "8,14,44,0.62", moonlit: "14,24,70,0.52", dusk: "40,20,60,0.5", dawn: "255,170,120,0.26",
   storm: "20,28,40,0.5", ember: "255,110,40,0.3", sickly: "80,140,70,0.28",
 };
 
@@ -143,7 +143,7 @@ function normalizeSteps(raw: unknown): TimedStep[] {
         const alpha = parts[3];
         if (parts.length >= 3 && (parts.some((n) => !Number.isFinite(n)) || parts.slice(0, 3).some((n) => n < 0 || n > 255))) throw new ToolError(`steps[${index}] tintColor '${v}' 는 'r,g,b,알파'(r·g·b 0~255) 형식이어야 합니다 — 예: '20,30,80,0.4'.`, { code: "invalid-args" });
         const luma = parts.length >= 3 ? 0.2126 * parts[0]! + 0.7152 * parts[1]! + 0.0722 * parts[2]! : 255;
-        if (alpha !== undefined && alpha > 0 && luma < 110 && (255 * (1 - alpha) + luma * alpha) > 170) throw new ToolError(`steps[${index}] tintColor '${v}' 는 어두운 색인데 알파가 ${String(alpha)}라 흰 눈·벽 위에서 밤으로 안 보이고 연보라로 바랠 뿐입니다(실측: 0.28~0.42 는 대낮처럼 보임). 이름 night·moonlit·storm 을 쓰거나 아주 어두운 색(예 '8,14,44')을 알파 0.55 이상으로 주세요.`, { code: "invalid-args" });
+        if (alpha !== undefined && alpha > 0 && luma < 110 && (255 * (1 - alpha) + luma * alpha) > 150) throw new ToolError(`steps[${index}] tintColor '${v}' 는 어두운 색인데 알파가 ${String(alpha)}라 흰 눈·벽 위에서 밤으로 안 보이고 연보라로 바랠 뿐입니다(실측: 0.28~0.42 는 대낮처럼 보임). 이름 night·moonlit·storm 을 쓰거나 아주 어두운 색(예 '8,14,44')을 알파 0.55 이상으로 주세요.`, { code: "invalid-args" });
         if (alpha !== undefined && (alpha < 0 || alpha > 0.75)) throw new ToolError(`steps[${index}] tintColor 알파 ${String(alpha)} 는 0~0.75 여야 합니다(0.75 를 넘으면 맵이 가려집니다; 푸른 밤은 0.3~0.45) — 예: '20,30,80,0.4'.`, { code: "invalid-args" });
       }
     }
