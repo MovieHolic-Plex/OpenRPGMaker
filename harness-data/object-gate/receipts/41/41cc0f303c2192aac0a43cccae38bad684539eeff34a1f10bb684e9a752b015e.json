@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "41cc0f303c2192aac0a43cccae38bad684539eeff34a1f10bb684e9a752b015e",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "석탄 상자(리벳 철판 통, 위에서 석탄이 보인다)",
+ "label": "steampunk-city/sp-coal-bunker",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "riveted iron coal bin with shovel",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 12,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The container opening is clearly seen from above across rows 5-16 filled with coal and a shovel, followed by a front rim and the south-facing riveted front panel across rows 18-29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3531
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "riveted iron coal bin with shovel",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 12,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening is clearly visible from rows 5 to 16 showing dark coal chunks and a shovel inside, bordered by the rim at row 17, above a vertical south-facing riveted front panel from row 18 to 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4225
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "riveted iron coal bin with shovel",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 12,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The opening filled with coal is visible from above between rows 5 and 16 (12 rows tall) above the riveted front south face (rows 18-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5536
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "riveted iron coal bin with shovel",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 12,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coal bin shows an interior opening from row 5 to 16 filled with coal and a shovel handle, with the riveted front face below from row 19 to 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4704
+  }
+ ],
+ "decidedAt": "2026-10-13T18:20:36.037Z",
+ "cells": {
+  "16": [
+   "77eae41b9d3b73d2",
+   "872d925dc49be2f8",
+   "c2fb2d0a286acce4",
+   "ea16f59996c294cf"
+  ],
+  "24": [
+   "012366fc250386ed",
+   "04dd37e906596421",
+   "16cf11a0d33baae4",
+   "252d29a7a94d0cb1",
+   "276d5cbe396be679",
+   "2e40782d64f7194f",
+   "394e5ff3f79db290",
+   "4bdf44b185a1434b",
+   "584e93a15884a74b",
+   "59206debb8bc54b3",
+   "616a1060c8cdbff9",
+   "7164e9bf0ff974ac",
+   "74f0505085324ec2",
+   "78a4f77bd03ce1f3",
+   "7f913de38e6ca728",
+   "942261fb20b2c315",
+   "96225591affcec07",
+   "97e0efda14e88d9e",
+   "aec72bed8aecc28b",
+   "af213a9db592f768",
+   "b63c0ce65bf4a40b",
+   "c5b98daccfe82270",
+   "d71c456100661d16",
+   "fd875847f240e0d1"
+  ],
+  "32": [
+   "26d0b416d708ef9d"
+  ],
+  "48": [
+   "13f4df3a7d026397",
+   "2efeac98ac64a1d8",
+   "82f74181d012aac0",
+   "8b70a9a9e8837814",
+   "f13a6351e3d2a797",
+   "f639a66dc1bd46c2"
+  ]
+ }
+}

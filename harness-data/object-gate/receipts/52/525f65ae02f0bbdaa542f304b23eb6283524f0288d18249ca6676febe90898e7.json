@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "525f65ae02f0bbdaa542f304b23eb6283524f0288d18249ca6676febe90898e7",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "땅 위 배관 — 세로 + 서 갈래",
+ "label": "steampunk-city/sp-pipe-nsw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "junction box / chest on piping",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The central box/junction body is drawn in pure front elevation from row 2 to 12 with a 1px top outline and no visible top surface foreshortened toward the camera.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5330
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pipe junction box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The central box structure is drawn in pure front elevation with no visible top surface (rows 2-12 show only front-facing vertical planes with a front-facing latch/plate).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6017
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pipe junction box with vertical and west-branching pipes",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main junction box clearly delineates a top surface (rows 2-7, lighter tone with brass plate fixture and edge highlight at row 7) and a south-facing front vertical face (rows 8-12, darker brown). The west pipe branch follows the same top/front division.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8138
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pipe junction box with vertical and west branch pipes",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The central junction box clearly depicts a 3/4 perspective with an illuminated top surface spanning rows 2 to 7 (6 rows tall) and a shaded front face spanning rows 8 to 12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5335
+  }
+ ],
+ "decidedAt": "2026-10-13T18:40:36.080Z",
+ "cells": {
+  "16": [
+   "561482a734627316"
+  ],
+  "24": [
+   "15c0cc8a93a136b4",
+   "1dedfb665a9aadcd",
+   "3df2e0296f9dd698",
+   "736edd3e6eb78592",
+   "8d8f83dc1b846759",
+   "af56afe87691e6cd"
+  ],
+  "32": [
+   "0c4ff858beff5025",
+   "4f7aca330598a87e",
+   "8c6fa288895bd9f6",
+   "91455e9a6742ab88",
+   "bc11999fe686d1ab",
+   "c72357c40b6614c6"
+  ],
+  "48": [
+   "0e34b3f2bf7cbbac",
+   "200cdffadc8a2ed4",
+   "56a03f9d87412d93",
+   "6b3243f48f94f837",
+   "99042f6d5b4fa474",
+   "b6b237e94dba3814"
+  ]
+ }
+}

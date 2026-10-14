@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "18f45347dcb7cc4d47bfcbb196651c9e1b8f0e504aa5ee8e3fd22257bf40985c",
+ "width": 16,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "침대 곁 탁자(기름등)",
+ "label": "steampunk-city/sp-nightstand",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "nightstand / bedside table with drawer",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from rows 5 through 8 (4 rows tall), while the front face showing the drawer occupies rows 9 through 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4044
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bedside table / nightstand",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from rows 5 to 8 (4 rows tall), with the front face and drawer occupying rows 9 to 13, and an oil lamp resting on top.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6306
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bedside table",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bedside table displays a clearly defined horizontal top surface of 3 source pixel rows (rows 6-8) with the lamp resting on it, above a 6-row front drawer face (rows 9-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4012
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bedside table",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bedside table displays a clear 3-row tabletop surface (rows 6-8) in lighter brown tones above the front drawer face (rows 9-13), meeting the 3/4 top-down perspective requirements.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4465
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.470Z",
+ "cells": {
+  "16": [
+   "420781f0125b3a12"
+  ],
+  "24": [
+   "1a2e7c7c4f4696a1",
+   "2144c2fce106ee6a",
+   "63a08c8d9dea3c3b",
+   "7405eab7ad102ac6",
+   "f3c300aeee4c57ff",
+   "fa7b60a38355978c"
+  ],
+  "32": [
+   "175a3dd5d64837a2",
+   "6bcd5ff308203314",
+   "886e38d1c3193ea3",
+   "b0663a4b78480c26",
+   "de54099bfc3cc9af",
+   "f8b0259560e6e7ae"
+  ],
+  "48": [
+   "0a601c5e776ea356",
+   "34aa5754370845fe",
+   "75b072e6059cc9b4",
+   "96eef7fdd5ca3671",
+   "a62b1462dbb9c17d",
+   "dbb56d4872f6d184"
+  ]
+ }
+}

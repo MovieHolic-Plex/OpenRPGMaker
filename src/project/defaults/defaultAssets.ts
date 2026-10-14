@@ -14,6 +14,7 @@ import { JOSEON_BARAM_TEXTURE, createJoseonBaramTileset, ensureJoseonBaramRefere
 import { MODERN_CITY_TEXTURE, createModernCityTileset, ensureModernCityReferences, ensureModernCityTileset } from "./modernCity";
 import { JP_CITY_TEXTURE, createJpCityTileset, ensureJpCityReferences, ensureJpCityTileset } from "./jpCity";
 import { WIZARDING_WORLD_TEXTURE, createWizardingWorldTileset, ensureWizardingWorldReferences, ensureWizardingWorldTileset } from "./wizardingWorld";
+import { STEAMPUNK_CITY_TEXTURE, createSteampunkCityTileset, ensureSteampunkCityReferences, ensureSteampunkCityTileset } from "./steampunkCity";
 import { MODERN_CAMPUS_TEXTURE, createModernCampusTileset, ensureModernCampusReferences, ensureModernCampusTileset } from "./modernCampus";
 import { SF_STATION_TEXTURE, createSfStationTileset, ensureSfStationReferences, ensureSfStationTileset } from "./sfStation";
 import { GOTHIC_MANOR_TEXTURE, createGothicManorTileset, ensureGothicManorReferences, ensureGothicManorTileset } from "./gothicManor";
@@ -165,6 +166,11 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       if (asset.textureKey === WIZARDING_WORLD_TEXTURE) {
         changed = ensureWizardingWorldTileset(project.tilesets[id]) || changed;
         changed = ensureWizardingWorldReferences(project.tilesets[id]) || changed;
+      }
+      // 스팀펑크 도시 (steampunk_city 굽기): 번들 칸 표·`sp-` 부품·참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
+      if (asset.textureKey === STEAMPUNK_CITY_TEXTURE) {
+        changed = ensureSteampunkCityTileset(project.tilesets[id]) || changed;
+        changed = ensureSteampunkCityReferences(project.tilesets[id]) || changed;
       }
       // 현대 학교·캠퍼스 (modern_campus 굽기): 번들 칸 표·`mc-` 부품·참고문서(야외 mc-·실내 mci-)를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
       if (asset.textureKey === MODERN_CAMPUS_TEXTURE) {
@@ -345,6 +351,7 @@ function bundledEasyRpgTilesetBase(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS
   if (asset.textureKey === MODERN_CITY_TEXTURE) return createModernCityTileset();
   if (asset.textureKey === JP_CITY_TEXTURE) return createJpCityTileset();
   if (asset.textureKey === WIZARDING_WORLD_TEXTURE) return createWizardingWorldTileset();
+  if (asset.textureKey === STEAMPUNK_CITY_TEXTURE) return createSteampunkCityTileset();
   if (asset.textureKey === MODERN_CAMPUS_TEXTURE) return createModernCampusTileset();
   if (asset.textureKey === SF_STATION_TEXTURE) return createSfStationTileset();
   if (asset.textureKey === GOTHIC_MANOR_TEXTURE) return createGothicManorTileset();

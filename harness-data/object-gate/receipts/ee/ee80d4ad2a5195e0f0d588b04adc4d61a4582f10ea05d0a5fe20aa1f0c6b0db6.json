@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ee80d4ad2a5195e0f0d588b04adc4d61a4582f10ea05d0a5fe20aa1f0c6b0db6",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "증기 구멍(쇠 굴뚝 토막에서 김이 오른다) (프레임 3)",
+ "label": "steampunk-city/sp-steam-vent-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "metal pipe stub / steam vent with a flanged top opening",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top flange of the vent pipe is drawn in clear 3/4 perspective spanning rows 15-24, containing a wide elliptical opening into the interior (rows 17-22, 6 rows tall) above the south-facing cylindrical pipe body (rows 24-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5006
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "metal pipe vent / chimney stub",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top flange and open pipe interior are clearly rendered as a foreshortened ellipse spanning rows 15-23, with a 6-row deep visible interior opening and a south-facing cylinder body beneath it (rows 24-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4600
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "metal pipe vent segment",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening of the pipe segment is rendered as a foreshortened ellipse spanning rows 17 to 22 (6 rows of interior opening depth), surrounded by an elliptical rim (rows 15 to 23) before descending to the cylindrical south face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8864
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "metal pipe vent / chimney stub",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top flange and circular opening of the pipe are clearly drawn in perspective as an ellipse from row 15 to 23 (opening interior is 5 rows tall, rows 18-22), sitting atop the front face of the pipe (rows 24-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3477
+  }
+ ],
+ "decidedAt": "2026-10-13T18:26:16.315Z",
+ "cells": {
+  "16": [
+   "0753858551777dad",
+   "3ba1038a33fba773"
+  ],
+  "24": [
+   "0e74fb5c9cd8a4fc",
+   "22a1d5b329014778",
+   "38e6e9fa7b40d963",
+   "4940e4b553dbf375",
+   "5d8b3193b77cfa05",
+   "86600f52ac077f9d",
+   "8dd7da43144d352d",
+   "a96bb6ac4d470fd9",
+   "aaee2f1bcf70ef47",
+   "bd58874083c4c82b",
+   "d55beb4dcad749a2",
+   "e38a73ce1ccd896a"
+  ],
+  "32": [
+   "92e13b8f08841fd1",
+   "b658c31d61e7d45a",
+   "dbe04637f21e69c3"
+  ],
+  "48": [
+   "01f77f88c50369c0",
+   "24751b550ac39093",
+   "2c5885e89cf4ec91",
+   "997b768ec46ea0f7",
+   "a4156eda6fe39d2b",
+   "c16aede68e66b36b"
+  ]
+ }
+}

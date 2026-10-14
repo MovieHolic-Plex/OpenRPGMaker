@@ -14,6 +14,7 @@ import joseonBaramSheet from "./joseonBaramSheet.json";
 import modernCitySheet from "./modernCitySheet.json";
 import jpCitySheet from "./jpCitySheet.json";
 import wizardingWorldSheet from "./wizardingWorldSheet.json";
+import steampunkCitySheet from "./steampunkCitySheet.json";
 import modernCampusSheet from "./modernCampusSheet.json";
 import sfStationSheet from "./sfStationSheet.json";
 import gothicManorSheet from "./gothicManorSheet.json";
@@ -146,6 +147,10 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   // 마법 학교 · 해리포터풍(2026-10) — HP 테마 42색 손 도트(성채 벽·12개 공간 기물·자연·탈것·생물·효과 움직임)를 48열 16px 칸으로 구운 시트. 칸 번호는 덧붙이기 전용(자리 키 핀).
   // 재생성: scripts/content/wizarding/bake_wz.py (검수 통과 조각만), 정의는 project/defaults/wizardingWorld.ts, openwiki/wizarding-world.md.
   {textureKey:"tex_wizarding_world",path:"assets/wizarding-world/wizarding-world-chipset.png",name:"마법 학교 · 해리포터풍 (손 도트)"},
+  // 스팀펑크 도시(2026-10) — 자체 잠금 팔레트 손 도트 야외(공장·보일러실·시계탑·연립·가게·배관 도랑·선로·증기 열차·기중기·급수탑·비행선 정박장·운하)와
+  // 실내(공방·보일러실·기관실·연구실·여관·선술집)를 48열 16px 칸으로 구운 시트. 칸 번호는 덧붙이기 전용(자리 키 핀).
+  // 재생성: scripts/content/steampunk-city/bake_sp.py (object-gate 통과 조각만), 정의는 project/defaults/steampunkCity.ts, openwiki/steampunk-city.md.
+  {textureKey:"tex_steampunk_city",path:"assets/steampunk-city/steampunk-city-chipset.png",name:"스팀펑크 도시 (손 도트)"},
   // 현대 학교·캠퍼스(2026-10) — modern3 팔레트 손 도트 야외(교문·담·교사 15종·운동장·교정 소품·바닥·도로)와 실내(교실·복도·도서관·보건실·급식실·기숙사 가구·바닥·벽면)를 48열 16px 칸으로 구운 시트. 칸 번호는 덧붙이기 전용(자리 키 핀).
   // 재생성: scripts/content/modern-campus/bake_mc.py (object-gate 통과 조각만), 정의는 project/defaults/modernCampus.ts, openwiki/modern-campus.md.
   {textureKey:"tex_modern_campus",path:"assets/modern-campus/modern-campus-chipset.png",name:"현대 학교·캠퍼스 (손 도트)"},
@@ -186,6 +191,7 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === "tex_modern_city") return modernCitySheet.count;
   if (key === "tex_jp_city") return jpCitySheet.count;
   if (key === "tex_wizarding_world") return wizardingWorldSheet.count;
+  if (key === "tex_steampunk_city") return steampunkCitySheet.count;
   if (key === "tex_modern_campus") return modernCampusSheet.count;
   if (key === "tex_sf_station") return sfStationSheet.count;
   if (key === "tex_gothic_manor") return gothicManorSheet.count;

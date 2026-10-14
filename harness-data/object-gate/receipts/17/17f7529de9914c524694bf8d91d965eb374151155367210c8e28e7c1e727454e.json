@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "17f7529de9914c524694bf8d91d965eb374151155367210c8e28e7c1e727454e",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "석탄재 마당(바퀴 자국)",
+ "label": "steampunk-city/sp-cinder-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ground terrain tile with wheel tracks in coal ash",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground surface tile depicting tire/wheel ruts in dark ash ground, viewed correctly from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3354
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ground surface with horizontal wheel tracks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a flat ground surface with wheel ruts, viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2806
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "coal ash ground with wheel tracks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a flat ground surface with horizontal wheel ruts and debris; entirely seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3667
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ground terrain tile with wheel ruts",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting ground with horizontal wheel ruts and coal ash speckles, fully visible from above as ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2541
+  }
+ ],
+ "decidedAt": "2026-10-13T18:27:58.051Z",
+ "cells": {
+  "16": [
+   "0cc8d8e7622bbeb7"
+  ],
+  "24": [
+   "17c3f2273d07f83a",
+   "3026e6b8dd0c4911",
+   "8e42af81cea2053b",
+   "c8e920be53a46ab8",
+   "d6fb9d548c486b44",
+   "f53db016cce76b6d"
+  ],
+  "32": [
+   "02f00d7dda66f5b7",
+   "040e7d52c596625c",
+   "279604d5fbdf0447",
+   "4422cf935444cb28",
+   "6bc534ddb8fb15e1",
+   "fa05ebf370d5ac92"
+  ],
+  "48": [
+   "24f2acbec4be15af",
+   "34b093465fa92eeb",
+   "6f38552a64bf3889",
+   "6fd763c91b6ca803",
+   "dc5d260755d820d3",
+   "fe4ccb5285f763f3"
+  ]
+ }
+}

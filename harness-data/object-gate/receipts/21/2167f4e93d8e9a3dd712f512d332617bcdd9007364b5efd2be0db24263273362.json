@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2167f4e93d8e9a3dd712f512d332617bcdd9007364b5efd2be0db24263273362",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "드릴 프레스(세운 기둥)",
+ "label": "steampunk-city/sp-drill-press",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "drill press upper head and work table/base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper head shows a 5-row top surface (rows 2-6) depicting the top pulley/motor enclosure in 3/4 perspective, with a front face on rows 7-13. The work table (rows 20-22) and base (rows 25-28) also show clear foreshortened horizontal top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6042
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "drill press machine (upper head and base)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The upper head of the drill press (rows 1-13) has only a 1px top outline at row 1, immediately followed by the front face containing the pulley/casing. There is no foreshortened top surface visible for the main volume.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4366
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "drill press upper head assembly",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The upper head unit (rows 1–13) has only a 1px black outline at row 1 with no visible top surface foreshortened from above; it is drawn as a flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7169
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "drill press machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire machine is drawn in pure 2D front elevation. The top of the upper housing has only a 1px outline border with no foreshortened top surface visible (top_rows = 0), and all segments are flat rectangular front-facing blocks.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4874
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:44.593Z",
+ "cells": {
+  "16": [
+   "32a7c238fd38d2d5",
+   "c7ac9f85461f8633"
+  ],
+  "24": [
+   "0843fd0e66d82ef1",
+   "35736fbdc92deaa0",
+   "3c59e9133e8a53c7",
+   "41a4f465cb4e4bc7",
+   "49faab7bb8a42925",
+   "577efd5fd7f46d72",
+   "5b405bd68827b784",
+   "5e2b7529f1ed03b2",
+   "9ecdc24d476009e9",
+   "a14d77a3c7ca600b",
+   "abd10b91706b0182",
+   "cc708128ad2b6b84"
+  ],
+  "32": [
+   "10ee5054c896aae8",
+   "c1984e520f51eceb",
+   "ccedb1aff5af8f97"
+  ],
+  "48": [
+   "1bf0fcd30c1b3594",
+   "50b0fb875eae5287",
+   "5686037c8b5830ce",
+   "5d8e4a0fac27acd6",
+   "79fddc56a13e4f7f",
+   "e8438493aae7eaa6"
+  ]
+ }
+}

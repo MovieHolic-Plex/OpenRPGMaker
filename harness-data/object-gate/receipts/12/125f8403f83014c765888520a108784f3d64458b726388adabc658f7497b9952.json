@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "125f8403f83014c765888520a108784f3d64458b726388adabc658f7497b9952",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "벽돌 벽면(윗줄)",
+ "label": "steampunk-city/sp-wall-brick-u",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick wall tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Tile is a vertical wall face terrain tile with running bond brick pattern, correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4949
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless vertical brick wall face terrain tile with top shadow line under ceiling edge; correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4866
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brick wall face tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image is a repeating brick wall surface terrain tile designed for vertical wall faces in 2D top-down maps.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4218
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brick wall face tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Tile represents a repeating vertical brick wall surface (terrain tile), correctly filling the 16x16 space.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3138
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.463Z",
+ "cells": {
+  "16": [
+   "6c87067cadfdf2b7"
+  ],
+  "24": [
+   "00fdf5641449df32",
+   "0c6eb548c3db2210",
+   "3c72dd789b39c81e",
+   "95d711ae494787d3",
+   "963b67bb6cf827f9",
+   "facf9268873743d8"
+  ],
+  "32": [
+   "014c157ddb889648",
+   "0774da053b0637c5",
+   "4e511c92f3d29730",
+   "7c09e79e975a75bd",
+   "95a441f93372e851",
+   "a8c90a13993cf14c"
+  ],
+  "48": [
+   "65fc1fb350309b4c",
+   "9e29910b866c12e5",
+   "aa1e15217d596718",
+   "b935bbe502a1c328",
+   "c3801ec18dfbef07",
+   "d9eb4f2a0035d399"
+  ]
+ }
+}

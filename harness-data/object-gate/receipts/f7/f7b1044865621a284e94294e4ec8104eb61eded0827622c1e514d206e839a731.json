@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f7b1044865621a284e94294e4ec8104eb61eded0827622c1e514d206e839a731",
+ "width": 32,
+ "height": 32,
+ "kind": "round_body",
+ "name": "나무 통 두 개",
+ "label": "steampunk-city/sp-barrels",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "two wooden barrels",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both wooden barrels clearly show their elliptical top wooden lids (~5-6 pixel rows tall) viewed from a 3/4 perspective above the cylindrical front bodies.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6097
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "two wooden barrels",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both barrels clearly feature elliptical top lids visible from above (rows 10-15 on the left barrel, rows 12-16 on the right barrel), foreshortened appropriately for 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5958
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two wooden barrels",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both barrels feature prominent elliptical top caps visible from above (left barrel top spans rows 10-15, about 6 rows tall) resting over cylindrical front bodies.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6107
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "two wooden barrels",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both barrels feature well-defined elliptical top lids measuring about 5-6 pixel rows tall, displaying the top surface in proper 3/4 top-down projection above the front cylindrical bodies.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6713
+  }
+ ],
+ "decidedAt": "2026-10-13T18:16:30.908Z",
+ "cells": {
+  "16": [
+   "6e06623b38fa1b2e",
+   "78b42d30cb028915",
+   "8b381dab816499e1",
+   "a22f33da6e3fe0ca"
+  ],
+  "24": [
+   "15345380d4af04fd",
+   "21035c8f98ba6536",
+   "227996d91361b002",
+   "231a466d8c832a46",
+   "26440e1ad62adf3e",
+   "566f964344f77adb",
+   "5ff1c2a7f9f2928e",
+   "8391c87ffd4b569c",
+   "8e343502102a8ec0",
+   "9d16c53d729e5bcf",
+   "9f6ee98bdff0fdcb",
+   "a6013f60dda70ed3",
+   "a7d2608cf30cb937",
+   "d085ab18d933550a",
+   "d087c92ef41a8c77",
+   "e526f0f10e516d0f",
+   "f01ce81392d4bc0e",
+   "f59dc707d663efcd"
+  ],
+  "32": [
+   "5642b6ad3d9e4e74"
+  ],
+  "48": [
+   "1506d444566b43e1",
+   "2562f5faf6293aae",
+   "27316f6568eb89c8",
+   "8dfff0fddba9c491",
+   "b16a94bfc8a86bc6",
+   "c2c10053625474e7"
+  ]
+ }
+}

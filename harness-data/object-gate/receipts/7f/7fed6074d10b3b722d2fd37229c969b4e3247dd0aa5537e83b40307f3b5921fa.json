@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7fed6074d10b3b722d2fd37229c969b4e3247dd0aa5537e83b40307f3b5921fa",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "곡물·석탄 자루 더미",
+ "label": "steampunk-city/sp-sacks",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pile of grain sacks",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sacks are drawn in flat front elevation with vertical column shading (lit left, shaded right) and have no visible foreshortened top surfaces. The kind is also mismatched (sacks are containers/clutter, not organic nature items).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 5594
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pile of grain sacks",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sacks are drawn in flat front elevation with horizontal outlines and vertical column-based lighting (lit from the left). Neither the top sack nor the lower sacks display a foreshortened top surface or 3/4 downward angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 7308
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pile of grain sacks",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Sacks are manufactured clutter rather than organic items. Furthermore, the sacks are shaded vertically (left side illuminated, right side shaded across rows 2–6) with no foreshortened top surface visible, depicting them in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 4567
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pile of grain sacks",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stacked sacks are drawn as flat rectangular shapes in pure front elevation with no visible top surface (top_rows = 0), and sacks do not fit the organic category.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 4126
+  }
+ ],
+ "decidedAt": "2026-10-13T18:42:41.658Z",
+ "cells": {
+  "16": [
+   "6c37eac87cf38db2"
+  ],
+  "24": [
+   "1056c64993ac7baf",
+   "2519aeda3569a0d6",
+   "2652cb6021bbb074",
+   "3adf61fdd4e86e88",
+   "5aacb36e8c7d614c",
+   "edb660eb67978064"
+  ],
+  "32": [
+   "15649507e8307f89",
+   "1ce799f6e85db8fa",
+   "5f7493aba6d32a51",
+   "aa31c177ae52efe0",
+   "c3d742bc5cf456fb",
+   "c65fa58490dc1304"
+  ],
+  "48": [
+   "058ea21d1dd183cf",
+   "4a3df0e148231dda",
+   "c3cd197c5ee7d73c",
+   "d39b0fa87384ba5b",
+   "d66d046613293974",
+   "f5d3d08d62ff310a"
+  ]
+ }
+}

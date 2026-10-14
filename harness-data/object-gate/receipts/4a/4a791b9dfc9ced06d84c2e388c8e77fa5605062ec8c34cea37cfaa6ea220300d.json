@@ -1,0 +1,123 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4a791b9dfc9ced06d84c2e388c8e77fa5605062ec8c34cea37cfaa6ea220300d",
+ "width": 48,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "벽난로(돌 벽난로 + 넓은 선반 + 화덕 바닥 + 불)",
+ "label": "steampunk-city/sp-fireplace",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone fireplace with mantel shelf and hearth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fireplace is drawn in pure architectural front elevation. The mantel shelf (rows 6-8) is drawn straight on as a 2-3px horizontal beam with candles and decor standing on it in flat profile, the stone surround and firebox are viewed directly from the front, and the base hearth (rows 26-29) is a flat vertical face without any top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11169
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone fireplace with mantel shelf and firebox",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mantel shelf top surface is clearly visible from above across rows 1–5 (5 source pixel rows deep), displaying several decorative items (candles, box, clock) resting on its plane before the front edge trim at rows 6–8.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9638
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone fireplace with mantel shelf and hearth",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mantel shelf top surface is clearly visible from rows 1 to 5 (5 source pixel rows deep), upon which candles and ornaments rest, with an additional hearth ledge visible at the base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4554
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone fireplace with mantel shelf and hearth",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the mantel shelf is clearly foreshortened and visible across rows 1-5 (5 source pixel rows deep), upon which decorative objects (candles, clock) rest, followed by the shelf's front overhang on rows 6-8.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6870
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:44.595Z",
+ "cells": {
+  "16": [
+   "0df990585c4791ca",
+   "6a2e76b26bc88357",
+   "7b5410d33ba5d743",
+   "b4f80baf7b67f49e",
+   "d3b064299a46a9c3",
+   "f2a105fa6dedc7e3"
+  ],
+  "24": [
+   "092c1a5e6829e6ae",
+   "0fb2c018c9f133df",
+   "312783156a79e707",
+   "3fad78d0187cbf7d",
+   "442263c5a78a49c7",
+   "4a96416e35ce5d18",
+   "7a0a3ae3bb985a68",
+   "b10b10374434c87c"
+  ],
+  "32": [
+   "04b907ea87f360c8",
+   "55c65c08355760e9",
+   "7f87b0a75d604d58",
+   "d597e617deb35405",
+   "d941d41a200478c3",
+   "f60d749d768cd58f"
+  ],
+  "48": [
+   "9c756eefca50bd6b",
+   "bf7b0b1144a8a73b"
+  ]
+ }
+}

@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c9276264836b492720b315eed65edf25abfc2356212078d7f3fd1b8e23c5ee8f",
+ "width": 48,
+ "height": 48,
+ "kind": "container",
+ "name": "탄수차(위가 트인 석탄 칸 + 물탱크 뚜껑)",
+ "label": "steampunk-city/sp-tender",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "train tender car with open coal bunker and water tank deck",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": true,
+    "opening_rows": 13,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface spans rows 6 to 19 (~14 source pixels tall), revealing the interior coal bunker opening filled with coal on the left and the water tank top with hatch on the right, above the vertical south-facing side wall (rows 20-36) and wheels.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5764
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tender car with open coal bunker and water tank top deck",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": true,
+    "opening_rows": 13,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper portion (rows 6-19, 14 rows) clearly displays the interior of the coal bin piled with coal as well as the water tank top deck and hatch seen from above in proper 3/4 perspective, atop the riveted vertical front wall (rows 21-36).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6309
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tender car with open coal bunker and water tank hatch",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": true,
+    "opening_rows": 13,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface and opening of the tender are seen from above across rows 6 to 19 (approx 14 rows), showing the interior coal pile and water tank lid foreshortened in standard 3/4 view, with the vertical south wall and wheels below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5536
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "train tender cart (coal bin and water tank deck)",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": true,
+    "opening_rows": 14,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top half of the tender cart (rows 5-20) clearly shows the top deck and an open coal compartment seen from above, while rows 21-36 show the vertical south face with rivets and wheels beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6356
+  }
+ ],
+ "decidedAt": "2026-10-13T18:32:03.858Z",
+ "cells": {
+  "16": [
+   "0a25a157c4b99b40",
+   "0ed552b50e29c477",
+   "0f05d605ebfab8b2",
+   "5318fc1443578c11",
+   "55fccccda00c471c",
+   "5735dc5bd1ef0620",
+   "995fd60eda0a5410",
+   "b98edbc63d0ddee2",
+   "e66dfd94a187007d"
+  ],
+  "24": [
+   "0b23a54c6acd100c",
+   "497cf7672ec77243",
+   "78535afff7d98288",
+   "ffb130f09839cd26"
+  ],
+  "32": [
+   "1391c2f3e51ee9b5",
+   "15aef220e5b3c07f",
+   "1bcb122f8089f0e2",
+   "221070af3dbed8d7",
+   "2fb5fc3de5c07752",
+   "533ccbd8f6f1adb6",
+   "56f68c1f0493da89",
+   "596ecf3835528f17",
+   "5b0b1cbb1afe3d01",
+   "5f3cb8a65d08d78c",
+   "674c5d810b0251cb",
+   "67a205cd35684d77",
+   "72fb5451bf9bae86",
+   "7dd69ae3dd2a1db4",
+   "7ebb59da61fb547f",
+   "800b630a122b8218",
+   "9efb44b7b355bd7c",
+   "a19b60f3ab15623c",
+   "c1618cae2fef5cfc",
+   "d25116704272d336",
+   "d2a6adab7fb574d8",
+   "def1b8e1d3df2b30",
+   "eb6cdf2cd6936274",
+   "fabf748bf8df07b9"
+  ],
+  "48": [
+   "ffb7fda73bdd8e22"
+  ]
+ }
+}

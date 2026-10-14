@@ -1,0 +1,133 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "219903dbab2d8018ad731016149f8d0a0613fb5aec23dafd73d7fb2c7a7b5bcb",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "부두 증기 기중기(돌 받침 + 운전실 + 비스듬한 격자 팔·갈고리)",
+ "label": "steampunk-city/sp-jib-crane",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "crane cabin and stone base",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabin roof is clearly visible from above across rows 26-32 (7 pixel rows), and the stone base platform also presents a prominent top surface across rows 49-55 (7 pixel rows) above its front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4313
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cabin and stone plinth of steam crane",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabin has a clear top roof surface measuring 6 pixel rows (rows 26-31) above the brick front wall, and the stone base plinth also shows a prominent top shelf/surface of 7 pixel rows (rows 49-55).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4508
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cabin and stone base of dock crane",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabin roof shows 6-7 rows of visible top surface (rows 26-32), and the stone base platform also displays a clear top plane of 7 rows (rows 49-55) above its front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3272
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cabin and stone base of dock crane",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabin roof shows a clear top surface spanning rows 26-32 (6-7 rows tall), and the stone base platform also displays a distinct top surface spanning rows 49-55 (7 rows tall) before its vertical front drop.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2814
+  }
+ ],
+ "decidedAt": "2026-10-13T18:42:41.659Z",
+ "cells": {
+  "16": [
+   "0e01eb713eed089e",
+   "15124370273ac259",
+   "2cf5df5b24844b06",
+   "33449c0269ff4a25",
+   "4370f8ed342c4f18",
+   "81fd1d6b86efe713",
+   "98d5c8115aea99c4",
+   "a347bf77f95058c5",
+   "c8efa3d7628a1867"
+  ],
+  "24": [
+   "1487f04b5d764455",
+   "3512ce5cb6c36ca1",
+   "4a3ef5c9cfd02358",
+   "71848246bd9e4b16",
+   "731920a81b5e6e1f",
+   "84af98fd0e4e2696",
+   "921f7dd23609c568",
+   "98419addcd84d407",
+   "9d1788493340f224",
+   "bce2279cb118d3cd",
+   "fae8b616848549cf"
+  ],
+  "32": [
+   "171ca7a7ea303d8c",
+   "6c050cedcdf04517",
+   "6e3b17050f83281c",
+   "a7bc89dfe2029bd8",
+   "ab1eebe9c427f86f",
+   "c7edfbe877e35785",
+   "c982d9f7a95f0f3e",
+   "e023c5f337bc4458",
+   "e522363aa0fd4f09",
+   "e55804fb4baf9e30",
+   "e6b13787181f27dd",
+   "f0869467ddacc46b"
+  ],
+  "48": [
+   "3820fdb460ac684e",
+   "903ace5022aa7bad",
+   "bf94a959585d6329",
+   "d4864851393ccb6d"
+  ]
+ }
+}

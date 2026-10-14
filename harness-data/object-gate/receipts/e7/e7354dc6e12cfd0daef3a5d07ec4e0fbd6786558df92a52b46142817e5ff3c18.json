@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e7354dc6e12cfd0daef3a5d07ec4e0fbd6786558df92a52b46142817e5ff3c18",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "무쇠 창살 담(한 칸, 잇는 조각)",
+ "label": "steampunk-city/sp-fence",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron-grated wall section",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire wall segment is drawn in flat front elevation with horizontal bands separated by 1px divider lines (rows 3, 6, 11, 15). None of the horizontal beams, wall surfaces, or base have a top surface visible from the 3/4 top-down angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8390
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron-grated wall / railing",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in pure front elevation as flat horizontal bands and vertical bar posts without any foreshortened top surface visible on the rail, beam, or wall base (0 rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5000
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron-barred wall section",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire wall and iron railing assembly is rendered in a pure flat front elevation. Neither the top of the wall nor the horizontal bars show any top-down horizontal surface depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4653
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron grated wall / fence segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall and iron grating are drawn in pure front elevation as horizontal bands with no visible top surface on either the railing, beams, or wall top.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4085
+  }
+ ],
+ "decidedAt": "2026-10-13T18:20:36.037Z",
+ "cells": {
+  "16": [
+   "2f390b3905ee4aa5"
+  ],
+  "24": [
+   "21e374c563f09c51",
+   "2daa12565839b5af",
+   "81a9479efe579168",
+   "bfc060d3fb01b8e3",
+   "e387f91df9b841c0",
+   "ea03aff8ed1c195d"
+  ],
+  "32": [
+   "34500d853f442db9",
+   "3757126b53139397",
+   "461bfdfa1f00cc97",
+   "73fe11b1e5b3da95",
+   "a746a2243f4255fd",
+   "cfc6502602fe0e7a"
+  ],
+  "48": [
+   "09ef46ffb8ec82d3",
+   "18e89312de7dfa1c",
+   "58d3de6eb70ef573",
+   "686b06e4d2a88c9e",
+   "dfbb7974fdf97835",
+   "ff7abbad383274b2"
+  ]
+ }
+}

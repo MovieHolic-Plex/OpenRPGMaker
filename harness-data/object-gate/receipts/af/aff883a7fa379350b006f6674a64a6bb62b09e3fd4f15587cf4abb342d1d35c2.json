@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "aff883a7fa379350b006f6674a64a6bb62b09e3fd4f15587cf4abb342d1d35c2",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "쪽매 마루(바구니 짜임, 여관)",
+ "label": "steampunk-city/sp-floor-herring",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "parquet wood floor tile in basketweave pattern",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a flat basketweave wooden parquet floor surface spanning the full 16x16 tile area, correctly representing floor terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3553
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "parquet wooden floor tile (basket weave pattern)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile is a seamless flat wooden floor surface (parquet pattern) viewed from above, perfectly matching the terrain kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2910
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "basket-weave parquet wooden floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless floor surface texture depicting a basket-weave parquet wooden floor viewed from above; valid terrain tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2601
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "basket-weave parquet floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile depicts flat parquet wooden flooring laid out in a basket-weave pattern, correctly classified as a terrain floor tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3997
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.462Z",
+ "cells": {
+  "16": [
+   "71308debfc76b086"
+  ],
+  "24": [
+   "0b76ae57ec6061d1",
+   "14d5afff5a5f5007",
+   "5306aabaee2d35aa",
+   "6d2a358c5dab6b30",
+   "93af4e82da396749",
+   "f14343d4dcd8f47d"
+  ],
+  "32": [
+   "00280f4b8c38dd38",
+   "12d81ef5d7d5622b",
+   "1519dace3ed7c06c",
+   "af9970e7d0b3e69a",
+   "c57cd147b455eb4d",
+   "e504aaedd76e3781"
+  ],
+  "48": [
+   "030318f5ac4f5ff2",
+   "32332ff7a815ee2b",
+   "58e771c149a354df",
+   "8cdf41c7a2df5209",
+   "9c66249abfadf2e0",
+   "dd6e384a0b940ab4"
+  ]
+ }
+}

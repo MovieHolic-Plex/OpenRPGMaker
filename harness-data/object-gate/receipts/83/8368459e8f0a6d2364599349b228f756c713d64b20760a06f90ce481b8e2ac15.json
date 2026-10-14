@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8368459e8f0a6d2364599349b228f756c713d64b20760a06f90ce481b8e2ac15",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "무쇠 창살 낮은 돌담(동서 — 위에서 길게 보이는 갓 위 창끝 줄)",
+ "label": "steampunk-city/sp-fence",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "low stone wall with iron bars (east-west orientation)",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-2 form a 3-row foreshortened top surface (coping) with a checkerboard texture, followed by the south-facing front wall elevation from row 3 downwards.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7436
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "low stone wall with cast iron railing (east-west)",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coping/capstone of the wall is explicitly rendered from above across rows 4-11 (8 rows) with the iron rail and spearheads mounted along it, above the south front face (rows 12-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10485
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "low stone wall with iron bars (east-west)",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-2 form a 3-pixel-tall top surface of the wall/coping, followed by a shadow line at row 3 and the south-facing wall facade with iron bar detailing from row 4 to 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5392
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "low stone wall with iron railing/spear accents (east-west)",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-2 depict the 3-row-tall top surface/coping of the stone wall viewed from above with a textured stone pattern, above the south front face (rows 4-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5870
+  }
+ ],
+ "decidedAt": "2026-10-13T18:55:20.982Z",
+ "cells": {
+  "16": [
+   "218dd56f78e5efe0"
+  ],
+  "24": [
+   "19d32d4bb3289579",
+   "5a3d1666bf2341aa",
+   "6c9532e38f0b21dd",
+   "8326da5d63683696",
+   "926c8d5a3baf4d21",
+   "df60ca1ca05b1798"
+  ],
+  "32": [
+   "422a046a38f3ed0a",
+   "45e39393b8315136",
+   "4e97fa42944718e5",
+   "529b051d3121821b",
+   "7c8532e85e875c97",
+   "86e2800e117eca34"
+  ],
+  "48": [
+   "178998849540b7be",
+   "236fffadceabc18f",
+   "511182f5afdfd939",
+   "5f5e2a374b7f8903",
+   "a511b9620f1c1f73",
+   "bef3504d156254fc"
+  ]
+ }
+}

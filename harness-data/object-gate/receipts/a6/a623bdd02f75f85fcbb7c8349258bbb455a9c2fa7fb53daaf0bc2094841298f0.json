@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a623bdd02f75f85fcbb7c8349258bbb455a9c2fa7fb53daaf0bc2094841298f0",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "서랍장(거울 없음, 위에 단지)",
+ "label": "steampunk-city/sp-dresser",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "chest of drawers",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the drawer chest is clearly visible across rows 8 to 13 (6 pixel rows tall) supporting the items on top, with drawer faces visible on rows 15-30 below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3493
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "chest of drawers",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the chest of drawers spans rows 9 to 13 (approx. 5 pixel rows tall) upon which several items sit, clearly showing the horizontal top surface in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4232
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dresser / chest of drawers",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the chest is clearly visible between rows 8 and 13 (6 pixels tall), where objects (book, candle, box) rest upon it, above four distinct drawer faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7470
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "chest of drawers",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the dresser is clearly visible across rows 8 to 13 (approx. 6 rows tall) with items resting on it, leading to a front face showing four drawer tiers below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4572
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.470Z",
+ "cells": {
+  "16": [
+   "04ac32c9938278f4",
+   "0946346f0ac371ae",
+   "1b837a7cfa801d1a",
+   "eebb6c94b6690b6c"
+  ],
+  "24": [
+   "01bd40f445588ef3",
+   "079ed63724cc7930",
+   "0bd33f8f9257ff39",
+   "1214c75cb9299e5f",
+   "12acfc45524b4121",
+   "1b137b20479db1b3",
+   "2647016d51e9a895",
+   "2b56094d2320a152",
+   "3ac8de0f357b9bf5",
+   "3c0020de36aa6b45",
+   "4445eb018fd43b2d",
+   "4e415b0932545c8e",
+   "56a102962f679100",
+   "67b6eb7cdf08ad4c",
+   "7779ff69094a6c95",
+   "887e80f4b76d116b",
+   "9db3e0acab9595d6",
+   "a029381528a5e330",
+   "d886975367dba283",
+   "d948e869944623a3",
+   "f7e65a099b4f2648",
+   "fa1f1905f2b5a763",
+   "fb5d7caaf222fa82",
+   "fc3be63036a5acbd"
+  ],
+  "32": [
+   "5721a8d4c55be2a1"
+  ],
+  "48": [
+   "156e82aa5b89bbee",
+   "867b0ed79eb3d94a",
+   "a298564ab9615771",
+   "c90bb6bb36c73a77",
+   "cd271a2c5b2ad3a0",
+   "d56ef5f2ce3e8dd2"
+  ]
+ }
+}

@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "de7cffa5d3927b05f852b14562d01bfcd019539db06ca6d5f6625503b3b9424e",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "철도 신호등(무쇠 기둥 + 등 상자 — 넓은 윗면 갓, 빨강·초록 등)",
+ "label": "steampunk-city/sp-rail-signal",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "railroad signal box and post",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The signal box features a 6-pixel-tall top hood/surface (rows 3-8) above the south-facing panel with the signal lights (rows 9-17), and the cylindrical base also clearly shows its curved top surface (rows 38-42).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9037
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "railway signal box on pole with base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The signal box has a distinct foreshortened top surface/hood spanning rows 3-8 (6 rows) above the front face (rows 9-18). The base at the bottom also shows an elliptical top surface spanning rows 38-42.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4201
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "railroad signal box on pole",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The signal box has a 6-row top surface/hood (rows 3–8) shown in 3/4 view above the south lamp face (rows 9–17), and the base plinth also clearly depicts a foreshortened top surface (rows 38–42).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7615
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "signal box and column base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface/visor of the signal box is clearly depicted across rows 3-8 (6 rows tall) above the light face, and the circular base also exhibits a visible foreshortened top surface across rows 38-42.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4624
+  }
+ ],
+ "decidedAt": "2026-10-13T18:54:36.462Z",
+ "cells": {
+  "16": [
+   "33302c4634bc46f3",
+   "54cddcbe5517a0b4",
+   "e6373630821ddc20"
+  ],
+  "24": [
+   "091d385d70518fd6",
+   "2de07645a8e17f2e",
+   "8e37c89ae1ccb7de",
+   "ace92d6778720889",
+   "b8dcf83f300d4f14",
+   "dd9d6c99c8a2bcd9"
+  ],
+  "32": [
+   "27a650c5ed9be4da",
+   "29b8dc787841eaa5",
+   "29cf1a01fe31bec3",
+   "3ecf750f8fc65043",
+   "49ce190ab5b8449a",
+   "5e321862ebca16e7",
+   "68cb85a52fe347f8",
+   "6d1a15079e165693",
+   "df83cd43b0149667",
+   "e1d0041519a568d9",
+   "e6f43d2d52446445",
+   "fd4192e45a8b50c0"
+  ],
+  "48": [
+   "038358c82e00c87f",
+   "53b6f671592acd97",
+   "88b74c026fd4944c"
+  ]
+ }
+}

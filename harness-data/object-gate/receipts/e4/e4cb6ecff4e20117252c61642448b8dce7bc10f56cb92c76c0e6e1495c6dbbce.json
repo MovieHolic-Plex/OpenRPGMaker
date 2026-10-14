@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e4cb6ecff4e20117252c61642448b8dce7bc10f56cb92c76c0e6e1495c6dbbce",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "선로 신호기(날개 신호 + 등, 무쇠 기둥)",
+ "label": "steampunk-city/sp-rail-signal",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "railway semaphore signal pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The semaphore arm, signal head, and pole are drawn entirely in flat front elevation with no visible horizontal top surfaces (0 top rows) foreshortened from the 3/4 camera angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6471
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "railway semaphore signal post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire signal post, including the semaphore wing, the top finial/lamp, and the base, is drawn in pure front elevation. The horizontal signal arm shows no top surface, and the pole and caps lack any foreshortened 3/4 top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6053
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "railway semaphore signal pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, signal arm, circular head, and base are all drawn in pure front elevation with no visible foreshortened top surfaces (the signal arm is a flat 2D rectangle and horizontal shading lines on the round elements are completely straight).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5535
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "signal pole with semaphore arm and finial",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire signal is drawn in pure front elevation: the top finial/lamp (rows 2-8), the horizontal semaphore arm (rows 11-14), the pole, collar, and rounded base (rows 39-46) show no top-down foreshortened horizontal surfaces or elliptical cross-sections.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4866
+  }
+ ],
+ "decidedAt": "2026-10-13T18:49:04.019Z",
+ "cells": {
+  "16": [
+   "19d5d470cd9c755f",
+   "bfd4c411a428eb62",
+   "e280d368ef097a03"
+  ],
+  "24": [
+   "0ee16128ff8e4862",
+   "341c2c913ea1941b",
+   "50466aba05aff1c8",
+   "9e92e59cb5e165ce",
+   "c2ee1580f3ade6fa",
+   "f1378ddd6fd3e23e"
+  ],
+  "32": [
+   "1c2ed1c57b2c806e",
+   "25deddb605243721",
+   "2d79c9a7babccf82",
+   "40d74ff866b22e52",
+   "5fe823704d64015f",
+   "67a6f89fccccfdd0",
+   "67f675a7f4dd9241",
+   "85d3f73aadc45ba3",
+   "a990f189f4566071",
+   "c189b52510674c59",
+   "d16c7e191bea5c50",
+   "ee0c115c26cd166c"
+  ],
+  "48": [
+   "6ccac51f1652f589",
+   "752db781d82df9bd",
+   "e8a883adf542302f"
+  ]
+ }
+}

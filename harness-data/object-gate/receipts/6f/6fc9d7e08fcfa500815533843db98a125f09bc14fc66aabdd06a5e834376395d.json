@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6fc9d7e08fcfa500815533843db98a125f09bc14fc66aabdd06a5e834376395d",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "나무 의자(남향, 등받이 북쪽)",
+ "label": "steampunk-city/sp-chair",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden chair seat and frame",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chair faces south with the backrest at the north. The top surface of the seat is clearly visible from rows 7 to 10 (4 rows tall), with a 2-row front apron (rows 11-12) beneath it, correctly showing a 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6860
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden chair seat and backrest",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat surface is seen foreshortened from above across rows 7-10 (4 rows), with the vertical front apron below it on rows 11-12 and the backrest rising behind it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6814
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden chair facing south",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chair seat surface is clearly visible from above across rows 7-10 (4 rows tall), with the front seat edge/apron shown on rows 11-12 and front legs on rows 13-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7094
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden chair seat",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chair faces south with the backrest at the north. The horizontal seat surface is clearly foreshortened and visible from above across rows 7 to 10 (4 rows tall), with a 2-pixel south-facing apron in rows 11-12 above the legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7306
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.469Z",
+ "cells": {
+  "16": [
+   "fe3e9aedec772ac6"
+  ],
+  "24": [
+   "04a79d8fdb71c43c",
+   "35efb18cbcaea869",
+   "3bc6e22bdb10a1a7",
+   "61e3c7378446128a",
+   "8b64ef0e2d7c57c2",
+   "a4acfc511c134d84"
+  ],
+  "32": [
+   "53ec364c8aa3d188",
+   "5f68000b1b510801",
+   "a160a2e2a42ea9ff",
+   "c21efb850498f54b",
+   "c779dec3c134d1dc",
+   "db4bb3227967bcd5"
+  ],
+  "48": [
+   "0a930d95b19eb1f9",
+   "1430c8614d6d981c",
+   "2f9c7f97fe9ef70f",
+   "54e84937943093ca",
+   "57ed852066d396e1",
+   "f1645888cd47fba7"
+  ]
+ }
+}

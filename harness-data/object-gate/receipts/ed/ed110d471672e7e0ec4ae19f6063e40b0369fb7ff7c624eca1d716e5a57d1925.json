@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ed110d471672e7e0ec4ae19f6063e40b0369fb7ff7c624eca1d716e5a57d1925",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "거리 시계 기둥(무쇠 기둥 + 네 면 시계 상자 + 작은 모임지붕)",
+ "label": "steampunk-city/sp-clock-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "clock box and upper lantern/roof structure on post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The clock box and the upper enclosure are drawn completely flat from the front, terminating at row 1 with a 1px flat cap line and no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4466
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "clock box and roof housing",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The clock box and upper chamber are drawn in pure flat front elevation with horizontal lines across rows 1, 2, 6, and 7, showing no foreshortened top surface or roof slope from the 3/4 viewing angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6655
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "clock box and roof on a post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The clock housing and top roof/cap are drawn in pure front elevation with only a 1px flat horizontal line at row 1, showing no foreshortened top surface or hipped roof plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5788
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "clock box and street post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The clock box and upper lantern structure are drawn in pure front elevation; row 1 is a single-pixel flat line with no visible top surface or hipped roof plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5645
+  }
+ ],
+ "decidedAt": "2026-10-13T18:49:04.018Z",
+ "cells": {
+  "16": [
+   "1f38e93a62349e66",
+   "70260db78a2fe3d3",
+   "eff450908bea1e4c"
+  ],
+  "24": [
+   "01114b2b43e22f7d",
+   "347ac908ffda9668",
+   "5da1bfac91f6d17c",
+   "694084343557dc48",
+   "7fb223a871661cd8",
+   "b7c898a0bce55b07"
+  ],
+  "32": [
+   "0084f066a9026958",
+   "0df8025f13820198",
+   "2df3513ac805625e",
+   "39ba21f855af4ff2",
+   "4881572a3678d479",
+   "614fcc353c8463a1",
+   "75d96c75534e5c5d",
+   "9047a93ac2394131",
+   "a3b910f8f911e0bb",
+   "b9c0bac41c0cb211",
+   "ef1dcf48c6f226d7",
+   "f05463f90b1e39e3"
+  ],
+  "48": [
+   "502afcb69a45c5a4",
+   "6ff11685c56c69e2",
+   "ccf25c3694d6e3ce"
+  ]
+ }
+}

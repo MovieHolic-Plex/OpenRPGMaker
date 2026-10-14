@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "439233bde1d2958821560079510fef4527e582d9ceb964321d9e035dab2a503b",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "땅 위 배관 — 서쪽 끝 마개(동으로 이어짐)",
+ "label": "steampunk-city/sp-pipe-e",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal ground pipe with west end cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pipe and its end flange are drawn in pure front/side elevation. The vertical flange running from row 0 to row 11 has no foreshortened top surface, and the pipe body shows vertical profile shading rather than a visible 3/4 view top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12120
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal pipe with end cap flange",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pipe and its vertical end-cap flange are drawn in a flat side/front elevation. Neither the flange nor the pipe shows any foreshortened horizontal top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14273
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal pipe with west end flange cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pipe and its western vertical flange/cap are drawn as a flat front elevation. Neither the flange cap nor the pipe body shows any foreshortened top surface seen from above (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9447
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pipe end cap and horizontal pipe segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pipe and its vertical end flange are drawn in pure front/side elevation. The vertical flange running from row 0 to 11 has no foreshortened top surface visible from above (only a 1px top outline), and the horizontal pipe body similarly lacks any 3/4 view top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7853
+  }
+ ],
+ "decidedAt": "2026-10-13T18:40:36.080Z",
+ "cells": {
+  "16": [
+   "a511c7801682523b"
+  ],
+  "24": [
+   "2411422c3f562096",
+   "41f41c026eea1f37",
+   "6bb2e266cfa5cc83",
+   "7f1c256d6d3a961d",
+   "9c85d96fa7cfc17b",
+   "ba8a0ad49f242e6e"
+  ],
+  "32": [
+   "04b3ee73d30e336d",
+   "109117d9a1ecd71c",
+   "1644c47194ce9191",
+   "2283c1123a8f4e5f",
+   "2a248aa1b7c269fb",
+   "d389ce751657b189"
+  ],
+  "48": [
+   "0d15ccef97bc13ae",
+   "1f201ab0ce50b3f6",
+   "54fecdb1f18e414a",
+   "5a6c574abdb296ce",
+   "acc883909f8c6de3",
+   "b83e0db05c1eee32"
+  ]
+ }
+}

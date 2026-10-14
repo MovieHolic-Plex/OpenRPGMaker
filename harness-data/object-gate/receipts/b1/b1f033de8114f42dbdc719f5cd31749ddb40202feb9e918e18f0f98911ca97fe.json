@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b1f033de8114f42dbdc719f5cd31749ddb40202feb9e918e18f0f98911ca97fe",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "벽돌 벽면 아치 창(아랫줄, 창턱)",
+ "label": "steampunk-city/sp-wall-window-d",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick wall face with window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall face terrain tile with window and sill at the base; wall surfaces are standard 2D front-facing terrain in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6102
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick wall face with window and windowsill",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall face terrain tile with a window and sill; as terrain it correctly represents the south wall surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6844
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brick wall with window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a vertical brick wall face with a window and sill. As standard south-facing wall terrain, it correctly depicts the vertical surface in top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5778
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brick wall face with window and windowsill",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall face terrain tile containing the lower portion of a window, windowsill, and base trim. As a terrain wall surface, standard vertical projection applies.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3637
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.464Z",
+ "cells": {
+  "16": [
+   "bd2232330686eaad"
+  ],
+  "24": [
+   "a0c82b55c29cba07",
+   "a3c2616d550bbd49",
+   "c1a49a34c4cf1582",
+   "e10f8e872b8fc644",
+   "e8bbb908d9a70f2f",
+   "eb0eabbe2d6a84e3"
+  ],
+  "32": [
+   "1b3e5be219ca8109",
+   "39e3da7dfee9b530",
+   "7f5d18d7f6dec9d1",
+   "989c165c1b0ea361",
+   "9e32bc99281921a7",
+   "fbd14f770fbbe9be"
+  ],
+  "48": [
+   "0f782a90cf06738d",
+   "1369820d7aa9fe74",
+   "4a2cab7cdc4eae4d",
+   "9c81e033d731a205",
+   "b16fba4886a2ac41",
+   "e787fb1c76c554c5"
+  ]
+ }
+}

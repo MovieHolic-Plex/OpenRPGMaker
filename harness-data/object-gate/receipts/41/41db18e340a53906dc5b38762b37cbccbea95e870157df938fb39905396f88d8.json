@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "41db18e340a53906dc5b38762b37cbccbea95e870157df938fb39905396f88d8",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "배관 도랑 — 동쪽 막힌 끝(서로 이어짐)",
+ "label": "steampunk-city/sp-pipe-w",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pipe trench in floor",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Floor trench terrain tile viewed from top-down 3/4 perspective, showing a recessed trench with a bordered lip and horizontal pipe ending within it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6263
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pipe trench with east dead-end",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Recessed floor trench terrain tile containing a pipe, viewed top-down with top rim and interior trench depth consistent with 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4232
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pipe in floor trench",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Floor trench tile viewed from above in standard 3/4 top-down perspective, showing the recessed trench borders and the top curved surface and south shading of the horizontal pipe.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4995
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pipe trench channel (terrain tile)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Recessed floor trench terrain tile seen from top-down 3/4 perspective, containing a horizontal pipe with proper depth shading and rim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4422
+  }
+ ],
+ "decidedAt": "2026-10-13T18:45:09.736Z",
+ "cells": {
+  "16": [
+   "36f1dca88c435cae"
+  ],
+  "24": [
+   "35e20a5d709eabaa",
+   "6627910302d40a5f",
+   "83b500ee9b5643b4",
+   "8da9c0f6269cb272",
+   "ba1865f02148282d",
+   "cfed7ba88fe41f52"
+  ],
+  "32": [
+   "3640ceee1bf140a8",
+   "5b55e22bf73e1820",
+   "73d2790a23bcc1a2",
+   "7421473cc0e1406d",
+   "79f14677f7698209",
+   "8a945370391bd671"
+  ],
+  "48": [
+   "00286e1d32671110",
+   "08ba905687fe697c",
+   "14add2f28b73ff25",
+   "74f8c80f38ad291a",
+   "a7c57ef8ec8bde22",
+   "ad6f1bed72ef3e72"
+  ]
+ }
+}

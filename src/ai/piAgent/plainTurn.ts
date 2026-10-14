@@ -25,6 +25,7 @@ export { normalizePiThinkingLevel } from "./thinkingLevel";
 import { normalizePiThinkingLevel } from "./thinkingLevel";
 import { JP_CITY_EXPOSED_TOOLS, jpCityTargetFor } from '../jpCityPolicy';
 import { GOTHIC_EXPOSED_TOOLS, gothicTargetFor } from '../gothicPolicy';
+import { STEAMPUNK_EXPOSED_TOOLS, steampunkTargetFor } from '../steampunkCityPolicy';
 import { CAMPUS_EXPOSED_TOOLS, campusTargetFor } from '../campusPolicy';
 import { SF_STATION_EXPOSED_TOOLS, sfStationTargetFor } from '../sfStationPolicy';
 import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
@@ -162,12 +163,17 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     // 일본 도시(jp_city) — 대상 맵이 jp_city 이거나 사용자가 칩셋·일본 거리를 말했을 때. 숲마을 계약·버들항 노트 대신 jp_city 노트가 간다(jpCityPolicy).
     // 실측(2026-10-04): 새 프로젝트(버들항 맵)에서 「일본 상가 거리」+author_village 선언이면 버들항 마을 노트가 먼저 잡아 jp_city 는 어디에도 안 나왔다 — 그래서 버들항보다 앞선다.
     // PAW 전용 게이트·팩 도시 타일셋(Rasak·REFMAP) 마을 노트는 2026-10-07 저작권 정리로 지웠다.
+    // 스팀펑크 도시(steampunk_city) — 「증기기관 도시 거리」는 jp_city 의 «도시 거리» 낱말에도 걸려서, 스팀펑크·증기·공장 지대·보일러실 낱말이나 대상 맵이 스팀펑크면 먼저 잡는다(steampunkCityPolicy).
+    const steampunk = steampunkTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
+    const jpCity = steampunk ? null : jpCityTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
     const jpCity = jpCityTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
     // SF 정거장·네온 거리(sf_station) — 우주 정거장·연구 기지·달 기지·사이버펑크 거리. jp_city 보다 먼저 본다(«네온 거리»·«미래 도시»가 일본 도시로 새지 않게, sfStationPolicy).
     const sfStation = sfStationTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
     const jpCity = sfStation ? null : jpCityTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
     // jp_city 가 아니고 대상 계열이 버들항이면 author_beodeul_town(beodeulTownRoute).
     // 고딕 저택(gothic_manor) — 칩셋이 프로젝트에 있을 때만(gothicPolicy). jp_city 가 이긴다.
+    const gothic = jpCity || steampunk ? null : gothicTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
+    const beodeulTown = jpCity || gothic || steampunk ? null
     const gothic = jpCity ? null : gothicTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
     // 캠퍼스(modern_campus) — jp_city·고딕이 잡지 않았고 프로젝트에 칩셋이 있을 때만(campusPolicy). 일본풍 학교는 jp_city, 마법 학교는 wizarding_world 가 이긴다.
     const campus = jpCity || gothic ? null : campusTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
@@ -181,6 +187,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
       beodeulTown,
       jpCity,
       gothic,
+      steampunk,
       campus,
       sfStation,
       requestText: text,
@@ -197,6 +204,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
       && declared.intent.clarify === null };
     // 숲마을 author_village 의 「마을 계약」은 2026-10-07 저작권 정리로 시공기와 함께 지웠다 — 마을은 author_beodeul_town 이 짓는다.
     routingAudit = `${formatIntentAudit(declared.intent, declared.elapsedMs)}${declared.error ? ` — 선언 오류: ${declared.error}` : ""}`
+      + (steampunk ? " → 스팀펑크 도시 맵" : beodeulTown ? " → 버들항 마을" : jpCity ? " → 일본 도시 맵" : gothic ? " → 고딕 저택 맵" : "");
       + (beodeulTown ? " → 버들항 마을" : jpCity ? " → 일본 도시 맵" : gothic ? " → 고딕 저택 맵" : campus ? " → 캠퍼스 맵" : "");
       + (beodeulTown ? " → 버들항 마을" : jpCity ? " → 일본 도시 맵" : gothic ? " → 고딕 저택 맵" : sfStation ? " → SF 맵" : "");
     if (declared.intent.mode === "question") {
@@ -210,6 +218,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
         // jp_city 작업은 첫 요청부터 조립 도구·참고문서·도로 키트 스키마가 보인다 — 자연어 점수 승격은 «이자카야 빌딩 세워줘» 같은 문장을 놓친다.
         ...(jpCity ? JP_CITY_EXPOSED_TOOLS : []),
         ...(gothic ? GOTHIC_EXPOSED_TOOLS : []),
+        ...(steampunk ? STEAMPUNK_EXPOSED_TOOLS : []),
         ...(campus ? CAMPUS_EXPOSED_TOOLS : []),
         ...(sfStation ? SF_STATION_EXPOSED_TOOLS : []),
       ])];

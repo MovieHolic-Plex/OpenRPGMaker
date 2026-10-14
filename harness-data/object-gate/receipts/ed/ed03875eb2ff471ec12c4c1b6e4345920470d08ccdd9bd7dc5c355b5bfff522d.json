@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ed03875eb2ff471ec12c4c1b6e4345920470d08ccdd9bd7dc5c355b5bfff522d",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "선로 끝 차막이(나무 들보 + 빨강 완충기, 동서 선로 두 줄을 막는다)",
+ "label": "steampunk-city/sp-buffer-stop",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "railway buffer stop beam and base",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The north-south buffer stop assembly shows a clear 3px tall horizontal top surface on its base (rows 22-24) above the 5px south-facing vertical face (rows 25-29), with the beam top extending northwards in proper 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 3행 < 4"
+   ],
+   "ms": 12252
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden buffer stop beam",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The north-south running wooden beam correctly displays its foreshortened horizontal top surface extending from row 4 to row 21 (about 18 rows), ending at a vertical south-facing front face from row 24 to 29. There are no receding isometric side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15581
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "railway buffer stop beam and support",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The north-south crossbeam correctly displays its top surface foreshortened along rows 4-21 (around 17 rows) and its south-facing vertical base/face on rows 24-29 (6 rows tall), matching standard top-down 3/4 RPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 20129
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "railway buffer stop beam",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat elevation without visible depth; the top edge at rows 4-6 provides only a 2px cap/rim, lacking the required foreshortened top surface for a 3/4 perspective standing object.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 4"
+   ],
+   "ms": 7325
+  }
+ ],
+ "decidedAt": "2026-10-13T18:42:41.659Z",
+ "cells": {
+  "16": [
+   "6b2e5bc3e1949180",
+   "74a08a3487631675"
+  ],
+  "24": [
+   "00c413c6f742da33",
+   "116a6a5225e57ee0",
+   "301a3de56956ba50",
+   "37dbcd13526494cc",
+   "6765922adcbbc924",
+   "85ba050b3fa98429",
+   "a939cebbef9301f7",
+   "af76fcbd6ae29ff5",
+   "bd6234d332f64ec4",
+   "e330f49050f4a338",
+   "e5e78556de3c47e4",
+   "fb2cdd48cb6f56da"
+  ],
+  "32": [
+   "128332a9e6eee2fc",
+   "888781a60f2dae55",
+   "ba69ebf84333b940"
+  ],
+  "48": [
+   "0eb9739b9d9b1430",
+   "3d34574bc58a1669",
+   "7fe2456c1585b995",
+   "bb3bea261549d174",
+   "bd23c43b2ce1229d",
+   "eaf9ba73b19fb8ad"
+  ]
+ }
+}

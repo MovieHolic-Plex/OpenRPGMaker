@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "06c27c8b5535345d4795557e307597949ed6199494fd39b3c551745a8e6a6e9d",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "부두 끝(판자 앞면 + 물 위 말뚝)",
+ "label": "steampunk-city/sp-deck-edge",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pier edge with wooden deck planks, front rim, and pilings in water",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-6 show the horizontal wooden plank deck surface viewed from above (7 rows), rows 7-9 show the deck's front face, and rows 10-15 show water with wooden support pilings.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3468
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pier edge with deck planks and pilings in water",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-6 show the top deck floor planks, followed by the front vertical edge (rows 7-9) and pilings going into water (rows 10-15), correctly forming a dock edge terrain tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3714
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pier deck edge and stilts over water",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-6 show the horizontal top deck planks of the pier, rows 7-9 form the front edge beam, and rows 10-15 show the support posts descending into water in typical 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3324
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pier edge with wooden deck and support pilings in water",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-6 display the top surface of the wooden pier planks viewed from above, followed by a 3-row front edge (rows 7-9) and pilings submerged in water below (rows 10-15). This represents a standard 3/4-view terrain transition tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3613
+  }
+ ],
+ "decidedAt": "2026-10-13T18:27:58.053Z",
+ "cells": {
+  "16": [
+   "3cefc6f4549fa79c"
+  ],
+  "24": [
+   "37cf03e07ae04fb2",
+   "4055f182ce7749d3",
+   "57fb4309a86695b5",
+   "b1c049241288b676",
+   "b7ece018d0076d4d",
+   "d281a606d33ab788"
+  ],
+  "32": [
+   "90c94b5fab03725b",
+   "92adad95e1672d24",
+   "a49f703d1f1869f2",
+   "cce1e40dfe67da04",
+   "ec9960ddbafe8fce",
+   "f3a71477ac45d0f7"
+  ],
+  "48": [
+   "32c39135a17c7547",
+   "4c65295aeb3bf474",
+   "80862d7628480493",
+   "9e6acc4003a78a43",
+   "c31c3763fa785908",
+   "e9357a7792e80a35"
+  ]
+ }
+}

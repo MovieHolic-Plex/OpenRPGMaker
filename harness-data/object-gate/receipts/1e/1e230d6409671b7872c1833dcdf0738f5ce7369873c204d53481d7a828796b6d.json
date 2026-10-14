@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1e230d6409671b7872c1833dcdf0738f5ce7369873c204d53481d7a828796b6d",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "거리 시계 기둥(무쇠 기둥 + 네 면 시계 상자 + 작은 모임지붕)",
+ "label": "steampunk-city/sp-clock-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "clock box and roof",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The clock box (rows 10-21) and the roof structure above it (rows 1-8) are drawn in pure front elevation with completely flat rectangular profiles and no top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6089
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "street clock box and pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The clock box (rows 10-21) and roof section (rows 1-8) are drawn in pure front elevation with straight horizontal edges and vertical sides, showing no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10415
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "clock box and roof on iron pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The clock box (rows 10-21) and the roof structure above it (rows 1-7) are drawn entirely in straight front elevation with vertical side silhouettes and no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5650
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "clock box and roof on iron pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The clock box (rows 10-21) and the upper roof section (rows 1-8) are rendered as completely flat rectangular front elevations with no visible horizontal top surfaces or 3/4 angled roof planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5860
+  }
+ ],
+ "decidedAt": "2026-10-13T18:42:41.656Z",
+ "cells": {
+  "16": [
+   "63ea10750d6ac27c",
+   "a8872e477e4699b4",
+   "abf45c56cd329e49"
+  ],
+  "24": [
+   "0d40f9e1f50f2acd",
+   "288219b1e996185d",
+   "6bdb37921ee1d35f",
+   "7f06aa8c1dff9b86",
+   "9dde08473ae0af4a",
+   "b8ead80aea9402f1"
+  ],
+  "32": [
+   "40475123ae30a695",
+   "42e328e3f0acca70",
+   "50dd6dc2ddb1ca70",
+   "7568be68b94ddc87",
+   "78dc52715efe73c0",
+   "7a9b0231b0eb8f8e",
+   "815d8e7e9290f109",
+   "857b107d8e51e218",
+   "8d165b5201cefeb6",
+   "c92a6b7cad9572b2",
+   "e58bd75ada6b6343",
+   "fce30ac53349e207"
+  ],
+  "48": [
+   "1dbc857f8f531c19",
+   "5b368f13db092213",
+   "a3b7d74f2e55a11f"
+  ]
+ }
+}

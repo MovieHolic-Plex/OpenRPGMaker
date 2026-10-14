@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "752a2b3b1c0e2fcc62ce1a6791e51ebcfaf26a2cc12598f334a0549e563ca721",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "증기 구멍(쇠 굴뚝 토막에서 김이 오른다) (프레임 3)",
+ "label": "steampunk-city/sp-steam-vent-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "아가리 3행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron steam vent / chimney pipe section",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the pipe features a visible elliptical opening (rows 21-23, 3 rows tall) with surrounding circular rim (rows 20-24) viewed from a 3/4 top-down angle, and a south-facing cylinder face below.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 4100
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "short iron chimney pipe / steam vent",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the pipe vent features a clear elliptical opening spanning rows 21-23 (3 rows tall) with dark interior cavity visible, properly foreshortened in 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 4491
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "short iron chimney pipe with steam vent",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pipe rim and dark interior opening form a clear ellipse visible from above (rows 21-23, ~3 rows of visible interior depth), with steam billowing out from within.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 3710
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron steam vent / chimney segment",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pipe opening is rendered as an elliptical dark interior spanning rows 21 to 23 (3 rows tall) framed by a foreshortened top rim from row 20 to 23, clearly showing the top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 4190
+  }
+ ],
+ "decidedAt": "2026-10-13T18:16:30.909Z",
+ "cells": {
+  "16": [
+   "2c7c47b40569d363",
+   "9343cf759c9cbf7f"
+  ],
+  "24": [
+   "052fe42e827b9a2a",
+   "23ed7fcee34a832c",
+   "3dd84a207ab92f4c",
+   "41118964830181d3",
+   "55eb5c25db5a03d3",
+   "5bc5cf1fd05579b5",
+   "699716ac3ead7713",
+   "75f8ecdee17ce082",
+   "877f22884fc8d7e9",
+   "9b771ffb885121fa",
+   "c6b23be3ac2d61d4",
+   "ea0378a63ea86d94"
+  ],
+  "32": [
+   "4b1f7e4097457ecd",
+   "c020cefedbe8f097",
+   "c719d6e91ae7972b"
+  ],
+  "48": [
+   "14f71ea5fb18dbe3",
+   "5666c5657e9dcbfc",
+   "7c30e78a317f5032",
+   "c1d6a1a7b54364cc",
+   "d8c24d6cfbdb611c",
+   "f576395ff7ab2dfe"
+  ]
+ }
+}

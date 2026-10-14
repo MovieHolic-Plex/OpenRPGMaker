@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "07ac54dc647f18a641bc101cf807166f04215274d90066d9fe5bca2cc02c08ad",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "내려가는 돌계단(바닥 구멍)",
+ "label": "steampunk-city/sp-stairs-down",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "descending stone staircase pit",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a floor opening with descending stone stairs. The stair treads show clear top-down depth foreshortening (each visible tread is 4-5 pixels tall alternating with darker riser/shadow bands), viewed correctly from a high 3/4 angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8548
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "descending stone staircase opening in the floor",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The terrain feature depicts stone steps descending into a floor opening in proper top-down perspective, with alternating horizontal step treads (3-4px tall) and risers/shadows descending into darkness.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4324
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "descending stone staircase in a floor opening",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The descending stairs correctly depict alternating horizontal step treads (3-4px tall top surfaces seen from above) and vertical risers (1-2px shadow bands), consistent with top-down 3/4 perspective terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4735
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone stairs descending into floor opening",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Floor opening with stairs descending downward in standard 3/4 view. Each step clearly shows a horizontal tread surface (3-4px tall) alternating with darker riser/shadow bands, correctly depicting depth from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5746
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.471Z",
+ "cells": {
+  "16": [
+   "0e0ff38b441347f9",
+   "a6c326b4cc0546b1",
+   "bb34dabb6f306262",
+   "ec47fb4065c551ae"
+  ],
+  "24": [
+   "1317c60dbce8f365",
+   "194782ce75bbe466",
+   "29db7f60bfc66b71",
+   "3aebb50c451cb47b",
+   "50913e3302765178",
+   "54582bc5aea74f03",
+   "552b8de597e9ceeb",
+   "558243fa5abcfc5b",
+   "565d143c4c1ad2f0",
+   "6a32128242ad1993",
+   "827486ade0326922",
+   "8c746fd4652dc9fa",
+   "93249a41f385ca0f",
+   "aea75ae9e7265e07",
+   "b079a9d059a587b5",
+   "ce91ed8f265fafef",
+   "d446acd1e30e42a1",
+   "da9588908ff9cee6",
+   "de9321f4defecdc6",
+   "e27ce74e4cdc2923",
+   "e40d749f48b8c0ef",
+   "e47d49019bd658d4",
+   "f637d322116288f6",
+   "f67aa41460d46190"
+  ],
+  "32": [
+   "26660ba921ee4551"
+  ],
+  "48": [
+   "23b6336bf454748a",
+   "4344c3393251fdd7",
+   "4995b68a5b084577",
+   "5769f3f1c3bac0cb",
+   "6dc2ad9641d63392",
+   "f73fdb2a7ed86ef1"
+  ]
+ }
+}

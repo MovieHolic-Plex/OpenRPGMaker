@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9a92d87238615cbed1bf5bd97c1a6bda0481fa1f2efaaef3df588c08b0f9d49c",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "증기 구멍(쇠 굴뚝 토막에서 김이 오른다)",
+ "label": "steampunk-city/sp-steam-vent",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "아가리 3행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "short metal steam pipe/vent with rising steam puffs",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pipe rim and dark interior opening are clearly rendered in 3/4 perspective (rows 21-23 form a 3-row deep opening ellipse) from which steam emerges.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 4761
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "metal pipe stub / steam vent",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pipe opening is rendered as an ellipse visible from above spanning rows 21-23 (3 pixel rows tall) surrounded by the top rim, correctly foreshortened in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 5233
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "metal pipe stump / steam vent",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pipe stump shows an elliptical top opening (rows 21-22) visible from above with a foreshortened circular rim spanning rows 20-23 from which steam rises.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 2행 < 4"
+   ],
+   "ms": 5372
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "metal pipe stub / steam vent",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the pipe stub shows a clearly foreshortened opening (rows 21-23) with visible dark interior depth where the steam billows out, and the surrounding curved top rim spans rows 20-23.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 5092
+  }
+ ],
+ "decidedAt": "2026-10-13T18:16:30.909Z",
+ "cells": {
+  "16": [
+   "c9e9e3eedb18cbf1",
+   "e25914702ad3092d"
+  ],
+  "24": [
+   "00f75278a8ae7182",
+   "27980ca18e4343eb",
+   "353ede5f7e035db8",
+   "41118964830181d3",
+   "4bbf26f634f109f9",
+   "75f8ecdee17ce082",
+   "80c6f27b83e32427",
+   "8f380c7a9290fe5d",
+   "a6143b0b775a4348",
+   "b48a2640db2a390d",
+   "ea0378a63ea86d94",
+   "ed257228ff3d48ac"
+  ],
+  "32": [
+   "84d815d010e2183f",
+   "b51a4412b0353e01",
+   "c032931df5b8dd4e"
+  ],
+  "48": [
+   "34de80932b6c0370",
+   "71f3cd7fcf4535ba",
+   "83eb636148721c77",
+   "db0b05bfd9ef622a",
+   "e02b0da0787602cc",
+   "f4e32047e81aa18a"
+  ]
+ }
+}

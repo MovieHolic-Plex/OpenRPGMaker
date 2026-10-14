@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c0107a69a6dbacb89bb5ec35555ae1b43de857fc5fcc57a129e9db0f72db18f1",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "곡물·석탄 자루 더미(위에서 본 불룩한 자루 셋)",
+ "label": "steampunk-city/sp-sacks",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pile of three grain sacks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each sack in the pile is drawn in flat front elevation with straight 1px horizontal black outlines at its top and base. There are no foreshortened top surfaces or rounded 3/4-view volumes visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4884
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pile of sacks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each sack in the pile is drawn with a flat 1px horizontal line across its top edge (rows 1, 6, and 7) with no visible foreshortened top surface or volume seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3976
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pile of three grain sacks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each sack is rendered as a flat front silhouette capped by a 1px straight horizontal black line (rows 1, 6, 7). There is no visible top surface foreshortened from above or elliptical sack rim/dome.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4565
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stack of three sacks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each sack is drawn in flat front profile capped by a 1px flat horizontal black outline with zero visible top surface or rounded foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4335
+  }
+ ],
+ "decidedAt": "2026-10-13T18:49:04.019Z",
+ "cells": {
+  "16": [
+   "42a1f8cf11f1967c"
+  ],
+  "24": [
+   "48a39267f1264126",
+   "63859c82b3c3ff10",
+   "7228e49ca6b8486b",
+   "951e76f791930542",
+   "a869e1242e314e6e",
+   "eaef8416a80e1af2"
+  ],
+  "32": [
+   "185b16d5e0b80996",
+   "92848e5c8144e4b4",
+   "96c700444627ef85",
+   "aa2f80d90058a2de",
+   "ea58390992e37510",
+   "fec23ab063f0c1e2"
+  ],
+  "48": [
+   "0d8bb85044288ef2",
+   "43f7fe9016fb97a1",
+   "708f53996d539e6c",
+   "8bbe97da81c85c61",
+   "d08758f8561339a8",
+   "ec02f706a52363c3"
+  ]
+ }
+}

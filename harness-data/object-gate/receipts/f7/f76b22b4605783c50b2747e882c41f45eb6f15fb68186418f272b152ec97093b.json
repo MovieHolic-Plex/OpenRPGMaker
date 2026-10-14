@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f76b22b4605783c50b2747e882c41f45eb6f15fb68186418f272b152ec97093b",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "술통 받침대(누운 통 둘 + 꼭지)",
+ "label": "steampunk-city/sp-barrel-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "barrel rack with two horizontal barrels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rack and barrels are drawn in flat front elevation. The top beam at rows 2-3 shows no top surface (0px), the horizontal crossbars at rows 5-6 and 10-11 are flat 2px bars without top faces, and the horizontal barrels facing south show flat circular heads without the visible curved top surfaces of their cylinders receding backward in 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6648
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "barrel rack with two horizontal barrels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top beam of the rack (row 2) has no top surface (0-1px outline only), and the horizontal crossbars and central post are drawn in flat front elevation. Additionally, the horizontal barrels are drawn as flat circular discs facing directly forward without any cylindrical top surface visible, representing a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9716
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "keg rack / wooden frame containing two barrels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top beam of the frame has no top surface visible (only a 1px outline and 1px highlight at rows 2-3), the horizontal rails are drawn as flat 1-2px bars, and the barrels and metal stand are drawn in flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6404
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden barrel rack with two barrels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top beam of the main frame at rows 2-3 is only 2px thick with no visible top surface receding backward. The barrels and supporting metal frame are also drawn in pure front elevation with circular faces and no visible cylindrical top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8682
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.468Z",
+ "cells": {
+  "16": [
+   "1011dcf7095401cd",
+   "1a1f5c482e09db59",
+   "77ccfdc05aedd780",
+   "e8119459bc0f3cea"
+  ],
+  "24": [
+   "0239e5c1d98d202a",
+   "0b68b039b52575b4",
+   "119f0cff37c9a110",
+   "1568810d0e5100cd",
+   "2b1b7eaf817b9de3",
+   "32d3a12afee9b6f6",
+   "35d151bcc6aa410b",
+   "376b26d21f6b6358",
+   "3aee93967576d7bd",
+   "41319b2e9a1c23e6",
+   "426715a3ed653897",
+   "4277ea07a8bdfe5b",
+   "4901738e841b18f6",
+   "7184d13ea6543a1e",
+   "8cf8cdc0c2eff08e",
+   "8ec27a75f3ba392c",
+   "95fbd3d9c7856cb5",
+   "b673248d9e2f4dd5",
+   "d17c1bcecc4001b2",
+   "dab1720d04ce0eec",
+   "dd01c436dc6b4ef2",
+   "dd2a0e9a10db9f4d",
+   "f83b203aa88b764d",
+   "fc27369ca1a5be71"
+  ],
+  "32": [
+   "6b70fe980332d389"
+  ],
+  "48": [
+   "24b009f0904aca89",
+   "5caf36dd68a88af3",
+   "664422da96b6f15c",
+   "66e9cd5cbace3bd9",
+   "6ca9c30bf0107685",
+   "7a94c93a4080269a"
+  ]
+ }
+}

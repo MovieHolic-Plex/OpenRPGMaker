@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "967ebb3fa8360ce5ad3e61cf75b051230a9be4ef1885b8b8750910a163dd7fc2",
+ "width": 32,
+ "height": 16,
+ "kind": "debris",
+ "name": "고철 더미(부서진 톱니·관·철판)",
+ "label": "steampunk-city/sp-scrap-heap",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pile of scrap metal with an upright gear and metal blocks/pipes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The scrap pile is drawn in a side-scrolling platformer elevation. The standing gear (rows 1-11) is drawn completely flat facing the camera with no top thickness, and the adjacent rectangular blocks lack top-down foreshortened surfaces (rows 4-5 function as a 2px horizontal bar rather than an angled top plane).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5503
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pile of scrap metal with an upright gear and metal pieces",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The scrap pile consists of a cog/gear and rectangular metal pieces drawn entirely in flat 2D side-scroller/front elevation. The gear face and its center hole are rendered perpendicular to the camera without foreshortening, and horizontal elements have only 1px edge highlights rather than 3/4 top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4721
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "scrap metal pile with upright gear and pipe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gear stands vertically facing directly towards the camera in pure 2D front elevation (round circular silhouette with teeth on four sides, no foreshortened top rim), and the rest of the metal pile lacks any foreshortened top surfaces, resembling a side-scrolling platformer asset.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4953
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "scrap pile with upright gear and metal pieces",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The scrap pile is drawn in side-scroller / flat front elevation: the large gear stands perfectly vertical facing the viewer with no top-down tilt, and the entire pile lacks any visible foreshortened top surfaces or depth on the floor plane.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5685
+  }
+ ],
+ "decidedAt": "2026-10-13T18:42:41.658Z",
+ "cells": {
+  "16": [
+   "81f27e9ce8b209bf",
+   "8db43d92f3f29c4c"
+  ],
+  "24": [
+   "05d527a4137e11e1",
+   "10684bdf5d63f7a7",
+   "13e6672904da6be8",
+   "17704c45dd765b5c",
+   "349a0cca6202147a",
+   "3fe741f9128d68a1",
+   "4bb69360d127e737",
+   "69b50d20b79dbb8c",
+   "829f34fe5689c2b5",
+   "a79501f7c12380fb",
+   "b857387ce718db8a",
+   "c6fac7ebc3361447"
+  ],
+  "32": [
+   "46efdb02b94bed99",
+   "57626c8a37496590"
+  ],
+  "48": [
+   "1b3e4013ebe2287a",
+   "2b9ed42790daf537",
+   "5a6eb8552b791491",
+   "66837de4226c82d6",
+   "967abd71b73723a7",
+   "f4af830dbb4b21ec"
+  ]
+ }
+}

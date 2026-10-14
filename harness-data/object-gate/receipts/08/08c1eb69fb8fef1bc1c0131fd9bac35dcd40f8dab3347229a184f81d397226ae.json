@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "08c1eb69fb8fef1bc1c0131fd9bac35dcd40f8dab3347229a184f81d397226ae",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "자갈 포석(얼룩 변주)",
+ "label": "steampunk-city/sp-cobble-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cobblestone pavement tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile depicting cobblestone pavement across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3993
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone paving terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a full-surface ground terrain texture showing flat cobblestone/gravel paving with color variation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6761
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cobblestone/pavement ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile represents a flat cobblestone terrain texture viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3695
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone paving tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing gravel/stone paving texture across the full 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4965
+  }
+ ],
+ "decidedAt": "2026-10-13T18:27:58.050Z",
+ "cells": {
+  "16": [
+   "2149c2888db9acda"
+  ],
+  "24": [
+   "15d1d3982a43cd4b",
+   "328a8181df18a92e",
+   "81281f5d5c4799e5",
+   "d5789507be19b662",
+   "d7e126d3de1b56cd",
+   "e9566d62544c2ffd"
+  ],
+  "32": [
+   "0426c28be871fcb1",
+   "05dc15aca474ad3c",
+   "415fcde04118667b",
+   "5e213e4338c3b72f",
+   "cf072241dafd45ee",
+   "f680134d77897722"
+  ],
+  "48": [
+   "39572a55a1683e63",
+   "65e18b832cb0fb8f",
+   "6d9f8cef00c396ed",
+   "9ae06ca9a5def8ee",
+   "b03135b37eb03638",
+   "be9926bd190b4d3c"
+  ]
+ }
+}

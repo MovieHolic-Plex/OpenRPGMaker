@@ -1,0 +1,125 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "03e4140212afa4fac37d8561813ae2d0e293d14cd24f4e083756dcb5bf6cc8ad",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "테슬라 코일(둥근 받침 + 구리 감은 탑 + 놋쇠 고리 + 구 + 불꽃) (프레임 3)",
+ "label": "steampunk-city/sp-tesla-coil-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "copper-wound coil column with brass toroid and sphere terminal",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brass toroid cap atop the column is drawn in clear 3/4 perspective, showing its top surface and recessed inner opening across rows 12-16 (approx. 4 rows deep). The base plinth also shows a curved top rim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6148
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "copper coil tower with brass toroid",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brass toroid ring capping the coil is drawn in clear 3/4 perspective with a 4-row visible top surface and a 3-row foreshortened elliptical inner opening (rows 13-15). The base plinth also displays its foreshortened top surface (rows 40-41).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5810
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "Tesla coil column with copper windings, brass toroid ring, top sphere, and base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The Tesla coil is drawn in consistent 3/4 top-down perspective. The brass toroid ring (rows 12-16) clearly shows its top surface and recessed center hole (~4 rows), the coil windings are drawn with downward-curving elliptical bands, and the base plinth shows a visible top surface (rows 39-41, ~3 rows).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9472
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "coil column",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is the tall copper-wound coil column (rows 18-39). It shows no top surface, and the top terminal orb/cylinder (rows 4-10) is also drawn flat with a 1px outline cap at row 4. While the brass ring and base plinth show 3/4 perspective, the main body itself lacks a visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 16670
+  }
+ ],
+ "decidedAt": "2026-10-13T18:44:00.639Z",
+ "cells": {
+  "16": [
+   "10972a283defd1fd",
+   "26d2ba69ed26b34a",
+   "44adefbcf8930177"
+  ],
+  "24": [
+   "0e414fc33c95dde4",
+   "16455c4b48c646f5",
+   "6b70bd294b687462",
+   "c59232bfbbc2d631",
+   "c8918c1866aec74a",
+   "d4762959d141884d"
+  ],
+  "32": [
+   "0bd559e2bef02b04",
+   "0c3de5bc8dd29d33",
+   "32aa7819b12b5da1",
+   "36f647859861c374",
+   "396ad2c22604f3c0",
+   "5f46c26587c28b6c",
+   "6e8c9c0ee89eda7d",
+   "8426e428acaef8bc",
+   "aa46bde1370b8682",
+   "b81f9f0fa895a242",
+   "ca713a2ba6618a12",
+   "d24a9f30d5187c63"
+  ],
+  "48": [
+   "364807a8fb9062a3",
+   "4f1ad4e60150fe71",
+   "e1b314654dd3ba9e"
+  ]
+ }
+}
