@@ -2,6 +2,7 @@ import { resolveCommandListAtPath } from "@/editor/eventCommandPaths";
 import { eventScopeRefusal, onlyEventPageCommandsChanged, type EventCommandScope } from "@/ai/eventCommandScope";
 import { resolveAssistScope, runEventCommandAssist } from "@/ai/eventCommandAssist";
 import { loadAiConfig, type AiConfig } from "@/ai/llmClient";
+import { jsonEqual } from "@/util/structuralJson";
 import { EVENT_COMMAND_ASSIST_TOOL, eventCommandAssistTarget } from "./eventCommandAssistTool";
 import { validateArgs } from "./jsonSchema";
 import { getTool } from "./toolRegistry";
@@ -42,7 +43,6 @@ export async function runToolAsync(
   if (validateArgs(tool.parameters, normalized).length) return runTool(ctx, name, args, options);
   try {
     const before = ctx.project;
-    const baseline = JSON.stringify(before);
     const snapshot = structuredClone(before);
     const { event, page } = eventCommandAssistTarget(snapshot, normalized);
     if (!String(normalized.prompt).trim()) throw new ToolError("요청을 입력하세요.", { code: "invalid-args" });
@@ -58,7 +58,7 @@ export async function runToolAsync(
     });
     options.signal?.throwIfAborted();
     // Includes changes to resources/references, not just the target command list.
-    if (ctx.project !== before || JSON.stringify(ctx.project) !== baseline) {
+    if (ctx.project !== before || !jsonEqual(ctx.project, snapshot)) {
       throw new ToolError("생성 중 프로젝트가 바뀌었습니다. 최신 상태로 다시 요청하세요.", { code: "stale-project" });
     }
     const isolated: ToolContext = {

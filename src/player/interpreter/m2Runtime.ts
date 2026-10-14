@@ -81,8 +81,8 @@ function executeByTitle(
   }
   if (title === "Tint Screen") {
     // color 필드(색 이름)를 우선 사용하고, value(r,g,b / hex)가 있으면 그것을 사용.
-    const explicit = fieldString(fields, "value", "");
-    runtime.screen.tint = explicit || fieldString(fields, "color", "neutral");
+    const explicit = fields.value !== undefined ? fieldString(fields, "value", "") : "";
+    runtime.screen.tint = explicit || (fields.color !== undefined ? fieldString(fields, "color", "neutral") : "neutral");
     // New commands use durationMs. Keep the old duration field readable for
     // imported projects, where small values were authored in seconds.
     runtime.screen.tintDurationMs = tintDurationMs(fields);
@@ -93,11 +93,19 @@ function executeByTitle(
     return;
   }
   if (title === "Flash Screen") {
-    runtime.screen.flash = fieldString(fields, "value", "flash");
+    runtime.screen.flash = fields.value !== undefined
+      ? fieldString(fields, "value", "flash")
+      : fields.color !== undefined
+        ? fieldString(fields, "color", "white")
+        : "flash";
     return;
   }
   if (title === "Shake Screen") {
-    runtime.screen.shake = fieldNumber(fields, "value", 1);
+    runtime.screen.shake = fields.value !== undefined
+      ? fieldNumber(fields, "value", 1)
+      : fields.intensity !== undefined
+        ? fieldNumber(fields, "intensity", 3)
+        : 1;
     return;
   }
   if (title === "Set Weather Effects") {

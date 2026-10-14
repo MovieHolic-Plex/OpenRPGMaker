@@ -1,5 +1,6 @@
 import type { Project } from "@/project/types";
 import type { ToolResult } from "@/editor/tools/types";
+import { jsonEqual } from "@/util/structuralJson";
 
 /** Host-owned boundary; never read from model arguments or natural-language instructions. */
 export interface EventCommandScope {
@@ -56,5 +57,5 @@ export function onlyEventPageCommandsChanged(before: Project, after: Project, sc
   const changed = copy.maps[scope.mapId]?.events.find(e => e.id === scope.eventId)?.pages?.find(p => p.id === scope.pageId);
   if (!original || !changed) return false;
   changed.commands = structuredClone(original.commands);
-  return JSON.stringify(before) === JSON.stringify(copy);
+  return jsonEqual(before, copy);
 }

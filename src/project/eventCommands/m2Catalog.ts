@@ -534,7 +534,7 @@ function page3FieldsFor(title: string): readonly M2CommandFieldSpec[] | undefine
       return [{ key: "pictureId", label: "그림 ID", type: "text", defaultValue: "pic1" }];
     case "Show Animation":
       return [
-        { key: "target", label: "누구에게", type: "select", defaultValue: "player", options: ANIMATION_TARGET_OPTIONS },
+        { key: "target", label: "누구에게", type: "text", defaultValue: "player", options: ANIMATION_TARGET_OPTIONS },
         { key: "animationId", label: "애니메이션 ID", type: "text", defaultValue: "" },
         { key: "wait", label: "완료까지 대기", type: "select", defaultValue: "false", options: BOOLEAN_OPTIONS },
       ];

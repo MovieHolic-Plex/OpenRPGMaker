@@ -36,6 +36,7 @@ import {
 } from "@/editor/cutscene";
 import { sharedFaceForCharset } from "@/project/sharedCharacterFaceResolver";
 import { reconcileSharedFaceWithCharset as reconcileFaceWithCharset } from "@/project/sharedCharacterFaceResolver";
+import { ensureSharedCharacters, HARNESS_CHARACTER_PREFIX } from "@/project/sharedCharacters";
 import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { searchResources } from "@/assets/resourceSearch";
 import {
@@ -1187,6 +1188,13 @@ const upsertEvent: ToolDefinition = {
     }
     routeRootCommandsIntoPage(event, patch, existing, warnings);
     applyEventLevelGraphic(draft, map, event, patch, warnings);
+    if (!event.name || !event.name.trim()) {
+      const firstPageName = event.pages?.find((p) => typeof p.name === "string" && p.name.trim())?.name?.trim();
+      event.name = firstPageName || event.id;
+    }
+    if ((event.pages ?? []).some((p) => p.graphic?.sprite?.id?.startsWith(HARNESS_CHARACTER_PREFIX))) {
+      ensureSharedCharacters(draft);
+    }
     // 기존 투명 조사 지점(그림 없는 action 페이지뿐)이나 통행 불가 칸(가구·벽·문 타일) 위의 새 이벤트는 타일이 그림이다.
     const tileHotspot = existing
       ? (existing.pages ?? []).some((page) => page.trigger?.kind === "action") && !(existing.pages ?? []).some((page) => page.graphic?.sprite !== undefined)
@@ -3114,6 +3122,7 @@ const placeChest: ToolDefinition = {
     required: ["mapId", "x", "y", "contents"],
   },
   invalidArgsExample: { mapId: "map_1", x: 5, y: 5, contents: { itemId: "item_potion", gold: 50 } },
+  placesCuratedCast: true,
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
     const requestedX = args.x as number;
@@ -3217,6 +3226,7 @@ const placeStorageChest: ToolDefinition = {
     "농장 창고·인벤 확장용. 보물상자(1회 보상)는 place_chest. 장식 박스는 place_props. " +
     "벽 위여도 인접 칸에서 조사할 수 있으면 그대로 두고, 사방이 막힌 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다.",
   mode: "write",
+  placesCuratedCast: true,
   parameters: {
     type: "object",
     properties: {
@@ -3299,6 +3309,7 @@ const placeSavepoint: ToolDefinition = {
   name: "place_savepoint",
   description: "세이브 포인트 이벤트를 배치한다. 조사하면 체크포인트 저장이 실행된다(크리스탈 외형). 벽 위여도 인접 칸에서 조사할 수 있으면 그대로 두고, 사방이 막힌 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다. 세이브 포인트는 반드시 이 툴 — place_npc/upsert_event 흉내 금지.",
   mode: "write",
+  placesCuratedCast: true,
   parameters: {
     type: "object",
     properties: {
@@ -3871,20 +3882,23 @@ function rejectHandMovedActorPictures(rawBeats: unknown): void {
  */
 function rejectCharsetMonsterAttack(rawBeats: unknown): void {
   let movesOtherActor = false;
-  let animates = false;
+  let animatesPlayer = false;
   const visit = (beats: unknown): void => {
     if (!Array.isArray(beats)) return;
     for (const beat of beats) {
       if (!beat || typeof beat !== "object") continue;
       const b = beat as Record<string, unknown>;
       if (b.kind === "parallel") { visit(b.beats); continue; }
-      if (b.kind === "animation") animates = true;
+      if (b.kind === "animation" && (!b.target || b.target === "player" || b.target === "@player")) animatesPlayer = true;
       const mover = b.target ?? b.eventId ?? b.actorId;
-      if (b.kind === "moveActor" && typeof mover === "string" && mover !== "player" && mover !== "@player" && mover !== "this-event" && mover !== "screen") movesOtherActor = true;
+      if (b.kind === "moveActor" && typeof mover === "string" && mover !== "player" && mover !== "@player" && mover !== "this-event" && mover !== "screen") {
+        const moves = Array.isArray(b.moves) ? b.moves : b.route && typeof b.route === "object" && Array.isArray((b.route as Record<string, unknown>).moves) ? (b.route as { moves: unknown[] }).moves : [];
+        if (moves.some((m) => m && typeof m === "object" && (m as { kind?: unknown }).kind === "move")) movesOtherActor = true;
+      }
     }
   };
   visit(rawBeats);
-  if (movesOtherActor && animates) {
+  if (movesOtherActor && animatesPlayer) {
     throw new ToolError(
       "다른 NPC 를 움직여 공격 애니메이션을 쏘는 컷신은 script_cutscene 으로 만들지 않습니다 — 차셋 NPC 로는 몬스터 그림이 나오지 않아 사람·동물 그림이 몬스터 행세를 합니다. "
       + "script_cutscene_staged 로 만드세요: actors 에 {name:'몬스터', resourceId:<list_monster_resources 의 scarloxy-monster-… 소재>}, 주인공은 {ghost:true, tile:{x,y}}, "
@@ -4005,6 +4019,12 @@ const scriptCutscene: ToolDefinition = {
       commands,
       conditions
     );
+    const existingLook = existing ? eventLook(existing) : undefined;
+    if (existingLook && trigger.kind === "action") {
+      page.graphic = existingLook;
+      page.priority = "same";
+      page.overlapForbidden = true;
+    }
     const outcome = existing ? "modified" : "added";
     let event: GameEvent;
     if (existing) {

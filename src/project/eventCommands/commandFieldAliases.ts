@@ -9,6 +9,7 @@
 
 import type { Command } from "@/project/types";
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
+import { M2_COMMAND_CATALOG, m2CommandById } from "@/project/eventCommands/m2Catalog";
 
 type RecordValue = Record<string, unknown>;
 
@@ -164,11 +165,100 @@ function canonicalizeBattleCommand(command: RecordValue): string | undefined {
 // 조건 분기를 페이지 조건처럼 `conditions:[…]` 로 쓴 사례(2026-09-24 연애 도그푸딩:
 // `{kind:"fork",conditions:[{kind:"variable",variableId:"var_day",op:">=",value:6}],then:[…]}`) —
 // 「condition가 객체가 아닙니다」로 이벤트 전체가 거부됐다. 조건 하나면 그대로, 여럿이면 all 로 묶는다.
-const FORK_THEN_ALIASES = ["thenBranch", "branch", "ifTrue", "commands"] as const;
-const FORK_ELSE_ALIASES = ["elseBranch", "otherwise", "ifFalse"] as const;
+const FORK_THEN_ALIASES = ["thenBranch", "thenCommands", "branch", "ifTrue", "commands"] as const;
+const FORK_ELSE_ALIASES = ["elseBranch", "elseCommands", "otherwiseBranch", "otherwise", "ifFalse"] as const;
 
 function isRecordValue(value: unknown): value is RecordValue {
   return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+const M2_SCREEN_COLORS = new Set(["white", "red", "green", "blue", "yellow", "purple", "black"]);
+const M2_TINT_COLORS = new Set(["neutral", "red", "green", "blue", "yellow", "purple", "black", "white", "sepia", "night", "sunset", "morning"]);
+
+function mapCustomScreenColor(raw: string, allowTintPresets: boolean): { color: string; value?: string } {
+  const trimmed = raw.trim().toLowerCase();
+  if ((allowTintPresets ? M2_TINT_COLORS : M2_SCREEN_COLORS).has(trimmed)) return { color: trimmed };
+  if (/gold|amber|orange|황금|금색/u.test(trimmed)) return { color: "yellow", value: raw.trim() };
+  if (/cyan|ice|aqua|하늘|청록/u.test(trimmed)) return { color: "blue", value: raw.trim() };
+  if (/violet|magenta|pink|보라|자주/u.test(trimmed)) return { color: "purple", value: raw.trim() };
+  if (/crimson|scarlet|blood|진홍|핏빛/u.test(trimmed)) return { color: "red", value: raw.trim() };
+  const hex = /^#?([0-9a-f]{6})$/iu.exec(trimmed);
+  if (hex) {
+    const h = hex[1]!;
+    const r = parseInt(h.slice(0, 2), 16);
+    const g = parseInt(h.slice(2, 4), 16);
+    const b = parseInt(h.slice(4, 6), 16);
+    let mapped = allowTintPresets ? "neutral" : "white";
+    if (r < 40 && g < 40 && b < 40) mapped = "black";
+    else if (r > 200 && g > 170 && b < 120) mapped = "yellow";
+    else if (r > 160 && b > 160 && g < 150) mapped = "purple";
+    else if (r > g + 50 && r > b + 50) mapped = "red";
+    else if (g > r + 40 && g >= b) mapped = "green";
+    else if (b > r + 40 && b > g) mapped = "blue";
+    return { color: mapped, value: `#${h}` };
+  }
+  return { color: allowTintPresets ? "neutral" : "white", value: raw.trim() };
+}
+
+function canonicalizeM2Command(command: RecordValue): string | undefined {
+  const fixes: string[] = [];
+  if (!isRecordValue(command.fields)) {
+    command.fields = {};
+  }
+  const fields = command.fields as RecordValue;
+  for (const key of ["color", "durationMs", "intensity", "value", "effect", "target", "eventId", "animationId", "wait", "mode", "x", "y", "zoom", "stateId", "enemyIndex"]) {
+    if (command[key] !== undefined && fields[key] === undefined) {
+      fields[key] = command[key];
+      delete command[key];
+    }
+  }
+  if (typeof command.commandId === "string" && !m2CommandById(command.commandId)) {
+    const rawId = command.commandId.trim();
+    const slug = rawId.replace(/^m2-\d+-/iu, "").toLowerCase();
+    if (slug === "fadeout-screen" || slug === "fade-out-screen" || slug === "fadeout") {
+      command.commandId = "m2-202-screen-effect";
+      fields.effect ??= "fadeOut";
+      fields.durationMs ??= 600;
+      fixes.push(`m2Command.commandId '${rawId}' 를 'm2-202-screen-effect'(fadeOut) 로 고쳤습니다.`);
+    } else if (slug === "fadein-screen" || slug === "fade-in-screen" || slug === "fadein") {
+      command.commandId = "m2-202-screen-effect";
+      fields.effect ??= "fadeIn";
+      fields.durationMs ??= 600;
+      fixes.push(`m2Command.commandId '${rawId}' 를 'm2-202-screen-effect'(fadeIn) 로 고쳤습니다.`);
+    } else {
+      const bySlug = M2_COMMAND_CATALOG.find((entry) => entry.id.replace(/^m2-\d+-/iu, "").toLowerCase() === slug)
+        ?? M2_COMMAND_CATALOG.find((entry) => entry.title.toLowerCase().replace(/[^a-z0-9]+/gu, "-") === slug);
+      if (bySlug) {
+        command.commandId = bySlug.id;
+        fixes.push(`m2Command.commandId '${rawId}' 를 카탈로그 정본 '${bySlug.id}' 로 고쳤습니다.`);
+      }
+    }
+  }
+  if (command.commandId === "m2-100-change-enemy-state" && fields.value === undefined && typeof fields.stateId === "string") {
+    fields.value = fields.stateId;
+    delete fields.stateId;
+    fixes.push("m2-100-change-enemy-state fields.stateId 를 fields.value 로 옮겼습니다.");
+  }
+  if ((command.commandId === "m2-046-tint-screen" || command.commandId === "m2-047-flash-screen") && typeof fields.color === "string") {
+    const allowTint = command.commandId === "m2-046-tint-screen";
+    const mapped = mapCustomScreenColor(fields.color, allowTint);
+    if (mapped.color !== fields.color || mapped.value !== undefined) {
+      fields.color = mapped.color;
+      if (mapped.value !== undefined && fields.value === undefined) fields.value = mapped.value;
+      fixes.push(`${command.commandId} fields.color 를 카탈로그 색상 '${mapped.color}' 로 정규화했습니다.`);
+    }
+  }
+  const catalog = typeof command.commandId === "string" ? m2CommandById(command.commandId) : undefined;
+  if (catalog) {
+    for (const spec of catalog.fields) {
+      const v = fields[spec.key];
+      if (v === undefined) continue;
+      if ((spec.type === "text" || spec.type === "textarea" || spec.type === "select") && (typeof v === "number" || typeof v === "boolean")) {
+        fields[spec.key] = String(v);
+      }
+    }
+  }
+  return fixes.length > 0 ? fixes.join(" ") : undefined;
 }
 
 function moveSingleAlias(command: RecordValue, target: "then" | "else", aliases: readonly string[]): string | undefined {
@@ -212,18 +302,27 @@ const WAIT_MS_ALIASES: readonly (readonly [string, number])[] = [
 export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined {
   if (raw === null || typeof raw !== "object" || Array.isArray(raw)) return undefined;
   const command = raw as RecordValue;
+  let unwrappedFieldsFix: string | undefined;
+  if (command.kind !== "m2Command" && isRecordValue(command.fields)) {
+    for (const [k, v] of Object.entries(command.fields)) {
+      if (k !== "kind" && command[k] === undefined) command[k] = v;
+    }
+    delete command.fields;
+    unwrappedFieldsFix = `${String(command.kind)}.fields 객체를 최상위 필드로 풀었습니다.`;
+  }
+  if (command.kind === "m2Command") return joinFixes(unwrappedFieldsFix, canonicalizeM2Command(command));
   if (command.kind === "changeParty") {
     const actorFix = canonicalizePartyActorAlias(command);
     if (command.action === "add" || command.action === "remove" || command.action === "lead") {
-      if ("op" in command) { delete command.op; return joinFixes(actorFix, `changeParty.op 는 쓰이지 않아 지웠습니다(action:"${command.action}" 유지).`); }
-      return actorFix;
+      if ("op" in command) { delete command.op; return joinFixes(unwrappedFieldsFix, actorFix, `changeParty.op 는 쓰이지 않아 지웠습니다(action:"${command.action}" 유지).`); }
+      return joinFixes(unwrappedFieldsFix, actorFix);
     }
     const resolved = direction(command.action) ?? direction(command.op) ?? direction(command.mode) ?? direction(command.type);
-    if (!resolved) return actorFix;
+    if (!resolved) return joinFixes(unwrappedFieldsFix, actorFix);
     const from = command.action !== undefined ? `action:${JSON.stringify(command.action)}` : command.op !== undefined ? `op:${JSON.stringify(command.op)}` : "별칭";
     delete command.op; delete command.mode; delete command.type;
     command.action = resolved;
-    return joinFixes(actorFix, `changeParty ${from} 를 action:"${resolved}"(${resolved === "add" ? "합류" : "이탈"}) 로 고쳤습니다.`);
+    return joinFixes(unwrappedFieldsFix, actorFix, `changeParty ${from} 를 action:"${resolved}"(${resolved === "add" ? "합류" : "이탈"}) 로 고쳤습니다.`);
   }
   if (command.kind === "transfer" && command.direction === undefined) {
     // 도착 방향을 `facing`/`dir` 로 쓴 사례(2026-09-24 JRPG ember-4: 보스 처치 뒤 귀환 transfer 에 facing:"down")
@@ -233,28 +332,28 @@ export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined 
       const alias = aliases[0]!;
       command.direction = command[alias];
       delete command[alias];
-      return `transfer.${alias} 를 direction 으로 옮겼습니다(장소 이동의 도착 방향 칸은 direction).`;
+      return joinFixes(unwrappedFieldsFix, `transfer.${alias} 를 direction 으로 옮겼습니다(장소 이동의 도착 방향 칸은 direction).`);
     }
-    return undefined;
+    return unwrappedFieldsFix;
   }
   if (command.kind === "wait" && typeof command.ms !== "number") {
     // 기다리기를 카메라·페이드 비트처럼 durationMs 로 쓴 사례(2026-09-24 꿈 세계 r3). 런타임은 ms 만 읽어
     // setTimeout(NaN) 으로 즉시 넘어갔다 — 컷신의 뜸이 통째로 사라졌다.
     const alias = WAIT_MS_ALIASES.find(([key]) => typeof command[key] === "number" && Number.isFinite(command[key]));
-    if (!alias) return undefined;
+    if (!alias) return unwrappedFieldsFix;
     const [key, toMs] = alias;
     command.ms = Math.max(0, Math.round((command[key] as number) * toMs));
     delete command[key];
-    return `wait.${key} 를 ms(밀리초 ${command.ms}) 로 옮겼습니다(기다리기의 시간 칸은 ms).`;
+    return joinFixes(unwrappedFieldsFix, `wait.${key} 를 ms(밀리초 ${command.ms}) 로 옮겼습니다(기다리기의 시간 칸은 ms).`);
   }
-  if (command.kind === "battleProcessing") return canonicalizeBattleCommand(command);
-  if (command.kind === "fork") return canonicalizeForkCommand(command);
+  if (command.kind === "battleProcessing") return joinFixes(unwrappedFieldsFix, canonicalizeBattleCommand(command));
+  if (command.kind === "fork") return joinFixes(unwrappedFieldsFix, canonicalizeForkCommand(command));
   if (command.kind === "setVariable" && command.value === undefined && typeof command.amount === "number") {
     // 변수 대입을 수치 명령(changeGold·changeItem)처럼 amount 로 쓴 사례(2026-09-24 갤러리 호러 r3:
     // `{kind:"setVariable",variableId,op:"=",amount:5}`) — 「value가 객체가 아닙니다」로 공용 이벤트가 통째로 거부됐다.
     command.value = command.amount;
     delete command.amount;
-    return "setVariable.amount 를 value 로 옮겼습니다(변수 명령의 값 칸은 value).";
+    return joinFixes(unwrappedFieldsFix, "setVariable.amount 를 value 로 옮겼습니다(변수 명령의 값 칸은 value).");
   }
   if (command.kind === "inputNumber" && typeof command.digits !== "number") {
     // 숫자 입력 자릿수를 amount·length 로 쓴 사례(2026-09-24 추격 호러 r5: `{kind:"inputNumber",variableId,amount:4}`)
@@ -263,20 +362,217 @@ export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined 
     if (alias) {
       command.digits = Math.max(1, Math.min(6, Math.trunc(command[alias] as number)));
       delete command[alias];
-      return `inputNumber.${alias} 를 digits(자릿수) 로 옮겼습니다.`;
+      return joinFixes(unwrappedFieldsFix, `inputNumber.${alias} 를 digits(자릿수) 로 옮겼습니다.`);
     }
-    return undefined;
+    return unwrappedFieldsFix;
   }
-  if (command.kind === "text" && typeof command.body !== "string") {
-    // 대사 본문을 `text` 로 쓴 사례(2026-09-24 갤러리 호러: `{kind:"text",text:"엄마: …"}` 가 한 이벤트에 여섯 줄)
-    // — 「대사는 string body가 필요합니다」로 upsert_event 4건이 통째로 반려됐다. 문장 명령의 본문 칸은 body 하나라
-    // body 가 없고 별칭 하나에만 문자열이 있으면 옮긴다.
-    const aliases = TEXT_BODY_ALIASES.filter(key => typeof command[key] === "string");
-    if (aliases.length !== 1) return undefined;
-    const alias = aliases[0]!;
-    command.body = command[alias];
-    delete command[alias];
-    return `text.${alias} 를 body 로 옮겼습니다(문장 명령의 본문 칸은 body).`;
+  if (command.kind === "text") {
+    let bodyFix: string | undefined;
+    if (typeof command.body !== "string") {
+      const aliases = TEXT_BODY_ALIASES.filter(key => typeof command[key] === "string");
+      if (aliases.length === 1) {
+        const alias = aliases[0]!;
+        command.body = command[alias];
+        delete command[alias];
+        bodyFix = `text.${alias} 를 body 로 옮겼습니다(문장 명령의 본문 칸은 body).`;
+      }
+    }
+    if (typeof command.body === "string" && /\\n(?!\[)/u.test(command.body)) {
+      command.body = command.body.replace(/\\n(?!\[)/gu, "\n");
+      bodyFix = joinFixes(bodyFix, "text.body 의 리터럴 \\n 을 줄바꿈으로 고쳤습니다.");
+    }
+    return joinFixes(unwrappedFieldsFix, bodyFix);
+  }
+  if (command.kind === "changeFace") {
+    const fixes: string[] = [];
+    if (typeof command.resourceId !== "string") {
+      const alias = (["value", "faceId", "id", "face"] as const).find((k) => typeof command[k] === "string");
+      if (alias) {
+        command.resourceId = command[alias];
+        delete command[alias];
+        fixes.push(`changeFace.${alias} 를 resourceId 로 옮겼습니다.`);
+      } else {
+        command.resourceId = "";
+      }
+    }
+    if (command.position !== "left" && command.position !== "right") {
+      command.position = "left";
+      fixes.push('changeFace.position 기본값 "left" 를 채웠습니다.');
+    }
+    if (typeof command.flipHorizontally !== "boolean") {
+      command.flipHorizontally = false;
+      fixes.push("changeFace.flipHorizontally 기본값 false 를 채웠습니다.");
+    }
+    return joinFixes(unwrappedFieldsFix, ...fixes);
+  }
+  if (command.kind === "cutsceneControl") {
+    const action = typeof command.action === "string" ? command.action.trim() : "";
+    if (action === "fadeOut" || action === "fadeIn") {
+      const ms = typeof command.durationMs === "number" ? command.durationMs : 600;
+      const wait = command.wait !== false;
+      for (const k of Object.keys(command)) delete command[k];
+      command.kind = "m2Command";
+      command.commandId = "m2-202-screen-effect";
+      command.fields = { effect: action, durationMs: ms, wait };
+      return joinFixes(unwrappedFieldsFix, `cutsceneControl(${action}) 를 m2-202-screen-effect 로 옮겼습니다.`);
+    }
+    if (command.mode !== "begin" && command.mode !== "end") {
+      if (command.value === true || /^(lock|begin|start|on|enter)$/iu.test(action)) {
+        command.mode = "begin";
+      } else if (command.value === false || /^(unlock|end|stop|off|exit)$/iu.test(action)) {
+        command.mode = "end";
+      } else {
+        command.mode = "begin";
+      }
+      delete command.value;
+      delete command.action;
+      return joinFixes(unwrappedFieldsFix, `cutsceneControl.mode 를 "${String(command.mode)}" 로 정규화했습니다.`);
+    }
+    return unwrappedFieldsFix;
+  }
+  if (command.kind === "showAnimation") {
+    const fixes: string[] = [];
+    if (typeof command.animationId !== "string") {
+      const alias = (["id", "value", "resourceId", "animation"] as const).find((k) => typeof command[k] === "string");
+      if (alias) {
+        command.animationId = command[alias];
+        delete command[alias];
+        fixes.push(`showAnimation.${alias} 를 animationId 로 옮겼습니다.`);
+      }
+    }
+    if (command.target === undefined) {
+      if (typeof command.eventId === "string" && command.eventId.trim()) {
+        const evId = command.eventId.trim();
+        command.target = evId === "player" ? "player" : { eventId: evId === "this" || evId === "self" ? "this-event" : evId };
+        delete command.eventId;
+        fixes.push("showAnimation.eventId 를 target 으로 옮겼습니다.");
+      } else if (typeof command.x === "number" && typeof command.y === "number") {
+        command.target = { x: command.x, y: command.y };
+        delete command.x;
+        delete command.y;
+        fixes.push("showAnimation.x/y 를 target 으로 옮겼습니다.");
+      } else {
+        command.target = "player";
+        fixes.push('showAnimation.target 기본값 "player" 를 채웠습니다.');
+      }
+    } else if (typeof command.target === "string" && command.target !== "player") {
+      const t = command.target.trim();
+      command.target = { eventId: t === "this" || t === "self" ? "this-event" : t };
+      fixes.push("showAnimation 문자열 target 을 {eventId} 객체로 옮겼습니다.");
+    }
+    if (typeof command.wait !== "boolean") {
+      command.wait = true;
+    }
+    return joinFixes(unwrappedFieldsFix, ...fixes);
+  }
+  if (command.kind === "showEmote") {
+    const fixes: string[] = [];
+    if (typeof command.emote !== "string") {
+      const alias = (["value", "id", "emotion", "icon"] as const).find((k) => typeof command[k] === "string");
+      if (alias) {
+        command.emote = command[alias];
+        delete command[alias];
+        fixes.push(`showEmote.${alias} 를 emote 로 옮겼습니다.`);
+      }
+    }
+    if (command.target === undefined) {
+      if (typeof command.eventId === "string" && command.eventId.trim()) {
+        const evId = command.eventId.trim();
+        command.target = evId === "player" ? "player" : { eventId: evId === "this" || evId === "self" || evId === "this-event" ? "" : evId };
+        delete command.eventId;
+        fixes.push("showEmote.eventId 를 target 으로 옮겼습니다.");
+      } else {
+        command.target = "player";
+        fixes.push('showEmote.target 기본값 "player" 를 채웠습니다.');
+      }
+    } else if (typeof command.target === "string" && command.target !== "player") {
+      const t = command.target.trim();
+      command.target = { eventId: t === "this" || t === "self" || t === "this-event" ? "" : t };
+      fixes.push("showEmote 문자열 target 을 {eventId} 객체로 옮겼습니다.");
+    }
+    if (typeof command.durationMs !== "number") {
+      command.durationMs = 800;
+    }
+    return joinFixes(unwrappedFieldsFix, ...fixes);
+  }
+  if (command.kind === "playAudio") {
+    const fixes: string[] = [];
+    if (typeof command.resourceId !== "string") {
+      const alias = (["id", "text", "value", "sound", "se", "bgm", "audioId"] as const).find((k) => typeof command[k] === "string");
+      if (alias) {
+        command.resourceId = command[alias];
+        delete command[alias];
+        fixes.push(`playAudio.${alias} 를 resourceId 로 옮겼습니다.`);
+      }
+    }
+    if (command.channel !== "bgm" && command.channel !== "se") {
+      command.channel = typeof command.resourceId === "string" && /bgm/iu.test(command.resourceId) ? "bgm" : "se";
+      fixes.push(`playAudio.channel 기본값 "${String(command.channel)}" 를 채웠습니다.`);
+    }
+    if (typeof command.loop !== "boolean") {
+      command.loop = command.channel === "bgm";
+    }
+    return joinFixes(unwrappedFieldsFix, ...fixes);
+  }
+  if (command.kind === "setLighting" && isRecordValue(command.lighting)) {
+    for (const [k, v] of Object.entries(command.lighting)) {
+      if (command[k] === undefined) command[k] = v;
+    }
+    delete command.lighting;
+    return joinFixes(unwrappedFieldsFix, "setLighting.lighting 객체를 최상위로 풀었습니다.");
+  }
+  if (command.kind === "addLight" && !isRecordValue(command.source)) {
+    const at = isRecordValue(command.at) ? command.at : undefined;
+    const x = typeof command.x === "number" ? command.x : typeof at?.x === "number" ? at.x : 0;
+    const y = typeof command.y === "number" ? command.y : typeof at?.y === "number" ? at.y : 0;
+    command.source = {
+      id: typeof command.id === "string" && command.id.trim() ? command.id.trim() : "light_1",
+      x,
+      y,
+      radius: typeof command.radius === "number" ? command.radius : 4,
+      color: typeof command.color === "string" && command.color.trim() ? command.color.trim() : "#ffaa44",
+      intensity: typeof command.intensity === "number" ? command.intensity : 0.8,
+      ...(typeof command.flicker === "boolean" ? { flicker: command.flicker } : {}),
+    };
+    delete command.id; delete command.x; delete command.y; delete command.at;
+    delete command.radius; delete command.color; delete command.intensity; delete command.flicker;
+    return joinFixes(unwrappedFieldsFix, "addLight 최상위 광원 필드를 source 객체로 묶었습니다.");
+  }
+  if (command.kind === "moveEvent") {
+    const fixes: string[] = [];
+    if (typeof command.eventId !== "string" && typeof command.target === "string") {
+      const t = command.target.trim();
+      command.eventId = t === "player" ? "__player__" : t === "this-event" || t === "self" || t === "this" ? "" : t;
+      delete command.target;
+      fixes.push("moveEvent.target 을 eventId 로 옮겼습니다.");
+    }
+    if (!isRecordValue(command.route) && Array.isArray(command.moves)) {
+      command.route = { moves: command.moves, repeat: false, wait: command.wait !== false };
+      delete command.moves;
+      fixes.push("moveEvent.moves 를 route.moves 로 옮겼습니다.");
+    }
+    if (isRecordValue(command.route)) {
+      const route = command.route;
+      if (!Array.isArray(route.moves) && Array.isArray(route.steps)) {
+        route.moves = route.steps;
+        delete route.steps;
+        fixes.push("moveEvent.route.steps 를 route.moves 로 옮겼습니다.");
+      }
+      if (typeof route.repeat !== "boolean") route.repeat = false;
+      if (typeof route.wait !== "boolean") route.wait = true;
+      if (Array.isArray(route.moves)) {
+        for (const rawMove of route.moves) {
+          if (!isRecordValue(rawMove)) continue;
+          if (rawMove.kind === "stepForward") rawMove.kind = "moveForward";
+          else if (rawMove.kind === "stepBackward") rawMove.kind = "moveBackward";
+          if ((rawMove.kind === "move" || rawMove.kind === "turn") && typeof rawMove.dir !== "string" && typeof rawMove.direction === "string") {
+            rawMove.dir = rawMove.direction;
+            delete rawMove.direction;
+          }
+        }
+      }
+    }
+    return joinFixes(unwrappedFieldsFix, ...fixes);
   }
   let optionsFix: string | undefined;
   let promptFix: string | undefined;
@@ -321,17 +617,17 @@ export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined 
       delete option[alias];
       moved.push(`options[${index}].${alias}`);
     }
-    return joinFixes(promptFix, optionsFix, moved.length > 0 ? `choices ${moved.join(", ")} 를 branch 로 옮겼습니다(선택지 분기의 정본 키는 branch).` : undefined);
+    return joinFixes(unwrappedFieldsFix, promptFix, optionsFix, moved.length > 0 ? `choices ${moved.join(", ")} 를 branch 로 옮겼습니다(선택지 분기의 정본 키는 branch).` : undefined);
   }
-  if (promptFix) return promptFix;
+  if (promptFix) return joinFixes(unwrappedFieldsFix, promptFix);
   if (typeof command.kind === "string" && AMOUNT_OP_KINDS.has(command.kind) && typeof command.op !== "string") {
     const resolved = direction(command.action);
-    if (!resolved) return undefined;
+    if (!resolved) return unwrappedFieldsFix;
     delete command.action;
     command.op = resolved === "add" ? "+=" : "-=";
-    return `${command.kind} action 을 op:"${command.op}" 로 고쳤습니다.`;
+    return joinFixes(unwrappedFieldsFix, `${command.kind} action 을 op:"${command.op}" 로 고쳤습니다.`);
   }
-  return undefined;
+  return unwrappedFieldsFix;
 }
 
 /** 명령 목록과 모든 중첩 분기를 제자리에서 고친다. */

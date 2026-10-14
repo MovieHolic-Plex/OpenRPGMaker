@@ -46,7 +46,8 @@ export type CutsceneBeat =
   | CutsceneParticlesBeat
   | CutsceneLookBeat
   | CutsceneEmoteBeat
-  | CutsceneWeatherBeat;
+  | CutsceneWeatherBeat
+  | CutsceneGameOverBeat;
 
 export type CutsceneSayBeat = {
   readonly kind: "say";
@@ -300,12 +301,18 @@ export type CutsceneEndingBeat = {
   readonly endingId?: string;
 };
 
+/** 사망·게임 오버를 부른다. */
+export type CutsceneGameOverBeat = {
+  readonly kind: "gameOver" | "killPlayer";
+};
+
 export type CutsceneValidationContext = {
   readonly eventIds?: ReadonlySet<string>;
   readonly resourceIds?: ReadonlySet<string>;
   readonly mapIds?: ReadonlySet<string>;
   readonly switchIds?: ReadonlySet<string>;
   readonly endingIds?: ReadonlySet<string>;
+  readonly allowTerminalFadeOut?: boolean;
 };
 
 export type CutsceneCompileOptions = {
@@ -525,6 +532,35 @@ export function withoutEndingBeats(beats: readonly CutsceneBeat[]): { beats: Cut
   return { beats: out, removed };
 }
 
+const FLASH_CATALOG_COLORS = new Set(["white", "red", "green", "blue", "yellow", "purple", "black"]);
+
+function normalizeFlashFields(colorRaw: string | undefined, durationRaw: number | undefined): M2CommandFields {
+  const ms = durationMs(durationRaw, 300);
+  if (!colorRaw) return { color: "white", durationMs: ms };
+  const trimmed = colorRaw.trim().toLowerCase();
+  if (FLASH_CATALOG_COLORS.has(trimmed)) return { color: trimmed, durationMs: ms };
+  if (/gold|amber|orange|황금|금색/u.test(trimmed)) return { color: "yellow", value: colorRaw.trim(), durationMs: ms };
+  if (/cyan|ice|aqua|하늘|청록/u.test(trimmed)) return { color: "blue", value: colorRaw.trim(), durationMs: ms };
+  if (/violet|magenta|pink|보라|자주/u.test(trimmed)) return { color: "purple", value: colorRaw.trim(), durationMs: ms };
+  if (/crimson|scarlet|blood|진홍|핏빛/u.test(trimmed)) return { color: "red", value: colorRaw.trim(), durationMs: ms };
+  const hex = /^#?([0-9a-f]{6})$/iu.exec(trimmed);
+  if (hex) {
+    const h = hex[1]!;
+    const r = parseInt(h.slice(0, 2), 16);
+    const g = parseInt(h.slice(2, 4), 16);
+    const b = parseInt(h.slice(4, 6), 16);
+    let mapped = "white";
+    if (r < 40 && g < 40 && b < 40) mapped = "black";
+    else if (r > 200 && g > 170 && b < 120) mapped = "yellow";
+    else if (r > 160 && b > 160 && g < 150) mapped = "purple";
+    else if (r > g + 50 && r > b + 50) mapped = "red";
+    else if (g > r + 40 && g >= b) mapped = "green";
+    else if (b > r + 40 && b > g) mapped = "blue";
+    return { color: mapped, value: `#${h}`, durationMs: ms };
+  }
+  return { color: "white", value: colorRaw.trim(), durationMs: ms };
+}
+
 export function compileCutscene(beats: readonly CutsceneBeat[], options: CutsceneCompileOptions = {}): Command[] {
   const validation = validateCutscene(beats, options.context);
   if (!validation.ok) throw new CutsceneValidationError(validation.errors);
@@ -532,16 +568,17 @@ export function compileCutscene(beats: readonly CutsceneBeat[], options: Cutscen
   // 진행 비트(스위치·맵 이동·엔딩)는 건너뛰기(Esc)로도 빠지면 안 된다 — 건너뛴 플레이어가 다음 기억으로 못 가고
   // 문이 안 열린다. 그래서 마지막 맵 이동부터 끝까지와 엔딩은 건너뛰기 착지 라벨 **뒤**에 두고,
   // 그 앞에서 켠 스위치는 라벨 뒤에서 한 번 더 켠다(같은 값이라 정상 재생에서는 변화 없음).
+  const isTerminalKind = (kind: CutsceneBeat["kind"]): boolean => kind === "ending" || kind === "gameOver" || kind === "killPlayer";
   const lastTransfer = beats.map((beat) => beat.kind).lastIndexOf("transfer");
   const head = lastTransfer >= 0 ? beats.slice(0, lastTransfer) : beats;
   const tail = lastTransfer >= 0 ? beats.slice(lastTransfer) : [];
-  const headBody = compileBeats(head.filter((beat) => beat.kind !== "ending"), state, { forceNonBlocking: false });
+  const headBody = compileBeats(head.filter((beat) => !isTerminalKind(beat.kind)), state, { forceNonBlocking: false });
   const committedSwitches = head.filter((beat): beat is CutsceneSwitchBeat => beat.kind === "switch").map(compileSwitchBeat);
   const cleanup = cleanupCommands(state);
   // 옮긴 맵에서는 앞 맵의 카메라·색조·그림을 되돌릴 것이 없다 — 꼬리는 제 상태로 따로 모은다(얼굴 흐름만 이어받는다).
   const tailState: CompileState = { pictures: new Map(), faces: state.faces, looks: [], ...(state.shownFace ? { shownFace: state.shownFace } : {}) };
-  const tailBody = compileBeats(tail.filter((beat) => beat.kind !== "ending"), tailState, { forceNonBlocking: false });
-  const endings = beats.filter((beat): beat is CutsceneEndingBeat => beat.kind === "ending").slice(-1).flatMap((beat) => compileBeat(beat, state, { forceNonBlocking: false }));
+  const tailBody = compileBeats(tail.filter((beat) => !isTerminalKind(beat.kind)), tailState, { forceNonBlocking: false });
+  const endings = beats.filter((beat) => isTerminalKind(beat.kind)).slice(-1).flatMap((beat) => compileBeat(beat, state, { forceNonBlocking: false }));
   return [
     { kind: "cutsceneControl", mode: "begin", skippable: options.skippable === true },
     ...(options.resetFace ? [clearFaceCommand()] : []),
@@ -575,11 +612,11 @@ export function validateCutscene(
     validateStagingBeat(beat, path, errors);
   });
   // 암전(fade out)으로 끝나고 화면을 되돌리지 않으면 컷신이 끝난 뒤에도 검은 화면에 조작만 돌아온다(2026-10-02 조수 시험:
-  // 불 몬스터 컷신이 어두워진 채 끝나 게임이 «멈춘 것처럼» 보였다). 맵 이동·엔딩이 뒤따르거나 fade in 이 있으면 통과.
+  // 불 몬스터 컷신이 어두워진 채 끝나 게임이 «멈춘 것처럼» 보였다). 맵 이동·엔딩·게임오버가 뒤따르거나 에필로그거나 fade in 이 있으면 통과.
   const topKinds = beats.map((beat) => (isRecord(beat) ? beat.kind : undefined));
   const lastFade = topKinds.lastIndexOf("fade");
-  if (lastFade >= 0 && (beats[lastFade] as { direction?: unknown }).direction === "out"
-    && !topKinds.slice(lastFade + 1).some((kind) => kind === "transfer" || kind === "ending")) {
+  if (!context.allowTerminalFadeOut && lastFade >= 0 && (beats[lastFade] as { direction?: unknown }).direction === "out"
+    && !topKinds.slice(lastFade + 1).some((kind) => kind === "transfer" || kind === "ending" || kind === "gameOver" || kind === "killPlayer")) {
     errors.push(`beats[${lastFade}]: 컷신이 암전(fade out)으로 끝나 화면이 검게 남습니다 — 끝에 {kind:'fade',direction:'in'} 를 넣어 되돌리거나, 맵 이동(transfer)·엔딩으로 이어 가세요.`);
   }
   return errors.length === 0 ? { ok: true, errors: [] } : { ok: false, errors };
@@ -620,7 +657,7 @@ function compileBeat(
     case "animation":
       return [{ kind: "showAnimation", target: !beat.target || beat.target === "player" ? "player" : { eventId: beat.target }, animationId: beat.animationId, wait: options.forceNonBlocking ? false : beat.wait ?? true } as Command];
     case "flash":
-      return [m2Command("Flash Screen", { color: beat.color ?? "white", durationMs: durationMs(beat.durationMs, 300) })];
+      return [m2Command("Flash Screen", normalizeFlashFields(beat.color, beat.durationMs))];
     case "shake":
       return [m2Command("Shake Screen", shakeFields(beat))];
     case "letterbox":
@@ -660,6 +697,9 @@ function compileBeat(
       }) as Command];
     case "ending":
       return [beat.endingId ? { kind: "triggerEnding", endingId: beat.endingId } : { kind: "triggerEnding" }];
+    case "gameOver":
+    case "killPlayer":
+      return [m2Command("Game Over")];
   }
 }
 
@@ -748,13 +788,22 @@ function compileCameraBeat(beat: CutsceneCameraBeat, state: CompileState, forceN
   return m2Command("Camera Control", fields);
 }
 
+const CAMERA_TARGET_OPTIONS = new Set(["player", "this-event", "event", "screen", "position"]);
+
 function cameraFields(beat: CutsceneCameraBeat, forceNonBlocking: boolean): M2CommandFields {
   const target = beat.target;
   const objectTarget = isCameraObjectTarget(target) ? target : undefined;
-  const eventId = beat.eventId ?? objectTarget?.eventId;
+  const stringEventId = typeof target === "string" && !CAMERA_TARGET_OPTIONS.has(target) ? target : undefined;
+  const eventId = beat.eventId ?? objectTarget?.eventId ?? stringEventId;
   const x = beat.x ?? objectTarget?.x;
   const y = beat.y ?? objectTarget?.y;
-  const targetText = typeof target === "string" ? target : eventId ? eventId : x !== undefined || y !== undefined ? "screen" : "player";
+  const targetText = typeof target === "string" && CAMERA_TARGET_OPTIONS.has(target)
+    ? target
+    : eventId
+      ? "event"
+      : x !== undefined || y !== undefined
+        ? "screen"
+        : "player";
   // 카탈로그 선택지 값으로 옮긴다(panTo·follow·lock·return) — 「fixed」는 카탈로그에서 lock 이다.
   const mode = beat.mode === "return" ? "return" : beat.mode === "pan" ? "panTo" : beat.mode === "fixed" ? "lock" : beat.mode;
   return m2Fields({
@@ -1251,6 +1300,8 @@ const KNOWN_BEAT_KINDS: ReadonlySet<string> = new Set([
   "look",
   "emote",
   "weather",
+  "gameOver",
+  "killPlayer",
 ]);
 
 function isCameraObjectTarget(value: unknown): value is { readonly eventId?: string; readonly x?: number; readonly y?: number } {

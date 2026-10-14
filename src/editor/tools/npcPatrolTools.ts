@@ -27,7 +27,8 @@ export const NPC_PATROL_TOOLS:readonly ToolDefinition[]=[
  }},
  {name:'configure_npc_patrol',description:'기존 생활 NPC에 안전한 닫힌 순찰 경로를 저작. 모든 걸음의 실제 양방향 충돌·넓은 통행·출입구/시작점 보호·다른 NPC를 검사. 플레이어가 막으면 기다리며 건너뛰지 않음. 교수/상인/스토리 NPC에 무분별하게 적용 금지.',mode:'write',preservesAuthoredRaster:true,parameters:schema({mapId:{type:'string'},eventId:{type:'string'},x:{type:'integer'},y:{type:'integer'},directions:{type:'array',items:{type:'string',enum:['up','down','left','right']}},intervalMs:{type:'integer',minimum:800,maximum:5000}},['mapId','eventId','directions']),run:(p,args)=>{
    const map=p.maps[String(args.mapId)],event=map?.events.find(e=>e.id===args.eventId);if(!map||!event||!event.pages?.length)throw new ToolError('실제 NPC 없음.',{code:'invalid-args'});
-   if(event.pages.length!==1||event.pages[0].conditions.length||event.pages[0].commands.some(command=>command.kind!=='text'))throw new ToolError('조건부 이야기/거래/전투 NPC의 이동은 이 도구로 덮지 않습니다. 단일 대사 페이지 생활 주민을 선택하세요.',{code:'protected-npc'});
+   const PATROL_ALLOWED_KINDS = new Set(['text','transfer','battleProcessing','setSwitch','setSelfSwitch','fork','choices','wait','playAudio','showEmote','m2Command','changeGold','changeItem']);
+   if(event.pages.some(page=>page.commands.some(command=>!PATROL_ALLOWED_KINDS.has(command.kind))))throw new ToolError('조건부 이야기/거래/전투 NPC의 이동은 이 도구로 덮지 않습니다. 단일 대사 페이지 생활 주민 또는 경비병을 선택하세요.',{code:'protected-npc'});
    const route=args.directions;if(!Array.isArray(route)||route.length<2||route.length>12||route.some(dir=>typeof dir!=='string'||!Object.hasOwn(directions,dir)))throw new ToolError('순찰은 2..12 방향의 닫힌 경로입니다.',{code:'invalid-args'});
    const x=args.x===undefined?event.x:Number(args.x),y=args.y===undefined?event.y:Number(args.y),interval=args.intervalMs===undefined?1600:Number(args.intervalMs);
    if(!Number.isSafeInteger(x)||!Number.isSafeInteger(y)||!Number.isSafeInteger(interval)||interval<800||interval>5000)throw new ToolError('좌표/걷기 간격 오류.',{code:'invalid-args'});

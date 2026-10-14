@@ -517,7 +517,7 @@ function validateM2CommandShape(label: string, command: Record<string, unknown>)
     }
   }
   for (const spec of catalog.fields) {
-    const value = fields[spec.key];
+    let value = fields[spec.key];
     if (value === undefined) continue;
     switch (spec.type) {
       case "number":
@@ -532,6 +532,10 @@ function validateM2CommandShape(label: string, command: Record<string, unknown>)
       case "text":
       case "textarea":
       case "select":
+        if (typeof value === "number" || typeof value === "boolean") {
+          value = String(value);
+          fields[spec.key] = value;
+        }
         requireString(`${label}.fields.${spec.key}`, value);
         break;
     }

@@ -75,8 +75,9 @@ export class PiCharsetSelectionGate {
   }
   afterWrite(before: Project, after: Project): ToolResult | null {
     const old = graphics(before);
+    const oldSelectionIds = new Set(old.values());
     for (const [path, selectionId] of graphics(after)) {
-      if (old.get(path) === selectionId || this.viewed.has(selectionId)) continue;
+      if (old.get(path) === selectionId || oldSelectionIds.has(selectionId) || this.viewed.has(selectionId)) continue;
       const match = /^charset:(.+):(\d+)$/u.exec(selectionId)!;
       const label = findCharsetSemantic(match[1]!, Number(match[2]))?.label ?? selectionId;
       return { ok: false, summary: `캐릭터 그림 선택을 되돌렸습니다: ${path}의 실제 칩은 「${label}」(${selectionId})입니다. `

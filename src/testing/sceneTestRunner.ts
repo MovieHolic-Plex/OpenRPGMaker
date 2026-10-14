@@ -199,6 +199,8 @@ export type SceneStep =
       variables?: Record<string, number>;
       inventory?: Record<string, number>;
       gold?: number;
+      partyActorIds?: readonly string[];
+      party?: readonly string[];
       manualHint?: string;
     }
   | { kind: "move"; dir: Dir; to?: never }
@@ -218,11 +220,14 @@ export type SceneStep =
 
 export type SceneExpectStep = {
   kind: "expect";
+  x?: number;
+  y?: number;
+  text?: string | readonly string[];
   playerAt?: { x: number; y: number; mapId?: string };
   switchOn?: string | readonly string[];
   switchOff?: string | readonly string[];
-  variableEquals?: { variableId: string; value: number } | Record<string, number>;
-  variableAtLeast?: { variableId: string; value: number } | Record<string, number>;
+  variableEquals?: { variableId?: string; id?: string; value: number } | Record<string, number>;
+  variableAtLeast?: { variableId?: string; id?: string; value: number } | Record<string, number>;
   eventAt?: { eventId: string; x: number; y: number; mapId?: string };
   eventOnMap?: { eventId: string; mapId: string };
   eventDistanceToPlayerLessThan?: { eventId: string; distance: number; mapId?: string };
@@ -241,8 +246,8 @@ export type SceneExpectStep = {
   spawnedCount?: number;
   pictureVisible?: string | { id: string; resourceId?: string };
   bgmPlaying?: string;
-  /** Runner-observable feedback/transcript: at least one message text has been shown. */
-  messageShown?: boolean;
+  /** Runner-observable feedback/transcript: at least one message text has been shown (or substring match if string). */
+  messageShown?: boolean | string;
   gameOver?: boolean;
   endingReached?: string;
   cutsceneLocked?: boolean;
@@ -258,7 +263,9 @@ export type SceneExpectStep = {
   interactionComplete?: boolean;
   lastTransfer?: { fromMapId: string; eventId: string; toMapId: string };
   friendshipAtLeast?: { npcKey: string; value: number } | Record<string, number>;
-  shopStock?: { eventId: string; itemIds: readonly string[]; prices?: Record<string, number>; mapId?: string };
+  shopStock?:
+    | { eventId: string; itemIds: readonly string[]; prices?: Record<string, number>; mapId?: string }
+    | readonly { itemId: string; price?: number }[];
 };
 
 export interface SceneTestInput {
@@ -441,11 +448,15 @@ function sceneShape(value: unknown, fields: Readonly<Record<string, SceneFieldCh
 }
 const scenePoint: SceneFieldCheck = value => sceneShape(value, { x: sceneCount, y: sceneCount }, ["x", "y"]);
 const sceneVariableValues: SceneFieldCheck = value => sceneNumbers(value)
-  || sceneShape(value, { variableId: sceneText, value: sceneNumber }, ["variableId", "value"]);
+  || sceneShape(value, { variableId: sceneText, value: sceneNumber }, ["variableId", "value"])
+  || sceneShape(value, { id: sceneText, value: sceneNumber }, ["id", "value"]);
 const sceneRewardDeltas: SceneFieldCheck = value => sceneRecord(value)
   && Object.values(value).every(delta => sceneNumber(delta)
     || sceneShape(delta, { atLeast: sceneNumber }, ["atLeast"]));
 const sceneExpectFields: Readonly<Record<keyof Omit<SceneExpectStep, "kind">, SceneFieldCheck>> = {
+  x: sceneCount,
+  y: sceneCount,
+  text: sceneStringOrList,
   playerAt: value => sceneShape(value, { x: sceneCount, y: sceneCount, mapId: sceneText }, ["x", "y"]),
   switchOn: sceneStringOrList, switchOff: sceneStringOrList,
   variableEquals: sceneVariableValues, variableAtLeast: sceneVariableValues,
@@ -462,7 +473,9 @@ const sceneExpectFields: Readonly<Record<keyof Omit<SceneExpectStep, "kind">, Sc
   weatherKind: value => value === "none" || value === "rain" || value === "storm" || value === "snow" || value === "fog",
   animationPlaying: sceneBoolean, fieldSpawnCount: sceneCount, spawnedCount: sceneCount,
   pictureVisible: value => sceneText(value) || sceneShape(value, { id: sceneText, resourceId: sceneText }, ["id"]),
-  bgmPlaying: sceneText, messageShown: sceneBoolean, gameOver: sceneBoolean,
+  bgmPlaying: sceneText,
+  messageShown: value => sceneBoolean(value) || sceneText(value),
+  gameOver: sceneBoolean,
   endingReached: sceneText, cutsceneLocked: sceneBoolean, mapId: sceneText,
   gameTimeAt: value => sceneShape(value, { minute: sceneCount, hour: sceneCount, day: sceneCount, season: isSeason, year: sceneCount }),
   timePhase: isTimePhase,
@@ -473,7 +486,9 @@ const sceneExpectFields: Readonly<Record<keyof Omit<SceneExpectStep, "kind">, Sc
   interactionComplete: sceneBoolean,
   lastTransfer: value => sceneShape(value, { fromMapId: sceneText, eventId: sceneText, toMapId: sceneText }, ["fromMapId", "eventId", "toMapId"]),
   friendshipAtLeast: value => sceneNumbers(value) || sceneShape(value, { npcKey: sceneText, value: sceneNumber }, ["npcKey", "value"]),
-  shopStock: value => sceneShape(value, { eventId: sceneText, itemIds: sceneStrings, prices: sceneNumbers, mapId: sceneText }, ["eventId", "itemIds"]),
+  shopStock: value =>
+    sceneShape(value, { eventId: sceneText, itemIds: sceneStrings, prices: sceneNumbers, mapId: sceneText }, ["eventId", "itemIds"])
+    || (Array.isArray(value) && value.every(entry => sceneShape(entry, { itemId: sceneText, price: sceneNumber }, ["itemId"]))),
 };
 
 // 스텝 종류별 허용 필드·필수 필드. 판정(isSceneTestInput)과 거부 문구(sceneTestInputProblem)가 이 표 하나를 쓴다.
@@ -496,7 +511,8 @@ const SCENE_STEP_SPECS: Readonly<Record<string, SceneStepSpec>> = {
   set: { fields: {
     mapId: sceneText, x: sceneCount, y: sceneCount, facing: sceneDirection,
     switches: entry => sceneStrings(entry) || (sceneRecord(entry) && Object.values(entry).every(sceneBoolean)),
-    variables: sceneNumbers, inventory: sceneNumbers, gold: sceneNumber, manualHint: sceneText,
+    variables: sceneNumbers, inventory: sceneNumbers, gold: sceneNumber,
+    partyActorIds: sceneStrings, party: sceneStrings, manualHint: sceneText,
   } },
   interact: { fields: { eventId: sceneText } },
   useItem: { fields: { itemId: sceneText }, required: ["itemId"] },
@@ -826,6 +842,8 @@ function runSetStep(state: RunnerState, step: Extract<SceneStep, { kind: "set" }
   for (const [variableId, value] of Object.entries(step.variables ?? {})) state.session.variables[variableId] = value;
   for (const [itemId, count] of Object.entries(step.inventory ?? {})) state.session.inventory[itemId] = count;
   if (step.gold !== undefined) state.session.gold = step.gold;
+  const partyIds = step.partyActorIds ?? step.party;
+  if (partyIds) state.session.partyActorIds = [...partyIds];
   syncFollowCamera(state);
   state.log.push(`set${step.manualHint ? `: ${step.manualHint}` : ""}`);
   return null;
@@ -1996,6 +2014,9 @@ function runExpectStep(state: RunnerState, step: SceneExpectStep): string | null
   if (step.mapId !== undefined && state.session.currentMapId !== step.mapId) {
     return `현재 맵: 기대 ${step.mapId}, 실제 ${state.session.currentMapId}`;
   }
+  if ((step.x !== undefined && state.session.x !== step.x) || (step.y !== undefined && state.session.y !== step.y)) {
+    return `플레이어 위치: 기대 (${step.x ?? state.session.x},${step.y ?? state.session.y}), 실제 (${state.session.x},${state.session.y})`;
+  }
   if (step.playerAt && (state.session.x !== step.playerAt.x || state.session.y !== step.playerAt.y || (step.playerAt.mapId && state.session.currentMapId !== step.playerAt.mapId))) {
     return `플레이어 위치: 기대 ${step.playerAt.mapId ?? state.session.currentMapId} (${step.playerAt.x},${step.playerAt.y}), 실제 ${state.session.currentMapId} (${state.session.x},${state.session.y})`;
   }
@@ -2080,8 +2101,21 @@ function runExpectStep(state: RunnerState, step: SceneExpectStep): string | null
   if (step.bgmPlaying !== undefined && state.session.audio.bgm?.resourceId !== step.bgmPlaying) {
     return `BGM: 기대 ${step.bgmPlaying}, 실제 ${state.session.audio.bgm?.resourceId ?? "(none)"}`;
   }
-  if (step.messageShown !== undefined && (state.messages.length > 0) !== step.messageShown) {
-    return `메시지 피드백: 기대 ${step.messageShown ? "출력" : "미출력"}, 실제 ${state.messages.length > 0 ? "출력" : "미출력"}`;
+  if (step.messageShown !== undefined) {
+    if (typeof step.messageShown === "string") {
+      if (!state.messages.some((m) => m.includes(step.messageShown as string))) {
+        return `메시지 피드백: 기대 "${step.messageShown}" 포함, 실제 ${JSON.stringify(state.messages)}`;
+      }
+    } else if ((state.messages.length > 0) !== step.messageShown) {
+      return `메시지 피드백: 기대 ${step.messageShown ? "출력" : "미출력"}, 실제 ${state.messages.length > 0 ? "출력" : "미출력"}`;
+    }
+  }
+  if (step.text !== undefined) {
+    for (const needle of toStringList(step.text)) {
+      if (!state.messages.some((m) => m.includes(needle))) {
+        return `메시지 텍스트: 기대 "${needle}" 포함, 실제 ${JSON.stringify(state.messages)}`;
+      }
+    }
   }
   if (step.gameOver !== undefined && state.gameOver !== step.gameOver) {
     return `게임 오버: 기대 ${step.gameOver}, 실제 ${state.gameOver}`;
@@ -2164,6 +2198,27 @@ function expectShopStock(
   state: RunnerState,
   expected: NonNullable<SceneExpectStep["shopStock"]>
 ): string | null {
+  if (!("eventId" in expected)) {
+    const mapId = state.session.currentMapId;
+    const map = state.runtimeMaps[mapId];
+    if (!map) return `상점 재고 확인 맵 없음: ${mapId}`;
+    const lastEvId = state.interactions[state.interactions.length - 1]?.eventId;
+    const views = runtimeEventViewsForMap(state.project, map, state.session, state.eventPositions);
+    const view =
+      (lastEvId ? views.find((e) => e.event.id === lastEvId) : undefined) ??
+      views.find((e) => findShopCommand(e.page?.commands ?? resolveEventPage(e.event, state.session)?.commands ?? e.event.commands) !== undefined);
+    if (!view) return `상점 이벤트 없음 (맵 ${mapId})`;
+    const prices: Record<string, number> = {};
+    for (const item of expected) {
+      if (typeof item.price === "number") prices[item.itemId] = item.price;
+    }
+    return expectShopStock(state, {
+      eventId: view.event.id,
+      itemIds: expected.map((i) => i.itemId),
+      prices,
+      mapId,
+    });
+  }
   const mapId = expected.mapId ?? state.session.currentMapId;
   const map = state.runtimeMaps[mapId];
   if (!map) return `상점 재고 확인 맵 없음: ${mapId}`;
@@ -2282,9 +2337,11 @@ function expectVariables(
   expected: SceneExpectStep["variableEquals"]
 ): string | null {
   if (!expected) return null;
-  if ("variableId" in expected && typeof expected.variableId === "string") {
-    const got = getVariable(state.session, expected.variableId);
-    return got === expected.value ? null : `변수 ${expected.variableId}: 기대 ${expected.value}, 실제 ${got}`;
+  const varId = ("variableId" in expected && typeof expected.variableId === "string" ? expected.variableId : undefined)
+    ?? ("id" in expected && typeof expected.id === "string" ? expected.id : undefined);
+  if (varId && "value" in expected && typeof expected.value === "number") {
+    const got = getVariable(state.session, varId);
+    return got === expected.value ? null : `변수 ${varId}: 기대 ${expected.value}, 실제 ${got}`;
   }
   for (const [variableId, value] of Object.entries(expected as Record<string, number>)) {
     const got = getVariable(state.session, variableId);
@@ -2298,9 +2355,11 @@ function expectVariablesAtLeast(
   expected: SceneExpectStep["variableAtLeast"]
 ): string | null {
   if (!expected) return null;
-  if ("variableId" in expected && typeof expected.variableId === "string") {
-    const got = getVariable(state.session, expected.variableId);
-    return got >= expected.value ? null : `변수 ${expected.variableId}: 기대 >= ${expected.value}, 실제 ${got}`;
+  const varId = ("variableId" in expected && typeof expected.variableId === "string" ? expected.variableId : undefined)
+    ?? ("id" in expected && typeof expected.id === "string" ? expected.id : undefined);
+  if (varId && "value" in expected && typeof expected.value === "number") {
+    const got = getVariable(state.session, varId);
+    return got >= expected.value ? null : `변수 ${varId}: 기대 >= ${expected.value}, 실제 ${got}`;
   }
   for (const [variableId, value] of Object.entries(expected as Record<string, number>)) {
     const got = getVariable(state.session, variableId);

@@ -275,7 +275,7 @@ function parseEpilogue(project: Project, value: unknown, warnings: string[] = []
     for (const event of map.events) eventIds.add(event.id);
   }
   try {
-    compileCutscene(beats as CutsceneBeat[], { context: { eventIds, resourceIds: collectResourceIds(project) } });
+    compileCutscene(beats as CutsceneBeat[], { context: { eventIds, resourceIds: collectResourceIds(project), allowTerminalFadeOut: true } });
   } catch (cause) {
     if (cause instanceof CutsceneValidationError) {
       throw new ToolError(`epilogue 검증 실패: ${cause.reasons.join(" / ")}`, { code: "ending-epilogue-validation" });

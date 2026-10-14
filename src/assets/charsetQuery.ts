@@ -76,6 +76,10 @@ const SYNONYMS: readonly {
   { terms: ["king", "국왕"], tags: ["왕", "국왕"] },
   { terms: ["golem", "골렘"], tags: ["골렘"] },
   { terms: ["warrior", "fighter", "전사"], tags: ["전사"] },
+  { terms: ["bandit", "thief", "rogue", "pirate", "산적", "도적", "도둑", "해적", "불한당", "약탈자"], tags: ["전사", "검사", "도적", "해적", "병사"] },
+  { terms: ["monument", "stele", "tablet", "obelisk", "altar", "비석", "석판", "제단", "비문", "기념비"], tags: ["석상", "보석", "크리스탈", "제단", "비석"] },
+  { terms: ["switch", "lever", "button", "device", "스위치", "레버", "발판", "장치"], tags: ["레버", "스위치", "크리스탈", "보석", "문"] },
+  { terms: ["spring", "fountain", "샘", "샘물", "분수", "성수"], tags: ["크리스탈", "보석", "불꽃"] },
   { terms: ["villager", "resident", "주민"], category: "people", tags: ["주민"] },
   { terms: ["actor", "hero", "영웅", "주인공"], category: "actor" },
   { terms: ["animal", "동물"], category: "animal" },
@@ -115,7 +119,7 @@ function categoryOf(entry: CharsetSemanticEntry): CharsetCategory {
   const base = shortKey.replace(/\d+$/, "");
   if (base === "vehicles") return "vehicle";
   if (base === "vehicle") return "vehicle";
-  if (base === "actor" || base === "animal" || base === "monster" || base === "object" || base === "people") return base;
+  if (base === "actor" || base === "animal" || base === "monster" || base === "object" || base === "vehicle" || base === "people") return base;
   return "object";
 }
 
@@ -256,7 +260,7 @@ export function findNpcGraphicMatches(
   const intentTerms = intentWords(normalized);
   const termHitsEntry = (term: string, entry: CharsetSemanticEntry): boolean =>
     intentTerms.has(term) || textMatchScore(term, entry) > 0;
-  return catalog
+  const strictMatches = catalog
     .map((entry) => {
       if (!satisfiesIntent(entry, intent)) return { entry, score: 0 };
       // 여러 낱말 질의는 낱말마다 이 칸을 가리켜야 한다. 하나만 맞아도 채택하면 「고양이 석상」이 살아 있는
@@ -265,6 +269,18 @@ export function findNpcGraphicMatches(
       const wholeTextScore = textMatchScore(normalized, entry);
       const splitTextScore = wholeTextScore > 0 ? 0 : queryTerms.reduce((sum, term) => sum + textMatchScore(term, entry), 0);
       return { entry, score: intentScore(entry, intent) + wholeTextScore + splitTextScore };
+    })
+    .filter((match) => match.score > 0)
+    .sort((a, b) => b.score - a.score);
+  if (strictMatches.length > 0 || queryTerms.length <= 1) return strictMatches;
+  // 모델이 후보 키워드 여러 개를 공백으로 나열한 경우(예: "장치 스위치 보석 상자", "산적 도적 전사") 0건 대신 OR 매칭으로 후보를 돌려준다.
+  return catalog
+    .map((entry) => {
+      if (!satisfiesIntent(entry, intent)) return { entry, score: 0 };
+      const hitCount = queryTerms.filter((term) => termHitsEntry(term, entry)).length;
+      if (hitCount === 0 && intentScore(entry, intent) === 0) return { entry, score: 0 };
+      const splitTextScore = queryTerms.reduce((sum, term) => sum + textMatchScore(term, entry), 0);
+      return { entry, score: intentScore(entry, intent) + splitTextScore + hitCount * 25 };
     })
     .filter((match) => match.score > 0)
     .sort((a, b) => b.score - a.score);

@@ -163,7 +163,7 @@ export function resolveRetroMonsterChoreography(record: RetroChoreographyRef | u
 /** 계약 id 하나가 직업 계약인가 몬스터 계약인가(도구 검증용). */
 export function retroChoreographyKind(id: string | undefined): "class" | "monster" | undefined {
   if (!id) return undefined;
-  return retroClassSkill(id) ? "class" : retroMonsterSkill(id) ? "monster" : undefined;
+  return retroClassSkill(id) || BUNDLED_BATTLE_MOTIONS.some((entry) => entry.id === id) ? "class" : retroMonsterSkill(id) ? "monster" : undefined;
 }
 
 /**

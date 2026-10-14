@@ -1799,6 +1799,17 @@ const upsertClass: ToolDefinition = {
     }
     dropUnknownElementRates(draft, record, "class", warnings);
     dropUnknownAnimationId(draft, record, "class", warnings);
+    if (record.equipmentPermissions?.actorIds?.length) {
+      const knownActors = new Set(draft.database.actors.map((actor) => actor.id));
+      const missingActors = record.equipmentPermissions.actorIds.filter((id) => !knownActors.has(id));
+      if (missingActors.length > 0) {
+        record.equipmentPermissions = {
+          ...record.equipmentPermissions,
+          actorIds: record.equipmentPermissions.actorIds.filter((id) => knownActors.has(id)),
+        };
+        warnings.push(`class ${record.id}: 아직 없는 equipmentPermissions.actorIds (${missingActors.join(", ")}) 를 빼고 저장했습니다 — 배우를 먼저 만든 뒤 지정하세요.`);
+      }
+    }
     const outcome = upsertById(draft.database.classes, record);
     return {
       summary: `클래스 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`,

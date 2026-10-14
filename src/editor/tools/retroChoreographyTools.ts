@@ -275,10 +275,6 @@ const upsertChoreography: ToolDefinition = {
     if (rawId) {
       requireChorId("id", rawId);
       existing = records.find((record) => record.id === rawId);
-      if (!existing) {
-        const near = records.map((record) => record.id).slice(0, 8);
-        fail(`chor_ id '${rawId}' 레코드가 없습니다${near.length ? ` (현재 ${near.join(", ")})` : ""}. 새로 만들려면 id 를 생략하고 name 을 주세요.`, "choreography-not-found");
-      }
     }
     const motion = args.motion === undefined ? existing?.motion : args.motion;
     if (typeof motion !== "string" || !SKILL_CHOREOGRAPHY_MOTIONS.includes(motion)) {
