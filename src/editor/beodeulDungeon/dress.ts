@@ -85,14 +85,14 @@ function sprinkle(c: DressCtx, rs: () => number, r: PlacedRoom, p: number, pick:
 
 // ---------------------------------------------------------------------------------------------
 
-export function dressTyped(c: DressCtx, type: DungeonType, r: PlacedRoom, i: number, rs: () => number, stairs: Slot | null, slots: Slot[], centerFirst: Slot[]): boolean {
+export function dressTyped(c: DressCtx, type: DungeonType, r: PlacedRoom, rs: () => number, stairs: Slot | null, slots: Slot[], centerFirst: Slot[]): boolean {
   switch (type) {
     case "sewer": return dressSewer(c, r, rs, stairs, slots, centerFirst);
     case "temple": return dressTemple(c, r, rs, stairs, slots, centerFirst);
     case "mine": return dressMine(c, r, rs, stairs, slots, centerFirst);
     case "cave": return dressCave(c, r, rs, stairs, slots);
     case "volcano": return dressVolcano(c, r, rs, stairs, slots);
-    case "labyrinth": return dressMaze(c, r, i, rs, stairs);
+    case "labyrinth": return dressMaze(c, r, rs, stairs);
     default: return false;
   }
 }
@@ -469,7 +469,7 @@ function dressVolcano(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | nu
 
 // ---------------------------------------------------------------- 미궁
 
-function dressMaze(c: DressCtx, r: PlacedRoom, i: number, rs: () => number, s: Slot | null): boolean {
+function dressMaze(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null): boolean {
   if (r.kind !== "entrance") return false;      // 보스·보물 방은 공통 방 규칙
   if (s) { c.put(TORCH, s.x - 2, s.y); c.put(TORCH, s.x + 2, s.y); }
   // 미궁 전체: 벽 횃불은 드문드문, 길바닥에 뼈·잔해·격자, 막다른 길목에 상자 모둠

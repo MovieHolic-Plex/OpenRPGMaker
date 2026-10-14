@@ -59,8 +59,8 @@ function removeGymBuilding(project: Project, town: GameMap | undefined, gymMapId
     if (footprint) continue;
     for (const kit of t.buildings) {
       if (!kit.name.startsWith("gym_")) continue; // 체육관 킷만 철거한다 — 일반 집·도시 건물은 문만 닫는다.
-      for (let ox = door.x - (kit.width - 1); ox <= door.x && !footprint; ox++) {
-        const oy = door.y - (kit.height - 1);
+      for (let ox: number = door.x - (kit.width - 1); ox <= door.x && !footprint; ox++) {
+        const oy: number = door.y - (kit.height - 1);
         if (ox < 0 || oy < 0 || ox + kit.width > town.width || oy + kit.height > town.height) continue;
         let matches = true;
         for (let y = 0; y < kit.height && matches; y++) for (let x = 0; x < kit.width; x++) {
@@ -77,10 +77,8 @@ function removeGymBuilding(project: Project, town: GameMap | undefined, gymMapId
     for (const page of door.pages ?? []) { page.commands = [{ kind: "text", body: "문이 굳게 닫혀 있다. 이 건물은 지금 쓰이지 않는 것 같다." }] as typeof page.commands; page.conditions = []; }
     if (!door.pages?.length) door.commands = [{ kind: "text", body: "문이 굳게 닫혀 있다. 이 건물은 지금 쓰이지 않는 것 같다." }] as typeof door.commands;
   };
-  if (!footprint) closeDoorOnly();
-  const ring0 = footprint;
   // 2) 건물 자리를 둘레 땅으로 덮는다(가장 흔한 둘레 칸) — 투명 칸 아래도 같은 땅이라 구멍이 안 난다. 자리에 비는 칸이 없게 소품 몇 개를 흩는다.
-  if (!ring0) return finishRemoval(project, town, gymMapId, door, true);
+  if (!footprint) { closeDoorOnly(); return finishRemoval(project, town, gymMapId, door, true); }
   const ring = new Map<number, number>();
   for (let y = footprint.oy - 1; y <= footprint.oy + footprint.h; y++) for (let x = footprint.ox - 1; x <= footprint.ox + footprint.w; x++) {
     const inside = x >= footprint.ox && x < footprint.ox + footprint.w && y >= footprint.oy && y < footprint.oy + footprint.h;
