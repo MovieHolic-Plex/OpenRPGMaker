@@ -17,10 +17,10 @@ import {
 } from "@/ai/ohMyPiProviders";
 
 describe("oh-my-pi provider catalog", () => {
-  it("제공자는 정확히 둘이고 권장 제공자(ChatGPT)가 맨 앞이다", () => {
+  it("제공자는 정확히 둘이고 권장 제공자(Google)가 맨 앞이다", () => {
     expect(OH_MY_PI_PROVIDERS.map((provider) => provider.id)).toEqual([
-      CODEX_PROVIDER_ID,
       ANTIGRAVITY_PROVIDER_ID,
+      CODEX_PROVIDER_ID,
     ]);
     expect(OH_MY_PI_PROVIDERS[0]?.id).toBe(RECOMMENDED_OH_MY_PI_PROVIDER);
   });

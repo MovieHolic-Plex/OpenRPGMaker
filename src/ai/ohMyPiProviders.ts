@@ -43,17 +43,17 @@ export type OhMyPiProvider = {
  */
 export const OH_MY_PI_PROVIDERS: readonly OhMyPiProvider[] = [
   {
-    id: CODEX_PROVIDER_ID,
-    label: "ChatGPT",
-    defaultModel: "gpt-6.1-sol",
-    envVars: ["OPENAI_CODEX_OAUTH_TOKEN"],
-    authKind: "oauth",
-  },
-  {
     id: ANTIGRAVITY_PROVIDER_ID,
     label: "Google",
     defaultModel: "gemini-4-argon",
     envVars: [],
+    authKind: "oauth",
+  },
+  {
+    id: CODEX_PROVIDER_ID,
+    label: "ChatGPT",
+    defaultModel: "gpt-6.1-sol",
+    envVars: ["OPENAI_CODEX_OAUTH_TOKEN"],
     authKind: "oauth",
   },
 ];
@@ -65,11 +65,13 @@ export const OH_MY_PI_PROVIDERS: readonly OhMyPiProvider[] = [
 export const DEFAULT_OH_MY_PI_PROVIDER = ANTIGRAVITY_PROVIDER_ID;
 
 /**
- * 새로 설정하는 사용자에게 권하는 제공자. 조수 기능 시험 12과제(2026-10-07, 같은 입력 1회씩)에서
- * gpt-6.1-sol 11/12, gemini-3.8-flash 7/12 — Gemini 는 범위 밖 칸을 바꾸는 실패가 많았다.
+ * 새로 설정하는 사용자에게 권하는 제공자 = Google 계정의 Gemini 4 Argon(사고 강도 medium).
+ * 사용자 결정(2026-10-14): 조수 기본은 Argon medium 이다. 2026-10-07 에는 12과제 시험(gpt-6.1-sol 11/12,
+ * gemini-3.8-flash 7/12)을 근거로 ChatGPT 를 권했으나, 그 뒤 타일 시공은 Gemini 가 훨씬 빠르다는 판단과
+ * Argon 도입으로 기본을 Google 로 되돌렸다. 이미 ChatGPT 를 고른 저장값은 그대로 둔다.
  * 제공자 목록 순서도 이 값을 첫 항목으로 둔다(첫 항목 = 권장값).
  */
-export const RECOMMENDED_OH_MY_PI_PROVIDER = CODEX_PROVIDER_ID;
+export const RECOMMENDED_OH_MY_PI_PROVIDER = ANTIGRAVITY_PROVIDER_ID;
 
 const BY_ID = new Map(OH_MY_PI_PROVIDERS.map((provider) => [provider.id, provider]));
 

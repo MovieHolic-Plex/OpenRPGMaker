@@ -17,7 +17,7 @@ import { PRODUCT_BRAND } from "@/brand";
 import { DEFAULT_OH_MY_PI_PROVIDER, RECOMMENDED_OH_MY_PI_PROVIDER, getOhMyPiProvider, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 import { parseImageDelivery, type ImageDelivery } from "./imageDelivery";
 import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID, RECOMMENDED_IMAGE_MODEL, RECOMMENDED_IMAGE_PROVIDER_ID } from "@/ai/imageModelCatalog";
-import { ANTIGRAVITY_PROVIDER_ID } from "@/ai/oauth/credentials";
+import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
 import { companionTokenHeaders } from "@/ai/companionToken";
 
 // OpenAI 메시지 규약(우리가 쓰는 필드만).
@@ -158,7 +158,7 @@ const RECOMMENDED_CODEX_MODEL = "gpt-6.1-sol";
 
 /** 각 제공자의 옛 공장 기본만 새 기본으로 승격한다. 그 밖의 저장값은 그대로 보존한다. */
 function promoteLegacyFactoryModel(model: string, providerId: string): string {
-  if (providerId === RECOMMENDED_OH_MY_PI_PROVIDER) return LEGACY_CODEX_FACTORY_MODELS.has(model) ? RECOMMENDED_CODEX_MODEL : model;
+  if (providerId === CODEX_PROVIDER_ID) return LEGACY_CODEX_FACTORY_MODELS.has(model) ? RECOMMENDED_CODEX_MODEL : model;
   if (providerId !== DEFAULT_OH_MY_PI_PROVIDER) return model;
   return LEGACY_FACTORY_MODELS.has(model) ? DEFAULT_MODEL : model;
 }
@@ -195,22 +195,26 @@ function promoteLegacyRoleModels(roles: SpecialistModels): SpecialistModels {
  */
 export function defaultAiConfig(): AiConfig {
   const legacy = legacyStoredAiConfigBase();
-  // 새로 설정하는 사용자의 권장 조합(2026-10-07): 계획 gpt-6.1-sol high · 실행/시각 medium · 작문 Gemini.
-  // 작문 계정(Google)이 없으면 실행기가 작문을 실행 모델로 대신한다 — 연결을 강제하지 않는다.
+  // 새로 설정하는 사용자의 권장 조합(2026-10-14, 사용자 결정): 계획·실행·시각·작문·시공 모두 Google 의
+  // Gemini 4 Argon medium. 감독(ultrabrain) 검수만 high 로 둔다. ChatGPT 는 사용자가 고를 때만 쓴다 —
+  // 이미 저장된 설정은 loadAiConfig 가 그대로 읽는다.
+  const argonMedium = { provider: RECOMMENDED_OH_MY_PI_PROVIDER, model: DEFAULT_MODEL, thinkingLevel: "medium" } as const;
   return {
     ...legacy,
     providerId: RECOMMENDED_OH_MY_PI_PROVIDER,
-    model: RECOMMENDED_CODEX_MODEL,
-    liteModel: RECOMMENDED_CODEX_MODEL,
-    ultrabrainProviderId: RECOMMENDED_OH_MY_PI_PROVIDER,
-    ultrabrainModel: RECOMMENDED_CODEX_MODEL,
-    ultrabrainReasoningEffort: "high",
+    model: DEFAULT_MODEL,
+    liteModel: DEFAULT_LITE_MODEL,
+    reasoningEffort: "medium",
+    ultrabrainProviderId: DEFAULT_ULTRABRAIN_PROVIDER,
+    ultrabrainModel: DEFAULT_ULTRABRAIN_MODEL,
+    ultrabrainReasoningEffort: DEFAULT_ULTRABRAIN_EFFORT,
     imageProviderId: RECOMMENDED_IMAGE_PROVIDER_ID,
     imageModel: RECOMMENDED_IMAGE_MODEL,
     roleModels: {
-      deep: { provider: RECOMMENDED_OH_MY_PI_PROVIDER, model: RECOMMENDED_CODEX_MODEL, thinkingLevel: "medium" },
-      vision: { provider: RECOMMENDED_OH_MY_PI_PROVIDER, model: RECOMMENDED_CODEX_MODEL, thinkingLevel: "medium" },
-      writer: { provider: DEFAULT_OH_MY_PI_PROVIDER, model: DEFAULT_MODEL, thinkingLevel: "medium" },
+      deep: { ...argonMedium },
+      vision: { ...argonMedium },
+      writer: { ...argonMedium },
+      build: { ...argonMedium },
     },
     roleModelsPolicyVersion: 1,
   };

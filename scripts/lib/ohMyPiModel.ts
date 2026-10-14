@@ -25,15 +25,6 @@ export function resolveOhMyPiModel(provider: string, requested?: string) {
   const id = requested?.trim() || getOhMyPiProvider(provider)?.defaultModel || "";
   const exact = getBundledModel(provider as never, id);
   if (exact && typeof exact === "object" && "id" in exact) return exact;
-  if (provider === "google-antigravity" && id === "gemini-4-argon") {
-    const base = getBundledModel("google-antigravity", "gemini-3.7-flash");
-    if (base) return { ...base, id, name: "Gemini 4 Argon", requestModelId: "gemini-4-argon-low", thinking: {
-      ...base.thinking!, effortRouting: {
-        minimal: "gemini-4-argon-low", low: "gemini-4-argon-low",
-        medium: "gemini-4-argon-medium", high: "gemini-4-argon-high",
-      },
-    } };
-  }
   // OMP 17.4 predates this model. OAuth wire verified 2026-09-14:
   // gemini-3.8-flash-high, thinkingLevel HIGH -> OK. Prefer bundled metadata once available.
   if (provider === "google-antigravity" && id === "gemini-3.8-flash") {

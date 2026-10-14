@@ -1246,6 +1246,12 @@ Ultrabrain for supervisor surfaces. Cast-sheet prose uses Writer. The small inte
 classifier remains a non-reasoning, 4096-token routing call; it must not inherit
 Deep's expensive effort or the editor's 200000 output budget. Legacy/test configs
 without role selections retain their prior behavior.
+**조수 기본 = Google · Gemini 4 Argon · medium (사용자 결정 2026-10-14).** 새로 설정하는 사용자의 `defaultAiConfig()` 는 계획·실행(deep)·시각·작문·시공(build) 다섯 슬롯을
+전부 `google-antigravity` / `gemini-4-argon` / `medium` 으로 둔다(감독 ultrabrain 검수만 `high`). `RECOMMENDED_OH_MY_PI_PROVIDER` 는 Google 이고 제공자 목록도 Google 이 맨 앞이다.
+설정 모달 「역할별 모델 직접 지정」에서 모델(Argon 은 카탈로그 첫 항목)과 추론 강도를 슬롯마다 바꿀 수 있다. **이미 저장된 설정은 그대로 읽는다** — 옛 공장 기본(3.7/3.8-flash)만 Argon 으로 소급되고,
+사용자가 고른 ChatGPT(gpt-6.1-sol)와 직접 지정한 슬롯은 건드리지 않는다. ChatGPT 로 바꾸면 시공·작문은 여전히 Argon medium 이다. 실조수 시험(스크립트 `scripts/qa/*live*`·`assistant-*`)도 이 기본을 쓴다.
+옛 근거(2026-10-07 12과제: gpt-6.1-sol 11/12, gemini-3.8-flash 7/12)는 이력이다.
+
 **Build(시공) 역할 (2026-10-08).** 실행 모델을 일의 종류로 나눈다. `src/ai/buildRole.ts` 의 `executionRoleFor(task, initialToolNames)` 가
 장르 프리셋 기획(게임 전체 짓기)이거나 첫 노출 도구 중 tile·world 영역 또는 map 쓰기 도구가 있으면 `build`, 아니면 `deep` 을 고르고
 `runPiCommand` 가 그 역할 모델로 실행한다(`roleModels.build` 가 없으면 `deep` 과 같다 — 옛 설정은 동작이 그대로다).

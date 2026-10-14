@@ -25,7 +25,7 @@ await page.addInitScript(({ fixture, feedbackOnly }) => {
   window.__OPRN_E2E_PROJECT__ = fixture;
   localStorage.setItem('oprn:editor-ui-mode', 'expert');
   for (const key of ['oprn:editor-welcome-dismissed', 'oprn:standard-welcome-seen', 'oprn:coachmarks-basic-v1']) localStorage.setItem(key, '1');
-  localStorage.setItem('oprn:ai-config', JSON.stringify({ providerId: 'google-antigravity', model: 'gemini-3.8-flash', piApply: 'auto', piTeam: true }));
+  localStorage.setItem('oprn:ai-config', JSON.stringify({ providerId: 'google-antigravity', model: 'gemini-4-argon', piApply: 'auto', piTeam: true }));
   localStorage.removeItem('oprn:ai-live-canvas');
   const original = window.fetch.bind(window);
   const qa = window.__creationQa = { stage: 'boot', acks: [], releaseFirst: null, releaseSecond: null, end: null, done: false };
