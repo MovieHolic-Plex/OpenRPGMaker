@@ -639,7 +639,11 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
   npc(school, "teacher", "선생님", "싸운다 → 기술 선택 → 상대 선택. 몬스터가 쓰러지면 교체해야 해요. 포획은 상대 체력을 낮춘 뒤 시도해 보세요. 메뉴의 몬스터 화면에서는 보관함 이동과 새 기술 교체도 할 수 있어요.", { x: 7, y: 5 }, [{ kind: "fork", condition: condition("mx_school_gift"), then: [], else: [gain("item_potion", 1), sw("mx_school_gift")] }], 5);
   if (museum) npc(museum, "curator", "학예사", "별빛은 섬의 생명을 빼앗아 만드는 에너지가 아니에요. 여덟 지역이 서로 돌볼 때 생겨나는 빛이지요. 밤막회사는 그 뜻을 잊었습니다.", { x: 9, y: 5 }, [], 5);
 
-  const rivals = [["lab", 5, 1, "mx_starter"], ...(towns.some(t => t.key === "prism") && finalKey !== "prism" ? [["prism", levels.gym(4), 3, "mx_badge_3"]] : []), [finalKey, levels.endgame(46), 4, "mx_badge_7"]] as const;
+  const rivals: ReadonlyArray<readonly [string, number, number, string]> = [
+    ["lab", 5, 1, "mx_starter"],
+    ...(towns.some(t => t.key === "prism") && finalKey !== "prism" ? [["prism", levels.gym(4), 3, "mx_badge_3"] as const] : []),
+    [finalKey, levels.endgame(46), 4, "mx_badge_7"],
+  ];
   for (const [key, level, count, required] of rivals) {
     const map = project.maps[id(key)]!;
     battle(map, "rival", "나루", nearest(map, { x: map.width - 5, y: map.height - 5 }, connected(map), true), pickSpecies("", level, undefined, count), level,
@@ -758,9 +762,16 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     const corridor = make("ship_corridor", "별바람호 · 복도", "rooms/ship_corridor", "coast", "interior");
     const cabin = make("ship_cabin", "별바람호 · 선실", "rooms/ship_cabin", "coast", "interior");
     connect(townMaps.get("harbor")!, deck, "mx_badge_2"); connect(deck, corridor); connect(corridor, cabin);
-    npc(cabin, "captain", "별바람호 선장", "한 번 방문한 마을로 데려다줄게. 돌아가는 길에서도 새 친구를 만날 수 있지.", { x: 4, y: 4 },
-      [{ kind: "choices", prompt: "어디로 갈까?", options: [{ text: "서쪽 지역", branch: [{ kind: "choices", options: towns.slice(0, 5).map(t => ({ text: lookTown(t).name, branch: [{ kind: "fork", condition: condition(`mx_visit_${t.key}`),
-        then: [transfer(townMaps.get(t.key)!, entries.get(id(t.key))!)], else: [text("아직 방문하지 않은 마을이야. 먼저 육로로 길을 열어 줘.", "선장")] }] })), cancelBehavior: "branch", cancelBranch: [] }] }, ...(towns.length > 5 ? [{ text: "동쪽 지역", branch: [{ kind: "choices", options: towns.slice(5).map(t => ({ text: lookTown(t).name, branch: [{ kind: "fork", condition: condition(`mx_visit_${t.key}`), then: [transfer(townMaps.get(t.key)!, entries.get(id(t.key))!)], else: [text("아직 방문하지 않은 마을이야.", "선장")] }] })), cancelBehavior: "branch", cancelBranch: [] }] }] : [])], cancelBehavior: "branch", cancelBranch: [] }], 7);
+    const ferryChoices = (list: typeof towns, blocked: string): Command => ({
+      kind: "choices", options: list.map(t => ({ text: lookTown(t).name, branch: [{ kind: "fork", condition: condition(`mx_visit_${t.key}`),
+        then: [transfer(townMaps.get(t.key)!, entries.get(id(t.key))!)], else: [text(blocked, "선장")] }] })),
+      cancelBehavior: "branch", cancelBranch: [],
+    });
+    const ferry: Command[] = [{ kind: "choices", prompt: "어디로 갈까?", options: [
+      { text: "서쪽 지역", branch: [ferryChoices(towns.slice(0, 5), "아직 방문하지 않은 마을이야. 먼저 육로로 길을 열어 줘.")] },
+      ...(towns.length > 5 ? [{ text: "동쪽 지역", branch: [ferryChoices(towns.slice(5), "아직 방문하지 않은 마을이야.")] }] : []),
+    ], cancelBehavior: "branch", cancelBranch: [] }];
+    npc(cabin, "captain", "별바람호 선장", "한 번 방문한 마을로 데려다줄게. 돌아가는 길에서도 새 친구를 만날 수 있지.", { x: 4, y: 4 }, ferry, 7);
   }
 
   for (const [i, sid] of EXPEDITION_LEGENDARIES.entries()) {

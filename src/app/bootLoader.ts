@@ -11,6 +11,8 @@
 // 풀릴 때 막대의 현재 계산값을 읽어 맞춘다. 다음 단계 값은 앞지르지 않는다.
 // 큰 프로젝트(80MB+)는 「프로젝트 불러오기」가 수 초에서 수십 초라 그 구간을 가장 넓게 잡았다.
 
+import { markBootSettled } from "@/util/bootSettled";
+
 const BOOT_LOADER_ID = "oprn-boot-loader";
 
 export type BootStage = "prepare" | "shared" | "project" | "editor";
@@ -116,6 +118,8 @@ export function reportBootStage(stage: BootStage): void {
 
 /** 멱등. 로더가 없으면(플레이어·테스트·두 번째 호출) 아무것도 안 한다. */
 export function dismissBootLoader(): void {
+  // 로더가 없어도(플레이어·테스트·두 번째 부팅) 첫 화면 신호는 켠다 — 미뤄 둔 한가한 일이 영영 안 도는 것을 막는다.
+  markBootSettled();
   const loader = loaderElement();
   if (!loader || loader.dataset.leaving !== undefined) return;
   stopTicker();

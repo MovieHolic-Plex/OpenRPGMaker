@@ -74,6 +74,25 @@ width/height와 기존 전체 셀 배열 형태는 그대로이며 스키마/릴
 - 마이그 저장 지속성(`persist-trace.mjs`): 마이그·미디어 분리 결과는 저장돼 다음 로드가 빨라진다(대형 사본 첫 로드 31초 → 둘째 21초). 다만 `shared_paw_modern_interiors`·`shared_refmap_crayon|snow|town_outside` 의 저장된 `structureKits` 순서가 라이브러리 순서와 달라 `ensureSharedContent` 가 되돌리고 `applySharedReferenceRefresh` 가 다시 합치므로 로드마다 「프로젝트 정규화 (2종)」 + 저장이 반복된다(수렴 안 함). 수렴 패치는 `sharedContent.ts`/`sharedTileReferences.ts` 몫이다.
 - **수렴·건너뛰기 적용됨 (perf/editor-lag):** `sharedContent.ts` `isMergedKitForm` 이 «라이브러리 형태에서 킷만 [shared_ 앞 + 나머지] 로 재배열한 것»을 같은 것으로 본다 → 첫 수렴 저장 1회 뒤 문서 바이트 고정(4.3MB 사본 4회 로드: revision 372·sha c578ba0a 고정). 그 위에서 `src/project/bootNormalization.ts` 가 `project.meta.bootNormalization = {v: NORMALIZER_VERSION, lib: 공용판본|빌드커밋}` 을 새기고, 다음 로드에서 짝이 맞으면 `normalizeCurrentProject` 가 정규화기 16종과 전후 `jsonContentDigest` 를 건너뛴다. 표식이 없거나 짝이 다르면(옛 파일·새 빌드·새 공용 판본) 전부 돌린 뒤 표식을 새긴다(기존 프로젝트마다 저장 1회, +110바이트). 수정된 트리(dirty)·커밋 미상·공용 판본 `bundled`/빈 값에서는 건너뛰지도 새기지도 않는다. **정규화기를 바꾸고 커밋이 같은 경우 `NORMALIZER_VERSION` 을 올려라.** 측정은 «깨끗한(커밋된) 트리에서 빌드»해야 켜진다. 증거: `verify-shots/editor-lag-fix/F/3a-trace-*.out`(`tamper-doc.mjs` 로 트리 잎을 지운 사본: 표식 유지 → 결함 그대로·저장 없음, 표식 제거 → 결함 복구·revision +1).
 
+## 편집기 시작 시간 — 부팅 정규화 표식·요약 지연·첫 화면 신호 (2026-10-14, 「앱 켜는 게 느려졌다」 조사)
+
+측정 방법은 `scripts/qa/startup-perf-probe.mjs`(영구 프로필 크로미움으로 편집기 주소를 N번 열어 «부팅 로더 걷힘 + `initialEditRenderMs`» 까지의 시간, 메인 스레드 CPU, 첫 화면 뒤 `--settle` 구간의 긴 작업을 잰다).
+`vite build` 를 커밋마다 따로 만들어 `node scripts/oprn-serve.mjs --project-dir <sqlite .backup 사본> --dist <dist> ...`(루프백, 로그인 없음)로 띄우고 같은 서버 코드로 비교한다.
+프로젝트는 정본 사본(타일셋 379칸, 타일셋 본문 98MB)이다. 측정은 **같은 시각 교차(A/B/A/B)** 로 해야 한다 — 이 머신은 다른 에이전트 때문에 load 가 7~40 을 오가 같은 빌드가 11~22초로 흔들린다.
+
+- **실측 요약(웜 부팅 편집 화면까지, 같은 시각 교차, 중앙값):** 수정된 트리 head(:9888 와 같은 경우) 22.8초 → 원인 1 만 고침 16.6초 → 원인 1·2·4 8.8초 → 전부 9.1초(원인 3 은 «첫 화면 뒤 가장 긴 작업» 을 8.4초→4.1초로 쪼개는 것이 목적이라 첫 화면 시간은 그대로). 깨끗한 트리 head 는 같은 조건에서 약 15초(건너뛰기가 켜진 뒤 웜 12~15초), 첫 부팅(콜드)은 24~28초 → 15.6~22초(콜드는 표본 1~3개라 거친 값). 부하 평균 9~20 에서 잰 값이라 ±3초 흔들린다.
+- **원인 1(가장 큼) — 정규화 건너뛰기 표식이 커밋·`dirty` 에 묶여 있었다.** `bootNormalization.ts` 는 «정규화기 16종 + 전후 내용 요약» 을 이미 같은 빌드가 끝낸 문서에서 건너뛴다.
+  표식이 `git describe` 커밋이라 ① 수정된 트리(`dirty`)에서 빌드한 번들은 표식을 새기지도 건너뛰지도 못해 **매 부팅** 전부 돌렸고(:9888 서비스의 `dist` 가 `0.200.0-dev.10+g97ba910.dirty` 였다), ② 정규화기와 무관한 머지마다 «새 빌드» 가 되어 첫 부팅마다 전부 돌렸다(하루 머지 약 150건).
+  → 표식을 **정규화기 입력의 내용 지문**(`scripts/lib/normalizerFingerprint.mjs`: `src/project/**`·`src/assets/**` + 정규화기 모듈이 정적 import 로 닿는 파일, vite `define __OPRN_NORMALIZER_FINGERPRINT__`, build 때만)으로 바꿨다. git 상태에 기대지 않는다. 지문이 없는 환경(dev 서버·vitest·플레이어)은 예전 커밋·`dirty` 규칙 그대로다.
+  정규화기 모듈을 새로 만들면 `NORMALIZER_ENTRIES` 에 더한다(store.ts 에서 import 하는 `ensure*`·`repair*` 모듈). 넓게 잡으면 건너뛰기가 덜 일어날 뿐 틀린 건너뛰기는 없다.
+- **원인 2 — 로드가 타일셋 379칸 요약(`jsonContentDigest`)을 첫 화면 전에 센다.** `electronRepository.loadSnapshotFromHost` 의 `parsedTilesets` 캐시 요약(재로드 때 재사용 판정용)이 critical path 약 4.9초.
+  정규화기가 돌지 않는 문서(표식 짝)는 요약을 첫 화면 뒤 한가할 때 타일셋 하나씩 센다. 정규화기가 도는 문서는 예전처럼 지금 센다(정규화가 같은 객체를 고치기 전 값이어야 한다).
+- **원인 3 — «한가할 때» 일이 첫 화면을 밀었다.** `requestIdleCallback(timeout 3s)` 는 편집기 셸이 그려지는 중에도 3초 안에 시작한다. `src/util/bootSettled.ts`(`expectBootSettle`/`markBootSettled`/`afterBootSettled`)로 기준본 요약 데우기(`store.baselineFrom`)·커밋 기준 요약(`projectCommitLog.resetManualProjectCommitBaseline`)·타일셋 요약을 첫 화면(`dismissBootLoader`) 뒤로 미뤘다. 신호를 켜지 않은 환경(헤드리스·테스트·플레이어)은 바로 돈다. 45초 안전망.
+  미룬 일이 한 덩어리로 도는 것은 막았다: `primeSharedEntryDigests`(contentDigest.ts)가 타일셋·업로드 자산 항목을 하나씩 `yieldToTask` 하며 먼저 요약해, 첫 화면 뒤 메인 스레드가 5~8초 멈추지 않게 한다. (미루기만 하면 7.8초짜리 긴 작업 하나가 첫 화면 뒤에 생겼다 — `--settle` 로 확인.)
+- **원인 4(작음) — 모듈 평가 때 번들 타일셋 전부를 만들었다.** `spatial/assets.ts` 가 `defaultTilesets()[한 id]` 로 시트 하나의 모양만 읽으려 번들 전체(3~9MB 복제 수십 개, 0.6초)를 만들었고 그 id(EasyRPG 실내)는 2026-10-07 부터 번들에도 없다. `bundledTilesetById(id)` 로 필요한 것만, 첫 사용 때 만든다.
+- **새 칩셋 10종(2026-10-14) 자체는 큰 원인이 아니다.** 번들 데이터 청크 46.1→55.6MB(+21%), 웜 부팅 +약 1초, 새 칩셋을 처음 받는 부팅 1회 +수 초. 문제는 «정규화를 건너뛰지 못하는 부팅» 이 늘었다는 것이다.
+- **남은 비용(후속 후보):** ① `store.baselineFrom` 의 `cloneProjectSharingReferenceDocuments`(타일셋 98MB 깊은 복사 약 1.4초 — 정규화를 건너뛸 문서는 타일셋을 공유해도 되지만 «기준본은 사적 사본» 계약을 건드려 보류), ② `installReferenceOwners.bundledTilesets()`(번들 전체를 만들어 소유자 참고문서를 읽는다, 약 0.9초 — 테마가 늘수록 선형으로 늘며 id 별 지연 생성은 ensure* 와 결과가 같은지 확인이 필요), ③ 번들 데이터 청크(55MB JS, 첫 접속·캐시 미스 때 4.4MB gzip) — 테마별 지연 로드는 `ensureBundledTilesets` 가 모든 프로젝트에 모든 번들 타일셋을 심는 계약(AGENTS.md 「새 타일은 공용에 추가한다」)과 부딪혀 설계가 따로 필요하다.
+
 ## 스킬 도트 연출 빌리기 — 선택 필드 retroChoreographyId (2026-09-30)
 
 `SkillRecord.retroChoreographyId?: string` — 계약 연출 id(예: `skill_hero_flame_sword`). 정규화 화이트리스트와 편집 변이 키에 들어 있고, 비어 있으면 필드 자체가 없다. 없는 id 는 조수 도구가 거부하고(비슷한 후보를 돌려줌) 편집기는 계약 목록에서만 고르게 한다. 런타임 의미는 [runtime-battle.md](runtime-battle.md) 같은 날짜 절.

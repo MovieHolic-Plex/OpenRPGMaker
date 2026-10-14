@@ -14,6 +14,7 @@
   --swc-active: color-mix(in srgb, var(--swc-fg) 18%, transparent);
   --swc-close-bg: #e81123;
   --swc-close-active: #f1707a;
+  --swc-on-close: #fff;
   position: fixed;
   top: 0;
   right: 0;
@@ -50,8 +51,8 @@
 .studio-window-controls .swc-button:active { background: var(--swc-active); }
 .studio-window-controls .swc-button:focus-visible { outline: 2px solid var(--accent, #5b6cff); outline-offset: -3px; background: var(--swc-hover); }
 .studio-window-controls .swc-button.is-close:hover,
-.studio-window-controls .swc-button.is-close:focus-visible { background: var(--swc-close-bg); color: #fff; }
-.studio-window-controls .swc-button.is-close:active { background: var(--swc-close-active); color: #fff; }
+.studio-window-controls .swc-button.is-close:focus-visible { background: var(--swc-close-bg); color: var(--swc-on-close); }
+.studio-window-controls .swc-button.is-close:active { background: var(--swc-close-active); color: var(--swc-on-close); }
 .studio-window-controls .swc-button.is-fullscreen[aria-pressed="true"] { background: color-mix(in srgb, var(--swc-fg) 8%, transparent); }
 
 /* 전체화면은 OS 캡션 세 개와 다른 종류의 동작이라 얇은 구분선으로 떼어 둔다. */

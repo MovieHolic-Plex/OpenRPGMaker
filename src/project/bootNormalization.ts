@@ -12,11 +12,23 @@ import type { Project } from "./types";
  *
  * 안전 규칙:
  * - 표식이 없거나 짝이 다르면(옛 파일·미마이그 사본·새 빌드·새 공용 판본) 예전처럼 전부 정규화한다. 그 뒤 표식을 새긴다.
- * - 정규화기 코드를 바꾸면서 커밋이 안 바뀌는 자리(개발 서버·수정된 트리·커밋 미상)에서는 건너뛰지도, 새기지도 않는다.
+ * - 내용 지문이 없고(개발 서버·vitest) 정규화기 코드를 바꾸면서 커밋이 안 바뀌는 자리(수정된 트리·커밋 미상)에서는
+ *   건너뛰지도, 새기지도 않는다. 빌드 번들은 지문이 있어 수정된 트리에서도 건너뛴다.
  * - 공용 라이브러리를 아직 못 받았으면(`bundled`) 건너뛰지도, 새기지도 않는다 — 나중 판본과 짝이 안 맞을 표식을 남기지 않는다.
  * - 커밋이 같아도 정규화기를 손댔다면 이 숫자를 올린다.
  */
 export const NORMALIZER_VERSION = 1;
+
+/**
+ * 정규화기 입력(src/project·src/assets 와 정규화기가 import 하는 파일)의 내용 지문 — 번들에 빌드 때 새겨진다
+ * (scripts/lib/normalizerFingerprint.mjs, vite define). 빈 값이면 지문이 없는 환경(dev 서버·vitest·플레이어)이다.
+ *
+ * 왜(2026-10-14 실측, 98MB 타일셋 프로젝트): 커밋·`dirty` 로 짝을 지으면 ① 수정된 트리에서 빌드한 번들(:9888 서비스가 그랬다)은
+ * 표식을 새기지도 건너뛰지도 못해 **매 부팅** 정규화기 전체와 전후 요약을 돌렸고(웜 11.8s → 19–21s),
+ * ② 정규화기와 무관한 머지마다 «새 빌드» 가 되어 첫 부팅마다 다시 돌렸다. 지문은 git 상태에 기대지 않는다.
+ */
+declare const __OPRN_NORMALIZER_FINGERPRINT__: string | undefined;
+const NORMALIZER_FINGERPRINT: string = typeof __OPRN_NORMALIZER_FINGERPRINT__ === "string" ? __OPRN_NORMALIZER_FINGERPRINT__ : "";
 
 export interface BootNormalizationMarker {
   readonly v: number;
@@ -25,10 +37,12 @@ export interface BootNormalizationMarker {
 
 /** 지금 빌드·공용 판본의 짝. 건너뛰기를 믿을 수 없는 환경이면 null. */
 export function currentBootNormalizationMarker(): BootNormalizationMarker | null {
-  const { commit, dirty } = APP_VERSION_META;
-  if (dirty || !commit || commit === "unknown") return null;
   const revision = sharedContentSnapshot().revision;
   if (!revision || revision === "bundled") return null;
+  // 내용 지문이 있으면 그것이 «빌드 코드» 의 정체성이다 — 수정된 트리·커밋 미상에서도 맞다.
+  if (NORMALIZER_FINGERPRINT) return { v: NORMALIZER_VERSION, lib: `${revision}|n${NORMALIZER_FINGERPRINT}` };
+  const { commit, dirty } = APP_VERSION_META;
+  if (dirty || !commit || commit === "unknown") return null;
   return { v: NORMALIZER_VERSION, lib: `${revision}|${commit}` };
 }
 

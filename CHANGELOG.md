@@ -5,6 +5,37 @@
 
 <!-- releases -->
 
+## 0.219.1 — 2026-10-15
+
+### 수정
+
+- **ci** — record the desktop window-control CSS winners (`41a85a4`)
+
+### 성능
+
+- **boot** — editor startup 22.8s -> ~9s (normalization marker, deferred digests) (#2577) (`a3de392`)
+
+## 0.219.0 — 2026-10-14
+
+### 기능
+
+- **monster** — campaign scale parameters, definition-consistency check, post-save write rejection root-cause fix (#2573) (`03db7aa`)
+
+### 수정
+
+- **ci** — type the expedition rival rows and ferry menu (`9da5416`)
+
+## 0.218.0 — 2026-10-14
+
+### 기능
+
+- **desktop** — window controls — minimize / maximize / fullscreen / close icons at top-right, platform-adaptive (#2572) (`2b02d6a`)
+- **monster** — free-path monster intent routing, volcano start theme, no-capture tournament/expedition builders, family batch + propagating rename tools (#2570) (`91ba50d`)
+
+### 수정
+
+- **ci** — type the expedition format and species flying flag (`5c6882e`)
+
 ## 0.217.0 — 2026-10-14
 
 ### 기능

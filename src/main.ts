@@ -18,6 +18,7 @@ import { loadSharedContent } from "@/project/sharedContent";
 import { installReferenceDocumentOwners } from "@/project/installReferenceOwners";
 import { bootApp } from "@/app/mode";
 import { dismissBootLoader, reportBootStage } from "@/app/bootLoader";
+import { expectBootSettle } from "@/util/bootSettled";
 import { editorState } from "@/editor/editorState";
 import { addEvent } from "@/editor/eventActions";
 import { addEventPage, ensureEventPages } from "@/editor/eventPages";
@@ -32,6 +33,8 @@ import { configureProjectInterviewBootPreparation } from "@/editor/projectInterv
 // 이게 1번이라는 사실을 코드로 읽히게 하려는 것 — 누가 import 를 정리해도 의도가 남는다.
 installGlobalErrorTrap();
 installVitePreloadRecovery();
+// 로드 직후 걸리는 «한가할 때» 일(요약 데우기)은 첫 화면 뒤로 미룬다(src/util/bootSettled.ts).
+expectBootSettle();
 
 // 개발/테스트 플래그를 URL 파라미터에서 body class로 변환.
 // 각 플래그는 대응하는 CSS 모드(palette compact scroll 등)를 토글한다.
