@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a327badb4af175921163905185c5d26cc8e60fffa7f2e0ee69b22f8c3b4e7118",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "오아시스 풀밭(변주 2)",
+ "label": "desert-east/de-grass-c",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "oasis grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile is a seamless top-down grass ground texture.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4014
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "16x16 flat terrain ground tile depicting green grass texture seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8591
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground tile depicting grass texture across the full 16x16 surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4469
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "oasis grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ground texture of oasis grass filling the 16x16 tile seamlessly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3937
+  }
+ ],
+ "decidedAt": "2026-10-14T08:01:48.457Z",
+ "cells": {
+  "16": [
+   "292240967d78170a"
+  ],
+  "24": [
+   "080f6eec2098e46a",
+   "15d344e7c4e44995",
+   "4fac5063925a662f",
+   "55c31a5174cb0b22",
+   "6e5f2115c0cee56d",
+   "affdfed9fa0d5bea"
+  ],
+  "32": [
+   "31d50f4e9664ab85",
+   "4a66dfe0a2f861c4",
+   "86283e01824c7043",
+   "909555b5cef279c5",
+   "9ef38393fc76d29d",
+   "a15b5ec15a41716b"
+  ],
+  "48": [
+   "1244b78ab2a27fcc",
+   "722c4c47ed022e05",
+   "80d223cf31c6e2ca",
+   "a220f3b935fdf6d4",
+   "c05339f53c9863e9",
+   "d5ce596de07e8d44"
+  ]
+ }
+}

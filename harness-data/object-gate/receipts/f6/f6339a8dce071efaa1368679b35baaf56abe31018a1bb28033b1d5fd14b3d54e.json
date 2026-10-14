@@ -1,0 +1,143 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f6339a8dce071efaa1368679b35baaf56abe31018a1bb28033b1d5fd14b3d54e",
+ "width": 48,
+ "height": 96,
+ "kind": "structure",
+ "name": "망루(통나무 다리·사다리·눈 지붕 감시대)",
+ "label": "snow-north/sn-watchtower",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "watchtower with snow-covered pitched roof",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large snow-covered roof slope occupies rows 7-24 (18 rows) representing the foreshortened top surface facing south in classic 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3743
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "watchtower roof and platform",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered roof displays an extensive top-facing slope spanning rows 7 to 24 (18 source pixels tall), providing clear 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4289
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "watchtower with snow-covered roof and timber frame",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered forward roof slope is clearly rendered from row 7 down to row 24 (18 source pixel rows tall), providing the standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5331
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "watchtower with snow-covered roof and observation platform",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered roof shows a large foreshortened top slope spanning rows 7 to 24 (18 rows tall), and horizontal surfaces like the railing and lower support beam also display top-facing snow layers.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3142
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:35.383Z",
+ "cells": {
+  "16": [
+   "1556a1dfc8012806",
+   "1a61e04f8b313642",
+   "1af3dee3b6fefd7d",
+   "2172edab89905b84",
+   "28daeb8b27b3afe2",
+   "2d4b23fac285203b",
+   "4b8ce4f9dd417744",
+   "4dfdaae8df5fc983",
+   "51af0de5ef98ba6c",
+   "5da543a3b24f2d82",
+   "6b82bfce0d2036ee",
+   "7118e9b0adf49c51",
+   "750e1b7e39270ee1",
+   "7a13e8a2c891ab26",
+   "a1a3009dfd65698d",
+   "ac8572a7b8944ee3",
+   "b279cd22ffd6a646",
+   "e1109e272af69b40"
+  ],
+  "24": [
+   "16c1c3e97e8e7250",
+   "2a627994b4121ffb",
+   "58c6f754bf39d300",
+   "71cfd310f6c97469",
+   "740824d4e85bbfae",
+   "7c9cedeca5c34ac0",
+   "a9bf88a5d6b63b47",
+   "c8b137b0631076d9"
+  ],
+  "32": [
+   "0858f66a6f9faedf",
+   "0f0aae76b0da4a74",
+   "15bb8e1977bfcea4",
+   "17cc6bbd8406381b",
+   "5440655877cf7c40",
+   "59c9571e7500cec9",
+   "6f38bfda6c73a182",
+   "82de9da63ef56727",
+   "8522d05e8d950aac",
+   "85dd7d49c5a82454",
+   "87ca84a2db5ab1f2",
+   "b81b6ee0a72a9304",
+   "bccf52e42cb82838",
+   "c925aed67e001ea5",
+   "ee7875e59e169303",
+   "f472c9aa60162415",
+   "f9cd5611071c3b62",
+   "f9e61b25df4fa647"
+  ],
+  "48": [
+   "40eb2c4a0e626a25",
+   "e54a39e4c9f096a8"
+  ]
+ }
+}

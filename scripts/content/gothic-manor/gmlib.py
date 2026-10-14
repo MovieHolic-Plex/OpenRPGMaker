@@ -250,7 +250,7 @@ class Cv:
         self.ellipse(cx, y + top_ry, rx, top_ry, K(m, base + 1))
         self.ellipse(cx, y + top_ry, rx, top_ry, K(m, base + 2), fill=False)
 
-    def outline(self, color=None, inset=False):
+    def outline(self, color=None, inset=False, soft=False):
         """외곽선. inset=False: 투명 픽셀 중 불투명 이웃(4방)이 있는 곳을 그 이웃 색의 램프 최암단으로 칠한다(유색 윤곽).
         inset=True: 실루엣 가장자리 불투명 픽셀을 한 단 어둡게(덩어리 크기 유지). color 를 주면 그 색으로."""
         a = self.a; op = a[:, :, 3] > 0
@@ -271,7 +271,7 @@ class Cv:
                 for ox, oy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
                     xx, yy = x + ox, y + oy
                     if 0 <= xx < self.w and 0 <= yy < self.h and op[yy, xx]:
-                        add.append((x, y, color or _ramp_floor(tuple(int(v) for v in a[yy, xx])))); break
+                        add.append((x, y, color or _ramp_floor(tuple(int(v) for v in a[yy, xx]), soft))); break
         for x, y, c in add: self.P(x, y, c)
 
     def shadow(self, x, y, w, h=2, c=None):
@@ -279,10 +279,13 @@ class Cv:
         self.R(x, y, w, h, c or OL2)
 
 
-def _ramp_floor(c):
+def _ramp_floor(c, soft=False):
+    """유색 윤곽: 이웃 색 램프의 0 단. soft 면 1 단(검정에 가깝지 않은 어두운 색조 톤 — 나무·덤불처럼 그늘 쪽이 윤곽에 녹는 선택 윤곽)."""
     for name in ('wood', 'stone', 'slate', 'brick', 'iron', 'ivy', 'grass', 'dirt', 'bone', 'glass', 'glow', 'velvet', 'gold', 'violet', 'teal', 'water', 'bark', 'paper'):
         r = RAMPS[name]
-        if c in r: return r[0] if r[0] != c else OL
+        if c in r:
+            if soft: return r[1] if r[1] != c else r[0]
+            return r[0] if r[0] != c else OL
     return OL
 
 

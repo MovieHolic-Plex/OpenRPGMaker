@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fb9093f24acfe470702bfc9c09a0b8e0cf6768c97bd2192354c058ef41ad9043",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "잔디 경계석(안쪽 남서 변)",
+ "label": "modern-campus/mc-curb-in-sw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass terrain tile with corner border stone",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing grass surface viewed from above with a corner boundary stone in the southwest corner (rows 12-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6649
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass terrain tile with corner border stone",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain autotile depicting a top-down ground surface of grass with a grey stone border edge in the bottom-left corner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4876
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass terrain tile with corner border stone",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile viewed top-down with grass texture and an inner corner of grey border stone in the bottom-left corner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3853
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass terrain tile with corner stone boundary",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile showing grass with an inner southwest corner boundary stone segment seen directly from above in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3756
+  }
+ ],
+ "decidedAt": "2026-10-14T08:06:14.287Z",
+ "cells": {
+  "16": [
+   "cda9f0c6bf3f2fb7"
+  ],
+  "24": [
+   "233ee9cf5fed9c04",
+   "4139b9e2166115a3",
+   "6c968b0159aa8935",
+   "84a6e2055d629ca0",
+   "9c0fe76f95d610f9",
+   "b9c3662e9bf0852d"
+  ],
+  "32": [
+   "3260490f0d3ba6fc",
+   "334d8375e5b25217",
+   "4b01fffc5bacd9f8",
+   "6a60afa4526e1930",
+   "779fe1c5669cfd4a",
+   "e231c45f471b1a58"
+  ],
+  "48": [
+   "16af5572e43e6380",
+   "42ddf20107fbcda7",
+   "81c50b2d6a372895",
+   "9c09482182a08d86",
+   "a4b43e8d4e45db87",
+   "e62c547790754e5b"
+  ]
+ }
+}

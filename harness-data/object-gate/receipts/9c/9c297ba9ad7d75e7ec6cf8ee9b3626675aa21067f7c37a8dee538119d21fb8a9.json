@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9c297ba9ad7d75e7ec6cf8ee9b3626675aa21067f7c37a8dee538119d21fb8a9",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "잔잔한 모래(변주 2)",
+ "label": "desert-east/de-sand-c",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sand terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile representing calm sand, fully top-down/horizontal surface across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4580
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sand ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat sand ground terrain tile filling the 16x16 tile; top-down ground surface valid for RPG Maker perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5826
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sand ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile filling the 16x16 canvas representing sandy ground.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9767
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sand ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing a sandy surface across the entire 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4818
+  }
+ ],
+ "decidedAt": "2026-10-14T08:01:48.456Z",
+ "cells": {
+  "16": [
+   "ba0941d4e812bcef"
+  ],
+  "24": [
+   "26d2d20c22bb648b",
+   "32379de69b269744",
+   "603ab0e5768d8878",
+   "84f9f860ed2cf2b8",
+   "c38551954adcdeb2",
+   "f04c940dbc76ccb6"
+  ],
+  "32": [
+   "031d8c20740a511f",
+   "545008ed18f374cb",
+   "5b8c3ba7f5d611e9",
+   "b1f6615fb44d6d0b",
+   "d67b9960349d8b77",
+   "e2cb72c0f2ebb5ce"
+  ],
+  "48": [
+   "044c22158e2da203",
+   "04cc07bee62bd591",
+   "1358e4250fec3904",
+   "1404203a95b40867",
+   "4c9b78b0503dc7d3",
+   "4e02c74a73d697d6"
+  ]
+ }
+}

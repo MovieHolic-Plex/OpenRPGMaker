@@ -46,6 +46,15 @@ modern-chipset 하네스가 합성한 도시(건물·도로·소품·차량)를 
 - 도구는 시작 칸 → 모든 문 접근칸 도달·문 칸 막힘을 엔진 통행으로 다시 재고, 실패하면 맵을 안 바꾼다. 건물 이름표(`locations`, 태그 `modern-city-building`)에 문·접근칸·맞는 실내 방 구성(program)을 적는다.
 - QA: `qa/compose-street.mts OUT.json [W H seed …]` → `qa/render_map.py OUT.json DIR`.
 
+## 거리 녹지 — 버들항 화풍 맞추기 (2026-10-14 quality-b, `scripts/content/modern-city-street/`)
+
+- 코드 손 도트 `art_green.py`: 큰 가로수 키트 `mc-prop-keyaki-a`·`-b`(느티나무 3×4)·`mc-prop-ginkgo-big-a`(은행나무 가을 3×4)·`mc-prop-park-tree-a`(공원 큰 나무 4×5)·`mc-prop-azalea-a`·`-b`(철쭉 덤불 2×2), 잔디 그룹 `mc:lawn`(바탕 4·짙은 풀 덩이 2·토끼풀·민들레). 수관은 잎 덩이 합집합 + 흩뿌린 2~3화소 잎(좌상 빛, 명암 7단) + 덩이 사이 짙은 골 + 짙은 녹색 선택 윤곽(남색 잉크 아님) + 땅 그림자. 맨 아랫줄은 줄기 칸 막힘·그림자만 있는 칸 flat(통행, 사람 밑), 윗줄 ★.
+- 팔레트 `palette.py` 에 램프 6개를 **끝에** 덧붙였다(lawn 7·canopy 7·grove 3·ginkgo 5·bark 5·azalea 5, 글자는 그리스 문자 — 앞 글자·색 불변). 녹색 계열은 같고 채도만 덜 눌렀다(SAT 0.55 → 0.72~0.8).
+- 굽기 `bake_green.py`(덧붙이기 전용, 10743→10812칸, 소유 `tiledata/modern-city/street-green/baked.json`) — `bake_tileset.py` 가 실내 다음에 다시 부른다. 관문 `bake_green.py gate` → `object-gate review --batch tiledata/modern-city/street-green/_gate/items.jsonl`: 14/14 임시 통과(provisional, 프로필 미보정).
+- 옛 칸을 제자리에서 다시 그리지 않은 이유: 나무·잔디·옥상은 사람이 고른 하네스 합격 PNG 를 자른 칸이고 576 키트 화소 재조립 대조가 그 PNG 를 기준으로 한다. 옥상은 건물 키트 259개(칸 7,313)에 박혀 있어 다시 그리면 대조가 깨지거나 칸이 수천 개 늘고, 오버레이로 덮으려 해도 지붕 바탕 칸이 난간과 칸 정렬이 안 맞아 얼룩 사각형만 생긴다 → 옥상은 남은 일.
+- 거리 구성기: 잔디는 `mc:lawn` 을 칸 해시로 섞어 칠하고(옛 정의면 `mc:green`), 남쪽 보도·세로 도로 보도 가로수는 큰 가로수(줄기 = 맨 아래 보도 줄, 수관은 연석·차도 위), 건물 뒤 녹지는 열마다 큰 나무·철쭉 둘까지, 공원은 큰 나무 하나 + 잎 덩이 나무 + 철쭉. 키트가 없으면 옛 키트로 돌아간다.
+- 지표(60×48 seed 17 장면): 칸당 고유색 중앙값 3→5·p90 9→11, 채도 0.38→0.41. 새 칸만: 중앙값 9·p90 11·채도 0.61(옛 나무·잔디 칸 5·7·0.45).
+
 ## 실내 (2026-10-14, `scripts/content/modern-city-int/`)
 
 - 가구 64종·바닥 9·벽면 8·탁자 3·탁상 물건 7 — 코드 손 도트(`pieces.py`, `art_*.py`), object-gate 영수증(문 4종은 조립 방 `assembled.py`). 네 번 다시 그려도 못 넘은 14종은 `pieces.DROPPED`.

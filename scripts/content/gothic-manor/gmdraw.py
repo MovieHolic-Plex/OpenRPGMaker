@@ -377,10 +377,10 @@ def texture_pass(c, mats=('stone', 'bone'), amt=.07, seed=0):
             elif h > 1 - amt * .4: c.P(x, y, lighter(col, 1))
 
 
-def finish(c, inset=False, tex=False):
-    """유색 외곽선(바깥 1px). tex=True 면 먼저 돌 결을 입힌다."""
+def finish(c, inset=False, tex=False, soft=False):
+    """유색 외곽선(바깥 1px). tex=True 면 먼저 돌 결을 입힌다. soft=True 면 램프 1 단 윤곽(나무·덤불)."""
     if tex: texture_pass(c)
-    c.outline(inset=inset)
+    c.outline(inset=inset, soft=soft)
 
 
 def slab_top(c, x0, y0, w, h, m='stone', t=6, seams=5):

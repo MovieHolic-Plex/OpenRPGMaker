@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f32b89b81fa63ba328732fcd9532932fdb4a42e2865624bd3c14b1113f7da58c",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "사우나 오두막(뗏장 지붕, 붉은 문, 쇠 연통)",
+ "label": "snow-north/sn-sauna",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sauna cabin building",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabin features a prominent snow-covered roof slope occupying rows 12 to 36 (about 24 pixel rows) above the front log wall and red door, providing standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10537
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sauna cabin with snow-covered roof and log facade",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered roof slope is clearly visible from rows 12 to 36 (approx. 24 rows) above the south-facing log wall (rows 37-61), properly rendering the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5734
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "log sauna cabin with snow-covered roof and front wall",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure shows a large forward-sloping snow-covered roof spanning rows 13 to 36 (about 24 rows) above the front log wall and door (rows 37 to 61), perfectly fitting 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5913
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sauna cabin",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabin features a large south-facing snow-covered roof slope spanning rows 13 to 36 above the front log wall, matching standard top-down 3/4 RPG building perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5417
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:35.382Z",
+ "cells": {
+  "16": [
+   "00ec8dfb25394b56",
+   "0f3246129148cd4f",
+   "33684e231065752e",
+   "36b6f21108cc954e",
+   "65f935df4bf3e5ab",
+   "7889233dfbe80052",
+   "9954ec891b944a24",
+   "b2fe61b9a255de1e",
+   "e4a48c9a2e959fe4",
+   "f0154f5b53c26593",
+   "f41aecf5f61f1bbe",
+   "f72f09238abbf1e4"
+  ],
+  "24": [
+   "0a3f3f7b70521e2f",
+   "0f8e3f5d8736828a",
+   "110de499f12c447e",
+   "1d614925eeddd515",
+   "1d6453890efce3a8",
+   "3f9a41cbc9858bbe",
+   "60b08f34384621af",
+   "67e2f1feb6286121",
+   "6bfbad2468ea3299",
+   "9294541a387b416e",
+   "a9697d7fc33479dc",
+   "ed5997a94d0821d2"
+  ],
+  "32": [
+   "0717b52679733d9d",
+   "232bf71a254b9049",
+   "58720a80cc45fafe",
+   "5db0445e7457bfcc",
+   "652cb665fbe7d869",
+   "6c04b3f620ecb3f8",
+   "71edf120ee4f8d5f",
+   "8adfde115f11cb5f",
+   "a77af884bc85a16e",
+   "d436562e28e25228",
+   "e281c3c5c4675d20",
+   "e953c2f22d716f95"
+  ],
+  "48": [
+   "61745aa627bd330f",
+   "74fa95e987cd914c",
+   "8cdefb47b494a4a8",
+   "ff5f3a8c6ed46d52"
+  ]
+ }
+}

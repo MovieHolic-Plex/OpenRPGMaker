@@ -32,11 +32,11 @@
   ]
  },
  "tiles": {
-  "count": 1014,
-  "rows": 22,
+  "count": 1061,
+  "rows": 23,
   "sheetPx": [
    768,
-   352
+   368
   ],
   "kits": 110,
   "groups": 56,
@@ -50,7 +50,7 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 1014,
+  "tiles_checked": 1061,
   "kits_checked": 110,
   "groups_checked": 56,
   "autotiles_checked": 0

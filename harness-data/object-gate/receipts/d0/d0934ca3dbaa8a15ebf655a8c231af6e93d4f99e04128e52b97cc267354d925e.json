@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d0934ca3dbaa8a15ebf655a8c231af6e93d4f99e04128e52b97cc267354d925e",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "물가 돌 축대(북동쪽 뭍)",
+ "label": "sengoku-edo/se-water-ne",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "waterfront stone embankment tile with northeast land and southwest water",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting an embankment edge with top-down stone ground along the top and right enclosing water in the southwest.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4901
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water corner bordered by stone pavement and railing to the north and east",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting water bordered by stone paving and a perimeter fence/railing on the north and east edges, viewed in standard top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6070
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone embankment and water tile",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing a stone embankment edge and water surface viewed from above with proper top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4529
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone embankment and water terrain",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing a stone embankment edge bordering a water surface from the north and east. Ground surface visible at rows 0-4 and top-down water below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4982
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:28.013Z",
+ "cells": {
+  "16": [
+   "366d7d1684336083"
+  ],
+  "24": [
+   "121c03c768e89a5c",
+   "194c23695f7dda90",
+   "3cd83958fc9a816d",
+   "5309ba52c422ce7a",
+   "78d4bd11c49faf15",
+   "c34af399d4e44ff3"
+  ],
+  "32": [
+   "171c32686408a14a",
+   "1c1e933e70496861",
+   "3961ec9105e05646",
+   "424a3a3201f72e15",
+   "9a296fbd042f8d31",
+   "f5d4d57dd524be05"
+  ],
+  "48": [
+   "3b15e7d07b29693f",
+   "552cc60e8f75ee77",
+   "64c71f60fc85613d",
+   "97b22ccefd9b74c4",
+   "acc3d5bf211f9b10",
+   "bb3c2ef2cb7ba81e"
+  ]
+ }
+}

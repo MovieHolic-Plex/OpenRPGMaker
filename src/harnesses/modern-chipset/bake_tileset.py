@@ -799,6 +799,10 @@ def main():
         sys.path.insert(0, os.path.join(ROOT, 'scripts', 'content', 'modern-city-int'))
         import bake_interior
         bake_interior.apply()
+        # 거리 녹지(큰 가로수·잔디 변형, scripts/content/modern-city-street) — 같은 방식으로 덧붙인 칸·키트(mc-prop-keyaki-* 등)·그룹(mc:lawn)을 다시 붙인다.
+        sys.path.insert(0, os.path.join(ROOT, 'scripts', 'content', 'modern-city-street'))
+        import bake_green
+        bake_green.apply()
     rep = out['report']
     if a.selftest:
         rep['selftest'] = selftest(a.out_root)

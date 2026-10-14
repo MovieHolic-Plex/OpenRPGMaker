@@ -14,7 +14,7 @@
 // 이 파일은 순수 함수다: GameMap·TilesetDef 를 받아 칸을 쓴다(도구 compose_sf_station_map 이 복제본에서 부른다).
 
 import { setLayerTileAt, layerTileAt } from "@/project/mapLayers";
-import { addMapLocation } from "@/project/mapNamedLocations";
+import { addMapLocation, COMPOSED_LAYOUT_TAG } from "@/project/mapNamedLocations";
 import type { GameMap, StructureKitDef, TilesetDef } from "@/project/types";
 
 export type SfMapKind = "station" | "lab" | "street" | "moonbase";
@@ -620,7 +620,7 @@ export function labelSfAreas(map: GameMap, areas: readonly SfArea[]): string[] {
   const lines: string[] = [];
   for (const a of areas) {
     const note = a.door ? `문 (${a.door.x},${a.door.y}) · 문 앞 접근칸 (${a.door.x},${a.door.y + 1})` : "구역";
-    const added = addMapLocation(map, { name: a.name, x: a.x, y: a.y, w: a.w, h: a.h, note, tags: ["sf-area", a.tag] });
+    const added = addMapLocation(map, { name: a.name, x: a.x, y: a.y, w: a.w, h: a.h, note, tags: ["sf-area", COMPOSED_LAYOUT_TAG, a.tag] });
     if (added.ok) lines.push(a.door ? `${a.name} 문 (${a.door.x},${a.door.y})` : a.name);
   }
   return lines;

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "daa58378d48a90a2ff07718aabb5f9a0d70570c68275ee327a2521c6ae20052b",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "잔디 경계석(서 변)",
+ "label": "modern-campus/mc-curb-w",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "curb edge and grass terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a vertical curb border between pavement and grass seen from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3556
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "curb border and grass terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a vertical border curb separating ground and lawn, viewed correctly from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6363
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "curb edge and grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a stone border/curb separating ground textures, seen top-down as expected for terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5130
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "curb stone and grass border",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing ground with a stone curb border separating asphalt/pavement from grass.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4822
+  }
+ ],
+ "decidedAt": "2026-10-14T08:06:14.286Z",
+ "cells": {
+  "16": [
+   "acc137989bfd2f8c"
+  ],
+  "24": [
+   "0e95edf94984ca90",
+   "1a34a484050c18f2",
+   "4bb3a6fca764e99b",
+   "77ed5439ab367aa5",
+   "c55cb89865d3f1d0",
+   "e06103f78812d483"
+  ],
+  "32": [
+   "3643b95db1ddc17d",
+   "7b2e5bcb6daad7d1",
+   "8107226541336706",
+   "953feeb66d5942b5",
+   "99ce974adaabcd85",
+   "d4c820e8cff59b4f"
+  ],
+  "48": [
+   "198cb5877773e6b8",
+   "49d4626e54e50feb",
+   "6c275777ad1d1f2b",
+   "7769ef374420b6ac",
+   "92c33ef7c612d853",
+   "d2f5db4109d1b263"
+  ]
+ }
+}

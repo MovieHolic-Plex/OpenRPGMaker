@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "85b687788c918aa1b35d8548c8d5ad4f4630ad9ea80696762e75e487662cbc4c",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "마른 풀밭 A",
+ "label": "gothic_manor/gm-ground-grass-a",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ground texture (dry grass)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 dry grass terrain ground tile viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3417
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dry grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 terrain surface representing dry grass ground in top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3295
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dry grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile representing dry grass covering the full 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2853
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dry grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless dry grass ground tile viewed from above, perfectly matching the terrain kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2316
+  }
+ ],
+ "decidedAt": "2026-10-14T07:55:00.835Z",
+ "cells": {
+  "16": [
+   "4dffb77308da9bcb"
+  ],
+  "24": [
+   "0a21fe8abf49ab4e",
+   "144c652aef799614",
+   "37dd649e54b290c2",
+   "7cc8f7cbe4f0afac",
+   "8b39d75217a28fe2",
+   "f1051ab062824b34"
+  ],
+  "32": [
+   "0ec18b420aab6f23",
+   "5f4df8fe82881dc3",
+   "74c54e3b7cb7d055",
+   "7c85accabf4daa68",
+   "7f7179e5e8e08d4e",
+   "c17f9ce113a205a5"
+  ],
+  "48": [
+   "617878a203f3b2f0",
+   "7092a074ebf51159",
+   "987a181954adfa35",
+   "a0cf4293f02f5014",
+   "e18d77f6efe6c824",
+   "e20fee743ad9f6a4"
+  ]
+ }
+}

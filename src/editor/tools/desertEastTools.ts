@@ -6,8 +6,7 @@ import pieces from "@/assets/desertEastPieces.json";
 import { isPassable } from "@/project/collision";
 import { setLayerTileAt } from "@/project/mapLayers";
 import { clearTileStack } from "@/project/mapOverlayTiles";
-import { addMapLocation } from "@/project/mapNamedLocations";
-import { COMPOSED_LAYOUT_TAG } from "@/ai/piAgent/layoutQuality";
+import { addMapLocation, COMPOSED_LAYOUT_TAG } from "@/project/mapNamedLocations";
 import { extractTreeNode, insertTreeNode } from "@/project/mapTree";
 import {
   DESERT_KIND_LABEL, DESERT_MIN_SIZE, DESERT_ROOM_LABEL, DESERT_ROOM_MAX, DESERT_ROOM_MIN,

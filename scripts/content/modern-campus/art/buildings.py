@@ -29,8 +29,19 @@ def cell(name):
 
 
 # ═══════════════════════ 벽 재질 ═══════════════════════
-def conc_wall(c, x, y, w, h, base=5, s=3):
-    """흰 칠 콘크리트 벽: 거의 평평 + 드문 1px 얼룩 + 아주 옅은 가로 거푸집 줄(8px 주기, 점선)."""
+def conc_wall(c, x, y, w, h, base=5, s=3, mat='conc'):
+    """흰 칠 콘크리트 벽: 거의 평평 + 드문 1px 얼룩 + 아주 옅은 가로 거푸집 줄(8px 주기, 점선).
+    mat='kinari'(quality-b): 미색 칠 벽 — base 는 conc 단(5/4)을 kinari 단(3/2)으로 옮긴다."""
+    if mat == 'kinari':
+        kb = 3
+        def g(wx, wy, i, j):
+            lx, ly = wx % 16, wy % 16
+            q = rnd(lx, ly, s + 1); t = kb
+            if q > 0.975: t = kb - 1
+            elif q < 0.015 and kb < 4: t = kb + 1
+            if ly % 8 == 7 and (lx + ly) % 4 == 0: t = kb - 1
+            return ('kinari', t)
+        c.F(x, y, w, h, g); return
     def f(wx, wy, i, j):
         lx, ly = wx % 16, wy % 16
         q = rnd(lx, ly, s + 1)
@@ -53,10 +64,13 @@ def stucco(c, x, y, w, h, base=3):
     c.F(x, y, w, h, f)
 
 
-# ── kr: 한국 학교(흰 콘크리트, 띠 창) ──
+WALL = 'kinari'   # quality-b: 한국 학교·체육관 벽은 미색 칠(회보라 conc 는 칙칙했다)
+
+
+# ── kr: 한국 학교(미색 칠 콘크리트, 띠 창) ──
 def kr_storey_u(c, end=None, ground=False):
     """윗줄 0~15: 슬래브 띠 0~3 · 창 4~15(위쪽)."""
-    conc_wall(c, 0, 0, 16, 16)
+    conc_wall(c, 0, 0, 16, 16, mat=WALL)
     c.HL(0, 0, 16, 'conc', 6); c.R(0, 1, 16, 2, 'conc', 4); c.HL(0, 3, 16, 'conc', 2)
     x0, x1 = (3, 15) if end == 'L' else (1, 13) if end == 'R' else (1, 15)
     # 창 위쪽 절반(틀 + 유리) — 아랫줄에서 이어진다
@@ -73,7 +87,7 @@ def kr_storey_u(c, end=None, ground=False):
 
 def kr_storey_d(c, end=None, ground=False):
     """아랫줄: 창 아래쪽 0~5 · 창턱 6~7 · 허리벽 8~15(접지층은 화강암 기단 13~15)."""
-    conc_wall(c, 0, 0, 16, 16)
+    conc_wall(c, 0, 0, 16, 16, mat=WALL)
     x0, x1 = (3, 15) if end == 'L' else (1, 13) if end == 'R' else (1, 15)
     c.R(x0, 0, x1 - x0, 6, 'conc', 5)
     for j in range(0, 5):
@@ -87,17 +101,21 @@ def kr_storey_d(c, end=None, ground=False):
     c.HL(x0 - 1 if x0 > 0 else 0, 5, x1 - x0 + (2 if x0 > 0 else 1), 'conc', 6); c.HL(x0, 6, x1 - x0, 'conc', 3)   # 창턱 윗면 + 그늘
     # 허리벽 빗물 자국
     for i in (x0 + 2, x1 - 4):
-        if h32(i, 1, 7) % 2: c.VL(i, 7, 3, 'conc', 4)
+        if h32(i, 1, 7) % 2: c.VL(i, 7, 3, 'kinari', 2)
+    c.HL(x0, 7, x1 - x0, 'kinari', 2)                                                  # 창턱 밑 그늘
     if ground:
-        c.HL(0, 12, 16, 'hodo', 5); c.R(0, 13, 16, 3, 'hodo', 3); c.HL(0, 15, 16, 'sumi', 1)
+        # quality-b: 1층 허리벽은 붉은 벽돌 + 화강암 기단(학교 1층의 흔한 마감)
+        c.F(0, 8, 16, 4, lambda wx, wy, i, j: tex_brick(wx % 16, (wy % 16), base=4, mortar=('renga', 2), s=5))
+        c.HL(0, 7, 16, 'kinari', 4); c.HL(0, 8, 16, 'renga', 2)
+        c.HL(0, 12, 16, 'hodo', 5); c.R(0, 13, 16, 3, 'hodo', 3); c.HL(0, 15, 16, 'sumi', 2)
     _kr_ends(c, end)
 
 
 def _kr_ends(c, end):
     if end == 'L':
-        c.VL(0, 0, 16, 'sumi', 1); c.VL(1, 0, 16, 'conc', 6)
+        c.VL(0, 0, 16, 'sumi', 2); c.VL(1, 0, 16, 'kinari', 4)
     if end == 'R':
-        c.VL(15, 0, 16, 'sumi', 1); c.VL(14, 0, 16, 'conc', 2); c.VL(13, 0, 16, 'conc', 3)
+        c.VL(15, 0, 16, 'sumi', 2); c.VL(14, 0, 16, 'kinari', 1); c.VL(13, 0, 16, 'kinari', 2)
 
 
 for e, nm in ((None, 'M'), ('L', 'L'), ('R', 'R')):
@@ -109,7 +127,7 @@ for e, nm in ((None, 'M'), ('L', 'L'), ('R', 'R')):
 
 @blk('kr.pier.u')
 def _(c):
-    conc_wall(c, 0, 0, 16, 16); c.HL(0, 0, 16, 'conc', 6); c.R(0, 1, 16, 2, 'conc', 4); c.HL(0, 3, 16, 'conc', 2)
+    conc_wall(c, 0, 0, 16, 16, mat=WALL); c.HL(0, 0, 16, 'conc', 6); c.R(0, 1, 16, 2, 'conc', 4); c.HL(0, 3, 16, 'conc', 2)
     # 계단실 세로 창(두 줄에 걸쳐 이어진다)
     c.R(4, 5, 8, 11, 'conc', 6)
     for j in range(6, 16):
@@ -120,7 +138,7 @@ def _(c):
 
 @blk('kr.pier.d')
 def _(c):
-    conc_wall(c, 0, 0, 16, 16)
+    conc_wall(c, 0, 0, 16, 16, mat=WALL)
     c.R(4, 0, 8, 9, 'conc', 6)
     for j in range(0, 8):
         for i in range(5, 11): c.P(i, j, 'garasu', 3 if j < 4 else 2)
@@ -131,7 +149,7 @@ def kr_door(c, side, row):
     """현관(2칸): 윗줄 = 슬래브 + 차양(윗면 5행 + 앞면 3행 + 그늘), 아랫줄 = 유리 양개문 + 계단."""
     L = side == 'L'
     if row == 'u':
-        conc_wall(c, 0, 0, 16, 16)
+        conc_wall(c, 0, 0, 16, 16, mat=WALL)
         c.HL(0, 0, 16, 'conc', 6); c.R(0, 1, 16, 2, 'conc', 4); c.HL(0, 3, 16, 'conc', 2)
         # 차양: 윗면(6행, 뒤 가장자리 어둡게) 앞면 3행
         c.HL(0, 5, 16, 'conc', 3); c.R(0, 6, 16, 5, 'conc', 6); c.HL(0, 10, 16, 'shiro', 4)
@@ -413,21 +431,21 @@ for sd in 'LR':
 # ── gy: 체육관(한 층 3줄: 높은 창 띠 · 벽 · 기단) ──
 def gy_row(c, row, end=None):
     if row == 0:      # 높은 창 띠
-        conc_wall(c, 0, 0, 16, 16, base=4)
+        conc_wall(c, 0, 0, 16, 16, base=4, mat=WALL)
         c.R(1, 4, 14, 8, 'conc', 5)
         for j in range(5, 11):
             for i in range(2, 14):
                 c.P(i, j, 'garasu', 1 if j == 5 else 4 if j < 8 else 3)
         c.VL(8, 5, 6, 'conc', 5); c.HL(1, 12, 14, 'conc', 6); c.HL(1, 13, 14, 'conc', 2)
     elif row == 1:    # 패널 벽
-        conc_wall(c, 0, 0, 16, 16, base=4)
+        conc_wall(c, 0, 0, 16, 16, base=4, mat=WALL)
     else:             # 기단
-        conc_wall(c, 0, 0, 16, 16, base=4)
+        conc_wall(c, 0, 0, 16, 16, base=4, mat=WALL)
         c.HL(0, 8, 16, 'hodo', 5); c.R(0, 9, 16, 7, 'hodo', 3)
         for i in range(0, 16, 8): c.VL(i, 9, 6, 'hodo', 2)
         c.HL(0, 15, 16, 'sumi', 1)
-    if end == 'L': c.VL(0, 0, 16, 'sumi', 1); c.VL(1, 0, 16, 'conc', 6)
-    if end == 'R': c.VL(15, 0, 16, 'sumi', 1); c.VL(14, 0, 16, 'conc', 2)
+    if end == 'L': c.VL(0, 0, 16, 'sumi', 2); c.VL(1, 0, 16, 'kinari', 3)
+    if end == 'R': c.VL(15, 0, 16, 'sumi', 2); c.VL(14, 0, 16, 'kinari', 1)
 
 
 for e, nm in ((None, 'M'), ('L', 'L'), ('R', 'R')):
@@ -438,7 +456,7 @@ for e, nm in ((None, 'M'), ('L', 'L'), ('R', 'R')):
 def gy_pil(c, r):
     gy_row(c, r)
     top = 13 if r == 0 else 0; bot = 16 if r < 2 else 9
-    c.R(5, top, 6, bot - top, 'conc', 5); c.VL(5, top, bot - top, 'conc', 6); c.VL(10, top, bot - top, 'conc', 3); c.VL(11, top, bot - top, 'conc', 2)
+    c.R(5, top, 6, bot - top, 'kinari', 3); c.VL(5, top, bot - top, 'kinari', 4); c.VL(10, top, bot - top, 'kinari', 1); c.VL(11, top, bot - top, 'kinari', 0)
     if r == 0: c.HL(4, 12, 8, 'conc', 6)
 
 
@@ -449,7 +467,7 @@ def gy_door(c, side, row):
     """체육관 큰 철문(2칸 × 줄 1·2)."""
     L = side == 'L'
     if row == 1:
-        conc_wall(c, 0, 0, 16, 16, base=4)
+        conc_wall(c, 0, 0, 16, 16, base=4, mat=WALL)
         c.R(0, 4, 16, 3, 'conc', 6); c.HL(0, 4, 16, 'conc', 3); c.R(0, 7, 16, 2, 'conc', 3); c.R(0, 9, 16, 1, 'yoru', 1)
         c.R(0, 10, 16, 6, 'tekko', 4)
         for j in range(10, 16, 2): c.HL(0, j, 16, 'tekko', 3)
@@ -468,12 +486,18 @@ for sd in 'LR':
 
 # ═══════════════════════ 지붕 ═══════════════════════
 def membrane(c, x, y, w, h, s=11):
-    """평지붕 방수층: 밝은 회색(hodo 5) + 판 이음 + 자갈 점."""
+    """평지붕 방수층(quality-b): 초록 우레탄 도막(한국 학교 옥상) — 8px 판 이음(짙은 줄 + 위쪽 밝은 줄) + 닳은 자리(lino) + 얼룩.
+    옛 판은 밝은 회색 단색(hodo 5)이라 옥상이 «단색 판»으로 읽혔다."""
     def f(wx, wy, i, j):
         lx, ly = wx % 16, wy % 16
-        if ly == 15 or lx == 15: return ('hodo', 4)
-        r = rnd(lx, ly, s)
-        return ('hodo', 4 if r < 0.12 else 6 if r > 0.95 else 5)
+        if ly % 8 == 7: return ('midori', 1) if lx % 8 != 3 else ('kokuban', 2)
+        if ly % 8 == 0: return ('midori', 3) if rnd(lx, ly, s + 2) < 0.55 else ('midori', 2)
+        if lx == 15 and ly % 8 in (2, 3, 4, 5): return ('midori', 1)
+        r = rnd(lx // 2, ly // 2, s); q = rnd(lx, ly, s + 5)
+        if r < 0.10: return ('lino', 2)
+        if q > 0.97: return ('midori', 3)
+        if q < 0.06: return ('midori', 1)
+        return ('midori', 2)
     c.F(x, y, w, h, f)
 
 
@@ -481,10 +505,10 @@ def flat(c, row, col, wall='kr'):
     """평지붕 칸. row b(뒤)·m(가운데)·f(앞: 방수층 + 파라펫 윗면 3행 + 바깥 면 6행) · col L/M/R."""
     membrane(c, 0, 0, 16, 16)
     if row == 'b':
-        c.HL(0, 0, 16, 'sumi', 1); c.R(0, 1, 16, 2, 'conc', 6); c.HL(0, 3, 16, 'conc', 4); c.R(0, 4, 16, 2, 'conc', 3)   # 뒤 파라펫: 윗면 + 안쪽 면
-        c.HL(0, 6, 16, 'hodo', 3)
+        c.HL(0, 0, 16, 'sumi', 2); c.R(0, 1, 16, 2, 'conc', 6); c.HL(0, 3, 16, 'conc', 4); c.R(0, 4, 16, 2, 'conc', 3)   # 뒤 파라펫: 윗면 + 안쪽 면
+        c.HL(0, 6, 16, 'kokuban', 1); c.HL(0, 7, 16, 'midori', 1)                     # 뒤 파라펫이 지붕에 드리운 그늘(빛 왼위)
     if row == 'f':
-        c.HL(0, 6, 16, 'hodo', 6)                                       # 앞 파라펫 안쪽 면 위 빛
+        c.HL(0, 6, 16, 'midori', 3)                                     # 앞 파라펫 안쪽 면 위 빛
         c.R(0, 7, 16, 3, 'conc', 6); c.HL(0, 7, 16, 'shiro', 4); c.HL(0, 9, 16, 'conc', 5)   # 앞 파라펫 윗면(3행, 가장 밝다)
         if wall == 'kr':
             c.R(0, 10, 16, 6, 'conc', 4); c.HL(0, 10, 16, 'conc', 3); c.R(0, 12, 16, 2, 'midori', 1); c.HL(0, 12, 16, 'midori', 2); c.HL(0, 15, 16, 'conc', 3)
@@ -497,12 +521,13 @@ def flat(c, row, col, wall='kr'):
         elif wall == 'cr':
             c.R(0, 10, 16, 6, 'kinari', 4); c.HL(0, 10, 16, 'kinari', 2); c.HL(0, 14, 16, 'kinari', 2); c.HL(0, 15, 16, 'kinari', 1)
     if col == 'L':
-        c.R(0, 0, 3, 16 if row != 'f' else 10, 'conc', 6); c.VL(0, 0, 16, 'sumi', 1); c.VL(3, 0 if row != 'b' else 4, 16 if row != 'f' else 7, 'conc', 3)
+        c.R(0, 0, 3, 16 if row != 'f' else 10, 'conc', 6); c.VL(0, 0, 16, 'sumi', 2); c.VL(3, 0 if row != 'b' else 4, 16 if row != 'f' else 7, 'conc', 3)
+        c.VL(4, 0 if row != 'b' else 6, 16 if row != 'f' else 6, 'midori', 1)                # 왼 파라펫 그늘
         if row == 'b': c.P(1, 1, 'shiro', 4)
     if col == 'R':
-        c.R(13, 0, 3, 16 if row != 'f' else 10, 'conc', 5); c.VL(15, 0, 16, 'sumi', 1); c.VL(12, 0 if row != 'b' else 4, 16 if row != 'f' else 7, 'hodo', 6)
+        c.R(13, 0, 3, 16 if row != 'f' else 10, 'conc', 5); c.VL(15, 0, 16, 'sumi', 2); c.VL(12, 0 if row != 'b' else 4, 16 if row != 'f' else 7, 'midori', 3)
     if col in 'LR' and row == 'f':
-        c.VL(0 if col == 'L' else 15, 0, 16, 'sumi', 1)
+        c.VL(0 if col == 'L' else 15, 0, 16, 'sumi', 2)
 
 
 for w in ('kr', 'gl', 'br', 'cr'):
@@ -562,7 +587,7 @@ def stairhouse(c, half, row):
         c.HL(0, 13, 16, 'shiro', 4); c.R(0, 14, 16, 2, 'conc', 3)
         c.VL(0 if L else 15, 4, 12, 'sumi', 1)
     else:
-        conc_wall(c, 0, 0, 16, 14, base=5); c.HL(0, 0, 16, 'conc', 2)
+        conc_wall(c, 0, 0, 16, 14, base=5, mat=WALL); c.HL(0, 0, 16, 'kinari', 1)
         if L: c.R(6, 3, 8, 11, 'tekko', 4); c.VL(6, 3, 11, 'tekko', 5); c.VL(13, 3, 11, 'tekko', 2); c.P(12, 8, 'kii', 4)
         else: c.R(3, 3, 6, 4, 'conc', 5); c.R(4, 4, 4, 2, 'garasu', 3)
         c.VL(0 if L else 15, 0, 14, 'sumi', 1); c.HL(0, 14, 16, 'hodo', 3); c.HL(0, 15, 16, 'hodo', 4)
@@ -574,7 +599,7 @@ for hf in 'LR':
 
 
 # ── 모임지붕(사다리꼴) ──
-ROOF = dict(slate=('tairu', 3), clay=('kawara', 4), green=('kokuban', 2), metal=('tekko', 4))
+ROOF = dict(slate=('tairu', 3), clay=('kawara', 4), green=('kokuban', 2), metal=('tekko', 4), blue=('sora', 2))
 
 
 def roof_tone(mat, base, ly, D):
@@ -731,7 +756,7 @@ add_bld('bld-dorm-7', '기숙사(크림 미장 4층 발코니, 붉은 기와 모
         ['기숙사', '대학', '학교'], '캠퍼스 가장자리, 운동장·주차장 반대편 조용한 곳.')
 add_bld('bld-dorm-flat', '기숙사(크림 미장 3층, 평지붕, 폭 6)', bld('cr', 6, 3, roof='flat', D=3, door=2, rooftop={(3, 1): 'rt.tank'}), 2,
         ['기숙사', '학교'], '기숙사 별동.')
-add_bld('bld-gym', '체육관(금속 골판 모임지붕, 폭 10)', bld('gy', 10, 1, roof='seam', D=4, door=4, color='metal'), 4,
+add_bld('bld-gym', '체육관(금속 골판 모임지붕, 폭 10)', bld('gy', 10, 1, roof='seam', D=4, door=4, color='blue'), 4,
         ['체육관', '학교', '대학'], '운동장 옆. 큰 철문 앞은 비운다.')
 add_bld('bld-gym-green', '강당(초록 골판 모임지붕, 폭 8)', bld('gy', 8, 1, roof='seam', D=3, door=3, color='green'), 3,
         ['강당', '체육관', '학교'], '학교 강당·체육관.')

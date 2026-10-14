@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7b9f403eb0a860128ad62adf81f07c5e1d337eaf72b4088b08a7e73f38225b6d",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "가문비(눈 덮임, 중간)",
+ "label": "snow-north/sn-pine-m",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "snow-covered spruce tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The spruce tree is drawn in a pure front elevation (side-scroller style). In 3/4 top-down perspective, the front-facing foliage of a cone must project downward towards the camera, hanging lower in the center than the sides; here, the foliage arches upward in the center (row 40) while the sides hang lower (row 42), revealing the trunk from an eye-level or upward-looking angle without top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7209
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "spruce tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The spruce tree is drawn in a flat 2D front elevation (side-scroller style) with horizontal snow bands across a flat triangular silhouette and no foreshortened top-down view of the conical foliage tiers.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11763
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "snow-covered spruce tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The spruce tree is drawn entirely as a flat 2D front elevation (side-scroller style). Conical tiers and branch shelves show no foreshortened top surfaces from a 45-degree downward angle, and the trunk and canopy lack the downward-looking 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7697
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "snow-covered spruce tree canopy",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn as a flat front elevation / side-scroller sprite with the apex at the very top and foliage tiers drawn straight-on; there is no foreshortened top-down perspective on the canopy tiers (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7780
+  }
+ ],
+ "decidedAt": "2026-10-14T08:02:24.501Z",
+ "cells": {
+  "16": [
+   "0275f1cea0f108e4",
+   "089903c157d9b630",
+   "5130ad539839e424",
+   "7b5cc4622a6e04b0",
+   "87fe816cac29a514",
+   "f1fd64f472e3740e"
+  ],
+  "24": [
+   "197cf91fbe1bfa69",
+   "2d5bbaee55f6c930",
+   "4be508ab838a537a",
+   "7345e5cf1c5d65ac",
+   "784a9316668ed3ac",
+   "7940d127b0563958",
+   "9598fbd3998f77b4",
+   "9829b6904f3d13b5",
+   "a39b98852b5287ae",
+   "b91e3a5c17891696",
+   "caf825dccb66f4bd",
+   "f2926ed082fd83b2"
+  ],
+  "32": [
+   "05b01dd91d8c881f",
+   "7f58189c1cb581dc",
+   "c36b4f2c612670a3",
+   "fb71d399e87fab7e"
+  ],
+  "48": [
+   "45dcc32013733352",
+   "7e2fb96b599e04e5",
+   "941d7f3fefd0023a"
+  ]
+ }
+}

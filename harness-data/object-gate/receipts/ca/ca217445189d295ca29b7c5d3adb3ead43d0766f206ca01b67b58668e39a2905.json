@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ca217445189d295ca29b7c5d3adb3ead43d0766f206ca01b67b58668e39a2905",
+ "width": 48,
+ "height": 48,
+ "kind": "terrain",
+ "name": "잔디 (16px 칸 3×3 반복)",
+ "label": "modern_city/street-green/lawn-base-211",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass ground terrain tile (3x3 repeat)",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 grass texture shown in a 3x3 repeating tile grid representing flat horizontal ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5065
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "seamless grass terrain tile (3x3 repeat)",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 repeating grass terrain ground texture, completely flat horizontal surface as expected for ground tiles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4750
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass ground surface",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 grass terrain tile repeated in a 3x3 grid; represents flat ground seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4013
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass ground surface",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Tiling grass terrain representing a horizontal ground plane viewed from above in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3421
+  }
+ ],
+ "decidedAt": "2026-10-14T08:05:10.639Z",
+ "cells": {
+  "16": [
+   "6cebfda2acfe6303"
+  ],
+  "24": [
+   "5632a7d21dfbbab9",
+   "7b3f673782960ea6",
+   "837d1fa9a4a4723f",
+   "f22267cb383e5bcd"
+  ],
+  "32": [
+   "0483a41319a1a16b",
+   "2498aba3e47978b8",
+   "3da7519494fd6b42",
+   "3f05f176ebbcfdbe",
+   "420349cd29455a92",
+   "468800483edc8ed0",
+   "46b5cbec5fb9e7d1",
+   "5077f046e377569c",
+   "5b79dcc665d5567b",
+   "7f950b5b7932e24d",
+   "7ffec31402452833",
+   "a4af8de5ebc4cde6",
+   "db6aa2a2d3644dd3",
+   "de2a6b8f0f436c76",
+   "efbc3bc4ee71adf9"
+  ],
+  "48": [
+   "244304b21b4aa60d"
+  ]
+ }
+}

@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "344d60a493cf4367d929c635f41adf2b87f1d9f99f5f3f4e33987b07d1b7308a",
+ "width": 48,
+ "height": 48,
+ "kind": "terrain",
+ "name": "잔디 (16px 칸 3×3 반복)",
+ "label": "modern_city/street-green/lawn-base-307",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 repeating grass terrain texture representing flat top-down ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5195
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass ground terrain tile",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 3x3 repeating 16px grass ground tile pattern viewed from above; legitimate flat terrain surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6151
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "repeating 16x16 grass ground tile pattern",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing flat grass ground viewed from above in top-down perspective, tiling seamlessly across all 48 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11437
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass ground terrain tile",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ground terrain texture repeated in a 3x3 16px tile grid; naturally represents ground viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5652
+  }
+ ],
+ "decidedAt": "2026-10-14T08:05:10.641Z",
+ "cells": {
+  "16": [
+   "6ee0c9c5b44d8ff7"
+  ],
+  "24": [
+   "30abdf7bc499b0ba",
+   "48e6315b5c92c6de",
+   "98a64ea17aaca115",
+   "edb3de3b41d01fce"
+  ],
+  "32": [
+   "033dd54ce0c016ba",
+   "1a863462500d3a75",
+   "281ffecbe8beeb28",
+   "2d5f5f64ddcc24be",
+   "448c5ef76e1373db",
+   "6c206a8aff7afe30",
+   "80e744ba1b789b3e",
+   "8c0e85b139e65a49",
+   "a0d8c0b2dcc451a5",
+   "acc27e8ceec9b578",
+   "d8559cd41823e944",
+   "dc8c9fad7023538c",
+   "ee2aca6bbbcb5892",
+   "f5608bd024c249e7",
+   "fd4259ae885eb7cf"
+  ],
+  "48": [
+   "b2a1d4ff3c550b8a"
+  ]
+ }
+}

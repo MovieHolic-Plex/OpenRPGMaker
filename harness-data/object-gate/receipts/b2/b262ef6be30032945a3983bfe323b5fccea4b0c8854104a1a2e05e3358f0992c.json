@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b262ef6be30032945a3983bfe323b5fccea4b0c8854104a1a2e05e3358f0992c",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "자갈 섞인 모래",
+ "label": "desert-east/de-sand-pebble",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "gravel and sand ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing top-down sand texture with small gravel pebbles across the full 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8771
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sand with scattered pebbles terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground surface tile depicting sand and small pebbles viewed from above spanning all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4754
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sand with gravel ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting sand mixed with small gravel pebbles across the full 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2824
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sand with gravel ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a standard top-down flat terrain surface representing sandy ground with embedded pebbles across the full 16x16 grid.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4397
+  }
+ ],
+ "decidedAt": "2026-10-14T08:01:48.456Z",
+ "cells": {
+  "16": [
+   "80157761de88c67b"
+  ],
+  "24": [
+   "37c392dab7d4b015",
+   "7cad55e48bb26282",
+   "878e6dbb308ba769",
+   "d0fadd3f6f13cc49",
+   "e365eff40c1b30cd",
+   "e552cc4abadf04e9"
+  ],
+  "32": [
+   "20c8d41431821e5f",
+   "36af9ce4f6584742",
+   "399e2a9a0b32e457",
+   "61d4d3c4cf3e260b",
+   "97179470289ade2b",
+   "9d4d8b0b66d8c26e"
+  ],
+  "48": [
+   "1a54670d8dbfa911",
+   "1ab476762c6abb51",
+   "1ed192ea24eae69a",
+   "36aeedc90f197ae0",
+   "4b0874c12c257256",
+   "efb6ac86809e5f0d"
+  ]
+ }
+}

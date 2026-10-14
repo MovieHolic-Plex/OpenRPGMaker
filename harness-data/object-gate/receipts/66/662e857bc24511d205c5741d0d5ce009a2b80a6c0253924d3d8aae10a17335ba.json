@@ -1,0 +1,162 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "662e857bc24511d205c5741d0d5ce009a2b80a6c0253924d3d8aae10a17335ba",
+ "width": 96,
+ "height": 96,
+ "kind": "structure",
+ "name": "회관 선술집(폭 6, 두 층 높이, 양개문·걸이 간판·등)",
+ "label": "snow-north/sn-meadhall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "snow-covered hall/tavern building",
+    "kind_matches": true,
+    "top_rows": 44,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered roof slope spans approximately 44 source pixel rows (rows 8 to 51) showing an ample top/slope surface above the south-facing log facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3410
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "two-story snowy log tavern building with large pitched roof",
+    "kind_matches": true,
+    "top_rows": 42,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered roof slope spans rows 10 to 51 (approx. 42 rows tall) representing the south-facing slope of the roof in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4226
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two-story snow-covered log tavern",
+    "kind_matches": true,
+    "top_rows": 43,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a large foreshortened south-facing roof slope covered in snow spanning rows 8 to 51 (approx. 43 pixel rows tall), correctly conveying the 3/4 top-down perspective over the front log facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4394
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "snow-covered two-story log tavern / hall",
+    "kind_matches": true,
+    "top_rows": 44,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features an extensive south-facing roof slope covered in snow spanning rows 8 through 51 (~44 pixels tall), along with top surfaces on the doorway lintel and window sills, fully adhering to standard top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5877
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:35.381Z",
+ "cells": {
+  "16": [
+   "05041862b4feb280",
+   "061b01b637b64e40",
+   "0e0cc289fcb939d6",
+   "15261bf3306513e9",
+   "15304d4958e295a7",
+   "1704b7d6b5c4da00",
+   "198fe2c2e545142d",
+   "1bc0cea16cf91249",
+   "1fb54da47fc97175",
+   "258fac736767023d",
+   "303494c27b3d9ea3",
+   "333c28e19cde69e0",
+   "3cda5c994aaa3ef3",
+   "4c27f48474a2cce0",
+   "53f548bd7f7ab0ac",
+   "5558b566e3b6702f",
+   "5da1a37918440555",
+   "5e1c037d7606b3a6",
+   "62fdaf338faf0d0a",
+   "671c4c0e7c11eaa9",
+   "70ec49dcd11e1182",
+   "717a625fc1ad3baa",
+   "72cc33e1ded4f65a",
+   "94007d42ab5ff7e0",
+   "9a2d39bc0233c9ca",
+   "a82fd4fd925f4c1d",
+   "bdc0aa5eb9494154",
+   "bde1dd16b7307cbb",
+   "be47f37c6659f388",
+   "ca777705bc7e7be6",
+   "d077017dd6095e9d",
+   "f042f66604d0e7a1",
+   "f1042ade260f5bb9",
+   "f36c476d8a702aee",
+   "f839c9081d3bea4a",
+   "ff9f6909feec6522"
+  ],
+  "24": [
+   "29fcca887712d173",
+   "2b182249d46d668c",
+   "2c0554e5cc097f13",
+   "46d00a7cdde436be",
+   "47f2132f152ae16a",
+   "666ca1bd256be4bb",
+   "6c0f0f14e68ceb24",
+   "76a3f290c45992a1",
+   "91a55e76c40ee008",
+   "a432ba93182acb3f",
+   "a92ff32ececca180",
+   "bf95611b3fb598fb",
+   "d29f7cfad2a7e497",
+   "d56894e1979eb433",
+   "da0938faa9443305",
+   "fd2c567ef37f0754"
+  ],
+  "32": [
+   "39c29a7a9c6a38df",
+   "4335da1ef3224733",
+   "5192df256917cea3",
+   "52e0ac492845f465",
+   "56dc61fbf0170292",
+   "73680b36355e842f",
+   "9b3e30910fe50301",
+   "ddcf6c34bf6b4871",
+   "e5a17aa0047d08d7"
+  ],
+  "48": [
+   "126f5ba6e45ff8da",
+   "9435d989af81db82",
+   "a4f1d65adca95d0d",
+   "ec9fb4881eddea6d"
+  ]
+ }
+}
