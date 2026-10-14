@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f7c7a943d71b9a10e8f0a2e9c99ff000e0ff3ee4777d42d75568d44e0202263b",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "통신 중계기(넓은 장비 상자 윗면(환기 격자·안테나 받침) + 위를 향한 작은 접시 + 앞 램프 패널)",
+ "label": "sf-station/sf-comms-relay",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "communication repeater equipment box",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main box clearly shows a deep top surface (rows 8-19, ~12 rows tall) featuring an upward-facing dish antenna and vent details, situated above a front-facing panel with indicator lights (rows 20-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5347
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "equipment box with top surface and front panel",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main equipment box clearly shows a deep top surface (rows 8-19, ~12 source pixels tall) housing the antenna base and dish, above a vertical front face with status lights (rows 20-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4688
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "communication relay box",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main box clearly displays a large top surface (rows 8-19, ~12 px tall) carrying the satellite dish, mast, and vent lines, above a front vertical face (rows 20-29) with LED indicator lights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4685
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "communication relay equipment box",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main box clearly presents a large top horizontal surface (rows 8-19, 12 px tall) equipped with ventilation lines and dish mounting, transitioning at row 20 to a south-facing front control panel with indicator lights (rows 20-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5242
+  }
+ ],
+ "decidedAt": "2026-10-13T16:09:00.073Z",
+ "cells": {
+  "16": [
+   "25a0a77d136ebc7c",
+   "4692049e397d5568",
+   "6d0c4f71e50c8433",
+   "a16ec41e9a112549"
+  ],
+  "24": [
+   "09d95c47c243905c",
+   "1bccd3e26806c28b",
+   "2d9269dba731591d",
+   "4572607c208d75e4",
+   "45a2c5ed863604e3",
+   "5095b1609d2a87d0",
+   "5973d1b8aedb4b50",
+   "6351627b0835a57b",
+   "636a0688716fc19c",
+   "686856e1041af7ed",
+   "733068755c8db129",
+   "7556548084dd9284",
+   "ab564d57051d5b5a",
+   "b9b51428c816c1f4",
+   "c2c6512193b6e609",
+   "cae39b67df718858",
+   "cccba3e6f29796c0",
+   "d65d143e96726988",
+   "d88a37d88731ad14",
+   "df8f56621cbe1337",
+   "f32f0a7f592c5048",
+   "f7ffe2b1a922a99f",
+   "f862c06a30c897dc",
+   "fa50db024b631ae7"
+  ],
+  "32": [
+   "83437d49c8adb06f"
+  ],
+  "48": [
+   "034ab2b5ded525f2",
+   "03644b85a1b0256d",
+   "7bdb2cb050610971",
+   "8293e7aeb5f75442",
+   "974ef70f39d616fd",
+   "dfd81e8ff9ed5086"
+  ]
+ }
+}

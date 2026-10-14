@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "04b3bf583c4dfbdbb4c477b185973c4106264da8df4c1b1e814deb64bb8b9fc4",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "prehistoric stone-age mud b",
+ "label": "prehistoric/ph-mud-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mud terrain ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 ground surface texture depicting mud/dirt viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4322
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "mud terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 mud ground terrain texture viewed from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2999
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "mud terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Entire 16x16 tile is a textured mud/dirt ground surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2435
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "mud ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain texture completely filling the 16x16 tile, representing top-down mud surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2950
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.790Z",
+ "cells": {
+  "16": [
+   "3f70206d6a5daea1"
+  ],
+  "24": [
+   "0e55cff0ee58cdbe",
+   "426a37f7ac03886a",
+   "67441042545cb5ee",
+   "9db68ad32f443409",
+   "a257b81a49e3004e",
+   "b086646bddc2f3a2"
+  ],
+  "32": [
+   "14dc93e28b0beb31",
+   "38706b8e62ec71fe",
+   "531b15e386da0371",
+   "7b5f94aa754cb57d",
+   "bcce8b352bd02ba1",
+   "d710f2df42d75b79"
+  ],
+  "48": [
+   "2ae4442ae7eedb76",
+   "65c67fa03944500a",
+   "a119980294889c0b",
+   "e6554d0c93fc2ae6",
+   "ee75467b93ae4a77",
+   "feee69c6d3b86e3f"
+  ]
+ }
+}

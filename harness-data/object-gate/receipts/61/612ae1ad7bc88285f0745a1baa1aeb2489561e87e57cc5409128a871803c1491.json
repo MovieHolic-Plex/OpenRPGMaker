@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "612ae1ad7bc88285f0745a1baa1aeb2489561e87e57cc5409128a871803c1491",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "부서진 묘비(그루터기 + 쓰러진 조각)",
+ "label": "gothic_manor/gm-tomb-broken",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "broken tombstone / stump with fallen piece",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top fracture/cut surface of the broken stele is clearly depicted in rows 2-7 with a lighter, foreshortened cross-section facing the camera/light source, above the darker vertical south face (rows 8-10). The fallen slab at the bottom also shows 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7568
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "broken tombstone stump",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The standing tombstone stump is drawn in pure front elevation with a 1px jagged silhouette along rows 0-2. There is no foreshortened top surface or cut face visible for the top of the column/stele.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10727
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "broken tombstone (upright stump with jagged fractured top and fallen slab)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upright broken stone clearly shows a fractured top surface across rows 2–7 (about 5 rows of lighter, faceted cross-section) above its darker south face (rows 8–11). The fallen horizontal piece below also shows its top face (rows 11–13) and south face (rows 14–15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6748
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "broken tombstone stump on base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The broken cut/fracture surface of the tombstone is visibly foreshortened and facing the camera from row 1 to row 7 (approx 5 rows of depth) above the south-facing dark stone wall (rows 8-10). The base plinth also clearly shows its horizontal top surface (rows 11-13) above its south face (rows 14-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9856
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:15.452Z",
+ "cells": {
+  "16": [
+   "b425199ecfda6801"
+  ],
+  "24": [
+   "08f8869daddf9b76",
+   "18bb181326eb53ce",
+   "1f4d8ff08f0362fa",
+   "94a1a2b8c5719b69",
+   "b6130c87f5444b89",
+   "edf8a005c88c74f9"
+  ],
+  "32": [
+   "21b4ed208d03a8d4",
+   "6cb0b74f5cb55509",
+   "9b89a0199db38717",
+   "a2eeb90bb56209ee",
+   "c498c3337377c6c7",
+   "e5d082926e126b4e"
+  ],
+  "48": [
+   "383609132ed56c04",
+   "ac2b08854a356eb1",
+   "ced78e44058e2d17",
+   "d0f8d3f9928a9545",
+   "e52db89dc2afbccd",
+   "fa90905437c380a7"
+  ]
+ }
+}

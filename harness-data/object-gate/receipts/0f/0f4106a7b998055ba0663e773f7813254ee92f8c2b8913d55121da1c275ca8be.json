@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0f4106a7b998055ba0663e773f7813254ee92f8c2b8913d55121da1c275ca8be",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "tilled farm soil edge on grass (terrain)",
+ "label": "sky-island/si-field-ne",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tilled soil ground tile",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing tilled farm soil bordered by grass on top and right edges, viewed as a flat horizontal ground plane consistent with top-down 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3652
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tilled soil terrain tile",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ground terrain tile showing furrowed soil bordering grass along the top and right edges.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2595
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tilled soil terrain tile",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting tilled soil furrows bordered by grass along the top and right edges. Ground terrain viewed from above correctly represents the floor plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3639
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tilled farm soil terrain",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile showing furrowed soil bordering grass; viewed from above as appropriate for top-down ground surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3229
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.980Z",
+ "cells": {
+  "16": [
+   "c641cdd01d5f6660"
+  ],
+  "24": [
+   "0bf6f230823b91f7",
+   "716021e2c7d7a5e2",
+   "776088a0aad17d01",
+   "7e67ef0ebd5c368a",
+   "9ba144d992d33249",
+   "ba64dfbb34e20631"
+  ],
+  "32": [
+   "09fed8a49797e780",
+   "0fd375ce0ffef27c",
+   "6c94f44a9699194d",
+   "b6ccbdbf098d0bae",
+   "bec6bbb8a13bdf72",
+   "c7c88f7f35efcc35"
+  ],
+  "48": [
+   "200307e07e9dd493",
+   "443eba7ef7c378aa",
+   "4eda7984a73c2d57",
+   "7c672c44f93426a6",
+   "df75a3276158b388",
+   "e16419b4c0bdcf40"
+  ]
+ }
+}

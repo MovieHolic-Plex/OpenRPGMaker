@@ -1,0 +1,159 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d6ab6d56311cf8b7f9eb7531ba3998e23e395e36d29adec379f581dcde0a9e01",
+ "width": 64,
+ "height": 32,
+ "kind": "frame",
+ "name": "무쇠 창살 철책(돌 받침) (3칸 줄 + 모퉁이 견본)",
+ "label": "gothic_manor/gm-fence-iron",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron fence with stone base and corner pillars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The right stone pillar ends with a flat 1px black outline at row 16 with 0 top rows visible, and the horizontal iron rails are drawn in pure front elevation without foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7464
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron fence with stone foundation and posts",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone foundation plinth clearly shows a 6-pixel-tall foreshortened top surface (rows 24-29) into which the iron bars are anchored, with cast bar shadows, above a 2-pixel south face (rows 30-31). The right post cap also shows an 8-pixel top face (rows 16-23).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5155
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron bar fence with stone base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence frame consists of vertical bars and horizontal rails drawn purely in front elevation without top surfaces on the horizontal beams (only 1px highlight lines). The stone base at the bottom also lacks a foreshortened top surface or distinct 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14774
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron bar fence and stone post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The right stone post terminates flatly at row 17 with only a 1px outline and zero visible top surface. The iron horizontal rails and vertical pickets are drawn as flat 2px strips with no foreshortened top faces, presenting a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8777
+  }
+ ],
+ "decidedAt": "2026-10-13T16:33:45.368Z",
+ "cells": {
+  "16": [
+   "199534e4ed3f4d59",
+   "8d670ae598426c75",
+   "a7c0eee14a2f308f",
+   "bc23bc389624f783"
+  ],
+  "24": [
+   "0d8816add79f6e6a",
+   "139c3966354758b2",
+   "21a1bcb7918bb382",
+   "231ca55f4089fc9d",
+   "237675fb13ac9638",
+   "2bd67f47b01fc0a9",
+   "362b9a904cac72a8",
+   "447f6905623a0f41",
+   "4b703cdaea7d8d86",
+   "6255304ab382ed5e",
+   "80231e26e73b56a6",
+   "827d5925de6f4f62",
+   "84287ff27c3dba9a",
+   "91a0c1f3a0c8b748",
+   "986e3b6a31694247",
+   "a1993b4aef4ce8b4",
+   "a8788f6226dc3ced",
+   "b899d7d823ebc70e",
+   "bcc9c3821b4470db",
+   "c7e3ba18d639f350",
+   "cf6878bdb978cffb",
+   "dcecd0f726c16c7c",
+   "e2f1ab1c4f7d5d75",
+   "e4f6b9a4c7ce9237",
+   "e90ab010b2393d01",
+   "ecb103215a574fbc",
+   "f6cf01161fa56bf3",
+   "feeb1906c7e1d906"
+  ],
+  "32": [
+   "3ca75e1ab113a3fb",
+   "9124f24cebcf4cc4"
+  ],
+  "48": [
+   "1f8f889d0b4aab01",
+   "62dbab387c3ea89b",
+   "78632d89bf0fb883",
+   "80d65cd607e78c6b",
+   "85a776d93ae9c004",
+   "8a5f15206f97f492",
+   "9a6dd8e2f5bb6889",
+   "c98960cb3e7504ce",
+   "cad6dd1e2b041463",
+   "cd593f6e2ed987fe",
+   "d4ff78086f5068d8",
+   "e89732f097b75da0"
+  ]
+ }
+}

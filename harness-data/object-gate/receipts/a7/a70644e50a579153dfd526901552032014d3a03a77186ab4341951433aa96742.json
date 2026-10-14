@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a70644e50a579153dfd526901552032014d3a03a77186ab4341951433aa96742",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "prehistoric stone-age skull pole",
+ "label": "prehistoric/ph-skull-pole",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "skull on wooden pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The skull and pole are drawn in flat front elevation with no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4701
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "skull mounted on wooden pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The skull and pole are depicted in straight front elevation with no visible top surface foreshortened from above (the top of the skull is just a 1px contour line at row 4).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 2612
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "skull mounted on a wooden pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The skull and pole are drawn entirely in front elevation with no visible top surface foreshortened from above; row 3 is merely a 1px contour outline above the skull forehead.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3398
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "animal skull mounted on a wooden pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the skull and pole are drawn in flat front elevation with eye sockets facing straight forward and a single-pixel outline across the skull top (row 4) showing no top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3896
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.804Z",
+ "cells": {
+  "16": [
+   "1cab7b8639d219a6",
+   "6f15ae72a797a0cf"
+  ],
+  "24": [
+   "3288fa3870106597",
+   "45da968abbec73a5",
+   "47073e5d5abc4815",
+   "509fad60ccfdd31f",
+   "58c3ac3b724bd440",
+   "6b555056f0e3e08c",
+   "758f4fcc07ba3f7a",
+   "84263d3cfa39a731",
+   "b21c132b7ef2145c",
+   "b2fbae0bfeff18f8",
+   "f353e0a149115fb0",
+   "fb822fc8e9bb4fce"
+  ],
+  "32": [
+   "103373b97f541619",
+   "612958a8985f8cfb",
+   "70cf7238749d9d29"
+  ],
+  "48": [
+   "4304dd5e81cbb64a",
+   "436fb3d633e7095d",
+   "55600cb8da599e84",
+   "7e16ed80fe8ce1c9",
+   "815919de89dcbf6c",
+   "a655d2fe79454508"
+  ]
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "da7dd85d44ec27f15098cf4c126f1e2f7948d919e555b9323dc148295e5ca50d",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "석등(가스가 등롱)",
+ "label": "sengoku-edo/se-lantern-stone",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone lantern (kasuga lantern)",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lantern features clear foreshortened elliptical top surfaces for the roof (rows 2-9, ~8 rows), middle shelf (rows 15-18), and base plinth (rows 25-28), correctly matching the 3/4 top-down angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4959
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone lantern (Kasuga tōrō) roof and tiered body",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lantern cap/roof clearly shows its foreshortened elliptical top surface across rows 1-8 (approx 8 rows), with further visible top surfaces on the middle platform (rows 15-18) and base (rows 25-28) in standard 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4566
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone lantern (Kasuga-doro) umbrella/roof",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lantern is properly foreshortened in 3/4 top-down perspective: the domed roof shows a 7-pixel-tall top surface (rows 2-8), and both the middle platform (rows 15-18) and base plinth (rows 25-28) clearly show horizontal top surfaces seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5447
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone lantern (Kasuga lantern)",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone lantern features multiple tiered elliptical horizontal surfaces viewed from above: the wide roof cap shows a distinct foreshortened top surface spanning rows 2-8 (7 rows), the middle tier top spans rows 15-18, and the base platform top spans rows 25-28, correctly matching 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4276
+  }
+ ],
+ "decidedAt": "2026-10-13T19:43:19.963Z",
+ "cells": {
+  "16": [
+   "983ab344ff389159",
+   "9ad1fdb0d940aae4"
+  ],
+  "24": [
+   "10226e8c9c7d0adf",
+   "12f2c1085a979651",
+   "436cb5f811fe8f1a",
+   "4b61e6223655b658",
+   "541f0add38ddcbed",
+   "62b0225ae247dc02",
+   "8a84c080a29d5334",
+   "8b34332585a33516",
+   "b050a341e86ae0b1",
+   "b5e79dd36b03ca45",
+   "c8701881abad309e",
+   "d9f861251eeddbef"
+  ],
+  "32": [
+   "4b92015f15884df6",
+   "97f05e3c06566917",
+   "dfbbf7ff79c07cfd"
+  ],
+  "48": [
+   "0834a1661a95de50",
+   "7eb00905cb28055d",
+   "8b49812482f1a66d",
+   "b661d18fead7cb37",
+   "db983a97c54d1501",
+   "eaeb6df261ceddf9"
+  ]
+ }
+}

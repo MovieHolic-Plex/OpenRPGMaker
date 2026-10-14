@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a9fd7eac63a442ec331c5e02d43269749d29de1a5609ee0ace244bf3abfd35c8",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "prehistoric stone-age totem",
+ "label": "prehistoric/ph-totem",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "totem pole with conical cap and carved faces",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The totem pole is drawn in pure 2D front elevation: all horizontal dividers, the red band at row 7, and the base at row 45 are perfectly flat horizontal lines with no 3/4 downward elliptical curvature, and the conical cap is depicted straight-on as a flat triangle rather than viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5514
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "totem pole with carved faces and a conical cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The totem pole is drawn in pure front elevation. The red headband (row 7), segmental divider lines (rows 21, 32), and bottom edge (row 45) are completely straight horizontal lines with no elliptical curvature for 3/4 top-down perspective. Furthermore, the underside of the cap overhang is exposed (rows 8-10), which is impossible from a 45° overhead camera.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8751
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "totem pole shaft and conical cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire totem pole is drawn in pure front elevation: the decorative red band, segment divider lines, mouth/eye features, and bottom base are all strictly flat horizontal lines with no 3/4 top-down foreshortening or curved ellipses.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4407
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "totem pole with conical cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylindrical totem pole and its cap are drawn entirely in front elevation: the decorative red band (row 7), the underside of the cap (row 10), the segment dividing lines (rows 21, 31, 42), and the bottom base are all perfectly straight horizontal lines with no 3/4-view elliptical curvature or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6259
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.804Z",
+ "cells": {
+  "16": [
+   "0236a76170516f50",
+   "4024bd8927c6893a",
+   "4b98ebf9d44698b7"
+  ],
+  "24": [
+   "1f4ff6b26d41c226",
+   "318fa6b1f79df37c",
+   "44fcba1074e0b33d",
+   "469e258efd06cd6d",
+   "8bd91c5612ef6a50",
+   "c4dad1c1c3f9e335"
+  ],
+  "32": [
+   "1082aaf6d6e9fa71",
+   "15cfbdc4231b3bf6",
+   "5873ae237597800d",
+   "6a99ff1ffbd79344",
+   "6df8a68d71491f29",
+   "9670de525cb363c6",
+   "96b12c8bb7e876af",
+   "984c52d2a180c1c4",
+   "9ff7e07e1af155e9",
+   "a07383fe15cd526a",
+   "bb585957bd5f6812",
+   "bfe0159246fef60b"
+  ],
+  "48": [
+   "790e0d4deff1a076",
+   "86b60d834eb551e7",
+   "fbf383467f90f6b4"
+  ]
+ }
+}

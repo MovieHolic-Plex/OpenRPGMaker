@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a41a2058b70247ebae562b08cd7c81e8697c2bb741d8326aa2ca7e25f55abe8c",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "prehistoric stone-age dirt b",
+ "label": "prehistoric/ph-dirt-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dirt ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "16x16 seamless dirt ground terrain tile with small embedded stones and color variation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4081
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ground dirt tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless dirt ground texture with pebble details across the entire 16x16 tile, representing horizontal terrain seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4126
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dirt ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless dirt ground terrain tile with small embedded stones and color texture variations filling the entire 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3514
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dirt ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 tile representing dirt ground viewed top-down with pebbles and texture.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3262
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.784Z",
+ "cells": {
+  "16": [
+   "fac189bbe68a8ad5"
+  ],
+  "24": [
+   "00dae59ea61c16b1",
+   "53d91b26a8f87cb2",
+   "69ba6912516720d0",
+   "84686321a99ec1be",
+   "be4d0b8f33a69a0e",
+   "cb347cc2d96419ca"
+  ],
+  "32": [
+   "25aa94da27d07a34",
+   "869fe49ad068605f",
+   "97ae636d1a1a357d",
+   "cd22237343b66966",
+   "d289eaff1208a97f",
+   "e33d637bed199e0a"
+  ],
+  "48": [
+   "0f8abb026d17a2e6",
+   "419559e1327b3d86",
+   "4a4e43e7c07936d9",
+   "84976d0026256ffe",
+   "9662a41195ea95e3",
+   "cec60517cd4ec800"
+  ]
+ }
+}

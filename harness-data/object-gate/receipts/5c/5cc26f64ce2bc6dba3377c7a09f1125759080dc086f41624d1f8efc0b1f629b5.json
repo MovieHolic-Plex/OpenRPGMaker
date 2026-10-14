@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5cc26f64ce2bc6dba3377c7a09f1125759080dc086f41624d1f8efc0b1f629b5",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "thick round wooden pier post, sawn top end with tree rings seen from above, rope wrap",
+ "label": "pirate-isles/pi-pier-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden pier post",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut end of the wooden post is drawn as an ellipse showing the cross-section of wood spanning rows 1 to 5 (~5 source pixel rows tall), with the cylindrical front face extending down to row 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2994
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round wooden post",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sawn top surface of the pier post is clearly visible as an ellipse spanning rows 1 to 6 (6 rows tall) showing the cut wood face, with the vertical trunk and rope wraps extending below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4334
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden pier post",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sawn top surface of the post is clearly rendered as a foreshortened ellipse spanning approximately 5 pixel rows (rows 1-5) with visible inner wood and pith, above the front-facing cylindrical body with rope wrapping.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5212
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden pier post",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sawn circular top of the wooden post is drawn foreshortened from row 1 to row 6 (approx 6 rows tall) displaying the wood grain/pith, above the front vertical face with rope wraps.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3549
+  }
+ ],
+ "decidedAt": "2026-10-13T19:25:15.329Z",
+ "cells": {
+  "16": [
+   "d7f43f6dd4428daf"
+  ],
+  "24": [
+   "37581ee258f9a8e9",
+   "60b514c431978336",
+   "a6cd4ddf81b3c9a6",
+   "d084cd98b06f08ef",
+   "de57a62a717c89b8",
+   "df1a171de4102a3c"
+  ],
+  "32": [
+   "08d4561b8f0ce86d",
+   "2462cbf40a06394a",
+   "615fee4ec6e67d13",
+   "7776304d209dc716",
+   "a7fd02734e55aaf2",
+   "ebd6e7e9f2611ea6"
+  ],
+  "48": [
+   "08e33898eee7da73",
+   "304a7cbe835f1fd4",
+   "a23485b6948ad4cb",
+   "cf9cd7d92d12bc72",
+   "e0502957f6996528",
+   "f53b8f17efd15a90"
+  ]
+ }
+}

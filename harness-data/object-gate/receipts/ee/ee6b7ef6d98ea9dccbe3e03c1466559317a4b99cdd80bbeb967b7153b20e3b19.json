@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ee6b7ef6d98ea9dccbe3e03c1466559317a4b99cdd80bbeb967b7153b20e3b19",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "무덤가 촛불(깜빡임 3프레임)",
+ "label": "gothic_manor/gm-grave-candles",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cluster of upright candles",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The candle cylinders are drawn in flat front elevation with straight horizontal cuts across the tops where the wicks/flames emerge, showing 0 rows of top elliptical surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 4877
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cluster of candles",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The candles are upright standing cylinders drawn completely flat from the front with horizontal top edges and straight vertical flames, showing 0 rows of top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 3690
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cluster of standing candles",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The candles are drawn as flat vertical rectangles with flames on top, showing zero visible top surface or elliptical tops (pure front elevation). Additionally, standing candles do not match the debris kind.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 4799
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cluster of candles",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The candles are standing cylinders drawn in pure front elevation with completely flat horizontal tops from which the flames rise, showing 0 rows of foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 4933
+  }
+ ],
+ "decidedAt": "2026-10-13T17:01:50.506Z",
+ "cells": {
+  "16": [
+   "2def9139cc455847"
+  ],
+  "24": [
+   "063b8145c37ce1be",
+   "4800281a82473ddc",
+   "48e0be0f678050a4",
+   "48e7d57714eaf5f7",
+   "cd4377b3786b1ed2",
+   "e24d30716b73e8d6"
+  ],
+  "32": [
+   "08575fb284e1df94",
+   "23d18ab77cefbf3c",
+   "7100b9d3bc7da37e",
+   "7b1b736edf585afd",
+   "c562ecde96ef4aab",
+   "ed0e33563119acba"
+  ],
+  "48": [
+   "05f1066eb6154ec5",
+   "0838d519086e6cc0",
+   "9dc869511b90544c",
+   "b53291b40c6b752c",
+   "b84e9d33c7bfb56b",
+   "d2589d540aec0422"
+  ]
+ }
+}

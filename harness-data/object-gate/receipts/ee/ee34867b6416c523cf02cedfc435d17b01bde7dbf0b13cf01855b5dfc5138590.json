@@ -1,0 +1,198 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ee34867b6416c523cf02cedfc435d17b01bde7dbf0b13cf01855b5dfc5138590",
+ "width": 96,
+ "height": 80,
+ "kind": "structure",
+ "name": "버려진 온실(쇠틀 첨두 아치·깨진 유리·마른 화분)",
+ "label": "gothic_manor/gm-bld-greenhouse",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "greenhouse facade with iron frame and pointed arch",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building is drawn entirely as a flat architectural front elevation with no visible roof slope or foreshortened top surface; the top edge at row 10-12 is merely a flat horizontal framing beam with decorative bolts/finials.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4896
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "greenhouse facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat architectural front elevation with no visible roof plane or top-down horizontal surface; the top of the iron frame at row 11 is only a 1-2px border with decorative bolts.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4226
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "greenhouse building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The greenhouse facade is drawn as a flat architectural elevation with vertical glass panels and a 2px horizontal top border with finials at rows 10-12, lacking any visible roof slope or foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3860
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "greenhouse glass facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire greenhouse structure is drawn in a pure front orthographic elevation with no visible roof slope, top horizontal surfaces, or depth foreshortening. The top beam at rows 10-12 has only 2-3px thickness with small cresting pegs, and the base wall is completely flat.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4830
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.459Z",
+ "cells": {
+  "16": [
+   "0e9a3dd47326a00f",
+   "2e1b58d022a33aeb",
+   "30049ab4398e7970",
+   "42ae3de7903ed23d",
+   "4784f737d6aeb37a",
+   "48fc31d936957dad",
+   "542779bbfad1043e",
+   "5f9f1cd221a1ced4",
+   "76f35246c19d5a8c",
+   "7e4d0234719a393c",
+   "84012503930b3104",
+   "90d06d7fb2b02da3",
+   "a18165f24b63c8d5",
+   "a4eb69d5b3bd401c",
+   "aa63e53a96cee3e1",
+   "b690bfa6051dc2b4",
+   "ca068cd1d425a0cf",
+   "ce3825e1972c5f71",
+   "ce634a1e5b66e091",
+   "e00968e430e951e6",
+   "ea215f91e5dddfe8",
+   "eb97758a7dea4163",
+   "f09524a3dcd3cd79",
+   "f6004e55ed88110c",
+   "fa857bf6c0d287fc",
+   "fc2d645b5b2615aa",
+   "fd842232d998a23d"
+  ],
+  "24": [
+   "02287da7ba3f232a",
+   "0f55408b902cde92",
+   "106a0a948a62c3f1",
+   "196245b70d4852f8",
+   "1e260c5967387446",
+   "1f714a27f767468d",
+   "203198318e9be653",
+   "3be5c9b0a760e767",
+   "3bea3e3090e23be8",
+   "4379c5831c4f26a1",
+   "54a395374e4cbe99",
+   "5cea60c7b3285935",
+   "614b03beee5461de",
+   "68f7e6be6c0f04cb",
+   "75b9d4c4c1f7bf7a",
+   "7cba802b1bafbe4c",
+   "a3a184253e1ea540",
+   "b68f4f12877f893f",
+   "b7d3af476b588bf3",
+   "be87eb206208f8df",
+   "bed91af83491faab",
+   "ccab8f928f59d9a2",
+   "ce82456528ec5e25",
+   "d35bb76e482c949b",
+   "db58e48a11030677",
+   "e5e07337aa8a282a",
+   "ed432a65dc9d1eec",
+   "f3977f068e2aec29"
+  ],
+  "32": [
+   "201753fc6e0c6776",
+   "23bdb02a80a9322e",
+   "2a561cf4283f90de",
+   "3ab582c7d9490361",
+   "40e4766ad7ee4899",
+   "443800b0a1195f99",
+   "65d4405e2bc1df43",
+   "80fe86d50f3c1772",
+   "817ee9f8a35f595f",
+   "8a7624051f446a30",
+   "a426881732f3931f",
+   "a876674dfd25c0c4",
+   "b0bbbcd696df1546",
+   "b76313ea1db9c364",
+   "d29e222c799bf14b",
+   "e16647b6edfd1dc4",
+   "e5251e7e417012ed",
+   "f7052424f4791b35"
+  ],
+  "48": [
+   "1c701c7f9f8611db",
+   "29c57590b624a29c",
+   "40ad5992bbd38a8f",
+   "51ed84334cb534e3",
+   "5567fb65e436e35e",
+   "5a3badcfe8379498",
+   "bb44ea3b2262e998",
+   "f672910a6d845dd2"
+  ]
+ }
+}

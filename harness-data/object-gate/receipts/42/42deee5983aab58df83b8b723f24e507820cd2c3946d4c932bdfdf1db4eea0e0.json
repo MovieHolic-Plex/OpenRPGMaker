@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "42deee5983aab58df83b8b723f24e507820cd2c3946d4c932bdfdf1db4eea0e0",
+ "width": 16,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "small round wooden table",
+ "label": "sky-island/si-table-round",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round tabletop",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round tabletop is rendered as a foreshortened ellipse spanning rows 2 to 7 (6 rows tall), with an apron, central pedestal, and base visible below in standard 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2946
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round tabletop on pedestal leg",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round tabletop surface is drawn as a foreshortened ellipse spanning rows 2 to 7 (6 pixel rows tall) with an object placed on top, showing a clear 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2962
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round tabletop on pedestal leg",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round tabletop is rendered as a foreshortened ellipse spanning rows 2 to 7 (6 rows tall), showing both the visible top surface with an item on it and the underside apron/pedestal below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3154
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round tabletop on pedestal base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round tabletop is clearly drawn foreshortened as an ellipse occupying rows 2-7 (6 rows tall), with an apron support and central pedestal leg beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2812
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.562Z",
+ "cells": {
+  "16": [
+   "1ccc7cee0332aec4"
+  ],
+  "24": [
+   "0a4f25fd31df5a9f",
+   "19cafc84ba545d61",
+   "ae98a6fb76fb3926",
+   "af9b8b190de94929",
+   "b29942f3e8568baa",
+   "c73412d1e919cca4"
+  ],
+  "32": [
+   "117aaa129d1c55a5",
+   "1677b497318f06cc",
+   "268db7129d44172a",
+   "3c4b7365e892cd12",
+   "6fc21a9da4e29474",
+   "f52b0a2727a81c7f"
+  ],
+  "48": [
+   "640a98e07329b3e6",
+   "71d740e6d91aa2a5",
+   "914927901777bc6b",
+   "bee88f16582c18db",
+   "c07cd6b4c5109ed3",
+   "d32504f399672187"
+  ]
+ }
+}

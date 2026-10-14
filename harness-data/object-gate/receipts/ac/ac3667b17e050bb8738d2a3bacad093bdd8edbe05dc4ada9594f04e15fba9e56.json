@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ac3667b17e050bb8738d2a3bacad093bdd8edbe05dc4ada9594f04e15fba9e56",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "simple wooden tavern chair with spindle back toward the north",
+ "label": "pirate-isles/pi-tavern-chair",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "chair with north-facing backrest and south-facing seat",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chair back is positioned to the north, and the horizontal seat surface is visible from above spanning rows 9 to 11 (3 rows), facing south with front apron on rows 12-13 and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5455
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "chair seat and spindle back",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chair backrest faces north (rows 0-7) and the horizontal seat surface is clearly seen foreshortened from above across rows 8-11 (4 rows deep), sitting above a 2-row front apron (rows 12-13) and front legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4778
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden chair seat and backrest",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat top surface is clearly visible from above across rows 9-11 (3 rows deep), viewed in front of the north-facing backrest and above the south apron/legs (rows 12-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4828
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden chair seat and backrest",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chair seat is viewed from above across rows 9 to 11 (3 rows tall) between the backrest base (row 8) and the front apron/legs (rows 12-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5084
+  }
+ ],
+ "decidedAt": "2026-10-13T19:28:41.189Z",
+ "cells": {
+  "16": [
+   "188e9953ffbf9059"
+  ],
+  "24": [
+   "043a3f25c2f1113f",
+   "0d0977b3db97f054",
+   "1d954cf285d031e7",
+   "35201b6bd82c73ee",
+   "441abbd0cc2aef67",
+   "976aef51f98fde86"
+  ],
+  "32": [
+   "4101f4f836111060",
+   "862960a7e54033c6",
+   "98ea3a7d4996b3a0",
+   "9ab8f2b0495717dd",
+   "9f7929d5a2200b68",
+   "d5ba6d938f3876b9"
+  ],
+  "48": [
+   "06ce47e00a2acb73",
+   "0a277a04bd551212",
+   "3e43d4221e17bd3b",
+   "aed718431ba8b555",
+   "e2ab94481ee775ef",
+   "e6e6929167dad8dd"
+  ]
+ }
+}

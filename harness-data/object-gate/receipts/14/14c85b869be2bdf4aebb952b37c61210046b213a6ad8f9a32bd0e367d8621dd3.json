@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "14c85b869be2bdf4aebb952b37c61210046b213a6ad8f9a32bd0e367d8621dd3",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "흙벽(신카베, 황토 회벽 + 기둥 + 인방)",
+ "label": "sengoku-edo/se-wall-plaster",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "earthen wall face with wooden pillar and lintel beams",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile showing the vertical front surface of an earthen wall (shinkabe style) with wooden post and beam framing. As standard wall face terrain, it correctly depicts the vertical surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4594
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "plaster and timber wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The asset is a standard vertical wall-face terrain tile (shinkabe mud wall with exposed wooden framing) intended for 3/4 perspective tilemaps.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3721
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "earthen wall face with timber frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile showing timber posts, lintels, and ochre plaster panels; as a vertical wall surface in standard JRPG autotile sets, it properly represents the vertical wall face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4498
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "earthen wall face with wooden frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile depicting an earthen wall with wooden pillar and crossbeams (shinkabe). As an autotile wall face, it correctly represents a flat vertical wall surface in standard JRPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4760
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.075Z",
+ "cells": {
+  "16": [
+   "1f377f6b1901b68a",
+   "b2e43f86a778b237",
+   "bcfc804590b3dcdf",
+   "f87bf30aa63f83bd"
+  ],
+  "24": [
+   "02f8af0cbb9ea51a",
+   "05f2e61116508ab9",
+   "0869598c5b146368",
+   "1115dc88be122112",
+   "13b66c765842354e",
+   "14c48fd30689ed0c",
+   "3e4a8ccab0a9fb48",
+   "43555b9356204604",
+   "4c351cbd884e7dc9",
+   "63e979eb963e82c5",
+   "64a23b1beea6fb95",
+   "6e26671dcc4e94e9",
+   "7e90aa7a2d465a3f",
+   "7fe2f5335ad1bd9e",
+   "80fe72a890099d56",
+   "923a893b6cdee318",
+   "98d86fd04c9b5c03",
+   "c21d946ed8f11f7c",
+   "c488af90c533a6af",
+   "cdb87afbd08366d6",
+   "d2fc8a3067d40a6a",
+   "e566a9fdaef7b84e",
+   "ec0135dab1392993",
+   "f3eb4045d365dfd3"
+  ],
+  "32": [
+   "3c4f08857abf47e9"
+  ],
+  "48": [
+   "32e0ea4e7dc56c56",
+   "3d9cd4510d6c9f39",
+   "70afddf85acc33a5",
+   "83f0938642c0d159",
+   "b89225fc503e3978",
+   "c8a1b472e8971a37"
+  ]
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c8c9b7ff37bfd72e1a347420eb11daf24d6a4276d0c5703505bf455312021130",
+ "width": 16,
+ "height": 32,
+ "kind": "round_body",
+ "name": "차 가마(풍로 위 무쇠 솥)",
+ "label": "sengoku-edo/se-tea-kettle",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron pot on a brazier",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid of the pot is clearly rendered as a 6-row elliptical top surface (rows 6-11) with a central knob, resting atop cylindrical front faces in proper 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3948
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron pot on brazier",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pot lid forms an elliptical top surface spanning rows 6-10 (5 rows tall) with a central knob, above a 6-row front cylindrical face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3749
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron kettle lid and body resting on a cylindrical brazier",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid of the kettle is rendered as a clear 5-row ellipse (rows 6-10) with a central golden knob, followed by the front vertical cylinder wall of the kettle and brazier.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3124
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cast iron kettle/pot on brazier",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The kettle lid forms a clear 5-row elliptical top surface (rows 6-10) with a knob in the center, showing proper 3/4 top-down perspective above the cylindrical body and brazier.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3343
+  }
+ ],
+ "decidedAt": "2026-10-13T19:42:40.482Z",
+ "cells": {
+  "16": [
+   "2ec9128d9f4005e0",
+   "e62113415759d759"
+  ],
+  "24": [
+   "08068e24fee85842",
+   "09c227f7d09cf76a",
+   "0a2850eac8c8fa1e",
+   "1198db5452663fec",
+   "79f23128ea1b141b",
+   "7dac6d7ccf21f074",
+   "8f83f7b8c826544c",
+   "97537a5c68ead368",
+   "c5de4e495b353819",
+   "d167c135b0cc66b2",
+   "dd18e8991487c00f",
+   "ddf2cf7f62c3c310"
+  ],
+  "32": [
+   "7ac076055d14bbc9",
+   "c0af77808ece949a",
+   "ef2bbf8961a3decb"
+  ],
+  "48": [
+   "4f361852a2a0e7ba",
+   "5c030d7342b25804",
+   "7e37017a51f47ed5",
+   "818fd32290a89151",
+   "b5f3de8643cedfe4",
+   "c38bca339e48966d"
+  ]
+ }
+}

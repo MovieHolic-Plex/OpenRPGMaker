@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c818dc30a81d575f3683101594e431f3ebb155240f06bdd976d2c34f61a332dd",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "부뚜막(가마도, 솥 둘)",
+ "label": "sengoku-edo/se-kamado",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "traditional kitchen stove counter (부뚜막)",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hearth has a well-defined horizontal top surface spanning rows 7 to 14 (8 source pixel rows) with two embedded pots/lids seen from above, resting on a front face spanning rows 15 to 26.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3626
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "traditional kitchen stove with two cauldrons",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the stove is clearly visible from row 7 to row 14 (8 pixel rows) containing two pots, with the vertical front face extending from row 15 to row 27.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4820
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "kitchen stove/hearth block",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the hearth spans rows 7 to 14 (8 pixel rows) containing two inset cauldrons/pots, clearly separated from the front face spanning rows 15 to 26.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3123
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "kitchen stove block (hearth with two cauldrons)",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the stove spans rows 7-14 (8 pixel rows) showing two cauldrons viewed from above, above a south front face spanning rows 15-26 with two firebox openings.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3559
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.078Z",
+ "cells": {
+  "16": [
+   "59af6e5ba6ece8fb",
+   "748218b6031e77a1",
+   "b5cb72d9d410826f",
+   "e07e65adaea9d139"
+  ],
+  "24": [
+   "173a1b7de4a3913d",
+   "18999a46922845d3",
+   "1c4830277cd0d3c3",
+   "222c05527c434472",
+   "2330f640dea19af0",
+   "268c748befa56789",
+   "333724cf31771c7f",
+   "469615156b7f32eb",
+   "4707dd1796cb1e80",
+   "5aca4b29fa728591",
+   "5cca6dc713ed25c2",
+   "6c383201387dfc13",
+   "6e145a9ce2d91da2",
+   "735cbd75bdad0906",
+   "8d1565adec7458c2",
+   "991b22c363a5f78e",
+   "9e13a1d588444ce3",
+   "a4e25273effac579",
+   "b26678980e6de1cb",
+   "b70130106877106a",
+   "d508e767c4189b0d",
+   "efc50486193fdc25",
+   "f6f3690e92c5035b",
+   "fc6af6429564815a"
+  ],
+  "32": [
+   "6a9627be8c88c0e5"
+  ],
+  "48": [
+   "14fa98931b112f66",
+   "4c5d297d0e74a693",
+   "8e21742239f8dee1",
+   "a8f18f36160e6170",
+   "b225ec249162ad92",
+   "bb3220ef6cbc1415"
+  ]
+ }
+}

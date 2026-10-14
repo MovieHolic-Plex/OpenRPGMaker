@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "feb1e454c78d6b2023b2ba649557831997c9f06c345d5ba8d7fb741e1b4d1c86",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "소화전(빨강 무쇠, 둥근 머리)",
+ "label": "steampunk-city/sp-hydrant",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fire hydrant body and domed cap",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rounded cast-iron dome cap of the hydrant occupies rows 3-6 (4 source pixel rows) with the top nut placed at the top/rear (row 2), clearly revealing the upper surface in 3/4 perspective above the main cylinder (rows 7-10).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7161
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "red fire hydrant with rounded cap and side nozzles",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rounded dome cap of the hydrant is viewed from above across rows 3-6 (4 rows tall) topped by the operating nut, and the base slab also shows a visible horizontal top surface on row 11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5874
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fire hydrant barrel and domed cap",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The domed cap of the hydrant spans rows 3-6 (4 rows tall) viewed from above, with the south cylindrical face extending below it on rows 7-10 and base curb visible beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5230
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "red fire hydrant with rounded dome cap and side nozzles",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The dome-shaped top of the hydrant is visible from row 3 to 6 (4 rows tall) foreshortened from above with a central top nut, before transitioning to the lower cylindrical body and base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5482
+  }
+ ],
+ "decidedAt": "2026-10-13T18:42:41.659Z",
+ "cells": {
+  "16": [
+   "89de57c4124cbc93"
+  ],
+  "24": [
+   "653dd84726db9096",
+   "9e561d2921211803",
+   "ba2f66b9520a3a31",
+   "ee156c01e29c676e",
+   "f9a81ce6b7543b5f",
+   "ff7c81833a8d6e6f"
+  ],
+  "32": [
+   "3dd98d5882d2ad8c",
+   "8457c4a77b11e685",
+   "a35c81b87113f6a4",
+   "b92ff3a4b67a54c1",
+   "c2dd1159b4364163",
+   "c92048269eacbf7c"
+  ],
+  "48": [
+   "44a023a265777b9a",
+   "761a1344bd6d4bd9",
+   "9c69c6b3f9fa8997",
+   "a4edcc64bad36be6",
+   "bce44e330c2cf52d",
+   "f3a050f0ddf5c5e6"
+  ]
+ }
+}

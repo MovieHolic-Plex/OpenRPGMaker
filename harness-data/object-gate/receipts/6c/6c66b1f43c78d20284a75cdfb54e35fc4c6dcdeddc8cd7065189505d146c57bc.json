@@ -1,0 +1,148 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6c66b1f43c78d20284a75cdfb54e35fc4c6dcdeddc8cd7065189505d146c57bc",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "에마 걸이(작은 지붕 + 나무 판 여럿)",
+ "label": "sengoku-edo/se-ema-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ema rack (frame with roof and wooden plaques)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure front elevation. The horizontal support beams (rows 11-12 and 19-20) are flat 2px bars with no visible top surface. The base plinth at rows 27-31 is a flat front-facing rectangle with only a 1px highlight line and no foreshortened top surface showing its depth on the ground.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12781
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden ema rack with tiled roof and stone base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire frame, hanging rails, and bottom stone base are drawn in flat front elevation with no visible top surfaces (the rails are 1-2px flat lines and the base shows only a south face with a 1px highlight). The roof is also drawn flatly without ridge depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8579
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ema rack frame with hanging plaques",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rack frame consists of 1px horizontal beams (rows 12 and 20) with no visible top faces, completely flat vertical plaques, and a base plinth drawn in front elevation without a visible top surface. The frame structure is drawn as a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8643
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ema rack with tiled roof",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The small roof covering the rack shows 8 rows of tiled downward slope viewed from above (rows 1-8). The stone base at the bottom also shows a distinct top surface (rows 28-29) above its front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6293
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.070Z",
+ "cells": {
+  "16": [
+   "17a5b1a840891e30",
+   "4fa086559a3c79d7",
+   "7a2c438f00ec6f51",
+   "9c7ca1a377bc38d3"
+  ],
+  "24": [
+   "0a52823bd6caa1e2",
+   "0a5ed3d70c43d26c",
+   "0bfc1fa2d74d62e7",
+   "1177057ee7353fd5",
+   "19f5749f63e28e1f",
+   "1c6a3301a369affc",
+   "2160ae659879b13c",
+   "44312ec51a46db9e",
+   "4cd198879aa0d26d",
+   "6fcaebb8019078bf",
+   "7733d887485b6083",
+   "861ffa1c36c58103",
+   "8a466a89f5ca1f8c",
+   "9008841edcffb493",
+   "98f9cde0642f94d4",
+   "9ec7c360ab75ad6b",
+   "ab9a011ed47adfaa",
+   "aeec4c0bbcd16498",
+   "b2bedc0266d230fe",
+   "c73a7b9e8524a53c",
+   "e11f677fed75ee4a",
+   "e625d73adafe0d33",
+   "f9298ac55ae3ae4d",
+   "fd241de912daac5e"
+  ],
+  "32": [
+   "3a2eb143e76a2b93"
+  ],
+  "48": [
+   "1bb7f9750a66f5b7",
+   "2fddab63d752f5f3",
+   "847ce71987d91e8e",
+   "bbf1c99180b6512a",
+   "d3dc915ab0f4ea42",
+   "df39fc0c47a3e3dd"
+  ]
+ }
+}

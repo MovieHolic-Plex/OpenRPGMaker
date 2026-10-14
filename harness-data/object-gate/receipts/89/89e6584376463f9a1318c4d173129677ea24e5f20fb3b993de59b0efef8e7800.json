@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "89e6584376463f9a1318c4d173129677ea24e5f20fb3b993de59b0efef8e7800",
+ "width": 32,
+ "height": 16,
+ "kind": "frame",
+ "name": "관람 차단 줄(놋쇠 기둥 둘·붉은 줄)",
+ "label": "gothic_manor/gm-stanchion",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brass stanchion posts with hanging velvet rope",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stanchion posts feature foreshortened circular bases (rows 10-14, ~4 rows high) and rounded finial tops consistent with a 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6055
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brass stanchions with red velvet rope barrier",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stanchion bases are drawn as foreshortened circular discs viewed from above (about 4 rows tall from rows 10-13), avoiding a flat front-elevation profile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7893
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brass stanchion posts with velvet rope",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stanchion base plates are drawn as 3/4 foreshortened circular discs showing about 4 rows of top surface (rows 10-13) where the vertical poles insert.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9325
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brass stanchion posts and velvet barrier rope",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The circular weighted bases of both stanchions are drawn as foreshortened ellipses (rows 10-14, ~4-5px tall) showing their top surfaces from above rather than flat edge-on profiles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4720
+  }
+ ],
+ "decidedAt": "2026-10-13T16:52:42.787Z",
+ "cells": {
+  "16": [
+   "277f8f0c97b2f9d3",
+   "79ed115c63ad1d88"
+  ],
+  "24": [
+   "03f373d868e2c34c",
+   "3007f0b437f5432a",
+   "47ed9a3c04214137",
+   "6c3f54bde8409083",
+   "7914e01fdd77745f",
+   "7c5f89656fa32842",
+   "983a319cd2aa62f6",
+   "a4d4e3533070a09b",
+   "c74257e03254c1a5",
+   "e0a7b6d5fb34c736",
+   "ea1275ebdf3aea93",
+   "efc02ccca0ab61aa"
+  ],
+  "32": [
+   "03b05ee81c0ebb05",
+   "d37a238cce21a00f"
+  ],
+  "48": [
+   "3f7414d1c5cd4217",
+   "7112080aa78306d5",
+   "71f576ad16880941",
+   "e351d0b651cbed2d",
+   "effa6734fe1376be",
+   "f889120f047751c2"
+  ]
+ }
+}

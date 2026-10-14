@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e7aad2855397c8210bfc717bdbaa24ec793374745a575107be888ba54b961d1f",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "축전지 뱅크(윗면 전지 셀 넷 + 전극 + 충전 램프)",
+ "label": "sf-station/sf-battery-bank",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rectangular battery bank casing with embedded battery cells",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the battery bank unit spans rows 1 through 9 (showing four round battery cells with terminals), while rows 10 through 14 form the front face containing the indicator lamps.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3892
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "battery bank with top cell bay and front indicator panel",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the battery bank clearly spans rows 1 to 9 displaying four cylindrical cells with terminals viewed from above, while the south front face occupies rows 10 to 14 with charge indicator lamps.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5762
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "battery bank unit",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top deck of the unit is prominently visible from rows 1 to 9 (9 rows tall) featuring four battery cells with terminals viewed from above, while the south front panel occupies rows 10 to 14 with status indicator lights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4356
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "battery bank unit with top-mounted battery cells and front indicator panel",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface occupies rows 1-8 and clearly shows four green battery cells with terminals seen from above; rows 10-14 form the front face with four charge status lamps.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3324
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:09.620Z",
+ "cells": {
+  "16": [
+   "fbd673b1cb3f01c7",
+   "fec4dd8db2f325cc"
+  ],
+  "24": [
+   "234be91307429e76",
+   "23aee2c9d4b8e296",
+   "3ed287d8758c5440",
+   "644fc15f577584e6",
+   "64fc9394cbcfae30",
+   "68d29a5f15c57501",
+   "86e01f2e96df3267",
+   "983421fb763193cf",
+   "9bfcac14b6f688e3",
+   "b36e182c7d215379",
+   "d21a329babd88052",
+   "ea4914483628678d"
+  ],
+  "32": [
+   "49d896dfaae2a4ad",
+   "bc7dd0666791bdb1"
+  ],
+  "48": [
+   "2825a41e73a63f9b",
+   "2bcd1883d510f39e",
+   "50bfd2036713dc1e",
+   "5251bc8b73d7b6c5",
+   "61301d156f8db74f",
+   "b8ac1099f5159671"
+  ]
+ }
+}

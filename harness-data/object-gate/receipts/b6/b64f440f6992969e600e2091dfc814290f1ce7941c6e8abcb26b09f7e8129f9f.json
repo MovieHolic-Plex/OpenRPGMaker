@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b64f440f6992969e600e2091dfc814290f1ce7941c6e8abcb26b09f7e8129f9f",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "fish drying rack seen from above at an angle, split fish laid on slats across the top",
+ "label": "pirate-isles/pi-fish-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "drying rack frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rack is drawn entirely in flat 2D front elevation: the legs and horizontal crossbeams have no visible top surfaces (only a 1px highlight on row 7/16), and the fish hang vertically inside the frame rather than lying on an angled top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5741
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fish drying rack frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire rack is drawn in pure flat front elevation. Both horizontal beams and the vertical support legs show only their south front faces with 1px edge highlights and zero top surface depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5043
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden frame rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rack is drawn entirely in flat front elevation with straight vertical legs and horizontal crossbeams. Neither the top horizontal beam nor the middle rail shows a foreshortened top surface (only 1-2px outline/highlight bands), and the items hang vertically in a flat 2D view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6317
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden frame rack with fish",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire rack is drawn in pure front elevation: horizontal beams have only 1px edge highlights instead of a foreshortened top surface, the fish hang vertically facing directly forward, and the legs drop straight down with no depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4123
+  }
+ ],
+ "decidedAt": "2026-10-13T19:25:15.329Z",
+ "cells": {
+  "16": [
+   "1b73379e3c8945d1",
+   "765e3502123e3ea0",
+   "76a5c824e439bb41",
+   "fa1cf27991ce0d29"
+  ],
+  "24": [
+   "242c02274a3b49f3",
+   "295a20876b044ab4",
+   "2d2bcffdbf78b67c",
+   "3169dd6f5480253b",
+   "446b8fbe45888489",
+   "4c29034a06aee42e",
+   "4e03d1109533dcf4",
+   "5ad8fadb4f6a0b73",
+   "62f133213f9f1622",
+   "642ba54e259fcdb2",
+   "6741676568b68a1a",
+   "7a7ec62d9aa717a4",
+   "7f92ca88a994a804",
+   "90c639f5644bfec0",
+   "91f9ebf72f558029",
+   "97f0641eaaaa1f5c",
+   "9b1604b58a43919f",
+   "acba00629084c628",
+   "ca396c21c8a1a204",
+   "d0b44fb8abf6b380",
+   "d5b9ce62b0099121",
+   "e835499ece75201f",
+   "eb01d60e0faa7c2c",
+   "fc9d85c4a95a2bf8"
+  ],
+  "32": [
+   "b50dd650e05e8d86"
+  ],
+  "48": [
+   "104b6ace1acfed64",
+   "48bb9248d261239b",
+   "608f52393e089961",
+   "68369480abaa8f86",
+   "f7d3321b7e06a086",
+   "f8df2f5d2e99637f"
+  ]
+ }
+}

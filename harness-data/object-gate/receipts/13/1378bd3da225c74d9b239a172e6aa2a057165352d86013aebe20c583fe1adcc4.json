@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1378bd3da225c74d9b239a172e6aa2a057165352d86013aebe20c583fe1adcc4",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "배관 도랑 — 가로",
+ "label": "steampunk-city/sp-pipe-ew",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal pipe trench cut into ground",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal pipe trench recessed into the ground terrain tile; pipe shows top-lit cylindrical shading (rows 6-9) within the trench.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4768
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal pipe trench tile",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal pipe running east-west embedded in a trench tile; the cylindrical pipe shows top lighting and south shading across 4 rows within an overhead terrain trench cut.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5274
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal pipe in trench",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal terrain trench tile correctly depicted in 3/4 top-down perspective, showing ground surfaces along both edges, the back wall of the trench, and a horizontally running pipe with cylindrical top-to-front shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5810
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal pipe trench terrain tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile representing a horizontal trench cut into the floor with an embedded pipe running east-west, viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4817
+  }
+ ],
+ "decidedAt": "2026-10-13T18:45:09.734Z",
+ "cells": {
+  "16": [
+   "4f51c6e23f25708a"
+  ],
+  "24": [
+   "277e740f72c2e311",
+   "40f1a269cb60a3d9",
+   "51f04c32b16a4d76",
+   "5db1319b199c9a21",
+   "abde1da4f4ab55f7",
+   "e9697d85874592d3"
+  ],
+  "32": [
+   "2e592840530b3779",
+   "4507ed2e56214123",
+   "5657c1b7728232b3",
+   "9714c537b1d37207",
+   "a903c36c97bab16b",
+   "c30ab1dbacfbdf5e"
+  ],
+  "48": [
+   "00b8d4ce9a1a1928",
+   "71a051c837e2af07",
+   "7c1ab5d7c6ae1c22",
+   "84e926cae844384f",
+   "a5b24cf22693ab98",
+   "dc7677b0e5f62224"
+  ]
+ }
+}

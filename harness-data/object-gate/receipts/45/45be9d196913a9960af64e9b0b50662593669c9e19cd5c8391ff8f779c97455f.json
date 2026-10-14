@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "45be9d196913a9960af64e9b0b50662593669c9e19cd5c8391ff8f779c97455f",
+ "width": 16,
+ "height": 32,
+ "kind": "round_body",
+ "name": "표본 수조(위에서 보이는 열린 용액 수면 타원 + 금속 테 + 초록 유리 원통 + 거품 + 받침)",
+ "label": "sf-station/sf-specimen-tank",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical specimen tank",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Top ellipse showing the liquid surface/opening spans rows 3 to 7 (5 source pixel rows tall) enclosed by a metal rim in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5906
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "specimen tank cylinder",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the specimen tube features a clear 3/4 perspective ellipse showing the liquid surface inside the metal rim spanning rows 3 to 7 (5 rows tall), with proper foreshortening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4211
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cylindrical specimen tank with green fluid",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap/rim clearly shows a foreshortened elliptical opening/fluid surface (rows 3-7, approx 5 rows tall) surrounded by a metal rim in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3603
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical specimen tank with green fluid",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the cylinder clearly displays an elliptical opening/surface of green liquid framed by a rim from rows 3 to 7 (5 source pixel rows tall), fully matching 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4938
+  }
+ ],
+ "decidedAt": "2026-10-13T16:02:53.702Z",
+ "cells": {
+  "16": [
+   "45dbf112eb2be791",
+   "f4f7ee8e9d7c3195"
+  ],
+  "24": [
+   "1724faf0bc3b305b",
+   "22736cad12fe65ac",
+   "2b9074afb75784bb",
+   "408f4d6c74736402",
+   "456ce7c6060826b3",
+   "831263f52a2c6fe1",
+   "a26f80cdc06212bb",
+   "a4755cef8ba40b1e",
+   "b8e5082763c5b722",
+   "f6427010065186b0",
+   "f6673e4009136e8d",
+   "fd7a77cd5a6c01fa"
+  ],
+  "32": [
+   "3c093840839ee05b",
+   "8891367b0bc9794c",
+   "ff77208dfe2cbb64"
+  ],
+  "48": [
+   "4a9739fa6e5652ff",
+   "4e2401b2e7fb194c",
+   "51cb76b919eb12d1",
+   "8119ffcd1ebca342",
+   "db404f13e9eb8a9b",
+   "dccf59956c680dbc"
+  ]
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f99f132386a74709612f2f590b0b57532f3d65137d13c58954761e1f003ac118",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "받침 위 큰 도자기 항아리",
+ "label": "gothic_manor/gm-vase-plinth",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "porcelain jar on a pedestal",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The jar has a large elliptical opening showing interior darkness (rows 2-5, approx 4 rows tall) and the wooden pedestal beneath it clearly shows its top surface (rows 17-23).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6309
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "porcelain jar on a wooden stand",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The jar at the top clearly reveals its elliptical opening (rows 1-5, interior 4 rows tall) viewed from above, and the supporting pedestal also displays a prominent top horizontal plane (rows 17-23).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5505
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ceramic jar on wooden pedestal",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The jar opening is rendered as a wide ellipse with visible dark interior spanning 4 rows (rows 2-5), and the wooden pedestal below also shows a 6-row top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5794
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ceramic jar on a wooden pedestal",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The jar has a prominent elliptical opening showing its dark interior from rows 1 to 5 (5 rows tall), and the wooden pedestal beneath it also clearly shows its top surface (rows 19-23) in proper 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5561
+  }
+ ],
+ "decidedAt": "2026-10-13T16:52:42.787Z",
+ "cells": {
+  "16": [
+   "c91880d574caa3ed",
+   "d40f69590f9ea894"
+  ],
+  "24": [
+   "111cbefb79ad8db1",
+   "19528532b12bf618",
+   "5309ca569a28a370",
+   "60aad182aca375a1",
+   "6383c66fe4023482",
+   "6bcd5d271ce205eb",
+   "7a69407c87f0b54a",
+   "8b6fdeb87f21d731",
+   "9e863e3e11748988",
+   "a6d062091e84f0ea",
+   "b0c56d37104844bc",
+   "b477525e2a65dc7c"
+  ],
+  "32": [
+   "3c92cb367918e223",
+   "510a3103e237cbf8",
+   "e5c9e6f779c74a90"
+  ],
+  "48": [
+   "031bf530369ea081",
+   "157fc43435ee1297",
+   "1a13511970c3b281",
+   "a06d712215c5c838",
+   "cde7fafda92cab2a",
+   "f578f88c9d2e6c32"
+  ]
+ }
+}

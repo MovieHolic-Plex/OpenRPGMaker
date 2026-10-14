@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d92cc97bf8b3b18ab045648e4c122a73868919779b54a4a945c6f3962b49c40f",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "round thatched hut with conical straw roof",
+ "label": "pirate-isles/pi-hut-round",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round thatched hut with conical straw roof",
+    "kind_matches": true,
+    "top_rows": 38,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The conical roof clearly shows its top slope facing the camera across roughly 38 pixel rows (y=0 to y=38). The thatch tiers, wall bands, and base rim are curved downward in the center as appropriate foreshortened circular cross-sections viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9312
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "thatched hut with conical roof",
+    "kind_matches": true,
+    "top_rows": 41,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The conical thatched roof displays 41 rows of top/sloping surface down to the eaves, and the step at the doorway shows a visible horizontal tread.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7135
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round thatched hut with conical straw roof",
+    "kind_matches": true,
+    "top_rows": 36,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features a fully visible conical roof slope facing south from the apex down to the eaves (rows 0–36, ~36 rows), along with a foreshortened top surface on the front entrance step (rows 60–61).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8478
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "thatched hut with conical roof and cylindrical wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hut is drawn in pure architectural front elevation: all circular horizontal features (thatch tiers, roof eave fringe, cylindrical wall bands, door lintel) are rendered as completely straight horizontal lines rather than curving downward into 3/4 perspective ellipses. The apex of the cone is vertically centered with no foreshortened top view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6547
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.700Z",
+ "cells": {
+  "16": [
+   "06da58ae0e45e595",
+   "1c5b4a89531d0ccf",
+   "32d209d5718170cb",
+   "358449a869114e71",
+   "37b442ce5f69717a",
+   "44ca0b8a4be55629",
+   "703dd45051e5c2c7",
+   "8fe388bab4f3278a",
+   "9f363efa7314f93b",
+   "a0de717ac04ef51c",
+   "e7d0eaa98a0bccad",
+   "f96869aa32ebda65"
+  ],
+  "24": [
+   "1d9169b8b0931934",
+   "430394b93e56a459",
+   "53c4bcb39b173a1a",
+   "840d65e175925078",
+   "9e3fc16dd8070c7b",
+   "a0b87dce5e6aab1b",
+   "a2cdc666c70d5980",
+   "c3d855fc4f4d4a2b",
+   "cf806152f9cc0406",
+   "e39c9f9ceac33be7",
+   "ee1a7d5395da319f",
+   "f1d85ccf7c71f1e5"
+  ],
+  "32": [
+   "17384d51bb679dae",
+   "3b3d45a268d63647",
+   "4af8016ddefca4c1",
+   "9334ce7573025939",
+   "b7160f076613e153",
+   "b7df55d3feeb1559",
+   "be36c58e41ca50e5",
+   "c549a54295764a60",
+   "cac68234b1dec5a1",
+   "f3c709511c9ef86a",
+   "f49b28dc837cdb3e",
+   "fde806d1129d97f2"
+  ],
+  "48": [
+   "0691aa0e2094f5c6",
+   "bcab4ae04c18ab2a",
+   "d71b9c3ef73ca201",
+   "e2d2c53124598851"
+  ]
+ }
+}

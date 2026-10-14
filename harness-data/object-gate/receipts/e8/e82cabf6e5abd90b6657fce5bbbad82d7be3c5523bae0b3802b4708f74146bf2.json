@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e82cabf6e5abd90b6657fce5bbbad82d7be3c5523bae0b3802b4708f74146bf2",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "stone bridge arch face (terrain overlay)",
+ "label": "sky-island/si-sbridge-arch",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone bridge arch wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a vertical bridge arch / stone wall face. As a wall-face terrain element, it correctly displays the vertical surface designed to connect with floor/water tiles below and bridge deck tiles above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4260
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone bridge arch wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall face of a stone bridge with an arch opening. As a terrain wall surface tile, it represents a vertical plane and correctly connects with adjacent bridge/wall tiles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5165
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone bridge arch wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain wall-face overlay depicting a stone arch opening under a bridge or wall. As a vertical terrain wall face, it correctly displays a flat south-facing surface without perspective distortion.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4820
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone bridge arch wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical stone wall face with bridge arch overlay, classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4105
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.983Z",
+ "cells": {
+  "16": [
+   "bd6451831b7e3b4b"
+  ],
+  "24": [
+   "4f4ec0dc1990c08a",
+   "84757a686ad28b94",
+   "9eef16ef9811cb3f",
+   "9fab96d813c2fa21",
+   "f08d190ab72275ef",
+   "f776234ff89a82b3"
+  ],
+  "32": [
+   "173c0bbfaa4a9303",
+   "6b4563c69648ca58",
+   "b249038e3da7d208",
+   "c4ce1f7dd61b147b",
+   "c54d509334fa2f2c",
+   "e04e549c54a293ec"
+  ],
+  "48": [
+   "28bc8784957a51de",
+   "29281ba8d2c680d0",
+   "2b9a11c17b0399a6",
+   "8cea4348337d46dd",
+   "9b40bd098d25939b",
+   "d526f0bf2ced7fc7"
+  ]
+ }
+}

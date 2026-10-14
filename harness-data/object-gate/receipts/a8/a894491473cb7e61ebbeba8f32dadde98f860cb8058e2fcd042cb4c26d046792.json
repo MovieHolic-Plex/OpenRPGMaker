@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a894491473cb7e61ebbeba8f32dadde98f860cb8058e2fcd042cb4c26d046792",
+ "width": 48,
+ "height": 48,
+ "kind": "terrain",
+ "name": "진흙 길(풀밭 가장자리)",
+ "label": "gothic_manor/gm-path-dirt",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mud path terrain patch",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a mud path bordered by grass, viewed from above as flat ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4975
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "mud terrain patch",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain patch representing a mud path bordered by grass, viewed flat from above as a horizontal surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5786
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "mud path terrain patch surrounded by grass",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile showing a mud path surface with grass borders; entirely a horizontal surface seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5717
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "mud terrain patch on grass",
+    "kind_matches": true,
+    "top_rows": 41,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile depicting a patch of mud surrounded by grass, viewed from above as appropriate for top-down terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4190
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.464Z",
+ "cells": {
+  "16": [
+   "3b15b67d69037912",
+   "431b21d42f4050d3",
+   "4f84602739cf396e",
+   "64fd1a553e3d0d7d",
+   "a2b58a1a688a873c",
+   "ad4e29903cc6b25c",
+   "b960911535b9c2ce",
+   "c87134bca58d2098",
+   "d67f364a3a66e702"
+  ],
+  "24": [
+   "4408f773c087eb14",
+   "77cde5bdca1e35ba",
+   "99da2483f49388fe",
+   "c86cd3725fb421f0"
+  ],
+  "32": [
+   "009597f227978b0f",
+   "00ebd5fdb97dea4e",
+   "1af0baa275f82246",
+   "482cf88f70375f8f",
+   "4a643fe1d872f4d0",
+   "5141e0b5160a7345",
+   "569fadb7b87a02ce",
+   "66a2ba34ea8e4ee9",
+   "6aeb79ca36661a40",
+   "6b5e6340b238fd80",
+   "73696d88bf845255",
+   "7a690e349e4c17d7",
+   "88f70a6da27b1953",
+   "8d7aad3f23ca620d",
+   "a60c143088a3aea9",
+   "ac44c2118ca3cd78",
+   "b0c347f8469ac53b",
+   "b7d97d5f2ab9456a",
+   "b83c1bbd1fbf7b37",
+   "bd838753ec606fcb",
+   "cc01057c57e79d13",
+   "df08c7cbbfb24835",
+   "ea5b9eb071c56620",
+   "fb261e0d9ab33f4b"
+  ],
+  "48": [
+   "3936b72bd853d4e5"
+  ]
+ }
+}

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "328887397b6779ec62db702376a16d65c61f61f8a92b362e02ca5e8072a96431",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "wooden lantern post on a square stone base with a hooded glowing oil lamp",
+ "label": "pirate-isles/pi-lantern-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lantern and wooden post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern housing and its conical/pyramidal hood (rows 0-13) are drawn in pure front elevation with flat horizontal rims (row 5 and 13) and no top surface visible. While the base plinth below has top-down foreshortening, base plinths do not count for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7199
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden lantern post and hooded lamp",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern post and hooded lamp are drawn in pure front elevation with no visible top surfaces (the hood is drawn as a flat symmetrical front silhouette and the lamp body as a flat front rectangle). Although the stone base plinth shows a top surface, base plinths do not count for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9072
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lantern and wooden post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern housing, hood/cap, and wooden post are drawn in pure front elevation with straight horizontal edges and no visible top surfaces. Although the stone base plinth shows a top surface, base plinths do not qualify the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5254
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lantern and wooden post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (lantern hood, housing, and post) is drawn in pure front elevation with straight horizontal eaves and flat frontal windows. A top surface is only drawn on the base plinth, which cannot be credited.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6553
+  }
+ ],
+ "decidedAt": "2026-10-13T19:25:15.328Z",
+ "cells": {
+  "16": [
+   "444f5271d9a22187",
+   "7259634abc653910"
+  ],
+  "24": [
+   "3737f332a15455eb",
+   "4c3bc14094acd1c9",
+   "60f2ecb3f6737e4b",
+   "63935f6b0817d9a6",
+   "6a35c32a4811f8c1",
+   "8c63c9c79433784e",
+   "92df4ebb41ecc559",
+   "94f376a4b10692ea",
+   "95d8b85996b8a37c",
+   "9c2dbb88498fa6a0",
+   "c5c570f5711e6ebc",
+   "d5fb6c9badb8fceb"
+  ],
+  "32": [
+   "59ce1d5c99613572",
+   "7ddd9cea7b943478",
+   "f5a12bc5898b1428"
+  ],
+  "48": [
+   "0004c8a5498d0778",
+   "2c66d657f8ae96df",
+   "422544d3d0313c4c",
+   "46eb8b58de4c75a1",
+   "9f7b4fa070a73f99",
+   "db7fb28b757827b5"
+  ]
+ }
+}

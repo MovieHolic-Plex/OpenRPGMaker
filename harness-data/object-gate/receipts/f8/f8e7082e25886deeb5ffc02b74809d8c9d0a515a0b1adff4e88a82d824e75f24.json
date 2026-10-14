@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f8e7082e25886deeb5ffc02b74809d8c9d0a515a0b1adff4e88a82d824e75f24",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "길가 등롱(나무 기둥 사각 등)",
+ "label": "sengoku-edo/se-street-lantern",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lantern head and wooden post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern cap at the top (rows 1-5) is drawn as a flat rectangular block in pure front elevation with a bottom shade row and right-side shade column, showing no top surface whatsoever.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5457
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "roadside wooden lantern post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern is drawn in pure front elevation. The wooden cap at rows 1-5 has no visible top surface (only a 2px flat color block), the lantern housing and wooden post show only their front faces, and no horizontal surfaces are viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8630
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "roadside wooden lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire lantern is drawn in pure front elevation: the wooden roof cap, lantern housing, post, and base show no top surface (0 visible top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14189
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lantern head and wooden post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern cap (rows 1-5) and lamp housing (rows 6-14) are drawn in a completely flat front elevation with horizontal shading bands and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9713
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.073Z",
+ "cells": {
+  "16": [
+   "4e1eb01433c369fb",
+   "e474ddaa235fa96a"
+  ],
+  "24": [
+   "0983a1c1880f7352",
+   "0ef196224d6febb3",
+   "497762961247c1b4",
+   "5f993b2e1fb0bea6",
+   "600a56774811d153",
+   "656c8d14a124e194",
+   "908f8644968a32d7",
+   "92266f82d09c2496",
+   "b19e8ae8ad550a73",
+   "c0db2cf92cf9ec38",
+   "db769f2db72a14d0",
+   "f7083d46ac96871e"
+  ],
+  "32": [
+   "474de9f7c8028859",
+   "662f1be9876adb29",
+   "9950e3d90d1ca6f8"
+  ],
+  "48": [
+   "6378766dece11397",
+   "76d3dd2d2cd7268f",
+   "98c90a76b966f722",
+   "9e8062b536a81eda",
+   "c32fcd2c45707ec3",
+   "c54b4c0284b5dce9"
+  ]
+ }
+}

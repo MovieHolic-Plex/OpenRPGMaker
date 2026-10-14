@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "45f4e1bcd9e3c805f10a401a3e864d9cb45023a9314cba9da119ae8a2f19170d",
+ "width": 48,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "long rectangular wooden tavern table seen from above at 3/4: deep plank top with ale mugs, plates of food and a candle",
+ "label": "pirate-isles/pi-tavern-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden tavern table",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is extensively visible from rows 4 to 18 (~15 rows deep) displaying plates, mugs, and a candle, with the south edge and legs extending below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4085
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rectangular wooden tavern table",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from above, spanning approximately 15 pixel rows (rows 4-18) with tableware and a candle resting on it, followed by the table apron and legs in front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3365
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rectangular wooden tavern table",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface clearly extends from row 4 to row 18 (15 pixel rows) displaying mugs, plates, and a candle in 3/4 top-down perspective, with the front apron and legs extending below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3344
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tavern table",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is extensively visible from row 4 to row 18 (15 pixel rows deep) with items resting on it, followed by the table's front apron and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3043
+  }
+ ],
+ "decidedAt": "2026-10-13T19:41:01.300Z",
+ "cells": {
+  "16": [
+   "001b4c6717fe5ac2",
+   "679329b46e976998",
+   "880e64502846a822",
+   "cc9eeebe640d4bc9",
+   "d2ac507271a10a98",
+   "d68c209b4fcd7672"
+  ],
+  "24": [
+   "0d56d84577882593",
+   "16539546dd3e56ca",
+   "29963afa8db033a4",
+   "58c01118cf1ab53c",
+   "7774e4f368690704",
+   "852dff96618648a8",
+   "9c4a3bdfa068bef1",
+   "f3f7edce298982ee"
+  ],
+  "32": [
+   "6ac013bf4536c5b6",
+   "6fd9ae09262b7cfb",
+   "7f35a5dbc2e6aa85",
+   "89652c800611ca09",
+   "c29d27d5947f3c40",
+   "fef9e874b807feb1"
+  ],
+  "48": [
+   "b322faa3ce8f2d3f",
+   "ebe08ef2ef65433b"
+  ]
+ }
+}

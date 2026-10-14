@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3b7306cec219424709d4afb5e8ae5ca603bb8e1126aa7f31d4fadd91675d5fc0",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "땅 위 배관 — 가로 + 남 갈래",
+ "label": "steampunk-city/sp-pipe-sew",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pipe junction / horizontal pipe with south branch",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main horizontal body/junction box is drawn as a flat frontal rectangle from rows 2 to 12 with no visible top surface (0 rows). The camera looks directly at its front face instead of looking down at 45 degrees.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9373
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "junction box / chest-like pipe junction",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The central square block (rows 2–12) is drawn in pure front elevation with front-facing hardware/latch at rows 3–6 and no visible top horizontal surface (only a 1px border at row 2).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4724
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "junction box of ground pipe",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The central box clearly distinguishes a 5-row top surface (rows 2–6) with a hatch plate and edge highlight (row 7) from the darker 4-row south-facing front face (rows 8–11). Both faces are rendered appropriately for 3/4 perspective with no receding isometric sides.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10618
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "above-ground pipe junction (horizontal pipe/junction box with south branch)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal conduit/junction shows a clear top surface from row 2/3 to row 6 with a brass hatch/valve, bounded by an edge highlight on row 7, above a shadowed south vertical face on rows 8-11 and a branch pipe extending south on rows 13-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10948
+  }
+ ],
+ "decidedAt": "2026-10-13T18:40:36.080Z",
+ "cells": {
+  "16": [
+   "270f4d3c533d0eb2"
+  ],
+  "24": [
+   "3a6605377213a971",
+   "7bf25bb15e15bb01",
+   "afec115ea2d1ef22",
+   "d2bb21a63d58a4e5",
+   "e4fa8bf560390fe3",
+   "ebd4b9add2d0a9f7"
+  ],
+  "32": [
+   "259fe5dd71816768",
+   "66ea21568377263d",
+   "6f76facbde27d49c",
+   "b208be2e599f5959",
+   "c4db6867a01ee877",
+   "c91a44d04f5b672c"
+  ],
+  "48": [
+   "11b94d6b5d23d4ce",
+   "1c0baa73e24ac043",
+   "54bafd08068cee9d",
+   "5e3516a33bdc734c",
+   "6b057b7b62fd227a",
+   "76f235767de141ee"
+  ]
+ }
+}

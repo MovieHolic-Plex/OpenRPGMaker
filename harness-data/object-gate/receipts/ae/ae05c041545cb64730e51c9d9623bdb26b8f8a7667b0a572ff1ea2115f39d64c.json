@@ -1,0 +1,162 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ae05c041545cb64730e51c9d9623bdb26b8f8a7667b0a572ff1ea2115f39d64c",
+ "width": 96,
+ "height": 96,
+ "kind": "structure",
+ "name": "two-storey harbor tavern with tile roof, timber-framed plaster walls, porch canopy and hanging mug sign",
+ "label": "pirate-isles/pi-tavern",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "two-storey building with pitched tile roof",
+    "kind_matches": true,
+    "top_rows": 42,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof slope is clearly visible and foreshortened from above across rows 0 to 41, displaying standard top-down 3/4 view perspective for RPG buildings.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4504
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "two-storey building with tile roof",
+    "kind_matches": true,
+    "top_rows": 42,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tavern features a large south-facing tile roof surface spanning rows 0 to 41 (over 40 pixel rows) seen from above, along with a top surface visible on the porch canopy, typical of top-down JRPG structures.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4442
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two-storey timber-framed building with hipped tile roof",
+    "kind_matches": true,
+    "top_rows": 42,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main roof slope is fully visible and foreshortened in standard 3/4 top-down perspective across rows 1 to 42, with no isometric receding side walls.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4659
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "two-storey tavern building",
+    "kind_matches": true,
+    "top_rows": 41,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof shows an extensive foreshortened top slope from row 1 to 42 (around 41 pixel rows) facing the camera in standard RPG Maker top-down 3/4 perspective, sitting above the south-facing facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3944
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.700Z",
+ "cells": {
+  "16": [
+   "0d91991314bafc1d",
+   "0f04e9580d8e4aae",
+   "139b980406ac38d4",
+   "1de4105cf51fdafb",
+   "2be440dc66fc8b61",
+   "2e5b9d8d89b6187a",
+   "2fecb81ab5becd40",
+   "30b9da724a491fd4",
+   "3c89035ab70d665b",
+   "5137803ea52761c9",
+   "53eac43e8052dab2",
+   "5963c744f8a6f81d",
+   "706e8dcd91504e6c",
+   "7d190832345b9f9b",
+   "8360724f4b01d9db",
+   "880b9030a38dcaa2",
+   "8c925e1417cc752f",
+   "9626aba9a3004a9a",
+   "96a0eb12e835d6ff",
+   "9dfbe2f7aa5d1fd4",
+   "a331447abb1ea3a8",
+   "b0462c31732a6b48",
+   "b29c6d46a68f553c",
+   "b68784dcf6c6039c",
+   "bb53ab894d049984",
+   "bba498b6486cb330",
+   "c4d4bee0e46d5659",
+   "c7013f2e2a5f4b0c",
+   "ca7c32099305e6da",
+   "d2a786fbb3e5c70d",
+   "da8cd11f6ba852f9",
+   "dbc1e6dd14b7ff8a",
+   "ec1048c53f87c450",
+   "ec677ace97bfe63b",
+   "f3d2e33b029944ea",
+   "f98f8f86895e98b5"
+  ],
+  "24": [
+   "29af3d86a8d5fae6",
+   "42e62fc640205d18",
+   "5397d6ece49c1a1a",
+   "6dfc98832add1eee",
+   "6e28fac082a69cd8",
+   "75b05e0a379556c2",
+   "76578a9fa98c902e",
+   "7d770c1733ca1d7d",
+   "83a49ac3c128bdd7",
+   "8d02bddc45818741",
+   "914719ced8ebcf9c",
+   "9fb7be6a68c2e64d",
+   "a038cd427eaa690c",
+   "b72b15b595e97feb",
+   "bf1d2d55ae48ac4a",
+   "f6a198e966f9ccc5"
+  ],
+  "32": [
+   "22bb29adf6cce5d3",
+   "295ce9b2ef9bb035",
+   "426c963521afb686",
+   "4286d79f7848b849",
+   "4c1492dd1e256f0e",
+   "766ffe2fbab5e3c2",
+   "83f1b5b118ff679f",
+   "9d794d770525d4e6",
+   "fa112a381ea6b375"
+  ],
+  "48": [
+   "2e1601c7f2a6a3f8",
+   "3b8ad8a8d26b154e",
+   "6ee6520b92915f49",
+   "83626ca844f9404d"
+  ]
+ }
+}

@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3c4265233142ebb24169f03c0f11ab06bb1ffe3d42c91815b7ad002d195576a3",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "wooden dock crane house with a plank roof seen from above, big treadwheel in front, jib arm with pulley and a hanging crate",
+ "label": "pirate-isles/pi-dock-crane",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "crane house with plank roof and treadwheel wall",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The crane house features a prominent sloped plank roof seen from above spanning rows 17-27 (11 rows) above the front wall (rows 28-43). The hanging crate also shows its top face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4308
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "crane house building",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main crane house body clearly displays a 10-row top roof surface with horizontal wooden planks (rows 17-26) above a vertical front wall showing the treadwheel (rows 27-43).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3139
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "crane house with plank roof",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The crane house roof clearly displays its top surface across rows 17 to 26 (10 pixel rows tall) above the vertical south face (rows 27 to 43), with no receding isometric side walls.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3422
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dock crane house with plank roof",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main crane house body clearly shows a foreshortened wooden plank roof spanning rows 18-26 (9 source pixels tall) above the vertical south wall with treadwheel (rows 27-43). The hanging crate also shows a top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3350
+  }
+ ],
+ "decidedAt": "2026-10-13T19:33:03.045Z",
+ "cells": {
+  "16": [
+   "1b227d5e1daf6ee1",
+   "202366dd7ef3b65d",
+   "7c3136e674758e41",
+   "c0a8f5ef6ea39133",
+   "e0d8be2c3dc66f9e"
+  ],
+  "24": [
+   "148d11d198bce251",
+   "1bdd76d0cb9534ce",
+   "20dc83a922c1caf2",
+   "2e81da324d14cd29",
+   "34fac0491272d2e1",
+   "36ec9aeeed769061",
+   "4218cf663499d4fb",
+   "500d1f3121399953",
+   "553473001a37a50d",
+   "57ddba33df495546",
+   "9bb30371a727892e",
+   "be463e79e4c7a624"
+  ],
+  "32": [
+   "40739063ec8cbe7e",
+   "a4328e3f101fc2b8",
+   "bc8ca165ca7c65b4",
+   "f7ac678622d95c43"
+  ],
+  "48": [
+   "05221a63b5178571",
+   "779684c47f3ae07e",
+   "a7aa645543611754"
+  ]
+ }
+}

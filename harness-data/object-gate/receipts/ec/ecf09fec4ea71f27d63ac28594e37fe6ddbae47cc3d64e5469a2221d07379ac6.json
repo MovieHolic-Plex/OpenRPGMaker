@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ecf09fec4ea71f27d63ac28594e37fe6ddbae47cc3d64e5469a2221d07379ac6",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "world globe on a small round wooden side table, seen from above at 3/4 (round table top visible, curved latitude lines)",
+ "label": "pirate-isles/pi-globe",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round wooden side table with world globe",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round wooden tabletop is drawn as a foreshortened ellipse spanning rows 16-19 (4 source pixel rows tall) supporting the globe stand, with the table rim and pedestal base visible below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5428
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round wooden side table with world globe",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round wooden tabletop is drawn as a foreshortened ellipse viewed from above (rows 16-19, ~4 source pixel rows deep) with the globe base resting on it, followed by the table apron and pedestal foot.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5890
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "world globe and round wooden side table",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round table top shows a foreshortened top surface 4 pixel rows tall (rows 16-19) with a front rim and apron below it (rows 20-23). The globe's latitude ring curves downwards in front, consistent with looking down from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9648
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "world globe on a round wooden pedestal table",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop has a clearly visible horizontal top surface across rows 16-19 (~4 px deep) upon which the globe stand rests, showing both the top and the front apron/pedestal in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6929
+  }
+ ],
+ "decidedAt": "2026-10-13T19:37:15.864Z",
+ "cells": {
+  "16": [
+   "49b5cf1fb03da3b6",
+   "4ae2bb503e4d697f"
+  ],
+  "24": [
+   "30627c8d528a162b",
+   "52a8d804b0dbb06a",
+   "71c6e6c86f1c4ff0",
+   "7a0ef60074dfec34",
+   "96df603c50f394b3",
+   "a0e28f68d76cfb69",
+   "a9bcd803842288df",
+   "ac6e01c858dbffa9",
+   "c36bb07142d82a26",
+   "e1a77f433a7ec419",
+   "f404e9c9ff9e7fc2",
+   "f7fd29a501719769"
+  ],
+  "32": [
+   "8eab9b0d5e050a24",
+   "bc092b6aed9140bd",
+   "eb131451a939f375"
+  ],
+  "48": [
+   "6eec441bb0509c8a",
+   "6f4a08bf3098b323",
+   "9159f995bfd212dd",
+   "92b40d9aa6468de2",
+   "93cb6fa664f30013",
+   "d267a761966ca739"
+  ]
+ }
+}

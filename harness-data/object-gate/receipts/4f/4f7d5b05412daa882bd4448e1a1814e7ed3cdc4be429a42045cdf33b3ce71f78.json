@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4f7d5b05412daa882bd4448e1a1814e7ed3cdc4be429a42045cdf33b3ce71f78",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "증기 구멍(쇠 굴뚝 토막에서 김이 오른다) (프레임 4)",
+ "label": "steampunk-city/sp-steam-vent-f3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "short metal steam pipe / vent chimney",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top flange and circular/elliptical vent opening are clearly foreshortened in 3/4 view; the dark interior of the opening spans rows 18 to 23 (6 rows) within a visible top rim spanning rows 15 to 23.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6534
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "short metal vent pipe with steam plume",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the pipe features a prominent elliptical flange (rows 15-24) with a clearly visible 6-row deep interior opening (rows 17-22/23) seen from above, above the south cylindrical pipe body (rows 24-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6093
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "short cylindrical iron vent pipe/chimney with steam",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening of the pipe is rendered as a wide ellipse spanning rows 15 to 24 with a visible dark interior hole from row 17 to row 23 (approx 7 rows tall), correctly presenting 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6106
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "metal pipe vent segment",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the pipe vent features a wide elliptical rim and opening visible from above spanning rows 15-23, with an interior dark opening spanning approximately 6 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5395
+  }
+ ],
+ "decidedAt": "2026-10-13T18:26:16.315Z",
+ "cells": {
+  "16": [
+   "3ba1038a33fba773",
+   "4edc153831a7f46f"
+  ],
+  "24": [
+   "1490bac373320529",
+   "3245a33bd11cfe96",
+   "38e6e9fa7b40d963",
+   "3a49f88d03125686",
+   "5881c6ede48477d6",
+   "5d8b3193b77cfa05",
+   "6360e3c8293c0154",
+   "86600f52ac077f9d",
+   "a0a17b2913eaefd5",
+   "c0d69acf3563ce19",
+   "ce29b440a4c893d1",
+   "f84e99c6010dbadb"
+  ],
+  "32": [
+   "02e47cd8ff0c597d",
+   "31411b388d07f2a0",
+   "dcfb11a5d07009f8"
+  ],
+  "48": [
+   "371731f65b444df6",
+   "396a0b2de4310c8c",
+   "643e5c3f0690e4a5",
+   "bba43837e85fd42c",
+   "e4e82d911973dd02",
+   "fc415ab1354ff969"
+  ]
+ }
+}

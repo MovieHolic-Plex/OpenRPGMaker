@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c76b3431f8e05c61c1947bb29945b18fc48c68b0289451b6f6396913eb395100",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "prehistoric stone-age altar",
+ "label": "prehistoric/ph-altar",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone altar block",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The altar shows a wide foreshortened top surface spanning rows 3-8 (around 6 pixels tall) with items on it, and a south-facing front vertical face from rows 9-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4562
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rectangular stone altar block",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The altar block clearly shows a 6-row top surface (rows 2-7) with markings/offerings on it, separated by a light edge row (row 8) from a 5-row shaded front south face (rows 9-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3969
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone altar block",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The altar shows a large top surface spanning rows 3-8 (6 rows tall) with offerings/bone resting on it, followed by a front face spanning rows 9-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3654
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rectangular stone altar block",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The altar block clearly shows a 6-pixel-tall foreshortened top surface (rows 3-8) with painted or carved markings, and a 5-pixel-tall south front face (rows 9-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2759
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.804Z",
+ "cells": {
+  "16": [
+   "7165305324a99468",
+   "889821c236d46a11"
+  ],
+  "24": [
+   "16759a29b3ee4ab1",
+   "4b337ad3fcadb417",
+   "4b3daab72e0b6b37",
+   "5e3b270e52844edf",
+   "7f46e868549c2989",
+   "83b3292f10673300",
+   "9391f4346cfff0a2",
+   "9c8ae19c94803d5a",
+   "a1e89033ded2ab55",
+   "a2973a9d36ed59cc",
+   "de7e3d64277e7da3",
+   "e55541a47f31f8c9"
+  ],
+  "32": [
+   "66d6ce89b54f82dc",
+   "6b8125b0b1c02bf7"
+  ],
+  "48": [
+   "14dc7315b8a3a3d5",
+   "50c04aa93a40a802",
+   "5c5beffc428c3201",
+   "652a588e7cc904ea",
+   "ab843d3d040bcb5d",
+   "e2d96cf09b8eaeb4"
+  ]
+ }
+}

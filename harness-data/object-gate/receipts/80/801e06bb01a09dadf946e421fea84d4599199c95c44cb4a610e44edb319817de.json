@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "801e06bb01a09dadf946e421fea84d4599199c95c44cb4a610e44edb319817de",
+ "width": 32,
+ "height": 16,
+ "kind": "organic",
+ "name": "재배 상자(흙 윗면 + 초록 식물 덩이 + 금속 테)",
+ "label": "sf-station/sf-planter-box",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cultivation box / planter trough",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The planter box shows a clear top opening (rows 6-9, 4px deep) displaying the soil bed and growing plants from above, followed by the front rim (rows 10-11) and the vertical front face (rows 12-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8267
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cultivation box with soil and plants",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top interior/opening of the planter box shows 4 rows of soil bed (rows 6-9) with plants growing out of it, behind the 1-2px front rim (row 10), atop a 5px front south face (rows 11-15). Both the interior top plane and south face are clearly visible.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8144
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "planter box with soil and plants",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top interior/opening of the planter box spans rows 5 to 9 (5 rows of visible soil and plants), followed by a front rim at rows 10-11 and a south face from row 12 downward.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5124
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "planter box",
+    "kind_matches": false,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a planter box (container), not organic. However, its 3/4 perspective is correctly drawn, showing a 5-row deep interior opening with soil and plants (rows 5-9) above a 6-row front face (rows 10-15).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 5739
+  }
+ ],
+ "decidedAt": "2026-10-13T15:28:17.423Z",
+ "cells": {
+  "16": [
+   "02325c055f6cdac3",
+   "877a513a2a70a95e"
+  ],
+  "24": [
+   "00b8328b4bf69da1",
+   "2279e842340a3bd4",
+   "28727c74c71fdbda",
+   "2a20b0df27e2d179",
+   "9c6e8c72aa5ea274",
+   "a037737941d0a3cc",
+   "aa54fd0135d0f292",
+   "abd40a469fd65344",
+   "b2c27206a1a7a288",
+   "ba00a546239cf65b",
+   "c1fb68e49c4c98a2",
+   "c517e13a40c0bb8c"
+  ],
+  "32": [
+   "3bb97e16393a5f73",
+   "e30dae9d86484065"
+  ],
+  "48": [
+   "184d84165e39ec53",
+   "1d41aea531842f74",
+   "bf6d48ccdc2d0ba2",
+   "d75a0fdf81928b75",
+   "d874785f428b896d",
+   "df63cc01afbd7390"
+  ]
+ }
+}

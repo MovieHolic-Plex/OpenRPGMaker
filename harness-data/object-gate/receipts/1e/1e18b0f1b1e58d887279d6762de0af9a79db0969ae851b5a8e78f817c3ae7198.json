@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1e18b0f1b1e58d887279d6762de0af9a79db0969ae851b5a8e78f817c3ae7198",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "안돈(종이 등잔)",
+ "label": "sengoku-edo/se-andon",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "paper lantern (andon)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern is drawn as a completely flat 2D rectangle in pure front elevation; neither the top cap nor the base shows a top surface seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5364
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "paper floor lantern (andon)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire lantern is drawn in pure front elevation with straight horizontal bands for the top frame (rows 3-5), middle bar (row 14), and base (rows 22-24). No foreshortened top surface or top opening is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5016
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "paper lantern (andon)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern frame and base are drawn entirely flat in front elevation with no visible top surface or perspective foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4862
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "paper lantern (andon)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern is drawn as a flat orthogonal front elevation with straight horizontal bands and no visible top surface or perspective foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4897
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.076Z",
+ "cells": {
+  "16": [
+   "a10a5d63ad63d5a7",
+   "a6f120eab3ff7d4e"
+  ],
+  "24": [
+   "03a7991da149556f",
+   "046c000014f91c72",
+   "0be8f227d1d22fd7",
+   "1250d17b390692b1",
+   "13915f0b264c684b",
+   "5bf2a89c0a8fdc58",
+   "75dde3fbba319d35",
+   "7773573849d686fd",
+   "7ee0545cacde255a",
+   "aa893f92e179a752",
+   "b5de0a35acc7238e",
+   "b7c62362c923096a"
+  ],
+  "32": [
+   "2ec5d5c151fa3d4c",
+   "3438da4d2bcac0b1",
+   "da0d8f70445d9342"
+  ],
+  "48": [
+   "3bbe1ef0a5e72759",
+   "45fc3735dbdc7b91",
+   "48a4d5d116179053",
+   "870c5944cc09ba83",
+   "9393abb405c7a286",
+   "ae09bdfeee1bf052"
+  ]
+ }
+}

@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "798917706a4423ada3e7bbf146a300afa752a968372ff1b069c1ff94666ad7f4",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "woven reed mat hut floor tiles",
+ "label": "pirate-isles/pi-floor-reed",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "woven reed mat floor surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 repeating terrain texture representing a flat woven reed floor viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3877
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "woven reed mat floor surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless floor tile pattern representing a woven reed mat seen flat from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3981
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "woven reed mat floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless floor pattern showing a woven reed mat texture across all 16 rows, appropriate for ground/floor terrain in top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4424
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "woven reed floor texture",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless woven reed mat ground/floor tile viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3908
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.696Z",
+ "cells": {
+  "16": [
+   "68d8bd030500e0bc",
+   "717fc3171647585e"
+  ],
+  "24": [
+   "0a7dfbf96a385c66",
+   "0ea1d6970c8c3998",
+   "1e4cded95a39e029",
+   "3a89a0e231aa8f76",
+   "46c2bbef03827b6f",
+   "7988793fdab2f46e",
+   "7b3b33b5dbe8b766",
+   "ab0ac53f8b050830",
+   "dce3be69920cf186",
+   "e54111e812d61f2d",
+   "ef89ec1df28e0e25",
+   "f9177999db1f1ed2"
+  ],
+  "32": [
+   "3f04f58efe02c4c0",
+   "46ae30d7d4db7d33"
+  ],
+  "48": [
+   "3cb4c1c720f4e13f",
+   "525b034b3c5abc18",
+   "7117b941240951a0",
+   "aa56b1db0c960ad9",
+   "d48c75c3e409a0ba",
+   "eb6131c10e3bf2b1"
+  ]
+ }
+}

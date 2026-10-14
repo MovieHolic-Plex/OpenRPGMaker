@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "03c861bbfc910ebf8692ae1212008f23d0bf6d57d3f5528e2f9f1b08c9feaaff",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "달 탐사 로버(굵은 바퀴 슬래브 위의 흰 차체)",
+ "label": "sf-station/sf-rover",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rover body and chassis",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rover is drawn in a pure front elevation view with flat windshield windows (rows 7-11), bumper/body panels (rows 17-28), and flank wheels, with no visible top roof surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7475
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lunar rover body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rover is drawn in pure front elevation: the lower chassis (rows 17-28), windshield/cabin (rows 3-16), and wheels are seen completely head-on with 0 rows of visible roof or top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7436
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rover body (cabin and chassis)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rover is drawn in flat front/side elevation with windows directly facing the viewer and no visible top roof surface (0 px).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5769
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lunar rover cabin and chassis",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rover chassis, cabin, windshield, and roof are drawn from a straight-on front elevation with no visible top surface foreshortened across the roof or chassis.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5969
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:27.306Z",
+ "cells": {
+  "16": [
+   "0f020e7cd2d047f5",
+   "1b88609feeddbadb",
+   "95d14172c8e84abf",
+   "a5342d311208d129",
+   "ad769efd0e951e7c",
+   "c5d6cf7402366278"
+  ],
+  "24": [
+   "0350e2eabaf3b912",
+   "090dc6e7ab12e6c5",
+   "58ef49a9a2e1cf75",
+   "8058d65aff498479",
+   "855b4bd207e38d30",
+   "b8606d76ed267211",
+   "bafab323344ae3b5",
+   "f9c143f3d2bf0cb3"
+  ],
+  "32": [
+   "69c8a4c2cdb506de",
+   "859897d19d46df43",
+   "a3701c5b066ca5e4",
+   "d213c4fd230f8365",
+   "e16853bfc0a39e1e",
+   "e73aa9e142b81b11"
+  ],
+  "48": [
+   "5b7afebb551066ac",
+   "5b7d5b684afff965"
+  ]
+ }
+}

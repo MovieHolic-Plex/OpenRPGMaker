@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "409fbc6f097f126486d7ce794df423392df00a08f1b24df384282245ca3ea69b",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "식당 탁자(흰 상판 + 식판 둘 + 받침)",
+ "label": "sf-station/sf-mess-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dining table with trays",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The white table top is clearly visible from row 1 to row 9 (9 rows tall) with two food trays placed on top; the south front edge and base span rows 10-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4321
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cafeteria table with white top",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop is viewed from above across rows 1-9 (9 rows tall) with two trays resting on it, and the front apron/support is shown below at rows 10-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3356
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cafeteria table with white tabletop and trays",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop is clearly foreshortened and visible from row 1 to row 9 (9 rows tall) with trays resting on it, above a distinct front apron/edge and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3357
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cafeteria table with trays",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The white tabletop is clearly visible in top-down 3/4 view across rows 1-9 with food trays resting on it, above a front apron/edge and legs in rows 10-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4475
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.951Z",
+ "cells": {
+  "16": [
+   "2c9b31b470e82c09",
+   "f2cb366516848c07"
+  ],
+  "24": [
+   "3c7c9232f98b7e75",
+   "45ce891c134fd20f",
+   "5f46ffce3711e9be",
+   "6ba7866c1d887699",
+   "711e9d989946f87c",
+   "7440e36e9a905aa9",
+   "78fcaf994b3a2d94",
+   "810ca3ef67043c82",
+   "a3404a1ee9196de4",
+   "acbaee5ed3b0c777",
+   "b8fa8f93f0a44637",
+   "df600ff3625cb7c8"
+  ],
+  "32": [
+   "a1cc5881ef53011a",
+   "c824c298f0a5452d"
+  ],
+  "48": [
+   "1000193cd5f8d7f0",
+   "137661777bb10a87",
+   "36271572607e9890",
+   "3a34adde0f3e0b3d",
+   "662d130274be1a7f",
+   "858538c7aa84126e"
+  ]
+ }
+}

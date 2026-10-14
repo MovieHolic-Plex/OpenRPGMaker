@@ -1,0 +1,123 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e96d0e9057fcddd53f0674d1bc749a52bd38c67c608b00a8c4da40c3bfb81af9",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "round woven basket full of tropical fruit: mangoes, bananas and a coconut",
+ "label": "pirate-isles/pi-woven-basket",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round woven basket",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basket is viewed from above at a 3/4 angle. The rim surrounds an elliptical opening filled with fruit (rows 2-8), with 2 rows of dark interior shadow visible in front of the fruit before the front rim at row 9.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 2행 < 4"
+   ],
+   "ms": 10511
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "woven basket filled with fruit",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basket features an elliptical top opening spanning rows 3-8, showing the interior shadow and contained fruit seen from a 3/4 top-down angle above the front rim (row 9).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5400
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round woven basket",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The basket is drawn in a flat front elevation. The front rim at row 9 is a straight horizontal line with only a 1-pixel dark line above it; there is no elliptical opening showing the inside from a 3/4 downward angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 21012
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round woven basket with fruit",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basket is viewed from above in 3/4 perspective, showing a clear elliptical opening spanning rows 2 to 8 filled with tropical fruit and interior shadow, sitting atop the front wall of the woven basket (rows 9-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10581
+  }
+ ],
+ "decidedAt": "2026-10-13T19:28:41.189Z",
+ "cells": {
+  "16": [
+   "70a2fd070d6aa199"
+  ],
+  "24": [
+   "091762146a2e9426",
+   "1ec3156e8e5c440e",
+   "6e50b4b6ea8dfc59",
+   "8cff2a797b1ba48b",
+   "9dbeb46d3c9bed62",
+   "cc35514fa403acde"
+  ],
+  "32": [
+   "5658519cc7b016db",
+   "b8f4acf7fb4349b5",
+   "c5addd9281b7ae8d",
+   "c624d4fb6201378e",
+   "e35367e4fbd48057",
+   "f7959e2d9928f536"
+  ],
+  "48": [
+   "1e419546fcc5a03c",
+   "1eacdef7378fd232",
+   "55c137d3b71bfc0d",
+   "5849588b5c1b1814",
+   "589479517d410c78",
+   "7e93f59f43f67963"
+  ]
+ }
+}

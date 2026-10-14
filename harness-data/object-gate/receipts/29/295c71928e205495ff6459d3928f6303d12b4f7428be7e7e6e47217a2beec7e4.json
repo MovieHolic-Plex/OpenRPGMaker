@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "295c71928e205495ff6459d3928f6303d12b4f7428be7e7e6e47217a2beec7e4",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "테슬라 코일(둥근 받침 + 구리 감은 탑 + 놋쇠 고리 + 구 + 불꽃)",
+ "label": "steampunk-city/sp-tesla-coil",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "copper-wound coil column",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main cylindrical coil body is drawn in flat front elevation with completely straight horizontal coil bands instead of foreshortened ellipses/curves. It has no visible top surface (top_rows: 0), and the base also lacks a visible top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13570
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tesla coil column with brass ring and sphere",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brass toroid/ring near the top (rows 12-17) is rendered in clear 3/4 perspective showing its top surface and recessed center (rows 13-15, ~3-4px tall). The base plinth also shows a visible top surface (rows 39-40).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7160
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "copper-wound coil column",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is the central copper coil column, which is drawn in pure front elevation with completely flat horizontal wire bands and no visible top surface. The base is also drawn in front elevation with no visible top plane, and the sphere at the top is drawn flat.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9454
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "copper coil tower with brass torus and terminal electrode",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brass torus mounted above the copper coil clearly displays a foreshortened top surface and elliptical central opening across rows 12-16, and the base block shows its top shoulder at rows 39-40. The object is properly constructed for 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11522
+  }
+ ],
+ "decidedAt": "2026-10-13T18:45:44.248Z",
+ "cells": {
+  "16": [
+   "008722483d460d36",
+   "44adefbcf8930177",
+   "c1e41f0bfcb71ad5"
+  ],
+  "24": [
+   "1e20bfe4de622a99",
+   "33afff461b53bbd9",
+   "589814878c74fe49",
+   "7b00b960bfc91f30",
+   "d5b74d7104b56370",
+   "e30fe2c6f85a121e"
+  ],
+  "32": [
+   "1b84b165c5570b8f",
+   "200c9d04bfeff872",
+   "3dcc8e5b9b7dd388",
+   "3e3bcc4371a879c1",
+   "3f647ca7defebab6",
+   "76671654437c1a16",
+   "88fca5e05da5b412",
+   "8923589b5c755204",
+   "c2ed14ce8bcb940e",
+   "cd19a02efd99e410",
+   "d38ba57b32b8337b",
+   "dc1b87610ac111c1"
+  ],
+  "48": [
+   "0095e0b32c1a9104",
+   "6909d5dadf21ead1",
+   "6d46564e0c0376f3"
+  ]
+ }
+}

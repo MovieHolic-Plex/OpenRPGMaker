@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8e7ab9d24429525287ab874d10186741f54cfd873b62c19d46c445dd817c2df7",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "transparent viewport floor showing stars below, two variants",
+ "label": "sf-station/sf-glass-floor",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "transparent floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Floor/ground terrain tiles depicting transparent panels revealing stars beneath; the entire surface represents horizontal ground seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5192
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "glass floor panel showing starfield below",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles representing a transparent glass floor looking down into space. The horizontal surface occupies the full 16 rows of each tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5596
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "transparent viewport floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles representing a viewport showing space and stars below, fully viewed from above across 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3426
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "transparent viewport floor tiles with stars",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Two 16x16 floor/terrain tiles representing a glass viewport showing a starfield below; as flat terrain floor, the entire surface is viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3693
+  }
+ ],
+ "decidedAt": "2026-10-13T15:26:41.508Z",
+ "cells": {
+  "16": [
+   "8b7678418a3cf0a6",
+   "f0ed404798b87b49"
+  ],
+  "24": [
+   "0af5ca915d55cc96",
+   "319403c2e4b9a373",
+   "466235ab4b00358a",
+   "5200e850f84e64ce",
+   "5fd30f382c9c4d6a",
+   "68258a8cf5dc866c",
+   "6fe91ead1401f05a",
+   "875493ea5a159bde",
+   "8a4d186641e72c5f",
+   "ce3498b21b69cd8d",
+   "de406d27320e6112",
+   "ebd5c90b22d8c937"
+  ],
+  "32": [
+   "7de4491c8a28301f",
+   "d62643f528c9a779"
+  ],
+  "48": [
+   "0706da4ad1471377",
+   "13f112119b985541",
+   "a03e70713a77137c",
+   "ac312e2dfc516aaa",
+   "bfbef13d5acf2b07",
+   "c3d615dc97c3ecdf"
+  ]
+ }
+}

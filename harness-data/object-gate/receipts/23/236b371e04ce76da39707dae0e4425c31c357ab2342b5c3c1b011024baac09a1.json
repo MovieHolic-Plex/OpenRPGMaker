@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "236b371e04ce76da39707dae0e4425c31c357ab2342b5c3c1b011024baac09a1",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "에어록 문(격벽 틀 + 미닫이 문, 지붕 윗면)",
+ "label": "sf-station/sf-airlock",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sci-fi bulkhead wall with sliding airlock door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is rendered as a flat architectural front elevation with wall panels, screens, hazard stripes, and an airlock door. There is no visible horizontal top surface (only a 1px border at rows 2-3).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7423
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "airlock bulkhead wall and sliding door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat vertical elevation from rows 2 to 46 with only a 1-2px border line at the top (rows 2-4). There is no visible top surface or roof plane showing 3/4 top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6242
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bulkhead wall and airlock sliding door structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire airlock structure is drawn as a flat 2D architectural elevation; the upper wall panels, hazard striping, doorframe, and doors are viewed directly from the front with no horizontal top roof/lintel surface visible (only a 2px rim at rows 2-3).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7163
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "airlock bulkhead wall and door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat architectural front elevation. The upper section contains vertical wall panels and monitors, with only a 1-2px outline at row 2 instead of a foreshortened top surface or roof slope.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7180
+  }
+ ],
+ "decidedAt": "2026-10-13T15:15:22.113Z",
+ "cells": {
+  "16": [
+   "2920a28b3e2e76e9",
+   "41c9e1fbbc48a75c",
+   "7fa4b9bccc9d6606",
+   "a962fdc96395018b",
+   "b054b770c6efd035",
+   "be995806c99d1da4",
+   "c4c1dbdce9f40969",
+   "ecc1d3c5764f3bec",
+   "fb20b04718dc3bcd"
+  ],
+  "24": [
+   "1199167747ee2177",
+   "4bcdc97c3586a6d2",
+   "6eae19ac9f05e512",
+   "c8cf71c33ee377db"
+  ],
+  "32": [
+   "0e29131dd22f246e",
+   "0fa2aa9add32764d",
+   "110f5a4523578f13",
+   "1cd75c71acc3aa5b",
+   "1dfb35a4d3d13b0c",
+   "27c7118748d62195",
+   "280aadc3eae1d15a",
+   "4746953d81cb4555",
+   "565fe343fcbe2bd5",
+   "5acec418ba8ba573",
+   "7564c7bc72326ca5",
+   "80c9fa08b04ee05e",
+   "97d2679ed74ca593",
+   "a9a37acb2cc9ae04",
+   "b4885016dc99638f",
+   "badd9f92057bf868",
+   "c3b6d8cd8ab6671f",
+   "d67bdf31d7aa3cf4",
+   "d7d1fbd6172d7d83",
+   "d97af2c0fc88d06c",
+   "dfd6f980632bdb20",
+   "e1a1fe8b63bd4325",
+   "eea80656898c1e2c",
+   "fb1dca9b7964afe0"
+  ],
+  "48": [
+   "fce8db3cf35a8b92"
+  ]
+ }
+}

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e2b219d634c7924f1ab75f8efb48828d0da0ebd0ed75a562b37adf2b7d45fa10",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "stone floor lantern seen from above-front: square base with flat top, light box, pyramid roof cap seen from above",
+ "label": "sky-island/si-lantern-floor",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone floor lantern (roof cap, light box, shaft, and base)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern is depicted in a pure front elevation with no visible top surfaces. The roof cap has a flat horizontal bottom rim (row 8), the light box is a flat square front view, and the base shows only vertical front faces with no foreshortened top plane visible around the central pillar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9235
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone lantern (cap, light box, post, and base)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire lantern is drawn in pure front elevation: the roof cap has completely flat horizontal rims (row 8), the light box is a flat 2D square, and the base consists of flat horizontal rectangular bands with no top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5378
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone floor lantern (cap roof, light box, pole, and base)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern is drawn entirely in pure front elevation: the roof cap, light box, shaft, and base are all flat vertical silhouettes with no foreshortened horizontal top planes visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3922
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone floor lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire lantern—including the roof cap, light box, post, and base—is drawn in straight 2D front elevation with perfectly horizontal edges and no visible foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5148
+  }
+ ],
+ "decidedAt": "2026-10-13T18:47:30.237Z",
+ "cells": {
+  "16": [
+   "429164fffba8124e",
+   "a6a2cfc71347f305"
+  ],
+  "24": [
+   "0823e673e9ae8292",
+   "100a4efe8a988272",
+   "24c1d5975bc72f21",
+   "400c21d849d86dc8",
+   "41250c8428ad5553",
+   "42de46055aa94115",
+   "43a09b5912924018",
+   "6f3bce2b1b351459",
+   "98032c02ed1c6276",
+   "c25d5e2b60a7b8d8",
+   "c80b82366937a627",
+   "d429de34602721e4"
+  ],
+  "32": [
+   "07cc96f8c9abdac5",
+   "26b0fe484655f4b4",
+   "a7595600437bfd00"
+  ],
+  "48": [
+   "0e92f815f7de3dc3",
+   "3feab1d3f8610c09",
+   "70534d7a84911b17",
+   "775850406669659d",
+   "82eb4b3cd3364d76",
+   "de83f5f333408a09"
+  ]
+ }
+}

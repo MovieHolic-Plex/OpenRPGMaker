@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c50bfc42b4491fed2b7b232eed928e9230836176b3a3e72cf297527e6575dd05",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "waterfall spray mist (terrain overlay)",
+ "label": "sky-island/si-falls-mist-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "waterfall spray mist overlay",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain overlay representing mist or waterfall spray, not a standing 3D object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3469
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "waterfall spray mist cluster",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Semi-transparent decorative splash/mist effect intended as a terrain overlay at a waterfall base; not a solid standing prop, perspective rules for solid horizontal surfaces do not apply.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2895
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water spray mist overlay",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a terrain/water surface mist overlay effect consisting of scattered spray droplets and foam; it is not a solid standing 3D object requiring top/front perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2864
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "waterfall spray mist overlay",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a flat/amorphous terrain particle/mist overlay, not a standing solid object requiring standard 3/4 perspective foreshortening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3238
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.982Z",
+ "cells": {
+  "16": [
+   "e1e00ff9dc5973a2"
+  ],
+  "24": [
+   "5a1267bff5a82403",
+   "a36390d28f5eb7f2",
+   "b3cad932f54cbaff",
+   "bb5095aa84fab99f",
+   "c96a137cc45c0ae3",
+   "f02c7c62bc06684d"
+  ],
+  "32": [
+   "3e308616da5f26f5",
+   "903baf7548100e4f",
+   "9a3e1085cd73593e",
+   "b093562d0daf1e87",
+   "bef0dc883c2d5fcc",
+   "d3afaeb4727e8c59"
+  ],
+  "48": [
+   "0a894355777548bb",
+   "56023fed759c0b4f",
+   "637437b2d58f6564",
+   "a2b1b2e0ec2a777a",
+   "a5a08ef93f68792a",
+   "d3876bd1fc8b4e91"
+  ]
+ }
+}

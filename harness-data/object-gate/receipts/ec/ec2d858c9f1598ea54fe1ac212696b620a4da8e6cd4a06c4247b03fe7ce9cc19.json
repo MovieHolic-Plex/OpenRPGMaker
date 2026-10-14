@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ec2d858c9f1598ea54fe1ac212696b620a4da8e6cd4a06c4247b03fe7ce9cc19",
+ "width": 32,
+ "height": 16,
+ "kind": "container",
+ "name": "음수대(스테인리스 대야 둘)",
+ "label": "modern-campus/mc-drinking-fountain",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "drinking fountain counter with two stainless steel basins",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top deck of the drinking fountain spans rows 1-9, containing two clearly depicted basin openings (rows 3-8) viewed from above with interior depth and water spouts, meeting the south face below at row 10.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5326
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stainless steel drinking fountain with dual basins",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top counter surface spans rows 1 to 9, featuring two large 6-row basin openings seen clearly from above, with the south front face extending across rows 10 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4772
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stainless steel drinking fountain counter with two basins",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fountain counter features a prominent top deck spanning rows 1-9 (9 rows tall) containing two rounded sink basins viewed from above (6 rows tall inside). A front-facing south panel extends from row 10 to 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4298
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stainless steel drinking fountain counter with two basin sinks",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The drinking fountain shows a 9-row deep horizontal top counter with two clearly recessed basin openings (each 6 rows tall, viewed from above with drains and spouts) and a 6-row front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3923
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.303Z",
+ "cells": {
+  "16": [
+   "2ff51492c2eb5f72",
+   "fb1d421c3381699b"
+  ],
+  "24": [
+   "11d855029df3a3ac",
+   "24a0e7f6364dc0e7",
+   "42a65a7a2b0d5f61",
+   "46efce53f75ce745",
+   "91bfcc28ce811b99",
+   "933c90560112fcf4",
+   "99e780a9cf2b4c08",
+   "9e7a133eac8e4e5b",
+   "ad7d58221704144b",
+   "af05725dae6723ff",
+   "cb7a2654b0abd242",
+   "f9ac90b4afc03763"
+  ],
+  "32": [
+   "1ea72e8aca6814ab",
+   "371883dfc28a837a"
+  ],
+  "48": [
+   "21c52fd1bde52d76",
+   "522c6d00476b0dc8",
+   "6465335fac8083ad",
+   "669e0e5be112d11e",
+   "c59d183291f93040",
+   "e683268f6ab38bc7"
+  ]
+ }
+}

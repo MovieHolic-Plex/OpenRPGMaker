@@ -1,0 +1,32 @@
+{"png": "se-machiya-a.png", "kind": "structure", "name": "마치야(2층, 흰 회벽 무시코창 + 격자, 쪽빛 노렌)", "label": "sengoku-edo/se-machiya-a"}
+{"png": "se-machiya-b.png", "kind": "structure", "name": "마치야(단층, 짙은 판자벽 + 격자, 감물빛 노렌)", "label": "sengoku-edo/se-machiya-b"}
+{"png": "se-machiya-c.png", "kind": "structure", "name": "마치야(2층, 황토 회벽 + 격자, 폭 3)", "label": "sengoku-edo/se-machiya-c"}
+{"png": "se-shop-rice.png", "kind": "structure", "name": "쌀가게(2층, 열린 가게 앞 + 쌀섬, 쪽빛 긴 노렌)", "label": "sengoku-edo/se-shop-rice"}
+{"png": "se-shop-sake.png", "kind": "structure", "name": "술도가(2층, 흰 회벽 + 스기다마, 폭 5)", "label": "sengoku-edo/se-shop-sake"}
+{"png": "se-shop-cloth.png", "kind": "structure", "name": "포목점(2층, 감물빛 긴 노렌 + 피륙 진열, 폭 5)", "label": "sengoku-edo/se-shop-cloth"}
+{"png": "se-chaya.png", "kind": "structure", "name": "찻집(단층, 발 드리운 열린 앞 + 붉은 초롱)", "label": "sengoku-edo/se-chaya"}
+{"png": "se-chaya-thatch.png", "kind": "structure", "name": "가도 찻집(초가, 열린 앞 + 발)", "label": "sengoku-edo/se-chaya-thatch"}
+{"png": "se-ryokan.png", "kind": "structure", "name": "여관·하타고(2층, 난간 + 장지 + 초롱, 폭 7)", "label": "sengoku-edo/se-ryokan"}
+{"png": "se-onsen.png", "kind": "structure", "name": "목욕탕·온천(가라하후 박공 현관, 두 빛 노렌, 폭 6)", "label": "sengoku-edo/se-onsen"}
+{"png": "se-smithy.png", "kind": "structure", "name": "대장간(단층, 판자벽 + 열린 화덕 불빛, 연기창 지붕)", "label": "sengoku-edo/se-smithy"}
+{"png": "se-dojo.png", "kind": "structure", "name": "도장(단층 큰 팔작지붕, 판자벽 + 높은 격자창, 폭 7)", "label": "sengoku-edo/se-dojo"}
+{"png": "se-samurai-house.png", "kind": "structure", "name": "무가 저택 본채(팔작 기와, 장지 + 툇마루, 현관 박공, 폭 8)", "label": "sengoku-edo/se-samurai-house"}
+{"png": "se-samurai-gate.png", "kind": "structure", "name": "무가 대문(맞배 기와, 열린 두 짝 문, 폭 4)", "label": "sengoku-edo/se-samurai-gate"}
+{"png": "se-wall-plaster.png", "kind": "structure", "name": "흰 담(츠이지베이, 갓 기와 + 줄눈, 1칸)", "label": "sengoku-edo/se-wall-plaster"}
+{"png": "se-wall-plaster-v.png", "kind": "structure", "name": "흰 담(세로로 이어지는 갓 기와 윗면, 1칸)", "label": "sengoku-edo/se-wall-plaster-v"}
+{"png": "se-castle-wall.png", "kind": "structure", "name": "성벽(돌 축대 + 흰 토담 + 총구멍, 1칸)", "label": "sengoku-edo/se-castle-wall"}
+{"png": "se-castle-wall-v.png", "kind": "structure", "name": "성벽(세로로 이어지는 토담 윗면, 1칸)", "label": "sengoku-edo/se-castle-wall-v"}
+{"png": "se-castle-keep.png", "kind": "structure", "name": "천수각(성의 본루, 돌 축대 위 3층 흰 벽 + 팔작 기와 + 금 샤치, 폭 9)", "label": "sengoku-edo/se-castle-keep"}
+{"png": "se-castle-turret.png", "kind": "structure", "name": "망루(야구라, 2층 흰 벽 + 치도리하후, 폭 5)", "label": "sengoku-edo/se-castle-turret"}
+{"png": "se-castle-gate.png", "kind": "structure", "name": "성문(망루문, 돌 축대 위 흰 문루 + 열린 큰 문, 폭 6)", "label": "sengoku-edo/se-castle-gate"}
+{"png": "se-torii.png", "kind": "structure", "name": "도리이(붉은 신사 문, 폭 4)", "label": "sengoku-edo/se-torii"}
+{"png": "se-shrine.png", "kind": "structure", "name": "신사 본전(동판 지붕 + 치기·가쓰오기, 붉은 기둥 + 금줄, 폭 6)", "label": "sengoku-edo/se-shrine"}
+{"png": "se-temple-hall.png", "kind": "structure", "name": "절 본당(큰 팔작 기와, 휜 처마 끝, 나무 기둥 + 흰 벽 + 격자문, 폭 9)", "label": "sengoku-edo/se-temple-hall"}
+{"png": "se-pagoda.png", "kind": "structure", "name": "오층탑(목탑, 겹 지붕 다섯 + 금 상륜, 폭 4)", "label": "sengoku-edo/se-pagoda"}
+{"png": "se-temple-gate.png", "kind": "structure", "name": "산문(절 대문, 큰 우진각 지붕 + 붉은 기둥, 가운데 통로, 폭 6)", "label": "sengoku-edo/se-temple-gate"}
+{"png": "se-bell-tower.png", "kind": "structure", "name": "종루(네 기둥 + 범종, 돌 기단, 폭 4)", "label": "sengoku-edo/se-bell-tower"}
+{"png": "se-minka.png", "kind": "structure", "name": "농가(두툼한 초가, 흙벽 + 기둥 + 흙바닥 문, 폭 6)", "label": "sengoku-edo/se-minka"}
+{"png": "se-minka-small.png", "kind": "structure", "name": "작은 농가(초가, 흙벽, 폭 4)", "label": "sengoku-edo/se-minka-small"}
+{"png": "se-kura.png", "kind": "structure", "name": "창고(흰 회벽 2층 + 나마코 벽 + 무거운 문, 폭 3)", "label": "sengoku-edo/se-kura"}
+{"png": "se-barn.png", "kind": "structure", "name": "헛간(초가 + 판자벽, 열린 앞 + 볏단, 폭 4)", "label": "sengoku-edo/se-barn"}
+{"png": "se-chashitsu.png", "kind": "structure", "name": "다실 초암(작은 초가 + 흙벽 + 둥근 창, 폭 3)", "label": "sengoku-edo/se-chashitsu"}

@@ -1,0 +1,22 @@
+{"png": "ph-rug-fur.png", "kind": "flat", "name": "털 깔개(짐승 가죽 모양)", "label": "prehistoric/ph-rug-fur"}
+{"png": "ph-mat-reed.png", "kind": "flat", "name": "갈대 자리", "label": "prehistoric/ph-mat-reed"}
+{"png": "ph-hearth.png", "kind": "container", "name": "화덕(큰 돌 테 + 숯불 + 뒤 테 위 작은 냄비)", "label": "prehistoric/ph-hearth"}
+{"png": "ph-hearth-f1.png", "kind": "container", "name": "화덕(큰 돌 테 + 숯불 + 뒤 테 위 작은 냄비) (프레임 2)", "label": "prehistoric/ph-hearth-f1"}
+{"png": "ph-hearth-f2.png", "kind": "container", "name": "화덕(큰 돌 테 + 숯불 + 뒤 테 위 작은 냄비) (프레임 3)", "label": "prehistoric/ph-hearth-f2"}
+{"png": "ph-lamp.png", "kind": "container", "name": "돌 등잔", "label": "prehistoric/ph-lamp"}
+{"png": "ph-lamp-f1.png", "kind": "container", "name": "돌 등잔 (프레임 2)", "label": "prehistoric/ph-lamp-f1"}
+{"png": "ph-lamp-f2.png", "kind": "container", "name": "돌 등잔 (프레임 3)", "label": "prehistoric/ph-lamp-f2"}
+{"png": "ph-fur-bed.png", "kind": "low_furniture", "name": "털 잠자리(고사리 단 위 털가죽 두 겹 + 가죽 베개)", "label": "prehistoric/ph-fur-bed"}
+{"png": "ph-straw-bed.png", "kind": "low_furniture", "name": "짚 잠자리", "label": "prehistoric/ph-straw-bed"}
+{"png": "ph-chief-seat.png", "kind": "seat", "name": "족장 자리(낮은 돌 단 + 털 + 엄니 등받이)", "label": "prehistoric/ph-chief-seat"}
+{"png": "ph-shaman-altar.png", "kind": "low_furniture", "name": "무당 제단(머리뼈·물감 그릇·깃털)", "label": "prehistoric/ph-shaman-altar"}
+{"png": "ph-stone-table.png", "kind": "low_furniture", "name": "돌 탁자(넓은 돌판)", "label": "prehistoric/ph-stone-table"}
+{"png": "ph-stump-stool.png", "kind": "seat", "name": "그루터기 걸상", "label": "prehistoric/ph-stump-stool"}
+{"png": "ph-skull-shelf.png", "kind": "tall_furniture", "name": "머리뼈 바위 턱(두 단)", "label": "prehistoric/ph-skull-shelf"}
+{"png": "ph-pigment-pots.png", "kind": "container", "name": "물감 그릇(붉은·흰·검은)", "label": "prehistoric/ph-pigment-pots"}
+{"png": "ph-knap-bench.png", "kind": "low_furniture", "name": "석기 작업대(그루터기 + 부싯돌 날)", "label": "prehistoric/ph-knap-bench"}
+{"png": "ph-stalagmite.png", "kind": "organic", "name": "석순", "label": "prehistoric/ph-stalagmite"}
+{"png": "ph-herbs-wall.png", "kind": "wall_mounted", "name": "말린 약초 다발(벽걸이)", "label": "prehistoric/ph-herbs-wall"}
+{"png": "ph-mask-wall.png", "kind": "wall_mounted", "name": "나무 탈(추상, 벽걸이)", "label": "prehistoric/ph-mask-wall"}
+{"png": "ph-antler-wall.png", "kind": "wall_mounted", "name": "사슴뿔(벽걸이)", "label": "prehistoric/ph-antler-wall"}
+{"png": "ph-hide-wall.png", "kind": "wall_mounted", "name": "물감 칠한 가죽(벽걸이)", "label": "prehistoric/ph-hide-wall"}

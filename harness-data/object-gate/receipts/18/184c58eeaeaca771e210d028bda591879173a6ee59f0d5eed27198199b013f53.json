@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "184c58eeaeaca771e210d028bda591879173a6ee59f0d5eed27198199b013f53",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "round wooden tavern table with two ale mugs, a lit candle and a plate on top",
+ "label": "pirate-isles/pi-tavern-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round wooden tabletop on a pedestal base",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round tabletop is viewed from above as an ellipse spanning roughly rows 3 to 17 (about 14-15 pixels tall) bearing tableware, followed by the table's front edge rim and a central pedestal base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3643
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round wooden table",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop is rendered as a large foreshortened ellipse spanning approximately 15 rows (rows 3 to 17) with tabletop items resting upon it, followed by the table rim, central pillar, and base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4348
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round wooden tabletop on pedestal",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round tabletop shows a large foreshortened elliptical top surface spanning rows 3 to 17 (about 15 source pixel rows) upon which mugs, a plate, and a candle rest, with the south edge rim and pedestal base visible beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3480
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round wooden tabletop on a pedestal base",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round tabletop displays a prominent foreshortened top surface spanning rows 3 to 17 with mugs, a candle, and a plate resting upon it, followed by a south-facing edge rim and pedestal base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3791
+  }
+ ],
+ "decidedAt": "2026-10-13T19:28:41.188Z",
+ "cells": {
+  "16": [
+   "1b34140ec1e1ca0b",
+   "1ebb12b5ec932fba",
+   "2dae208e35cd3b16",
+   "8e86562ae69093d2"
+  ],
+  "24": [
+   "0debf0fe69055dfe",
+   "334a64f819993db5",
+   "3b33494a1a3ea716",
+   "4acb30a9d8322d9f",
+   "66827f1cc44a04f1",
+   "69a56dd6d88db6d0",
+   "6bac3c8aa49ebf48",
+   "76792bb9c8bb97f0",
+   "86c24ba602c59470",
+   "876c6e69ce024c71",
+   "8beb6cb1ee97853d",
+   "928d1a7843b01e41",
+   "99024ac98d0b3195",
+   "a2feffae40b1e87c",
+   "b025860bd4c597a5",
+   "b658a7ad8e8839e2",
+   "c9ae49b34e8cd001",
+   "cca67bfaffaad40d",
+   "d831cfcf91512557",
+   "dd897da258679243",
+   "e0d43c7c0c28ea1a",
+   "eb76d35e21ddb5db",
+   "f7e1baba44a31e66",
+   "fac9175e85bfa789"
+  ],
+  "32": [
+   "db391ee4287810fd"
+  ],
+  "48": [
+   "146e346b7a602754",
+   "8ffdcdfd8aece881",
+   "a83ebc1bfffb5d24",
+   "bd14313b148e25c0",
+   "e4c652881b5afa1b",
+   "ecd736fa9971bd14"
+  ]
+ }
+}

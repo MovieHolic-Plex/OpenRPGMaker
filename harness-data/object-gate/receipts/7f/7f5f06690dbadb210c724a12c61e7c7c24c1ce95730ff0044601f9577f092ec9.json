@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7f5f06690dbadb210c724a12c61e7c7c24c1ce95730ff0044601f9577f092ec9",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "물가 돌 축대(남동쪽 뭍)",
+ "label": "sengoku-edo/se-water-se",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water tile with stone bank corner along south and east edges",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile showing water surface bordered by a stone ledge on the south-east edges, rendered as ground-plane terrain in top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5299
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water tile with stone embankment edge to the south and east",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting water bordered by stone shore along the bottom and right edges.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3552
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water surface with stone embankment border",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a water surface bordered by stone revetment along the south and east edges, viewed correctly from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4756
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water tile with stone embankment edge to the south and east",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting water bordered by stone edging on the south and east edges, viewed correctly from overhead.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4488
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.063Z",
+ "cells": {
+  "16": [
+   "3fea862363f89288"
+  ],
+  "24": [
+   "1d67d0b24ee338fb",
+   "400e9dc3426c3dd4",
+   "ee34ac093a9beeab",
+   "eea77d924d086cbd",
+   "eef55e0f8cec32e4",
+   "f10d4bb29d30857d"
+  ],
+  "32": [
+   "24bdaf3d71edf6d6",
+   "39decbbc628ab3c3",
+   "3cfb6dfe94cbbc39",
+   "a2f3232b57ab3d4b",
+   "b7ea1281155b6670",
+   "cf46d54d4bba6ba9"
+  ],
+  "48": [
+   "15f6313356f86186",
+   "60648a0c12ffc144",
+   "b8988258c7cddd8e",
+   "e1bf0a5c417436a5",
+   "e7ca4f67c409ae0a",
+   "f2a30dbc4c4e6b48"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "da3c0fc15f873c1c2a8ba205840e690c65d80927ac3fa26ca759ec9a2cbcc376",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "waterfall flowing over a rock cliff (terrain overlay)",
+ "label": "sky-island/si-falls-face-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "waterfall stream",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A vertical waterfall segment designed as a cliff-face terrain overlay tile. As a terrain tile (wall/cliff face overlay), it is not a standing object and does not require a top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4248
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "waterfall vertical stream",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a repeating vertical water surface / wall face terrain overlay suitable for a cliff face in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3609
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "waterfall terrain tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical waterfall terrain tile designed to cover cliff faces. As standard terrain/wall-face art in 3/4 top-down perspective, it correctly depicts the vertical flow of water.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6126
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "waterfall stream",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical terrain overlay depicting falling water along a cliff/wall surface; correctly textured as vertical terrain tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2738
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.981Z",
+ "cells": {
+  "16": [
+   "d7bb1e6ca968f3f7"
+  ],
+  "24": [
+   "039587a93c02fda5",
+   "904129f227d289ad",
+   "91f1b2051146dab4",
+   "a9873d8d52671d19",
+   "b690ae4c9b369592",
+   "b96040ed55f71bd7"
+  ],
+  "32": [
+   "41200dda3cd01761",
+   "9e72ee3f695ee302",
+   "b805c3386d799e7c",
+   "da3792e0c65125ff",
+   "fa7207568b2cf564",
+   "ffb8df355b0c191f"
+  ],
+  "48": [
+   "0ce1a8fd0b954b08",
+   "1c825ea94dcca6f8",
+   "4a71968e3bd059ea",
+   "b963fe5f7179204a",
+   "c4c90b1d045d1155",
+   "f4edf61e827fd225"
+  ]
+ }
+}

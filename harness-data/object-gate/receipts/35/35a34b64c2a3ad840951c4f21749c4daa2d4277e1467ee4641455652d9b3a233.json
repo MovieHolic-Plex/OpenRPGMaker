@@ -1,0 +1,143 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "35a34b64c2a3ad840951c4f21749c4daa2d4277e1467ee4641455652d9b3a233",
+ "width": 48,
+ "height": 16,
+ "kind": "frame",
+ "name": "낮은 담 세 칸(양 끝 돌 기둥 + 넓은 갓)",
+ "label": "steampunk-city/sp-fence-h3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 2행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "low wall with stone pillars at ends",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall and flanking pillars are rendered in pure front elevation. The tiled coping along the top of the wall is only 2 rows tall (rows 0-1), which acts as a 2px cap/rim, and the stone pillars have no visible top surface at all.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6503
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "low wall with stone pillars and tiled roof cap",
+    "kind_matches": false,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a tiled low wall with pillars, not an open frame. The body is rendered as a flat architectural front elevation with only a 2px tiled cap along the top (rows 0-1) and no depth shown on the lower ledge or pillar tops.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 7521
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "three-span low wall with stone pillars and tiled roof coping",
+    "kind_matches": false,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a solid low wall with roof coping and stone pillar ends, not an open frame or rack (kind mismatch). Furthermore, the entire structure is drawn in pure front elevation with only a 2px strip of tiles at the top and completely flat front-facing pillars, lanterns, and wall panels.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 5805
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "low wall with end pillars",
+    "kind_matches": false,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a solid low wall with stone pillars, not an open frame or rack. Its tiled cap across rows 0-1 is only 2 pixel rows tall, and the main body and side pillars are drawn in pure flat front elevation without top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 4846
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:21.953Z",
+ "cells": {
+  "16": [
+   "01ac8b4d6b3d35c2",
+   "4cffb0ea35fa7fc4",
+   "d63071a08b811a6d"
+  ],
+  "24": [
+   "4b3369f4e1b8c95f",
+   "683a1f760674845b",
+   "aef8c9cc6380e3e6",
+   "df143daaaebb92c3"
+  ],
+  "32": [
+   "0e8cbaa8de1bc448",
+   "19b0184315a72221",
+   "1ee41cc8e4261d1d",
+   "24ec135c392af719",
+   "26485fa8ed6f277b",
+   "40e94f7789b670ab",
+   "4ef60668abcab8fc",
+   "9d22dd1b84f66ff4",
+   "9fc30cd91035eb60",
+   "eaebff5a7ff6c365",
+   "f68b5db72fcf4359",
+   "fe2af2f9ee2d9455"
+  ],
+  "48": [
+   "c773cfab4c188195",
+   "dcdeea0b514ef826"
+  ]
+ }
+}

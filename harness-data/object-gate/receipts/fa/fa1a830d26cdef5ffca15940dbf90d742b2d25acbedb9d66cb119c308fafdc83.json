@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fa1a830d26cdef5ffca15940dbf90d742b2d25acbedb9d66cb119c308fafdc83",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "prehistoric stone-age reeds",
+ "label": "prehistoric/ph-reeds",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "reeds/cattail stalks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The reeds consist of 1-pixel-wide vertical lines with no depth, ground footprint, or foreshortened top surfaces, drawn entirely as a flat 2D side/front elevation.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5279
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "reed stalks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The reeds consist of purely 1-pixel-wide vertical lines drawn in flat 2D front elevation with no visible top surface, foreshortening, or depth cues.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4048
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "reed stalks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The reeds are drawn as 1-pixel-wide vertical lines with no depth, base cluster, or foreshortened top surfaces visible in 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2909
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "reed stalks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The reeds are drawn as purely vertical 1-pixel-wide lines with no visible top surfaces, ground cluster, or foreshortening in top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4201
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.798Z",
+ "cells": {
+  "16": [
+   "f05c36eb8555a65e"
+  ],
+  "24": [
+   "02e6c54d378a413e",
+   "0a458e8f0356a362",
+   "134ea72c4e090323",
+   "38d39bc3efa22b67",
+   "96b69c143019b525",
+   "eec9425df16cc135"
+  ],
+  "32": [
+   "12528dcb4c27bc74",
+   "57a2e7f257d17aee",
+   "6b4fca6b5c836241",
+   "82d862d32b0b6f5a",
+   "974bdca94215ffab",
+   "9c073b4ece28b7e7"
+  ],
+  "48": [
+   "2b475674c6c74d9b",
+   "3a4d87fc39e4f541",
+   "893fe01b00e62b49",
+   "aa8e6f9b6b5db8c3",
+   "b6915955a86fd047",
+   "e059d19da3ab1c5f"
+  ]
+ }
+}

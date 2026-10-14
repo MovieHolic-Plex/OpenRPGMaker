@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b92c7b2549c55b13df9cbe8e16e19c2bc51ea8adb184763082271f87b0e8b892",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "기울어진 묘비",
+ "label": "gothic_manor/gm-tomb-tilt",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tilted stone stele / gravestone",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut/head surface of the leaning gravestone is rendered in light tones across rows 0-4 (approx. 3-4 pixel rows tall), properly foreshortened for the 3/4 top-down perspective, with the darker front face below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9144
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tilted gravestone",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the stone slab is clearly visible in rows 0-4 as a lighter, foreshortened plane measuring about 4 pixel rows tall before meeting the darker south-facing front surface (rows 5-11).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6337
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tilted tombstone stele",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tombstone/stele is rendered in a flat front elevation without any visible top surface or cut face at the top (top_rows = 0; the top edge reaches row 0 with no horizontal plane showing depth). The plinth/base at the bottom also only shows a 1px edge rather than a proper top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10873
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tombstone / stele",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The gravestone shows a clearly defined, illuminated top surface spanning rows 0 to 4 (5 rows tall) above the darker south face with carvings (rows 5 to 11).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7584
+  }
+ ],
+ "decidedAt": "2026-10-13T16:24:27.171Z",
+ "cells": {
+  "16": [
+   "ba9b54fce8fef5b4"
+  ],
+  "24": [
+   "2d30e5930dac5f82",
+   "67857029db52988c",
+   "87bbb99b40156189",
+   "8f0bc8a74e87325f",
+   "9e21a31c3ecf2d56",
+   "b5c8192409691198"
+  ],
+  "32": [
+   "087009a04e3b98f1",
+   "61eb2f6705dff0d7",
+   "8b9cad02161d7d53",
+   "8f741c67b286522b",
+   "b3016d01a8cd2938",
+   "d35c1b31f75220bd"
+  ],
+  "48": [
+   "1b16bb87f16918d5",
+   "20afdd2ab4b9eb43",
+   "29b071f3ef06bede",
+   "37704a8bd334e609",
+   "3b1da90a44acf4b0",
+   "baf13d73d15e41c2"
+  ]
+ }
+}

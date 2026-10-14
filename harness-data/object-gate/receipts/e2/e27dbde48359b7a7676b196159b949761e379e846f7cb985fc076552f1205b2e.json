@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e27dbde48359b7a7676b196159b949761e379e846f7cb985fc076552f1205b2e",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass island edge tile against sky (terrain)",
+ "label": "sky-island/si-gs-n",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floating island grass edge against sky",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing the north edge of a floating grassy island overlooking blue sky; the grass ground plane spans rows 3 to 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4108
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass island terrain surface",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing the north edge of a floating grass island against open sky (rows 0-3), with the top-down grass ground occupying rows 3-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3799
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grassy terrain edge against sky",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting the northern edge of a grassy floating island/ground against blue sky at rows 0-3, with top-down ground spanning rows 3-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3903
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "floating grass island surface and edge",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Tile depicts horizontal grass terrain viewed from above (rows 3-15) bordering sky (rows 0-2) along the northern edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3032
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.973Z",
+ "cells": {
+  "16": [
+   "e0203a306618e84a"
+  ],
+  "24": [
+   "31fbd48521cfa5f9",
+   "772957b4a542b02a",
+   "7d68ce40bd306199",
+   "a666736e79660662",
+   "ebb4e18714efa6c4",
+   "efbb2d883546ab68"
+  ],
+  "32": [
+   "2e26d4b30ba9c870",
+   "31c533cb5d7ff963",
+   "9153970aa1fc2120",
+   "a7bbbe942215cb14",
+   "d01d62ae763b0b80",
+   "fce1ddff119ada21"
+  ],
+  "48": [
+   "4756891d41dd6d8b",
+   "523102b418bcfb75",
+   "8428bccb1d300f60",
+   "c17c2fddf1240daa",
+   "c33c0de40ae9bea4",
+   "f6c7ac7e8a695ebc"
+  ]
+ }
+}

@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bbacd7323de919d9fc65b0108551633c6ddb3a0910271ca22863b67802234263",
+ "width": 32,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "도코노마(족자 + 꽃병 단)",
+ "label": "sengoku-edo/se-tokonoma",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tokonoma raised wooden platform with back alcove wall",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tokonoma platform top surface spans rows 18 to 28 (11 rows) seen from above, with a 2-row south front rim (rows 29-30), correctly displaying 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5267
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tokonoma platform and alcove",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The raised platform floor of the alcove is viewed from above across rows 19-28 (10 rows deep), with objects resting on its top surface and a 2px front baseboard on rows 29-30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6183
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tokonoma alcove platform and back wall with scroll",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The raised platform (alcove floor) has a prominent top surface visible from rows 19 to 28 (10 rows) upon which objects rest, with the south edge/front face drawn at rows 29-30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7606
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tokonoma alcove platform",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The raised wooden platform/floor of the tokonoma clearly shows a top surface spanning rows 19-28 (10 rows) with its front face visible at rows 29-31, correctly representing the top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5542
+  }
+ ],
+ "decidedAt": "2026-10-13T19:37:02.184Z",
+ "cells": {
+  "16": [
+   "33048adacf3d50d2",
+   "376d6256ec843bfe",
+   "662fc900a936f314",
+   "9e5f6ac332d1866e"
+  ],
+  "24": [
+   "2f5f7603fe2e74a9",
+   "2fb5342f9b6b52be",
+   "449a117c23297839",
+   "5c0995ba17baee55",
+   "5c9a8591cb90c011",
+   "60839544f042504e",
+   "6162dfa39a33c4c1",
+   "6460b53954e629a8",
+   "7ebfd09b57f0753d",
+   "88aed9496822374a",
+   "92a33518877cb37a",
+   "9c4483d1ba58d6c7"
+  ],
+  "32": [
+   "206d8a9346641c7c",
+   "41334d277f5cfc44",
+   "aa04bb74c1728803"
+  ],
+  "48": [
+   "4d4eba4283447903",
+   "7f9083a6528f10fd",
+   "b2123ea511b47606"
+  ]
+ }
+}

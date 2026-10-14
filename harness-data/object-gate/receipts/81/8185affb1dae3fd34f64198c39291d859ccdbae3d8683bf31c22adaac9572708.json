@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8185affb1dae3fd34f64198c39291d859ccdbae3d8683bf31c22adaac9572708",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "prehistoric stone-age bridge h",
+ "label": "prehistoric/ph-bridge-h",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal bridge deck and railings",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Walkable bridge terrain tile showing the top surface of the bridge deck with planks and rope/wood railings spanning horizontally.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4023
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal bridge deck and railings",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal bridge section spanning east-west with top-down visible plank walkway (rows 3-12) between upper and lower railings.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11883
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal bridge deck and rails",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a horizontal bridge segment viewed from above, showing the top-down walking deck of planks and flanking rope/log railings spanning rows 1-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4054
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal bridge deck",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal bridge terrain tile showing the top-down walking deck of vertical logs/planks flanked by north and south railings against water.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4364
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.806Z",
+ "cells": {
+  "16": [
+   "d661848dbce54387"
+  ],
+  "24": [
+   "0165a111842a499f",
+   "08526fb18a6df1f3",
+   "14e380675b1be2ea",
+   "555e9992c1b5d058",
+   "66d546ae67b7e92c",
+   "eb9dba7ddcdae99c"
+  ],
+  "32": [
+   "00c57f61cc504a09",
+   "8220b65eba9369b8",
+   "bcf7903073fd35a2",
+   "d876d0e88d81da76",
+   "ec0e1231e253364e",
+   "f7da53c1971efeef"
+  ],
+  "48": [
+   "2f58c09143b76999",
+   "381fd54a5d5392a1",
+   "5051aae54c827191",
+   "7d4212af5f3567d2",
+   "a7e49b30f1f12699",
+   "dd83133564b955f4"
+  ]
+ }
+}

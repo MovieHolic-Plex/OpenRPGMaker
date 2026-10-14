@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "02751ebcac1d9c5f2e61f9927a768609139c8d829929507c7a5793f7fda7a536",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "목검·창 걸이(도장 벽)",
+ "label": "sengoku-edo/se-weapon-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "weapon rack base and horizontal frame",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base shelf clearly displays a 3-row foreshortened top horizontal surface (rows 25-27) upon which the wooden weapons stand, followed by a 4-row front face (rows 28-31). The upper crossbeam also shows a distinct top and front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5249
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden weapon rack base and frame",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lower base of the rack shows a clear 3-row horizontal top surface (rows 25-27) upon which the vertical wooden practice weapons stand, followed by a 4-row front face (rows 28-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5280
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden weapon rack with base and upper crossbeam holding wooden swords and a spear",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base horizontal beam clearly shows a 3-row top surface across rows 25-27, with the front south-facing elevation descending across rows 28-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4573
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "weapon rack base and horizontal beam",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base shelf/rack has a visible top surface foreshortened from rows 25 to 27 (3 rows tall) where the vertical wooden training weapons and spear rest, above a distinct front vertical face (rows 28-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5205
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.077Z",
+ "cells": {
+  "16": [
+   "0d7c8eb82d539d26",
+   "2bcd6136c338558f",
+   "7327b5b6a4b47380",
+   "77613a54eed4d6fb"
+  ],
+  "24": [
+   "2cdb289e3c3e4dfc",
+   "2fa5469f76510412",
+   "327b3ca2a1025c0a",
+   "3ca5cbb2b6236fbe",
+   "478c62d7705310ce",
+   "50279a072a611b9f",
+   "54d84a10c8b2bb16",
+   "6a35f45fa123d5ca",
+   "6b30a9915298fdb9",
+   "72774e7c6aa81d6d",
+   "73b078431eb4e7e2",
+   "75c500a64b26228a",
+   "7c6567ad3f598f69",
+   "867ccad802eeda63",
+   "8a05370ceaa11846",
+   "8ba596eada053a32",
+   "9b0c40d15fa7c5f9",
+   "ab3353a7a7869ee5",
+   "af7c17d9ddf4ae37",
+   "b8ca1fc94635d3bf",
+   "bb0daff3ec9752b7",
+   "cbec4ccbcb1b0afc",
+   "d3e0945d77b39a6c",
+   "d9f847f0f0c47328"
+  ],
+  "32": [
+   "713f82ad20b6702d"
+  ],
+  "48": [
+   "210905e920bdb9d4",
+   "75a73d2b2df5f253",
+   "89741091e90de1df",
+   "a595178dc8a0e319",
+   "f5a27ac7a69b26b8",
+   "feecf4a8aeae080c"
+  ]
+ }
+}

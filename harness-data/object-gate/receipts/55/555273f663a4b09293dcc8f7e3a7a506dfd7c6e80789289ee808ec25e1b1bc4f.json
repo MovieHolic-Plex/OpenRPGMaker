@@ -1,0 +1,148 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "555273f663a4b09293dcc8f7e3a7a506dfd7c6e80789289ee808ec25e1b1bc4f",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "prehistoric stone-age fish rack",
+ "label": "prehistoric/ph-fish-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fish drying rack frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rack is drawn as a flat front elevation. Neither the top horizontal beam (rows 3–6) nor the bottom beam (rows 21–24) shows a distinct top surface seen from above (only a 1px highlight/outline line, which does not qualify). The frame lacks 3/4 top-down perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10057
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden frame drying rack with reed matting and drying fish",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fish drying rack is drawn as a flat front elevation. The top horizontal beam has only a 1px highlight line (row 5) rather than a visible top surface (0 rows), and the lower crossbeam likewise only has a 1px highlight line with no visible horizontal top face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8437
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "slanted drying rack with straw mat and fish",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The drying rack is shown in proper 3/4 perspective with back legs drawn higher up (rows 24-27) than front legs (rows 22-29). The slanted top surface holding the fish spans rows 6 to 19 (14 rows), and the front horizontal beam shows distinct top and south faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6447
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fish drying rack frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The A-frame rack is drawn in flat front elevation. Both the top and bottom horizontal beams have only a 1px highlight on their upper edges rather than a foreshortened top surface, and the drying screen and legs face the camera directly without 3/4-view depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13987
+  }
+ ],
+ "decidedAt": "2026-10-14T00:50:47.814Z",
+ "cells": {
+  "16": [
+   "6fc4ba9aabf9f361",
+   "83438e447645069b",
+   "a1d3259b51333cba",
+   "f35003a2ba1c24d0"
+  ],
+  "24": [
+   "02e8712b6baf8c48",
+   "0fee80b315ea4030",
+   "14c4cdfbeda151e9",
+   "1631b5b5f38f3757",
+   "1e87c1dd5812efbb",
+   "2820dde09bf25833",
+   "31582c269c61b1e9",
+   "3dd1affadff33481",
+   "3e508576ba08cb57",
+   "41a589b392a49f14",
+   "5cb33f09777749c7",
+   "63a2f4de71d012d9",
+   "6771e402d0bf2428",
+   "6a54eeed944d0b0e",
+   "715beeb30133c9c6",
+   "7283f60684e64c92",
+   "7fe85a4796e55fea",
+   "96938d2e9fcb1a99",
+   "9eb04bc3852ac4dc",
+   "a8a782d35418a890",
+   "cfd132437350c2ed",
+   "de894f74fe3d57e8",
+   "e27be1c35758f727",
+   "f8b63b51d089f34c"
+  ],
+  "32": [
+   "cc6611b05c902510"
+  ],
+  "48": [
+   "0cc3d995ddc369a6",
+   "35ebbd86ca01cbfd",
+   "92a3d1a7c72d05fe",
+   "b15c81829b70743c",
+   "f8fe5ccba8f2ca9f",
+   "f9a2cce47d0805ac"
+  ]
+ }
+}

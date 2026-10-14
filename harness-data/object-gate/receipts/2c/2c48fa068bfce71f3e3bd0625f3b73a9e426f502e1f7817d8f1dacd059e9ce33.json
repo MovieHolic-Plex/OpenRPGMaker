@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2c48fa068bfce71f3e3bd0625f3b73a9e426f502e1f7817d8f1dacd059e9ce33",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "조종사 좌석(등받이 + 시안 쿠션 윗면 + 양옆 팔걸이 콘솔)",
+ "label": "sf-station/sf-pilot-seat",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pilot seat cushion and backrest",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cyan seat cushion surface is visible from above across rows 8-11 (4 rows tall) flanked by armrests, with the backrest rising behind it (rows 1-6).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5013
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pilot seat cushion and backrest",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cyan seat cushion top surface is clearly visible from above, spanning rows 7 to 11 (5 rows tall), situated in front of the vertical backrest (rows 4-6) and flanked by armrests.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9729
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pilot seat cushion and backrest",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The backrest and headrest occupy rows 1-6, while the top surface of the cyan seat cushion is seen from above at rows 7-11 (5 rows tall) flanked by armrests with console controls.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8424
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pilot seat cushion and frame",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat cushion top surface (cyan) is clearly foreshortened and visible from above across rows 7-11 (5 rows tall) between the side armrests, sitting in front of the upright backrest (rows 1-6) and above the seat base/front face (rows 12-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8063
+  }
+ ],
+ "decidedAt": "2026-10-13T15:25:00.447Z",
+ "cells": {
+  "16": [
+   "9cc1e9b647a8f7e1"
+  ],
+  "24": [
+   "00493f1d10c36bf1",
+   "20cbd38cf5bb7d04",
+   "5e3e028a95e013c6",
+   "609ef2fda551a71d",
+   "b72d1b88f8bf7413",
+   "cea8c5c5c90a5961"
+  ],
+  "32": [
+   "0fe3d3fe340150b0",
+   "21286ee1309cf41c",
+   "240dcc0cf8a61573",
+   "2e9f2157b394be1e",
+   "5559e9afa1f7e5b2",
+   "d0927e1b67fa2730"
+  ],
+  "48": [
+   "0b7b8405129c43b8",
+   "1e3a1e3bf01b9c49",
+   "2ac2d53bcc55da3a",
+   "89a27f1229b9ee91",
+   "8b516fb544291897",
+   "df0b01ccb6ad8a74"
+  ]
+ }
+}

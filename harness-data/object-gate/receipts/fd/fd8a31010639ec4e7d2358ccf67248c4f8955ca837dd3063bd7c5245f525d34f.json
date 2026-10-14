@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fd8a31010639ec4e7d2358ccf67248c4f8955ca837dd3063bd7c5245f525d34f",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "prehistoric stone-age hide frame",
+ "label": "prehistoric/ph-hide-frame",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden frame with stretched hide",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The frame and stretched hide are drawn in pure front elevation facing directly at the camera. Neither the top horizontal beam, post caps, nor base show any foreshortened top surfaces (only a 1px outline along the top edge).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5828
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden hide drying rack frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hide stretching frame is drawn in flat front elevation. Neither the top horizontal beam, the base beam, nor the posts show any foreshortened top surfaces visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6140
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden frame with stretched hide",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden frame and stretched hide are drawn in a direct front elevation. Neither the top horizontal beam nor the upright posts display any foreshortened top surfaces or end-grain tops.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5847
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden frame with stretched hide",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire wooden frame and top crossbeam are drawn in pure front elevation with no visible top surface (0px) on the horizontal beam, post tops, or base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5276
+  }
+ ],
+ "decidedAt": "2026-10-14T00:39:52.940Z",
+ "cells": {
+  "16": [
+   "8dec64e0b67c248e",
+   "e0494f6c474bfa36",
+   "e755d0140e205a71",
+   "f9c442b1390ab04a"
+  ],
+  "24": [
+   "167293cf01fad28a",
+   "1a81c8f8c6c54658",
+   "26f06af7c8ed430b",
+   "325866d4e533f169",
+   "341ef51b5cd35241",
+   "3f99bf5f7e645403",
+   "4659e667a429ca88",
+   "4ce06d6d08a4ff64",
+   "67d0e4b1271ea922",
+   "742512f0f0be6ebe",
+   "818ee69961ad72db",
+   "89405393ef5c7da3",
+   "9482fd6501ff7914",
+   "9684f541b9d752e1",
+   "99a4046ee46c67f3",
+   "9a653c72e0cab54d",
+   "9e85b9d6ee54eb6a",
+   "a57c9f3fae7b93e2",
+   "bfd730452be308cc",
+   "ca1bbea25eced9e1",
+   "ce0b6eb5c8f5146c",
+   "e37647ae56b0c9b3",
+   "f4e2a549387c3d95",
+   "f9c18bbc7930e731"
+  ],
+  "32": [
+   "580099900e8d615b"
+  ],
+  "48": [
+   "4dfcd9627db1ca03",
+   "4f271506e1b04d6a",
+   "900bded5816bcbb9",
+   "a0fdc5e300bd41d7",
+   "a3617d20ef189660",
+   "f4b74e30ece23243"
+  ]
+ }
+}

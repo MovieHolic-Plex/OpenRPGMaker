@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b32fcf782cec5d33e9dd2515f7a404e0b76fa01f146d40dc6f2524e6c1f76d85",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "지장보살 석상(붉은 턱받이)",
+ "label": "sengoku-edo/se-jizo",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 1.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Jizo statue on stone plinth",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base plinth clearly displays a foreshortened top surface across rows 24-26 (3 rows tall, lit from above) in front of the statue, with a darker south-facing vertical front face across rows 27-30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11851
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Jizo statue on a stone plinth",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone plinth has a clearly visible 3-row top surface (rows 24-26) on which the statue rests, with a shaded 4-row front face below (rows 27-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9694
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "Jizo stone statue on plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The statue and its rectangular plinth are drawn entirely in a flat front elevation. The top of the plinth has no visible top plane (only an outline step at row 23), and the statue itself shows zero downward-looking top surfaces on the head, shoulders, or base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8902
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "Jizo stone statue on plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The statue's head, bib, torso, and base plinth are drawn in a flat front elevation. There is no visible top surface on the head, shoulders, or plinth (the plinth shows only front-facing horizontal bands with a 1px bevel highlight at row 26).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9176
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.071Z",
+ "cells": {
+  "16": [
+   "a9cd29def530a31b",
+   "aa6b2894c4b73915"
+  ],
+  "24": [
+   "225a9cc6ebc4905a",
+   "4e6e92c16ff5075f",
+   "70dc4cdbf0ffd19e",
+   "8e3305534d305970",
+   "948d75871a672f6b",
+   "a1865e15b349a2c0",
+   "a7609c1f20ffb36a",
+   "c89a29d2990986a6",
+   "d94cafab3069100a",
+   "db4fa15605e8ebb7",
+   "dca45080822b4b21",
+   "f997674b3de89871"
+  ],
+  "32": [
+   "6ba06f9bc7647353",
+   "da75d3001b72bf99",
+   "f57a282ff494b9dd"
+  ],
+  "48": [
+   "14cc42fd0242f3a0",
+   "38c09d1b3fd91cb3",
+   "47ae65edd12c4788",
+   "8033c4828c3b2fa3",
+   "8c35413742da5f17",
+   "95ebc3b23f6be338"
+  ]
+ }
+}

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "de3881c3e3c123a199fb1512b6c1669ba11b3f0931ddf929b8e427122bc6b13d",
+ "width": 32,
+ "height": 16,
+ "kind": "frame",
+ "name": "woven rope hammock strung between two posts, hollow bed seen from above",
+ "label": "pirate-isles/pi-hammock",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 1행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "woven hammock bed between two posts",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hammock is drawn almost entirely in front elevation: its front curved face spans rows 4-10, while the hollow interior/top surface is merely a 1-2px dark rim band at rows 2-3 instead of showing the hollow bed surface from a 45-degree overhead angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 6860
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hammock bed suspended between two posts",
+    "kind_matches": false,
+    "top_rows": 1,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hammock is drawn almost entirely as a flat front elevation. The interior/top opening of the hammock is reduced to a 1-pixel dark band along row 3, and the support posts have no visible top caps.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 10501
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "woven hammock between posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hammock and supporting posts are drawn in pure front elevation; the posts are flat vertical columns and the hammock sling is drawn facing directly toward the camera with only a 1-2px dark rim at rows 2-3 rather than a foreshortened hollow bed seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5594
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hammock bed",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hammock is drawn almost entirely in side/front elevation: the outer belly occupies 7 pixel rows (rows 4-10) while the interior opening/bed surface is only 2 pixel rows tall (rows 2-3). The side posts are also drawn as flat vertical elevation bars.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 4698
+  }
+ ],
+ "decidedAt": "2026-10-13T19:25:15.329Z",
+ "cells": {
+  "16": [
+   "c3b6bd7dba3d5cb1",
+   "ff59cb1518de9343"
+  ],
+  "24": [
+   "0299e932052ae6c1",
+   "0fd1cba88240e2ce",
+   "145d6d5bffde4d3a",
+   "21ec721b82cff5ee",
+   "25df64aa51668d3b",
+   "5eb87dd970236524",
+   "754e89bdd470f778",
+   "a2bc89f332aec579",
+   "a9030f1c5cabb6dd",
+   "ac14ea6c8cf6606b",
+   "cc0b282b2ca34fd0",
+   "ed8d2eebdb6189b1"
+  ],
+  "32": [
+   "268e25b9115b1575",
+   "c0b2876d11abfa2d"
+  ],
+  "48": [
+   "16ca9610680500d6",
+   "1b9122e50a9ac2cb",
+   "5e118967081c59cb",
+   "9ad7e004dbd88d02",
+   "a232b35e6b257f6b",
+   "d20d746fe6bb5094"
+  ]
+ }
+}

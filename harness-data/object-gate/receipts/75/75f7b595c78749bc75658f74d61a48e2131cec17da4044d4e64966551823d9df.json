@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "75f7b595c78749bc75658f74d61a48e2131cec17da4044d4e64966551823d9df",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "논(자란 벼)",
+ "label": "sengoku-edo/se-paddy-grown",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rice paddy ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 tile of seamless green terrain representing a rice paddy ground surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5697
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rice paddy field ground texture",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a full 16x16 seamless ground terrain texture representing a rice paddy, seen completely from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2966
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rice paddy terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 green terrain tile representing grown rice / paddy field ground.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2787
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rice field terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a seamless flat ground texture covering all 16 rows, appropriate for terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7084
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.061Z",
+ "cells": {
+  "16": [
+   "969bb2940ead844a"
+  ],
+  "24": [
+   "2ee21e4a23322073",
+   "3b3d729f39ae777b",
+   "4ea28d160d5532e2",
+   "97d6cbce94dbb09c",
+   "e2ccaa3e0ed4fd01",
+   "f8c6816d1a9e7689"
+  ],
+  "32": [
+   "0b8c378c457cca7c",
+   "2abbd37d4b58626e",
+   "66cbd06a55e21f47",
+   "86eb12033c592ee7",
+   "a13024384b75de60",
+   "bf8f4df9d4784b8a"
+  ],
+  "48": [
+   "08c5a3f555d7a350",
+   "397ff9f47a8ce56e",
+   "4eaf53cde9628947",
+   "821d213245ddf184",
+   "c79326ae9d36c00a",
+   "f3edaa7ce160c04b"
+  ]
+ }
+}

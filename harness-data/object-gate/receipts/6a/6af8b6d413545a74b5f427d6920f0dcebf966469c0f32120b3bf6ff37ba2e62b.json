@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6af8b6d413545a74b5f427d6920f0dcebf966469c0f32120b3bf6ff37ba2e62b",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "식당 냉장고(윗면 + 위·아래 두 문 + 세로 손잡이 + 온도 램프)",
+ "label": "sf-station/sf-galley-fridge",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall restaurant refrigerator with upper and lower doors",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the refrigerator is clearly visible from rows 1 to 5 (5 pixels tall), with the front doors and controls depicted below from row 6 downward in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4734
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "refrigerator",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the refrigerator is clearly rendered from rows 1 to 5 (5 pixel rows tall) before transitioning to the front face with two doors and handles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4822
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "refrigerator",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-5 clearly render the foreshortened top surface of the refrigerator, while rows 7-30 depict the front face with two doors, handles, and a display.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4448
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "refrigerator",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the refrigerator spans rows 1 to 5 (5 pixels tall) with clear horizontal shading before the front edge at row 6. The front face shows two doors, handles, a display lamp, and a base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3857
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.954Z",
+ "cells": {
+  "16": [
+   "04dd3c67c1dc3cf6",
+   "a7123eb79600d2d9"
+  ],
+  "24": [
+   "62639d4919064286",
+   "6b4639f3b55f3452",
+   "8f20d19bec09f44e",
+   "b3a2988b18b15bb3",
+   "c3023ba8c3383c4d",
+   "db763d28aa3db165",
+   "de7abcbe7679b8d4",
+   "f070d0e292d6da3d",
+   "f43045cddc54b327",
+   "fc9c5a37a6503a54",
+   "fe85f7866fb2d82d",
+   "ffe9be425ece9c96"
+  ],
+  "32": [
+   "31da00c56b60ea7f",
+   "7e6193fb4667e8a7",
+   "84608b2f7217634e"
+  ],
+  "48": [
+   "103d13e9b077ef35",
+   "251ed3d54519a16d",
+   "260bc8defa391ae8",
+   "9b80e035fa0b9c68",
+   "9bd7b38c2fba8bb2",
+   "c5b0daca091e5d03"
+  ]
+ }
+}

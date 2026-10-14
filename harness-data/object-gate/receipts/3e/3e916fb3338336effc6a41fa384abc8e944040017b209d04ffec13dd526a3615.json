@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3e916fb3338336effc6a41fa384abc8e944040017b209d04ffec13dd526a3615",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "stone slab floor tile (flat)",
+ "label": "sky-island/si-floor-stone",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "four stone paving slabs separated by mortar lines",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tile composed of a 2x2 grid of stone slabs viewed from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3387
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone slab floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles divided into four stone slabs; the entire 16x16 surface represents horizontal ground seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3852
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone slab floor",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tile composed of four stone pavers with mortar lines; correctly rendered as horizontal ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3897
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone slab floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile consisting of a 2x2 pattern of stone floor slabs divided by mortar joints, correctly depicted viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4258
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.559Z",
+ "cells": {
+  "16": [
+   "4dab6990f7bd6e31"
+  ],
+  "24": [
+   "127c3f7d5d24b826",
+   "2a4e04f94770b3b6",
+   "33489129e2b8d009",
+   "8669ea1c805a3a39",
+   "aad11a4a7036f71b",
+   "accad27fd86be509"
+  ],
+  "32": [
+   "0d6764d011947321",
+   "156540417639627c",
+   "6aaa4917c6cd72e1",
+   "88ae8e73b7fc850a",
+   "ba0d606aff0fb8c3",
+   "be9a0c95fd1fd08d"
+  ],
+  "48": [
+   "0a46bcfd53db02b3",
+   "34032e3964ca5159",
+   "3a423e779c5c5eb0",
+   "43ccd661c0ae1a72",
+   "7bdf09bff6c8712c",
+   "882f40403edc00c5"
+  ]
+ }
+}

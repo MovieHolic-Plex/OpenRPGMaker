@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fa7cd7ef9059bea088a74c76bb81e50c48ae201f4b759da6479f82ed3e56a90d",
+ "width": 48,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "실험대(흰 상판 + 플라스크·시험관 꽂이·작은 화면 + 서랍 앞면)",
+ "label": "sf-station/sf-lab-bench",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "laboratory bench / work table",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The white tabletop surface is clearly visible and spans rows 1 to 9 (approx. 9 pixel rows tall) with items resting on it, while the front drawers occupy rows 10 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4476
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "laboratory bench / counter with equipment on top",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The white tabletop surface is clearly visible from rows 1 to 9 (9 rows tall) with lab equipment placed on top, followed by the front drawers facing south on rows 10 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4162
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lab bench / experimental desk",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The white tabletop surface is clearly visible from row 1 to row 9 (9 pixel rows deep) holding various lab equipment, with drawer fronts below from row 10 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3870
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "laboratory bench / work table with drawers",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The white tabletop surface is clearly visible from rows 1 to 9 (9 rows tall) supporting various lab equipment, with the front drawer face extending from row 10 to 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3892
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.952Z",
+ "cells": {
+  "16": [
+   "5b0d40ba4658412a",
+   "8f7d047620964653",
+   "ecfd84d612781071"
+  ],
+  "24": [
+   "2063f8a7df8f797c",
+   "2815c507f6c77acf",
+   "830d51cf47c54ea4",
+   "a054ad4e0464df6d"
+  ],
+  "32": [
+   "0fa122adde181efb",
+   "1db93c592fa0023e",
+   "1e002c619bdb5b51",
+   "3c494403d0387d1b",
+   "5ab34433854aac0d",
+   "60f9c60146f57799",
+   "62298cfa5749529d",
+   "8d68f116758e9693",
+   "9827979ee1f41019",
+   "a30d6524ce9a2cbd",
+   "e9683f84aa8ec9f3",
+   "fe54230e59d8d974"
+  ],
+  "48": [
+   "6b4a9e82be81dbe4",
+   "d9848cfc24e1b722"
+  ]
+ }
+}

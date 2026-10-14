@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1969d334e788de4986f06a5f70a7f9f5040ae4cf0e230bc415e1c4943044ad63",
+ "width": 32,
+ "height": 32,
+ "kind": "column",
+ "name": "눈보기 석등(유키미, 넓은 갓)",
+ "label": "sengoku-edo/se-lantern-snow",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "yukimi stone lantern (wide umbrella roof and legs)",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large umbrella cap is drawn as a foreshortened ellipse spanning rows 3-12, clearly presenting the broad upper surface visible from above in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4692
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wide stone umbrella cap (kasa) and lantern",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wide stone cap of the lantern is drawn as an elliptical dome foreshortened from above, displaying approximately 8 rows of top roof surface (rows 3-11) before shading down into the front rim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4734
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "yukimi stone lantern roof and legs",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The broad umbrella roof (kasa) is drawn as a wide foreshortened dome viewed from above, exposing roughly 8 rows of its upper surface (rows 3-11) before shading into the lower rim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4699
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wide umbrella cap (kasa) of snow-viewing stone lantern",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large umbrella roof (kasa) is drawn as a broad foreshortened dome/ellipse spanning rows 3 to 11 (approx 8 rows of visible top surface) above its front edge rim, correctly depicting the top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3938
+  }
+ ],
+ "decidedAt": "2026-10-13T19:42:40.480Z",
+ "cells": {
+  "16": [
+   "1b711bbbc82280d9",
+   "273856a02a137641",
+   "3f41a8e29634ff01",
+   "b0f35e00ca2918bd"
+  ],
+  "24": [
+   "01b035288c6d0b60",
+   "10eaa956c1b59f32",
+   "16be8dbe27fa3243",
+   "1726f7b2c702ee58",
+   "1c6e4565ac477920",
+   "2612e117298dc063",
+   "2951680db559a69b",
+   "2f02edbbe55718b6",
+   "45764e9de99a60dd",
+   "57f921e7f1f7acd6",
+   "5e90eaacffe6a48e",
+   "61db1b86b1d0503f",
+   "6b05b4ae76191503",
+   "6eb2a71363c47e8f",
+   "74b5b87f6011a9bb",
+   "8c77d6b5ac437c90",
+   "8cbc14b5f3f395bb",
+   "97ab9e88c4c0d107",
+   "99e9c026e5388f5e",
+   "9fbb9b474ef150f5",
+   "a3a16e50c1055ea0",
+   "c94136bbd706f5eb",
+   "dd2b9879b1f7e25a",
+   "e2d49965544c0a8c"
+  ],
+  "32": [
+   "d88ef85871cf21f2"
+  ],
+  "48": [
+   "0f097e3abc30099b",
+   "43d2e1dd78fef59c",
+   "7c2d07c96091de82",
+   "8de2588a159ad3c0",
+   "92f54e669386bb02",
+   "aa730b5b59da2184"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f338b4d9b1c8085406bc48041dfa45ffbfc6a5e794d60845559d67cbf7949f95",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "논두렁(북서쪽 둑)",
+ "label": "sengoku-edo/se-paddy-nw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rice paddy ridge and flooded field",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile showing the northwest bank/dike of a flooded rice paddy with rice sprouts, correctly drawn in top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5658
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rice paddy levee corner and flooded field",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting the northwest corner of a flooded rice paddy with an earthen levee and seedlings in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4240
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rice paddy field and bank terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Northwest corner of a flooded rice paddy with an earthen/grassy ridge (embankment) correctly depicted as top-down terrain tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5306
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rice paddy ridge and water terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is flat/top-down terrain depicting the northwest border of a flooded rice paddy with an earthen ridge and planted seedlings.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3911
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.062Z",
+ "cells": {
+  "16": [
+   "bc44f4f7edf3db3f"
+  ],
+  "24": [
+   "1ec53f0981381ef4",
+   "7fac7f099b977b24",
+   "999cee8a3fdcd80c",
+   "9f952872ba0c1e68",
+   "a8047af86ef4a80c",
+   "fbfb403ef29c16bf"
+  ],
+  "32": [
+   "085b9d276f660e95",
+   "2f0e1849c576cfcc",
+   "3850b24d846ae81e",
+   "3bff3a3df6ff0aae",
+   "59d8fafda9d0bd89",
+   "cd244e84e70ca943"
+  ],
+  "48": [
+   "26d89c74271a9148",
+   "3b927db5298e08bf",
+   "59141cf7ac975e99",
+   "8cf62d556f816ffb",
+   "d2a24987875759f7",
+   "ef938baa5f0c0b97"
+  ]
+ }
+}

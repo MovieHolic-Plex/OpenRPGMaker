@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d59e950ec0238657156bf18c316a154f37d5742348350c45c14061be85fe94db",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "드릴 프레스(세운 기둥)",
+ "label": "steampunk-city/sp-drill-press",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "drill press",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The drill press is drawn entirely as a flat 2D side elevation profile. Neither the base, the work table, nor the top head show any horizontal top surface visible from above (all horizontal elements are flat rectangles without receding depth in 3/4 perspective).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6558
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "drill press head and column assembly",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The drill press is drawn in a pure 2D side profile/elevation (like a side-scroller sprite). The head, work table, and base have no visible top surfaces showing depth from above; the horizontal surfaces are drawn as flat rectangular slabs with simple vertical split-shading rather than receding 3/4 top-down planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8862
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "drill press",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The drill press is drawn as a flat side elevation (side-scroller style). Horizontal surfaces such as the top of the head, the work table, and the base show no top surface foreshortened from above, only flat 2D rectangular side silhouettes with simple horizontal tone splits.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8641
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "drill press (head, column, work table, base)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The drill press is drawn in a flat side elevation. None of the horizontal surfaces (head, work table, or base) show a visible top surface viewed from above; each component is rendered as a flat vertical rectangle with simple two-tone horizontal bands rather than foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6343
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.467Z",
+ "cells": {
+  "16": [
+   "0ba647df2e7c15c1",
+   "9749b7c87b1605d7"
+  ],
+  "24": [
+   "1cefbe51a445052a",
+   "2d6d9a24b96616fa",
+   "5410466990b1dc8b",
+   "5512021e009b20cc",
+   "5673ce866820fdc5",
+   "75b10b22bf719493",
+   "8b41ee20b6493cb4",
+   "8bab6e97c23d9fb6",
+   "9ed8be9b7de97d63",
+   "b0f2713bef7c00fd",
+   "c312f4a190076566",
+   "df3dff5d82e221d3"
+  ],
+  "32": [
+   "4231330fe573091f",
+   "c4b58a2ad80c556d",
+   "d0b0d17a91b02a23"
+  ],
+  "48": [
+   "29209a2f072aef76",
+   "55d8bc4412f2a6ff",
+   "6d47cb838c4c7fee",
+   "d73779c465607b67",
+   "e4ab2680673df4c6",
+   "f351b059bfe9ba8f"
+  ]
+ }
+}

@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bbb56ca40669f97fa27669f684a0f299df002cd624cc33d6cc07093437fd67c6",
+ "width": 16,
+ "height": 48,
+ "kind": "figure",
+ "name": "갑옷 진열(투구 + 갑옷, 궤 위)",
+ "label": "sengoku-edo/se-armor",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "armor display on a chest",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chest/plinth base beneath the armor shows a clear 3-row top surface (rows 31-33) viewed from above at a 3/4 angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7053
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "armor display on storage chest",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chest/plinth base shows a clear foreshortened top surface spanning rows 31-33 (3 rows tall), providing the required 3/4 top-down perspective for the figure display.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8131
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "armor display on chest",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chest serving as the display base shows a 3-row top surface (rows 31-33) in proper 3/4 perspective above its front face (rows 34-38).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 19029
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "armor display on chest",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chest (궤) acting as the base shows a clear 3-row top surface (rows 31-33) in 3/4 perspective, properly grounding the display.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6198
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.077Z",
+ "cells": {
+  "16": [
+   "38997bd17ab287cb",
+   "8d59d6a02812fb1c",
+   "ff1d082ba320b9db"
+  ],
+  "24": [
+   "228f7009b9cf5f7d",
+   "3da648ffbc77015a",
+   "492727d87054ae24",
+   "634cc01ffeb86bb5",
+   "a9e33d928da8b0b6",
+   "f811e8aad83c0fb0"
+  ],
+  "32": [
+   "0ef079bd30a6a4ba",
+   "211919edecbd1470",
+   "300bcb7e579b0a64",
+   "37469c590edb9514",
+   "429aee31044efea5",
+   "61323305b993ee59",
+   "6589ef115e144c43",
+   "7008a2ed6ed0e7e6",
+   "9becb64844a4ccd4",
+   "a6a5acdf953d0282",
+   "a9cf609ee57a0724",
+   "fd3748cf4f74f1c8"
+  ],
+  "48": [
+   "3aeb59e9fdf33b6a",
+   "b7f162e5d5308fc6",
+   "c78383d19f3ba03a"
+  ]
+ }
+}

@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f5a049c9f2e3d2a464595a332eced5cedb78424ca79708bd55928f032144d395",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "방화 물통 더미(받침 위 통 여섯)",
+ "label": "sengoku-edo/se-bucket-stack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stack of water buckets on a wooden stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All buckets and the base plinth are drawn as purely rectangular blocks composed of horizontal straight pixel stripes. Neither the bucket rims/openings nor the top surfaces show any elliptical curvature or 3/4 perspective depth; it is a flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4814
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fire buckets on a stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The buckets and the wooden base are drawn entirely with straight horizontal rectangular stripes with no elliptical foreshortening or top surfaces visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4827
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stack of buckets on a stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The buckets and the base are drawn entirely with flat horizontal bands and straight rectangular colored blocks (the blue water areas are flat 4x2 rectangles) with no elliptical opening or foreshortened top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4425
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stack of water buckets on a wooden stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Every bucket and the base stand are rendered with purely horizontal and vertical pixel rectangles without any elliptical top surface, rim foreshortening, or top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5590
+  }
+ ],
+ "decidedAt": "2026-10-13T19:37:02.183Z",
+ "cells": {
+  "16": [
+   "9c0564a7250dc441"
+  ],
+  "24": [
+   "0dca7b4d583dbd63",
+   "3a45b018ffe218a1",
+   "483ec4d12549e8db",
+   "ae7f294f66cfbe07",
+   "fc7e60b8f6c898a0",
+   "fcbf6d85df772452"
+  ],
+  "32": [
+   "1242872fe90bb85f",
+   "260f37890d2e6660",
+   "9338b70ce915d711",
+   "a194b0baaf5ff70b",
+   "be93d5dcc2b2c595",
+   "fe2d7fef1e8321a5"
+  ],
+  "48": [
+   "19dd974d7be7c94b",
+   "7ae97f5e0857997d",
+   "852b11cabdbd34ae",
+   "d5deb5eb34eb6dc2",
+   "dd127e0731734379",
+   "f57ea1449137a04d"
+  ]
+ }
+}

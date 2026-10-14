@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "66a7972c09e5e3bb12dedd421dc8e8d6819274f26131e161e1e8ff2ef81ba828",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "glowing crystal shard hovering above a carved stone pedestal",
+ "label": "sky-island/si-crystal-pylon",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone pedestal with hovering crystal shard",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone pedestal shows a clear foreshortened top surface spanning rows 22 to 24 (3 rows tall) with a yellow center inlay, transitioning to the front vertical face below on rows 25-29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3647
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone pedestal with hovering crystal shard",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The carved stone pedestal base shows a distinct top surface across rows 22-24 with a gold inset, followed by a south vertical face across rows 25-29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4691
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone pedestal with hovering crystal shard",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The carved stone pedestal shows a clear 3-row foreshortened top surface (rows 22-24) with a yellow inset plate, above a vertical front face (rows 25-29), conforming to the 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4104
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "carved stone pedestal with hovering crystal shard",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone plinth shows a clear top surface from row 22 to 24 (3 pixel rows tall) featuring a gold inlay, before transitioning to the front vertical face at row 25.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3559
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.428Z",
+ "cells": {
+  "16": [
+   "6c38cae43e4ebfe1",
+   "f2d82c61d3a85303"
+  ],
+  "24": [
+   "0a736dd62fd3b2d5",
+   "3c7bd1e871766e30",
+   "40a309ea4a8e0202",
+   "47cd37df3fc7e48c",
+   "52af6b9171046014",
+   "553dcd3b0ffb81cd",
+   "67a986ca8f08207c",
+   "6d10aee4fce2f2af",
+   "732b207b9bcb812c",
+   "892063c7f5ddc64e",
+   "e6101f9ff6c3e6e2",
+   "ee9b522abf09a839"
+  ],
+  "32": [
+   "1917536722f312c3",
+   "4ab1b2808360f3d0",
+   "7862ad442977516b"
+  ],
+  "48": [
+   "164fe5b6334096c1",
+   "48153b65f5dea139",
+   "6be1dbc61391544b",
+   "b3ab67c88317fe21",
+   "db06eb46c031758f",
+   "ec172303727a8c30"
+  ]
+ }
+}

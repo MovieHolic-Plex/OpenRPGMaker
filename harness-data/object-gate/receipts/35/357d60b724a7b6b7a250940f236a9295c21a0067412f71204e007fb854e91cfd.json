@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "357d60b724a7b6b7a250940f236a9295c21a0067412f71204e007fb854e91cfd",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "washed-up seaweed pile on the sand",
+ "label": "pirate-isles/pi-seaweed",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "seaweed pile",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seaweed forms an irregular cluster resting on the floor plane spanning rows 4 to 13, viewed from 3/4 overhead perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3992
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "seaweed pile",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seaweed pile is drawn flat on the ground plane viewed from above, spanning rows 4 to 13 with visible top surface foreshortened across about 7-8 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6973
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "washed-up seaweed pile",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seaweed forms a flat/mounded pile of debris spread across the ground plane from row 4 to 13, seen appropriately from above in 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3539
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pile of seaweed lying flat on the ground",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seaweed forms an irregular low pile spread across the floor from row 4 to row 13, viewed from above in top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2831
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.699Z",
+ "cells": {
+  "16": [
+   "a7994a2b7c4b8cf4"
+  ],
+  "24": [
+   "1044d591d8ecacf2",
+   "4c422fc19bf7d5e7",
+   "53c84eb70275da88",
+   "5773270abd92df71",
+   "7ab9a8598d502d76",
+   "eb6205124ad9df74"
+  ],
+  "32": [
+   "0d1c475f88b060af",
+   "461322cf669962d5",
+   "a7b2851741801020",
+   "bc402cc552989e1d",
+   "bd3197719451a55a",
+   "fa99281b8bcb0d3f"
+  ],
+  "48": [
+   "05447eb112964fe5",
+   "6e3310b72a30cf4e",
+   "846a1847cf97264a",
+   "936c1e0f6644a049",
+   "c6b29cafc42a2d46",
+   "ef27d6903a0e8ec5"
+  ]
+ }
+}

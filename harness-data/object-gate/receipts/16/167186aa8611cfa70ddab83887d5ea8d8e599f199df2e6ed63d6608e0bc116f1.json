@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "167186aa8611cfa70ddab83887d5ea8d8e599f199df2e6ed63d6608e0bc116f1",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "bottom tip of a floating island rock underside (terrain)",
+ "label": "sky-island/si-tip-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rock underside of a floating island hanging over sky",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing the downward-pointing rock formations/underside of a floating landmass with dangling roots against sky background. As a terrain/underside cliff face, no horizontal top surface is expected.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3573
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "floating island rock underside",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting the rocky underside stalactites/crags of a floating island against sky background, with small hanging roots.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3344
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "floating island rock underside",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing the jagged rocky underside and bottom tips of a floating island against the sky; as cliff/island underside terrain, no top surface is expected.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3900
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "floating rock underside",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing the hanging underside/stalactite-like bottom peaks of a floating island against sky background. As hanging vertical terrain continuing from the tile above, it does not have a top horizontal surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5384
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.975Z",
+ "cells": {
+  "16": [
+   "45a06aced84557c3"
+  ],
+  "24": [
+   "6799d4fdd810f912",
+   "9ec8809c6bfd6121",
+   "b542771c63ec5d05",
+   "d3b8d4066c13d609",
+   "dd4ca7ab81d6e5f5",
+   "dfe1265c6f4bf457"
+  ],
+  "32": [
+   "2a5cc12bc35e5776",
+   "2c7f2076532854b3",
+   "39bce18f2edc6905",
+   "57f80fd960cc56c1",
+   "65effccaccfe0c8f",
+   "eb7fd9596865c57e"
+  ],
+  "48": [
+   "035da85312059585",
+   "0a55e3a0b28326b1",
+   "7dfd6b85500cfade",
+   "a3453acba42d3959",
+   "aacf28c41534e907",
+   "c73dc7ed8a92f0e1"
+  ]
+ }
+}

@@ -11,10 +11,10 @@ export const CONCEPT_LOCALES = ["en", "ja", "zh"] as const;
 export type ConceptLocale = typeof CONCEPT_LOCALES[number];
 export const CONCEPT_TWEAK_LIMIT = 300;
 /**
- * 지금 그림이 준비된 공용 번들 타일셋 — 피드는 이 넷 중 하나로 지을 수 있는 컨셉만 보인다(2026-10-08 사용자 결정).
+ * 지금 그림이 준비된 공용 번들 타일셋 — 피드는 이 중 하나로 지을 수 있는 컨셉만 보인다(2026-10-08 사용자 결정).
  * 칩셋이 준비되면 여기에 더한다. 몬스터 수집은 첫 구간 도로 도구(author_wild_route)가 버들항 전용이라 아직 뺀다.
  */
-export const BUILDABLE_CONCEPT_TILESETS = ["joseon_baram", "wizarding_world", "jp_city", "beodeul_city", "desert_east"] as const;
+export const BUILDABLE_CONCEPT_TILESETS = ["joseon_baram", "wizarding_world", "jp_city", "beodeul_city", "pirate_isles", "sengoku_edo", "sky_island", "steampunk_city", "modern_campus", "sf_station", "gothic_manor", "prehistoric", "desert_east"] as const;
 export const UNBUILDABLE_CONCEPT_PRESETS: readonly string[] = ["monster-collect"];
 export const CONCEPT_LIMITS = { title: 40, hook: 120, description: 600, protagonist: 120, stage: 120, firstScene: 160, brief: 1000 } as const;
 

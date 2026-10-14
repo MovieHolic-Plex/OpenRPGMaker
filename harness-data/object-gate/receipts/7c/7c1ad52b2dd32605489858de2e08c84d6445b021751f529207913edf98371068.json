@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7c1ad52b2dd32605489858de2e08c84d6445b021751f529207913edf98371068",
+ "width": 32,
+ "height": 32,
+ "kind": "other",
+ "name": "iron cannon on a wooden carriage with wheels, aimed south",
+ "label": "pirate-isles/pi-cannon",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron cannon and wooden carriage",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden carriage clearly displays its horizontal bed surface foreshortened from above (rows 10-19, ~10 rows) above a darker south-facing front edge (rows 20-24). The cannon barrel is correctly depicted along its length from breech to muzzle in 3/4 overhead perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6540
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cannon barrel and carriage",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cannon barrel extends north-south, exposing its top cylindrical surface for over 20 pixel rows, while the muzzle opening and front carriage drop-off are clearly visible as south-facing surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7718
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cannon barrel and wooden carriage",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden carriage clearly shows both its horizontal top surface (rows 10-20, ~11 rows tall with plank detailing) and its south-facing front drop (rows 21-25 in darker shadow). The barrel extends north-to-south over the carriage in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9800
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cannon barrel and carriage",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cannon barrel is viewed from above-rear pointing south down the screen, and the wooden carriage shows extensive top surface area across rows 10-20 before dropping to the front edge at rows 21-25.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10461
+  }
+ ],
+ "decidedAt": "2026-10-13T19:19:03.410Z",
+ "cells": {
+  "16": [
+   "0c985e15cf7242b6",
+   "0f3f6fc5c43c7a31",
+   "2ca267f43e5baebd",
+   "d16110ecd8e25dda"
+  ],
+  "24": [
+   "00849c3c22bc77ce",
+   "0ce72faaef739cec",
+   "11b2c3fe63201550",
+   "136640e856d24a63",
+   "1e442cb13b1f8bf5",
+   "23ead58eba7242ba",
+   "3b6141827c1fb232",
+   "3be3320102af9ef1",
+   "503005cf362bafe0",
+   "54cec07291100335",
+   "5f349ffc35d2861f",
+   "6f9cdda83ae7e3ff",
+   "730a7b0ec4806763",
+   "7acfd296671736c5",
+   "93feac0aafb27031",
+   "a42f8a59b8271ba5",
+   "a6b5fda24885526f",
+   "bda8d6200f7b38a2",
+   "bff90f597c0bd5f0",
+   "cd0ebcc58783a6fe",
+   "ce395df498c775e0",
+   "f2b224d140c63177"
+  ],
+  "32": [
+   "3b1e1118e9e28743"
+  ],
+  "48": [
+   "802db827a106a3e8",
+   "9633047b1110a1df",
+   "c160cd32537644d0",
+   "ed5823346c18cb9b",
+   "ee87c1abae49f9f6",
+   "f5b70acfe80f8036"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d6ca8587e9ec7534c1b9df45a359193740a0a92e1d50d753ec8a97b48dbb5137",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass ground tile",
+ "label": "sky-island/si-grass-flower",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass ground surface with flower specks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing top-down grass surface spanning all 16 rows with small flower accents.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3237
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass ground surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 grass ground terrain tile with small floral details, viewed from the top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2790
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile covering the full 16x16 grid with grass texture and small flower accents.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2661
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass terrain tile with small flowers",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ground terrain tile covering the full 16x16 pixel canvas with grass and scattered flower pixels.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2781
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.973Z",
+ "cells": {
+  "16": [
+   "ed2ca684d4b35b11"
+  ],
+  "24": [
+   "1bd5969626c38587",
+   "6d67ea88182d22c2",
+   "86ad619572435f18",
+   "9dc56bc63b853802",
+   "a978bab86e614b14",
+   "c2cddba023a57573"
+  ],
+  "32": [
+   "37d8462c37cb959e",
+   "4ab1b64f1f65f150",
+   "a1cb5d633ee29812",
+   "b5eb5d63d95ba43c",
+   "d0d086540918993d",
+   "dc069cbf5dbeef7d"
+  ],
+  "48": [
+   "0775e15e8992690d",
+   "46696472e2343359",
+   "4cf3c3604a5ac5af",
+   "730611e4913576e3",
+   "c03dde28b66c5f68",
+   "ed886785c484f305"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ecf784f38e43bba73469265d5543dd7f2c685a267383cb0fbaba415c59335882",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "rock cliff face tile (terrain)",
+ "label": "sky-island/si-face-mid-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rock cliff face tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting a vertical rock cliff face. As a wall/cliff terrain element rather than an independent standing object, standard standing 3/4 perspective top-surface rules do not apply.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5230
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cliff face terrain tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless terrain tile depicting a vertical rock/cliff wall surface; as a terrain wall tile, it correctly represents a vertical face without requiring an integrated top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4128
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cliff/wall face tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a 16x16 vertical wall/cliff face terrain tile. As terrain representing a vertical surface, it has no top surface and correctly functions as a wall face in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3888
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cliff face terrain tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical rock cliff/wall face terrain tile; properly categorized as terrain, representing a vertical surface rather than a standalone 3/4 perspective prop.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4551
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.975Z",
+ "cells": {
+  "16": [
+   "4648c8818aa91816"
+  ],
+  "24": [
+   "6346d582b65ba9ea",
+   "6aed676ce16d916a",
+   "6c71b9e6619932d9",
+   "7ee02632e12efbce",
+   "812141433fb86c04",
+   "e4cfc13061dc531a"
+  ],
+  "32": [
+   "1868f7c14824bbab",
+   "59dc312a95edf89d",
+   "8c2b1f60778f7ebf",
+   "a4858a03dec5161a",
+   "e40ce70aa77dbe1a",
+   "f53a693d18f04030"
+  ],
+  "48": [
+   "0306e887d4010ccb",
+   "2ea78883eb32bba2",
+   "678dc2aef303ee2f",
+   "9c97f53aa775582f",
+   "bff87c8c3b5c4c0f",
+   "daa503f481929998"
+  ]
+ }
+}

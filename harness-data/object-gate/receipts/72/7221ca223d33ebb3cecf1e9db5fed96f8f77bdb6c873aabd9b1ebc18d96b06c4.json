@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7221ca223d33ebb3cecf1e9db5fed96f8f77bdb6c873aabd9b1ebc18d96b06c4",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "달 탐사 로버(굵은 바퀴 슬래브 위의 흰 차체, 지붕 해치)",
+ "label": "sf-station/sf-rover",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rover cabin and chassis",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof surface extends across rows 1-13 showing a roof hatch viewed from above, with the south front face containing windows and bumper below at rows 14-22.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4239
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rover body",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof surface of the rover is clearly shown from row 1 to row 13 (approx. 13 pixels tall) featuring a roof hatch, sitting above the vertical front windshield/face (rows 14-22) and wheels.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4255
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rover body (white roof section and lower grey chassis/cabin band)",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof surface of the rover cabin spans rows 1 to 13 with an overhead view of a roof hatch, while the front south face spans rows 14 to 22 with front windows and an orange bumper stripe.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6551
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lunar rover body with cabin and wheels",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof surface of the rover cabin extends from row 1 to row 13 (approx 13 source pixels tall) complete with a top hatch, sitting above the south-facing front body (rows 14-22) and wheels.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5174
+  }
+ ],
+ "decidedAt": "2026-10-13T15:32:20.333Z",
+ "cells": {
+  "16": [
+   "110c90e1a186cbcf",
+   "5e90ac29de19651a",
+   "8f379dbbe23b31aa",
+   "af2d0afcf2083f64",
+   "b644a44f17c3c3d5",
+   "e23fa2004b7f5dcf"
+  ],
+  "24": [
+   "34a4f141605f8b7c",
+   "535027c85bba0e8a",
+   "6252f3e771e62c66",
+   "6973db5156d5b2ee",
+   "a5dcdb93f6f06a5f",
+   "aa66b9c1b56dac9b",
+   "adf1649b9e7aed2d",
+   "c4d168192c3df92c"
+  ],
+  "32": [
+   "026975b1544575ab",
+   "39750717974e67f8",
+   "5ba82375c753e236",
+   "affe18956885eef6",
+   "e3b98bef785f67d9",
+   "f23587ddeb573df0"
+  ],
+  "48": [
+   "6fe1837602954531",
+   "89da2642779416aa"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b2b56c99599b33fe30d5be1fad417fc39b805b81edb21ea7e57ed7c6b8aff8f2",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "갈라진 땅·포석 금(덧그림)",
+ "label": "gothic_manor/gm-ov-cracks",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ground crack decal",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a floor decal representing a ground crack/fracture lying flat on the horizontal ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3318
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ground crack decal",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a floor overlay depicting cracks in paving/ground, lying completely flat on the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3605
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ground crack decal",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Floor crack overlay lying completely flat on the ground surface across rows 3-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3809
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ground crack decal",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat ground decal representing a crack across paving/earth, drawn directly onto the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3587
+  }
+ ],
+ "decidedAt": "2026-10-13T17:01:50.505Z",
+ "cells": {
+  "16": [
+   "5294a5858f94ddae"
+  ],
+  "24": [
+   "0b82b7b191310d9e",
+   "1318980087574736",
+   "69bd97231bf3d0d1",
+   "b41adee8fc3566be",
+   "ed4625944cfb06fc",
+   "f2787bb6b6dda907"
+  ],
+  "32": [
+   "03aa074023a2fa4e",
+   "7d620f84d503389d",
+   "cc0899319c42de53",
+   "d848b4c4d8c3b673",
+   "ec8dd5a46966f972",
+   "fc6dbcfaf9b58002"
+  ],
+  "48": [
+   "100b59b18665fba6",
+   "614aea57ad25daa8",
+   "6afbe6f85d58c963",
+   "a85061c32d8fbe48",
+   "c40f6aba604b5d36",
+   "e0d226b0c27a5644"
+  ]
+ }
+}

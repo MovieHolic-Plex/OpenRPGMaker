@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "64a91c2b8874f300b26b14e92263e24ef0026a07d430eff278b94d81ec47a46c",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "벽 부착 화면(초록 줄 데이터)",
+ "label": "sf-station/sf-wall-screen-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall-mounted data screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted screen displayed flat against the vertical wall surface as permitted for wall_mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3884
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall-mounted monitor screen with frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted screen displayed flat against a north wall as standard for wall decor in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15883
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall-mounted screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted monitor display showing green text/data bars; correctly drawn flat against the wall per wall_mounted kind specifications.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10383
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall-mounted screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat monitor/screen displaying green data lines, designed to be mounted directly onto a wall. Per the wall_mounted category specification, flat objects facing the camera are acceptable.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5102
+  }
+ ],
+ "decidedAt": "2026-10-13T15:30:54.893Z",
+ "cells": {
+  "16": [
+   "377cc39fe0d1bfa2"
+  ],
+  "24": [
+   "40051d9bf6225b44",
+   "592551e8aa6b9e3e",
+   "649c8fc8d0810f28",
+   "b21171d20cf2e4e4",
+   "b44c46c408d4346f",
+   "c755b19bef7f41f2"
+  ],
+  "32": [
+   "05d2056ac019a3a4",
+   "0d1d29f3b74ac585",
+   "1f2079b26ad283d6",
+   "256634e0c90e54b7",
+   "830b5f7a62f638bf",
+   "8c31ea052d8af51c"
+  ],
+  "48": [
+   "1abd7fbc52128c0b",
+   "26e811c6969b2955",
+   "8d11631544e6f390",
+   "a1115039c6ad72b8",
+   "c35f891bfdbaea03",
+   "f5ca91292e23cf6c"
+  ]
+ }
+}

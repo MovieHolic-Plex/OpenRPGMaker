@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "54da33fd3897f1e6dd47db9ca5d0f60ddf9895cc3d33b9594744154b49e75e44",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "정원사 헛간(판자벽·외쪽 지붕·삽)",
+ "label": "gothic_manor/gm-bld-shed",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "gardener's shed with shingled roof and wooden plank wall",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sloping roof surface is prominently visible from above across rows 4 to 20 (around 17 rows of shingle courses) over the south-facing plank wall (rows 21-47).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6102
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "gardener's shed with tiled roof and plank front wall",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled shed roof is fully rendered in top-down 3/4 perspective across rows 4 to 20, clearly showing multiple rows of sloped tiles seen from above before meeting the front wooden plank wall below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4831
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "gardener's shed with tiled roof and wooden plank wall",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The monopitch roof slope is visible from above, displaying several tiers of slate tiles spanning rows 4 to 20 (~17 rows tall) above the vertical front wall (rows 21-47).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6261
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "gardener's shed with tiled roof and plank front wall",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The shed roof shows an extensive foreshortened top slope of roof shingles spanning rows 4 through 21 (18 rows tall) above the south wall face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5695
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.458Z",
+ "cells": {
+  "16": [
+   "06e3ad0a3129887d",
+   "24a2bd72600ad6f9",
+   "3bf73eeeec424e8e",
+   "48a55d50b8177b53",
+   "ae2c34a5acb7b942",
+   "cbaea3e046a2a72d",
+   "e168e21bddb09090",
+   "ec558a154d0cc57a",
+   "f72b3d8570e1d9cf"
+  ],
+  "24": [
+   "3a4d058eaf598fb8",
+   "6e5e26c6c6c5f790",
+   "81aa79c9e6bc5987",
+   "ee3a609086ae88d9"
+  ],
+  "32": [
+   "07556a5e9f7b10ff",
+   "0e293bb48826e0cd",
+   "10edda2aea862ee4",
+   "16457a025fb58e47",
+   "263f008f80ba0eb4",
+   "2a49c3ffade4e3ae",
+   "35a15a9ad8a0500d",
+   "3817dc1cd01fda18",
+   "3ec2b842cb06de56",
+   "639387e01e5f00d8",
+   "65c0a5db9f4b02cc",
+   "7789e8b41419f724",
+   "78dc9d5fbf9de134",
+   "87d09fd4053dee60",
+   "90615cc6148cabf7",
+   "980c906582a50812",
+   "a9e869ffe2ff156e",
+   "b6700b647e9e3d55",
+   "b78fee50ce56589e",
+   "d64e9e4e9faa4aae",
+   "d812582f1ebdff9c",
+   "eb879f7af2b289fa",
+   "f4a55e52bec22135",
+   "fea134459e054813"
+  ],
+  "48": [
+   "0b3d39e30645e402"
+  ]
+ }
+}

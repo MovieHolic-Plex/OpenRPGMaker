@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9324e27c841f0effcc902f0ca988b3a073398eaa04b46e84de19af0024fe1fc6",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "고마이누(돌 사자, 받침 위, 오른쪽 봄)",
+ "label": "sengoku-edo/se-komainu",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "komainu statue on rounded plinth",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base plinth shows a clear, foreshortened top surface spanning rows 21 to 26 (around 6 pixel rows) in light grey before transitioning to the front vertical face below row 26, conforming to 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4406
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "komainu statue on a rounded pedestal",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rounded pedestal shows a clearly visible foreshortened top surface from rows 21 to 26 (about 6 rows tall) upon which the figure sits, with the front face rendered in shadow below at rows 27-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4734
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "komainu statue on a rounded plinth",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The plinth/base shows a clearly foreshortened top surface spanning rows 21-26 (about 5-6 rows tall) above its shaded front face (rows 27-31), correctly representing the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5467
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "komainu statue on a rounded stone plinth",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The statue is seen in profile/south view mounted atop a large plinth whose horizontal top surface is clearly visible across rows 21-26 (approx 6 rows tall) before transitioning to the darker south-facing vertical face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5182
+  }
+ ],
+ "decidedAt": "2026-10-13T19:42:40.481Z",
+ "cells": {
+  "16": [
+   "c80264b150af6677",
+   "f2ac538840a37d29"
+  ],
+  "24": [
+   "0e05a35b1abde8f2",
+   "100099c8aa4f6879",
+   "29263cb709913653",
+   "4b15d772c7165333",
+   "78ec080565942264",
+   "96c391dc38150823",
+   "97b3387768f9c98e",
+   "bd0cb9a9b82ecbbe",
+   "c2855c9d8fd72b7d",
+   "cb7835b4cf4247dc",
+   "daade27cf8adc87a",
+   "fba6c1c38b9d547b"
+  ],
+  "32": [
+   "250e2494ed3b1dfb",
+   "b7e17aecdb38c8ec",
+   "c6c082d628df6626"
+  ],
+  "48": [
+   "051b1b5e76740dc1",
+   "2f00d02f982fe833",
+   "718ef40300dc2d88",
+   "732f98e068ae1afc",
+   "7f72f5171b5b8fa7",
+   "8f090fc20dc93b18"
+  ]
+ }
+}

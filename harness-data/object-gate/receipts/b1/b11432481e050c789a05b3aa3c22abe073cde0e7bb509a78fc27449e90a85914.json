@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b11432481e050c789a05b3aa3c22abe073cde0e7bb509a78fc27449e90a85914",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "jp-lot-pay",
+ "label": "jp_city/street_hand/jp-lot-pay",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall payment kiosk/machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The machine starts at row 2 with only a 1-pixel dark outline at the top; there is no foreshortened top surface visible. The entire structure is drawn as a flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5449
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "automated payment / ticket machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The machine has only a 1px top outline at row 2 directly above the front panels, with zero rows of visible top surface, drawn as a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5802
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "payment machine / ticket kiosk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The machine starts at row 2 with a 1px outline and shows only vertical front panels with screen, slot, and buttons down to row 25, lacking any visible foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4807
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "payment machine / kiosk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire machine is drawn in flat front elevation from row 2 to row 25 with no foreshortened top surface visible (only a 1px outline at row 2).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4255
+  }
+ ],
+ "decidedAt": "2026-10-13T17:35:49.667Z",
+ "cells": {
+  "16": [
+   "179d9fc0371de589",
+   "8a20fa0fb5689a96"
+  ],
+  "24": [
+   "0597ba78cb8960cf",
+   "4e0d6b5d93aaeb57",
+   "5014771f63eaebb9",
+   "578631c3aabf0ab8",
+   "5cbd601ee696c726",
+   "854ece8ccc72b98a",
+   "94304699b01ecac6",
+   "ae4b986cdab8a050",
+   "b2c5e849ba1567e6",
+   "c425d7d2cf9da0f4",
+   "c4dd64446cb7cd1d",
+   "cd18c164b86b7a85"
+  ],
+  "32": [
+   "9de2610b5dcea17a",
+   "b75a122ad7db82ac",
+   "c2ab200553ec3d7b"
+  ],
+  "48": [
+   "35e4d94340596cdb",
+   "69d84a4d8777508a",
+   "7fdcf118006ad786",
+   "97a79ce3e93c384f",
+   "ea5804cc9acd9d76",
+   "f5ad48fb52ace116"
+  ]
+ }
+}

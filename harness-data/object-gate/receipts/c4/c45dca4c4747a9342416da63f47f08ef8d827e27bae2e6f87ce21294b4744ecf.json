@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c45dca4c4747a9342416da63f47f08ef8d827e27bae2e6f87ce21294b4744ecf",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "iron mooring bollard on the quay",
+ "label": "pirate-isles/pi-bollard",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron mooring bollard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bollard is drawn in pure front elevation with a flat horizontal 5px top edge (row 2) and flared lip (row 4) without any elliptical foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12117
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron mooring bollard",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bollard is drawn in front elevation with a flat horizontal top only 1 pixel row tall (row 3) above a flared rim, rather than showing an elliptical top surface visible from a 45-degree downward angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 9553
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron mooring bollard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bollard is drawn in pure architectural front elevation: the silhouette shows the classic side profile with a chamfered cap, flared lip, vertical shaft, horizontal base plinth, and flat bottom line. No foreshortened circular/elliptical top surface is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 18995
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical mooring bollard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bollard is drawn as a flat front elevation. Both the top cap (row 2) and base (row 15) are straight horizontal lines without any elliptical foreshortening, offering no visible top surface beyond a 1px cap highlight on row 3.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11289
+  }
+ ],
+ "decidedAt": "2026-10-13T19:19:03.411Z",
+ "cells": {
+  "16": [
+   "8c1bfe8624a33f70"
+  ],
+  "24": [
+   "48cfbefa0d36d9d0",
+   "7c5f9e9677617cff",
+   "aa083b07048dbf4f",
+   "db84e0c98732f927",
+   "f30d383205ba6259",
+   "f905c4f63e3d3760"
+  ],
+  "32": [
+   "1676725bd056c69e",
+   "20cfe12b008bb53e",
+   "2827315f602fbeee",
+   "656cffb507a601cb",
+   "bfff25f7e21efdb5",
+   "fb988e5dd0181b94"
+  ],
+  "48": [
+   "012e1c79f33c7db8",
+   "26637aa766bfa9da",
+   "5e80d7ab7cc84f3f",
+   "b5449ea9722b47b3",
+   "b625a4a36ea175f5",
+   "e98ae9564555d4ad"
+  ]
+ }
+}

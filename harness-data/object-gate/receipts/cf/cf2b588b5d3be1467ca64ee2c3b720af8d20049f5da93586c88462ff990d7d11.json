@@ -1,0 +1,150 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cf2b588b5d3be1467ca64ee2c3b720af8d20049f5da93586c88462ff990d7d11",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "작은 도리이(붉은, 폭 3)",
+ "label": "sengoku-edo/se-torii-small",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "torii gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire torii gate is drawn as a flat front elevation. The crossbeam (rows 17-21) and stone plinths (rows 43-46) show no top surface at all, and the upper lintel/kasagi shows its front vertical face with front-facing decorative peg details rather than any top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6958
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "torii gate lintels and posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire torii gate is drawn in direct front elevation. Both the upper curved crossbeam (kasagi), the lower crossbar (nuki), and the stone base pedestals show only their vertical front faces with no visible top horizontal surfaces foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4333
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "torii gate (lintels, pillars, and plinths)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The torii gate is drawn entirely in front elevation with no visible top surfaces. The top curved beam (kasagi) displays only its vertical front face with peg markings, the secondary lintel (nuki) is drawn as a flat horizontal band with cylindrical front shading, and the stone bases at the bottom are flat rectangular blocks lacking any top face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6453
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "red torii gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The torii gate is drawn as a flat front elevation. Both the curved upper lintel (kasagi/shimaki) and the lower tie-beam (nuki) show only front-facing vertical surfaces with cylindrical shading, without any foreshortened top surfaces. The pillar stone bases at rows 43-46 are also rendered as flat 2D rectangles showing no top planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4738
+  }
+ ],
+ "decidedAt": "2026-10-13T19:37:02.182Z",
+ "cells": {
+  "16": [
+   "4d94073aebd5aa42",
+   "523716317839d442",
+   "74514823828fe854",
+   "7fb3935ac643d4ba",
+   "a6a36f26dadaef97",
+   "b67494ed56719a09",
+   "ee341da6ddb8ca01"
+  ],
+  "24": [
+   "0c740aed904570a2",
+   "5fa1a8e95dbc0f8a",
+   "7069588d46ac6baa",
+   "bd9685214344f354"
+  ],
+  "32": [
+   "0cebe0154dec5835",
+   "1bf2c76951798741",
+   "214865f681bbec1c",
+   "2ab8caa6db78b721",
+   "2e48798c881f8b44",
+   "340525cdcf8e6b1b",
+   "35981af14d579629",
+   "3d48caa70d8c63e2",
+   "42c1e5eb5493a30d",
+   "4ba84742277ca8da",
+   "5a3eb173396155ee",
+   "618bafc95d2571bf",
+   "63ca86ab4b2f689d",
+   "6526e0bcca8c961e",
+   "71d2c9678fc45151",
+   "9328e0603bba37d1",
+   "9de8ebb1b5ba70d5",
+   "a3f792caa6e9f5c6",
+   "ba30960c93bf7d31",
+   "d37423cc7c5b0d7d",
+   "de80d2e85fdbea6d"
+  ],
+  "48": [
+   "f2c7d9415de6d07c"
+  ]
+ }
+}

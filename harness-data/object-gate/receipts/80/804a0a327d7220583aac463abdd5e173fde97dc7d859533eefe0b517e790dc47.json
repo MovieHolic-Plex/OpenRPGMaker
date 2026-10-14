@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "804a0a327d7220583aac463abdd5e173fde97dc7d859533eefe0b517e790dc47",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "보건실 약 진열대(낮은 2칸, 약병 올림)",
+ "label": "modern-campus-int/mc-aid-counter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "infirmary medicine counter with drawers",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter shows a deep foreshortened top surface across rows 9-17 (9 rows tall) on which medicine bottles and a first-aid box are placed, with the front face (drawers) visible below from row 18 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14237
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "infirmary medicine cabinet with drawers",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn entirely as a flat architectural front elevation. The top of the cabinet has only a 1px dark border at row 8 with no visible horizontal top surface, and the frame, shelf/surface, items, and drawers are all viewed straight-on.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8265
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "infirmary medicine counter",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is a low 2-tile counter/cabinet. Its top surface spans 8 pixel rows (rows 9–16) where medicine bottles and a first-aid kit are placed across depth, leading to the south front face with drawers spanning rows 17–30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15981
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "medicine counter / low drawer unit with items placed on top",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is a low drawer unit with a 9-pixel-deep top surface (rows 9-17) where medicine bottles and a box are placed, and a south-facing front containing two tiers of drawers (rows 18-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8643
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:11.493Z",
+ "cells": {
+  "16": [
+   "3bb43502812e689e",
+   "445a060a9e9b84dd",
+   "6b02aea201d8cf63",
+   "9c16815fd30912aa"
+  ],
+  "24": [
+   "03c08ef5c739e217",
+   "0d21bbd2c12a7195",
+   "1352f2897e2b84fe",
+   "15987485a7b805d8",
+   "1c88aca9d4fe1401",
+   "302dde5baf1c8c02",
+   "3cd610992777c331",
+   "5d365e2f5f18574e",
+   "7cdb779c424ac619",
+   "a3fe89b8e51086a9",
+   "a6afb22afb7166a9",
+   "a9c66ee64c8111d0",
+   "b885352e848b0d71",
+   "c32bcdd97a0c8415",
+   "cd4008e203482402",
+   "ce04144130889863",
+   "d67a55599160855f",
+   "f21b3fd1456f66b6"
+  ],
+  "32": [
+   "efbe0d28e1a63073"
+  ],
+  "48": [
+   "4358f2695429b21d",
+   "617df23a969e4dbc",
+   "66d6e04df112947d",
+   "729cbb685c1b4747",
+   "d76257182f8f13a8",
+   "eeb727378d951785"
+  ]
+ }
+}

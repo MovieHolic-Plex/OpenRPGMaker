@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "850b4f8dd68158caa5323278239b07170874d25b206c578fb6c88132c057f5d5",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "물가 돌 축대(북서쪽 뭍)",
+ "label": "sengoku-edo/se-water-nw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "waterfront stone embankment corner and water",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain autotile depicting a stone embankment edge on the north and west borders with top-down water filling the rest of the tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5020
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone embankment and water terrain corner",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a waterfront stone embankment corner (rows 0-4) meeting water (rows 5-15) viewed from top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3433
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone embankment and water terrain",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting a water basin corner with a stone revetment/curb. The horizontal water surface and embankment ledge are appropriately viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4740
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone embankment and water tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting the northwest corner of a stone embankment bordering water in top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4622
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.063Z",
+ "cells": {
+  "16": [
+   "2c7c7f37c5d90699"
+  ],
+  "24": [
+   "4f3d2832081d444c",
+   "a82f77ad9207b728",
+   "b20a24073cc7716b",
+   "b378f33c5183c8eb",
+   "b78b666eff157b3c",
+   "ecec926459e247d1"
+  ],
+  "32": [
+   "0d1628bade6d5f0a",
+   "24e817ab5760488a",
+   "50afed6d48156f39",
+   "54f05453b376c0ed",
+   "743b6bfd260762e0",
+   "cd5db3e45cfe5c4d"
+  ],
+  "48": [
+   "0a55e14632abd62d",
+   "1eb95d449893ee07",
+   "3ddb5cab14a29553",
+   "4058c4be6d7ac83b",
+   "9684e40d74ffdfa8",
+   "fdea56f6e8483976"
+  ]
+ }
+}

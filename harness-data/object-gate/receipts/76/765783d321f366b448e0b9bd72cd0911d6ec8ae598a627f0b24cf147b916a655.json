@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "765783d321f366b448e0b9bd72cd0911d6ec8ae598a627f0b24cf147b916a655",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "underside billows of a cloud platform (terrain)",
+ "label": "sky-island/si-billow",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cloud platform underside billows (cliff/edge terrain)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing the bottom/underside billows of a floating cloud cliff against a blue sky backdrop; vertical terrain faces do not require a visible top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4707
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cloud platform underside billows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing the bottom billows/cliff edge of a floating cloud platform against sky backdrop.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3593
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cloud platform underside terrain edge",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting the southern underside/cliff edge of a cloud platform over sky.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5333
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cloud platform underside billows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting the southern underside billows of a floating cloud platform against a sky background.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2973
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.977Z",
+ "cells": {
+  "16": [
+   "c23ab5face5cb839"
+  ],
+  "24": [
+   "1e067cd56132f8e1",
+   "666a4ea5bc3d16d8",
+   "8b7def4f0e428ba9",
+   "a47a4ef4635c0dd9",
+   "e675bc8b9a0ecb5f",
+   "edabe9715f7ead3b"
+  ],
+  "32": [
+   "18fdfb5f6819629b",
+   "27a98795669b6c66",
+   "443f9246bb4c1cd8",
+   "4d9a421ed1d0f071",
+   "7d2ac468bbf2d939",
+   "a77cdf98cd922171"
+  ],
+  "48": [
+   "0d1022ce5796872a",
+   "968195ff89568f3e",
+   "c44f40856dcdc622",
+   "d809507dc9c52178",
+   "e211bc9c662b727a",
+   "eb3c955b209628e2"
+  ]
+ }
+}

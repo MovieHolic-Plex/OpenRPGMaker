@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6cbce5c99729c2017e5d143598259dd523bd5a284141602b61aa9092f8b96d1d",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "wooden plank cabin wall with brass rivets, lower interior wall tile with baseboard (wall_mounted)",
+ "label": "sky-island/si-wall-wood-low",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "interior wooden plank wall face with bottom baseboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile representing the vertical face of a lower interior cabin wall with baseboard trim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5075
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden plank wall face with baseboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid vertical interior wall tile (terrain) showing vertical planks and a horizontal baseboard at rows 13-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2634
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "interior wooden wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is an interior wall face terrain tile with baseboard at rows 13-14. As standard vertical wall terrain, it correctly represents a flat vertical wall surface in JRPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3929
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden wall face tile with baseboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid vertical interior wall terrain tile showing wooden planking and bottom baseboard trim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3948
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.560Z",
+ "cells": {
+  "16": [
+   "721b358741b32c41"
+  ],
+  "24": [
+   "3e0bd421f0b6e9b0",
+   "65e644078108f0ad",
+   "80ffed2f8d39cd19",
+   "91d2ed50f7d90763",
+   "c64ecfd48acc2018",
+   "ca2e3fd6620e17a4"
+  ],
+  "32": [
+   "32a8cd96ffb15537",
+   "5b45e4cfc4464708",
+   "7b9f905eb65bfb97",
+   "9a0940a487914c28",
+   "d7e7f126c3f64142",
+   "dacbb69860a83da4"
+  ],
+  "48": [
+   "1a623de8c9e8c537",
+   "622531379c1b6730",
+   "76f7c8c87a745d8c",
+   "b1c4a524894dcd59",
+   "d6e09dfd030cf54f",
+   "e267c653e77cdc44"
+  ]
+ }
+}

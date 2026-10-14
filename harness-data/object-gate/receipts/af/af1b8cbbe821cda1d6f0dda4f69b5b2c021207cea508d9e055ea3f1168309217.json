@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "af1b8cbbe821cda1d6f0dda4f69b5b2c021207cea508d9e055ea3f1168309217",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "거울 화장대(금 간 거울)",
+ "label": "gothic_manor/gm-vanity",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dressing table with cracked mirror",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface spans rows 14-20 (7 rows tall) with objects resting on it, and the front face with drawers extends from row 21 to 30 in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4307
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vanity table with mirror",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal tabletop surface is clearly visible from row 14 to row 20 (7 rows tall) with objects resting on it, positioned above the south-facing drawer unit.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4795
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dressing table with cracked mirror",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from rows 14 to 20 (7 rows tall) with cosmetics and a candle placed on it, above a front face showing two drawers (rows 21-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3275
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vanity table with mirror",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The vanity tabletop surface is clearly visible from row 13 to row 20 (8 pixel rows deep) with items resting on it, and the drawer-front face occupies rows 21-30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2911
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.503Z",
+ "cells": {
+  "16": [
+   "84a123b5ca560361",
+   "891b508ce756d55e",
+   "e39c47b5fca066fb",
+   "f91155a3cab747bf"
+  ],
+  "24": [
+   "099ba39cee425c6e",
+   "0ba33cec1c130854",
+   "136f659f05fe3715",
+   "1a7efcce53c3c6ca",
+   "1aa8e9115d680957",
+   "256ea926a4573d1a",
+   "31e3896c68cc54cf",
+   "3d277d17a4827d01",
+   "3ff593a7861fff23",
+   "437daae46973da15",
+   "4e7325928d2f7d47",
+   "683298d5a246a3fc",
+   "6af29fc326b64319",
+   "6f2a95b55a3b8eb0",
+   "8535a6623df345e0",
+   "9a0ad72610a6bab1",
+   "9bf353e0032400b0",
+   "a117c72e19870908",
+   "aeb27d48e496622b",
+   "b073fcf6dde52089",
+   "b3c964d875d6b629",
+   "d64f712caeb81450",
+   "e4e526d6e2455be1",
+   "f71652a61c5e83b0"
+  ],
+  "32": [
+   "cbb4e23df67f56f8"
+  ],
+  "48": [
+   "169796303c7117b6",
+   "18182bc9642f33ff",
+   "3b8b31b3d5175874",
+   "6b9b8886a3bf98a4",
+   "d9d93739c5f1925c",
+   "e01f061f84fa8199"
+  ]
+ }
+}

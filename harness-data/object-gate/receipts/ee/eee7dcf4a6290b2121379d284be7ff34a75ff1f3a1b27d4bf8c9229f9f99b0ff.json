@@ -1,0 +1,127 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "eee7dcf4a6290b2121379d284be7ff34a75ff1f3a1b27d4bf8c9229f9f99b0ff",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "히바치(둥근 도자기 화로)",
+ "label": "sengoku-edo/se-hibachi",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "아가리 3행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ceramic hibachi brazier",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening is shown as an ellipse from rows 6 to 8 with visible grey ash and two ember pixels, viewed from above before transitioning to the front cylindrical body.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 3880
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cylindrical ceramic brazier (hibachi)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening into the brazier is clearly visible from above across rows 6-8, showing grey ash and glowing coals, bounded by a back rim at row 5 and front rim at rows 9-10.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 4837
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ceramic hibachi brazier",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening of the round brazier is foreshortened from above across rows 6-8, clearly showing the ash bed and burning coals inside the vessel.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 5191
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ceramic hibachi brazier",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening is rendered in 3/4 view showing an elliptical interior of grey ash with glowing embers across rows 6 to 8, framed by the front rim at row 9.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 3467
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.077Z",
+ "cells": {
+  "16": [
+   "9247131120cc3fc2",
+   "f88400c44f75fbab"
+  ],
+  "24": [
+   "04ffbd7279225e50",
+   "0f2773ddf5e6f9f4",
+   "221f5fb74c567d0c",
+   "27913866375c9f27",
+   "2ac14fa6a8848c51",
+   "65d3d03d9a8f820b",
+   "8948a554b390d6b3",
+   "d884c4c99d32a1b7",
+   "f84a703672f38a39"
+  ],
+  "32": [
+   "98a2e1e584eef0a4",
+   "af22b5788e66f8d5",
+   "d5fd2bc7d45a5ec9"
+  ],
+  "48": [
+   "27f363b0038751c4",
+   "4c1dfd4cb35369f2",
+   "5a526bd22cd442f9",
+   "c1a1158a0cbbe6f2",
+   "c33aad77fff9d729",
+   "e8bb0eabc787743a"
+  ]
+ }
+}

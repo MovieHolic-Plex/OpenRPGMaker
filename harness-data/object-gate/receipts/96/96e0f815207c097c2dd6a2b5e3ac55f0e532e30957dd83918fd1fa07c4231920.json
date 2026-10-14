@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "96e0f815207c097c2dd6a2b5e3ac55f0e532e30957dd83918fd1fa07c4231920",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "우산꽂이(철제 격자, 열린 아가리)",
+ "label": "modern-campus-int/mc-umbrella-stand",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "metal mesh umbrella stand with open rim and colored umbrellas inside",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening is clearly visible from rows 2 to 6 with deep interior space containing umbrella handles, framed by a back rim at row 1 and a front rim at row 8, atop a front-facing mesh body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4538
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "umbrella stand / wire mesh container",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The container opening is viewed from above between rows 1-2 (back rim) and rows 7-8 (front rim), showing an elliptical opening ~5 rows tall filled with umbrella tops, with the front grid face extending down to row 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3420
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wire grid umbrella stand",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The container opening is drawn as an ellipse from row 2 to row 7 (approx 5 rows interior depth) revealing colored umbrella tops inside against the dark interior, with the front rim around rows 7-8 and the south mesh body extending down to row 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3418
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "metal mesh umbrella stand with umbrellas inside",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening is shown as an ellipse from row 1 to row 8, with an interior opening depth of 5 rows (rows 2-6) revealing colorful umbrella tops inside, with the cylindrical grid body extending below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3823
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:11.491Z",
+ "cells": {
+  "16": [
+   "e6a90f8890e4c8a7"
+  ],
+  "24": [
+   "0470200b53b47bb5",
+   "51dedf641adc355e",
+   "7f1f2f93479916c0",
+   "a6db4830d20fc84b",
+   "c534504453975ca8",
+   "cad6a5d3524a1995"
+  ],
+  "32": [
+   "42f745f7cd240d51",
+   "6c477fe82c246a48",
+   "b7b6750b51e884fa",
+   "d74b0a033ccfcf70",
+   "e5f90a6a7459f43d",
+   "fb72a6d252e7fddc"
+  ],
+  "48": [
+   "1aa27b3259c5e95c",
+   "26b5434961ce3f60",
+   "8557babdbadbedf0",
+   "930a5f54936ed7b6",
+   "ddfaeeb141fb92b1",
+   "fb91aa0d187afae7"
+  ]
+ }
+}

@@ -1,0 +1,145 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a1d704ba87d92d41998a15a90cb6908d08af79ac708ba6ab0ed7babab5874ec1",
+ "width": 64,
+ "height": 32,
+ "kind": "structure",
+ "name": "스탠드(3단 계단식 관람석)",
+ "label": "modern-campus/mc-bleachers",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "3-tier stadium bleachers structure",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stepped grandstand clearly displays the horizontal tread/aisle surfaces for each tier (rows 7-10, 16-19, and 25-30, each 4-6 pixels deep) in top-down 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4964
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "3-tier grandstand bleachers with seats",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each tier clearly displays its horizontal walkway/tread surface seen from above (3 to 5 pixel rows deep between tiers), correctly establishing the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8347
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "3-tier stepped grandstand with stadium seats",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each tier of the grandstand features a 4-5 source pixel tall horizontal walkway/tread surface viewed from above (e.g. rows 7-10, 17-20, 27-31), and the seats show top-down lighting on their upper surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 33606
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "3-tier stepped bleachers with individual seats",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each tier of the bleachers features wide horizontal tread platforms (4 to 6 rows deep) viewed from above, and each seat bench shows a top surface (2 rows) with a shaded front riser.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5640
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.872Z",
+ "cells": {
+  "16": [
+   "0d8322c987444375",
+   "2010d4998a4c8a35",
+   "3e8803412446c556",
+   "92643b7ecc247fba",
+   "bfd89b84e0105453",
+   "dbbdc618bc93887e"
+  ],
+  "24": [
+   "0a676fae8b734808",
+   "0da37b56e8b63196",
+   "2026e7a2cd1a1755",
+   "584c88902361f00a",
+   "59d5dc9adaa54710",
+   "5ea0ac2e3ce0adb6",
+   "6889ccedb355bc07",
+   "69e3ef6bac99a7d0",
+   "74613858e5c6d99c",
+   "757a5a48c0f2ce37",
+   "75ca1f3334fdf503",
+   "7bbc2bb5f027203e",
+   "878bec7248fd3159",
+   "8e7a415e2e4623e7",
+   "9db9c470352f1471",
+   "a445e9a40bd8a5cc",
+   "ace9e5c726833253",
+   "beaebab07471fc6b",
+   "c02782e7f2b1a7b7",
+   "c413ff602e433363",
+   "d6ee8ff97ec6fc67",
+   "d88e25593fe2e7bf",
+   "ddad06e16f1de2c2",
+   "e2fa1495669cb201",
+   "ef3321789c73931f",
+   "f2505c67ac4f95e9",
+   "fa377a21880ccf1e",
+   "fba18b78f58675d7"
+  ],
+  "32": [
+   "2aff08314dbf3c7e",
+   "4df6758cadf22049"
+  ],
+  "48": [
+   "0625e2167fe83570",
+   "11405727fccb890f",
+   "205694f040ed47a0",
+   "209938984f51ba64",
+   "26ed4507787a531e",
+   "348eba88f78b8058",
+   "705ba7e1bd6c02aa",
+   "903ec81b10d40549",
+   "94ead83b61044c06",
+   "96d27120c55e9fbd",
+   "b0b2f5f69483d298",
+   "b2f67eeb4db35465"
+  ]
+ }
+}

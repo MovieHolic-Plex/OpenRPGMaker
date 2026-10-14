@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cb3e17c1b933053a6a85dd54eeef2d7af0aa7f27d9196b929bedfcebe9acbf7c",
+ "width": 32,
+ "height": 16,
+ "kind": "seat",
+ "name": "붉은 천 평상(찻집 의자)",
+ "label": "sengoku-edo/se-bench-red",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "red cloth-covered bench (teahouse seat)",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top seat surface of the bench is clearly visible from above across rows 2–7 (with a front edge highlight at row 8, totaling ~6 rows of depth), showing vertical cloth seams/creases running back-to-front. The south-facing draped front face is visible on rows 9–11 (3 rows) above the legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6168
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "red cloth bench",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal seat surface of the bench is clearly visible from above across rows 3-8 (6 rows), followed by a 3-row front skirt and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3627
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "red cloth-covered teahouse bench (pyeongsang)",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top seating surface is clearly visible from above across rows 2–7 (approx. 6 pixel rows deep), with a front edge highlight at row 8, front skirt at rows 9–11, and front legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6524
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "red cloth-covered bench (pyeongsang / teahouse bench)",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top seating surface of the bench is prominently shown from rows 2 to 7 (6 rows tall) with seam details, bounded by the front edge highlight on row 8 and the front-facing cloth drop on rows 9-11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6161
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.073Z",
+ "cells": {
+  "16": [
+   "44b3b672947f27de",
+   "5dcae7de2d59b9cf"
+  ],
+  "24": [
+   "0d87739e518d9159",
+   "1814be0a514c488b",
+   "3c124bb91c3a4e2a",
+   "48566bef62df9e77",
+   "594fa02a6dc6d0ca",
+   "63c2341ba891ff74",
+   "71ea54313a65fc54",
+   "88196868780a0b01",
+   "e65372a93de9a90b",
+   "f320973594689c17",
+   "fc0e8194b8366977",
+   "ffe4ce28eacb4899"
+  ],
+  "32": [
+   "ae4b2c23940d69db",
+   "d3cd42633588966f"
+  ],
+  "48": [
+   "37e259e379c6151a",
+   "c354550298a4e563",
+   "c3f138ed4f8cf121",
+   "d3ba7efd1e292a5c",
+   "d8fa016317909951",
+   "f2c24500838dd366"
+  ]
+ }
+}

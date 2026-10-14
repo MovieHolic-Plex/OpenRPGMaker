@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e6f453edc67d0c6c1b1cc81ee4adbc046d15f2b639d52a6d082c44d18a206430",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "갈퀴 자국 자갈(가레산스이)",
+ "label": "sengoku-edo/se-gravel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "raked gravel ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing Japanese rock garden (karesansui) raked gravel with horizontal ridges across the full 16x16 ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3931
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "raked gravel terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat raked gravel ground tile with horizontal grooves covering all 16 rows, appropriate as a top-down terrain surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3008
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "raked gravel ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting raked karesansui gravel stripes seen entirely from above, filling all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4110
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "raked gravel ground tile (karesansui)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile represents flat terrain depicting raked gravel ridges seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2389
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.060Z",
+ "cells": {
+  "16": [
+   "ec35b419cd313e05"
+  ],
+  "24": [
+   "00a8274fbfc181d3",
+   "0e0e1b9227e1ecbc",
+   "22b7353688d93bc2",
+   "7e7551ed2e5d5ca8",
+   "c3851f93f93f9d01",
+   "edd0443f607d60bb"
+  ],
+  "32": [
+   "53473e1920ad0992",
+   "5efd68c27dc595b0",
+   "a75f741ecf084b5d",
+   "d568be5388cc3eff",
+   "dab4dc18b238c449",
+   "f588434b45225698"
+  ],
+  "48": [
+   "084fe048f19f5fd5",
+   "0bc7ec8674328eb3",
+   "c30103ba8546d950",
+   "e2bbdd22ed7ad460",
+   "e80bc7c1626340d3",
+   "f3b2e8db8201c2ea"
+  ]
+ }
+}

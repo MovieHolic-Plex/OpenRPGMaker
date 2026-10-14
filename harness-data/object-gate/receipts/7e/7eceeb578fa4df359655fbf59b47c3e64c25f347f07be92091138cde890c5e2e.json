@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7eceeb578fa4df359655fbf59b47c3e64c25f347f07be92091138cde890c5e2e",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "prehistoric stone-age drying rack",
+ "label": "prehistoric/ph-drying-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden drying/tanning frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The frame is rendered in pure front elevation: the horizontal crossbeams (rows 5-6 and 14-17) and vertical posts show only their front faces with no visible top surfaces (0 px), and the legs terminate in flat front-facing cuts.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8763
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "prehistoric stone-age drying rack frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire frame and stretched hide are drawn in a flat 2D front elevation (side-scroller view). The horizontal crossbeams show only vertical front faces with no visible top surfaces, and the vertical posts extend straight down with flat cutoffs.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10518
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "drying rack frame with stretched hide",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rack shows clear 3/4 depth: the back posts are offset upwards (rows 3-12) behind the front beam and legs (rows 13-31), exposing a 7-row horizontal top surface/stretched hide (rows 6-12) viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6897
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "drying rack frame with stretched drying surface",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rack shows distinct 3/4 depth: a rear crossbeam (rows 4-6) sits higher and further back than the front crossbeam (rows 13-17), with a foreshortened top drying surface visible for ~8 pixel rows (rows 6-13) between them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5599
+  }
+ ],
+ "decidedAt": "2026-10-14T00:42:49.784Z",
+ "cells": {
+  "16": [
+   "018e71da4ad103a4",
+   "74a0c93fc56b1959",
+   "af1b2ee22cd7a984",
+   "f0ac360b9e0f960d"
+  ],
+  "24": [
+   "06feb105bb4b1c0e",
+   "11be986ba0217169",
+   "26b0f768d2078278",
+   "3a5ed34e57840aac",
+   "41f390f1f2bf51f3",
+   "489b0ae0facd9115",
+   "53075b03ced2f28b",
+   "5c0a62208d84006f",
+   "645027469e78d375",
+   "6ab3c6736e4fd736",
+   "76139aa208523e37",
+   "76476e63dc070854",
+   "84c1b270aca3b98e",
+   "a10a9f532135f89e",
+   "a9a3d4a7c5e2dd0c",
+   "acd675c25fce658b",
+   "b4fdabf461a59e14",
+   "b524923343d2b6bf",
+   "b9efa41295892e00",
+   "d7549a5ce84af0f9",
+   "e1ab42c0784ab3f4",
+   "ea91fca275aaf4a3",
+   "eef5b80534d84673",
+   "f14f029e93ce12b3"
+  ],
+  "32": [
+   "34602386d0635663"
+  ],
+  "48": [
+   "68b9f319306bb66a",
+   "6bca527667a62a6b",
+   "8e6c742b966c5515",
+   "a66f43176e23a4a1",
+   "c0d6ef209e5f6780",
+   "d9e16c641f48a167"
+  ]
+ }
+}

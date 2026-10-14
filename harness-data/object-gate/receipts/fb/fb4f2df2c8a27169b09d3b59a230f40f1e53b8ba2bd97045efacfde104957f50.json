@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fb4f2df2c8a27169b09d3b59a230f40f1e53b8ba2bd97045efacfde104957f50",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "dark blue mosaic floor with gold grid and star dots (flat)",
+ "label": "sky-island/si-floor-mosaic",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mosaic floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile viewed from above with gold border grid and blue mosaic surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2980
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "mosaic floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile showing a dark blue mosaic surface with gold grid edging and a star pixel.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3827
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "mosaic floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile showing a dark blue mosaic pattern with gold border and a star dot seen from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4755
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dark blue mosaic floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile viewed from above with gold border grid lines and mosaic star dots across the full 16x16 surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2499
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.559Z",
+ "cells": {
+  "16": [
+   "ef44835946fed42b"
+  ],
+  "24": [
+   "0b0d4c500159049a",
+   "4ef1631c550b2fab",
+   "885183c6ef5be2dd",
+   "97ed52f6e3393dd4",
+   "9be39c3c50cfc954",
+   "dbe3faf4b4ec56fb"
+  ],
+  "32": [
+   "063cd263d2fedac9",
+   "1c8d6b2a27bff37f",
+   "2aa0d91aed276906",
+   "3f2484e976146f6e",
+   "46472dc8c7c91435",
+   "8aa0cf22520ae4fa"
+  ],
+  "48": [
+   "4001dca9e8422be5",
+   "4528f2f0928bba7d",
+   "6473fbe14952719a",
+   "aae0725f9a73db5e",
+   "e6cd4ae334d73559",
+   "f09fbc20bb06c93c"
+  ]
+ }
+}

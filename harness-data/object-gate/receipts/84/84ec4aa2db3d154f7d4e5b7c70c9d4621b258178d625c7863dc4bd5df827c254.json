@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "84ec4aa2db3d154f7d4e5b7c70c9d4621b258178d625c7863dc4bd5df827c254",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "흙바닥(도마, 다진 흙)",
+ "label": "sengoku-edo/se-floor-doma",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dirt ground texture",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile depicting compacted dirt viewed from above across all 32 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3820
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dirt ground surface",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless dirt ground terrain texture viewed top-down across the entire canvas.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4370
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dirt ground texture",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ground terrain texture depicting packed dirt with subtle variation across all rows; correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4896
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "packed dirt ground tile",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing packed dirt texture seen from above across the entire surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3294
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.075Z",
+ "cells": {
+  "16": [
+   "14578f560ecaef2b",
+   "1cda32bb1a356ce5",
+   "460601124578d260",
+   "d7eb92476f13b358"
+  ],
+  "24": [
+   "13f653ad451a7f6d",
+   "394e84f577d9e321",
+   "3fc33b3fe1140448",
+   "41a554225b4646de",
+   "4a0d6f9f582b9c77",
+   "4d7afacaf7f145a5",
+   "5c2139facbaf3027",
+   "6330a739a24305f7",
+   "653f1d53b1284399",
+   "804a647c7fc77c10",
+   "82c8f361351ab4d8",
+   "94ab7edb07373e51",
+   "a9cba94bbb0309d6",
+   "b922745bb1af57c1",
+   "c7bb5c39ccae5de2",
+   "c923d03c60c0756e",
+   "cc4f8d9537956a30",
+   "cc62f337e4ae199a",
+   "d09f1bde99f38c17",
+   "d7fd045fff543e86",
+   "e09dc2b2333a375a",
+   "e1cbc5f232b243a8",
+   "fd7c23a9231687a4",
+   "fe0ce8f33f619c00"
+  ],
+  "32": [
+   "e653a59fce8ad485"
+  ],
+  "48": [
+   "20af54405524289d",
+   "380f9f2194f43a62",
+   "6e164e84432f9c72",
+   "77e68d52dc91e0e0",
+   "8e3856688be9f268",
+   "daf8fe069b6fcfb2"
+  ]
+ }
+}

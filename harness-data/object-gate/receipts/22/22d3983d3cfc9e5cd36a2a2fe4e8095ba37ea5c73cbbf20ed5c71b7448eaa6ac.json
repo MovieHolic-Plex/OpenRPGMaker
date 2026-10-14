@@ -1,0 +1,181 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "22d3983d3cfc9e5cd36a2a2fe4e8095ba37ea5c73cbbf20ed5c71b7448eaa6ac",
+ "width": 48,
+ "height": 128,
+ "kind": "structure",
+ "name": "하늘 등대(빛 탑)",
+ "label": "sky-island/si-lighthouse",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lighthouse tower",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tower is drawn in pure front elevation: all stripe boundaries (rows 73, 82, 98, 108), the window, the door, and the lantern room are completely flat and horizontal with no 3/4 downward curvature, and no top surfaces are visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8918
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lighthouse tower",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lighthouse structure is properly drawn in top-down 3/4 perspective: the conical roof shows roughly 18 rows of sloped top surface (rows 6-24), and both the observation deck platform and base plinth display foreshortened curved top surfaces consistent with viewing from slightly above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12152
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lighthouse tower",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lighthouse is drawn as a flat architectural front elevation (side-scroller style). The observation gallery/catwalk shows no floor surface from above, the lantern room, window, and door are drawn completely flat without top foreshortening, and only the base plinth has any top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 17884
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lighthouse tower with lantern room, balcony, and stone base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The observation balcony around the lantern room clearly displays its top surface (rows 42-48, ~6 rows tall) foreshortened from the 3/4 camera angle. Additionally, the conical roof and the base plinth (rows 116-122) show clear top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10908
+  }
+ ],
+ "decidedAt": "2026-10-13T18:44:58.915Z",
+ "cells": {
+  "16": [
+   "149707c051207fd9",
+   "23b77a491c272c07",
+   "2f2f4b2e52a5e230",
+   "31cb9d40254f49c1",
+   "392a6d08cdab7fba",
+   "5554678269ef53a2",
+   "5a8fa77324c505df",
+   "65a1f4ac27eb4aa7",
+   "67ed4b48f4b4068f",
+   "68f77395c08c79c6",
+   "6c8ce876f1a7e09c",
+   "acf00f7a13c4563f",
+   "b067a847ad14549f",
+   "c016047bac8cdad9",
+   "c42dcedad0868fab",
+   "c4f81b147649ac7c",
+   "d6c5999a6077ab77",
+   "ebfce814e2618477",
+   "f371a03d2748b026",
+   "f3b64b5f11805767",
+   "f543bbcb509190ff",
+   "fae301b5979d5541"
+  ],
+  "24": [
+   "05a3ac9869e1597c",
+   "252b12f26e6be153",
+   "389470cb823428ef",
+   "47e8fbbcc28223ae",
+   "501066859b3ea76d",
+   "5f9ccbce2e89e186",
+   "5fb2df2a6b22c98a",
+   "5ffaad34a8cbd6b2",
+   "6b9ebfb8d7f7d9fd",
+   "736ad60f8856505a",
+   "7c1325df5db2aead",
+   "8c0c0baedc5cf13f",
+   "91d672b77b8caba7",
+   "97ec0ccc289a3dcc",
+   "9df037a95aa9657b",
+   "a2397966db211e07",
+   "ad7213904f381cce",
+   "b802a27f905bbb6a",
+   "bd93aa0d39107284",
+   "c8e03f34ad18517a",
+   "e1d4cac7183acf05",
+   "f41a26f35d182778",
+   "f5b2a83d35913e2e",
+   "f92eb01c95b84c8b"
+  ],
+  "32": [
+   "08ded535fcbdce6c",
+   "12bb7c13ab7a9a47",
+   "1429084b80ebbeb8",
+   "1a44fb395cc5feee",
+   "206d367d8a164c6f",
+   "2ab060fb3e7770b4",
+   "2da7a949d12c4496",
+   "30c57cc943682979",
+   "5b35c2e9b7b30e49",
+   "7c9b0c834ec915bb",
+   "7d7afa001c77117e",
+   "8b05898dc8ba527f",
+   "8d70c76f8ce1ca10",
+   "91f8789633dc6b59",
+   "92c13fce75bc53ad",
+   "a32f9a834e854b27",
+   "b0d3fa58d8d90c10",
+   "bcbd26454730eec5",
+   "db38ac42b48d1387",
+   "df67eb95b3ff6943",
+   "e49cf8df6d86aca1",
+   "e6d9103f0f49bbd6",
+   "fc7f264755cb0215",
+   "fe2500a839e5d533"
+  ],
+  "48": [
+   "03c0c8cd317c9baa",
+   "1207f17b3eb1bc19",
+   "1a8b47c73fe3752b",
+   "a3d029d507a7fc84",
+   "b09cef1384817b31",
+   "fa143a0a807b0c8f"
+  ]
+ }
+}

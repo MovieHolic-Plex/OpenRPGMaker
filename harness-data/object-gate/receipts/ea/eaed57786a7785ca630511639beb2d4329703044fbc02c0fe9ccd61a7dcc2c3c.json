@@ -1,0 +1,128 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "eaed57786a7785ca630511639beb2d4329703044fbc02c0fe9ccd61a7dcc2c3c",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "붉은 양산 평상(노다테 우산)",
+ "label": "sengoku-edo/se-bench-parasol",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "parasol and bench structure",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bench seat clearly shows its foreshortened top surface across rows 35-40 (6 rows tall) above the front face (rows 41-43). While the parasol canopy rim is drawn completely flat rather than as an ellipse, the bench portion clearly exhibits 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6283
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "nodate umbrella with bench",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The umbrella canopy is drawn in flat front elevation like a 2D lampshade: its lower rim at row 14 is a completely straight horizontal line across its entire width instead of an ellipse/curve foreshortened for a 45-degree top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8205
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "red parasol (nodate umbrella) with bench",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bench platform displays a clear foreshortened top surface (rows 35-40, 6 rows tall) above its south face. However, the umbrella canopy is drawn with a completely straight horizontal rim (rows 13-14) instead of an elliptical curve appropriate for a 3/4 top-down angle, though the bench provides sufficient top surface for the combined structure.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5134
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "nodate umbrella bench",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bench seat shows a clear foreshortened top surface (rows 35-40, 6 rows tall) above its front face (rows 41-43). However, the umbrella canopy above is drawn as a flat front elevation with a completely straight horizontal bottom rim (rows 13-15) and straight flat top (rows 2-3) instead of an elliptical rim curving downward in 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail"
+   ],
+   "ms": 7195
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.073Z",
+ "cells": {
+  "16": [
+   "11bc9dddb95d1962",
+   "20b089abdded6534",
+   "44c0ddfe6a41b8fe",
+   "50434faaa73ef0da",
+   "8d3f27b9db0fa3c3",
+   "8dd49fc177b7c003"
+  ],
+  "24": [
+   "078c5182d9a7532a",
+   "10f4c9ca77736b63",
+   "29c24465db90a1e8",
+   "4238a1774e679118",
+   "6bb2cee155ac62d7",
+   "75502373d3872555",
+   "814cb9ffacda8df9",
+   "d579e03a88526f54",
+   "e01208806e3a9c5f",
+   "f19d8016f470b57e",
+   "f7ef68294f2c3e4b",
+   "ff765d391ab6a5ff"
+  ],
+  "32": [
+   "39196efe754b3e50",
+   "aafb0f52168fd157",
+   "cd8717afbae9b15d",
+   "fc23e56286ce4bb0"
+  ],
+  "48": [
+   "0b81f551a455bc6c",
+   "aee1ddecfc46f863",
+   "f086bb7dfa7c1433"
+  ]
+ }
+}

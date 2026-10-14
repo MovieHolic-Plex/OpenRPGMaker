@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7ab0cd73a0aa60341da008c0ac4a2163d825629d97df37a2f06aa162b21e76cd",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "cabin wall with round brass porthole (wall_mounted)",
+ "label": "sky-island/si-wall-wood-port",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cabin wall with porthole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile depicting a vertical wooden cabin wall with a round brass porthole; correctly rendered as a standard flat south-facing wall tile for RPG Maker perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7735
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cabin wall face with porthole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting a vertical south-facing cabin wall with an embedded brass porthole. As wall terrain rather than a standing object, it correctly shows the vertical wall surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8485
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall face with porthole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a terrain wall tile (south-facing vertical wall face with an inset round brass porthole window). As terrain representing a vertical wall face rather than a standing object, it correctly fills the tile face without top perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6271
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cabin wall face with porthole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile showing a south-facing wooden cabin wall with a brass porthole window; wall surfaces are vertical terrain elements in RPG Maker perspective and correctly show no top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5142
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.561Z",
+ "cells": {
+  "16": [
+   "7290ba009ec5203a"
+  ],
+  "24": [
+   "1736ba7461e555e6",
+   "3aa51aca13ae5f34",
+   "6479522708419081",
+   "cc8736bab1c3012f",
+   "da846c7f62b7b241",
+   "de58f431eda7976d"
+  ],
+  "32": [
+   "1c1cdcecb5d512ee",
+   "257dcc81e7997eb6",
+   "3f9e9190bd421830",
+   "49bb4dd9a174e745",
+   "8cb9844531e27a89",
+   "b485f3caab5b5e98"
+  ],
+  "48": [
+   "2f215cd42f0617d5",
+   "31b96de8ef51105b",
+   "6c26d6eb63eaacbb",
+   "b0e6ee17b2d5ed3e",
+   "bf6cc2484ec6894a",
+   "f0c1e7ffd8623751"
+  ]
+ }
+}

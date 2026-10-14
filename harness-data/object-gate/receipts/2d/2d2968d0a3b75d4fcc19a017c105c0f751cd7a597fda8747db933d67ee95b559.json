@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2d2968d0a3b75d4fcc19a017c105c0f751cd7a597fda8747db933d67ee95b559",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "횡단보도",
+ "label": "modern-campus/mc-crosswalk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "crosswalk road surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a crosswalk with painted white stripes on dark asphalt ground spanning all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4660
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "crosswalk ground surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a flat road terrain with painted pedestrian crosswalk stripes viewed entirely from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4772
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "crosswalk stripes on asphalt terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground tile depicting pedestrian crosswalk markings on dark asphalt; correctly categorized as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3519
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "crosswalk zebra stripes on asphalt road terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat terrain tile depicting painted zebra stripes on an asphalt crosswalk, correctly viewed entirely from above as ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4069
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.864Z",
+ "cells": {
+  "16": [
+   "67a31dc41860f197"
+  ],
+  "24": [
+   "10cf9388e8081d5b",
+   "1df423a97aca7ab7",
+   "3312fe40e34837d6",
+   "4132ede68d9bbe77",
+   "56698e1d35edfb51",
+   "9559f6ad0537e21a"
+  ],
+  "32": [
+   "107c1051e372d837",
+   "40befa4d3bc02c75",
+   "7005b32597a4b6cc",
+   "778bf1a9893a2d3f",
+   "a3aea518fef8c2d1",
+   "b8eaea9facf94013"
+  ],
+  "48": [
+   "14498134e8791242",
+   "1e96e68dbd03ebcf",
+   "46b14def6e32fc05",
+   "956035c5ae0e3de5",
+   "d2504dea8c09f575",
+   "ef9bf0b2ee45d69e"
+  ]
+ }
+}

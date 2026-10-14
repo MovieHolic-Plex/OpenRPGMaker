@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a646a3c4dccb30e44155b8b969872b1bf2042adab179dc1fadbcbce60d4f3481",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "prehistoric stone-age bridge v",
+ "label": "prehistoric/ph-bridge-v",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical bridge segment",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical bridge tile viewed from above as terrain, showing top-down wooden planks with side bindings over water.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4623
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical bridge segment",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bridge deck is a terrain/pathway tile viewed from above across all 16 rows, with side ropes/rails and horizontal planks spanning over water.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4735
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vertical bridge segment",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wooden bridge tile viewed from above with horizontal planks and rope railings along the edges, functioning as a walkable terrain tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2841
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical bridge deck segment",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wooden bridge/pathway tile seen from above as walkable terrain surface spanning the full 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3868
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.806Z",
+ "cells": {
+  "16": [
+   "c9a3e4c4bfac5e22"
+  ],
+  "24": [
+   "024e80ab9cdd43f3",
+   "221fb0efbdf4b477",
+   "371f9044dac01875",
+   "89a00ff236aaaf3e",
+   "9da99fd83b240670",
+   "e85222f4c3d64e43"
+  ],
+  "32": [
+   "268901f35891a9d2",
+   "373bb9b352bd1b27",
+   "49185d47a130501e",
+   "5c1a5084c2dc0e61",
+   "8f2cbe77011bc682",
+   "a5831f610a0e7ba3"
+  ],
+  "48": [
+   "02717de3d46e933d",
+   "67313ff1872ecfdb",
+   "8de23e88e8e7af3d",
+   "8f76c283adaf4cf9",
+   "9135295d63e36327",
+   "e435d64875d928ae"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "154586969814547e4ec88a9360576bcd09ee874af95a604b68eb777f1bfbdbd9",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "stone birdbath seen from above: wide round bowl with water clearly visible inside, short pedestal",
+ "label": "sky-island/si-birdbath",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "birdbath bowl and pedestal",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The birdbath bowl features a large foreshortened elliptical opening filled with water spanning rows 2 to 9, set above a front-facing stone pedestal.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3942
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "birdbath bowl",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The birdbath bowl features a wide, clear elliptical opening showing water from row 2 through row 9 (8 rows tall), resting on a foreshortened pedestal.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4899
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "birdbath bowl and pedestal",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The birdbath bowl opening with water is clearly visible from above as a foreshortened ellipse spanning rows 2 to 9 (8 rows tall), resting on a short stone pedestal.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3422
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "birdbath bowl on a short pedestal",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basin opening is clearly foreshortened in 3/4 perspective showing the water inside across rows 2-9 surrounded by a stone rim, resting on a pedestal (rows 10-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3591
+  }
+ ],
+ "decidedAt": "2026-10-13T18:46:20.920Z",
+ "cells": {
+  "16": [
+   "0ec4ed2a246b2d7b"
+  ],
+  "24": [
+   "376c019306367c6f",
+   "55145135da432d45",
+   "872f57197fdddd16",
+   "c21fa4cb50bc2ad2",
+   "d9745f2a82f050ee",
+   "f53f70dc66374410"
+  ],
+  "32": [
+   "4efd11abf9e31a71",
+   "5bcb301449dc7d15",
+   "719d45714da35678",
+   "a22b7adec905727c",
+   "f0cde79baf5ea01d",
+   "fc73139b37bcb95d"
+  ],
+  "48": [
+   "24dbdf483ace0a4b",
+   "260ab0a91d08b80f",
+   "674c6a5fce8f609b",
+   "951afca60401382a",
+   "c5248cd0e5aef7e5",
+   "d706714b1d8c2ee9"
+  ]
+ }
+}

@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "84360324a5fd03429e962e855d2269254d2c29b7746acac3c78b514845de74ed",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "달 탐사 로버(굵은 바퀴 슬래브 위의 흰 차체)",
+ "label": "sf-station/sf-rover",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lunar exploration rover vehicle body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rover is drawn in a pure 2D side elevation (side-scroller view). The horizontal roof has no visible top surface foreshortened from above (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6508
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vehicle body of lunar rover",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rover is drawn in a pure 2D side-scroller profile/elevation view with zero rows of visible roof or top surface shown from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6894
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lunar rover vehicle body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rover is drawn in a pure 2D side-profile elevation (side-scroller view) with a flat 1px outline at the top (row 0-1) and no visible roof surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6889
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rover vehicle body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rover is drawn in a flat side elevation (side-scroller view) with no top surface visible on the roof or chassis.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5808
+  }
+ ],
+ "decidedAt": "2026-10-13T15:31:15.750Z",
+ "cells": {
+  "16": [
+   "5dff9f1dfd9ad817",
+   "6461c223c05cd646",
+   "6d3c1817500a3c1f",
+   "a89e679f1afb1687",
+   "b764da1f15440346",
+   "cd4442c9d26df176"
+  ],
+  "24": [
+   "24adf0dd2fb5c8c9",
+   "26a943d72408a45b",
+   "38eeb3b12b9be8a6",
+   "59d3824a84ba7875",
+   "6955597a9c411fd4",
+   "bb615b717d15a444",
+   "e2545db3e75821a2",
+   "f105826dabb07ab6"
+  ],
+  "32": [
+   "37d74b7aaa7d9ff0",
+   "576bfc316d4db2f2",
+   "880fd8b89a0987ae",
+   "aaaf3de5a11a36bd",
+   "d78fb2779e2394d2",
+   "f68c29bdaba77f91"
+  ],
+  "48": [
+   "16da16d8a469054a",
+   "523d5f6de0d62a07"
+  ]
+ }
+}

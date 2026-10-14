@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e0ff3afbc061739782b95cad3a7169a841209554e0dc309b6bec13ad91fb7a2a",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass to cloud floor transition tile (terrain)",
+ "label": "sky-island/si-gc-w",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ground transition tile (grass and cloud floor)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile showing the edge between green grass and white cloud floor, viewed entirely top-down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3283
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass to cloud floor transition tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing flat ground/floor transition from cloud to grass viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3619
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "terrain transition tile between grass and cloud floor",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a horizontal floor/ground transition viewed top-down across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2798
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "terrain transition tile between cloud floor and grass",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile showing a transition from a pale cloud floor on the left to green grass on the right, fully viewed from above as ground terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2931
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.978Z",
+ "cells": {
+  "16": [
+   "99539584e3f2cf47"
+  ],
+  "24": [
+   "265530209bb1c5a0",
+   "38d7ecbeff5443ab",
+   "988790a8b4ccaac5",
+   "a5fa10dcc3d345cd",
+   "c3144648f1a0e44c",
+   "d42239dac7756f7c"
+  ],
+  "32": [
+   "0bf86587433eb734",
+   "8f5543d5363a05cf",
+   "b309304097814154",
+   "c359c43f0a11e52c",
+   "f760b9a5167d733a",
+   "fb2abc6dde170128"
+  ],
+  "48": [
+   "589fcccc58947af5",
+   "91ca8175e61c8915",
+   "c094b17dd23a14be",
+   "c17761bd047b65da",
+   "ccc87324a501d2e3",
+   "f05a8b5c912646ee"
+  ]
+ }
+}

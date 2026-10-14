@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c63e3a22168f9ed4dde042fe77b61c83e4c75f9e82436afe5e039d450e061bb6",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "prehistoric stone-age fern",
+ "label": "prehistoric/ph-fern",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fern terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full-tile leafy fern/moss terrain texture viewed from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4725
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "foliage / ground fern terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 terrain tile depicting dense green fern/foliage ground cover viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3489
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fern ground cover terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 tile composed of top-down fern/foliage ground cover texture.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4900
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fern/foliage ground terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless full-tile ground/foliage texture viewed from top-down, correctly matching the terrain category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3344
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.788Z",
+ "cells": {
+  "16": [
+   "e9f12fc1746cd7fa"
+  ],
+  "24": [
+   "141c61b2e3f1cb70",
+   "1a1f449295dc910d",
+   "4c3e22e393f87047",
+   "b39ca37ad47915f8",
+   "c1425108621d70b2",
+   "cee14c1720767db9"
+  ],
+  "32": [
+   "1abc396988a584bc",
+   "3b7620af0ed226c7",
+   "41f75737d70555c9",
+   "5e0bdac003f8750f",
+   "90ffa93cde20fa4f",
+   "ccfc2593c87778c5"
+  ],
+  "48": [
+   "1b03e635f1107bda",
+   "1f150806e1b6804b",
+   "86823b977b46fc74",
+   "b70446eee27071e5",
+   "c3f6c2148d6d6882",
+   "deae15db535fbee3"
+  ]
+ }
+}

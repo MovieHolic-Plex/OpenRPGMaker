@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ed7b42945aa4b2c9c14635e2bc41b45d0d29a1a60d49142715cc6210b35ce134",
+ "width": 32,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "벽 배관 두 줄(구리 파이프 + 이음 고리)",
+ "label": "sf-station/sf-wall-pipes",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal wall pipes with vertical mounting brackets",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Horizontal pipes with vertical wall brackets mounted flat against a vertical wall face. As a wall-mounted asset (may be flat), no top projection is required.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8985
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal wall-mounted pipes with vertical brackets",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pipes and brackets are designed as flat wall-mounted fixtures on a vertical wall surface, matching the wall_mounted category where no top surface is required.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5464
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal pipes with mounting brackets",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted pipes running horizontally across the wall plane with vertical mounting rings; appropriately depicted flat against the vertical wall surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4534
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal wall-mounted pipes with vertical mounting brackets",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted pipes and clamps shown flat against a vertical wall surface as permitted for wall_mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5647
+  }
+ ],
+ "decidedAt": "2026-10-13T15:30:54.894Z",
+ "cells": {
+  "16": [
+   "d1e4cac1be3c5a79",
+   "fd801f7846f6ca0b"
+  ],
+  "24": [
+   "0606479464c7075a",
+   "10e93893aa153794",
+   "2b9e8e14f7ed3d1e",
+   "3277490aa3285158",
+   "383585def569ebe2",
+   "56af6ca352ff36e4",
+   "7bb2a945124adc7f",
+   "89bd4dc0d416d60e",
+   "9490d40c2c2175cf",
+   "a9f7568ae6522d45",
+   "ee7ca4788b81384f",
+   "f16e8d8bb0b07327"
+  ],
+  "32": [
+   "2c8719aaa995bb0f",
+   "a414c06671fe7c00"
+  ],
+  "48": [
+   "1927addffb040449",
+   "40b51b01fd86cc01",
+   "6fa4028e431defd3",
+   "9ae663c4a169a1d9",
+   "9b0597da22a03c76",
+   "f963bcfcf79890fd"
+  ]
+ }
+}

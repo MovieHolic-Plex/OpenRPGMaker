@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "36ed0b6024026b25e73c706256a36a05e1b5be798e079e3ed4b04ba62a532836",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "마른 풀밭 C (돌멩이)",
+ "label": "gothic_manor/gm-ground-grass-c",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ground terrain tile with small stones and grass tufts",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a 16x16 ground terrain tile viewed from above, matching the terrain category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5025
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ground terrain tile with pebbles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Entire 16x16 tile is top-down ground terrain depicting grassy field with small embedded pebbles and scattered debris.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4668
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ground terrain tile with small stones and dry grass details",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a 16x16 flat ground/terrain tile depicting grassy ground with scattered small pebbles, viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4692
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ground terrain tile with scattered small stones",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile covering the full 16x16 grid with surface texture and small embedded stones.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4352
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.462Z",
+ "cells": {
+  "16": [
+   "f6ccddb6c8025be5"
+  ],
+  "24": [
+   "0aac4389b6aa3124",
+   "3adf87bbf336c93b",
+   "45f2477a396cc7a0",
+   "8f9a338a65a966ce",
+   "e0e0f0ec7b92844a",
+   "e72796d659b8e4d7"
+  ],
+  "32": [
+   "3d7d2a23bcc8ae3d",
+   "3f4423cfe7e1a0fa",
+   "7b15fa9608c2fd45",
+   "c1f9cc43a9c3e63c",
+   "d79c243c6ffec0af",
+   "e417c2e386a5d15f"
+  ],
+  "48": [
+   "23e7fef2b1fe78e8",
+   "265394a860c12529",
+   "3b9c96ced3794e21",
+   "904e21cf14ff29ca",
+   "c3fd8c3a1f0df8d3",
+   "f13cc4e89d92061e"
+  ]
+ }
+}

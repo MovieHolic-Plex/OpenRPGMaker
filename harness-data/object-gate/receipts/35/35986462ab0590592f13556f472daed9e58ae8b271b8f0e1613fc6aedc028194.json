@@ -1,0 +1,161 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "35986462ab0590592f13556f472daed9e58ae8b271b8f0e1613fc6aedc028194",
+ "width": 64,
+ "height": 48,
+ "kind": "other",
+ "name": "고정 증기 기관(실린더 + 피스톤 + 큰 플라이휠)",
+ "label": "steampunk-city/sp-engine",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "steam engine mechanism (cylinder, piston rod, and flywheel)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "While the base plinth has a top surface (rows 30-35), the main body of the steam engine (horizontal cylinder and circular flywheel) is drawn entirely in pure flat side/front elevation with 0 visible top surface rows.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5476
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "steam engine mechanism (cylinder, piston rod, and flywheel)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The engine mechanism (cylinder, valve dome, piston rod, and flywheel) is drawn as a flat 2D side elevation with 0 top rows visible on any of its components; only the base plinth has a top surface, which does not qualify.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10630
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stationary steam engine (cylinder and flywheel)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The engine mechanism (flywheel, connecting rod, and cylinder) is drawn purely in flat side-scroller elevation. The flywheel has zero thickness/depth (drawn as a flat 2D circle with no visible top rim), and the cylinder shows no top surface. The only top surface is on the base plinth, which is excluded from judging the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5834
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "steam engine mechanism (cylinder and flywheel)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The steam engine mechanism (flywheel, cylinder, connecting rod, and governor) is drawn in pure 2D side elevation like a side-scroller asset. The flywheel is a completely flat circle with 0px top thickness, the cylinder end caps are vertical lines with no top ellipse, and the governor is a flat 2D silhouette. Only the base plinth shows a top surface, which does not count.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8056
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.465Z",
+ "cells": {
+  "16": [
+   "33601cb1815d6d5d",
+   "45d6d139ffa52f76",
+   "4f6352d1a50c100c",
+   "507bcf97caf03587",
+   "5169346aad343f44",
+   "54b449b93729bdb4",
+   "64c9c8b6e1495a27",
+   "8490c9f4b5764a9b",
+   "93e1f49eaa937fbc",
+   "a42e7b60df8b2d2a",
+   "bb02a97ff640a472",
+   "c8acb30bc3af191c"
+  ],
+  "24": [
+   "059bb67dc85e971b",
+   "1414132f45e92219",
+   "1b48625ee964a877",
+   "1b9f9e8c9e50f477",
+   "23acf47adcd3d697",
+   "3b248bf54149d794",
+   "4b6cdec29480c9df",
+   "4d2f346b66e2e886",
+   "71b5f3fc6c366d23",
+   "7a4b1c2043eb2de8",
+   "8b847566a0b397c4",
+   "8e79e465e4dbef82",
+   "95fcb2477ecd4f92",
+   "d016371aad66bc9b",
+   "d68b54b643df1a2e",
+   "de7f20fa18371ddd",
+   "f9d31c3a978ee3ed",
+   "fd0e44bd41794ad0"
+  ],
+  "32": [
+   "1ad679c7d278d391",
+   "244db8248498f761",
+   "77de3516a37609b2",
+   "99258bd63d386ef8",
+   "b32418d7606574a9",
+   "d2d4d4ef9d38dc54",
+   "dfc714c741c237d6",
+   "e905a26ec4e234b5"
+  ],
+  "48": [
+   "4fa2b050ee0348f2",
+   "6cfce21f93974634",
+   "7f89e1c4f0b88b4b",
+   "8d182ca39bd25fa3",
+   "b67e6c56679a3402",
+   "ea1deb5cee2ddf51"
+  ]
+ }
+}

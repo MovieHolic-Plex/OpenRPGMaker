@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5cfdc89ae80caa3d4c69e856c37f303ed306a3336bd37a1589e614af62c7cc24",
+ "width": 64,
+ "height": 32,
+ "kind": "terrain",
+ "name": "cave rock wall front face strip, 4 variants x 2 rows",
+ "label": "pirate-isles/pi-wall-face-cave",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cave rock wall front face strip",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain wall face tiles representing vertical cave wall surfaces. As terrain wall front faces, they appropriately depict vertical rock relief without top surfaces (which are placed on separate ceiling/wall-top tiles). No receding isometric side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8558
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cave rock wall front face strip",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a terrain autotile/strip representing the vertical front face of a cave wall, not a standalone 3D object. As a vertical terrain wall face, it correctly displays only the south-facing rock surface without a top surface (which is handled by ceiling/roof tiles).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9372
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cave rock wall front face strip",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain wall face strip designed as vertical south-facing rock wall tiles (with torch, vines, and ore variants). As terrain wall front faces, they represent the vertical cliff/wall surface beneath a ceiling or cliff top.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8232
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cave rock wall front face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tiles representing vertical south-facing rock surface. As terrain tiles (not a standing object), they correctly display the vertical wall face without top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8781
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.697Z",
+ "cells": {
+  "16": [
+   "0cb3791c7041e010",
+   "50faeb2e46aed571",
+   "663aa510d2745aae",
+   "6697976fdfd2ed53",
+   "7593e6b4e5ffab34",
+   "9778ef8f964aca30",
+   "e48189d7f6ba9399",
+   "efd451fd26251d51"
+  ],
+  "24": [
+   "1263feefffb1b552",
+   "153739c500f1a88c",
+   "1a1086766367bea5",
+   "1f493c60d6c45b37",
+   "2379a54fce4c718b",
+   "2d55280b1611f2de",
+   "346090189701e1e4",
+   "34a3c6b23904dba8",
+   "35f87df6d832399e",
+   "386ec6a899ec31de",
+   "429a361e53ba60bf",
+   "5432289943f9fa42",
+   "5646a18646c36306",
+   "574ff2140f4fd052",
+   "588ee6ebd5cc4d6e",
+   "6dfc38661dad2f1c",
+   "89268c30664b1ab2",
+   "8c8da1b74d34d1e3",
+   "93c1a3f1bf819d8c",
+   "9dca088c0a9688c9",
+   "a497b30aab0f522d",
+   "a6039abbed05357c",
+   "aaef4eb7f6de3d0b",
+   "b1537079083af3dc",
+   "be5090eb1df3dcdd",
+   "c385df8e1919dadb",
+   "c5ecbf96362e8549",
+   "cee9179d8253ccfe",
+   "d954006af51a422f",
+   "da1131a68e6924ae",
+   "dc3fced8ef423f48",
+   "e5231e1381d25aff",
+   "e5c8fc30d17fb83e",
+   "ef52a347dc5ca226",
+   "ff4d3fce110eb9df",
+   "ff58074aec74fa41"
+  ],
+  "32": [
+   "25944b95998644f5",
+   "8a76c062828f4f83"
+  ],
+  "48": [
+   "11275899b28b019f",
+   "14a240cf9fa87935",
+   "174d25253f44783c",
+   "269424bfc2e00ed7",
+   "2b83a7b6e01461dd",
+   "368159252382c5cb",
+   "6030abd39c659d75",
+   "60d6a0dbc10aa78c",
+   "bc75e7da13a3a88e",
+   "e0840154c2e91305",
+   "e40fd9d97eb0502e",
+   "f0bcacf7ed7575c5"
+  ]
+ }
+}

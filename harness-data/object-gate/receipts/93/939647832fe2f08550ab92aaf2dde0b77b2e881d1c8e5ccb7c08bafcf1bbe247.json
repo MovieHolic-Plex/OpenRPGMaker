@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "939647832fe2f08550ab92aaf2dde0b77b2e881d1c8e5ccb7c08bafcf1bbe247",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "prehistoric stone-age stone table",
+ "label": "prehistoric/ph-stone-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone slab tabletop on stone legs",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone tabletop surface is clearly visible from above across rows 2-9 (about 8 rows deep), with items resting on top, while row 10 and the legs beneath depict the south-facing front edge and supports.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4808
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone slab tabletop on stone legs",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone tabletop clearly displays its foreshortened top surface across rows 2–8 with objects (cloth and bones) resting on it, followed by a shaded south-facing front slab edge (rows 9–10) and legs (rows 10–14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5204
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone slab table top on stone legs",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the stone table is clearly visible from row 1 down to approximately row 8 (around 7-8 pixel rows), displaying items on it, with the front vertical edge and legs visible below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4463
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone slab tabletop on thick stone legs",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone table surface occupies rows 1 to 9, displaying items lying on top in 3/4 perspective, with the front thickness of the slab and legs visible below from row 9 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6536
+  }
+ ],
+ "decidedAt": "2026-10-14T00:39:52.944Z",
+ "cells": {
+  "16": [
+   "bc619cde722a5001",
+   "cf64a69749ace02d"
+  ],
+  "24": [
+   "16daefb6156b2248",
+   "33f1f375bcb06d2c",
+   "3b1784f967a140cc",
+   "56ce5f4cfcf66bc4",
+   "5ab65fb6d09d1f54",
+   "64f18ca3069e738d",
+   "808b7b9ec718f883",
+   "a1ecc33d146093a0",
+   "bb17e6a28c378ec9",
+   "ca4d888a19fcd550",
+   "d48ebcee3e9c96a5",
+   "d94179fb7e4aeb17"
+  ],
+  "32": [
+   "14fcd3a91c4beb44",
+   "181c7b89cb8289d7"
+  ],
+  "48": [
+   "2e062ceeacbbcd26",
+   "4549d77b9fda4435",
+   "5e789825b1874c55",
+   "9e74f1f1e63d4119",
+   "a313f4fdaaa5c750",
+   "b354b12c1e227bef"
+  ]
+ }
+}

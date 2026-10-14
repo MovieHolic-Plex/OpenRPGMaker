@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "655f283af9e76c57103ea56b7732832b7519627bb2184903087d7f6b186a1d9e",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "츠쿠바이(낮은 돌 물그릇 + 대롱)",
+ "label": "sengoku-edo/se-tsukubai",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone water basin (tsukubai)",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basin opening showing the water surface inside spans rows 5 through 10 (6 rows tall), with the front stone wall visible below it on rows 11-12, creating the correct 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5576
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone water basin (tsukubai)",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basin opening with blue water is viewed clearly from above across rows 5-10, with the front stone wall visible below it on rows 11-12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3933
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone water basin",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basin interior filled with water is viewed from above across rows 5 to 10 (6 rows tall), with the south stone wall visible below on rows 11 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4623
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone water basin",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone basin opening containing water is clearly visible as an ellipse viewed from above across rows 5-10, with the front wall of the basin visible below on rows 11-12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5046
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.071Z",
+ "cells": {
+  "16": [
+   "2619f864e65880c1"
+  ],
+  "24": [
+   "07b17487d9951ec9",
+   "13f20745742e950a",
+   "27866a37e394b937",
+   "72c503257be3d301",
+   "a784a8c240769e58",
+   "e950b55808ac7255"
+  ],
+  "32": [
+   "32ae351f8fc8f279",
+   "8916e31e318dc3e1",
+   "967a7bf136553997",
+   "ada9a570fc7ea596",
+   "b65fada77603e735",
+   "d5e84124a11efc93"
+  ],
+  "48": [
+   "54e74f35fa19eac6",
+   "89a61aaba85c1022",
+   "90935c5aa7ab4576",
+   "9a61f13f5419789f",
+   "9ec219ac1ac20b58",
+   "b58708699cc1c397"
+  ]
+ }
+}

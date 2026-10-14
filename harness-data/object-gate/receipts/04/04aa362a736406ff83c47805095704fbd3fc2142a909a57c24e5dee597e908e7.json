@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "04aa362a736406ff83c47805095704fbd3fc2142a909a57c24e5dee597e908e7",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "냉동 수면 포드(상자 몸체 + 윗면 유리 뚜껑 + 안의 형체 없는 안개)",
+ "label": "sf-station/sf-cryo-pod",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cryosleep pod",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pod is viewed in 3/4 perspective with a 15-pixel-tall top surface (rows 2-16) featuring a framed glass lid, and a 15-pixel-tall front south face (rows 17-31) with a control panel and status lights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7461
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cryo sleep pod (box-style bed with top glass lid)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface (rows 2-17, 16px tall) is clearly visible from above, rendered brightly lit and housing the framed glass lid showing the interior fog, while the south face (rows 18-31, 14px tall) displays the darker front panel with status lights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 16053
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cryo sleep pod cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pod is rendered as a flat, upright vertical cabinet viewed directly from the front (glass viewing window on the upper half, control buttons and lower vent on the bottom half). The horizontal top surface/roof of the unit is completely missing (0px).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 14063
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cryo sleep pod",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a horizontal cryo pod lying on the floor: rows 2-17 depict the top surface (glass lid showing interior mist framed in white), while rows 18-31 depict the south vertical front face with status lights and control panels.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7519
+  }
+ ],
+ "decidedAt": "2026-10-13T15:26:40.169Z",
+ "cells": {
+  "16": [
+   "58d3c436393c557d",
+   "b30a63f70cd9486a"
+  ],
+  "24": [
+   "200e2e61e9950ab3",
+   "3ac7e9258560708f",
+   "406b5b6bcdf05111",
+   "48413e9059112aa2",
+   "54b9afa0777793e0",
+   "5929b24fec87af9e",
+   "5e406c195093e579",
+   "86eac5b45f4b140f",
+   "c517b27e143c2c49",
+   "d6c77a5e3fa7b71f",
+   "eb51b4780a076afb",
+   "ee2877f60260e3bc"
+  ],
+  "32": [
+   "0cc97ec7c328143f",
+   "3e1e13ac5d9cd861",
+   "55555ddcd75c074e"
+  ],
+  "48": [
+   "44032ab800f449ec",
+   "4bf3a1e60b59def2",
+   "4dab348a27b96aa6",
+   "6e86cc2258c0642d",
+   "a2ea2b35e962602d",
+   "b59124433ec82f5b"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4a5fddd4d880a6108c6b97931c00e6610f6d31b96f0fed739779b9aee0f1150c",
+ "width": 16,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "prehistoric stone-age quern",
+ "label": "prehistoric/ph-quern",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone quern basin",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The quern shows an elliptical bowl/depression seen from above (rows 4-8) with foreshortened rim and front face curving down to row 13, matching proper 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4823
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone quern basin",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The quern shows an elliptical hollow depression spanning rows 5-8 (4 rows tall) and a clearly foreshortened top rim, with the south front face extending down to row 13 in proper 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4712
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone quern basin",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The quern is shown from a proper 3/4 top-down angle, displaying the wide top rim and a 4-row deep grinding hollow/depression (rows 5-8) above the south front face (rows 9-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4332
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone quern (grinding stone basin)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The quern shows an elliptical depression/hollow basin from row 4 to row 7 (4 rows tall) and a clearly foreshortened top rim, followed by a south-facing front wall from row 8 to row 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4910
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.803Z",
+ "cells": {
+  "16": [
+   "8d89154edf68241a"
+  ],
+  "24": [
+   "41b58f17718e2517",
+   "48ac218f0b6e9391",
+   "96d02c09b7e60d0e",
+   "97b8d35c970ecdb0",
+   "b742a05e28419dd6",
+   "f132c9a46ec3fc42"
+  ],
+  "32": [
+   "1746116eb746070f",
+   "465939de23016f5f",
+   "4e62d7f9648a0d66",
+   "5ed0f981d07fcdad",
+   "a1ed5e9146948826",
+   "aded4067ac3ded77"
+  ],
+  "48": [
+   "027b1cb7932adc13",
+   "07c183dbd1f37948",
+   "1ef1f1e506c421ed",
+   "bb853da7dec5b0a1",
+   "e07fd223be7f2421",
+   "e7c688eebd2dc479"
+  ]
+ }
+}

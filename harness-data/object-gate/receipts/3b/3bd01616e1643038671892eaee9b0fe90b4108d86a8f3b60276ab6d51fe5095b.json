@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3bd01616e1643038671892eaee9b0fe90b4108d86a8f3b60276ab6d51fe5095b",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "treasure cave entrance in a rocky mound with dark arched mouth, vines and skull marker",
+ "label": "pirate-isles/pi-cave-entrance",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rocky mound cave entrance with green mossy crown",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the rocky mound features a rounded, foreshortened green mossy crown spanning rows 2 to 13 (~11 rows) visible from above in 3/4 perspective, transitioning into the vertical rock face and cave mouth below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9623
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rocky mound with cave entrance",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the rocky mound features a clear 10-row foreshortened green moss/foliage cap (rows 4-13) demonstrating the 3/4 top-down viewing angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8255
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rocky mound cave entrance",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rocky mound features a clearly visible foreshortened top surface covered in green foliage spanning rows 4 to 14 (approx. 11 rows), establishing the 3/4 overhead perspective above the arched cave mouth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7651
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rocky mound with arched cave entrance",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rocky mound features a clear, foreshortened top surface covered in green vegetation spanning roughly 11 pixel rows (rows 3-14) above the vertical rock face and cave mouth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7730
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.702Z",
+ "cells": {
+  "16": [
+   "114a1d36c519d6a2",
+   "13901fa346011497",
+   "53d26f7946dd57db",
+   "642fa8c2e2225e01",
+   "6b6a2f4a0067fc54",
+   "9d7d2421e31ec480",
+   "9d99ce01d0e75e76",
+   "aa221ee890a39ba3",
+   "cb2c9dfc9edfff90"
+  ],
+  "24": [
+   "0d64c35db5cb9834",
+   "2305cc8288d76c66",
+   "60f215c7ecfda1be",
+   "c5fe42fea23920e7"
+  ],
+  "32": [
+   "0b53afb89533fef7",
+   "1239a6bcec23f2a0",
+   "2d0689b5227e0f1d",
+   "2dc8219b4894db49",
+   "2dd59ce11ee78810",
+   "31af0c0b98e02dd0",
+   "3bf562a4e5418401",
+   "42c80c4182eb5336",
+   "48f1f85cd5e129c0",
+   "688e7898beddc528",
+   "6b565c4779336ef6",
+   "7cafda39e97c2b6d",
+   "8776474f40edf31b",
+   "98183f7baa8dce27",
+   "b82d6796c2c3f376",
+   "ba5d8702b0829e6c",
+   "bb336bb8ef7aa802",
+   "cbc5f5fdcac2ece0",
+   "d145af873990e0ba",
+   "e480bd9693abc8cd",
+   "e717f76cdd70bc86",
+   "eb9a5b2577bf8182",
+   "ec5313387ddd12c2",
+   "ece623fd8766ea95"
+  ],
+  "48": [
+   "ae780038aab0818e"
+  ]
+ }
+}

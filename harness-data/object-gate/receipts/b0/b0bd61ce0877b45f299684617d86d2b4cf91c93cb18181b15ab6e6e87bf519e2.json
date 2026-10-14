@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b0bd61ce0877b45f299684617d86d2b4cf91c93cb18181b15ab6e6e87bf519e2",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "수위실(작은 초소)",
+ "label": "modern-campus/mc-guard-booth",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "small guardhouse / security booth building",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building is drawn in pure 2D front elevation with perfectly horizontal stripes, window, and door. There is no visible top surface or slope to the roof or overhang (only a 1px outline at row 2 above the flat fascia).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12011
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "guardhouse booth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat architectural front elevation with no visible roof surface or top plane; the upper section (rows 3-13) forms a vertical flat fascia/signboard rather than a foreshortened top roof surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5078
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "guard booth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure architectural front elevation. The upper section (rows 4-14) depicts the front fascia/sign band of the canopy/roof with a blue stripe, rather than showing a foreshortened top surface of the roof. There is no visible top surface anywhere on the building.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10849
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "guard booth structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire guard booth is drawn as a flat architectural front elevation within a rectangular outline. Rows 3-13 depict a front-facing fascia/awning band above the window and door, with no visible top surface or slope of the roof.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6305
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.872Z",
+ "cells": {
+  "16": [
+   "496c5adadf293b39",
+   "646f2c1519bed14e",
+   "8dbd32b100d9e05d",
+   "9cc87ebbc98344bb",
+   "9f1819228fc56c39",
+   "b03a444c120e641c"
+  ],
+  "24": [
+   "00e3e68c0ed4a307",
+   "06d7d69ea1126374",
+   "35c1f8000ae1807b",
+   "4ea5ae50f3b6b15b",
+   "80ef64e4a1190bbc",
+   "8f0629b7106bba68",
+   "9fa5796ecc3c99fa",
+   "a7fadb173ff2e519",
+   "ae23e86326902c76",
+   "b916209ad63b31c2",
+   "e10dfa2cfddb0167",
+   "f701cb6d5070edd8"
+  ],
+  "32": [
+   "30011e67e8ccabb7",
+   "354b217f8acf0b3a",
+   "d7d600992b2bfce4",
+   "f01aa189ef1e4270"
+  ],
+  "48": [
+   "6e44aa2150daeaf8",
+   "e0426049a65d329b",
+   "f5852142fb66be93"
+  ]
+ }
+}

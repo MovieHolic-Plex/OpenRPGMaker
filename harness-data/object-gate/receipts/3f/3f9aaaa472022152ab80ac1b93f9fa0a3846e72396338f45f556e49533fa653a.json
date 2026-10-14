@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3f9aaaa472022152ab80ac1b93f9fa0a3846e72396338f45f556e49533fa653a",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "선술집 둥근 탁자(잔·촛불)",
+ "label": "steampunk-city/sp-tavern-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round tabletop with pedestal base",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round tabletop is rendered as an ellipse seen from 3/4 perspective spanning roughly rows 3-15 (13 pixel rows) with cups and a candle placed on it, above a central pedestal leg and base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4725
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round tabletop on central pedestal and base",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round tabletop is drawn as a wide foreshortened ellipse spanning roughly rows 3-16 (~14 rows of visible top surface holding mugs and a candle) above a central leg and base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4654
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round tabletop on pedestal base",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round tabletop is rendered as a foreshortened ellipse showing ample top surface (rows 3 to 16) with mugs and a candle placed on it, supported by a central leg and base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5005
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round wooden tabletop on a central pedestal base",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round tabletop is rendered as a foreshortened ellipse spanning rows 3 to 17, providing a clear top surface supporting mugs and a candle in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4668
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.469Z",
+ "cells": {
+  "16": [
+   "29edcfb54540592d",
+   "6388d5a2a698e4d4",
+   "c202b4329ec895d5",
+   "f91ea9415c048cc5"
+  ],
+  "24": [
+   "1542fb2bf7a43c6d",
+   "1b3ffa74c3577f0d",
+   "1c9de082f9578944",
+   "22c65982cbdb6baf",
+   "3f3880590238a3f4",
+   "43121fc5a08836e7",
+   "79fba9505fcaf16d",
+   "8537f91884e5746b",
+   "879743c705f5567a",
+   "897c28613b0549ab",
+   "8d3d88a826a6d36f",
+   "a53209fe665aa444",
+   "b6d3b18cac25bff0",
+   "b9719aa80c162988",
+   "bde88649a73b95d5",
+   "c547b53855f89eb6",
+   "caa2375412609727",
+   "d0304d242a0f0dc2",
+   "e6b658d3080aa29d",
+   "f170862cff9d7bc1",
+   "f6fd64e3504b081b",
+   "fd366d5ddc53216c"
+  ],
+  "32": [
+   "2a6057c60b0e3c27"
+  ],
+  "48": [
+   "32fc232af266d8db",
+   "5f91ad7337fc0af3",
+   "676aa55373089767",
+   "855904c1310fb975",
+   "abd2a8a234883f3b",
+   "eceebfba96518396"
+  ]
+ }
+}

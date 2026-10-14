@@ -5,6 +5,39 @@
 
 <!-- releases -->
 
+## 0.208.0 — 2026-10-14
+
+### 기능
+
+- **gothic** — build_gothic_place hands out create_transfer_pair endpoints and keeps doors linked on rebuild (`cf76698`)
+- **gothic-manor** — reference documents (gm-*), route horror/graveyard/gallery to build_gothic_place, drop old interior draft set (`594c1f7`)
+- **gothic-manor** — wire bundled tileset, outdoor composer + build_gothic_place tool, QA improvement pass (`7877cbd`)
+
+### 수정
+
+- **gothic** — place builder meets the assistant layout-quality limits as built (clearing fill, smaller default rooms, seed probe) (`f964827`)
+
+### 문서
+
+- **gothic** — assistant real-run scores and the place-builder linking contract (`b25dff0`)
+
+### 기타
+
+- **gothic-manor** — gate-clean redraw (166 pieces), bake sheet+tileset+room spec, drop gate failures (`3587240`)
+- **gothic-manor** — redraw engine (gmlib/gmdraw), buildings, graveyard, terrain first pass (`8c6fb34`)
+
+## 0.207.4 — 2026-10-14
+
+### 수정
+
+- **ci** — give the geography raster page the test's own time budget (`1dc9e7e`)
+
+## 0.207.3 — 2026-10-14
+
+### 수정
+
+- **ci** — install Playwright before the browser gate (`b6e0594`)
+
 ## 0.207.2 — 2026-10-14
 
 ### 수정

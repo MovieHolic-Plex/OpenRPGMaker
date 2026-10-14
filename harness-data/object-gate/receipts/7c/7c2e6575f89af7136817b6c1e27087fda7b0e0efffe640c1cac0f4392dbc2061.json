@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7c2e6575f89af7136817b6c1e27087fda7b0e0efffe640c1cac0f4392dbc2061",
+ "width": 16,
+ "height": 32,
+ "kind": "round_body",
+ "name": "나무 통 하나",
+ "label": "steampunk-city/sp-barrel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrel is rendered in pure front elevation: all horizontal bands, rims, and the base (rows 16, 27, 29-30) are completely flat, straight horizontal lines with no elliptical curvature or visible top surface from the 3/4 camera angle. The upper section (rows 10-15) is drawn as an upright arch/dome in side profile rather than an ellipse seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11323
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden barrel / cask",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn in pure front elevation: the bottom rim, base, and metal hoops are perfectly straight horizontal lines with no 3/4 downward curvature, and the top is rendered as a vertical dome/arch profile rather than an elliptical horizontal surface seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10282
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "barrel / cask",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrel is drawn in pure front elevation: the metal hoops (rows 16 and 27) and the bottom base edge (row 29) are straight horizontal lines rather than elliptical arcs, and the top features a front-facing domed lid with a knob rather than a foreshortened top cap viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 15033
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrel is drawn in pure front elevation: all rims, metal bands, and base lines are completely flat horizontal lines with no elliptical curvature, and the top lid/contents are drawn in front profile rather than foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7119
+  }
+ ],
+ "decidedAt": "2026-10-13T18:16:30.908Z",
+ "cells": {
+  "16": [
+   "9899ec1a9dd29d4c",
+   "defc7ae45dcb2291"
+  ],
+  "24": [
+   "0b9c6deedce0c3ac",
+   "442ff763e03e7bb5",
+   "59825bc273a23624",
+   "affdd2a665f4bb35",
+   "baff9bccacc848ff",
+   "c0ecbb08f2cccd9f",
+   "d157dbbd5f7313bc",
+   "dab478101ef5bc07",
+   "dcb4f5930781d688"
+  ],
+  "32": [
+   "2475c74316fa96a7",
+   "71f04f60fd5d7664",
+   "8df07079c2a5f4e1"
+  ],
+  "48": [
+   "18625ade3bf7cc1a",
+   "484a7767e0c1a44d",
+   "8cb61c4e583939a0",
+   "944addd61e9d2cbd",
+   "968de43f3b3306af",
+   "ab54af9a835bcc3a"
+  ]
+ }
+}

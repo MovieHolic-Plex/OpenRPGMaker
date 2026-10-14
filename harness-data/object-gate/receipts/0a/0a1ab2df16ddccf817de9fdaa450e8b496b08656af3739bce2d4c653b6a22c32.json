@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0a1ab2df16ddccf817de9fdaa450e8b496b08656af3739bce2d4c653b6a22c32",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "부두 끝(판자 앞면 + 물 위 말뚝)",
+ "label": "steampunk-city/sp-deck-edge",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pier edge with wooden deck and water pilings",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-6 depict the horizontal wooden deck surface seen from above, rows 7-9 show the pier edge front face, and rows 10-15 show the pilings submerged in water.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3550
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pier end with deck planks, front rim, and stilts in water",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-6 show the horizontal top deck planks with nails foreshortened in 3/4 view, followed by the front edge fascia (rows 7-9) and stilts descending into water (rows 10-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3703
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pier edge over water (dock planks, front beam, and pilings)",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-6 show the horizontal top deck of the pier with plank seams and nails (7 rows tall), rows 7-9 show the vertical front face/beam, and rows 10-15 show water with support pilings.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10263
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pier edge with deck planks and pilings over water",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-6 show the horizontal wooden plank deck (7 rows of top surface), rows 7-9 show the front edge beam, and rows 10-15 show the pilings submerged in water.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4418
+  }
+ ],
+ "decidedAt": "2026-10-13T18:45:40.070Z",
+ "cells": {
+  "16": [
+   "0cb94f4ae38cc075"
+  ],
+  "24": [
+   "629f1e9512e8277e",
+   "81446896bcdd03fa",
+   "a231f451b13971bc",
+   "b11e0b176745b425",
+   "e3d4e63469244c31",
+   "e83c6a2442811990"
+  ],
+  "32": [
+   "23b9e967dd5a2035",
+   "2e8dfa9040ee7aaa",
+   "60ec33ac1826655f",
+   "733da9be02db35ea",
+   "8be71062d32c604a",
+   "cf42b7cf84849e15"
+  ],
+  "48": [
+   "37d18c0fae480f89",
+   "5fdca93c678f3e3c",
+   "6d757bcfd1f9e357",
+   "7388fec93f9541b4",
+   "7e0cefcfeae9eb91",
+   "df01f746482ace0a"
+  ]
+ }
+}

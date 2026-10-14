@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d669204606a4bdf5af9e92ece96b6f685a7bc4b9e310d4482cbb388d4c602e94",
+ "width": 64,
+ "height": 16,
+ "kind": "terrain",
+ "name": "deep space void with scattered stars, four variants",
+ "label": "sf-station/sf-void-star",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "space void tiles with scattered stars",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Four 16x16 terrain tiles representing a deep space void background with scattered star pixels. Terrain tiles are flat surfaces viewable from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3842
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "space void terrain surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Four 16x16 terrain tiles depicting deep space with scattered star pixels. As flat terrain/void, the entire 16-row surface represents the walkable or background plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3243
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "space void terrain tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Four 16x16 terrain tiles representing a deep space void with subtle nebulous patches and scattered stars, suitable as background or floor terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3738
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "space void terrain tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Four 16x16 variants of flat deep space terrain tiles with subtle nebula patches and scattered stars; correctly treated as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5477
+  }
+ ],
+ "decidedAt": "2026-10-13T15:26:41.508Z",
+ "cells": {
+  "16": [
+   "49d87fa67c575807",
+   "74c911d0ebacd8bb",
+   "b4951d9eecb2b2c2",
+   "bc608223d726fe78"
+  ],
+  "24": [
+   "0dc0ee44a93331f9",
+   "221b700254414ea9",
+   "3274aab1a676a366",
+   "37443e4b1cd9999e",
+   "3b4d345d300a951f",
+   "61b70f17e7c5e78d",
+   "7eda3d0c5815d783",
+   "803e53e5843bf9ab",
+   "8e4199bf786ac3fe",
+   "90b6a8e5b04265f8",
+   "a866f66e2e56b0f1",
+   "b37af87178d3ab96",
+   "b8d8293bd3fc24be",
+   "bc4d249351d0c93c",
+   "c3be7ea19089aac0",
+   "d6a893a6af26fe44",
+   "ddd187bfbb338ec5",
+   "fff356a1c72fd6d7"
+  ],
+  "32": [
+   "0bd5488614c2f957",
+   "44f87674b5f1d47f",
+   "b7f165c8ce8fc872",
+   "ec704ef828b9f8e3"
+  ],
+  "48": [
+   "06fbb0167f0c6efe",
+   "2838b67ae64005d4",
+   "2e752f30022724fa",
+   "31576b57fab7efed",
+   "4583290bba9c3824",
+   "473696929f861dc4",
+   "5369b7628a935890",
+   "5a409c928cfe10e2",
+   "7cafc8200b4072eb",
+   "a37e672296139b6f",
+   "c6177e52c5ca5ade",
+   "d1ac7fb753484fdd"
+  ]
+ }
+}

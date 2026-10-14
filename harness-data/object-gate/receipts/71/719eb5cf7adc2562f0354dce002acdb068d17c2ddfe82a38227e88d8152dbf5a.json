@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "719eb5cf7adc2562f0354dce002acdb068d17c2ddfe82a38227e88d8152dbf5a",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "나무 십자가 무덤",
+ "label": "gothic_manor/gm-cross-wood",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden cross",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The upright post extends to the top of the sprite without showing any horizontal top surface or cut face. The horizontal arms are shaded with a flat vertical light gradient rather than distinct top and front planes, resulting in a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10343
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden cross",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden cross is drawn in pure front elevation; the vertical post is cropped at the top border with no top cut face shown, and the cross arms have only a 1-2px gradient highlight rather than a clearly rendered top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 21254
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden cross grave marker",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden cross is drawn in pure 2D front elevation. The vertical post extends to the top of the canvas without any visible top cut face, and the horizontal crossbeam only has simple vertical gradient shading rather than defined 3D top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12085
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden cross",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cross beams are drawn in pure front elevation without any visible top surface or cut face on either the vertical post or the horizontal crossbar; the lighter coloring is simply top-down lighting on the front face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6130
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:15.455Z",
+ "cells": {
+  "16": [
+   "cff89035b6902fad"
+  ],
+  "24": [
+   "02c21131531da8d7",
+   "0c74e6d83581df90",
+   "519519a928450073",
+   "66d4c924df72afbd",
+   "94c066dec2b52273",
+   "fabc460895f774e2"
+  ],
+  "32": [
+   "5b11ebfe367c14a6",
+   "9201dd367c87c43f",
+   "a063e62481ea232a",
+   "aebf82359985b1c2",
+   "b76b38275dcafe11",
+   "c36bc88149a1c5e0"
+  ],
+  "48": [
+   "6dc676e51ed93693",
+   "a306853a24e79410",
+   "bb01bc1cc8891ac9",
+   "c406948ef95e232e",
+   "df8ba920c42ac787",
+   "e35af2b02f315d7e"
+  ]
+ }
+}

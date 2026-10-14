@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "899ddf0ccacf74622071a28401405f38d27d9b823aebc6e58dd19587ee566965",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "navy studded rubber crew quarters floor, two variants",
+ "label": "sf-station/sf-crew-floor",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "studded rubber floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain floor tiles representing studded rubber flooring viewed directly from above in standard top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3705
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "studded rubber floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tiles depicting navy studded rubber crew quarters flooring in two tile variants.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3943
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "studded rubber floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tiles viewed from above with small circular studs with cast shadows across the entire surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3623
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "studded floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles depicted from top-down perspective showing studded rubber pattern across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4080
+  }
+ ],
+ "decidedAt": "2026-10-13T16:10:30.407Z",
+ "cells": {
+  "16": [
+   "1051ffb0c390719a",
+   "d0bf174573747b02"
+  ],
+  "24": [
+   "127d2abce14c27bf",
+   "1ecbb4909cfa65ea",
+   "2f01aad4f08fb4c6",
+   "2f95f2162a408181",
+   "4f16ba61959623d9",
+   "544054a537519148",
+   "6ec7567782e232d9",
+   "7744d65f710975e5",
+   "c049ca7ff2483be3",
+   "cec9cc98a5c58465",
+   "f66dc8791ae7d5dd",
+   "fe7ade9ac2b032da"
+  ],
+  "32": [
+   "37309cd710a9f123",
+   "845e082f81dab977"
+  ],
+  "48": [
+   "336859ccef015479",
+   "51474bfb17757218",
+   "893c6dd2f25a2e69",
+   "9b7c0b14b262b228",
+   "ac8611ffaf0d9f4c",
+   "f7749442568f565f"
+  ]
+ }
+}

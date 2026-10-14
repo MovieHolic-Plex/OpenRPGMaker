@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2531a9c0400249c6ad64bb39368d35c59efbeb2bdfa9dc96d7abdd427eba68ff",
+ "width": 64,
+ "height": 32,
+ "kind": "other",
+ "name": "짐배(쌀섬·지붕 덮은 목선, 물 위)",
+ "label": "sengoku-edo/se-boat-cargo",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden cargo boat with deck, rice sacks, and covered shelter",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The boat's wooden deck is extensively visible from above across rows 12-27 (~16 rows of top horizontal surface). Both the cargo sacks and the straw-covered shelter clearly exhibit top surfaces (rows 14-16 for sacks, rows 3-6 for the shelter roof) conforming to the standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5677
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden cargo boat with deck, thatched shelter, and cargo sacks",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden deck is extensively foreshortened and visible from above across rows 11-28. Both the thatched roof structure and the cargo sacks also show top surfaces (rows 3-5 for the roof, rows 13-15 for the sacks) above their front-facing surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8955
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden cargo boat with deck, shelter, and cargo",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cargo boat is viewed from a top-down 3/4 angle, displaying an expansive foreshortened deck top surface spanning rows 12 to 28 (~16 rows tall) along with foreshortened tops on the cargo sacks and roof shelter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7661
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cargo boat with covered cabin and deck",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabin roof shows its top surface across rows 3-5 (3 source pixels tall) above its south wall (rows 6-18), and the boat deck provides an extensive top-down horizontal surface (rows 12-28) alongside foreshortened cargo sacks.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6553
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.072Z",
+ "cells": {
+  "16": [
+   "2bc5ea5cd4729f84",
+   "311b236d672105cf",
+   "4a4c4f65aa858f8f",
+   "4a790dc90148a426",
+   "54c02bd241700b0c",
+   "7476b6fd73910c46",
+   "810202000f8ca2ae",
+   "e3bb5af9a341465a"
+  ],
+  "24": [
+   "0db710f0d353b498",
+   "179bc917c1408821",
+   "2561abaf34107cb0",
+   "33d0b4b3f9cef0a5",
+   "36b3acb3d9f8c06e",
+   "38fdcf3634326eea",
+   "40c70f5560977f3f",
+   "41a8f375198ed16f",
+   "61082fd6413c2fc1",
+   "66b05a1e69598b18",
+   "790d461c0179a451",
+   "83b5c75ff4b8243f",
+   "89b7af612ef26bf6",
+   "8beda5fb9bce6d54",
+   "96c37000caae18c0",
+   "970cf5b70649a647",
+   "9a6c0edf5884c9e6",
+   "9b9a7eeeaacd3f41",
+   "a2877bf9fe794761",
+   "a7a1bfd723381d6c",
+   "a7bbf4fe759b0670",
+   "b84311bb9c28a651",
+   "c2a45b44d68285d6",
+   "c49eb4f5a714210f",
+   "dbc0b0cd7ae74432",
+   "dd7cb4b2a8b07844",
+   "e096663261796489",
+   "e1125a1e614b1a1a",
+   "e2e18e9a4f3947e8",
+   "e76865bb591422ba",
+   "e8163d7b516e7782",
+   "f4fd6d06b2a7dcc7",
+   "f6831491f7891ea9"
+  ],
+  "32": [
+   "48332def0fe10536",
+   "a5e5669344e840c9"
+  ],
+  "48": [
+   "1570120a5dd54c63",
+   "2d670e11240352dc",
+   "6521ca2750b88fb5",
+   "6f19919f0dcc1ff8",
+   "70dd3065df2779b3",
+   "78ec0b3ef81623f4",
+   "c503278f98432c73",
+   "c6a96d92788d6f04",
+   "cae68f853e59ae24",
+   "cf5a20e1e6bd2e27",
+   "e4c1561959dce6de",
+   "ed7cbcc7d30ed379"
+  ]
+ }
+}

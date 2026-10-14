@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "acfbd252adf4aa7c6f4f5e4230075507478485205fd243a352c5ab1bc79934ff",
+ "width": 16,
+ "height": 32,
+ "kind": "frame",
+ "name": "rack of leaning oars and a paddle",
+ "label": "pirate-isles/pi-oar-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden rack with top beam, vertical shafts/oars, and bottom base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "While the bottom base shows a 3-row foreshortened top surface (rows 22-24), the top horizontal beam (rows 1-6) is drawn in pure front elevation with vertical patterning running down its south face and only a 1px edge highlight on row 1, showing no top face as required for horizontal beams in rack frames.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "윗면 0행 < 3"
+   ],
+   "ms": 15354
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rack / oar frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top structure/beam of the rack (rows 0-6) is drawn as a flat front rectangle with 0 rows of visible top surface. The vertical members and overall silhouette are rendered in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9134
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rack frame with base and top beam",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The base at the bottom shows a 3-row top surface (rows 22-24), but the upper horizontal section (rows 0-6) is rendered in pure front elevation with vertical shading bands running straight to the top black outline without any top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6679
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rack base and top frame / oar blades",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "While the bottom base shows a 3-row top surface (rows 22-24), the top structure (rows 0-6) is drawn in pure front elevation with completely flat vertical bands and 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12191
+  }
+ ],
+ "decidedAt": "2026-10-13T19:19:03.413Z",
+ "cells": {
+  "16": [
+   "46df389f0909e199",
+   "9a4d212d7c5a6de3"
+  ],
+  "24": [
+   "063c50837bb74f92",
+   "0d119301b6051024",
+   "0f010e8f8f6f9498",
+   "22e718d942249783",
+   "23e9bd3af43f8e1a",
+   "2e664b2d87e56ae6",
+   "4090484871381487",
+   "70da6226d13ee5a7",
+   "78ace91bd93d71f1",
+   "7e8147d17edff1ae",
+   "c7aab7a077f976a0",
+   "e9b51bb625b9c89f"
+  ],
+  "32": [
+   "69e778ab1d0441c1",
+   "a039f58f2e4d608c",
+   "fa77243ba41472f8"
+  ],
+  "48": [
+   "2e217ed2cbf2f5ba",
+   "5e322086d88c6893",
+   "6da6f6c8a0a52882",
+   "7704081777bb1405",
+   "9cbb8827c5543484",
+   "cbd76dd080d0d65d"
+  ]
+ }
+}

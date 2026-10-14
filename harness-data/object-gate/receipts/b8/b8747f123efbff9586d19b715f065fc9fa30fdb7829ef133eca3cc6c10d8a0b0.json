@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b8747f123efbff9586d19b715f065fc9fa30fdb7829ef133eca3cc6c10d8a0b0",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass island edge tile against sky (terrain)",
+ "label": "sky-island/si-gs-sw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floating grass island edge with cliff face",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing top grass surface (rows 0-11) overhanging a front-facing cliff/dirt edge (rows 12-15) against sky background.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3617
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "floating grass island edge",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Tile shows a top-down ground surface of grass (rows 0-10) with an overhang leading into a vertical south-facing cliff/dirt wall (rows 11-15) against sky.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3517
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "floating grass island surface and front cliff edge",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-10 show the green top ground surface viewed from above, with rows 11-15 showing the south-facing dirt cliff face with grass overhang, appropriately rendered in top-down 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2833
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "floating grass island edge with cliff face",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing a top-down grass surface spanning rows 0-11 and a south-facing dirt cliff face below from row 11 to 15, correctly following 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3247
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.974Z",
+ "cells": {
+  "16": [
+   "5b64206d358d6d1e"
+  ],
+  "24": [
+   "0c7e56cf3f965945",
+   "12337e6c6ad5bddb",
+   "193fd99f309c0c21",
+   "23e7a6249b367780",
+   "2bf64b3c3d2ebe5b",
+   "913fa4f810cf55d1"
+  ],
+  "32": [
+   "496c0e81084e39d3",
+   "4d09420d4b91da83",
+   "5bc23e0295af3e0e",
+   "935ac5dfc3781452",
+   "df92628efe1a9a19",
+   "e6ed19fdb2f54df9"
+  ],
+  "48": [
+   "2944eff159e36354",
+   "7179ad53a75ac562",
+   "7b62789a0508c4dd",
+   "b2fd02b4ac871524",
+   "d870d58545bec4b3",
+   "dd3986cba661a2ea"
+  ]
+ }
+}

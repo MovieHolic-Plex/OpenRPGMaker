@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b6526b2f9666b963be1942f6008e624731efff0781906eeaf60254b9ef2a906f",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "wooden sky dock plank deck seen from above (flat walkway)",
+ "label": "sky-island/si-pier-se",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden dock plank deck",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The planks are seen from above across rows 0-11 (12 rows of top surface), with a southern edge/rim visible along rows 12-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3653
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden dock walkway with planks and front drop edge",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top walking surface spans rows 0-11 showing horizontal wooden planks seen from above, with a 3px south-facing edge visible at rows 12-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4339
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden dock plank walkway",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-11 depict the top surface of the horizontal wooden planks viewed from above, and rows 12-14 show the south front edge/thickness of the platform.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5340
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden dock plank walkway surface with front edge",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The dock plank surface is viewed from above across rows 0-11 (12 rows tall), terminating in a 3-row south-facing drop edge at rows 12-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3967
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.984Z",
+ "cells": {
+  "16": [
+   "4aa4773fc6d44077"
+  ],
+  "24": [
+   "3cba8320d9ef3542",
+   "85ea267abee8dd35",
+   "d81221a97838ffc1",
+   "eca2c31d545c92e4",
+   "ece2bd07322bf0f5",
+   "fc7db3f46a8dba72"
+  ],
+  "32": [
+   "35a20fa78fe9bb46",
+   "38711f2c81d826f5",
+   "3c16633712b01329",
+   "4a54d9a755f17e8b",
+   "9dbf68ef1ae4ec57",
+   "a8c193871ab97725"
+  ],
+  "48": [
+   "00fe0b646e3a507f",
+   "112396440beba9c5",
+   "5a6c3df17c4540a8",
+   "96842cf3c540750a",
+   "b9990e93148ed2fe",
+   "d944754424bb2557"
+  ]
+ }
+}

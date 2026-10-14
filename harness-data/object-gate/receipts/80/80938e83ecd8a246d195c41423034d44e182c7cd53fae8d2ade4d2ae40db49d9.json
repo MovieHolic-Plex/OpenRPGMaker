@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "80938e83ecd8a246d195c41423034d44e182c7cd53fae8d2ade4d2ae40db49d9",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "물가 돌 축대(동쪽 뭍)",
+ "label": "sengoku-edo/se-water-e",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water and stone bank terrain edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Water surface tile with wave highlights bordering a vertical stone embankment edge on the east; standard top-down terrain tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3122
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water and stone embankment terrain boundary",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting water with rippling waves meeting a stone embankment on the eastern edge. Correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4146
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water and stone embankment edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing water meeting an eastern stone bank, viewed from the standard top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4182
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water and stone embankment edge terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Water surface tile with east-side stone revetment border. Valid terrain transition tile viewed from standard top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3383
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.063Z",
+ "cells": {
+  "16": [
+   "f27328e712bcabe7"
+  ],
+  "24": [
+   "1e57ffa705d51d46",
+   "42f3819370ab8851",
+   "7a04769f2ccc2306",
+   "a02760e73c8bad82",
+   "a75f61d5f784a112",
+   "d00e3c49072cae2f"
+  ],
+  "32": [
+   "257500842e65a7f4",
+   "a62a9efd322efd5e",
+   "a9464702266b2b8c",
+   "b1dc5624c5fa1313",
+   "b434e34e83a5c73b",
+   "f01bcd14412b1f42"
+  ],
+  "48": [
+   "4d2a67851e6cb325",
+   "537a5405609f5c5d",
+   "7e1db2df0831b704",
+   "ae12da7c7283939e",
+   "b572a7780b82ecb0",
+   "f46e4be28338037b"
+  ]
+ }
+}

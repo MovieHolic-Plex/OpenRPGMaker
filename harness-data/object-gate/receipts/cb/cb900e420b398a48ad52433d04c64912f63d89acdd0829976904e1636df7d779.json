@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cb900e420b398a48ad52433d04c64912f63d89acdd0829976904e1636df7d779",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "승강장 끝(놋쇠 안전선 + 선로로 내려가는 벽)",
+ "label": "steampunk-city/sp-platform-edge",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "platform edge with safety line and drop-down wall",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Platform floor surface spans rows 0-8 including the yellow safety line and curb, dropping down to a vertical front-facing wall on rows 9-15; valid top-down terrain ledge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3550
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "platform edge and vertical drop to tracks",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Platform floor and brass safety line span rows 0-6 (7 rows visible from above), followed by a platform curb and a 6-7 row south-facing vertical wall down to the tracks.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3639
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "train platform edge with upper floor surface, brass safety strip, and vertical wall drop to track level",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-8 show the horizontal platform surface including the safety line and curb edge; rows 9-15 depict the vertical drop wall leading down to track level.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4539
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "platform ledge with safety line and wall drop",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Platform terrain tile showing top ground surface (rows 0-6 including yellow safety strip) transitioning into a south-facing wall drop (rows 7-15), standard 3/4 RPG cliff/ledge layout.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2857
+  }
+ ],
+ "decidedAt": "2026-10-13T18:27:58.053Z",
+ "cells": {
+  "16": [
+   "76d77c122bf9ccae"
+  ],
+  "24": [
+   "0ec44e9a1b3e7905",
+   "65e0d3ff19ed0312",
+   "738af02aefe329ab",
+   "7a078c4b8a4b2d7e",
+   "a9fee60217b497c6",
+   "c59a0dea52dd9315"
+  ],
+  "32": [
+   "06e3f885323c46a6",
+   "0a2154b58e798b65",
+   "1e9df74465690fb7",
+   "aa8e5f7968c60bfa",
+   "dde08413ee71018e",
+   "de7ad14c3d334f91"
+  ],
+  "48": [
+   "43d848a6f64191a6",
+   "83f07e9c53e4f725",
+   "a2661eac316ea08e",
+   "b14dfd382dc812eb",
+   "b36ae9e772a46863",
+   "e64db677f1fe025f"
+  ]
+ }
+}

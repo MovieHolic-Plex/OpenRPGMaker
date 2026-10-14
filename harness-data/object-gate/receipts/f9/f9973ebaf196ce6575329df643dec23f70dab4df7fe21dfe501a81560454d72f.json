@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f9973ebaf196ce6575329df643dec23f70dab4df7fe21dfe501a81560454d72f",
+ "width": 64,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grey moon regolith ground with pebbles and small craters, four variants",
+ "label": "sf-station/sf-regolith",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "regolith ground tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tiles depicting lunar regolith ground with pebbles and shallow circular craters lit from above; full 16-row ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5391
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grey moon regolith ground tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Four 16x16 flat ground terrain tiles showing lunar regolith surface with pebbles and small craters viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4556
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grey moon regolith ground tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain surface spanning all 16 rows, depicting lunar regolith ground with crater indentations and pebble texture.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7703
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "moon regolith ground tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Four 16x16 flat ground terrain tiles depicting grey lunar regolith with texture variations, pebbles, and small crater depressions viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4104
+  }
+ ],
+ "decidedAt": "2026-10-13T15:26:41.508Z",
+ "cells": {
+  "16": [
+   "1275976b069ca8df",
+   "781e29afae9d8e38",
+   "c8540fbba8ddeafb",
+   "d2eb747ac5a2f9c0"
+  ],
+  "24": [
+   "0683aa9507cf01c8",
+   "319c2f895f656a1d",
+   "3646f9d56c57c741",
+   "3e18adb5c2a11deb",
+   "41d9b754a42ba2fc",
+   "4a0050194ac4405b",
+   "636f80fb23696f5b",
+   "76bc24cedd9f7068",
+   "7792bedd4ff32ed3",
+   "8cc8a690863932ad",
+   "8dd4beda3243f804",
+   "c5b3737a9c1cdc6b",
+   "d29c1429f85b40be",
+   "d9b3e6ca7a0f8d9e",
+   "e22004da1a36c85b",
+   "f08be1bab41f636a",
+   "f4b5797c4b930fbf",
+   "f55165591f5e8a4c"
+  ],
+  "32": [
+   "6a8ba3a9de9bff6f",
+   "a377bb51b069cb0a",
+   "c69ff6794c47d422",
+   "d0a0203b30380e44"
+  ],
+  "48": [
+   "1f0079ac373fe0c9",
+   "3b46d6f49fe0da10",
+   "4c08f923cd261305",
+   "4e3df74aca0947c3",
+   "53662a0fb0fa359d",
+   "714a3a32c11ca346",
+   "789ab37871666819",
+   "7d0f407614380df1",
+   "81043588d318d92a",
+   "837313058b059a08",
+   "b0ece02bd28d0e15",
+   "fb94a3da30a33368"
+  ]
+ }
+}

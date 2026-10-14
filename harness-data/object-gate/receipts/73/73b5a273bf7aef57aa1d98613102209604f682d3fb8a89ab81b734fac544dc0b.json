@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "73b5a273bf7aef57aa1d98613102209604f682d3fb8a89ab81b734fac544dc0b",
+ "width": 96,
+ "height": 48,
+ "kind": "debris",
+ "name": "prehistoric stone-age longneck",
+ "label": "prehistoric/ph-longneck",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "standing dinosaur skeleton",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a fully assembled standing sauropod skeleton standing on legs, not scattered floor debris. It is drawn as a flat pure side elevation (side-scroller view) with zero visible top surface on the spine or ribcage.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 3527
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "standing sauropod dinosaur skeleton",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The dinosaur skeleton is standing upright rather than lying on the ground as debris, and is drawn in a pure 2D side-scroller profile/elevation view with 0 rows of visible top surface along the spine, head, or ribcage.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 4673
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "standing sauropod dinosaur skeleton",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The dinosaur skeleton is standing upright on legs rather than lying on the floor as debris, and it is drawn in a pure 2D side-profile elevation with 0 rows of visible top surfaces for the spine, head, or ribs.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 3376
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "standing dinosaur skeleton",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is an upright standing skeleton drawn in a pure side-profile elevation (like a side-scroller sprite) rather than scattered debris lying on the floor. No top-down perspective or top surfaces are shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 3068
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.805Z",
+ "cells": {
+  "16": [
+   "207fd9f33f064f82",
+   "26037737bfe92df0",
+   "2f40fdd2f4560ed2",
+   "3604eef2c5b12014",
+   "643a481aa2e48235",
+   "7c1453cda6d123a3",
+   "86be202fd25d7af5",
+   "985a3bbce36cdcd2",
+   "9c53dbb43fdd8a94",
+   "bdabef2525b0fc8c",
+   "d8a8c031449b9fd0",
+   "f373b7c5e93a0569",
+   "fc063629f8967083"
+  ],
+  "24": [
+   "332a29360df23288",
+   "633cb9b57821cf7e",
+   "9be594e0b7285894",
+   "c0ac56a20afbc434",
+   "cd92dbd809edc721",
+   "d25dc73ef21405be",
+   "e2febb3dd4cd3784"
+  ],
+  "32": [
+   "0ae62e325e50bc20",
+   "287c4a66bef0e26a",
+   "3f116b3caac95de9",
+   "47039ec34debcbc9",
+   "540503cf9a9d63df",
+   "811feba75e85a690",
+   "81c0dd5f7231daaa",
+   "98665e2b6dc37683",
+   "9f9176fb24d139cf",
+   "c91dff943f4f8c65"
+  ],
+  "48": [
+   "34e8766cd595c413",
+   "a980b06c9ff01b9b"
+  ]
+ }
+}

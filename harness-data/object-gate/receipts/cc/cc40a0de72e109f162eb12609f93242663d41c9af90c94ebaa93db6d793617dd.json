@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cc40a0de72e109f162eb12609f93242663d41c9af90c94ebaa93db6d793617dd",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "샤워 포드(윗면 샤워 머리 + 반투명 유리문 물줄기 + 배수 받침)",
+ "label": "sf-station/sf-shower-pod",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "shower pod",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-5 clearly show the top horizontal surface of the pod with an embedded shower fixture viewed from above, above the front glass door (rows 6-23) and base drain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6454
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "shower pod",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-5 clearly represent the top surface of the pod containing the overhead shower head assembly, providing a distinct 5-pixel-tall horizontal plane viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5695
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "shower pod",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shower pod is clearly visible at rows 1-5 (5 pixel rows tall) showing the top cap and shower head fixture from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5138
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "shower pod",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof surface of the pod is clearly drawn across rows 1-5 (5 pixel rows tall) displaying the shower head fitting seen from above, atop the vertical glass cabin body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4948
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.954Z",
+ "cells": {
+  "16": [
+   "635608096ca92e77",
+   "a65a6f4f63ac2949"
+  ],
+  "24": [
+   "407d4d769777b7e1",
+   "5bc25c21ff57df75",
+   "64a9c8665df0c7dc",
+   "6a36043f814a640e",
+   "73701499020be1f0",
+   "8a443b62d9b1d0e4",
+   "922a906fcae5241f",
+   "bd3450073e421244",
+   "c2a14abaa2f42418",
+   "e2c53b67dfe81405",
+   "f541187dd6b81dc3",
+   "f75707cc454820b4"
+  ],
+  "32": [
+   "8b1337f15ed9bd7a",
+   "911e62f2c06bc3db",
+   "dc55aae8ad9b59c6"
+  ],
+  "48": [
+   "268e6f9051ed5d66",
+   "32e3d2a1cb7ad158",
+   "5e8e89c493b49692",
+   "5f9e421e11a9026b",
+   "dac691eec225fadb",
+   "eed876289f6d94ec"
+  ]
+ }
+}

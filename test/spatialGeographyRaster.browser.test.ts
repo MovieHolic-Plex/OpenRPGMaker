@@ -51,8 +51,8 @@ describe("spatial geography candidate raster", () => {
     const page = await browser!.newPage({ viewport: { width: 1280, height: 800 } });
     try {
       await page.goto(`${origin}${HARNESS}`, { waitUntil: "domcontentloaded" });
-      await page.waitForSelector("html[data-ready='1']");
-      await page.waitForSelector(`${RASTER}[data-painted='atlas']`);
+      await page.waitForSelector("html[data-ready='1']", { timeout: 55_000 });
+      await page.waitForSelector(`${RASTER}[data-painted='atlas']`, { timeout: 55_000 });
       const canvas = page.locator(RASTER);
       expect(await canvas.getAttribute("data-painted")).toBe("atlas");
       await mkdir(EVIDENCE, { recursive: true });
@@ -77,8 +77,8 @@ describe("spatial geography candidate raster", () => {
     const page = await browser!.newPage({ viewport: { width: 1280, height: 800 } });
     try {
       await page.goto(`${origin}${HARNESS}?fault=narrow-mountain`, { waitUntil: "domcontentloaded" });
-      await page.waitForSelector("html[data-ready='1']");
-      await page.waitForSelector(`${RASTER}[data-painted='error']`);
+      await page.waitForSelector("html[data-ready='1']", { timeout: 55_000 });
+      await page.waitForSelector(`${RASTER}[data-painted='error']`, { timeout: 55_000 });
       const fault = page.locator(RASTER);
       expect(await fault.getAttribute("data-painted")).toBe("error");
       expect(await fault.getAttribute("data-error")).toMatch(/invalid-args/);

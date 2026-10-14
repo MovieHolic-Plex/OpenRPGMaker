@@ -1,0 +1,146 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f7358c1fc421c809ae9516c73e41e7c0f55510b56d7c73e439509d62822a9dfd",
+ "width": 32,
+ "height": 32,
+ "kind": "other",
+ "name": "화장실 칸막이 2칸 묶음(낮은 문 + 윗 틀)",
+ "label": "modern-campus-int/mc-stall-block",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bathroom stall partitions (two stalls)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stalls and top frame are drawn entirely from the front elevation with only a 1-2px dark outline at row 7-8 at the top; no top horizontal surface is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4762
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "toilet stall partitions with doors and top frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The toilet partition frame and cubicles are drawn strictly from a front elevation with only a 1px outline on top (row 7/8) and zero rows showing a top horizontal surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4121
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "toilet stall partitions with doors",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stall partitions and doors are drawn in pure front elevation; the top rail is merely a 1-2px dark outline (rows 7-8) with no visible horizontal top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5556
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "toilet partition stalls",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stalls and upper frame are rendered in a pure front elevation with only a 1px dark border at row 7-8 instead of a foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3905
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.314Z",
+ "cells": {
+  "16": [
+   "462908e9fa3fc596",
+   "50e4798872b349fc",
+   "9537bd5e833602ca",
+   "f18fc359f4079475"
+  ],
+  "24": [
+   "055fa95359fe6798",
+   "11a754f9dca46ff9",
+   "217e03c72b0ecaa1",
+   "2df9f700d6882a07",
+   "3fc11ce33ab5f7e3",
+   "51dbd16965c6c378",
+   "5796265a817f9421",
+   "57d79219d97aec37",
+   "5b47e6e6193320b6",
+   "6546f68f40c3c257",
+   "6d375646770a5ebe",
+   "9094285b365fccca",
+   "9f053a512f3b9a58",
+   "a5ae82d11fe3de8c",
+   "bc6618193053e18a",
+   "cc3b5a1b4d49859d",
+   "d3e6a3b7c760409e",
+   "d80b62d6b089da47"
+  ],
+  "32": [
+   "4deb6c337666487e"
+  ],
+  "48": [
+   "1159c5f20c29d68a",
+   "3e31ab75df01cb21",
+   "8e624b959c44e253",
+   "d632551f45a093c2",
+   "e1326126eaa304de",
+   "f34278016f98c80a"
+  ]
+ }
+}

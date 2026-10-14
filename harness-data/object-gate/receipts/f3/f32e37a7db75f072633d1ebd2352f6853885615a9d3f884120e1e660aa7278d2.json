@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f32e37a7db75f072633d1ebd2352f6853885615a9d3f884120e1e660aa7278d2",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "맨홀 뚜껑(바닥 둥근 철판 + 테 + 격자 홈 + 바랜 빛)",
+ "label": "sf-station/sf-street-manhole",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "manhole cover plate",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Foreshortened circular iron manhole cover lying flat on the ground plane spanning rows 3-13 with appropriate top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5016
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round metal manhole cover lying flat on the floor",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The manhole cover is correctly depicted as a foreshortened circular disc lying flat on the ground, spanning rows 3 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6796
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "circular iron manhole cover plate",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The manhole cover is a flat floor object viewed from above, displaying its entire top surface across 11 source pixel rows with rim and surface detail clearly visible.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7362
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round manhole cover plate",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The manhole cover is correctly depicted as a foreshortened circular plate lying flat on the floor, roughly 12px wide by 11px tall with interior grid markings.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4704
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:31.924Z",
+ "cells": {
+  "16": [
+   "4660bbe44a335b59"
+  ],
+  "24": [
+   "10f121a057e0454b",
+   "c2a60550e7898e13",
+   "c2e45ea03a738356",
+   "eafea8c4d8e5c956",
+   "ee6257ce1aaac508",
+   "f25363eb0d035517"
+  ],
+  "32": [
+   "15329ed54ab64370",
+   "5a74b4e221c1a531",
+   "704e586579e5da04",
+   "837b4588324d2899",
+   "d9616e4fa86e9999",
+   "f46a0fe4b7a50339"
+  ],
+  "48": [
+   "1477239fbde14427",
+   "2c4d790d65ff9c19",
+   "3d8b8a65da9e1240",
+   "92320ed2394044d1",
+   "ad93dc83ad9c2bc0",
+   "cff0f03bd145c40a"
+  ]
+ }
+}

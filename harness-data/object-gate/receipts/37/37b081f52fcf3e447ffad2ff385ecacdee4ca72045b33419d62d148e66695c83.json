@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "37b081f52fcf3e447ffad2ff385ecacdee4ca72045b33419d62d148e66695c83",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "맨홀 뚜껑(바닥에 박힌 둥근 철판)",
+ "label": "sf-station/sf-street-manhole",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "manhole cover",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The circular manhole cover is drawn taller (16px) than it is wide (11px). In 3/4 top-down perspective, any flat object lying on the ground must be foreshortened vertically (width > height). Here it is vertically stretched and appears as an upright front elevation facing the camera with no foreshortened ground perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 17089
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round manhole cover / iron grate plate",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The manhole cover lies flat on the tiled floor and shows its full top surface across rows 1 to 15. No side faces or vertical front elevations are present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10983
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "manhole cover / drain grate",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a circular iron drain/manhole cover lying flat on the ground, correctly presented from an overhead 3/4 perspective across rows 1 to 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3806
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "manhole cover / grate embedded in the ground",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat circular drain grate embedded flush into the stone floor, viewed from above spanning rows 1 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5312
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:06.343Z",
+ "cells": {
+  "16": [
+   "f788f343c1ca5f93"
+  ],
+  "24": [
+   "7f3a669aa8264d40",
+   "b9a1a2ee22058342",
+   "ceab59e10feca095",
+   "e7887ace2c5db5eb",
+   "f98f055c6493653d",
+   "fc67b89a00ca3746"
+  ],
+  "32": [
+   "0dc0e80d79ec4b35",
+   "51a71c8dab1bc167",
+   "a0cb95239f93e81f",
+   "d63fb10fe461154f",
+   "e057347f02064aef",
+   "fbd098a957fde1b6"
+  ],
+  "48": [
+   "53aad223bab1c4b4",
+   "5443f86da5d3ce5b",
+   "594c6d7197e4d27c",
+   "8ffd291a311b197d",
+   "a1c74273253987cc",
+   "a63cf702f8655b07"
+  ]
+ }
+}

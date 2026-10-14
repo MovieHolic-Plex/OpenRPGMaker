@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e26b3b56b24ee4f3c468adf5c75d11ff480c8ecf9d68052a7f9d3fcb9eaff7ba",
+ "width": 16,
+ "height": 32,
+ "kind": "organic",
+ "name": "prehistoric stone-age lava spire",
+ "label": "prehistoric/ph-lava-spire",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall rock spire",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The spire is rendered as a flat 2D silhouette/side view with a completely flat horizontal base line and no visible top surfaces or top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4005
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lava spire",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The spire is drawn strictly as a 2D side/front elevation: the base is a completely flat horizontal line at row 30, the steps/tiers lack any foreshortened top surfaces, and the tip terminates in a side-profile peak with 0 visible top rows.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8281
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lava rock spire",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The spire is drawn as a flat 2D elevation with a pointed top (0 top rows), flat stepped ledges with no visible horizontal surface depth, and a perfectly straight horizontal bottom base line.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4894
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone-age lava spire / rock pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The spire is rendered as a flat side-scroller elevation with a completely straight horizontal base across the bottom (row 30) and no visible top surface or 3/4 top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4078
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.799Z",
+ "cells": {
+  "16": [
+   "70372def054c35d6",
+   "bd42b9a41a448cb8"
+  ],
+  "24": [
+   "1f60b97a18637a98",
+   "41143864331e5b84",
+   "52b680dbea350952",
+   "5aba60628c44a1c0",
+   "6d66c1af35e46217",
+   "6fd5151ada8e99f4",
+   "72b315bc2d0f72b6",
+   "8d4f4da513fe56a5",
+   "9228b15e45e35a3d",
+   "a154101c73872b2d",
+   "b3c784a79171f320",
+   "c3869e4cd9266a64"
+  ],
+  "32": [
+   "4c4ff9c664edbfbc",
+   "8594fbcbb0fc21f1",
+   "9aa6083ab617897a"
+  ],
+  "48": [
+   "32edd6855ae46a2c",
+   "42f25a8c123e3372",
+   "46832122c131d3af",
+   "4c82118b674c3bf8",
+   "5db452b678fd9dcc",
+   "bcfc7e531d14df9e"
+  ]
+ }
+}

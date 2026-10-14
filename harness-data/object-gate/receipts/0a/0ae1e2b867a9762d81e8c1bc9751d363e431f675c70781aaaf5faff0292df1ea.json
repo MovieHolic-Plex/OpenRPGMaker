@@ -1,0 +1,146 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0ae1e2b867a9762d81e8c1bc9751d363e431f675c70781aaaf5faff0292df1ea",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "보건실 약 진열대(낮은 2칸, 약병 올림)",
+ "label": "modern-campus-int/mc-aid-counter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "infirmary medicine cabinet with drawers and bottles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet and the bottles are drawn entirely in a flat front elevation with a 1px outline at row 8 and no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8054
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "infirmary medicine cabinet with drawers and shelf/bottles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn as a flat front elevation enclosed in a border from rows 7 to 31 with no visible foreshortened top surface (top_rows=0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6533
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "medicine cabinet / drawer unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet and drawers are rendered entirely in a flat front elevation. There is no visible top surface at row 7-8 (only a 1-2px outline), and all shelves, drawers, and bottles are seen directly from the front with no 3/4 top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5567
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "medicine cabinet / drawer unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn as a flat front elevation with a 1px top outline at row 8 and no visible horizontal top surface (0 rows). All drawers and bottles are viewed directly from the front.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6268
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.313Z",
+ "cells": {
+  "16": [
+   "18caf7fe9cb5beb7",
+   "267924bc68cd5182",
+   "92e86e6ee6ddc47e",
+   "9a3b939e0cbbc414"
+  ],
+  "24": [
+   "0bc27a3e143f7793",
+   "1e08e6c3ac160c31",
+   "1eb441ea2e3aac5a",
+   "22f7a500a419f76a",
+   "29288b42b3eb0369",
+   "2d4ae77a3b446f2d",
+   "33d0c7d4077c3e69",
+   "57b8f02453292cfd",
+   "6db58fcb4b782d80",
+   "6dbd49bdd0c062ca",
+   "769389511c293d29",
+   "a622d04970a25ee7",
+   "ad5a44eed22e62a5",
+   "c8c499827d2eb22e",
+   "d0b8a6b210e0338c",
+   "d43c218d89d4deaa",
+   "dbfce993642b68d4",
+   "f7ca08514ea91a64"
+  ],
+  "32": [
+   "eb4b323bf72904a7"
+  ],
+  "48": [
+   "4416b8b9d1b06333",
+   "c195dcf4bc24432f",
+   "d1194f812581f6a7",
+   "db99db72135b5c82",
+   "e6a15d07f7f6e405",
+   "fd0f5cc9f9e5aea1"
+  ]
+ }
+}

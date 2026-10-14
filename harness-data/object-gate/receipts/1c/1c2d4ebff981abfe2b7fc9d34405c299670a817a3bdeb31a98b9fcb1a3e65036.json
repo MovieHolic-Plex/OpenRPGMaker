@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1c2d4ebff981abfe2b7fc9d34405c299670a817a3bdeb31a98b9fcb1a3e65036",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "중앙선 황색 실선 두 줄(가로)",
+ "label": "modern-campus/mc-asphalt-yellow",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "asphalt road terrain with double yellow lines",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat road surface terrain tile viewed from above with horizontal double yellow center line markings.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4451
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "asphalt road surface with two horizontal solid yellow lines",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing an asphalt road surface with painted horizontal double yellow lines seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4192
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "road surface with double solid yellow lines",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing flat asphalt road surface viewed from above with horizontal yellow center lines.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3968
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "asphalt road terrain with double yellow center lines",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile showing asphalt road surface and two horizontal painted yellow lines viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3573
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.864Z",
+ "cells": {
+  "16": [
+   "70d30bf5e795cf4a"
+  ],
+  "24": [
+   "2134be8c36ac626d",
+   "4fe7bd3f93224907",
+   "656dd948da567a56",
+   "74d210eda86bf1bc",
+   "79b125ab08de1193",
+   "9766dbf302a0594d"
+  ],
+  "32": [
+   "2516963eeff1ee1e",
+   "46066e64ba79e904",
+   "4ff264eecc12fbe0",
+   "53f533eb569ea1c0",
+   "59db7e34f75223b2",
+   "c0602d971ff2d352"
+  ],
+  "48": [
+   "0a08979d9558e56f",
+   "0cfea260289251ea",
+   "4e9c615090984364",
+   "7786c406a3242e85",
+   "8e6d2cf1057506e3",
+   "9983b8a314a97068"
+  ]
+ }
+}

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c2062ca62bd822d0f0b13074a049a775d6a7fe06d60927f6abd272086f0e9449",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "등불 돌기둥(쇠 등롱)",
+ "label": "gothic_manor/gm-lantern-pillar",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone/iron lantern pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire column is rendered as a flat front elevation. The top end at row 0 has no visible horizontal surface (0px top surface), and all ledges/steps are drawn as flat horizontal stripes without any 3/4 downward perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5401
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lantern pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire pillar (cap block at rows 0-9, central shaft with lamp window at rows 10-25, and base at rows 26-31) is drawn in flat front elevation. The top cap has no visible top surface (row 0 is a 1px flat outline), and the horizontal shelves/steps are represented only as 1-2px divider lines.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6185
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone lantern pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire pillar, from the upper block (rows 0-7) through the middle lantern section to the base, is drawn in pure front elevation with straight horizontal bands and no top surface visible anywhere.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4435
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lantern stone pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire pillar is drawn in pure front elevation with strictly horizontal bands, a flat front-facing upper block, and a rectangular lantern opening. No top surface is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5864
+  }
+ ],
+ "decidedAt": "2026-10-13T16:33:45.367Z",
+ "cells": {
+  "16": [
+   "bc1e62b084900ade",
+   "dd5db372b99d7b45"
+  ],
+  "24": [
+   "0ec4cda1c70f7f09",
+   "410594def14991dc",
+   "44ae3132f89280a7",
+   "606dbac0caab2c12",
+   "6661738c5efd7b31",
+   "74216fb1bc42e876",
+   "86ca096fa2db51b8",
+   "8a3cf8c0ee26b307",
+   "b7b2d96a553d764a",
+   "e158907b870fd388",
+   "fabc20372b8c1474",
+   "fc56e92824dd4eb6"
+  ],
+  "32": [
+   "27ed418326f290bd",
+   "4356724b2ce8e930",
+   "7cac36fc85fd109e"
+  ],
+  "48": [
+   "77f197756f061411",
+   "885154e28a89337e",
+   "8beed090caa0289f",
+   "ccec3fbc22304d5f",
+   "d30e4e455fd94be2",
+   "e478e06ccea97a4e"
+  ]
+ }
+}

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6f1925d1a8ce00c9a98f9997d2a90376209e571fd05404a7128f847a5bf7acf2",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "windsock pole seen from above-front: round stone base with visible top, pole with round cap, striped sock",
+ "label": "sky-island/si-windsock",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "windsock pole and cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, yellow cap, and windsock are drawn in pure front/side elevation. The cap at rows 1-4 is a flat 3x4 pixel rectangle with no top surface, and the windsock and base plinth show no 3/4 downward angle view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5769
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "windsock pole and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in flat front/side elevation. The bottom base slab (rows 27-30) is a flat rectangle with no top ellipse or top surface visible, the upper collar (rows 24-26) is a flat stepped silhouette, and the yellow cap at rows 1-4 is a flat 3x4 rectangle with 2 rows of simple split shading.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7379
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "windsock pole and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in a flat 2D side elevation. The yellow finial is a flat 3x4 block, the sock is drawn directly from the side without any top-down angle or opening ellipse, and the base plinth (rows 27-29) is a flat rectangle showing no receding top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9319
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "windsock pole and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in flat front/side elevation. The base consists of flat rectangular stepped blocks with no visible top surface foreshortening, the cap is a flat 3x4 block, and the windsock is a flat 2D side-profile cutout.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5068
+  }
+ ],
+ "decidedAt": "2026-10-13T18:46:20.919Z",
+ "cells": {
+  "16": [
+   "1fc4fa3b8d886681",
+   "4f1179107f3d5586"
+  ],
+  "24": [
+   "00ba8ed42372c64e",
+   "03c01212bb18d1d7",
+   "0dc8fcc87f4d532c",
+   "19ec3be98daa2d8d",
+   "4c9410e5008938e9",
+   "75cfb54bdc46d6cf",
+   "8fa70f31ab27ad42",
+   "b84e0392850a407f",
+   "cbd662f677b9d8a9",
+   "e02824fa2f951971",
+   "e1f3f3d0b0f5f915",
+   "e1f7cf28e878d00a"
+  ],
+  "32": [
+   "3736e958530489a7",
+   "a1afd39aed671ae2",
+   "b0b1b441460ce574"
+  ],
+  "48": [
+   "76bdb4cd590870b3",
+   "82c4556db364c45c",
+   "891f8e6855dbce7e",
+   "d6396ce5ec744320",
+   "f319dcff420b223c",
+   "fe7f280e8a3cec73"
+  ]
+ }
+}

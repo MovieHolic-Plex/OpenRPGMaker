@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b7caa308ff6a66ea6e6027e6585ab9d80f06185d2a84b7097ac1df37579122f3",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "노면 궤도 북쪽 레일(자갈 포석 속)",
+ "label": "steampunk-city/sp-tram-n",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tram rail embedded in cobblestone pavement",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tile depicting horizontal streetcar rails embedded in cobblestone surface; flat terrain properly visible from above across the full 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4927
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tram rail embedded in cobblestone ground",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a streetcar/tram rail embedded in stone pavement, correctly viewed from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3859
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tram rail embedded in cobblestone ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a streetcar/tram track embedded in stone pavement seen from top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3147
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tram rail embedded in cobblestone terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a ground terrain tile depicting a street rail flush with stone pavement, viewed from the standard top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4837
+  }
+ ],
+ "decidedAt": "2026-10-13T18:27:58.052Z",
+ "cells": {
+  "16": [
+   "fcf44bb12e3f22ad"
+  ],
+  "24": [
+   "2568b7c2db551416",
+   "29447c36d0bd9e0d",
+   "315b39e471ca3249",
+   "8037824d391d19ff",
+   "d534cc1afa327bd7",
+   "d5544feb2d5ec53a"
+  ],
+  "32": [
+   "1e2985b73b475f9d",
+   "3b9b23ae5e44073f",
+   "c1a02112d70f9760",
+   "d2f6a4d8c3c886c1",
+   "fce28718d5f19f95",
+   "ff155ae221ce960e"
+  ],
+  "48": [
+   "0d99addb28119b62",
+   "3db46b8f21a78e9c",
+   "a5441a4e46693935",
+   "e254c23267110dc7",
+   "f156bca459b9f46c",
+   "fedc900050903a94"
+  ]
+ }
+}

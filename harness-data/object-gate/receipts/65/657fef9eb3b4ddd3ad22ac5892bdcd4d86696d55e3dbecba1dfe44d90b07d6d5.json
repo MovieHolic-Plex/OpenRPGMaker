@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "657fef9eb3b4ddd3ad22ac5892bdcd4d86696d55e3dbecba1dfe44d90b07d6d5",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "deep blue sea water tiles, 2 variants",
+ "label": "pirate-isles/pi-deepwater",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water surface terrain tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 2D terrain texture representing deep sea water across two 16x16 tiles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14304
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "deep blue sea water surface tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain water tiles viewed from above with horizontal wave patterns across the entire 16-row surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5286
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water surface tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain water tiles representing deep ocean surface with wave/highlight patterns; entire surface is viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4971
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water terrain tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat sea water surface texture tiles viewed from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2476
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.694Z",
+ "cells": {
+  "16": [
+   "7885a9ed0f21565c",
+   "b95cf5747f88cb70"
+  ],
+  "24": [
+   "06e020d6617f3198",
+   "0f71be17cbec963a",
+   "264838e981dd8bde",
+   "3c3c51008391e4b8",
+   "558db09fa4412cfd",
+   "77586fc7288fe667",
+   "7c8a248781173afa",
+   "a7264413f079bf14",
+   "b34f107036ef8ffa",
+   "d8c3f100a8ce5134",
+   "ed5c601ee73fafff",
+   "ee55cc2606699229"
+  ],
+  "32": [
+   "2f990b708897df06",
+   "d01930316a4a51d9"
+  ],
+  "48": [
+   "033c08f88c7c476c",
+   "0793325246a67931",
+   "3d3118afba7bcc8f",
+   "6fef07eee0230f90",
+   "9d4932059cfe4cac",
+   "c2b4c6af3070e92b"
+  ]
+ }
+}

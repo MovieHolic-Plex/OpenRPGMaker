@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "28fde8266ac458714e3aa29066c9849961110f72bc1cc494be91cffac6c20db2",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "받침 위 가고일 석상",
+ "label": "gothic_manor/gm-statue-gargoyle",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "gargoyle statue on stone pedestal",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone plinth base features a clear top surface spanning rows 17-19 (3 rows tall) upon which the gargoyle perches, correctly foreshortened for 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5941
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "gargoyle statue on stone pedestal",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone plinth displays a clearly visible 3-row foreshortened top surface (rows 17-19) capped by a highlight line at row 20 above its brick south face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5921
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "gargoyle statue perched on a stone pedestal",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone pedestal shows a clear 4-row top surface (rows 16-19) where the gargoyle sits, terminating in a front-edge highlight row at row 20 before the vertical brick face begins at row 21.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10543
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "gargoyle statue on brick pedestal",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The plinth/pedestal shows a clear foreshortened top surface across rows 17-19 (3 rows tall) on which the gargoyle rests, with an edge highlight at row 20 before the south vertical brick face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5657
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.462Z",
+ "cells": {
+  "16": [
+   "5655b70ac1bc472b",
+   "ac28b2a17693a1c7"
+  ],
+  "24": [
+   "6374b58c31db4096",
+   "67fd19565d3b9d45",
+   "8f7ae2bf33c7a0fe",
+   "a35b6700b238ab12",
+   "b8019e56886403d0",
+   "bb3e2d24ac4f60e4",
+   "bdc3a21ca036c4f9",
+   "d12b2454c13f946a",
+   "d9cc7f38981eaa0f",
+   "f4e11cff9f51deeb",
+   "f525536b629878b8",
+   "f7b7a48308c303c8"
+  ],
+  "32": [
+   "2aa2e75553d206e0",
+   "4b601a9e0f71459c",
+   "ee753d6902fabaab"
+  ],
+  "48": [
+   "0dfa39b2441aa886",
+   "14290c07ed0ccada",
+   "45765800f10e62ee",
+   "45f94c42a254b6fa",
+   "524580ee70b27c55",
+   "b3928aa7d746751d"
+  ]
+ }
+}

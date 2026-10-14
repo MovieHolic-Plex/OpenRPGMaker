@@ -1,0 +1,179 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "75ac974a0c1bcc98a964a45baa498875b3e7a239d25c138fdc7057db2539970f",
+ "width": 32,
+ "height": 80,
+ "kind": "column",
+ "name": "small wind turbine: round stone plinth seen from above, slim mast, nacelle box with visible top, three blades",
+ "label": "sky-island/si-wind-turbine-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wind turbine nacelle and mast",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The nacelle box shows a clear top surface of about 6 pixel rows (rows 12-17) extending back from the rotor hub, and the round plinth at the base also shows a prominent 6-row top ellipse (rows 68-73).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11826
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wind turbine mast and nacelle",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "While the base plinth has a top surface, the main body (mast, nacelle, and rotor) is drawn in pure 2D side/front elevation with no top surface visible on the nacelle box or mast.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7062
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wind turbine mast and nacelle",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The turbine head (nacelle, tail, and rotor) is drawn in pure side elevation. The nacelle spans rows 13-22 with the rotor hub centered across rows 14-22, leaving row 13 as a flat 1px edge with no foreshortened top surface visible (0 top rows). Only the base plinth shows a top surface, which cannot be credited for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 29922
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wind turbine nacelle and mast",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The nacelle and mast are drawn in flat front/side elevation with a completely flat 1px top edge at row 13 and no visible horizontal top surface, despite the base plinth having 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6386
+  }
+ ],
+ "decidedAt": "2026-10-13T18:44:58.916Z",
+ "cells": {
+  "16": [
+   "046e8bafe3e9f56f",
+   "442e1f316ace6233",
+   "684cc4c386cca9c1",
+   "99665fbdf7b51b56",
+   "a4b6ea44e26f6ac4",
+   "a58c736144dfd89a",
+   "d82357a0bddbdb75",
+   "e42f8ce486aa7194",
+   "e4885645a38a0fd1",
+   "eafaaf3e06cd18a9"
+  ],
+  "24": [
+   "01d2b94f492f808e",
+   "062249c3f92e4bcb",
+   "0f23a43eeea3e63f",
+   "29ed08f4145a2f1b",
+   "2d7d6e679529cb3f",
+   "34f3a4c634b89759",
+   "377a94b91adeb925",
+   "39a092d538502aca",
+   "4a57a892c181ffc3",
+   "4adf06215b6379b1",
+   "4dc801042dff8504",
+   "52051dee669e8703",
+   "55ccae5c99d966e4",
+   "5a0f1b7143ef0a52",
+   "6d739fd9d9282b27",
+   "78ac9c2f79f289cf",
+   "7ea601015e0bf30d",
+   "84d253b3ccf7add8",
+   "8d1e95592aa54be1",
+   "99116aa8ed56dc47",
+   "a0f81d61f1c16d64",
+   "a2c9e4e733e2bd11",
+   "a36de18af6298f4f",
+   "a45b9f2122716779",
+   "a4cf5d6a2e6fc0ed",
+   "ac19906c37b3bcd0",
+   "ad9574e864af73df",
+   "afa0ab01564559aa",
+   "b78ec5c3b09eed2b",
+   "b8236353b1e98f63",
+   "c7feec098451142b",
+   "d61f2dd604037a0a",
+   "ea8883ad8fc415d5",
+   "ebf745db4373aba2",
+   "ee026a56038b465c",
+   "fc0713685e6cc877",
+   "fdff2950d1bb1e26",
+   "fef7edf00103e214"
+  ],
+  "32": [
+   "070196b22c806b64",
+   "197d0f86b48dd21b",
+   "23a460de163c6e56",
+   "6c64d035f4bc56c5",
+   "9b824085768ac053",
+   "f40604382397d716"
+  ],
+  "48": [
+   "00f25d4542f5057f",
+   "1e5803f9832cba59",
+   "34fc85c509720836",
+   "4e6ed64538a6e935",
+   "543294688ae3c85c",
+   "999efcc3ed559167",
+   "a331e7c7e64be174",
+   "b2e8ccd707674757",
+   "b87ca72a1af69744",
+   "f09e965c26855c9e",
+   "f6383cd84d6a059f",
+   "fe5f934888395556"
+  ]
+ }
+}

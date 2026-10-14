@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a80eabe7dd7e50b217929183d3de6c7e61f91785d0f906accf3034c25a2b9a32",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "round wooden bar stool seen from above at 3/4: big round seat top, three splayed legs",
+ "label": "pirate-isles/pi-tavern-stool",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round wooden seat top and legs",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round stool seat is drawn as a foreshortened ellipse visible from above occupying rows 1-7, with its south edge/thickness and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3303
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round wooden seat top and stool legs",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round wooden seat top is clearly visible from above as a large foreshortened oval spanning rows 1 to 7, with the front rim and legs extending downwards below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3767
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round wooden seat top and base",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round stool seat is clearly depicted from above as a foreshortened ellipse measuring roughly 7 pixel rows (rows 1-7) above the front rim and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2402
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round wooden seat top and stool legs",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round wooden seat top is clearly visible from above as a 7-row foreshortened disk (rows 1-7) above the front edge/rim and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2782
+  }
+ ],
+ "decidedAt": "2026-10-13T19:35:50.750Z",
+ "cells": {
+  "16": [
+   "079c97ea28930f69"
+  ],
+  "24": [
+   "2975a99e14160542",
+   "2be5ff1957fd99b4",
+   "352d0a4d9244749b",
+   "5a49004d9b187527",
+   "7839dede60303b39",
+   "bcfa5af2d301d7e3"
+  ],
+  "32": [
+   "150b87edfb5daa74",
+   "36d03b68561a8601",
+   "42230f6b7cb77fe8",
+   "7938816cd6ef3806",
+   "e2e8159e7eaef097",
+   "f7335f01ddac7b42"
+  ],
+  "48": [
+   "15bcee7645c32662",
+   "8230cb911edd8b7a",
+   "8631d57bdcf18ed0",
+   "c7c0ebc1aee4f027",
+   "e17fda62f2243525",
+   "fabfa3d82b4d569b"
+  ]
+ }
+}

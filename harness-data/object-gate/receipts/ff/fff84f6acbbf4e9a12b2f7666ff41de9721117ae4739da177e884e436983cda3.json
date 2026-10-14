@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fff84f6acbbf4e9a12b2f7666ff41de9721117ae4739da177e884e436983cda3",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "prehistoric stone-age footprints",
+ "label": "prehistoric/ph-footprints",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "three-toed footprint floor impression",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The footprint is drawn flat on the ground plane, foreshortened as a floor decal from row 1 to row 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3051
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dinosaur footprint indentation",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The three-toed footprint is drawn flat on the ground plane viewed from above, with subtle interior shadow and lower-edge rim shading suggesting an indentation in the earth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3509
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "three-toed footprint decal",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The footprint lies flat on the ground plane, viewed from above spanning rows 1 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2693
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "three-toed prehistoric footprint",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The footprint is drawn flat on the ground as an indented floor decal spanning rows 1 to 13 with edge beveling to show depth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2705
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.800Z",
+ "cells": {
+  "16": [
+   "4480ba81a24c0838"
+  ],
+  "24": [
+   "6b25ef7eddb79f27",
+   "a83f1efc70300aa5",
+   "d8a61037ddf095b8",
+   "ddc847b20359e6a9",
+   "f644a0745ec5f131",
+   "f777adfd5d69385f"
+  ],
+  "32": [
+   "04c12940c7c7ed96",
+   "2834ae9058e5e9c0",
+   "2c982b2718d23e13",
+   "2d0eee422adedcd6",
+   "d3502d96c7bece99",
+   "d5065f2a5a2dadf7"
+  ],
+  "48": [
+   "34746fb1d3bcf87e",
+   "5b4c3c784c3a8a16",
+   "6ac777d877482404",
+   "8ea5ca2a7350755c",
+   "94fc79b41a4d1462",
+   "aebcbcfc05d4f772"
+  ]
+ }
+}

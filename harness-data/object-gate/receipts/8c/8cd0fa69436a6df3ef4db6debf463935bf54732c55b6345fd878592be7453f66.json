@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8cd0fa69436a6df3ef4db6debf463935bf54732c55b6345fd878592be7453f66",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "prehistoric stone-age shaman altar",
+ "label": "prehistoric/ph-shaman-altar",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone altar slab",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The altar top is clearly visible across rows 4 to 9 (6 pixels tall) with ritual objects resting on it, and the vertical front face extends from row 10 to 14 (5 pixels tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3941
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone altar slab",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The altar table clearly shows a 5-row deep horizontal top surface (rows 5-9) bearing objects, and a 5-row deep front face (rows 10-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 18921
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone altar block",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The altar shows a clear top surface from row 4 to row 9 (6 pixels tall) with ritual objects placed on it, and a darker south front face from row 10 to row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3521
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone altar table",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The altar table has a clearly defined top surface spanning rows 5 to 9 (5 pixels deep) with ritual items placed on it, and a south-facing front vertical surface from rows 10 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2959
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.809Z",
+ "cells": {
+  "16": [
+   "5c1ce491a5a41d94",
+   "e435738fdfe3a5f6"
+  ],
+  "24": [
+   "3981241af7141596",
+   "4af54470c2321783",
+   "6665a223e22d94a5",
+   "77906027c5f2280a",
+   "8532a85a818abbab",
+   "9f2ce3bf9085f6ce",
+   "a80f641570132b00",
+   "b12359481790d4f2",
+   "bb3101e124e98737",
+   "c1c7cd79f3dec96e",
+   "d6bdd27d1e39b0d8",
+   "f6ad4b197a3a9bb5"
+  ],
+  "32": [
+   "cf296fc7db0d3890",
+   "da2e66aac10981db"
+  ],
+  "48": [
+   "159364f550628ac2",
+   "3d627dca7dbef131",
+   "88f1e9bc35730d30",
+   "b5f30d6c29925958",
+   "b77a8aff75c8727d",
+   "c9996295428c7b52"
+  ]
+ }
+}

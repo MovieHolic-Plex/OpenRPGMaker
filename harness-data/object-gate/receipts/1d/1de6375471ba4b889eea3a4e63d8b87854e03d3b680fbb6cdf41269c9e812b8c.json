@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1de6375471ba4b889eea3a4e63d8b87854e03d3b680fbb6cdf41269c9e812b8c",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "독수리 강론대",
+ "label": "gothic_manor/gm-lectern",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "eagle lectern stand and book rest",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire lectern is drawn in flat 2D front elevation. The base block (rows 25-30) shows only a vertical front rectangle with 0px of top surface, and the book/rest at the top is drawn completely flat without foreshortened depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4452
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "eagle lectern stand and book rest",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lectern, open book, and base plinth are all drawn in pure flat front elevation with no visible horizontal top surfaces (0 top rows on both the base and the lectern desk).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4291
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "eagle lectern stand and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lectern is drawn completely in flat front elevation. The base plinth at rows 25-31 shows only a vertical front face with no top surface visible around the pole, and the book and lectern head are rendered strictly flat-on facing forward.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4495
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "eagle lectern / book stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lectern is drawn in pure 2D front elevation. The base plinth is a flat rectangle with no visible top surface around the shaft (0 px), and the open book and rest are displayed straight-on rather than angled in top-down 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5436
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.504Z",
+ "cells": {
+  "16": [
+   "12c33f4c479cab47",
+   "e1b9225d5d514f33"
+  ],
+  "24": [
+   "1e7cc4269bde45cd",
+   "22b5a42c19ff550d",
+   "27fa1d59d51a69fd",
+   "616e5c149796cef2",
+   "6691f867e1e0591f",
+   "7c8cbea2824feabc",
+   "a6e040604b5cfab8",
+   "c6acd27836644f21",
+   "e2434f0da8293a58",
+   "f665c2a278afd778",
+   "fa7b342e2204a9e6",
+   "fc30383864aeed86"
+  ],
+  "32": [
+   "066a955dd0af70e1",
+   "cc054aea8096a437",
+   "f4f675b868e5c72a"
+  ],
+  "48": [
+   "3c2ec01cb6065b1e",
+   "8c655c122209c61c",
+   "950f2afdb38c28bc",
+   "a1d52d4003846266",
+   "f11c2bffe88eabf0",
+   "f3e950b9a6bdc00f"
+  ]
+ }
+}

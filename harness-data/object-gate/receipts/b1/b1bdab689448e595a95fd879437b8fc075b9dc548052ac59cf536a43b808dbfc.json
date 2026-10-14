@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b1bdab689448e595a95fd879437b8fc075b9dc548052ac59cf536a43b808dbfc",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "레이돔 탑(판 기단 + 굵은 기둥 + 육각 판 레이돔)",
+ "label": "sf-station/sf-radome-tower",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "radome tower with base platform",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features a distinct 8-pixel tall top deck/platform surface (rows 46-53) with railing and floor panels seen from above, sitting above the front vertical face (rows 54-63). The spherical radome atop the pillar appropriately shows upper surface illumination and curvature in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8418
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "radome tower with spherical dome on central pillar and base building",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base building shows a clear 9-row top deck surface (rows 46-54) in 3/4 perspective, and the spherical radome above is fully shaded with top-down lighting.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5403
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "radome tower with spherical dome and base terrace",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base structure features a clearly visible horizontal roof terrace spanning rows 46 to 54 (approx. 9 source pixel rows tall) above its south facade (rows 55-63). The spherical radome atop the pillar is appropriately foreshortened with top-down lighting and paneling.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9922
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "radome tower (spherical radome atop platform base)",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base structure features a clearly foreshortened top deck across rows 46-54 (9 rows tall) complete with surface details and railings, supporting the spherical radome above. No receding isometric side faces are present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5442
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:09.618Z",
+ "cells": {
+  "16": [
+   "22f25dff549fa4c6",
+   "250c5739ba258804",
+   "2a28f6f4f2177bd6",
+   "32065e6819ac203b",
+   "39d0620ade62cc7f",
+   "43bb2d536f543587",
+   "7776216a85f3b2d5",
+   "94583ed9bd8d2077",
+   "ad27c4f5bb6d3547",
+   "db34d68347dff4f7",
+   "f15d1e83e5ca1f03",
+   "f2e5270fd4efa10d"
+  ],
+  "24": [
+   "0decde14fd56723c",
+   "1b71e766be841ccf",
+   "1c697b12f7281a5a",
+   "539c1cd5840af702",
+   "7319987903d24182",
+   "7c069e7cbd3a3e67",
+   "9782b9827504dfde",
+   "99e5368c75181156",
+   "a54cc8b1cc8e9b74",
+   "cf409b04daa51125",
+   "de318477fe34c6f2",
+   "e49d1bce3eef21aa"
+  ],
+  "32": [
+   "01278168055e91c9",
+   "0d3ab20fdbad96ed",
+   "540f8acdd28bcd90",
+   "6b751bc4471ca538",
+   "7badbafea871c1de",
+   "83b40a12ddc0ef78",
+   "89929c51543447ac",
+   "8c8d85c3f7711029",
+   "afaa56e5363dc76d",
+   "cd97c995e5fc699e",
+   "ef34e19c58addc70",
+   "ef523549162a840e"
+  ],
+  "48": [
+   "0c6037b309840e8b",
+   "5e050c5659e941bc",
+   "b603674af74d3896",
+   "c0e6a7061fc0b962"
+  ]
+ }
+}

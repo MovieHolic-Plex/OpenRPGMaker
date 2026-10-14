@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e6b08359dd508fe2f8e274f33471ca38fa4034184ed56c34d87e846fd35cc43f",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "버스 정류장(지붕 + 유리 칸막이 + 의자)",
+ "label": "modern-campus/mc-bus-shelter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bus stop shelter with roof, glass partition, and bench",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat architectural front elevation. The roof canopy shows only a vertical front fascia (rows 1-9) with no top surface visible, and the bench (rows 21-25) has only a 1px black rim on top with no foreshortened seat surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8077
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bus stop shelter with roof, glass wall, and bench",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire bus stop shelter is drawn in flat 2D side-scroller/architectural front elevation. Neither the roof canopy nor the bench shows any top surface seen from above (the bench seat is a 1px flat edge at row 21, and the roof has no foreshortened top plane).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4959
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bus stop shelter with roof, glass partition, and bench",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat side-scroller/front architectural elevation. The roof canopy consists of horizontal rectangular stripes with no visible top slope or top plane, the bench shows only a 1px outline for a seat with a front face (0px top surface), and the pillars and sign are flat front projections.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4962
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bus stop shelter with roof, glass partition, and bench",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in a pure 2D front elevation (side-scroller style). Neither the roof nor the bench shows a top surface seen from above (both have only 1px flat edge outlines at rows 1 and 21 respectively), lacking any 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5815
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.873Z",
+ "cells": {
+  "16": [
+   "3d28fad70c94b50a",
+   "6a90a2601d8b254b",
+   "bf9fb0f3f3cc320e",
+   "cd4bb3f062d5ffb1",
+   "ea72cb96fda1738f",
+   "eb5f5def11bb41cd"
+  ],
+  "24": [
+   "03611e025d10eace",
+   "0bb5b3c9ee924bfe",
+   "349851ca87aaf361",
+   "763e9745dd1ff4d7",
+   "877eb2476734da7e",
+   "df8cc9615e09f10c",
+   "e3b59909201ed5f2",
+   "e5f333a2dbcb7edc"
+  ],
+  "32": [
+   "1aae2a56adf5261a",
+   "50358063773f9eac",
+   "5d285a748ceec1c8",
+   "7ab088844f913d69",
+   "e1d46128c5d964c3",
+   "f66bf63149193674"
+  ],
+  "48": [
+   "1196c6f3ff50ec1f",
+   "cbfc275b5ce31471"
+  ]
+ }
+}

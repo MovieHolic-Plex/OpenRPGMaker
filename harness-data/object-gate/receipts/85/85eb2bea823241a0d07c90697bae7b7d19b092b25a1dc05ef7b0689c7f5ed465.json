@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "85eb2bea823241a0d07c90697bae7b7d19b092b25a1dc05ef7b0689c7f5ed465",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "writing desk with star charts and candle",
+ "label": "sky-island/si-desk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "writing desk",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk tabletop surface is prominently visible from rows 1 to 9 (approx 8-9 source pixel rows), complete with objects resting on top (star chart, paper, candle), followed by a front apron on rows 10-11 and legs beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3568
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "writing desk",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk shows an 8-row deep top surface (rows 2-9) covered with star charts, paper, and a candle, followed by a south-facing front apron and legs (rows 10-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4774
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "writing desk",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk surface is clearly seen from above across rows 2-9 with star charts, paper, and a candle resting on it, above a front apron (rows 10-11) and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3817
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "writing desk",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk surface is clearly seen from above spanning rows 2 to 9 (8 rows tall), decorated with a star chart, parchment, and candle, with the south apron and legs visible below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3351
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.565Z",
+ "cells": {
+  "16": [
+   "2a77d6c4e88a114f",
+   "b182f83e1b813e1a"
+  ],
+  "24": [
+   "13ff20fbf4cdcc9d",
+   "2054c1738096a517",
+   "222fe2a1ac0a75ea",
+   "2352aa3f9a70505a",
+   "46c67969842bbce4",
+   "9043f9d0dae3a486",
+   "9d22ba328c531655",
+   "af6f7d83e8221476",
+   "bd44f981d1576ff2",
+   "cd78369aad0a01b1",
+   "eccafbf6ded23618",
+   "f8136ff475d0eb15"
+  ],
+  "32": [
+   "687f7f5bee54807b",
+   "f7e3c7c05ec0536d"
+  ],
+  "48": [
+   "0be3ed95489fc4a6",
+   "2216014fa8f108fb",
+   "3f296c0214f0cde6",
+   "49e41ea297bced8f",
+   "6b80e7b5846918d6",
+   "f944eeea2373fd93"
+  ]
+ }
+}

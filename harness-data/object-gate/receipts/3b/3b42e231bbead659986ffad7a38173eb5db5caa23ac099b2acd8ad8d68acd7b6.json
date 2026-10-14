@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3b42e231bbead659986ffad7a38173eb5db5caa23ac099b2acd8ad8d68acd7b6",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "풀밭(짙은 변주)",
+ "label": "sengoku-edo/se-grass-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 ground terrain tile representing grass with darker green variation pixels.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8211
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dark grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 ground terrain tile representing grass; viewed from above as an overhead ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9966
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dark grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 ground terrain tile representing darker grass texture viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7422
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flat grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 flat terrain tile representing grassland surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9181
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.058Z",
+ "cells": {
+  "16": [
+   "487bd8e76c213a1c"
+  ],
+  "24": [
+   "0cc7065491569680",
+   "84366bf4141250f9",
+   "889793fe25a60f58",
+   "91f78954358d2df5",
+   "bd1a0e6066eae8c2",
+   "d40c8f66f7f62293"
+  ],
+  "32": [
+   "528758839b725de0",
+   "5615f4d0f8d5a8fc",
+   "5d828b78b18838bf",
+   "bcbabf9c35ea1763",
+   "d8a565f936018f8a",
+   "e2d7cf6a96e33900"
+  ],
+  "48": [
+   "2c6efef5289816be",
+   "4d3dcb329dc73525",
+   "5cfcfc46ef8b3c2f",
+   "6406526bc0d83a46",
+   "97f1ed9068a677dd",
+   "c4290e2bef5ee8a5"
+  ]
+ }
+}

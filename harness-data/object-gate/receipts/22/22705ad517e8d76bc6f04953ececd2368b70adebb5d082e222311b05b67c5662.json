@@ -1,0 +1,123 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "22705ad517e8d76bc6f04953ececd2368b70adebb5d082e222311b05b67c5662",
+ "width": 48,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "선반 기계(무쇠 침대 + 주축대 + 심압대)",
+ "label": "steampunk-city/sp-lathe",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lathe bed and headstock/tailstock assembly",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lathe features clear top surfaces throughout: the headstock shows a 4-row foreshortened top plane (rows 4-7) with a cylindrical feature on top, the tailstock shows a 2-row top plane (rows 6-7), and the lathe bed ways show a distinct 3-row horizontal surface (rows 13-15) above the south-facing bed beam (rows 18-21).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6917
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lathe bed and carriage assembly",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lathe bed shows a clear 3-row top surface/ways (rows 13-15) above the front face (rows 16-20). In addition, the headstock and tailstock blocks both exhibit distinct visible top surfaces (rows 3-6 and rows 5-7, respectively).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5007
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lathe bed and frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire lathe (legs, bed beam, lead screw/ways, carriage, headstock, tailstock, and handwheel) is drawn in pure side/front elevation, typical of a 2D side-scroller rather than a top-down 3/4 view. The main body has 0 pixel rows of top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10608
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lathe bed and carriage",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lathe bed shows a clear 5-row horizontal top deck (rows 11-15) above its front vertical casting face (rows 17-21). Both the headstock and tailstock also show top planes in proper 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6977
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.467Z",
+ "cells": {
+  "16": [
+   "241f6a237dcf2d05",
+   "625a0147a74fb4f9",
+   "65cbb7077c4c95a1",
+   "6bfa53acb43256a0",
+   "9023cfb1ac2c08c7",
+   "a89b4e2cf3a16ba8"
+  ],
+  "24": [
+   "007044867f976c27",
+   "01cd4079733559c7",
+   "65f83081bbd35ca0",
+   "85f0f78b4ca33bc5",
+   "9dcf9302cd73065b",
+   "a91c5661958c85d4",
+   "b48d0e7b6bc5f721",
+   "e4274cb8ef79d9aa"
+  ],
+  "32": [
+   "04a9cda34ce8c02f",
+   "13e2d6542212a9d0",
+   "9328bcbab9bde268",
+   "a709ed9d839c8673",
+   "c9782b593ff604e1",
+   "fc1031b8ee1cc3b1"
+  ],
+  "48": [
+   "9e5c3a3e4ada0d18",
+   "fe363b7274fa383d"
+  ]
+ }
+}

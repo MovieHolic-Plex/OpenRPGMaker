@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8c8be96bdea6de69f1d5eb5a8c33044b85cb8ba0b9022d3651bb8e7e34a8236e",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "향로(청동 큰 향로, 다리 셋 + 연기)",
+ "label": "sengoku-edo/se-incense",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bronze censer cauldron with three legs on a stone plinth",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The censer has a clearly foreshortened elliptical opening (rows 8-11, 4 rows high) showing the pale ash/interior inside a well-defined rim, properly depicted in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6584
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bronze tripod censer",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The censer has a clearly foreshortened elliptical opening across rows 7-11 showing an interior ash bed of 4 pixel rows, properly viewed from a 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7086
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bronze censer body",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The censer's top rim and opening are clearly drawn as an ellipse seen from a 3/4 top-down angle, revealing 4 source pixel rows of light-colored ash/interior between rows 8 and 11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6767
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bronze censer/tripod cauldron",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The censer rim and opening are clearly drawn as an ellipse viewed from above (rows 7-11), showing 4 rows of light beige ash/interior surface inside the rim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 21129
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.071Z",
+ "cells": {
+  "16": [
+   "19d8d38262ff4ad7",
+   "2dca71cf1da13c2f",
+   "370df4c928974bb8",
+   "c9a8a321498f674a"
+  ],
+  "24": [
+   "18ec7908ac54650b",
+   "265a9c2e2464b895",
+   "2684a5957687b6f7",
+   "277d25f7878c15d8",
+   "2d494f7cfba2af63",
+   "3f3a2e13ee0f126e",
+   "4cdcd294e98df6d0",
+   "50155594388572f4",
+   "5787267e80926662",
+   "6eeb581391c4bf1a",
+   "7877d497becabd7d",
+   "8a58ae66f449f9ab",
+   "9e54cc8bb63cdc2a",
+   "a002ccf8070da60f",
+   "a09c06066c692a16",
+   "ac5d32ac07a85703",
+   "b1100a8cd5e36e36",
+   "cdc28e102fa32614",
+   "ce7cfd0481a82056",
+   "d95ba1c4330461ec",
+   "e143a63714f93639",
+   "fc48a7fd473452b1"
+  ],
+  "32": [
+   "24be9b614d6a002a"
+  ],
+  "48": [
+   "31af8e9b95e38d53",
+   "85d9ced758adb9ff",
+   "b3d8a5cf2efe07e6",
+   "d6c0b1c64f918f9a",
+   "d9408ede4ac46bae",
+   "f17070513be140fd"
+  ]
+ }
+}

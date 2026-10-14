@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5c128b3e0e608ef84aa1729118b6fb7f0de39bbc53c4e226d1a431b6cdb4eb5d",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "round wooden stool seen from above-front: large oval seat top clearly visible",
+ "label": "sky-island/si-stool",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stool seat and legs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The seat is drawn in pure front elevation: it has vertical side edges from row 4 to row 9, a completely flat horizontal bottom rim at row 9, and only rounded top corners (rows 2-3) rather than a foreshortened elliptical top surface. No top surface of the seat is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12996
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "seat top of the round wooden stool",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round stool seat is drawn with a large foreshortened elliptical top surface spanning roughly rows 2 through 8 (about 7 source pixel rows) with visible front rim thickness at row 9 above the legs, clearly depicting the top surface from a 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10291
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round wooden stool seat top",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round stool seat is rendered as an elliptical top surface viewed from above spanning rows 2 to 7 (about 6 rows tall), supported by front-facing vertical legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4210
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round wooden stool seat and legs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The seat is drawn with vertical silhouette edges (rows 4-8) and a rounded top dome rather than an elliptical top surface seen from above. Furthermore, all three legs terminate along a single horizontal baseline at row 15, showing a classic 2D front elevation with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9104
+  }
+ ],
+ "decidedAt": "2026-10-13T18:47:30.235Z",
+ "cells": {
+  "16": [
+   "c10323ba2d8e4d71"
+  ],
+  "24": [
+   "49805d8b86b6edb1",
+   "4b10eb361e04e238",
+   "7b3d831ddc0e6bd2",
+   "91c9093262e0e1c2",
+   "92327b0e62287c81",
+   "e983c8a09cc2bd4c"
+  ],
+  "32": [
+   "2d47a2eb5011d928",
+   "3feef984bcc75c03",
+   "4e924ba765a3f407",
+   "ac28171d4a1a4189",
+   "e88eab5d556e6a6d",
+   "ff893f6511925297"
+  ],
+  "48": [
+   "21ecb99012bce28a",
+   "6519c834e535b7ed",
+   "78b68461336f5c1f",
+   "9605966d5eb11837",
+   "f4b61f675ffd1033",
+   "f66e998874122b17"
+  ]
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "33d80d8f15c2f492203f36c66742fa591a63235c4114e50be285a905af271ae1",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "길가 작은 사당(호코라, 붉은 문)",
+ "label": "sengoku-edo/se-hokora",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone roadside shrine with red door",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The shrine roof shows sloped surfaces (rows 2-8), and the base platform in front of the door has a clear 5-pixel-tall horizontal top surface (rows 22-26) on which an offering sits above a front vertical face (rows 27-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4196
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone shrine (hokora)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The shrine features a sloped roof (rows 2-7) and a clear 5-row horizontal base ledge (rows 22-26) supporting an offering in front of the doors, before dropping to the vertical base face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4896
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone roadside shrine (hokora) with roof and plinth",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The shrine has a sloped roof (rows 1-8) and a clearly foreshortened horizontal base platform (rows 22-25, 4 rows deep) upon which an offering box rests, followed by the plinth's vertical front face (rows 27-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4204
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone hokora shrine with roof and base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The shrine roof shows its sloped/curved top surface across rows 2-7 (6 rows tall), and the base platform has a foreshortened top surface across rows 22-26 (5 rows tall) upon which an offering rests, consistent with 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6998
+  }
+ ],
+ "decidedAt": "2026-10-13T19:37:02.182Z",
+ "cells": {
+  "16": [
+   "73921bb10abd091c",
+   "a9cf948feebc59eb"
+  ],
+  "24": [
+   "0ba9359403017186",
+   "16b1162593b890c4",
+   "1777dd7b80382e55",
+   "284db91f233f1839",
+   "46169fa60646c88b",
+   "4df12949bfb20027",
+   "5ed5e6c91ff01464",
+   "b16b76b548f604b5",
+   "db085cfa8df99d4d",
+   "ee9818d38a201cf0",
+   "f0f2a16bb132ce0b",
+   "f8dc83f83fd7c14e"
+  ],
+  "32": [
+   "0e865394e7e962f4",
+   "2a234b9b06fec6d7",
+   "6a8f9b387553b743"
+  ],
+  "48": [
+   "29f6f0b9b04c7310",
+   "4fd5ac16cd91ee90",
+   "84fe02684e6196f1",
+   "90658d60fac6813d",
+   "f03fd00c0121bb15",
+   "f3d0df86bbc3893c"
+  ]
+ }
+}

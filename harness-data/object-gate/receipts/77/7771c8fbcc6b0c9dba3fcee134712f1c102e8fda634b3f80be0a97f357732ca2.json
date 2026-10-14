@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7771c8fbcc6b0c9dba3fcee134712f1c102e8fda634b3f80be0a97f357732ca2",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "선로 북쪽 레일(자갈 도상)",
+ "label": "steampunk-city/sp-rail-n",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "railroad track on gravel bed",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tile showing a railway track with gravel and wooden ties viewed from the top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7346
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "railroad track and rail on gravel ballast",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a top-down flat ground terrain tile showing a railway track with gravel and wooden ties viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3168
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "railroad track and ties on gravel terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile depicting a horizontal railroad track with wooden ties over gravel ballast, viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5406
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "railroad track terrain tile with rail and ballast",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile depicting gravel ballast, wooden ties, and a horizontal metal rail viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3870
+  }
+ ],
+ "decidedAt": "2026-10-13T18:27:58.051Z",
+ "cells": {
+  "16": [
+   "6674dd79b63ac363"
+  ],
+  "24": [
+   "50f55c23f4996ee3",
+   "90ebd64c5cc5f0d2",
+   "ad23350fb75b2ff4",
+   "c8c99f8926d9760d",
+   "ca08bf176872c7d3",
+   "ea461217388ae451"
+  ],
+  "32": [
+   "060ca686911616dd",
+   "1097c0683958071a",
+   "7952e970918aa7af",
+   "79c2263634ecbcc6",
+   "7bc533c2c482074d",
+   "d316e990fd413d94"
+  ],
+  "48": [
+   "1ced4a8d42b864ee",
+   "5e7fbb4779f78f05",
+   "60473951114ae21c",
+   "94dc3bc3e714e0ae",
+   "ae83a29655aad285",
+   "b11a780cb0b7f8ed"
+  ]
+ }
+}

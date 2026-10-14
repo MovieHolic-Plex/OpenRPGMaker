@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ebcd8f9454c0264689658fac72108725613f11e4fc4214fde9b82f7f28a988ba",
+ "width": 48,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "조리 카운터(솔결 스테인리스 상판 + 가열판 둘 + 냄비 + 아래 수납)",
+ "label": "sf-station/sf-galley-counter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cooking counter with stainless steel top and lower storage",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter top surface occupies rows 1-9 showing hot plates and cookware from above, while the south front face with lower storage occupies rows 10-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9827
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cooking counter with stainless steel top and lower storage",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter top surface occupies rows 1-9 (9 rows tall) featuring heating elements and cookware in 3/4 perspective, while rows 10-15 clearly show the front face with storage compartments.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4077
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cooking counter with stainless steel top and lower storage",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter top is clearly visible from rows 1 to 9 (9 rows tall) featuring two stove burners, a cooking pot, and control panel viewed from above, with the south front face and lower storage compartments occupying rows 10 to 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3117
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cooking counter with stainless steel top and lower storage",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter clearly displays a deep top surface (rows 1-9, ~9 rows tall) featuring heating elements and a pot, and a front face (rows 10-15) showing lower cabinets.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4960
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.953Z",
+ "cells": {
+  "16": [
+   "0fc181d25c845eb2",
+   "30d00a84e0d0ca72",
+   "45cb160f5a7771c8"
+  ],
+  "24": [
+   "317029d753b3cd7f",
+   "9156f1e56b6c39a4",
+   "93b5152275cd5702",
+   "b4e66585d1225c58"
+  ],
+  "32": [
+   "07fa96ff991dd34f",
+   "130430a923b0eaa9",
+   "46a6e89b3653fb00",
+   "57eeffc0200ae505",
+   "62e3e72cdecdc64a",
+   "93f5f25fdad35719",
+   "b3db54203b2006ae",
+   "c853ab0133d5d56b",
+   "d3dd222b7d98dd60",
+   "e4b1d41c4d9d09f8",
+   "e4d04800f6b0de74",
+   "fcd481d0438a1133"
+  ],
+  "48": [
+   "aabe19ebc2d6c596",
+   "c8327752b579c361"
+  ]
+ }
+}

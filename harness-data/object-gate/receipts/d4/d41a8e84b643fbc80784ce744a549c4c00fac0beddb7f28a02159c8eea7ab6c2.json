@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d41a8e84b643fbc80784ce744a549c4c00fac0beddb7f28a02159c8eea7ab6c2",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "조종사 좌석(등받이 + 시안 쿠션 + 양옆 팔걸이 램프)",
+ "label": "sf-station/sf-pilot-seat",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pilot seat cushion and backrest",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal seat cushion surface is clearly visible from above at rows 8-11 (4 rows tall), positioned between the armrests and above the dark front face/base at rows 12-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6113
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pilot seat with backrest and cushion",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chair faces south in standard 3/4 view: the vertical backrest is at rows 1-7, the horizontal seat cushion is clearly visible from above at rows 8-11 (4 rows tall), and the south-facing base/pedestal drops below it at rows 12-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10302
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pilot seat with backrest and cushion",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chair is viewed from the standard 3/4 top-down angle: the horizontal seat surface is clearly foreshortened and visible from above across rows 8–11 (4 rows tall), with the front support structure/base descending below it on rows 12–14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7924
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pilot seat cushion and base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chair shows a 4-pixel deep horizontal seat cushion surface (rows 8–11) positioned between the backrest above and the south-facing seat base below (rows 12–14), fully consistent with standard 3/4 top-down projection.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7924
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.950Z",
+ "cells": {
+  "16": [
+   "48760e6aca6a2a96"
+  ],
+  "24": [
+   "455063f4b889539f",
+   "6ad502fb63392780",
+   "727c35d081e237a3",
+   "7f4a1e5603f34b88",
+   "d958cf4123c2ae11",
+   "ed2b13ae71431a98"
+  ],
+  "32": [
+   "39aac297a0512450",
+   "5e9030ecda32512a",
+   "653dccc3b6079882",
+   "6c4c5f92441504bd",
+   "db1668adc65ae9da",
+   "df79d4e5656c2a09"
+  ],
+  "48": [
+   "188831aee937768f",
+   "18b376c766e66eb9",
+   "2325accfccef3a53",
+   "44e9e8ea0f677a0a",
+   "d339a90363fb8156",
+   "dfd98e6c88e55ce2"
+  ]
+ }
+}

@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "525b77e32892160e66e4174910c9f4738ac604290670db0b41fe2491b9f31778",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "prehistoric stone-age fish rack",
+ "label": "prehistoric/ph-fish-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fish drying rack with frame and horizontal drying bars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rack is drawn in pure front elevation; the top horizontal beam and bottom crossbeam only have 1px outlines/edge highlights with no visible horizontal top surfaces seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6111
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "drying rack frame",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fish drying rack is depicted in pure front elevation. Both the top crossbar (row 4) and the bottom crossbeam (row 21) have only a 1px highlight line rather than a foreshortened top surface showing the 3/4 downward viewing angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 7320
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden frame rack with fish",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rack and its frame are drawn in pure front elevation: the top beam is only a 1-2px line (rows 4-5), the bottom beam shows only a vertical front face with no top surface, and the legs extend straight down flatly with no 3/4 perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6885
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden drying rack frame with slatted screen and hanging fish",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rack is drawn in flat front elevation. The top horizontal beam has at most a 1px outline/highlight (row 4) and the front beam has only a 1px highlight (row 21); neither beam shows a proper top surface, presenting an upright front view without 3/4 top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9217
+  }
+ ],
+ "decidedAt": "2026-10-14T00:47:54.423Z",
+ "cells": {
+  "16": [
+   "0e9797f9e7c8cdc0",
+   "1060cd0988adba9c",
+   "d93315560776dd3f",
+   "ea9e68f2de1d7d93"
+  ],
+  "24": [
+   "02e8712b6baf8c48",
+   "03fa717516bb30c3",
+   "1b903f11cf5e2ffd",
+   "1e87c1dd5812efbb",
+   "2040ee5d358b2ece",
+   "2189756f8f753b93",
+   "27b9b756e5bb4b11",
+   "2bc7937822f79f6f",
+   "302184768a8cfc1f",
+   "31582c269c61b1e9",
+   "32b22b2c486cde61",
+   "41a589b392a49f14",
+   "43f9db5411f5d7c9",
+   "63a2f4de71d012d9",
+   "6498f942055a6e24",
+   "6771e402d0bf2428",
+   "745bc82ad304ff37",
+   "a0adf5631571f58d",
+   "a5019cb3064f83d9",
+   "bc69d1833a32d5e0",
+   "c510b84be2bcd651",
+   "e26cc050f093470b",
+   "e3d53bccd11a9c1e",
+   "e8d0f70f11807c7d"
+  ],
+  "32": [
+   "d86158b3cdb5d422"
+  ],
+  "48": [
+   "0789d0083f95acb6",
+   "25df667f3923f668",
+   "42d6d7de21b4adb0",
+   "607856b28404894e",
+   "72974aa3f07723c2",
+   "cb6bb60e0ad81943"
+  ]
+ }
+}

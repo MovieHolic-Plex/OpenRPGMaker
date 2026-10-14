@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e38b9c156a483bb8848267af6b2a29d7896e3158ff61395e03e6211efd3c8234",
+ "width": 64,
+ "height": 16,
+ "kind": "terrain",
+ "name": "station deck floor plating, four variants (steel blue panels with rivets)",
+ "label": "sf-station/sf-deck-plate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floor plating tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Four 16x16 terrain floor tiles representing metal station deck plating viewed top-down with corner rivets and surface variations.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4693
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "station deck floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor/deck plating tiles viewed top-down across the full 16x16 tile height with subtle surface detail, seams, and rivets.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4414
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "station deck floor plating tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Four 16x16 floor plating terrain tiles seen from above with rivets and panel borders, functioning properly as top-down ground terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3803
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "station deck floor plating tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Four 16x16 terrain floor tiles representing metallic station deck panels with rivets and panel lines, correctly viewed as flat horizontal ground surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4096
+  }
+ ],
+ "decidedAt": "2026-10-13T15:26:41.506Z",
+ "cells": {
+  "16": [
+   "414c99cb2da361ae",
+   "95a234c1e255127b",
+   "eef6e4596bdc2e4e",
+   "f58afb7ed48bfdde"
+  ],
+  "24": [
+   "01efd97aa53246bd",
+   "0b8f3c303fd2c9a8",
+   "102e74d6aa7e157e",
+   "4a3dce9d0f988cca",
+   "4c16327fded69b61",
+   "4f91dc01a9a833b5",
+   "5187127842cde420",
+   "7d11fc9f30ea908c",
+   "8895c005fde5b74d",
+   "92682c66268c8217",
+   "92d57c55f28d5fc1",
+   "9a2aba5c6747ec0e",
+   "a1b86d0269fb1234",
+   "a6ffe51147e36f9d",
+   "bb4c857c65a078fe",
+   "d0976e264eb40074",
+   "d7dbfd4c6a976945",
+   "efc44c91a6873221"
+  ],
+  "32": [
+   "201d05ea18f2b794",
+   "3cbc596eca6b7395",
+   "3e1f8fc631c70819",
+   "c46c5323beb13017"
+  ],
+  "48": [
+   "0f1943a52e332a68",
+   "67750a8330c3b124",
+   "735c4055a9693e5f",
+   "81abe8c7a6ddc0b4",
+   "8924d653a44d976d",
+   "92eaaf6124ce20ea",
+   "961945522b670e56",
+   "97a899f39efcc9a7",
+   "a0cf3b62d71b9ab7",
+   "a60b0b78e966844b",
+   "b7b03d6d3b6daf52",
+   "e7c112d48146d617"
+  ]
+ }
+}

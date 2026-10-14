@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f25173ed560cb9ce59dc1e7d7ad7364aa98ae82eca692d8f1105cc9264a53285",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "무쇠 창살 담 오른쪽 끝 기둥",
+ "label": "steampunk-city/sp-fence-post-r",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cast iron fence with right end pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fence and pillar are drawn in pure front elevation. Horizontal bars are 1px thick flat lines, the base wall is drawn vertically flat, and the pillar shows no top surface (only a flat 2px finial on top).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4809
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pillar and iron bar fence section",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The iron bars, horizontal rails, lower brick wall, and right-end pillar are all drawn entirely in flat front elevation with no visible top surfaces (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5590
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "right end pillar of cast-iron fence",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillar and iron railing are drawn entirely in flat front elevation. Neither the horizontal iron rails nor the pillar's capital/top surface show any foreshortened top plane visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5700
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pillar and iron railing fence section",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The right end pillar and the railing fence are rendered straight-on in front elevation; the pillar cap and horizontal wall trims consist of horizontal colored bands with 0 visible rows of foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4878
+  }
+ ],
+ "decidedAt": "2026-10-13T18:16:30.908Z",
+ "cells": {
+  "16": [
+   "26180ebd96051201"
+  ],
+  "24": [
+   "1ffc8672c4b700a4",
+   "2176efa04ea1deac",
+   "399071313e504273",
+   "c2fa2bc35efa36a1",
+   "c4a7dd52e5973da6",
+   "fd6337ba20d872b1"
+  ],
+  "32": [
+   "0cf1c5f15ba2d831",
+   "1f9433ad6774b905",
+   "436e157a7c0e63f1",
+   "5edf8bd90a5b4539",
+   "aa71406e5c1b0410",
+   "afb3698ef5fbcfb2"
+  ],
+  "48": [
+   "20a6cb5282108418",
+   "6363a00bdebd2c2b",
+   "83d4823d5a2df946",
+   "a56174aa526c266d",
+   "ebcce911b1328f4c",
+   "f378403239dfeb57"
+  ]
+ }
+}

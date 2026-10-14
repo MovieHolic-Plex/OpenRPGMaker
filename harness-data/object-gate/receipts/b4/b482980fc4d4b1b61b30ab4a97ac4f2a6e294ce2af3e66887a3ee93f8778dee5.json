@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b482980fc4d4b1b61b30ab4a97ac4f2a6e294ce2af3e66887a3ee93f8778dee5",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "stone statue of a winged bird on a pedestal",
+ "label": "sky-island/si-statue",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pedestal and statue",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pedestal is drawn as a flat architectural front elevation with an overhanging cornice (rows 21-23) casting a shadow on the die (rows 25-30), with no visible top surface (0 rows) showing depth around the base of the statue.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6926
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pedestal and bird statue",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pedestal is drawn in pure front elevation as stacked flat rectangular blocks (rows 20-23 cap, rows 24-30 shaft) with no visible top surface foreshortened toward the viewer. The statue's base also lacks any visible top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6593
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pedestal and bird statue",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pedestal is drawn in pure architectural front elevation: row 20-23 is a front-facing cornice cap with a 1px shadow line at row 24 and the shaft at rows 25-29, with no foreshortened top surface where the statue stands (0px). The bird statue itself is also in pure flat elevation/profile.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11052
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone statue of a winged bird on a pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in pure front/side elevation. The bird is shown in flat 2D profile/elevation, and the pedestal beneath it is drawn as a flat architectural elevation with a light capital (rows 20-23), shaft (rows 24-30), and base (row 31) with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 22347
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.433Z",
+ "cells": {
+  "16": [
+   "3080bb61f410ffc0",
+   "4ae0c881c093f890"
+  ],
+  "24": [
+   "053a73eeb0fc7cf6",
+   "39b92727f24ecd87",
+   "640b3869a4802160",
+   "a1b40a353eec4d2c",
+   "ba0c7192c3f30c23",
+   "c285dbbc0e1724e9",
+   "d2e8a05fd30b3567",
+   "d6bf84f4ac0f6595",
+   "f12206a141f75b2a"
+  ],
+  "32": [
+   "8f57de3434b4c758",
+   "a599a68989e24643",
+   "f8aa32721b16b758"
+  ],
+  "48": [
+   "0ca2f8023380ee8a",
+   "71aa07606357a7f8",
+   "aeeff822a8e96bfa",
+   "d00da89c63194245",
+   "dafa7ca9599e7d3a",
+   "fff60d7ab52ee239"
+  ]
+ }
+}

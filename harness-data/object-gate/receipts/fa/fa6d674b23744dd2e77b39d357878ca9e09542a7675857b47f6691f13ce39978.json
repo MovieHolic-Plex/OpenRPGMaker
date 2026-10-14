@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fa6d674b23744dd2e77b39d357878ca9e09542a7675857b47f6691f13ce39978",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "cast iron galley stove with a stew pot and a kettle on top, glowing firebox door and a chimney pipe",
+ "label": "pirate-isles/pi-galley-stove",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "galley stove",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stove top surface is clearly visible from row 11 to 18 (about 8 pixel rows deep) with stove burners, a pot showing stew inside, and a kettle resting on it, leading to a front face with a firebox and oven door below row 19.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4733
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cast iron galley stove",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stovetop horizontal cooking surface is clearly foreshortened and visible from row 11 to row 18 (about 8 rows deep), supporting the pot, kettle, and burner rings above the front firebox doors.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4847
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cast iron galley stove",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cooktop surface spans rows 10-18 (around 9 source pixel rows deep) with burner rings, stew pot, kettle, and chimney base resting on it, above a clear south-facing front containing the firebox and oven doors.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4510
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cast iron galley stove",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cooktop surface spans about 8 pixel rows (rows 10-18) in depth, clearly showing circular burner insets, a stew pot, and a kettle from above before the front face begins at row 20.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4793
+  }
+ ],
+ "decidedAt": "2026-10-13T19:28:41.187Z",
+ "cells": {
+  "16": [
+   "5c4a607c738d7c89",
+   "9b079da9c9ce5243",
+   "a750fa845ad1c507",
+   "e6fdfdf4beff9d41"
+  ],
+  "24": [
+   "090b98067c71e61f",
+   "0a8d6fb278937ef2",
+   "0c5c007eb894aaa4",
+   "30698b0361201275",
+   "3adf5c952cfdd133",
+   "3d77d4a3e372ea22",
+   "4ce9e11eaf1faf4f",
+   "5d4659a12d450613",
+   "5f5b0a3fab3bee69",
+   "64e0235bd32829b4",
+   "7ea926c73fbcfdf5",
+   "9084d83679de3613",
+   "911e2d1dbcfa8e9f",
+   "91d46616fc4440ad",
+   "94edc87d420a4850",
+   "b3b4c9c4c8e60a44",
+   "b923eb993c39427a",
+   "d83dce0eecbb6434",
+   "de067907ae38048b",
+   "de826b71ab34a4ea",
+   "e1b46315159dff03",
+   "e6ac65d10618f6e6",
+   "ed2208bbe93d408e",
+   "f7bf60a4720b8dae"
+  ],
+  "32": [
+   "7392044bebaae4cf"
+  ],
+  "48": [
+   "4b99d481156408e9",
+   "50d2f41969d69358",
+   "5ed6d022b1490af0",
+   "a033dcc093eb1c7f",
+   "d4bf749ca957ab27",
+   "d6a6de9510a2e63f"
+  ]
+ }
+}

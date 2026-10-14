@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1001406d3c8437cf6143bffde7e1553c50295116955cf4050e937fa459b5a73f",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "벽 압력계 묶음",
+ "label": "steampunk-city/sp-gauge-wall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall-mounted gauge panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a wall-mounted panel with pressure gauges and a switch, mounted flat against a vertical wall as permitted for wall_mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5771
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall-mounted pressure gauge panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a set of pressure gauges mounted on a wall panel. As a wall-mounted fixture, a flat front-facing elevation is appropriate for top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5142
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall-mounted pressure gauge panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Object is classified as wall_mounted; it is mounted flat against a vertical north wall, so a flat front-facing view without a top surface is standard and permissible.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4546
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall panel with pressure gauges",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted gauge panel correctly rendered flush against the wall surface, appropriate for the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5401
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.466Z",
+ "cells": {
+  "16": [
+   "c5eee5be4e7eaea6"
+  ],
+  "24": [
+   "265432c0300ee198",
+   "3de08ebab9aaed97",
+   "5747aaf24dc38f6d",
+   "68a878f970bcaaed",
+   "df657bb6c30eca7b",
+   "fca63f4cf3496d7f"
+  ],
+  "32": [
+   "5d0e2b0600a492de",
+   "7389cb78e44ad2a0",
+   "83fb50aa8392411e",
+   "a06b3e3d9a735c08",
+   "b64cd02818060fed",
+   "fc866894c5a9c16e"
+  ],
+  "48": [
+   "073be108e8d003ed",
+   "3df1682456a9813e",
+   "54fa9604fef93268",
+   "a4e016e2baf7fbfb",
+   "edd2062c42ee5c79",
+   "f5eb629a6689e62b"
+  ]
+ }
+}

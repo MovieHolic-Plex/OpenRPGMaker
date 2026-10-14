@@ -1,0 +1,5 @@
+{"png": "sp-boiler-house.png", "kind": "structure", "name": "보일러실(그을린 벽돌, 폭 6, 배관·압력계)", "label": "steampunk-city/sp-boiler-house"}
+{"png": "sp-clock-tower.png", "kind": "structure", "name": "시계탑(다듬은 돌 밑동 + 벽돌 몸 + 놋쇠 시계 + 녹청 첨탑, 폭 4)", "label": "steampunk-city/sp-clock-tower"}
+{"png": "sp-workshop.png", "kind": "structure", "name": "기계 공방(벽돌 1층, 폭 6, 화물 문·천창)", "label": "steampunk-city/sp-workshop"}
+{"png": "sp-lab.png", "kind": "structure", "name": "연구소(다듬은 돌 2층, 폭 6, 구리 돔·피뢰침)", "label": "steampunk-city/sp-lab"}
+{"png": "sp-pump-house.png", "kind": "structure", "name": "급수 펌프장(다듬은 돌 1층, 폭 3, 구리 돔)", "label": "steampunk-city/sp-pump-house"}

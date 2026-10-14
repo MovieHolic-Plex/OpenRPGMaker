@@ -1,0 +1,162 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "343c107a741f3bcf7f0f8aaf851335f611c15bc18aeca88ed7d7a78f23dac0f5",
+ "width": 32,
+ "height": 96,
+ "kind": "structure",
+ "name": "white and red striped stone lighthouse with lantern room and gallery",
+ "label": "pirate-isles/pi-lighthouse",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lighthouse tower",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lighthouse tower, lantern room, and dome roof are drawn in pure front elevation with completely flat horizontal section lines, roof rim, and gallery railing. The main body displays no visible top surface (0 rows), with only the base plinth showing a horizontal step.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11032
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lighthouse tower and lantern room",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lighthouse tower, gallery railing, lantern room, and dome roof are drawn in a flat architectural front elevation with straight horizontal stripe boundaries, flat eaves, and no foreshortened top surfaces. The only horizontal surface shown is on the base plinth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5866
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lighthouse tower shaft",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylindrical tower is drawn in pure flat front elevation: all stripe boundaries, window frames, gallery railings, and the lantern roof base are completely straight horizontal lines with no curvature or elliptical perspective to show the downward 3/4 angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5186
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lighthouse tower shaft",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (tower shaft) and lantern room are drawn in a flat architectural front elevation with straight horizontal stripe divisions, flat horizontal rims at the roof base (row 9) and gallery, and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6888
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.701Z",
+ "cells": {
+  "16": [
+   "02de96a71cab4421",
+   "45ced2a982c6cbf1",
+   "4aad6afe8758e92f",
+   "6aa31d90da23ece6",
+   "84b48bf2cad1df53",
+   "856474bdeff52c20",
+   "877667065693c961",
+   "b35503d4e192d4fd",
+   "c557ebac5071f9fd",
+   "c8810a40d23c8c93",
+   "cbcacce5e38fbc3b",
+   "d8bbf8534486fdc6"
+  ],
+  "24": [
+   "12e37694adc2ad36",
+   "173329d2923e93f7",
+   "17edbfe0a897109d",
+   "226c789ecee33479",
+   "2527310207cd0043",
+   "3a619a3babd73fd3",
+   "45361184a8d18547",
+   "4d84d9924e2020ed",
+   "6166397b10d46020",
+   "65c13ddcb3d97a9b",
+   "68468d33dc27bc6c",
+   "7051f86da93a5bbe",
+   "8d6270df7287ba81",
+   "9bcde9ec146d0dd6",
+   "9d6578ba79314788",
+   "bc56666f4d60f40f",
+   "bfc0ed4b1259746f",
+   "d49b4374ba197669",
+   "da34454683f66746",
+   "dfa6f8949c5e5415",
+   "e41a1c6bab6f03bf",
+   "eed7317ac0939215",
+   "f67c9aa3b1a39a6e",
+   "fe6509ba9537b2b7"
+  ],
+  "32": [
+   "8fa0550094ec1c61",
+   "9bc60cea0f65c7f7",
+   "f36bf4ca6b69a4c6"
+  ],
+  "48": [
+   "2cda8d2e89b06920",
+   "6491dfd6f9127ebf",
+   "ae799724d5d87200",
+   "c4330d2e67292af1",
+   "f37ab80df65629c7",
+   "f7acc85b25e19ce3"
+  ]
+ }
+}

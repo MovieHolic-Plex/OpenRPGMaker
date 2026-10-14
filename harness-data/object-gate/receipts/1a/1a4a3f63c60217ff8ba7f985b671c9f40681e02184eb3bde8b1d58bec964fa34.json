@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1a4a3f63c60217ff8ba7f985b671c9f40681e02184eb3bde8b1d58bec964fa34",
+ "width": 48,
+ "height": 64,
+ "kind": "organic",
+ "name": "prehistoric stone-age swamp tree",
+ "label": "prehistoric/ph-swamp-tree",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The organic tree canopy is built of layered rounded foliage clumps viewed from a 3/4 perspective, with the upper/rear canopy tiers clearly visible above and behind the front tiers (rows 0-14). Roots and vines also layer in front/behind to support depth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5687
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "swamp tree canopy and stilt root base",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The foliage canopy is arranged in layered spherical clumps showing upper surfaces angled toward the viewer (rows 0-16). Stilt roots attach with depth layering between front and rear roots.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4649
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "swamp tree (canopy and trunk with stilt roots)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn from a side-scroller/platformer front perspective rather than a 3/4 top-down view: the underside of the canopy is exposed from below with vertical hanging roots, the trunk is a flat vertical cylinder, and the mangrove stilt roots branch out strictly in a 2D plane with 0px of top-down depth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7060
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire swamp tree is drawn in a pure 2D side-scroller front elevation. The canopy underside is viewed horizontally with parallel vertical hanging vines, the trunk is a flat vertical cylinder, and the mangrove stilt roots branch strictly in the 2D X-Y screen plane with no depth foreshortening or roots extending forward toward the viewer.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7793
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.798Z",
+ "cells": {
+  "16": [
+   "04f1f0e1c492001e",
+   "0f9172ebf55cb37d",
+   "1407ebdeff920aa2",
+   "2e87cd599fa88270",
+   "50a8ec22aad33a50",
+   "5341e2854d5f068d",
+   "585d80945e123ffe",
+   "618d51c6b498c8dc",
+   "a5b290423675c90e",
+   "b0a3232b8898795f",
+   "c7ceaf9cfed86375",
+   "e3ef7177015c402d"
+  ],
+  "24": [
+   "22e17d59bef86ccd",
+   "28b96572aab30836",
+   "60ca2a26e97b00f1",
+   "6de728fc2a4dac95",
+   "71a5fe5f4b8713bf",
+   "7b9fbbcf7db219e9",
+   "84f7185c44dd3b32",
+   "8a1c42a963591a15",
+   "8a8ace22955cd999",
+   "9110f1ee814dab4e",
+   "ad7c5722a565193d",
+   "b32221e83ebc0448"
+  ],
+  "32": [
+   "183de87560b83cdb",
+   "2c594c30bb016c90",
+   "3bd335afb605a2e4",
+   "63729e824b058dc7",
+   "6d1f522995403139",
+   "8b844bd20ca214ef",
+   "a80b57c34223c534",
+   "c05c082a170ab9f7",
+   "c0e50266651cbf24",
+   "c501169ec7097784",
+   "cd7e038d7e9bf69b",
+   "f9f51f545c41db05"
+  ],
+  "48": [
+   "69d5e7475c95d9dd",
+   "98dcfd6eda494c7e",
+   "9ff508425be50601",
+   "e6dea8b300183a23"
+  ]
+ }
+}

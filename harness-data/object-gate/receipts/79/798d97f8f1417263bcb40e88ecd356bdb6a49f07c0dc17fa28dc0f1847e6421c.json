@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "798d97f8f1417263bcb40e88ecd356bdb6a49f07c0dc17fa28dc0f1847e6421c",
+ "width": 32,
+ "height": 16,
+ "kind": "organic",
+ "name": "prehistoric stone-age berry bush",
+ "label": "prehistoric/ph-berry-bush",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cluster of foliage mounds with berries",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush is rendered with clear top-down depth, featuring an upper/rear foliage clump in rows 0-5 layered behind two lower front clumps, with upward-facing surfaces highlighted appropriately for 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3808
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cluster of berry bush foliage mounds",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Overlapping rounded foliage clumps with a rear central mound (rows 0-6) and foreground mounds (rows 4-14) shaded with top-down lighting, indicating proper 3/4 perspective depth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4596
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cluster of rounded foliage mounds forming a berry bush",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Overlapping spherical clumps with a rear mound visible at rows 0-6 and foreground mounds extending down to row 14, shaded with overhead lighting appropriate for 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9170
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cluster of berry bush foliage",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush consists of layered rounded lobes with a prominent upper clump visible from rows 0 to 6 and illuminated top surfaces on the lower lobes, providing clear 3/4 top-down depth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4221
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.798Z",
+ "cells": {
+  "16": [
+   "bc31330a794006a5",
+   "db93713bc1478856"
+  ],
+  "24": [
+   "0a8c3e4c63dcb51a",
+   "103d1027be875f10",
+   "1d968f118946dda1",
+   "3689d9b773a569ec",
+   "446929e9d491e045",
+   "6b459dfbc8a7be93",
+   "70677e75fcd0bed5",
+   "a5479de98491fc0c",
+   "accbdb911d9e6c0e",
+   "c763d94394eca1bf",
+   "cde06ad803118e2b",
+   "d235b815ae172ef2"
+  ],
+  "32": [
+   "45fb482b4a58b98e",
+   "c4c4389b1c438e8a"
+  ],
+  "48": [
+   "4a7611e9b0e44c49",
+   "4cb71a677b2a9cf9",
+   "68721595ff209276",
+   "8713d421510dea02",
+   "b05bf42589a4c885",
+   "fa8d5c578e5b1219"
+  ]
+ }
+}

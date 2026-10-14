@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4aac1482152f981bfa9a18f26edae3806e601b5e56775ab88e58e899646447f0",
+ "width": 48,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "급식실 긴 탁자(3칸, 밝은 합판 + 식판 줄)",
+ "label": "modern-campus-int/mc-cafe-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cafeteria table with lunch trays",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop is clearly shown from a 3/4 top-down perspective across rows 2-8 (7 rows deep) with cafeteria trays resting flat on its surface, followed by a south face/bench structure below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6191
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "long cafeteria table with meal trays",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from above across rows 2-8 (7 rows tall) with four meal trays resting on it, followed by a shaded front face across rows 9-12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6246
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cafeteria table with meal trays",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from above, spanning rows 2 to 8 (7 pixels tall) and holding four meal trays, with the front face/bench structure shown below it from rows 9 to 12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7004
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "long cafeteria table with meal trays",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop is clearly visible from above across rows 2–8 (7 source pixel rows) with four meal trays resting on its surface, above a front face/apron in rows 9–12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4863
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.310Z",
+ "cells": {
+  "16": [
+   "1bf13ffbd2da45a0",
+   "20ddefedf1407145",
+   "7f4539ac66b2fba0"
+  ],
+  "24": [
+   "71c0d67f7b966c61",
+   "7f47697a78f11463",
+   "ce958c68d88d1891",
+   "fbbbc0e9938289ff"
+  ],
+  "32": [
+   "100f9f3ecd56833b",
+   "1a56ccdca38b80ba",
+   "2bf25f5b67b1c6e0",
+   "5a2fc314303f54e2",
+   "681fc6603d7c6e71",
+   "6ee147ab22dd0c7b",
+   "72d741ec001af579",
+   "998cd32842970263",
+   "9bcbdc02168fa9f3",
+   "b5e4ce7753afc74f",
+   "ca7b375dbe58840f",
+   "ce58e76d8e3547ce"
+  ],
+  "48": [
+   "a1cb55f7c70a07d9",
+   "a9dfe2788e19fb3a"
+  ]
+ }
+}

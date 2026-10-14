@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b812a7395bafedc4303c536fe3345d66c8a40ab886113f4b5032feea263601f1",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "가로등(받침 + 가는 기둥 + 위 넓은 등 머리(윗면 5줄·아래 발광면) + 땅 빛 웅덩이)",
+ "label": "sf-station/sf-street-lamp-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lamp head and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire streetlamp is drawn in pure front elevation: the upper grey section (rows 0-4) is the vertical front face/cap of the lantern head rather than a receding horizontal top surface, with perfectly horizontal straight boundaries across the cap, glowing band, and lower housing. No horizontal surface foreshortened in 3/4 perspective is visible on the lamp head or post.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10917
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "street lamp head and pole",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wide top surface of the lamp head is explicitly rendered from rows 0 to 4 (5 rows tall) with an inset paneled top face before transitioning to the south-facing emissive band (rows 6-7) and tapered lower section. The ground light pool at rows 28-31 also confirms the 3/4 downward angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 21455
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "street lamp head and column",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the lamp head is clearly rendered across rows 1-4 (4 pixel rows tall) above the downward-facing light band and housing. The base also features an elliptical light puddle on the ground plane, consistent with 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10923
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lamp head and column",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire street lamp is drawn in pure front elevation: the lamp head cap (rows 1-4) has straight vertical side outlines and a straight horizontal base (row 5) with no elliptical foreshortening to indicate a top surface viewed from a 45-degree angle. The light band, stem, and base plinth (rows 26-29) are all rendered with flat, straight horizontal edges.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9748
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:07.399Z",
+ "cells": {
+  "16": [
+   "4019f82f92eee172",
+   "c1b04637dae00014"
+  ],
+  "24": [
+   "09a660121970b85c",
+   "201b1c964ce16548",
+   "2adba0f5f3315739",
+   "30ea1337b3a65635",
+   "3260eed508510615",
+   "3fc961747d3f706f",
+   "4ec606d1fa5a467c",
+   "68cceabc23a536a6",
+   "97f1359b9cb7e558",
+   "c089c0d5011da7ea",
+   "fa4d91fe4e9d1dc1",
+   "fd82b71038739029"
+  ],
+  "32": [
+   "5ac114a4ccebf8d9",
+   "653b8eae24eecb93",
+   "eea142a3bc12f6ab"
+  ],
+  "48": [
+   "04584ba573156b1d",
+   "3f7d891ac619c1cc",
+   "7c6bb8350349a28c",
+   "a4f648bd7f3d6af1",
+   "b280ff720c6c23ab",
+   "b6c3810dd0833c7d"
+  ]
+ }
+}

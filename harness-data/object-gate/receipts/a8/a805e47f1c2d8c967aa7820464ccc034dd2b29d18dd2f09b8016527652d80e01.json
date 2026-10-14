@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a805e47f1c2d8c967aa7820464ccc034dd2b29d18dd2f09b8016527652d80e01",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "captain's wooden writing desk with sea chart, quill in inkwell and oil lamp on top, drawers in front",
+ "label": "pirate-isles/pi-captain-desk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "writing desk",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk surface spans rows 4 through 16 (approximately 13 rows) displaying the map, quill, and lamp, while the front drawers span rows 17 through 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3946
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "desk",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the desk is clearly visible from row 4 to row 16 (approx 12-13 rows) displaying a map, quill, and lamp, above the front drawer face extending down to row 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3381
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "captain's wooden writing desk",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the desk is clearly depicted from above across rows 5 to 16 (approximately 12 rows), holding the chart, inkwell, quill, and lamp, while rows 17 to 31 show the front face with drawers and kneehole.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4140
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden writing desk",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desktop surface clearly extends from row 5 to row 16 (approximately 12 rows deep) displaying the sea chart, quill in inkwell, and oil lamp, before transitioning to the front drawer pedestals from row 17 downward.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3642
+  }
+ ],
+ "decidedAt": "2026-10-13T19:28:41.185Z",
+ "cells": {
+  "16": [
+   "41ef709faafa3546",
+   "4e7fa2021696ae8b",
+   "683c110befb17bcb",
+   "8941aae6339b4d7f"
+  ],
+  "24": [
+   "0162b8e6d19f0b66",
+   "0957c3b50ff0c759",
+   "1174a89c186b7ed1",
+   "258a6c925db5e8d8",
+   "293c8a9ae65466b7",
+   "4011ec121c5d388e",
+   "5c5db0abab315c55",
+   "65c5633cb24dc3ae",
+   "766baa1ec5707801",
+   "778173eeb186a0a2",
+   "79a089491f24606f",
+   "84dcdccc4fd7e79c",
+   "88356f2cc5fc4706",
+   "8e28ae44e57d03d2",
+   "a1064d8c09f490ee",
+   "a297e48f6b23089c",
+   "b0629e24b6c3a7ab",
+   "cd1526eba094b3c0",
+   "d6b9432350a5c6d1",
+   "e4767c1c29684446",
+   "e90e3d6170f02913",
+   "f9d0ebd876cf4e53",
+   "fb0813ac5724e5fa",
+   "fc44ff7ca994559f"
+  ],
+  "32": [
+   "c5679ed28980badb"
+  ],
+  "48": [
+   "0ad1912fbcb074dd",
+   "41063dde501ba689",
+   "9dafbb009386178f",
+   "a588470ef5dd0f39",
+   "e3e9cb6fe029f663",
+   "fd36f0a2b3cdb7a6"
+  ]
+ }
+}

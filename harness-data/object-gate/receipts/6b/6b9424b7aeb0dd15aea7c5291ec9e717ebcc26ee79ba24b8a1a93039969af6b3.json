@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6b9424b7aeb0dd15aea7c5291ec9e717ebcc26ee79ba24b8a1a93039969af6b3",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden rail fence segment (north-south)",
+ "label": "sky-island/si-fence-v",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fence post and rail segment",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The southern post/block shows a clearly foreshortened top surface across rows 4–7 (4 pixels tall) with its south-facing front face below on rows 8–13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7193
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden rail fence segment",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fence segment shows a 4-pixel-tall horizontal top surface (rows 4–7) in light brown above its south-facing vertical surface (rows 8–13) in shadow.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14788
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden rail fence segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence segment is drawn in flat front elevation. Neither the vertical uprights nor the horizontal crossbar at row 3 show any top surfaces (0 px), cutting off flatly at the top edge without foreshortened top faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 21948
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden rail fence segment",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal rail/beam shows a clear foreshortened top surface spanning rows 4-7 (4 source pixels tall) shaded lighter than the south-facing front vertical face at rows 8-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 19601
+  }
+ ],
+ "decidedAt": "2026-10-13T18:50:50.431Z",
+ "cells": {
+  "16": [
+   "e2f7a699dc1ea4d5"
+  ],
+  "24": [
+   "13b24dc58736690c",
+   "29ae70ed605747ce",
+   "914fc5a940c518b4",
+   "bd58ec0522ddf930",
+   "c01ca37eb192d71d",
+   "fa05c741b424a14b"
+  ],
+  "32": [
+   "17d4de96dfa65e52",
+   "92cce00f417df39f",
+   "a6cb029335880070",
+   "ba307ea070c99224",
+   "ceb58045e2f089bf",
+   "dfb9835cee872485"
+  ],
+  "48": [
+   "65f700cc86ae8f48",
+   "c5256a0a7595563e",
+   "cf8bd6e0706e63c8",
+   "e04d5853e7650dc5",
+   "ec59523cad06383e",
+   "efed3a941a3dcbc4"
+  ]
+ }
+}

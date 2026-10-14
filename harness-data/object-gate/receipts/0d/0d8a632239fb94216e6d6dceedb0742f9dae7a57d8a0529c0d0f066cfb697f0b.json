@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0d8a632239fb94216e6d6dceedb0742f9dae7a57d8a0529c0d0f066cfb697f0b",
+ "width": 16,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "prehistoric stone-age hide wall",
+ "label": "prehistoric/ph-hide-wall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hide wall hanging",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted animal hide banner hanging flat from a wooden rod; permitted to be flat as a wall-mounted decor.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4459
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hanging animal hide / banner mounted on a wooden rod",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted hide hanging flat against a wall from a horizontal bar, appropriate for a flat wall-mounted decoration in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5367
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "animal hide hanging from rod",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted animal hide hanging flat against the wall from a wooden rod. As a flat wall-mounted object, no top horizontal surface is required.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5259
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hanging animal hide mounted on a top wooden rod",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted animal hide banner hanging flat against the wall from a top wooden bar. As a flat wall-mounted decoration, it correctly shows no top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7041
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.810Z",
+ "cells": {
+  "16": [
+   "0820da0e3164b1ac",
+   "b9032d611ada38d1"
+  ],
+  "24": [
+   "08f6e8b880153777",
+   "0ef628d067d72423",
+   "235d5b58d96076cf",
+   "522c86f1a5ec1686",
+   "59c1ad7b90220961",
+   "6627ebad676290d4",
+   "7bbeaf76b3801baf",
+   "7ed2d8decd216d71",
+   "a91a0ff880e6d6d5",
+   "ac91cbd638702b94",
+   "bd22e40cf5bff8a3",
+   "cb4ac5e036e63540"
+  ],
+  "32": [
+   "129bbe86c51a5c24",
+   "beb42d590855f6e1",
+   "ee26faaf8c37f83c"
+  ],
+  "48": [
+   "7b602f192b9e845a",
+   "8deff82f150f9a3f",
+   "b9cc267a1c67326e",
+   "bb034acdf7195cfa",
+   "bc637d2fa3d0716f",
+   "f964424e481b4c60"
+  ]
+ }
+}

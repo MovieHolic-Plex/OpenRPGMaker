@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "54a0d00b957e83d706cac4f303fc8eb7cb2b3bf58455509321986ceb4bbefff3",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "대숲(곧은 대 여럿 + 잎 덩이)",
+ "label": "sengoku-edo/se-bamboo",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bamboo grove (stalks and foliage clusters)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bamboo stalks and foliage clusters are drawn in pure front elevation: all stalk nodes and base cutoffs are perfectly flat horizontal lines with no 3/4 downward elliptical curvature, and the foliage masses are drawn from a straight-on side view with 0 rows of top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7951
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bamboo grove with vertical stalks and leaf clusters",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bamboo stalks and foliage are drawn in pure 2D side-scroller front elevation: all stalk nodes are perfectly flat 1-pixel horizontal lines with no foreshortened curve, the stalks terminate along a flat horizontal bottom edge, and there is no top-down perspective visible on the stalks or canopy.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7889
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bamboo foliage canopy and stalks",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bamboo grove features multi-layered foliage clusters and layered foreground/background stalks. The upper foliage canopy shows a clear foreshortened top surface facing the 3/4 camera across rows 2–8 with top-down illumination.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10556
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bamboo grove (stalks and foliage clumps)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bamboo grove is drawn in a flat 2D side-scroller elevation: all four stalks are grounded on the exact same horizontal baseline at row 46 above a flat base line at row 47, with straight horizontal node bands and no top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13167
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.069Z",
+ "cells": {
+  "16": [
+   "26dc5932491f0403",
+   "76b094a155409aa4",
+   "7e1c57ae50bbf85b",
+   "ec4c6c0307e4171f",
+   "ecd886d3dbff5392",
+   "fb76806d767982f1"
+  ],
+  "24": [
+   "1044a638799e65b5",
+   "50f8f09076461383",
+   "6a71adb1b8a54e2d",
+   "74e25c589e9ea449",
+   "8d4cfb568f405e7a",
+   "9d2e373c4ce73734",
+   "bbe1e36c25c2fd27",
+   "c69e7cd76bceaf41",
+   "cdb894ba84aacd9f",
+   "dd3d9045cd79cc0d",
+   "e7b531a02643ec17",
+   "fdfd149feb6adc6c"
+  ],
+  "32": [
+   "4babb2069bf70549",
+   "a6f95e71750a1a65",
+   "c87822755ea5ba08",
+   "e9698682d8624f85"
+  ],
+  "48": [
+   "3be6cf6107146741",
+   "9c8459e6622fc9aa",
+   "d7b0d41fa6ca92d8"
+  ]
+ }
+}

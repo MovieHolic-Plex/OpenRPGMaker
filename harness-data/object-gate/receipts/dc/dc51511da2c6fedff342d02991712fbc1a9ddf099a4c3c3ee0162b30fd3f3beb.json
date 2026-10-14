@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dc51511da2c6fedff342d02991712fbc1a9ddf099a4c3c3ee0162b30fd3f3beb",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "cast-iron stove on a low brick platform seen from above-front: flat stove top plate with kettle clearly visible, brick platform top, fire window",
+ "label": "sky-island/si-hearth-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cast-iron stove body",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stove has a clearly foreshortened top plate spanning rows 6-10 (5 source pixels tall) with a kettle on it, sitting atop a front face with a firebox window. The brick platform also shows a distinct top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4544
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cast-iron stove",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top plate of the cast-iron stove spans rows 6 to 10 (5 source pixel rows) with a kettle resting on it. In addition, the brick platform beneath displays a wide top surface spanning rows 20 to 26.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5270
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cast-iron stove body on brick platform",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top plate of the stove is clearly visible at rows 6-10 (5 rows deep) with a kettle resting on it, and the brick platform also shows its top surface clearly (rows 20-26).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3707
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cast-iron stove on brick platform",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stove top surface is clearly foreshortened and visible across rows 7 to 10 (4 rows tall) supporting a kettle and stovepipe. The brick platform beneath also exhibits a clear visible top surface (rows 20 to 26).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3921
+  }
+ ],
+ "decidedAt": "2026-10-13T18:51:14.098Z",
+ "cells": {
+  "16": [
+   "280bdcc2e839c5d5",
+   "8f6dd96e04f6f333",
+   "d05a015a2ebbe6f5",
+   "ef43fea37ad54fbb"
+  ],
+  "24": [
+   "0a29143b340cdfbc",
+   "15f43bfa4cc90cac",
+   "15f4caada0061ac9",
+   "17a04239b43533fb",
+   "2261c6c54c0c549b",
+   "2bb3f7b77181b46e",
+   "3bc92d9d986afac4",
+   "45e86a4986333cd0",
+   "58a5c5f97fcd3a2b",
+   "63f156003ba0c29e",
+   "79d55b287c6b8470",
+   "88135f4aa5701a7a",
+   "9e7818aa47f6b95c",
+   "a5b608bc7d5090ca",
+   "ae135d1355f699d7",
+   "b46b42786a1d6011",
+   "c64865db5d589add",
+   "c71492ff644170a5",
+   "cc30bbea6663f716",
+   "d926862c04d08f38",
+   "e0bf4ef4dac49ca1",
+   "f85db846203f5c9d",
+   "fc4fe55421f536e6",
+   "fd8eb2555be34be9"
+  ],
+  "32": [
+   "c52ca90d4788c026"
+  ],
+  "48": [
+   "08654dcf0700f081",
+   "13178150f751cb85",
+   "2e01fe275f80cfa4",
+   "4676c271a77bb424",
+   "bdc5e555c87f2c6c",
+   "c4503a0d5041072a"
+  ]
+ }
+}

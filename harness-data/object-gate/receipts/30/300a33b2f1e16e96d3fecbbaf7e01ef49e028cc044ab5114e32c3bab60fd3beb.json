@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "300a33b2f1e16e96d3fecbbaf7e01ef49e028cc044ab5114e32c3bab60fd3beb",
+ "width": 32,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "도코노마(족자 + 꽃병 단)",
+ "label": "sengoku-edo/se-tokonoma",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tokonoma alcove unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The alcove/furniture has no visible top surface at row 0 (0px). Additionally, the vase inside is drawn in pure front elevation with a flat horizontal rim and no visible opening or top ellipse.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7245
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tokonoma alcove with scroll and vase",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire tokonoma alcove, floor beam, and vase are drawn in flat front elevation. There is no visible floor plane or top surface (0 rows) for the dais or alcove base, and the vase is a flat rectangle with no top opening/ellipse.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5660
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tokonoma alcove with scroll, vase, and raised platform (tokogamachi)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire tokonoma is drawn in flat 2D front elevation. The alcove base/step at rows 26-30 consists only of horizontal bands representing the vertical front face without any foreshortened top surface, and the vase (rows 18-25) is drawn as a flat rectangle with a straight horizontal top line (0px visible top or opening).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6146
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tokonoma alcove and platform",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire alcove is rendered in pure architectural front elevation. The platform/step at rows 26-30 shows only a front face with 0 top rows visible, and the vase on the ledge (rows 18-25) is a flat rectangle with no visible opening or top ellipse.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5835
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.076Z",
+ "cells": {
+  "16": [
+   "2541dda4261955c3",
+   "2bad0a0d05d70537",
+   "2e608574e7cfe911",
+   "6f2d35fda61b02c1"
+  ],
+  "24": [
+   "0bdc455fa5b3d859",
+   "42a77d2fb662c827",
+   "4c56153233200539",
+   "4d3c4754424c9e4f",
+   "6d5e66073d21fd82",
+   "7642fa21d3119c5a",
+   "b0266deba98050d0",
+   "bb477592808a464a",
+   "cbae11fc3f2a7ba4",
+   "e72b9cddb352a5f6",
+   "eaa12824da08233e",
+   "fdf4d5ae88fa6357"
+  ],
+  "32": [
+   "465154adea1933d1",
+   "83782d8f1b993559",
+   "ec556fcf1ae401b4"
+  ],
+  "48": [
+   "b0823aaea293d224",
+   "ba48a54aec4e8643",
+   "f6abcc656cb79be1"
+  ]
+ }
+}

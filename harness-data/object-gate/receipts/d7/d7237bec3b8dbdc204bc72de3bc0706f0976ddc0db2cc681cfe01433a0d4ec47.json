@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d7237bec3b8dbdc204bc72de3bc0706f0976ddc0db2cc681cfe01433a0d4ec47",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "black powder keg seen from above at an angle: round lid disk with rim and fuse plug on top, red band below",
+ "label": "pirate-isles/pi-keg-powder",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "powder keg",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top circular lid of the keg is clearly visible as an elliptical surface spanning rows 2 to 6 (~5 rows tall), resting above the curved front face with red bands.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3932
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cylindrical powder keg with round top lid and red bands",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid is rendered as a foreshortened ellipse spanning rows 1-6 (approximately 6 pixel rows tall) above the curved south-facing cylindrical body and bands.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4571
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cylindrical powder keg with wooden lid",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top circular lid is foreshortened into a clear ellipse spanning rows 1-6 (about 6 rows tall), while rows 7-14 show the curved front cylinder body with red bands.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8340
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical powder keg with round top lid",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid is depicted as an elliptical disk spanning rows 1 through 6, resting above the curved front body and red bands (rows 7-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3655
+  }
+ ],
+ "decidedAt": "2026-10-13T19:37:04.820Z",
+ "cells": {
+  "16": [
+   "6c5d553372a947cb"
+  ],
+  "24": [
+   "332dcfc4b86090ba",
+   "3d910d74df75a214",
+   "3dd0abeddd5a15f9",
+   "d3508a3b75c7d320",
+   "f2f7458fff458b05",
+   "f6555ee36253cbbc"
+  ],
+  "32": [
+   "1c04481217c60641",
+   "5c23aadfd58f6934",
+   "6b814e4c63c0449f",
+   "909734ac745cdb36",
+   "b0bdf8458360e937",
+   "b9afda6bf968a5a1"
+  ],
+  "48": [
+   "36abcbeccc12ab50",
+   "4f11cb4a69281040",
+   "4f1e0a110334f793",
+   "7842f9cae446ab26",
+   "8a34f21a6b43079c",
+   "fc080292c2b19103"
+  ]
+ }
+}

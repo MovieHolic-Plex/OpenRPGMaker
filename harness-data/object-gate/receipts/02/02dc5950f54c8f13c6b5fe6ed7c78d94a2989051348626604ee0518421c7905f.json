@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "02dc5950f54c8f13c6b5fe6ed7c78d94a2989051348626604ee0518421c7905f",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "벽 부착 경고 화면(주황 경고판 + 레이더)",
+ "label": "sf-station/sf-wall-screen-c",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall-mounted warning screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted monitor/screen mounted flat to the wall face. As a wall-mounted flat object, a flat front-facing view is appropriate.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6262
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall-mounted screen with warning display",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Flat wall-mounted screen displaying an orange status bar and radar graphic, valid for the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5116
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall-mounted warning monitor screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted screen displayed flat against the wall with framed border, orange warning bar, and radar blip icon; acceptable for wall_mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3661
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall-mounted monitor display",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Object is a screen/display panel mounted flat against the wall, matching the wall_mounted category where flat front-facing surfaces are expected.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3560
+  }
+ ],
+ "decidedAt": "2026-10-13T15:30:54.894Z",
+ "cells": {
+  "16": [
+   "4cbf61ceea7eab05"
+  ],
+  "24": [
+   "200ff2f07dffa74a",
+   "21856d2a4b5ed961",
+   "7861fac03320c3d1",
+   "c8ea386469f83c2c",
+   "ddff2c03c5c07cac",
+   "ecaf9dba22b4dbf4"
+  ],
+  "32": [
+   "01d54b79c1d21d0d",
+   "12a6b00850e5a0e3",
+   "20e4eb6fb0c96a66",
+   "94fde116e9d68e9e",
+   "e3d92f9b7b5d0cf9",
+   "e59364cb9a999312"
+  ],
+  "48": [
+   "596fc8b1d327b4e2",
+   "7f4f9119f4de3611",
+   "99ace027329ed37a",
+   "9a3158635fa5d3ae",
+   "9f5f6e8e3ddddb2c",
+   "e739e180de24caac"
+  ]
+ }
+}

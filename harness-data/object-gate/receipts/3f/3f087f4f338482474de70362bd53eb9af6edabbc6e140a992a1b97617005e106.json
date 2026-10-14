@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3f087f4f338482474de70362bd53eb9af6edabbc6e140a992a1b97617005e106",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "thick square wooden signpost with a flat top cap seen from above and three blank arrow boards, on a stone foot",
+ "label": "pirate-isles/pi-signpost",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden signpost with arrow boards",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top cap of the post is drawn in pure front elevation with vertical column shading extending all the way to row 0, showing no horizontal top surface. The arrow boards are also drawn in pure front elevation with no visible top edge.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10464
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden signpost with boards",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden post and its cap (rows 0-4) are drawn in pure front elevation as a stepped/beveled profile (width 4 tapering/stepping up from a width 6 overhang), showing no top surface foreshortened from above. The horizontal signboards are likewise drawn as flat front-facing strips.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8537
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden signpost with arrow boards",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden post and its cap are drawn in pure front elevation with vertical column shading extending all the way to row 0. No horizontal top surface or cut face is visible on the post, cap, or horizontal sign boards.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5376
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden signpost with top cap and crossboards",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden post and its cap are drawn in pure front elevation. The cap at rows 0-4 is drawn as a front-facing trapezoid/knob narrower at the top and wider at the bottom with no foreshortened top surface visible from above. The horizontal sign boards are also flat vertical faces without visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7021
+  }
+ ],
+ "decidedAt": "2026-10-13T19:33:03.044Z",
+ "cells": {
+  "16": [
+   "9044c19b73876ab0",
+   "ee2e69b383724cb6"
+  ],
+  "24": [
+   "12144606cd87d53a",
+   "13ebb907fad82a08",
+   "189e8296a0216de3",
+   "27162e7433e4e09a",
+   "39face9798f06997",
+   "6954c1fc8ae70d92",
+   "926aa937910ca41d",
+   "951252b4ba220889",
+   "aaa79ce953e162fb",
+   "b4d4c65720b488a1",
+   "c1006ba6a5418a0d",
+   "d0b9f39ea3a633ba"
+  ],
+  "32": [
+   "aa64a5e83b148de2",
+   "c193d8125ecacb0b",
+   "ea857b1b02cf1a8e"
+  ],
+  "48": [
+   "40b16b74ef4ddefb",
+   "663cd536aaaf36d5",
+   "74bb7111fd2ec845",
+   "7d6fa9e43d2d08cb",
+   "c71c582f4b97bea9",
+   "e124b16ac684db2e"
+  ]
+ }
+}

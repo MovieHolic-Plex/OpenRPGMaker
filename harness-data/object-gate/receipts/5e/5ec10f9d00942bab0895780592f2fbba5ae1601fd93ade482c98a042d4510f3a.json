@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5ec10f9d00942bab0895780592f2fbba5ae1601fd93ade482c98a042d4510f3a",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "prehistoric stone-age hearth",
+ "label": "prehistoric/ph-hearth-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "아가리 3행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "clay pot hearth / primitive kiln",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top chimney/vessel opening is clearly drawn as an ellipse from rows 8 to 11 (3 rows of interior cavity visible) in 3/4 view, with the cylindrical front face and surrounding stone hearth extending downwards.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 4310
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "clay kiln or hearth pot sitting on a stone fire pit",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening of the clay structure is clearly visible as an ellipse spanning rows 8-10 (3 rows inside) with its back rim at row 7, correctly depicted in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 3600
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "clay hearth pot / kiln chamber",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hearth vessel has an elliptical top opening clearly visible from above across rows 8-10 (3 rows tall interior) with smoke rising from it. The surrounding stone base is also foreshortened in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 5664
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "clay hearth pot / kiln over fire pit",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the clay vessel features a clearly visible elliptical opening across rows 8-11 showing its interior, situated above a front-facing outer wall and a fire pit below.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 5063
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.808Z",
+ "cells": {
+  "16": [
+   "5fcc8fa0cc876d98",
+   "724c5d42c84f391d",
+   "788475de310672b2",
+   "f09014ed1f004f1c"
+  ],
+  "24": [
+   "12de7e6f05ecfd65",
+   "21be80ca666d793f",
+   "2475e61833077481",
+   "478ae243dd276b84",
+   "4887a6e44fad0a8b",
+   "6211a434cb982130",
+   "647e3b8794ec6860",
+   "6a05a2df2dfe914a",
+   "6e0711480e9c3ac4",
+   "803c992bf6344c0e",
+   "843a8a91084f1384",
+   "91fbebbc1ba0ab0e",
+   "ad859aa63187213c",
+   "b6276d81c5ffe9ff",
+   "bfd54a763766c44c",
+   "c709848478a2726e",
+   "d1bc88dd38ce9b07",
+   "e1eb16384759a3f0",
+   "edd565d2a1818790",
+   "eece90d3730f699c",
+   "f167f64e93b5105d",
+   "f9e38c87e33ae4b6"
+  ],
+  "32": [
+   "e6692aa9e3930f71"
+  ],
+  "48": [
+   "657ad3dc9a697d63",
+   "8105cdb32fd36976",
+   "92b3a586523343ed",
+   "b32fd30f2179e2ad",
+   "b6272b7b246b5fdc",
+   "ecce619dd94b3b95"
+  ]
+ }
+}

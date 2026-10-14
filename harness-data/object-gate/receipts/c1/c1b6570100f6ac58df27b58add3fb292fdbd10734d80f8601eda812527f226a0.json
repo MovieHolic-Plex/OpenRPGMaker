@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c1b6570100f6ac58df27b58add3fb292fdbd10734d80f8601eda812527f226a0",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "기숙사 서랍장(낮고 넓은 3단, 위에 소품)",
+ "label": "modern-campus-int/mc-dorm-dresser",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "3-drawer dresser with items on top",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the dresser is clearly visible spanning rows 9-14 (6 pixel rows tall) supporting tabletop props, above the front drawer face spanning rows 16-30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5019
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dresser / 3-drawer cabinet",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the dresser is clearly visible across rows 8 to 14 (7 rows deep) holding several small props, and the front face with three drawers spans rows 15 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5559
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dresser / chest of drawers",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the low dresser is clearly visible across rows 9-14 (6 pixel rows deep) with small props placed on top, followed by the front drawers below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9443
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "3-drawer low chest of drawers",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface is clearly visible from row 9 to row 14 (6 rows tall) holding small decorative items, positioned above the 3-drawer front face (rows 15 to 31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5461
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.313Z",
+ "cells": {
+  "16": [
+   "2aab6c3be2dc8043",
+   "5535a6174e503e04",
+   "86b3357cc586b819",
+   "c514d922ebab124f"
+  ],
+  "24": [
+   "157234986c3d6e9c",
+   "26cf6024fa5a1cf2",
+   "2a612687398b6a85",
+   "3a67f127dabc7a10",
+   "46d4e2096c9dc89d",
+   "6e487f0ea4ea17cb",
+   "7b807a98453bc664",
+   "7eb3e3f30303f1c0",
+   "8294291baf89b9df",
+   "ba1352f1ee100efb",
+   "bc1c056fdd4cb5dd",
+   "bdac6fface3aa06e",
+   "ce054e44579103e6",
+   "def26a2598f92a8e",
+   "e24f4828bc51ff67",
+   "f172813256b0ab79",
+   "fc2fa1f85ae54a13",
+   "ff4f1c026cec7967"
+  ],
+  "32": [
+   "740afa26731b7315"
+  ],
+  "48": [
+   "0bfeee6f23b1ebda",
+   "491b1de08ebd8e70",
+   "53093a45c0be6730",
+   "682041b941f04d1d",
+   "a5c0876156467da7",
+   "c9fee82767c718ff"
+  ]
+ }
+}

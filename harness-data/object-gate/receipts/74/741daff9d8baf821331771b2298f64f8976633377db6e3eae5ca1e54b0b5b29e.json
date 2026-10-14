@@ -1,0 +1,128 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "741daff9d8baf821331771b2298f64f8976633377db6e3eae5ca1e54b0b5b29e",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "둥근 광고탑(빛바랜 포스터 — 글자 없음, 넓은 녹청 돔 뚜껑)",
+ "label": "steampunk-city/sp-poster-column",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "advertising column (Morris column) with verdigris dome cap and poster drum",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The dome cap shows its rounded upper surface from row 5 down to row 11 (approx 7 rows tall) with decorative features bowing downward in the center along the 3/4 perspective curve. The lower base plinth also exposes a visible stepped top surface around row 27.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13958
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "advertising column (Morris column) with dome roof",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylindrical advertising pillar is capped with a broad dome roof. Consistent with the 3/4 view, the dome's lower rim curves downward toward the viewer (y=12 at sides to y=14 in the center), and the upper dome surface foreshortens across rows 5–11 (approx. 7 rows). The base plinth similarly curves down at the front.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15291
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "advertising pillar (Litfaßsäule) with dome cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire pillar is drawn in pure front elevation: all section boundaries, posters (rows 17, 21, 22, 26), shadow line (row 16), and base plinths (rows 27, 29, 31) are completely flat horizontal lines with zero foreshortened elliptical curvature. The dome cap is also rendered straight-on as a 2D silhouette.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13622
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "advertising column (Morris column) with dome cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The advertising column is drawn as a flat front elevation: the finial sits at the very apex of the silhouette, the decorative band across the dome is completely horizontal, the posters on the cylinder have flat horizontal edges without cylindrical/elliptical curvature, and no top surface of the column or dome is visible from a 45-degree angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11818
+  }
+ ],
+ "decidedAt": "2026-10-13T18:54:36.461Z",
+ "cells": {
+  "16": [
+   "221a39c1588144c5",
+   "7bc20894db92f718"
+  ],
+  "24": [
+   "072da892688daf17",
+   "0ccb0f2e15ebf986",
+   "2a5e0f8ed19b6062",
+   "3fbbfcca51148e7a",
+   "4ec134c0f62e8f5b",
+   "6928a2bf9670e29c",
+   "86153e547f02bf57",
+   "8eaef9f19af6be4b",
+   "a148255c30154af4",
+   "b664ae20fe9e1552",
+   "b78eb4e1d9f678a6",
+   "bf1fa32a9c416bf0"
+  ],
+  "32": [
+   "6323c2ea7f1876d8",
+   "7404fe436d84a3c0",
+   "79c1455bb704d1b6"
+  ],
+  "48": [
+   "082261dd01ec9a8b",
+   "0b7f8a9ae014444b",
+   "344a53443be3aea9",
+   "4109399259ca31f1",
+   "a33400c44bac9a7f",
+   "dee767ab6cf0cf90"
+  ]
+ }
+}

@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c773eb7ae4fa075bc57da8aecfd1c01870effa44b0110470fbe248502183ebf9",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "세워 둔 자전거(한 대)",
+ "label": "modern-campus/mc-bicycle",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bicycle frame and wheels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bicycle is drawn in a pure 2D side profile/elevation like a side-scroller sprite: circular wheels side-by-side with no top-down tilt, depth, or visible top surfaces on the seat, handlebars, or frame.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5543
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bicycle frame and wheels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bicycle is drawn as a flat 2D side elevation (side-scroller style). Horizontal surfaces like the seat and handlebars have no visible top surface (0 rows of top view), and the wheels are drawn as flat circular rings without any 3/4 downward projection.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4957
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bicycle frame, wheels, seat, and handlebars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bicycle is drawn as a flat side-scroller profile elevation. The wheels are circular rings and the horizontal surfaces (seat, handlebars, frame) have 0 rows of visible top surface from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4066
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bicycle frame and wheels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bicycle is drawn as a flat 2D side elevation with zero overhead depth. The seat, handlebars, and frame show no top surfaces visible from the 3/4 camera angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4237
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.873Z",
+ "cells": {
+  "16": [
+   "47ee43468b06d8e0"
+  ],
+  "24": [
+   "2265febb11b540d6",
+   "436822b943b4c219",
+   "6b437bcb9ed3eb90",
+   "b332d74f5230a241",
+   "de81f8be103e0b47",
+   "de9a3b3d353c1dc9"
+  ],
+  "32": [
+   "1f51b1b3f2a1f8eb",
+   "390db4104877cd8d",
+   "9337689821d08a22",
+   "bfc92e8fecc89840",
+   "dac888b3a28048dd",
+   "fca2637e64acddf9"
+  ],
+  "48": [
+   "0a6152041bc2475e",
+   "0f3bd19896d08a82",
+   "2374980ac92bb13d",
+   "8d9140aef6fad15b",
+   "a8061d31f8979357",
+   "e3368e79c3240263"
+  ]
+ }
+}

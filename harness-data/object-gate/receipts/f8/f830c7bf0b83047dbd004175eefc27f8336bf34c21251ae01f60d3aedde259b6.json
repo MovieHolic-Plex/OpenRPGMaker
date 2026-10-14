@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f830c7bf0b83047dbd004175eefc27f8336bf34c21251ae01f60d3aedde259b6",
+ "width": 16,
+ "height": 32,
+ "kind": "frame",
+ "name": "칼걸이(긴칼·짧은칼 두 자루)",
+ "label": "sengoku-edo/se-sword-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sword rack with mounted swords and wide base",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden base plinth displays a clearly defined top surface across rows 18-20 (3 source pixels tall) leading down to a front vertical face at rows 21-23, providing proper 3/4 perspective for the rack.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5238
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sword rack with two horizontal swords and a base stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The swords and frame are drawn completely flat in pure front elevation. Both swords are flat horizontal bands with 1px black outlines and no foreshortened top surfaces. The base plinth also lacks a convincing top plane, rendering the entire object as an architectural front view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7955
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sword rack with two swords",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sword rack's base plinth clearly shows a 3-row foreshortened top surface (rows 18-20) above its 4-row south face (rows 21-24), providing proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9064
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sword stand with two mounted swords",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stand's base shows a clear 3-row foreshortened top surface (rows 18-20) above its 3-4 row front face (rows 21-24), providing appropriate 3/4 perspective for the frame.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7126
+  }
+ ],
+ "decidedAt": "2026-10-13T19:42:40.482Z",
+ "cells": {
+  "16": [
+   "35d61b3c36b84bdd",
+   "65a514dbd4f95047"
+  ],
+  "24": [
+   "19184a005187ac5e",
+   "427b00f629deff7e",
+   "4a16ba51a191d5ad",
+   "518f1dfe7365b5b7",
+   "728e6b0de32d82de",
+   "76277b4e30c49633",
+   "7be9d8b919bff184",
+   "91eb346d458b45f1",
+   "9667fb46f9b92515",
+   "ca69d35f49b038f8",
+   "ccf166009ad318b8",
+   "daac9c4af0bfc0fc"
+  ],
+  "32": [
+   "21c49bf4a832333b",
+   "82efbf1beccab2aa",
+   "c38adc8cef6a602f"
+  ],
+  "48": [
+   "239a143d857adfe8",
+   "619419dfe760c1c2",
+   "637e781ef558a625",
+   "6b716e80659ddcb0",
+   "6e686cf71e5a18d1",
+   "c33751103c932140"
+  ]
+ }
+}

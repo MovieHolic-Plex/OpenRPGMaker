@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "207bec9ed2c2faa623f468813d40f71cd78acc2fbd5b5d7fde4f1d912b791898",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "무쇠 화분(둥근 통 — 흙이 위에서 넓게 보인다, 뒤쪽에 작은 관목)",
+ "label": "steampunk-city/sp-planter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round cast iron planter",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round planter shows a clear elliptical opening spanning rows 3-8 (about 5 rows of visible soil and bush from above) above the cylindrical front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4310
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cast iron planter tub",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round planter shows a wide foreshortened circular opening spanning rows 3-8 filled with soil and a small green shrub, resting on a cylindrical south-facing metal body spanning rows 9-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3858
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cast iron planter / pot",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round container opening is drawn as an ellipse showing 5 rows of soil and foliage interior (rows 3 to 7) before the front rim at row 8, with the front south face extending below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2910
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cast iron cylindrical planter pot",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pot has an elliptical top opening spanning rows 3-8 (approx 6 rows) filled with soil and a small bush, clearly seen from a top-down 3/4 angle above the front cylindrical body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3403
+  }
+ ],
+ "decidedAt": "2026-10-13T18:54:36.462Z",
+ "cells": {
+  "16": [
+   "a20f8a8967ed8c54"
+  ],
+  "24": [
+   "40e382cdab87df35",
+   "6993f60afc91f420",
+   "767afdb0c5ec8e78",
+   "cfe2f9e0967901b9",
+   "d83c84df0c3b5000",
+   "de8cffee79d65f6e"
+  ],
+  "32": [
+   "03abd40948eb477f",
+   "1f4142c155dbbbdb",
+   "24da4559312bfc57",
+   "3efdff60ac8cd7c8",
+   "b30053d585127ade",
+   "e98dfedf1fef8be1"
+  ],
+  "48": [
+   "0653ef5f89d03fd6",
+   "1adadb0de97ae9c1",
+   "524eecbb11e3cd1b",
+   "b75e74a38034cf9e",
+   "cc021fa4c4ba9873",
+   "f9edc81d24cc46ed"
+  ]
+ }
+}

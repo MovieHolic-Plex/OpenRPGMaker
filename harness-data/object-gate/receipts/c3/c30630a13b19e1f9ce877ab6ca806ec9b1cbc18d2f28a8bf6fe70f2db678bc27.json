@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c30630a13b19e1f9ce877ab6ca806ec9b1cbc18d2f28a8bf6fe70f2db678bc27",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "rock cliff face tile with small embedded crystals (terrain)",
+ "label": "sky-island/si-face-top-crystal",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cliff face terrain tile with crystals",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a terrain cliff face tile showing the top ground edge (rows 0-2) and the vertical rocky wall face with embedded crystals, correctly following standard 3/4 view JRPG cliff tile structure.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4437
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cliff face tile with crystals",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting a vertical rock cliff face with embedded blue crystals.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2811
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rock cliff face with crystals",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a terrain cliff face tile with dirt at the top edge (rows 0-1) and embedded crystals along the vertical face; as standard JRPG cliff terrain rather than a standing object, it matches its kind and is valid.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5908
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rock cliff face tile with embedded crystals",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a vertical cliff/wall face terrain element with brown ground ledge at the top and vertical rock wall with embedded crystals, correctly categorized as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3488
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.975Z",
+ "cells": {
+  "16": [
+   "8ce20964becd6b28"
+  ],
+  "24": [
+   "5e9bdafc81c6d108",
+   "69952dfd83440fd0",
+   "724d63c2ba0d52da",
+   "816570ceeac710b5",
+   "cdaedc908d9e952e",
+   "e804486163d0a022"
+  ],
+  "32": [
+   "0f335069ed40a0bb",
+   "1966a97790422bc5",
+   "33b37f7244fb9148",
+   "6983bdd8ee4baedf",
+   "8d797dd2534babac",
+   "a19043073aa86c25"
+  ],
+  "48": [
+   "041bff6dbe7155b5",
+   "527703cef565fb1f",
+   "5dd9178cd034e2a8",
+   "5f6f47ac6136a8b1",
+   "6d1b727331efb68c",
+   "fd05ea892bd89512"
+  ]
+ }
+}

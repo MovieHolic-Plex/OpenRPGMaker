@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a7c899cb497bac33383637e8e8246d51e6ba543ffb0cc8f8dc448df4f22e3df2",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "trade goods stall with cream canvas awning, pots and rolled cloth",
+ "label": "pirate-isles/pi-stall-goods",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "market stall with awning and counter",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The canvas awning clearly displays its foreshortened top slope across rows 0-9 before dropping to the front valence (rows 10-12), and the goods rest on a visible recessed counter/shelf surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4254
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "market stall with canvas awning and display counter",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The canvas awning clearly displays a large downward-sloping top surface spanning rows 0-8/9 above its front valance, and the counter shelf shows depth supporting pots and cloth rolls.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3966
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "market stall with awning and counter",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The canvas awning clearly slopes forward showing its top face across rows 0-12, and the counter displays a visible horizontal surface where the pots and cloth rolls sit (rows 17-22) above the vertical wooden counter base (rows 23-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4252
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stall with awning and counter",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The canvas awning clearly displays a large sloped top surface from row 0 to row 9 (10 source pixel rows) above the front valance, and goods rest on a foreshortened counter top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4376
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.702Z",
+ "cells": {
+  "16": [
+   "2828232f9934c94b",
+   "2afc4f07555126dd",
+   "92433f93d463821f",
+   "baaefb02520c85e0"
+  ],
+  "24": [
+   "027a5ed4da7cae1a",
+   "1bf939c75790a036",
+   "20520e9142a6eba0",
+   "26297fcf0590c764",
+   "31291dc543d6d1f5",
+   "32a4b169535e13f2",
+   "42b3fabbf54be7cd",
+   "49b3bfa28b753cc5",
+   "5594df1e867c88f0",
+   "5940dc07742c693e",
+   "5ce7dd121fc12acc",
+   "6000ae3fd0993dbe",
+   "611019f02d1c8c02",
+   "835851df7946b47d",
+   "8688625ded3270ab",
+   "8e18a227ea727ba5",
+   "932fd41fcbcae36f",
+   "a3cebd2aa7626fe1",
+   "b388e2e572e41f4e",
+   "b7354261a5658ea4",
+   "cdaad006734cf02c",
+   "d9cb1df6d92ea6c7",
+   "dd6f431af1afc188",
+   "f777d7cc0c475971"
+  ],
+  "32": [
+   "e5918da5ca68d06f"
+  ],
+  "48": [
+   "029edecb50d57eba",
+   "1016b0e9360290f8",
+   "4289c68cef7452d7",
+   "5846cd4fea07077b",
+   "bce0a53d00c43edd",
+   "ed71a122ca9637f7"
+  ]
+ }
+}

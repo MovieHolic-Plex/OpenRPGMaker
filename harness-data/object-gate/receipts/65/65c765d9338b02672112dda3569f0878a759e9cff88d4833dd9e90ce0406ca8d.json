@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "65c765d9338b02672112dda3569f0878a759e9cff88d4833dd9e90ce0406ca8d",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "물결 자갈(가레산스이)",
+ "label": "sengoku-edo/se-gravel-wave",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "raked gravel ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing zen garden raked gravel (karesansui) viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7325
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "raked gravel ground tile (karesansui)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting horizontal raked gravel ridges in a Japanese dry landscape garden across the entire 16x16 ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6458
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "raked gravel ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless horizontal raked gravel/sand texture for a karesansui zen garden, functioning as a ground terrain surface across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4012
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "raked gravel ground tile (karesansui)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile depicting raked sand/gravel patterns across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2501
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.061Z",
+ "cells": {
+  "16": [
+   "f27a9876ffcccde7"
+  ],
+  "24": [
+   "0de1a9ee3526db9f",
+   "16e096484f1b49f1",
+   "63ac551abab5c5a7",
+   "6d772e9075fef73e",
+   "b1c5e36ab77083ad",
+   "dc5470a6190a11ec"
+  ],
+  "32": [
+   "1017aef687f49253",
+   "24739f5a6bf1e3fb",
+   "2e48b600a1ce2e43",
+   "333b83c9ea6ec53a",
+   "c86777b17603e352",
+   "f528698158c71138"
+  ],
+  "48": [
+   "76aa6d8a76c9e080",
+   "af5675a7baf02915",
+   "b876c0b3ecf5a102",
+   "c51609c5b939a860",
+   "e540502bf990df80",
+   "fd5da8066aa0f0a0"
+  ]
+ }
+}

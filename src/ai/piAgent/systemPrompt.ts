@@ -13,6 +13,13 @@ import { BEODEUL_GROUND_POLICY_LINE, STORE_TILE_SOURCE_POLICY_LINE, TILESET_FAMI
 import { HAND_INTERIOR_POLICY_LINE } from "../handInteriorPolicy";
 import { jpCityPromptLines } from "../jpCityPolicy";
 import { gothicPromptLines } from "../gothicPolicy";
+import { pirateIslesPromptLines } from "../pirateIslesPolicy";
+import { sengokuPromptLines } from "../sengokuEdoPolicy";
+import { skyIslandPromptLines } from "../skyIslandPolicy";
+import { steampunkPromptLines } from "../steampunkCityPolicy";
+import { campusPromptLines } from "../campusPolicy";
+import { sfStationPromptLines } from "../sfStationPolicy";
+import { prehistoricPromptLines } from "../prehistoricPolicy";
 import { desertEastPromptLines } from "../desertEastPolicy";
 import { JOSEON_POINTER_LINE } from "../joseonPolicy";
 
@@ -68,6 +75,18 @@ export function buildPiAgentSystemPrompt(
     // 일본 도시(jp_city) — 칩셋이 있다는 사실과 건물 조립 도구로 가는 길. 범위 맵이 jp_city 면 상세 순서가 더 붙는다.
     ...(spatial ? jpCityPromptLines(project, mapIds) : []),
     ...(spatial ? gothicPromptLines(project, mapIds) : []),
+    ...(spatial ? pirateIslesPromptLines(project, mapIds) : []),
+    // 전국·에도(sengoku_edo) — 칩셋이 프로젝트에 있을 때만 줄이 붙는다.
+    ...(spatial ? sengokuPromptLines(project, mapIds) : []),
+    // 하늘섬(sky_island) — 칩셋이 프로젝트에 있을 때만 줄이 붙는다(없는 칩셋을 «있다»고 말하지 않는다).
+    ...(spatial ? skyIslandPromptLines(project, mapIds) : []),
+    // 스팀펑크 도시(steampunk_city) — 칩셋이 프로젝트에 있을 때만 줄이 붙는다.
+    ...(spatial ? steampunkPromptLines(project, mapIds) : []),
+    // 캠퍼스(modern_campus) — 칩셋이 프로젝트에 있을 때만 줄이 붙는다(없는 칩셋을 «있다»고 말하지 않는다).
+    ...(spatial ? campusPromptLines(project, mapIds) : []),
+    ...(spatial ? sfStationPromptLines(project, mapIds) : []),
+    // 선사 원시 세계(prehistoric) — 칩셋이 프로젝트에 있을 때만 줄이 붙는다.
+    ...(spatial ? prehistoricPromptLines(project, mapIds) : []),
     // 사막·동양풍(desert_east) — 칩셋이 프로젝트에 있을 때만 줄이 붙는다.
     ...(spatial ? desertEastPromptLines(project, mapIds) : []),
     ...(spatial ? [JOSEON_POINTER_LINE] : []),

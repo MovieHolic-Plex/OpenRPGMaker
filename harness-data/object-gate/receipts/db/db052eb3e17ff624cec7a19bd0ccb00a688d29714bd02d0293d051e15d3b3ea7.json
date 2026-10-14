@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "db052eb3e17ff624cec7a19bd0ccb00a688d29714bd02d0293d051e15d3b3ea7",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "prehistoric stone-age fur bed",
+ "label": "prehistoric/ph-fur-bed",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fur bed / pelt sleeping mat on foliage base",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sleeping surface and pelt spread horizontally across rows 6-24, clearly viewed from above in classic 3/4 perspective with an organic headrest at the north end.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3655
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fur pelt bed",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed is seen from above in a proper 3/4 top-down angle, showing the spread-out fur pelt lying horizontally on the bedding base across rows 6 to 24.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3197
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fur pelt / bed spread over leaves and frame",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fur bed is viewed from above at a 3/4 top-down angle, showing the broad horizontal surface of the pelt and bedding spanning from row 6 to row 24 (about 18 rows of top surface).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3202
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "animal pelt bed spread over foliage and wood frame",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sleeping surface/fur pelt is viewed from above across rows 6 to 22, clearly displaying the horizontal surface in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5108
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.809Z",
+ "cells": {
+  "16": [
+   "6ef1f417cf2298d4",
+   "7fd019042e18f45e",
+   "cc0ac80eeba7793f",
+   "e8a43e49bc7fe51c"
+  ],
+  "24": [
+   "2f63055d80f0f825",
+   "39169a5cf9dda983",
+   "4091c8493dfd9e34",
+   "44983c8b7892eade",
+   "46bb486b6fa90627",
+   "47f19cf3d80401d3",
+   "4ba2769b0f8ccba4",
+   "4ef644ec5dd249da",
+   "59076d0cd1e69d4a",
+   "60a7a18e9154e717",
+   "68c28599a441a3c9",
+   "76f1bffa7f79e267",
+   "8192587cb215ece1",
+   "83fd4c226fffdb52",
+   "a9397af79dd9bf56",
+   "af80c694524e718a",
+   "b38623b07508cbef",
+   "c2fed44a56344077",
+   "c7ea450cc3fc2fea",
+   "c8589efd566a075a",
+   "cf735271139407e8",
+   "e789b90496a105b6",
+   "fae6a1bcde64b160",
+   "ff4fa3f9bcf152b7"
+  ],
+  "32": [
+   "be0fe437775d5153"
+  ],
+  "48": [
+   "5543b671279e862b",
+   "570c90c950e2c812",
+   "99ea408d4475e194",
+   "c6d2eedc458acf25",
+   "eb9712dfa31c6fb1",
+   "f42a3a517908b071"
+  ]
+ }
+}

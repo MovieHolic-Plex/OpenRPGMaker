@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "68738f700b5e45506c8cc199e44708248b61b55b3345d7d95b0cd5ddefd58d4e",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "prehistoric stone-age vent",
+ "label": "prehistoric/ph-vent-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone vent cone / rim",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The vent opening is clearly viewed from above at an angle, displaying a 5-row glowing interior cavity surrounded by a stone rim (3 rows at the back, 2 rows at the front) with smoke drifting upwards from behind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15307
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone vent / thermal pit with glowing interior",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The vent opening is clearly viewed from above at a 3/4 angle, displaying a 5-row deep glowing interior (rows 7-11) encircled by a stone rim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4372
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone vent mound with glowing opening",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The vent opening is clearly viewed from above in 3/4 perspective, showing a 5-row tall fiery interior (rows 7-11) surrounded by a stone rim, with smoke rising above it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12186
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone rim with glowing volcanic interior",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The vent opening is rendered as an elliptical pit seen from above (rows 7-11, 5 rows tall) filled with glowing magma, surrounded by a dark stone rim in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3323
+  }
+ ],
+ "decidedAt": "2026-10-14T00:46:42.340Z",
+ "cells": {
+  "16": [
+   "d75317f5ebf6ba31"
+  ],
+  "24": [
+   "027e7c14de7e9e99",
+   "6dc387c9fbed11e7",
+   "72f3c536f3baae16",
+   "7e6b94a25fad8c94",
+   "94870fb4d18a9299",
+   "f05a8334c5038ce2"
+  ],
+  "32": [
+   "365150db9ce21a13",
+   "39efac12b9b2c51b",
+   "6c4afe61cd0c36af",
+   "aefa4202d7a1b0de",
+   "d5cbda9433a76b0a",
+   "ee0b3761de257ed4"
+  ],
+  "48": [
+   "196759ec20cd9389",
+   "40c5fbc64a70af4c",
+   "59a69133caba5d24",
+   "6daf9658db2df3b4",
+   "c194251b4eb2ecea",
+   "f3d119805ac5a673"
+  ]
+ }
+}

@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5a8efd1744fd4f19db283572575d9a97cbe36a63501fa607498c5daa37321bb9",
+ "width": 64,
+ "height": 32,
+ "kind": "structure",
+ "name": "화물 호버 트럭(넓은 화물칸 윗면 + 앞쪽 낮은 캐빈 윗면)",
+ "label": "sf-station/sf-street-pod-truck",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cargo hover truck body",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cargo section displays a substantial 13-row top surface (rows 1-13) above a vertical front face with hazard striping (rows 14-26). The attached cabin also clearly exhibits both a foreshortened top surface (rows 11-19) and a vertical south face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6507
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cargo hover truck",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main cargo body shows a large top surface spanning rows 1-13 above a vertical front face with hazard stripes (rows 14-25). The attached cabin also shows a clear top surface (rows 11-19) above its front windshield face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6363
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cargo hover truck with large rear cargo container and front cab",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main cargo body clearly displays an expansive foreshortened top surface (white ribbed deck across rows 1-13) above its vertical south face (blue hazard-striped section, rows 14-25), with the attached cab similarly showing both top and front planes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6171
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cargo hover truck with large white cargo container roof and front cabin",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the large cargo bay spans rows 1-12 (12 pixel rows tall), and the cabin also has a clearly visible top surface spanning rows 11-19, placed above their respective south-facing front walls.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6248
+  }
+ ],
+ "decidedAt": "2026-10-13T15:31:17.043Z",
+ "cells": {
+  "16": [
+   "470d8be2631ce0c0",
+   "473516fa2c940bf9",
+   "623fdc154c3dfc8a",
+   "75e5a13e536f6b33",
+   "77af926df88705fb",
+   "87bcce2e6aad8454",
+   "ccc7383e26a0fcf2",
+   "d34314b5719b21d7"
+  ],
+  "24": [
+   "0af023f69ed6590e",
+   "0b9b6e21673418dc",
+   "1aaeea4e7f70a6df",
+   "1d8658337ea76ebf",
+   "20a71d231bd08c30",
+   "24881dd518a1f1f8",
+   "25709ecdf5b4ed6f",
+   "2ba6202bce14a97c",
+   "2dfd47dad8820581",
+   "2fecd3ba12279c9a",
+   "317e15edfdc1d673",
+   "34e9b63bae60994e",
+   "3b0819470148843c",
+   "3b85c2e675432bbe",
+   "45d2b552c7d0b19c",
+   "4def5b7a61eaab49",
+   "5170ecac775aca20",
+   "637bcb30e695e792",
+   "666fd9dee1b412fe",
+   "66e72c64d0d3239e",
+   "6c47bc7814cafe39",
+   "72e1d67bc15e8fca",
+   "77bbf3fc59412f2f",
+   "80a2aebcbe64db96",
+   "81c3e2bb69ff4045",
+   "84bdef4c662b8dab",
+   "8d8c99d0c189b7c4",
+   "a406de7088e52a9d",
+   "a8640dae49fcff90",
+   "ae5a01afc8fa369d",
+   "c8458f57b3b5b258",
+   "db069feb775c6ee3",
+   "e9b045b74f154b0a",
+   "f48282936a27be51",
+   "fc2156eab1a029ab",
+   "fda3ea0aa1d6c72f"
+  ],
+  "32": [
+   "29b7940c258a477f",
+   "d78e659979ef4eb5"
+  ],
+  "48": [
+   "0a6f290f169084c4",
+   "0bdda1dd782be4da",
+   "370b29302036237f",
+   "38cdad9cabf2ea2a",
+   "4268db290a205470",
+   "479623f1f35c46d2",
+   "5c8f4c90038a64f5",
+   "7e54f50ef8f91a34",
+   "925bb0178fff244c",
+   "bbd07a95241330ce",
+   "c174867aef9f050a",
+   "c75b8e9acec561bc"
+  ]
+ }
+}

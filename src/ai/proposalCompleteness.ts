@@ -201,6 +201,7 @@ function heuristicCompletenessWarnings(
 const INTERIOR_ROOM_TOOL_NAMES = new Set([
   "build_hand_interior_room",
   "build_wizarding_space",
+  "build_gothic_place",
 ]);
 
 function interiorCompletenessWarnings(

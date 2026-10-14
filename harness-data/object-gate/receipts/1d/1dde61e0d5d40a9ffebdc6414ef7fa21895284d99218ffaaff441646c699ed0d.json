@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1dde61e0d5d40a9ffebdc6414ef7fa21895284d99218ffaaff441646c699ed0d",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "전차 정류장 지붕(무쇠 기둥 + 유리 지붕 + 벤치)",
+ "label": "steampunk-city/sp-tram-shelter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tram stop shelter canopy and pillars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shelter roof/canopy and supporting pillars are drawn in pure front elevation with no visible top surface or slope (the dark top rim is only 2px thick, row 1-2). It looks like a flat vertical plane or 2D side-scroller asset rather than a 3/4 top-down structure.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5531
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tram stop shelter roof and frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shelter canopy/roof frame is drawn entirely in a flat front elevation with only a 1-2 pixel dark rim along the top (rows 1-2) and no foreshortened top slope or upper surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5419
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tram stop shelter roof and frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shelter roof and iron frame are drawn in flat front elevation. The top horizontal frame is only a 1px border line (row 1) with no top surface or slope visible for the roof structure.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6343
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tram stop shelter canopy (cast iron frame and glass panels)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shelter canopy/frame is drawn completely flat as a front elevation. The top horizontal frame is only 2px thick (rows 1-2) with no visible top surface or slope to indicate depth in 3/4 perspective, and the glass frame consists of straight vertical and horizontal bars without foreshortened top/depth faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 40948
+  }
+ ],
+ "decidedAt": "2026-10-13T18:42:41.660Z",
+ "cells": {
+  "16": [
+   "238d925d39cb872d",
+   "364a6cdb279c26a9",
+   "36923583baa80d67",
+   "39f3251680fd56d7",
+   "c5402aabc424a777",
+   "f59644ef7d12e479"
+  ],
+  "24": [
+   "151eb0e00997b8d8",
+   "377b5f80e0df1fe0",
+   "3fe8c57f5f511cce",
+   "4019ee0d140e7848",
+   "51cae21fc0361251",
+   "6836a2f82a08aa2c",
+   "8e94072bd5af8001",
+   "c95155514736a4a6"
+  ],
+  "32": [
+   "50604be9524c02c7",
+   "737b5506b69b9ae3",
+   "b2b364f9cdb2591e",
+   "bd0be585c840e0bd",
+   "d07c94ebd5cfd783",
+   "ec88874d38e54827"
+  ],
+  "48": [
+   "422c08f4d414bd02",
+   "eba28390598ee84a"
+  ]
+ }
+}

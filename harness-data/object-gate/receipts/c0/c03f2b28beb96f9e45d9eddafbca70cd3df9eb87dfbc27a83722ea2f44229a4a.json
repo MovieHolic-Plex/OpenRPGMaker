@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c03f2b28beb96f9e45d9eddafbca70cd3df9eb87dfbc27a83722ea2f44229a4a",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "정류장 쉼터(유리 지붕 윗면 + 시안 등 + 유리 뒷벽 + 안 벤치 + 노선 화면)",
+ "label": "sf-station/sf-street-transit-stop",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bus stop shelter roof canopy",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The shelter's glass roof top surface is shown from row 1 to 6 (6 px tall) foreshortened from above, with the cyan light fixture facing south below it, and the interior bench also shows a visible top seat surface on rows 21-22.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7795
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bus stop shelter roof canopy",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The shelter's roof canopy shows a 6-row top glass surface (rows 1-6) before the cyan underside light at row 7, and the interior bench clearly displays a 2-row top seat surface (rows 21-22) above its front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8363
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bus stop shelter canopy",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The glass canopy roof shows its top surface across rows 1-6 (6px tall) with panel divisions, seen looking down from above. The bench inside also shows its top seat surface (rows 21-22).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6564
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bus stop shelter with glass canopy roof",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The shelter's glass canopy roof displays its foreshortened top surface across rows 1-6 with pane dividers, and the interior bench also correctly shows a 2px top seat surface (rows 21-22) above its front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6661
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:31.924Z",
+ "cells": {
+  "16": [
+   "01d2c6d25db31180",
+   "3f505231d0c9271d",
+   "5caf9ee30f04191e",
+   "605f2f09ff48fce4",
+   "be041f89c44122be",
+   "fbbb5be24a28a457"
+  ],
+  "24": [
+   "0c7b7dd37eed440c",
+   "17d15ee2aaf1e67f",
+   "2456842baafff341",
+   "32a0572e62081d4a",
+   "367fd029e4d9e935",
+   "970a7d3003e1a390",
+   "a2e5e8ec08936e0e",
+   "c6650e4d76fb7c5e"
+  ],
+  "32": [
+   "112505b0953cfeb6",
+   "626bd350db121976",
+   "bc5c279d7b0e65c2",
+   "dfb8f70424c0f52c",
+   "f5239631843d837d",
+   "f9daf32099624564"
+  ],
+  "48": [
+   "12323294b4db3bc0",
+   "bf3b297b887fc9cb"
+  ]
+ }
+}

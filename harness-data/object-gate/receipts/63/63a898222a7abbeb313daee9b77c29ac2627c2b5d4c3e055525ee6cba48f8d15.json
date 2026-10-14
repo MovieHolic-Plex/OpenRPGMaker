@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "63a898222a7abbeb313daee9b77c29ac2627c2b5d4c3e055525ee6cba48f8d15",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "긴 좌탁(검은 옻칠)",
+ "label": "sengoku-edo/se-zataku",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "long low table",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from above, spanning approximately 6 source pixel rows (rows 5 to 10), with the front apron below (rows 11 to 15) and legs underneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6612
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "low table (좌탁)",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly depicted in 3/4 view across rows 5–10 (6 rows tall), with the front apron visible below it across rows 11–14 and legs extending to row 19.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6912
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tabletop",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the low table spans rows 5 to 10 (6 pixel rows tall), distinctly lighter than the south-facing front apron (rows 11-14), with legs extending below on rows 16-19.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12465
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tabletop and front apron of a low floor table",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from rows 5 to 10 (6 pixel rows tall), illuminated from above. Below it is the south-facing front apron (rows 11-14) in shadow, resting on short legs (rows 16-19).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12353
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.076Z",
+ "cells": {
+  "16": [
+   "04737c64fe546e03",
+   "44c3eb1f360e78ce",
+   "8d9d0dace6a3bc88",
+   "99a910bb5e56d942"
+  ],
+  "24": [
+   "027b56b7d94c8195",
+   "08c6f953a74b6e2b",
+   "0d7a008d2262c49a",
+   "16f5a8ef1b7d3e65",
+   "17b0da48e1976214",
+   "3925b57d4b52bac0",
+   "3a9c4496c92025bd",
+   "3bcab67d78d3fdfd",
+   "40a1c9b1a99bb5ce",
+   "5c592671f1e9c35b",
+   "5d4078b8a670b3d5",
+   "6b5bd3b0ef2a3698",
+   "6ca53ffb184df992",
+   "7876874756db6a65",
+   "832bbc9bb765fa49",
+   "98a3b225fbb60235",
+   "f92d95e633e5eae7",
+   "f9e78fd2d309cef3"
+  ],
+  "32": [
+   "ee15f4ff9cd182b7"
+  ],
+  "48": [
+   "00c1a63a759439d1",
+   "331da12295fb777e",
+   "4b25a923fb1d6bf2",
+   "b4b8abaf212427c4",
+   "e677ec63017cdb73",
+   "ef74708d5008185e"
+  ]
+ }
+}

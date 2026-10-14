@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "95ac3cef5973f9fa9fb3b9d2b701efbb75ec5e3f7e20b652ef16c236259e6534",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "돌 십자가 묘비",
+ "label": "gothic_manor/gm-tomb-cross",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone cross gravestone",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cross and its horizontal crossbeams are drawn entirely from the front with no visible top surface (rows 0-1 are merely a dark outline cap). The arms and base are likewise rendered strictly as flat vertical front faces without foreshortened top planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6381
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone cross gravestone",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone cross and its base are drawn in flat front elevation with no visible top surface on the top arm (rows 0-1), crossbar (row 6), or plinth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6370
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone cross gravestone",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cross arms and top post have no foreshortened top surfaces visible; the entire stone cross is drawn in a flat front elevation with a 1px outline across the top.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4567
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone cross gravestone",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cross arms and top post have no top horizontal surfaces visible from above; the top end terminates in a 1-2px dark outline (rows 0-1) and the cross arms have only a 1px top outline, resulting in a flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5192
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:15.452Z",
+ "cells": {
+  "16": [
+   "7b89f5bda2e5c4d5",
+   "de651a1a94a59db2"
+  ],
+  "24": [
+   "03dea5bdbc1aa71a",
+   "21011cf7970c5fd4",
+   "2dcc9c10e585c33c",
+   "3575ec136f3262ab",
+   "61206375204193f9",
+   "7bbaeb579b837924",
+   "7e8877ef2ec4d4a7",
+   "8e90bb99d01d25b8",
+   "cb7a7c5e707260f2",
+   "e3b3b8506881ea7e",
+   "fd64749bbe30618b",
+   "ff3f5359598df65e"
+  ],
+  "32": [
+   "39b200a458e5587b",
+   "904c1a7fd18d6ae0",
+   "a35b91c3b24066e9"
+  ],
+  "48": [
+   "240947d5fadb1f75",
+   "3fba7a565df279f8",
+   "ae5c4bbd7b3785a7",
+   "b900e90bb27280d0",
+   "cfe9d0ead974e63c",
+   "fc195bef09afa841"
+  ]
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a903603258315aa37ce693d2a036d6a055ba73b30c11f0d749742d2e107fd561",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "빨강 무쇠 우체통(둥근 기둥, 넓은 둥근 뚜껑이 위에서 보인다)",
+ "label": "steampunk-city/sp-pillar-box",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "red cast iron pillar postbox",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rounded cap/lid of the cylindrical postbox shows a distinct elliptical top surface foreshortened from above across rows 6–10 (5 pixel rows tall) before dropping to the rim and the south-facing cylindrical shaft.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10100
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cylindrical postbox with rounded cap",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the postbox is drawn with a foreshortened elliptical top surface spanning rows 6 to 10 (~5 rows tall), complete with downward-curving rim and perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7005
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "red cast iron pillar box (postbox)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rounded cap on top shows a foreshortened elliptical top surface spanning roughly 5 pixel rows (rows 6 to 10) before the downward lip and cylinder body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6429
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical pillar box with domed cap",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rounded cap on top of the pillar box shows an elliptical foreshortened top surface spanning rows 6 to 10 (about 5 rows) viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5112
+  }
+ ],
+ "decidedAt": "2026-10-13T18:49:04.018Z",
+ "cells": {
+  "16": [
+   "738ac1debd8af84a",
+   "f1ba35a228c57089"
+  ],
+  "24": [
+   "0cc66a0ea3ed8251",
+   "3059b6ba0172589c",
+   "33a7e3f6a44c9f03",
+   "3bd05d68e45d39e0",
+   "5179ead04cc07bf5",
+   "60bcc9c24fffda11",
+   "6708880c4971a845",
+   "a2554592501b023b",
+   "c7bec9acdcfdadb7",
+   "eb566d3d7a7a3e70",
+   "ef5cfb781da1e3e7",
+   "f514e55d025fcdb0"
+  ],
+  "32": [
+   "21a4a2608a22dc14",
+   "3a8b3be1d4c9e556",
+   "dbdcbae80c797b96"
+  ],
+  "48": [
+   "0fb7d0fa40a8456b",
+   "2f154c4f1102e14f",
+   "3ed22b843495391a",
+   "931a304e859b87f0",
+   "af9b06ec6073a099",
+   "c2a671b04b2a078b"
+  ]
+ }
+}

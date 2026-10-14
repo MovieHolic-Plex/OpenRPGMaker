@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f1a334d5d7747b303e056ca2d43952c28aced9e1477c4bd3d42606fb8ecdbc17",
+ "width": 48,
+ "height": 32,
+ "kind": "box",
+ "name": "운송 컨테이너(홈이 파인 큰 직육면체)",
+ "label": "sf-station/sf-container",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "shipping container",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lighter upper section (rows 2-13) shows the container's top roof surface with transverse roof ribs viewed from above, while the darker lower section (rows 16-28) depicts the south-facing front wall with corrugated panels.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11462
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "shipping container",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The container clearly shows a distinct, lighter-shaded top roof surface (rows 2-13, ~12px tall) foreshortened from above, and a darker south-facing front wall (rows 14-29) with corrugated detailing and bottom trim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7910
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "shipping container",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The container clearly exhibits a 3/4 perspective with a 12-pixel tall lighter top surface (rows 2-13) showing corrugated grooves, and a darker south-facing front wall (rows 14-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6518
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "shipping container",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof surface of the container is clearly visible from rows 1 to 13 with lighter lighting and roof ribs, while the darker front/south face spans rows 14 to 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6754
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:27.305Z",
+ "cells": {
+  "16": [
+   "180c41cfa6432ca1",
+   "4a39cd25637d3a69",
+   "790373f4a9cecbc8",
+   "c35ea83d35075482",
+   "c3ffb3b1174b0804",
+   "d245a4bd834d17c7"
+  ],
+  "24": [
+   "04b50656430765fd",
+   "0a4c60dba71d03ee",
+   "1088805cfa7b1f94",
+   "267f48dffce5cc92",
+   "38c1e22bbe56aa63",
+   "7f51592a9358f715",
+   "857f758e0ab4a510",
+   "9522495b44052f24"
+  ],
+  "32": [
+   "11dc56bd5d474c85",
+   "174e7f01f53fd23d",
+   "1900d3b2a3104c65",
+   "ae8467fb033ad7bd",
+   "bcea40a409fdbb3a",
+   "d9c47f2510284fc2"
+  ],
+  "48": [
+   "4b5ea71f745043ca",
+   "678a219a8f5bb66e"
+  ]
+ }
+}

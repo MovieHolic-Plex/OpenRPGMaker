@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "47c6a598a19da9deed82b2499abd890065e34fe710d8f5c7e522adba86ba4cee",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "waterfall falling through open sky (terrain overlay)",
+ "label": "sky-island/si-falls-air-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "waterfall stream",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical waterfall stream terrain overlay drawn straight on as a vertical face for 3/4 perspective, with no isometric receding sides.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3918
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "falling water column",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical waterfall segment/overlay tile. As a vertical water terrain element, it represents falling liquid in the front vertical plane without a separate top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3458
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "waterfall stream",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical water stream tile meant as a terrain overlay/autotile; terrain category correctly applies.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3402
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "waterfall stream",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical waterfall cascade tile spanning top to bottom, correctly categorized as terrain overlay with no isometric distortion.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4778
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.982Z",
+ "cells": {
+  "16": [
+   "b048b34ac473dc09"
+  ],
+  "24": [
+   "01f8cdb55d6f533f",
+   "7bee9cc7b8bad8de",
+   "a34d600513e819b3",
+   "db757c64cd3692fe",
+   "dd9d66e9fc061107",
+   "ecac0d94f3b5892c"
+  ],
+  "32": [
+   "19213a6501c50016",
+   "2de22662c72d92c4",
+   "38948aa803a846c0",
+   "5cf8540da2acedef",
+   "73dc126b07967ab2",
+   "e2d273a926237aa8"
+  ],
+  "48": [
+   "0a13d67ef8b4d67d",
+   "0ba67b5a26a225ea",
+   "762d94a76be5d705",
+   "8d87a62a22e89266",
+   "ace8c61acd6ac312",
+   "c9bb8b86c5f2db0e"
+  ]
+ }
+}

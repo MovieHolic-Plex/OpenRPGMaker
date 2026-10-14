@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6b7429244c506f5f3cdafbc0a71d6922ff75765031b0117b2fb72cf78dac5b13",
+ "width": 32,
+ "height": 48,
+ "kind": "frame",
+ "name": "옷걸이 틀(이코, 걸린 기모노)",
+ "label": "sengoku-edo/se-kimono-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "kimono rack with hung kimono",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top crossbeam of the rack and its base feet are drawn completely flat in 2D front elevation with no visible top surfaces (0 px).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3472
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "kimono rack with hanging kimono",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top horizontal beam is drawn as a flat 1px-tall strip with outlines (rows 3-5) with no top surface visible. The feet at rows 30-31 are also flat 2px rectangles seen straight from the front with no top faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3444
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ikou (kimono rack with hanging kimono)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top crossbeam (rows 3-5) and base feet (rows 30-31) are drawn flat from the front with no top surfaces visible foreshortened from above. The entire kimono and rack structure is rendered as a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3796
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "kimono rack with hanging kimono",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top horizontal beam (rows 3-5) and the base feet (rows 30-31) have no foreshortened top surfaces visible; the entire frame and hanging kimono are drawn in flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3600
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.078Z",
+ "cells": {
+  "16": [
+   "30b5da62a033cde6",
+   "5ebc41af0d1ea55d",
+   "66126d8debe6ec1c",
+   "dc3b75e03c84a237"
+  ],
+  "24": [
+   "116cc04331e1d01b",
+   "280aafe5df643a5d",
+   "4d92497f1a3f2bd9",
+   "65c580e5c4469030",
+   "6c36ea797ecffdce",
+   "744daed7c3636cf8",
+   "8a2781d7d3e9a5c1",
+   "9dda7983f1aba42e",
+   "b3a17e2aa4463797",
+   "e702ae4045514f0c",
+   "e729cf5eca45a82b",
+   "facd3c11fec814a3"
+  ],
+  "32": [
+   "1537a311baeb0091",
+   "20e9c66d24d7a117",
+   "38f201faf1df3539"
+  ],
+  "48": [
+   "37aace6dd76b0cbc",
+   "a7ee3193e6a59773",
+   "b164b518f91907ed"
+  ]
+ }
+}

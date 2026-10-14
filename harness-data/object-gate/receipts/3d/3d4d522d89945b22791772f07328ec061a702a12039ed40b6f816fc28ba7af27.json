@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3d4d522d89945b22791772f07328ec061a702a12039ed40b6f816fc28ba7af27",
+ "width": 16,
+ "height": 48,
+ "kind": "box",
+ "name": "네온 간판 탑(콘크리트 윗면 + 간판 상자, 글자 없음)",
+ "label": "sf-station/sf-neon-sign-tower",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "neon sign box",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The concrete top surface of the main sign box is clearly visible from above across rows 3–10 (8 source pixels tall) above the dark front display face (rows 12–35).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10329
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "neon sign tower box with concrete top surface",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The concrete top surface of the sign tower structure is clearly rendered across rows 3 to 10 (8 rows tall) before transitioning to the front sign face at row 12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8703
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "neon sign box",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the sign box is rendered in concrete grey spanning rows 3 to 10 (8 rows tall) before transitioning to the south-facing dark display face from row 12 downward.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7417
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "neon sign box with top concrete surface on a support post",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the tower (concrete top) is clearly visible from above across rows 3-10 (8 rows tall), resting above the vertical sign face (rows 11-35).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8013
+  }
+ ],
+ "decidedAt": "2026-10-13T15:20:49.489Z",
+ "cells": {
+  "16": [
+   "2a00fca1d6400259",
+   "7078e9e4638179df",
+   "70abb67d01d68a83"
+  ],
+  "24": [
+   "0527861df2ea1bd9",
+   "0eaadecc52985f19",
+   "184ba31ef82a9777",
+   "19bfdc4e300a6896",
+   "ce4bc8d12d48355d",
+   "db4139ca4859ae7a"
+  ],
+  "32": [
+   "052a1de18021e954",
+   "1117642adc884fb6",
+   "19d67336ba9e6f1a",
+   "1c228eea78c6e3da",
+   "5b4d636dc22a4418",
+   "5dc4e367dac5416f",
+   "6637bb1728be1534",
+   "72879c805445cf75",
+   "813e9e24c881b5fb",
+   "8f46185cafe3a15e",
+   "d81abca869d4125b",
+   "dd1d4b8a4a1f817d"
+  ],
+  "48": [
+   "5ec7d938af75878f",
+   "ad194d057cf21a54",
+   "d2633e547b639d90"
+  ]
+ }
+}

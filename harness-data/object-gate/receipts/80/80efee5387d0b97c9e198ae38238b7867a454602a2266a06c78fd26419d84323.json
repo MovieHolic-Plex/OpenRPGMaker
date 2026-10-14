@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "80efee5387d0b97c9e198ae38238b7867a454602a2266a06c78fd26419d84323",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "prehistoric stone-age grass b",
+ "label": "prehistoric/ph-grass-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ground terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 top-down grass ground tile texture representing flat horizontal terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3172
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 terrain ground surface with mottled green grass texture and a tiny accent dot; flat ground view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4052
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 top-down grass ground texture; correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2273
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass ground terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 ground terrain tile representing grass with slight color variation and a tiny flower speck, viewed from above as a floor/ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3748
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.788Z",
+ "cells": {
+  "16": [
+   "574451b9feac707a"
+  ],
+  "24": [
+   "1d9b2fd29df82bfa",
+   "53ff11a1577ea7d9",
+   "58e8055cf65670dc",
+   "7a9d3bd0f3304255",
+   "b4a87d743e1236c8",
+   "fe5edc387c5d0ed6"
+  ],
+  "32": [
+   "3807ae8d3b7e4b06",
+   "3e3fb43ae235003e",
+   "55446b48feebe39a",
+   "612b7476b935c1cd",
+   "7cda47069c55545a",
+   "a4eb9a8f37e734e2"
+  ],
+  "48": [
+   "4d1daa2d7e177327",
+   "5a260f1824b07a5b",
+   "7b88b795eafef0fa",
+   "dfe44ad30e59cb71",
+   "ed14b65663509d01",
+   "ee5e86f631a19909"
+  ]
+ }
+}

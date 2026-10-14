@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "db4d7e7f6a7ed535e57e6a3e00769c24b334cf668970c267925b0cce8855f6e5",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "flowing stream channel on grass (terrain)",
+ "label": "sky-island/si-stream-lip-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flowing stream channel flanked by stone edging and grass banks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting a stream/water channel bordered by stone banks and grass, viewed from top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3265
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stream channel in grass flowing off a cliff edge",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing a top-down ground surface (stream between stone borders on grass) across rows 0-10, dropping into a 5-row vertical cliff/waterfall edge at rows 11-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4209
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water stream channel in grass terrain",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a flowing stream channel flanked by grass, viewed from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3282
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flowing stream channel flanked by grass terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image is a terrain tile showing a vertical water channel flanked by grass banks viewed top-down in standard JRPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4448
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.981Z",
+ "cells": {
+  "16": [
+   "83e24f782c1f6066"
+  ],
+  "24": [
+   "268e3f299ccd6ecb",
+   "30df4005337b3346",
+   "3a3b5458fe21fb48",
+   "620c90ead0faee8f",
+   "780eb5ef1a94de31",
+   "c060b730c45937e3"
+  ],
+  "32": [
+   "0719c971779747d7",
+   "08d59d114eb97d0f",
+   "22ac4b2a5329c654",
+   "77fbe77b8d529a0e",
+   "905178e8efb05bca",
+   "c94873f9edf9f842"
+  ],
+  "48": [
+   "141a816edb417d5c",
+   "301907ca9caa9bd6",
+   "60e3cc7062c015ea",
+   "969339cd2c06d102",
+   "d9d0a2d2bf21b142",
+   "ebb64708ac43fedf"
+  ]
+ }
+}

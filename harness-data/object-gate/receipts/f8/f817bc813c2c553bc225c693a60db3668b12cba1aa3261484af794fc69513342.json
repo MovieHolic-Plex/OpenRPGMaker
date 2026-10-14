@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f817bc813c2c553bc225c693a60db3668b12cba1aa3261484af794fc69513342",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "테슬라 코일(둥근 받침 + 구리 감은 탑 + 놋쇠 고리 + 구 + 불꽃) (프레임 3)",
+ "label": "steampunk-city/sp-tesla-coil-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "copper-wound column with toroid and base",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brass toroid/ring at rows 12-17 is drawn in 3/4 view showing its foreshortened elliptical shape and opening, and the base plinth at rows 38-41 clearly shows about 3 rows of top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11018
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "copper-wound column with toroid ring, sphere, and cylindrical base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brass toroid ring (rows 12-17) clearly shows its elliptical top surface and hollow center viewed from a 3/4 perspective, and the cylindrical base (rows 38-41) shows ~3-4 rows of visible top surface around the column foot.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10246
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tesla coil column with brass toroid, terminal, and base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brass toroid/ring in rows 12-17 is drawn in clear 3/4 perspective with an elliptical top surface and inner hole (~4 rows deep), and the cylindrical base also shows its curved top surface (rows 38-41).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9929
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "Tesla coil column with toroid and base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brass toroid ring near the top is clearly foreshortened in 3/4 perspective, showing a 5-row tall ellipse (rows 13-17) seen from above. The cylindrical base also shows its curved top surface (rows 38-40).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10359
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:44.594Z",
+ "cells": {
+  "16": [
+   "5058129dbf630551",
+   "666aab35fc27f97c",
+   "8f8b3249de3ece99"
+  ],
+  "24": [
+   "0f2540393c5dec84",
+   "32a719ee8bbaa49b",
+   "690400b29e5ba70b",
+   "a08a2842a35989b3",
+   "bae5c90d77a8b273",
+   "be59d2a9d942c9e5"
+  ],
+  "32": [
+   "3493420d57271c46",
+   "41b3dce38d9b80ce",
+   "4252711277aac3bd",
+   "4be1f084213ad9a1",
+   "55b48e857b5c92ee",
+   "56e31e479c7173a5",
+   "6a566f7946c99367",
+   "6f562317b40a0322",
+   "8ce62cf7e2616eb4",
+   "c0f1e56886536bfa",
+   "cab9d6d39020f115",
+   "f64a48ffa0dcab2d"
+  ],
+  "48": [
+   "1e534c1b99a37663",
+   "a2456ba68b87561a",
+   "a937e96be5917373"
+  ]
+ }
+}

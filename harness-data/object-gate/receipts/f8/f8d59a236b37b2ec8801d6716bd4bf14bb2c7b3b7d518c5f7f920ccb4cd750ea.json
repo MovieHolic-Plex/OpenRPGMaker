@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f8d59a236b37b2ec8801d6716bd4bf14bb2c7b3b7d518c5f7f920ccb4cd750ea",
+ "width": 16,
+ "height": 32,
+ "kind": "round_body",
+ "name": "나무 들통 더미(목욕·물)",
+ "label": "sengoku-edo/se-buckets",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 1행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden buckets pile",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The buckets are drawn as flat rectangular shapes with perfectly horizontal bands and flat 1px bottoms. The top openings are flat 1px horizontal strips rather than foreshortened ellipses, representing a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 4467
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pile of wooden water buckets",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The buckets are drawn as flat rectangular blocks in pure front elevation with straight horizontal bands. The top water surfaces are only 1 pixel high horizontal lines with no visible ellipse or depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 4120
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pile of wooden buckets",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The buckets are drawn as flat rectangular shapes with purely horizontal stripes for hoops and bases (no curvature). The openings are 1px flat horizontal slices of blue rather than foreshortened ellipses.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 6898
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pile of wooden water buckets",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The buckets are drawn as flat rectangular blocks with completely straight horizontal bands and flat 1px-tall blue lines for water rather than foreshortened elliptical openings or rims.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 4924
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.079Z",
+ "cells": {
+  "16": [
+   "95f7dc73884a64f1",
+   "af2cc112695a24da"
+  ],
+  "24": [
+   "0602bbc5ff2abe18",
+   "24ff942cf0bd622f",
+   "2668aaee52d72ef5",
+   "2d2dbc808cf9b1e7",
+   "41a49ce785603e9f",
+   "a66ef149e726ad81",
+   "aa960499c0f49582",
+   "c97a43ee114d83eb",
+   "fd08f1370a4436a9"
+  ],
+  "32": [
+   "3e4ed9a90c69bb38",
+   "76130fa50d365e92",
+   "e6f97ecc60cea9e9"
+  ],
+  "48": [
+   "1747c1aec7c89d56",
+   "397456aed8423845",
+   "72909be5b4c445cd",
+   "72a3b42cc35a8120",
+   "b3083faf9c6d28e3",
+   "c4f063c8563d92fc"
+  ]
+ }
+}

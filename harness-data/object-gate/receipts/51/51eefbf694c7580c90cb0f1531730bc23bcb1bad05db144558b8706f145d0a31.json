@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "51eefbf694c7580c90cb0f1531730bc23bcb1bad05db144558b8706f145d0a31",
+ "width": 48,
+ "height": 64,
+ "kind": "organic",
+ "name": "그네 매달린 고목",
+ "label": "gothic_manor/gm-dead-tree-swing",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "old tree trunk and branch",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree trunk, horizontal branch, and base are drawn in flat side-scroller/platformer elevation. The base sits on a completely flat horizontal line (rows 60-61) without an elliptical footprint, and the horizontal branch shows no top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6564
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "old tree trunk and branches",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn in a pure 2D side-scroller / front elevation view. The trunk base ends in a flat horizontal line at row 61 with no ground ellipse, the cut branches at the top end in 2D jagged silhouettes without foreshortened top cross-sections, and the horizontal branch shows 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9174
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "withered tree with hanging swing",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body of the object is the large withered tree, which is drawn in a flat side-scroller/front-elevation style. Its trunk, cut branch ends, and horizontal limb show no 3/4 top-down foreshortened top surfaces or elliptical stump cross-sections. While the small swing seat shows a 3px top plane, the main body itself has 0 top rows.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10140
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dead tree trunk and branch",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body of the tree is drawn entirely in a 2D side-scroller/front elevation plane: the horizontal branch and vertical trunk show no foreshortened top surfaces (only a 1px outline along the top edge of the branch), and cut branch ends are drawn as flat silhouette tips rather than angled 3/4 cross-sections.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9108
+  }
+ ],
+ "decidedAt": "2026-10-13T17:01:50.505Z",
+ "cells": {
+  "16": [
+   "0c07d82591547c13",
+   "1c2cd2a1d2c02449",
+   "49407066ac4372ac",
+   "4f259f72571e7135",
+   "65c6b405d449ef23",
+   "78a06da15265c58c",
+   "804f653e5b8c5899",
+   "8173b0b1e033f0e2",
+   "9c3d795a7fc75178",
+   "b29e865d24699080",
+   "e17120ed9108b1d2",
+   "fe7c9639e0ea2cee"
+  ],
+  "24": [
+   "0b376a708c429087",
+   "10747223b73e7659",
+   "17c38494713ead10",
+   "4888743d1eff693e",
+   "7c925d4780b4bbb9",
+   "813fed3aa835aa4c",
+   "9e65ec92745e893a",
+   "b4b32fd1cefaa091",
+   "b4bffec7a6482e0f",
+   "cf3cca1e0d1ba31e",
+   "d4d5eafc2e0bc760",
+   "d4fa61f74b05aac9"
+  ],
+  "32": [
+   "2b49d917f9d2931e",
+   "3d23809b58835a0d",
+   "559ecdfe1caf256d",
+   "56d443b3897f64e9",
+   "63132fb1ff636872",
+   "682c5af55d103321",
+   "6f11fdc32c581d95",
+   "74fe8272e0fdc10b",
+   "75a201c3ad12cccf",
+   "b1e223682c65ec44",
+   "cad2379a6e26dcd8",
+   "d0d0f7572689237e"
+  ],
+  "48": [
+   "1604f019158179ab",
+   "1961e9a63cb92093",
+   "1f6c68d74a4c552c",
+   "98ca1768846bd7b9"
+  ]
+ }
+}

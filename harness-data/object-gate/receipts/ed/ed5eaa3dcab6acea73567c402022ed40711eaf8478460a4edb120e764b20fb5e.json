@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ed5eaa3dcab6acea73567c402022ed40711eaf8478460a4edb120e764b20fb5e",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "small clay smokehouse with smoke vent and stacked firewood",
+ "label": "pirate-isles/pi-smokehouse",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "small clay smokehouse with sloped thatched roof",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features a large sloped thatched roof occupying rows 0-25, angled toward the viewer with a visible smoke vent, sitting atop a south-facing wall with door and firewood.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9393
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "thatched/straw roof and clay smokehouse structure",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sloping thatched roof occupies rows 0-25 showing ample top/sloped roof surface above the 22-row south wall and door, consistent with standard 3/4 JRPG building perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3039
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "clay smokehouse with thatched roof",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features a large sloping thatched roof covering rows 0 to 24, complete with a smoke vent showing interior depth, matching typical JRPG 3/4 top-down building perspective above a vertical south-facing wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8633
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "small clay smokehouse with thatched roof",
+    "kind_matches": true,
+    "top_rows": 26,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The thatched roof displays its sloped top surface across rows 0–25 above the south-facing clay and wooden wall (rows 26–47), adhering to the standard 3/4 top-down JRPG building perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4910
+  }
+ ],
+ "decidedAt": "2026-10-13T19:16:35.210Z",
+ "cells": {
+  "16": [
+   "3776643bc69fa398",
+   "474e648496d1999c",
+   "7d68a06169ec5e32",
+   "835db43e866dc582",
+   "913790a7d9962633",
+   "e3ff32841c0b3247"
+  ],
+  "24": [
+   "0621078f5ea69633",
+   "528a0c1ac249bccc",
+   "54d73348c8fc2ecb",
+   "5c46aadb485f6043",
+   "66450555e49ba1bd",
+   "719f07ef2838498f",
+   "afe0381bd2ff4cf5",
+   "bb0e8d85fb22a135",
+   "d7f64dac1761edbf",
+   "e9bfd90a48f80084",
+   "f15a99f5110e7735",
+   "fb51ae937da8064e"
+  ],
+  "32": [
+   "877633f1ea028fd3",
+   "cf0047375ce3f296",
+   "ed539e99b59cf081",
+   "fc34a129dc8e5a98"
+  ],
+  "48": [
+   "44da6e1d0a34ae7f",
+   "589dbdc504c9e067",
+   "c7f230b8e9e66617"
+  ]
+ }
+}

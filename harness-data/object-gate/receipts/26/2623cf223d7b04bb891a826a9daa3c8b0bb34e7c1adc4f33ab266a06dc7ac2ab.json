@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2623cf223d7b04bb891a826a9daa3c8b0bb34e7c1adc4f33ab266a06dc7ac2ab",
+ "width": 48,
+ "height": 32,
+ "kind": "round_body",
+ "name": "산소 탱크 줄(받침판 + 흰 원통 셋 + 시안 띠 + 밸브)",
+ "label": "sf-station/sf-oxygen-tank-row",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "oxygen cylinder tanks",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylinders feature foreshortened curved top domes/caps spanning rows 3-8 (6 rows), curved cyan bands (rows 14-17), and curved bases set on a visible horizontal base plate surface (rows 22-25), correctly rendering the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7446
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "three cylindrical oxygen tanks on a base plinth",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each cylinder features a foreshortened domed white top section spanning rows 3-9 (~7 rows tall) with a valve cap at the apex. All cross-section contours (top shoulder seam, cyan band, and tank base) curve downwards consistently with a 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 25190
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "row of oxygen tanks on a base plinth",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylinders feature foreshortened domed top caps/shoulders spanning rows 2 to 8 (about 6 rows tall) topped with valve caps. The cyan retaining bands and bottom seams curve downward toward the viewer to convey roundness in 3/4 view, and the base platform has a clearly visible 4-row top surface (rows 22-25).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7063
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "oxygen tanks (cylinders)",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylinders show proper 3/4 perspective foreshortening: the rounded white top caps span rows 3 to 9 (~6 rows tall), the cyan mid-bands curve downwards along the cylindrical surface, and the base plinth exhibits a clear 3-row top deck (rows 22-25).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7235
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:09.620Z",
+ "cells": {
+  "16": [
+   "02783fbd987a92c9",
+   "59e99a297e498e91",
+   "644e290ec5ba3eb4",
+   "7d8884716969b263",
+   "9c2469514cbceeae",
+   "b8a05e34dab2c904"
+  ],
+  "24": [
+   "091ab020f3385b0c",
+   "1efd3fa8f10b89ca",
+   "7c36e3fc4d9b9594",
+   "bd428ff25df4424e",
+   "c6d511db9f64d327",
+   "eae8e481631bba4c",
+   "f2193f7df78c4bc0",
+   "fc64745b78162129"
+  ],
+  "32": [
+   "0cee889c2d858ad6",
+   "37d1dd95444d21af",
+   "497f414a989dc41c",
+   "95bafc800f8b8494",
+   "ab1dda24edad7306",
+   "f3df42cff42ea44d"
+  ],
+  "48": [
+   "9b253b8611ded1d7",
+   "fc6f1c45520c3126"
+  ]
+ }
+}

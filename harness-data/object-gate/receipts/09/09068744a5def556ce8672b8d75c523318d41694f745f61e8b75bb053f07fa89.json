@@ -1,0 +1,146 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "09068744a5def556ce8672b8d75c523318d41694f745f61e8b75bb053f07fa89",
+ "width": 32,
+ "height": 96,
+ "kind": "structure",
+ "name": "white and red striped stone lighthouse with lantern room and gallery",
+ "label": "pirate-isles/pi-lighthouse",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lighthouse tower with conical roof and gallery",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure is drawn in 3/4 perspective: the conical roof shows its southward-facing slope across 10 rows (rows 0-9), the gallery walkway/deck is visible from above (rows 21-24), and the base foundation plinth shows its top horizontal surface (rows 86-89) stepping down to the front vertical base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 23091
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lighthouse tower with gallery platform and lantern",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The conical roof slopes toward the camera (rows 0-9), the gallery deck shows 4 pixel rows of elliptical top surface (rows 21-24), and the base plinth displays a 3-4 pixel row top ledge (rows 86-89), properly establishing the 3/4 top-down angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9263
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lighthouse tower and gallery",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The gallery walkway floor (rows 21-24) is clearly viewed from above showing 4 rows of horizontal surface within the railing ellipse, and the base plinth also shows 3-4 rows of visible top surface (rows 86-89).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5111
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lighthouse tower",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main tower body (rows 31-86) and its conical roof are rendered in pure front architectural elevation: all stripe boundaries, window sills/lintels, the roof bottom rim (row 9), and the gallery underside (row 30) are perfectly flat horizontal lines with zero cylindrical curvature, showing no top surface for the main shaft.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14270
+  }
+ ],
+ "decidedAt": "2026-10-13T19:16:35.208Z",
+ "cells": {
+  "16": [
+   "45334afde527bcec",
+   "45ced2a982c6cbf1",
+   "4aad6afe8758e92f",
+   "62c9d286ec006366",
+   "6aa31d90da23ece6",
+   "7ac0bd83e6b7e9e8",
+   "84b48bf2cad1df53",
+   "856474bdeff52c20",
+   "877667065693c961",
+   "b35503d4e192d4fd",
+   "c557ebac5071f9fd",
+   "cb370e42b2110575"
+  ],
+  "24": [
+   "0fe3ccf302d03eb9",
+   "1254504e638f9655",
+   "12e37694adc2ad36",
+   "17edbfe0a897109d",
+   "30013a967c6be845",
+   "30416251d9a35be2",
+   "324194fc2d987432",
+   "3a619a3babd73fd3",
+   "3ba416bf1fc0820e",
+   "6166397b10d46020",
+   "68468d33dc27bc6c",
+   "7051f86da93a5bbe",
+   "8c2f73328e3e6799",
+   "9bcde9ec146d0dd6",
+   "a2bcdc0c41feeabc",
+   "af8de824bc076462",
+   "bfc0ed4b1259746f",
+   "ca06ccfa70739bcb",
+   "ce90e9bc7d5e2f1f",
+   "d49b4374ba197669",
+   "de454c7300f5d458",
+   "e41a1c6bab6f03bf",
+   "f67c9aa3b1a39a6e",
+   "fe6509ba9537b2b7"
+  ],
+  "32": [
+   "8fa0550094ec1c61",
+   "f36bf4ca6b69a4c6",
+   "fc5dd75c5e870de4"
+  ],
+  "48": [
+   "20651624eabd3380",
+   "2cda8d2e89b06920",
+   "6e62bac5e04d6f78",
+   "8957c3b8d7459bd7",
+   "ae799724d5d87200",
+   "c4330d2e67292af1"
+  ]
+ }
+}

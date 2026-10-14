@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3584d4d6f971abf02960157ccce8add62dfa1a0c4fe93b96856f83a3a834060d",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass to cloud floor transition tile (terrain)",
+ "label": "sky-island/si-gc-inw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ground transition tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing a patch of cloud floor transitioning into grass; entire surface is a top-down ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3092
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "terrain transition tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a flat ground surface (grass with a corner cloud transition) viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3051
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ground terrain tile (grass with cloud floor corner)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile viewed from above in top-down perspective with consistent ground plane texture.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3696
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ground terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting grass ground with a corner transition; fills the tile as horizontal surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2493
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.978Z",
+ "cells": {
+  "16": [
+   "0a980ac6225f804d"
+  ],
+  "24": [
+   "02ea1a07e1f6c0f7",
+   "244bcca57a54d865",
+   "41daf8695b9628b7",
+   "4dc5e066a67bd701",
+   "a62bf3ed3e34c156",
+   "e1589c6915052506"
+  ],
+  "32": [
+   "12a6922cef0eecab",
+   "26bdf10f2ffd577a",
+   "6ad69d209f68b345",
+   "a2ed1b408a69d893",
+   "c6734e5bbff4a4c0",
+   "e52fa1c4ed7d817c"
+  ],
+  "48": [
+   "0758324bb47832c8",
+   "1a88567cf85f862e",
+   "8341d710c5f21d44",
+   "b954fac6da37dfb5",
+   "eac57091b1d3e48c",
+   "ff87d0419885b9f9"
+  ]
+ }
+}

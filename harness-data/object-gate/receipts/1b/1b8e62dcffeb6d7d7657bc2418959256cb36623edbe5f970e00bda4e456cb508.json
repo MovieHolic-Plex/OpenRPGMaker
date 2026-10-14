@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1b8e62dcffeb6d7d7657bc2418959256cb36623edbe5f970e00bda4e456cb508",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "prehistoric stone-age mud",
+ "label": "prehistoric/ph-mud",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mud terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 ground terrain tile representing dirt/mud seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2634
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "mud terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile depicts flat ground terrain (mud/dirt texture) viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2714
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "mud ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 terrain ground tile depicting dirt/mud texture viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2529
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "mud terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 ground terrain texture depicting mud or dirt.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2455
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.789Z",
+ "cells": {
+  "16": [
+   "ceabfcbd6f48f857"
+  ],
+  "24": [
+   "1c6dc77b93889bde",
+   "2ff4bfc3c424ea77",
+   "3a86271ae53bdae6",
+   "3bf126b4ab2e8b09",
+   "6e7b34a9c28edc6b",
+   "df2c1cb7c25f58e5"
+  ],
+  "32": [
+   "7fbaf8063ed2bb32",
+   "9c398df64fcbb6b5",
+   "b087837c366a7e16",
+   "cfd50b6898ea18ab",
+   "d06782c5bf0547e7",
+   "e4ae8f0b569f1ab9"
+  ],
+  "48": [
+   "359c3b2f5a5814c5",
+   "561a45ed71cb37ab",
+   "867a394702c8dd87",
+   "94e0f39720b15070",
+   "beb649f99ea05d48",
+   "f811b8c059a3fd68"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "79a3f5c55176d53077f62c752c5c4089affbdd329cf24f1d557c4aee99dd30fc",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "dark interior void ceiling tile (flat)",
+ "label": "sky-island/si-void",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dark interior void/ceiling tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Tile is a flat 16x16 dark void/ceiling terrain texture with subtle dither pixels.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3158
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "void ceiling tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Dark flat void/ceiling terrain tile filling the 16x16 canvas with subtle stippling pixels.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3310
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dark void ceiling terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Uniform dark void/ceiling terrain tile filling the 16x16 canvas with faint texture pixels, correctly representing flat overhead/void terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4012
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dark void / ceiling tile surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting dark interior void/ceiling occupying the full 16x16 surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3505
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.561Z",
+ "cells": {
+  "16": [
+   "2c47e6b32561966e"
+  ],
+  "24": [
+   "30c5a0f15b402bd0",
+   "7ea86c80c958f513",
+   "9d6c81e2081ebfd0",
+   "a89ae05e06deacf6",
+   "cca7f34f8b098562",
+   "d05a63adc6ac973c"
+  ],
+  "32": [
+   "34b06659a037b72b",
+   "70e23909829afe80",
+   "85341cb79fefcdad",
+   "aa43396c5ed5c512",
+   "ac892afe7f1a7618",
+   "ede9e5a3e1891b01"
+  ],
+  "48": [
+   "0c00ed7a1142b05a",
+   "310fa737ace558a8",
+   "329e4ba357d9436e",
+   "467be3210c2260c5",
+   "513abb33a5e3b90e",
+   "ddeabe6f13ce4880"
+  ]
+ }
+}

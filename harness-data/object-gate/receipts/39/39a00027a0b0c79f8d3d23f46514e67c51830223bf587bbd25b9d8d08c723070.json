@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "39a00027a0b0c79f8d3d23f46514e67c51830223bf587bbd25b9d8d08c723070",
+ "width": 32,
+ "height": 48,
+ "kind": "other",
+ "name": "large brass telescope on a round wooden platform seen from above (platform top clearly visible), tube pointing up",
+ "label": "sky-island/si-telescope",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "telescope mounted on a round wooden platform",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round wooden platform base clearly shows a foreshortened top surface spanning rows 33 to 41 (approx 8 rows), with a vertical south edge below it. The telescope lens at the top is also angled towards the camera.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5232
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brass telescope on tripod and wooden platform",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round wooden platform clearly displays a large foreshortened top surface spanning rows 33 to 41 (about 9 rows tall) with a distinct south rim/face below it, and the angled brass telescope features 3/4 cylindrical volume and lens perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5938
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brass telescope mounted on wooden platform",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round wooden platform base clearly displays an elliptical top surface visible from above (rows 33-41, ~9 rows tall) with foreshortened south front edge (rows 42-45), and the angled telescope tube properly shows top shading in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5286
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "telescope mounted on round wooden platform",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round wooden platform clearly shows its top surface foreshortened as an ellipse spanning rows 33 to 41 (about 8 rows) with the front edge dropping down to row 45, matching proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4706
+  }
+ ],
+ "decidedAt": "2026-10-13T18:47:30.237Z",
+ "cells": {
+  "16": [
+   "0854b3dbcb091028",
+   "67e9ec24d29040e4",
+   "77f4ae23d47bc1e7",
+   "8557cc796b5611f8",
+   "c52c2dd615fa772b"
+  ],
+  "24": [
+   "0276758b35979974",
+   "4826c87ea83a6839",
+   "48b4b17514bb6d4d",
+   "59964b713eadb5d2",
+   "63c50d26c26d1440",
+   "6cf825c131fb832a",
+   "74ff22ea01fb8d32",
+   "7da1cc4b7839a314",
+   "927c36a3b23a5e94",
+   "bf0632ddb606fd8b",
+   "e1bd3660e8c40a04"
+  ],
+  "32": [
+   "82f7ea6d86928f99",
+   "97c738af90f8834e",
+   "b5c8cab70f3c7648",
+   "c7b2c2a4010b53cd"
+  ],
+  "48": [
+   "645cc025371d41e6",
+   "9fe50cc772f8435d",
+   "d9e49ab21a430a52"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "da8f056f4d8dd3fb357eabfdf06015a6fdb41b5809a67f34705af1abfa0aff03",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "구장 흰 선 교차",
+ "label": "modern-campus/mc-turf-line-c",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sports field grass with white line intersection",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing a grass surface with intersecting white pitch lines covering all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3866
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sports field grass with intersecting white lines",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a green field surface with perpendicular white boundary lines covering the entire 16x16 grid.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3912
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sports field grass with intersecting white lines",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile depicting a grass surface with white field boundary line intersection, viewed entirely from above as ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3741
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sports field grass with intersecting white lines",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing a grass sports field surface with intersecting 2px-wide white boundary lines.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6115
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.865Z",
+ "cells": {
+  "16": [
+   "f2f2b28d1a8b0e9e"
+  ],
+  "24": [
+   "037f87120a6cc0a6",
+   "1ca71bd42d26364c",
+   "7193a359339b860c",
+   "a71623de836c0281",
+   "e946aaf6cab36a5c",
+   "eb9667be794e757e"
+  ],
+  "32": [
+   "297004b651cd6d04",
+   "3e5f78286bf26f53",
+   "7e3c2334a59b8ec8",
+   "cc3036a46bdba995",
+   "cce9f2113cbaa3c4",
+   "d03d5fb7580f50bb"
+  ],
+  "48": [
+   "0056a8d94b80d0e2",
+   "0802cacf9e5eca85",
+   "2a8220f0339e4a4f",
+   "7f3bd010cc26c495",
+   "bc1c1968d1a32d25",
+   "ebd7eeb29c8f7ed1"
+  ]
+ }
+}

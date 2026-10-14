@@ -18,7 +18,7 @@ export function isDesertEastTilesetDef(tileset: Pick<TilesetDef, "image"> | unde
 /** 칩셋을 이름으로 부른 식별자. */
 const NAMES_DESERT_EAST_RE = /desert[_-]?east|oprn-desert-east|사막\s*·?\s*동양풍\s*(?:칩셋|타일셋)?/iu;
 /** 사막·동양풍 풍경 낱말. */
-const DESERT_EAST_RE = /사막|오아시스|바자르|바자|수크|피라미드|스핑크스|오벨리스크|지구라트|아라비(?:아|안)|페르시아|실크\s*로드|비단길|대상\s*(?:숙소|행렬)|카라반|캐러밴|낙타|술탄|칼리프|파라오|이집트|메소포타미아|사막\s*궁전|모래\s*(?:마을|도시|왕국)|함맘|\b(?:desert|oasis|bazaar|souk|pyramid|sphinx|ziggurat|arabian|silk\s*road|caravan(?:serai)?|sultan|pharaoh)\b/iu;
+const DESERT_EAST_RE = /사막|오아시스|바자르|바자|수크|피라미드|스핑크스|오벨리스크|지구라트|아라비(?:아|안)|페르시아|실크\s*로드|비단길|대상\s*(?:숙소|행렬)|카라반|캐러밴|낙타|술탄|칼리프|파라오|이집트|메소포타미아|사막\s*궁전|모래\s*(?:마을|도시|왕국)|함맘|\b(?:desert(?!\s*island)|oasis|bazaar|souk|pyramid|sphinx|ziggurat|arabian|silk\s*road|caravan(?:serai)?|sultan|pharaoh)\b/iu;
 /** 버들항 로마풍 사막을 가리키는 말 — 버들항이 이긴다. */
 const BEODEUL_DESERT_RE = /로마(?:풍|식)?|버들항|beodeul|지중해/iu;
 

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "67a77e9dbf0e97bafa823c62e19602e4e449f8c47d64902a5b442c5d3e1ec825",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "jp-lot-spring",
+ "label": "jp_city/street_hand/jp-lot-spring",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "spring rider duck on plinth",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base plinth clearly displays a 4-pixel tall top surface (rows 22-25) in front of the spring, meeting the requirement for a figure/plinth in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3818
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "duck spring rider on plinth",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base plinth shows a clear 4-row top surface (rows 22-25) in lighter gray/lavender, foreshortened above its 4-row front vertical face (rows 26-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5096
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "duck spring rider",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The figure is mounted on a spring atop a rectangular base plinth. The base plinth clearly shows a 4-pixel-tall top surface (rows 22-25) in addition to its front vertical face (rows 26-29), conforming to the required 3/4 top-down perspective for figures.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5092
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "spring rider duck figure on spring with base plinth",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base plinth clearly displays a foreshortened top surface across rows 22-25 (4 rows tall) in a lighter tone, positioned above the darker front face (rows 26-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4723
+  }
+ ],
+ "decidedAt": "2026-10-13T17:30:03.089Z",
+ "cells": {
+  "16": [
+   "dbe48275a2a318ed",
+   "e3cd00a7c9c075d0"
+  ],
+  "24": [
+   "01e8e702202e94b9",
+   "0d93518bd52e3380",
+   "0f6f66d7a51b5444",
+   "1791b47fc6d4bcaf",
+   "33ce2646b6c1d941",
+   "438f8dd624bc6c0b",
+   "68d6a90483350571",
+   "7036da2931a40e69",
+   "83d328fa9b8a68ad",
+   "cf0060a869ba6b81",
+   "cf73563d964172fd",
+   "f695943752ef7c13"
+  ],
+  "32": [
+   "726f95068a7c7626",
+   "dc2bd7406e8a832f",
+   "f5f682ee351bff72"
+  ],
+  "48": [
+   "215eb2cea630a0c7",
+   "5d5bdbf226591e20",
+   "73d17e0b5dc8805c",
+   "7ebfcf913553f71a",
+   "bf6c6c805d3a83cc",
+   "f123b584261f04a4"
+  ]
+ }
+}

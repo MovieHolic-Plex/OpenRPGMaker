@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "aef497f2bac09472ec23f7d59f7280f4e181933f4172cda54fd1c7ed9a36add3",
+ "width": 32,
+ "height": 32,
+ "kind": "other",
+ "name": "naval deck cannon on a four-wheeled wooden truck carriage with breeching rope, aimed south",
+ "label": "pirate-isles/pi-cannon-int",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cannon barrel and wooden carriage",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cannon points south, showing the full length of the barrel and carriage foreshortened from above (rows 0-25) and both front and rear wheel sets, with the muzzle opening visible as an ellipse at rows 26-29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6559
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cannon barrel and carriage",
+    "kind_matches": true,
+    "top_rows": 22,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cannon barrel extends lengthwise from breech (north, row 0) to muzzle (south, row 26), displaying its cylindrical top surface over more than 20 rows in proper 3/4 top-down perspective, with the downward-facing muzzle opening clearly visible at rows 26-29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5806
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cannon barrel and carriage",
+    "kind_matches": true,
+    "top_rows": 22,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cannon barrel clearly recedes back from rows 25 to 0, showing its full cylindrical top length, the carriage side cheeks, both front and rear wheels, and an elliptical muzzle opening at rows 26-29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5034
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cannon barrel and carriage aimed south",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cannon barrel extends backward from the south-facing muzzle at row 26 up to row 1, showing its full cylindrical top surface foreshortened in 3/4 top-down perspective, with the carriage flanks and muzzle ellipse clearly rendered.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4615
+  }
+ ],
+ "decidedAt": "2026-10-13T19:57:07.440Z",
+ "cells": {
+  "16": [
+   "21e8bd7ec8907048",
+   "318d78a20107a4f2",
+   "62e68f0db6815405",
+   "a40b6a8d48f2de63"
+  ],
+  "24": [
+   "088181d7e434dd77",
+   "1f708cd23632bce6",
+   "2325d7531ff4dde7",
+   "24e8bedf71a200a3",
+   "2dc6bef1e77de325",
+   "2e4363b1b00afb39",
+   "35211d48808b172e",
+   "523ae892f54575d2",
+   "547c6b1077d1f007",
+   "5a7e219bdaa68984",
+   "5e29783697e51a1b",
+   "62f610a5f5fc41a2",
+   "938d8b5d52f09cc2",
+   "a0447b201ceb2d47",
+   "a6c2c7dd122c7d87",
+   "a74a90d2d35f4667",
+   "a8217b600c6462aa",
+   "b95ce267987640eb",
+   "c3dbe64c13dea64c",
+   "c95cf7baaa397f06",
+   "caf08f4bd33452a1",
+   "d0cd646727e5332a",
+   "e236b852acde12c4",
+   "e90aadb1816f6654"
+  ],
+  "32": [
+   "3a998a1887a52aea"
+  ],
+  "48": [
+   "033e52e8c7d2c1cd",
+   "11dd0d6672f2279d",
+   "1570f016d9cb1f8a",
+   "190eac7cd4063826",
+   "b59537aad9577e38",
+   "fac3d2dd085d88ba"
+  ]
+ }
+}

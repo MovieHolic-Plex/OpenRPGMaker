@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1fa3216f19fcd13c0a4eac457ea35d63a75c2cef3fd6e18b62a808e29df0bd7a",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "둥근 걸상(원통 + 타원 쿠션 윗면)",
+ "label": "sf-station/sf-stool",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round stool with cushion",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the stool/cushion is clearly visible as an ellipse occupying rows 4 to 10 (~7 rows tall), showing both the cyan cushion and its rim above the cylindrical base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3399
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round stool with cushion top",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the stool seat is rendered as an elliptical cushion spanning rows 3 to 10 (approx. 8 rows tall), with the south front edge and base extending below down to row 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5040
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round stool with cushion top",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the stool/cushion forms a clear foreshortened ellipse spanning rows 3 through 10 (8 rows tall), resting on a visible front base below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3477
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round stool with cushion top",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the stool is drawn as a wide ellipse spanning rows 3-10 with a cyan cushion center, clearly showing the top surface foreshortened from above, resting on a pedestal base at rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3985
+  }
+ ],
+ "decidedAt": "2026-10-13T15:25:00.448Z",
+ "cells": {
+  "16": [
+   "446775befcc42eaa"
+  ],
+  "24": [
+   "0a75f82bfe3e7da2",
+   "146bd3484ecbb7b8",
+   "18f5f9af938be20c",
+   "ad2eafe8ef8bcc9c",
+   "b6641efc943e53ed",
+   "bede1736decb938f"
+  ],
+  "32": [
+   "0da44e514a7b6ce7",
+   "1b4afe37a7462c07",
+   "4c9cf5d16d01d64e",
+   "c44cdf43f1271a3c",
+   "d8f1611259c45bb8",
+   "fc2e1230d5e5caec"
+  ],
+  "48": [
+   "5d177f9abf366c0c",
+   "74342697a9432665",
+   "82fa982291de0179",
+   "88f83026cf8bef37",
+   "a228e43c246c40d9",
+   "d9649a7c4febcd74"
+  ]
+ }
+}

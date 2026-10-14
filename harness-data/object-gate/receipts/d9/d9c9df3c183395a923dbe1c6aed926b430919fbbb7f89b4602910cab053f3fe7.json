@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d9c9df3c183395a923dbe1c6aed926b430919fbbb7f89b4602910cab053f3fe7",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "prehistoric stone-age fossil rock",
+ "label": "prehistoric/ph-fossil-rock",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fossil rock slab",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rock is rendered as a flat vertical face / cross-section seen straight-on (pure front elevation). There is no receding or foreshortened horizontal top surface shown from above, only a 1px outline across the top edge.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11529
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fossil rock boulder",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper portion of the boulder (rows 5-13, ~9px tall) is rendered as the light, upward-facing top surface, while the lower south face (rows 14-30) is deeply shaded and displays the embedded fossils.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11382
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fossil-bearing rock block",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rock is rendered as a flat vertical cut/wall face in pure front elevation. Vertical edges run straight down columns 4 and 31 to a flat base at row 30, and the upper section (rows 4–13) is a vertical cliff face with vertical cracks and an overhanging shadow rather than a foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13430
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fossil rock",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock has a clearly defined, fully lit top surface extending from row 5 to roughly row 13-14 (around 9 source pixels tall) with cracks, overhang shadow, and a darker south vertical face below containing the embedded fossils.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7197
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.805Z",
+ "cells": {
+  "16": [
+   "26dbe823ea90586f",
+   "2b58cfae5857812d",
+   "9e811df2f5a45650",
+   "dbaec60441037f87"
+  ],
+  "24": [
+   "2cbac2c9eeefa893",
+   "2dfc6299e4a4f8b9",
+   "3e490db66ceec001",
+   "439f4c0d2e560979",
+   "457d43b81d33166a",
+   "4598d88818b25dff",
+   "4cb988f2dc1a88dd",
+   "5de6e27bd0f30522",
+   "6afd46ba62c952fb",
+   "77db51be75bc77a6",
+   "7e993256a40e7949",
+   "88190efbae7047ad",
+   "8c487fbb5408f0e5",
+   "923d84c7bf8664ad",
+   "9339ca67561f5830",
+   "a12691a5f997afc6",
+   "b0f58607d35fd661",
+   "bdedcbdb42ed349e",
+   "de6f588907c8c29d",
+   "e0a2963f3c3de252",
+   "eadfb6026377bc3b",
+   "f4c47b08d91e143e",
+   "f961cf69b01c7dad",
+   "fff7a10ec0c8cb91"
+  ],
+  "32": [
+   "a70f9846c6d37466"
+  ],
+  "48": [
+   "05330bade4c424e3",
+   "08293f772237a31c",
+   "38b8d083fdc8678c",
+   "7d283c645318a3fb",
+   "8c801dbb0728881b",
+   "c71eb1ec0cb1d914"
+  ]
+ }
+}

@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "48619cd5d6751c5d137d5a59ed063e75bd01a7f7ebd27811f90adfc457f1299c",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "tall wooden flagpole on a wide square stone base, flying a black pirate flag with a white skull",
+ "label": "pirate-isles/pi-flagpole",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flagpole with top finial",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The flagpole and its golden top cap are drawn in flat front elevation with horizontal rows and no visible top surface/disc (0-1px highlight only). Per instructions, the stone base plinth does not count for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7532
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flagpole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The flagpole is drawn in pure front elevation; the top finial and pole end show only flat horizontal color bands with no visible top surface or elliptical cut face, failing the column requirement.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11570
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tall wooden flagpole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is the flagpole (the stone structure at the bottom is a base plinth). The pole is drawn in pure front elevation with a flat 2px rectangular cap at row 1-2 showing no top surface or foreshortened cut face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7004
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flagpole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The flagpole and its golden cap are drawn in flat front elevation with a horizontal 1-2px cap line at rows 0-2 showing no top surface. While the base plinth shows a top surface, base plinths do not qualify the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7311
+  }
+ ],
+ "decidedAt": "2026-10-13T19:25:15.328Z",
+ "cells": {
+  "16": [
+   "08b13841d3cd4c83",
+   "362224d98f91852c",
+   "c6d919f8a9f1c42b"
+  ],
+  "24": [
+   "349445f9d35029b5",
+   "4e57849f3f3d7792",
+   "9d0ee29c736942d9",
+   "b804b4fd533c0fdc",
+   "ce32e8d0188bfaa8",
+   "ef84efbb08bccdc9"
+  ],
+  "32": [
+   "0efc23a3ebf4e1af",
+   "3c3684083f39fab8",
+   "44df01eb6f9e2fb0",
+   "46f1b4eb53f4bb8e",
+   "789011220bc7f3fb",
+   "78c6662a41b59760",
+   "a39d3352381c3c33",
+   "acc326dc2897afa0",
+   "b126a9741d978f0e",
+   "b4430d235bab79ee",
+   "ca2b5b702237f34b",
+   "ce5b046a875f1f5c"
+  ],
+  "48": [
+   "147e2b0013dc545a",
+   "450292ff620ff8c4",
+   "5328430aa4b51b0e"
+  ]
+ }
+}

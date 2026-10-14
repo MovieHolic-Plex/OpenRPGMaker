@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ef500cbaef04dcacf77bd1f0acf2a4e1722b98b0e4be013edb3abd68d074ae6d",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "closed wooden treasure chest seen from above at an angle: flat plank lid top face, darker front with gold lock",
+ "label": "pirate-isles/pi-chest-closed",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "closed wooden treasure chest",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chest shows a clear foreshortened lid top face spanning rows 2 to 6 (~5 rows) with metal reinforcing bands, above a highlighted front rim on row 7 and a darker south/front face on rows 8 to 14 with a lock.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6720
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden treasure chest",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chest lid top face occupies rows 2-7 (6 rows tall) above the front face (rows 8-14) with lock, properly demonstrating the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4812
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "closed treasure chest",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chest shows a clear 3/4 perspective: rows 2-6 form a 5-pixel-tall lighter lid surface seen from above, bordered below at row 7 by the lid overhang, followed by a darker front face (rows 8-14) with a gold lock.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6374
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "closed wooden treasure chest",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chest shows a clear top surface (lid) spanning rows 2 to 6 (5 rows tall), foreshortened with slight perspective tapering towards the back, and a distinct darker front face spanning rows 8 to 14 with the gold lock.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14650
+  }
+ ],
+ "decidedAt": "2026-10-13T19:33:03.044Z",
+ "cells": {
+  "16": [
+   "898dcdd4b4cdbc6f"
+  ],
+  "24": [
+   "2e640089977eb70a",
+   "455838eb1856c908",
+   "465434825ff5687d",
+   "5c9b6bba4062e37c",
+   "8c9e9a0acb768129",
+   "b95609ffd7157240"
+  ],
+  "32": [
+   "3732f519e8240728",
+   "41c62378926ad9c9",
+   "573bcdb22564b29d",
+   "7692deb63a8c7e16",
+   "aa0460d081d9fa38",
+   "d857052113b98ce7"
+  ],
+  "48": [
+   "66de148ad01c156a",
+   "6b211abc394f3df9",
+   "79515964d1b31ca2",
+   "b53272059eab3d9e",
+   "d96adb5f4d2d0054",
+   "f99016f577dc76cf"
+  ]
+ }
+}

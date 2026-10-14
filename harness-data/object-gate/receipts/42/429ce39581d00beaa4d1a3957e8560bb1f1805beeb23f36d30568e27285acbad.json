@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "429ce39581d00beaa4d1a3957e8560bb1f1805beeb23f36d30568e27285acbad",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "고마이누(돌 사자, 받침 위, 왼쪽 봄)",
+ "label": "sengoku-edo/se-komainu-l",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone plinth and komainu statue",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone plinth is drawn in pure front elevation with no visible top surface (only a 1px dark top outline at row 22). The statue sits directly on the edge with no floor/pedestal depth visible around it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4968
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "komainu statue on stone plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The statue is drawn in flat side profile and the stone plinth underneath is drawn as a flat front elevation with no visible top surface (0 pixel rows of plinth top surface around the figure's base).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7181
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "komainu (stone lion) statue on a stone plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The plinth base is drawn as a flat vertical rectangle (rows 22-31) with only a 1px horizontal outline at row 22 and no top surface visible. The statue itself is also rendered in a flat 2D side profile.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5692
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone lion statue on a rectangular plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The statue is drawn in a pure side profile, and its pedestal/plinth underneath is rendered in a pure front elevation with no visible top surface (0 rows of top surface visible).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5668
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.070Z",
+ "cells": {
+  "16": [
+   "6a824fae57a09353",
+   "b5c039248d6363da"
+  ],
+  "24": [
+   "1750254c9db00793",
+   "4c4eab8150eb87e7",
+   "8f67de89f1450681",
+   "925718da6f1fd197",
+   "927e07bf9aa982f0",
+   "9d815be3879f0452",
+   "bbbbb0d53eef6725",
+   "c3bd2abea09ca91d",
+   "d156882e641813f8",
+   "d85df908500a2046",
+   "ea7fd263d46dd397",
+   "f6c79ac02cd6fc8b"
+  ],
+  "32": [
+   "aa832bca66b61165",
+   "b42d37bbc7824cc1",
+   "dd1b256516a162bc"
+  ],
+  "48": [
+   "01e76318c4af616a",
+   "1130964956fe0ad0",
+   "3b3c3d1d37245857",
+   "5beedd8f5257b3bf",
+   "73bcdb889c40546f",
+   "f6d398eda9eac2d0"
+  ]
+ }
+}

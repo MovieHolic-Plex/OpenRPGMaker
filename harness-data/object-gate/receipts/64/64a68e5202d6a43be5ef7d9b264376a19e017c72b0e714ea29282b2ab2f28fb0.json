@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "64a68e5202d6a43be5ef7d9b264376a19e017c72b0e714ea29282b2ab2f28fb0",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "cobblestone plaza edge on grass (terrain)",
+ "label": "sky-island/si-plaza-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cobblestone plaza transition to grass",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile showing cobblestone paving (rows 0-13) meeting grass (rows 14-15) viewed from top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4297
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cobblestone pavement edge transitioning to grass",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a ground terrain transition tile showing a cobblestone paved surface ending onto green grass along the bottom edge; viewed properly from the top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3295
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cobblestone ground transition to grass",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a 2D ground terrain tile depicting cobblestone pavement transitioning to grass at the bottom, correctly rendered as top-down flat ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4346
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cobblestone plaza pavement with lower edge meeting grass",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile showing cobblestone ground surface across rows 0-13 meeting grass at rows 14-15 viewed from top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3671
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.979Z",
+ "cells": {
+  "16": [
+   "6e50c22dd53eae93"
+  ],
+  "24": [
+   "0cb1b29b54d3a9a3",
+   "13ab43c4a7cc6e13",
+   "499dc6e99eadc6a4",
+   "82684dca15129468",
+   "8a5ccdd49de6f820",
+   "d29541e86140616c"
+  ],
+  "32": [
+   "0b9da0bd8526f898",
+   "25a0d47d8b06f17e",
+   "72b7bb6f566404f3",
+   "8d924e5d4c63bb03",
+   "a97d7e7b47ee393c",
+   "f92b394ff8b02ba3"
+  ],
+  "48": [
+   "092ebc6717b97ef0",
+   "1e605aa37269e3c5",
+   "2ced801d1ea0ee60",
+   "2d5fd706183f7b7d",
+   "3c27ad72640d2a65",
+   "5ceb8e7b1f5c9a8b"
+  ]
+ }
+}

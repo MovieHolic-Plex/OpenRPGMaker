@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f6834194a36a1d04ccd259a9c7f04427b857a4d2d7623bf23becce88e3f7bce2",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "square wooden signpost seen from above at an angle: thick post with flat light top face, three blank arrow boards, stone foot",
+ "label": "pirate-isles/pi-signpost",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden signpost",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut-face of the post is clearly visible at rows 2-5 (approx 4 rows) in a light tan wood tone, transitioning to the vertical south face at row 6. The horizontal boards and stone base also clearly show top planes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4213
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden post with top face and stone base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top face of the square wooden post is clearly visible as a light-tan horizontal surface spanning rows 2 to 5 (4 pixel rows tall), and the stone base also shows a 3-row visible top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4181
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden signpost",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top face of the central post is clearly shown foreshortened across rows 2-5 (4 rows tall) in a lighter wood tone. The stone foot and arrow boards also display corresponding top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4432
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "square wooden post",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the wooden post is clearly visible from above at rows 2-5 (4 source pixel rows tall in a lighter tan shade), and the stone plinth also displays a visible top surface (rows 25-27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5750
+  }
+ ],
+ "decidedAt": "2026-10-13T19:37:04.821Z",
+ "cells": {
+  "16": [
+   "07415b1579b77f86",
+   "58e7fcc2249e95e0"
+  ],
+  "24": [
+   "07e224e7ced16a0e",
+   "33b3a14b0e8dee37",
+   "5864f1964c326de3",
+   "5cfa4a85d37bb088",
+   "66410a61fe796529",
+   "7b66b20e431dcf90",
+   "9b2f049269058b64",
+   "ae9330bd395689db",
+   "b18986f815bb3e4e",
+   "cf9723dd2c4ed6ce",
+   "efbf538dbc3d4d88",
+   "fd677d78035d0ad2"
+  ],
+  "32": [
+   "1fab010e4188fe2f",
+   "2842aec97a3bae6e",
+   "30756b2a468b4d3c"
+  ],
+  "48": [
+   "5befffe7764dd4c0",
+   "7a42229117305e19",
+   "9a4d70e0cc30a0df",
+   "c4024c33a57c6020",
+   "db26740e59a96f6d",
+   "fee248a04594ccc3"
+  ]
+ }
+}

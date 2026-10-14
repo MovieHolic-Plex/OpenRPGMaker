@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "06f0d628bd9d87fa474e62489d91adaf9d2b90603701c342d3a8ac9afd442976",
+ "width": 48,
+ "height": 48,
+ "kind": "container",
+ "name": "jp-lot-fountain",
+ "label": "jp_city/street_hand/jp-lot-fountain",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fountain basin",
+    "kind_matches": true,
+    "top_rows": 19,
+    "opening_visible": true,
+    "opening_rows": 19,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fountain basin features a deep elliptical opening showing the water surface spanning 19 pixel rows (rows 15-33) with a rounded front face below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6124
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fountain basin",
+    "kind_matches": true,
+    "top_rows": 19,
+    "opening_visible": true,
+    "opening_rows": 19,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fountain basin shows a large foreshortened elliptical opening filled with water (~19 rows deep from row 15 to 33) framed by a stone rim, sitting above a 10-row front rounded wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5705
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "circular fountain basin",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": true,
+    "opening_rows": 17,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fountain basin shows a broad, clearly foreshortened elliptical opening filled with water (rows 16-33, ~17 rows tall) surrounded by a visible circular rim and front basin wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6599
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fountain basin",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": true,
+    "opening_rows": 18,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fountain basin shows a wide elliptical opening filled with water (rows 16-33, ~18 rows tall) along with a foreshortened front wall (rows 34-43), correctly following 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4585
+  }
+ ],
+ "decidedAt": "2026-10-13T17:27:07.783Z",
+ "cells": {
+  "16": [
+   "0e22e11dec020a18",
+   "21b55c92c1e5c854",
+   "2f97fd8262be4afc",
+   "8f3e2e4353110768",
+   "929546497ceae54a",
+   "9bbbabdeeaa5e29d",
+   "9f378dfd78babd8e",
+   "e53fa78f4eb53944",
+   "f83982ff307672f4"
+  ],
+  "24": [
+   "78016dd96bec6cdc",
+   "7c5628768b5fc916",
+   "c47e651357aaca8a",
+   "f5a458fc4b7d73b1"
+  ],
+  "32": [
+   "0ba912f399324aa3",
+   "112941306b9c1da1",
+   "12cf8ea2facfd403",
+   "12dc3be6ef4612cf",
+   "3167f8da5f58c3dc",
+   "5435e247c6b0a72f",
+   "628a779e05fdb483",
+   "73192ee5879371c0",
+   "775a20f96abae5c4",
+   "7805ad3603840367",
+   "87dffd3de3a8313a",
+   "8ba4c7460f0434f9",
+   "8fd6c04d9ba04d8e",
+   "90c661fc9a062039",
+   "9adeaaeb62eb5972",
+   "a9bb83a80269752e",
+   "b53b8e51998d8e18",
+   "b9d661452a296dd4",
+   "bfbdf76e34d81e29",
+   "c03001b1e2a78dfd",
+   "c4ac4ff0e8c67f0f",
+   "c50c82493c04994f",
+   "ca5344d0510d3ecb",
+   "db0ac1855910136d"
+  ],
+  "48": [
+   "9b5a74d586891c3a"
+  ]
+ }
+}

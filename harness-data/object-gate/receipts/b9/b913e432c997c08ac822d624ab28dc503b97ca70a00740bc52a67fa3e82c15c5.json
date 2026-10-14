@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b913e432c997c08ac822d624ab28dc503b97ca70a00740bc52a67fa3e82c15c5",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "시장 노점(과일·채소, 빨강 줄무늬 차양)",
+ "label": "steampunk-city/sp-stall-fruit",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "market stall with striped awning and fruit display counter",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The striped fabric awning shows a 15-pixel-tall downward slope (rows 2-16), and the display counter below exposes an 8-pixel-deep top/interior tray area (rows 26-33) displaying fruit bins in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4757
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "market stall with striped awning and fruit display counter",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The striped awning shows its downward slope from rows 1 to 15 (15 rows), and the counter features recessed produce bins viewed from above spanning rows 26 to 32 (7 rows) before dropping into the vertical wooden front face (rows 34-43).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5153
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "market stall with striped awning and counter",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The display counter top clearly shows 7 rows of depth (rows 26-32) featuring recessed bins with fruit, and the striped awning depicts the downward slope of the canvas roof towards the viewer.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6107
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "market stall counter and awning",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter display area clearly shows its horizontal top surface divided into compartments holding produce (rows 25-31, 7 rows deep) viewed from above, with a vertical front panel below (rows 34-43).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5720
+  }
+ ],
+ "decidedAt": "2026-10-13T18:16:30.909Z",
+ "cells": {
+  "16": [
+   "6396b8d207d5fd07",
+   "67fae408600f10ef",
+   "93ff9b09318a8cc4",
+   "a9c2fcf049e2f05e",
+   "aefffc5e8cbc30a6",
+   "b13980850e031bea",
+   "de3e372a7ccdff7a",
+   "ed6d206278b25703",
+   "f1bfcad99e60cd37"
+  ],
+  "24": [
+   "ab96f7df3a6d2fa6",
+   "b614087f646ce530",
+   "bf17c5feca624e54",
+   "f22b6d451a1cfc7a"
+  ],
+  "32": [
+   "1f5d452c65d8540a",
+   "2d79d1276ad7c956",
+   "2f5b35a0306098a8",
+   "44113496ca12c53a",
+   "443be2a8a0b1485a",
+   "591cbe5497f9e889",
+   "667389651b621d69",
+   "8cf42528fcbb6343",
+   "8ebd57f045b86528",
+   "91f6a006cfb2202c",
+   "9dbd8ee275613ed0",
+   "a0dba8003f0a4361",
+   "a69eb534532b80e8",
+   "b02e1b0464770542",
+   "b0c1458615c69771",
+   "b1fdb62270f26c47",
+   "b27992652d792353",
+   "b6880a55fc8854d4",
+   "bd38cb9c741af544",
+   "c6d45d0e91bf592f",
+   "d71d5c50dbfe170c",
+   "d7f2a43822179dc7",
+   "ef2e9f9e6a8b04b6",
+   "f046e242c21561dc"
+  ],
+  "48": [
+   "f6f51acd572c27ed"
+  ]
+ }
+}

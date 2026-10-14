@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e692d721dadddc302ae3b7e77a96e70e8eb6cd5f2845e543a09aa24f4760eeb2",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "국기 게양대(흰 깃대 + 학교 깃발 + 돌 기단)",
+ "label": "modern-campus/mc-flagpole",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flagpole with flag",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is the pole and flag; as per instructions, a base plinth does not count for top surface credit. The pole is drawn as a flat vertical stripe capped by a 2D diamond finial with 0 visible top rows, resulting in a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10177
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flagpole with stone base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The flagpole and its stone base are drawn in flat front elevation. The stone plinth at the bottom shows only its south face (rows 40-46) with a 1px outline rim at row 39, showing no top surface from the 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7339
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flagpole with stone pedestal base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone pedestal at the bottom (rows 39-47) is drawn entirely as a flat front elevation rectangle with no foreshortened top surface visible around the base of the pole.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6058
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flagpole with flag and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire flagpole assembly is drawn in pure 2D front elevation. The pole has no top cut face or top-down perspective, the flag is drawn flat sideways, and the base plinth is rendered as a flat 2D rectangle with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8097
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.869Z",
+ "cells": {
+  "16": [
+   "3f297b24304da567",
+   "4180c6727ea9b5a8",
+   "9205072f6f6ffb62"
+  ],
+  "24": [
+   "6031bf184ca4f70d",
+   "643c2d764272a5c5",
+   "67953666aa773735",
+   "781d5c9d2c5a4c0b",
+   "b0014efccab4fdf6",
+   "cb8fbbaf8e4e9dc8"
+  ],
+  "32": [
+   "2323e9f3c060f849",
+   "4266551328b645b9",
+   "47fcb482e6a11d5a",
+   "4961dd777bfd3c52",
+   "b50b984ee8615133",
+   "bf9c1812791d6af8",
+   "c683214f46cfd4ce",
+   "e27fd961a78448aa",
+   "e3abb49c786505a7",
+   "e8a74bfd87cfd86f",
+   "e8bf55537ba54cef",
+   "f007cff396955c54"
+  ],
+  "48": [
+   "237863e5f1daa3be",
+   "28b4bcb64acf4df4",
+   "58e7b151e9be5466"
+  ]
+ }
+}
