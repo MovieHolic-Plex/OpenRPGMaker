@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5bf5fed4da82e78dfd51ab0599087413ed17162690660d2138cd6355f30f63c8",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "인조잔디 구장(어두운 줄)",
+ "label": "modern-campus/mc-turf-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "artificial turf ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 top-down ground terrain texture representing dark-striped artificial turf.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4316
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "artificial turf ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile depicting artificial turf pattern, filling the entire 16x16 tile space as ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2713
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "artificial turf ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting dark green artificial turf texture across the entire 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3614
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "artificial turf ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground surface tile depicting artificial turf texture across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2944
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.864Z",
+ "cells": {
+  "16": [
+   "eaa090416ecc257b"
+  ],
+  "24": [
+   "340647f9e7baa762",
+   "40ec9f4bdcf91be2",
+   "4822dd6c4b9ff788",
+   "8c17e423bd01e29b",
+   "a785cb286a2f8631",
+   "b4cd939e50921087"
+  ],
+  "32": [
+   "107e8fb7fec7ab13",
+   "1d44d9cf4ee423b5",
+   "4b7dcb965ca36321",
+   "7b76958dc892a745",
+   "85207ff6ffbac41d",
+   "d508f727f4bb61cc"
+  ],
+  "48": [
+   "26bd9b0d407b2085",
+   "5cd767b31b48dab2",
+   "726481eaa8a111b8",
+   "a722927b5077ac86",
+   "c9667c1e4dbbcabb",
+   "de74113937071e15"
+  ]
+ }
+}

@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "eb13a35643a8e1b468e3e8d74524070b59ceb649286df3a9da5349cd4473706a",
+ "width": 32,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "풍경화(폭풍 치는 고성)",
+ "label": "gothic_manor/gm-paint-landscape",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "framed landscape painting",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted picture frame correctly depicted flat against a north wall with frame borders and subtle drop shadow.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8063
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "framed landscape painting",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted picture correctly depicted flat against the wall with frame and dark drop-shadow edges.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7610
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "framed landscape painting",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Framed painting mounted flat on a wall. For wall-mounted objects, a flat front-facing view is expected and appropriate, and there are no incorrect isometric receding side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8378
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "framed landscape painting",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted framed picture shown flat against the vertical wall surface as expected for wall-mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5186
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.505Z",
+ "cells": {
+  "16": [
+   "845a41211f49b691",
+   "c03f9678c76bef90"
+  ],
+  "24": [
+   "2048f4ddcab5033a",
+   "447f293c339c874c",
+   "53e5b9205ff06512",
+   "5c7295b7c1520872",
+   "78b7e65d2e0feff3",
+   "946bf7759bf40377",
+   "a88af78fe9884f29",
+   "aee1ecba25a38834",
+   "af71141941960269",
+   "c88a1717e08f436b",
+   "d985384b78a42c5d",
+   "f847310bee6de339"
+  ],
+  "32": [
+   "6cedcfbf108d750d",
+   "e8f314380e357331"
+  ],
+  "48": [
+   "2169cb235ec846fc",
+   "245da6ac28a4c51f",
+   "491e2d1be7b999b6",
+   "ac84e7f527b0b5b3",
+   "b01511307dc145d4",
+   "e4f75426769cb165"
+  ]
+ }
+}

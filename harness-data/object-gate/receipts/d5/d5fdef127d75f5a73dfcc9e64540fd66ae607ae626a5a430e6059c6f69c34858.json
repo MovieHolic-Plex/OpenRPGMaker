@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d5fdef127d75f5a73dfcc9e64540fd66ae607ae626a5a430e6059c6f69c34858",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "급수 기둥(기관차 물 넣는 무쇠 기둥 + 팔)",
+ "label": "steampunk-city/sp-standpipe",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water column (iron pillar with domed cap, base, and horizontal arm)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire water column is drawn in pure front/side elevation. The top cap shows a front silhouette with a visible underside (rows 10-11), the horizontal arm has only a 1px edge highlight with no top surface, and the valve wheel is drawn flatly facing forward with no top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9106
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "railway water crane (vertical cast-iron column with boom arm and cap)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The water column is drawn entirely in flat 2D side/front elevation. The top cap, horizontal boom arm, valve wheel, and lower base cylinder (rows 44-47) are all drawn with straight horizontal baselines and zero elliptical foreshortening or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13921
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water column (railway water crane)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire water crane is drawn as a flat side/front elevation: the top cap and base are shaded as flat side profiles, the horizontal arm is only 2px tall with no visible top surface, and the side wheel and hanging attachment show zero 3/4 view top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6936
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water column with horizontal arm and spout",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Drawn in flat side/front elevation: the horizontal arm (rows 12-14) shows no visible top surface (0px beam top), the suspended spout (rows 15-23) is a flat 2D rectangle, and the valve wheel (rows 23-28) is drawn as an unforeshortened 6x6 circle rather than being rendered in 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11264
+  }
+ ],
+ "decidedAt": "2026-10-13T18:42:41.659Z",
+ "cells": {
+  "16": [
+   "1574ae5b6bac19a1",
+   "44ce89a9469c61a1",
+   "aa245daf04e285a8"
+  ],
+  "24": [
+   "560b41b7484808d8",
+   "72d9c0f31015b09d",
+   "8f8970a26774eee7",
+   "98d6ac165f1d6332",
+   "ddaf8f8106f23e0f",
+   "f34241466300fab9"
+  ],
+  "32": [
+   "1d3eb6821ce56eee",
+   "5ba1e1532ecadb29",
+   "645085a068480dbf",
+   "64c105320b6ad1bb",
+   "729e472d9c0ca73d",
+   "834154fcbd31b544",
+   "944dca2903fbe642",
+   "9f9af4a78b4e707a",
+   "aa4171fd69750fa9",
+   "b22b6a39125ad831",
+   "cd16411643a17761",
+   "feb22190f51c5d03"
+  ],
+  "48": [
+   "5177324c6915e99c",
+   "542c5706c1b3dac7",
+   "68193830adcfae63"
+  ]
+ }
+}

@@ -1,0 +1,146 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2d0cf4feb607af3f5f29e840f01ca59e607ae522dd36b37e5f522c0fd4c0b2d0",
+ "width": 32,
+ "height": 32,
+ "kind": "other",
+ "name": "화장실 칸막이 2칸 묶음(낮은 문 + 윗 틀)",
+ "label": "modern-campus-int/mc-stall-block",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "toilet stall partition with two doors and upper openings",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stalls, doors, and outer frame are rendered in flat architectural front elevation with no visible horizontal top surfaces seen from above (0px top surface).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4623
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "toilet stall partition set with doors and upper openings",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stall structure and doors are drawn as a completely flat front elevation with only a 1px outline/border at the top (row 7-8) and door tops (row 20), showing no foreshortened top surface depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3978
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "toilet stall partition with two doors and upper frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stall partition frame and doors are drawn in pure front elevation with no visible top surface foreshortened for the top beam, dividing panels, or door tops (row 7 is merely a 1px outline).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3893
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "toilet stall partition unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stalls and doors are rendered in a pure front elevation with no visible top surface foreshortened from above (only a 1px outline along the top edge at row 7).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4361
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:11.493Z",
+ "cells": {
+  "16": [
+   "0377ebeec6db60fb",
+   "24e02be4d3dec1d7",
+   "5c16f01586fec5c6",
+   "cb2e9e6496a5309c"
+  ],
+  "24": [
+   "0a8c8df8fe228ff4",
+   "0cb232e482dba50f",
+   "1c5b8715cef58fb6",
+   "210117e3859aa404",
+   "2870118ffe122f49",
+   "2a9fe2a1a23acf68",
+   "358086a606aed5fc",
+   "52b725eb5de8f788",
+   "5600547712c56407",
+   "5a5cf5bdeb2f1ff0",
+   "679276b66287b99f",
+   "6f144c61956a0708",
+   "b0c5969185c6c6ec",
+   "b56c33b81ef6bf7b",
+   "b7ffd5cb0a7622c4",
+   "c224df6a63798c50",
+   "c9e23a7609ffc4dd",
+   "f88158bb5ecf987a"
+  ],
+  "32": [
+   "a52ae5dbf4261b74"
+  ],
+  "48": [
+   "1762ad1384bd3043",
+   "40ea9fb005bbbfbe",
+   "6549d8c978667a8f",
+   "d1b2db0866a2833f",
+   "d42a52307aae6a55",
+   "f44b571c9c89d6b8"
+  ]
+ }
+}

@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "aa6424fd534045a412f049854b5f499df23240586ef05a8430f3f7dc02677011",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "흄 후드 실험장(윗면 환기구 + 유리 앞창 + 안의 기구)",
+ "label": "sf-station/sf-fume-hood",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fume hood laboratory station",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is drawn in pure front elevation with only a 1px outline and 1px edge highlight along the top (rows 1-2). Rows 2-13 form an upper vertical front panel rather than a foreshortened top surface, and the middle sash window and base cabinet are also drawn completely flat from the front.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 18240
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fume hood laboratory workstation",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface spans rows 2 to 13 (12 pixel rows tall) with a visible exhaust vent duct and top-mounted unit, clearly delineated by the front edge highlight at row 14 from the south-facing glass chamber and lower panel below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10693
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fume hood laboratory station",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the fume hood is clearly visible across rows 2–13 (12 rows tall, lit lighter than the front face with a bright highlight along the front edge at row 14). It features an upward-facing exhaust duct with a foreshortened elliptical opening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14180
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fume hood",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the unit spans rows 1 to 13 (13 rows tall), clearly viewed from above with a circular exhaust vent flange and filter unit mounted on it, while the front face below (rows 14-31) shows the sash window into the chamber and lower controls.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8964
+  }
+ ],
+ "decidedAt": "2026-10-13T15:32:45.208Z",
+ "cells": {
+  "16": [
+   "325a2d714a958576",
+   "7f807241231009bf",
+   "94b15ccb34fc52e6",
+   "c45465d2960b0def"
+  ],
+  "24": [
+   "27053ca3f3e10ad9",
+   "30b603a23baa3503",
+   "36c40c2d1316a919",
+   "39e4d8946e912c19",
+   "3b31dae6e2c68716",
+   "41d11e43b5b093be",
+   "49ff4357ae45199a",
+   "5115725227ab21e4",
+   "5ee685299317f32e",
+   "616a02279e04a1fd",
+   "63ca19f725fc23bf",
+   "8af9f7d8a0163743",
+   "98c1d521a81ed7bb",
+   "a5f34026d282425e",
+   "ae2f0929ff773f22",
+   "bcc0bf213196de41",
+   "bd657a3ec138d3f5",
+   "d2b0cbf35010c9da",
+   "d30ae842d7692c6b",
+   "d7ff42a824a4e897",
+   "d913634ab5891290",
+   "e9d168cf4e6e1d1c",
+   "fd1602ac2092e22a",
+   "fd54eb014b0f2f25"
+  ],
+  "32": [
+   "6865f4b4f83dccf0"
+  ],
+  "48": [
+   "2ae2df0a0fa6d542",
+   "43724e1622cd87af",
+   "619d833312988094",
+   "ae88aa730598698f",
+   "cda57b1cc8396e33",
+   "ebdffe7112a125bf"
+  ]
+ }
+}

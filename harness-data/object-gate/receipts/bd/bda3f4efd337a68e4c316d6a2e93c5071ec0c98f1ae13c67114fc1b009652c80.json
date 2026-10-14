@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bda3f4efd337a68e4c316d6a2e93c5071ec0c98f1ae13c67114fc1b009652c80",
+ "width": 16,
+ "height": 32,
+ "kind": "round_body",
+ "name": "표본 수조(선체 받침 + 초록 용액 유리 원통 + 거품 + 윗 뚜껑)",
+ "label": "sf-station/sf-specimen-tank",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "specimen tank (glass cylinder with liquid, base plinth, and top cap)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The specimen tank is drawn in pure front elevation. The top cap has no visible foreshortened elliptical top surface (drawn flatly with horizontal shading bands), the green liquid cylinder uses vertical cylindrical highlights without top/bottom elliptical perspective, and the base platform is completely flat and horizontal (rows 23-31).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9993
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "specimen tank (liquid glass cylinder with metal base and cap)",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylinder, liquid, base plinth, and cap are all drawn with perfectly straight horizontal lines without any elliptical curvature. The cap has at most 1 row of dark pixels inside the top outline, and the entire assembly is drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 8444
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "specimen tank (glass cylinder with base and lid)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in pure front elevation: the top cap, the top and bottom rims of the glass cylinder (rows 7 and 23), and the base plinth are all rendered with dead-flat horizontal lines instead of the elliptical curves required for a cylinder in 3/4 top-down view. There is no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9170
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "specimen tank (fluid cylinder with metal base and cap)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in flat front elevation: the top cap has flat horizontal banding without an elliptical top surface, the glass cylinder top and bottom boundaries are straight horizontal lines, and the base plinth (rows 23-30) is completely rectangular with a flat horizontal bottom edge.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8001
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.952Z",
+ "cells": {
+  "16": [
+   "06dc56665acc830d",
+   "cc58738374497aaf"
+  ],
+  "24": [
+   "2656230281c7e9a3",
+   "2aeef58a40b416a5",
+   "3912136f908317aa",
+   "46697bdabd5ce5ef",
+   "4de6a29a651e1399",
+   "525ffd741688e3df",
+   "5838d44d3149f9c3",
+   "5cb6712db6400fbc",
+   "8c3dc86366228935",
+   "98e71dfac7be63d7",
+   "a952866a14770948",
+   "e04df20b214ff24f"
+  ],
+  "32": [
+   "2831b1c380932983",
+   "b6c2e4c4baeca0e3",
+   "c0bf3fcb80dff933"
+  ],
+  "48": [
+   "185fa8bf9e06aa61",
+   "2aaab3b72c5a0581",
+   "3fe60201e3b71765",
+   "4763784ee4e5f715",
+   "4e1569f873a55c92",
+   "dba5912f5deef42e"
+  ]
+ }
+}

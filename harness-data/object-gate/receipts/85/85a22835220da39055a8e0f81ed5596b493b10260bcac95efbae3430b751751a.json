@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "85a22835220da39055a8e0f81ed5596b493b10260bcac95efbae3430b751751a",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "벽돌 벽면(아랫줄, 걸레받이)",
+ "label": "steampunk-city/sp-wall-brick-d",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick wall face with baseboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing the lower section of a vertical brick wall with baseboard trim. As a flat vertical wall face terrain tile, no top surface is expected on this segment.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5726
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick wall bottom section with baseboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid vertical wall face terrain tile with bottom baseboard trim designed for standard 3/4 top-down tilemaps.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4246
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brick wall face with baseboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Standard vertical wall face terrain tile with baseboard along rows 11-15, correctly drawn as a flat south-facing wall tile for 3/4 view environments.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4621
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brick wall face with baseboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a south-facing brick wall face and bottom baseboard trim; appropriate vertical surface for top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3728
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.463Z",
+ "cells": {
+  "16": [
+   "1f587d1f6447a072"
+  ],
+  "24": [
+   "4d426c4a2a77ab5a",
+   "769e230aab9d49f6",
+   "8e3a3850d6591555",
+   "999ba61ef651f56e",
+   "e8e4d3f236e5818e",
+   "f5b8a7cbbbc49ba1"
+  ],
+  "32": [
+   "0395bc03f822f9ba",
+   "040274c919ef9cb9",
+   "75c21d2d66bfe293",
+   "8525ea73df038ad7",
+   "df7767457a3bdf18",
+   "e21b5cb4c77acf3a"
+  ],
+  "48": [
+   "297c06bfb0916b06",
+   "46c2bb3aeaa4f1f7",
+   "84bae0d351c28d98",
+   "aa6eaaab1185cab1",
+   "d4c2dc80b5e653a7",
+   "e67688ae240f328c"
+  ]
+ }
+}

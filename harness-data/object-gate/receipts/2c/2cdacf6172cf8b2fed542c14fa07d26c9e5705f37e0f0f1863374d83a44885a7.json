@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2cdacf6172cf8b2fed542c14fa07d26c9e5705f37e0f0f1863374d83a44885a7",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "배관 도랑 — 세로 + 서 갈래",
+ "label": "steampunk-city/sp-pipe-nsw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pipe trench in stone floor tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a recessed floor channel/trench containing pipes running vertically with a western branch, viewed top-down as terrain floor tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4508
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pipe trench with T-junction in floor",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing a floor trench with a pipe running vertically and branching west, viewed correctly from the standard top-down 3/4 perspective with trench depth and wall shadows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4041
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pipe trench with T-junction in ground",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting an embedded trench and pipe junction viewed from the standard 3/4 top-down perspective, with vertical trench walls and ground surface visible.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4190
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pipe trench terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting a recessed pipe trench with vertical and western branches cut into stone floor tiles, viewed from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4600
+  }
+ ],
+ "decidedAt": "2026-10-13T18:45:09.736Z",
+ "cells": {
+  "16": [
+   "aa2102f65f9e4e05"
+  ],
+  "24": [
+   "11b5f3cb0d06edb6",
+   "1be329f7a56bf36b",
+   "340dc59a521f81b9",
+   "875164911651a4f8",
+   "daa93a59090f1983",
+   "f3ae6dbe0a721cc5"
+  ],
+  "32": [
+   "16cec1a1ad3ca536",
+   "483cd6a4f9641325",
+   "4a16592a3c7009d0",
+   "6e23cd57c951e082",
+   "9795779e1417973a",
+   "daeb3a246d3e7e12"
+  ],
+  "48": [
+   "634b764946cba3aa",
+   "67c32dee4aa8b4cf",
+   "ace088cef1d44977",
+   "bc560af5bcb3959b",
+   "bcd999d0e4775348",
+   "e3ba82b28f285ff9"
+  ]
+ }
+}

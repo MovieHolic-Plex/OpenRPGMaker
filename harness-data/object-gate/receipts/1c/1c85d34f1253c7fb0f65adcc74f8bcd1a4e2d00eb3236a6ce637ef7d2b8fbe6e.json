@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1c85d34f1253c7fb0f65adcc74f8bcd1a4e2d00eb3236a6ce637ef7d2b8fbe6e",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "나무 징두리 벽면(아랫줄)",
+ "label": "steampunk-city/sp-wall-panel-d",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wainscot wall face terrain tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a vertical terrain tile depicting the lower section of a wainscoted wall. As a continuous wall face tile (terrain), it correctly shows the vertical surface without a foreshortened top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6742
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden wainscot wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile representing the lower section of an interior wainscot wall. In top-down 3/4 perspective, vertical south-facing wall surfaces are properly displayed as vertical faces without a top surface on the wall tile itself.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6943
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall face with wooden wainscoting",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting the lower section of an interior wall face with wooden wainscot paneling. As a vertical wall terrain tile rather than a standing object, it correctly shows the vertical wall plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6760
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wainscot wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting the lower section of a vertical wainscoted interior wall face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4720
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.463Z",
+ "cells": {
+  "16": [
+   "dd57788e04d47a82"
+  ],
+  "24": [
+   "1a0b94817526d192",
+   "3776a7c1e99f8828",
+   "5ba4be6d9af8451b",
+   "69994c5447857cd1",
+   "7ba59ba76ba961fe",
+   "c5d30a9de4cd5022"
+  ],
+  "32": [
+   "4aaf49aaa496f73c",
+   "776fe0c938e67ca5",
+   "ae754e15be1b8458",
+   "bb05e8ad97cf0fd3",
+   "c7e38f56b817c7e8",
+   "d30b78ba387cd71a"
+  ],
+  "48": [
+   "21c7537e227c0266",
+   "6b9e2b37ae268636",
+   "8649ccf4a4c7801a",
+   "88f6a22116513cc4",
+   "9121be792a0aa0f3",
+   "dec12762699067d3"
+  ]
+ }
+}

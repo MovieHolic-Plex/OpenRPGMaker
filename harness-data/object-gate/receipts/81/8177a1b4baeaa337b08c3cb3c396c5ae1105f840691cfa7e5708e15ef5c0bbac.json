@@ -1,0 +1,145 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8177a1b4baeaa337b08c3cb3c396c5ae1105f840691cfa7e5708e15ef5c0bbac",
+ "width": 48,
+ "height": 32,
+ "kind": "container",
+ "name": "석탄 칸(벽돌 세 벽 + 석탄 더미)",
+ "label": "steampunk-city/sp-coal-bunker",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "아가리 안쪽이 안 보임",
+  "아가리 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick frame/walls of the coal bin",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brick surround (pillars and lintel) is drawn in flat front elevation with no visible top surface (0 rows of top depth). The framing resembles a 2D architectural elevation rather than a 3/4 top-down structure.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 6802
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick bin frame (three walls)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brick enclosure is drawn as a flat, straight-on architectural elevation/frame with mitered bevels around an opening, lacking any top surfaces for the side or back walls projecting in 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 7961
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "coal bin / alcove frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brick/wood frame surrounding the coal pile is drawn as a flat front elevation (archway/mantel) with no visible top surface (0px) showing horizontal depth from the 3/4 overhead perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 5613
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brick coal bin enclosure / frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brick enclosure is drawn in pure flat front elevation like a 2D cross-section or archway. Neither the top of the lintel/back wall nor the top surfaces of the side walls running north-south are shown from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 9490
+  }
+ ],
+ "decidedAt": "2026-10-13T18:16:30.908Z",
+ "cells": {
+  "16": [
+   "50dc0405e56aa062",
+   "6144d430a63373da",
+   "cef5c99c6c95ab97",
+   "e333a2092e628ce3",
+   "ebac17cd319dfc6a",
+   "f93eb62e1f7423b8"
+  ],
+  "24": [
+   "04361976f4b7508c",
+   "08dd5253210b80b5",
+   "26d5068cc1e01582",
+   "2ca1661f85120358",
+   "39e9bbbd6a3a6628",
+   "bc490dda2a15fbaa",
+   "c84a4344e93776b9",
+   "e7737f94cd2ce791"
+  ],
+  "32": [
+   "46a0a9ca532cef25",
+   "6ec7464386e4def4",
+   "7f1111c84424d771",
+   "be2951d5641a9bfe",
+   "c6ff1f06ce21b6bc",
+   "d5196737953407a5"
+  ],
+  "48": [
+   "4c2f528468a5500a",
+   "66c1c5eb95113641"
+  ]
+ }
+}

@@ -1,0 +1,148 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e996938b4dabc036fd109234c182158584b00266ea6647e2e8f5abfbabcb72ad",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "동아리방 잡동사니 선반(2칸)",
+ "label": "modern-campus-int/mc-club-shelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "two-compartment wooden shelving unit / bookcase with items",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire bookcase is drawn as a flat front elevation. The horizontal shelves and bottom plank are drawn as 1-pixel-thick lines with no visible top surface depth, and there is no foreshortened top surface for the main body (0 rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8555
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bookshelf / shelving unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shelving unit is drawn in pure front architectural elevation. The horizontal shelf boards are only 1-2px thick divider lines with no visible top depth/floor, and there is no visible top surface of the main unit.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8083
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two-tier wooden knick-knack bookshelf",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bookshelf is clearly visible across rows 0–4 (5 rows deep) with items (orange and purple boxes/books) resting on top of it before the front lip at row 5.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7321
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bookshelf / utility shelf",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire shelf unit is drawn in pure front elevation: all shelf boards are 1-2px flat horizontal lines, interior shelf floors show 0px of depth, items inside (boxes, books, ball) are seen directly from the front, and the main body has no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11439
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.312Z",
+ "cells": {
+  "16": [
+   "2eb5875b109d7abe",
+   "7c5b512e13aeb434",
+   "acbff8903c0513e3",
+   "d1db5ee215c960f9"
+  ],
+  "24": [
+   "010a7d2d372af806",
+   "04f6c97b628c675f",
+   "069431d9e61ca514",
+   "0c08ac0e46b398f2",
+   "109bee3d71caacf3",
+   "110ec679f6ac765d",
+   "183332ccb9b8aca6",
+   "1f412f4b5b649e60",
+   "2d5cc60c9c83d746",
+   "2eb541348629bb46",
+   "4ef66d0150e28f09",
+   "50b7473c07ac4f0e",
+   "883b3794fedf60e3",
+   "89d2badc9a205749",
+   "919c213269996d76",
+   "95dd5984e9fd6b3f",
+   "a2fd3821968acac0",
+   "b02488ec5edd773c",
+   "b9a29e929d92ff01",
+   "cb0af5c72feb3720",
+   "ce0017463c152e6c",
+   "ed3be2be71ed1203",
+   "f12444c5e2dc499e",
+   "f35df3cec4a797a7"
+  ],
+  "32": [
+   "0780c9b217bf5db1"
+  ],
+  "48": [
+   "032b6f3d071762fb",
+   "1a68eefe25038c92",
+   "7f63eac6672646a3",
+   "a22d7791fd176cf6",
+   "be86dbe21e20a6d0",
+   "c9465cdf26e5ab2d"
+  ]
+ }
+}

@@ -1,0 +1,134 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "04fd35c6ec67909c90d3adbc97b7de1c66b171a50c96644e46827e2f9432910e",
+ "width": 16,
+ "height": 32,
+ "kind": "frame",
+ "name": "철망 울타리(녹색, 콘크리트 기초)",
+ "label": "modern-campus/mc-fence-mesh",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wire mesh fence on concrete base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The concrete base clearly displays a 4-pixel-tall top surface (rows 24–27) foreshortened from above, contrasted with a 4-pixel-tall vertical south face (rows 28–31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7196
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wire mesh fence with concrete base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence and its concrete foundation are drawn in flat front elevation with no visible horizontal top surfaces on either the rails, post, or concrete base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14304
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wire mesh fence with green metal frame and concrete foundation",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "While the concrete base correctly shows a 4px top surface (rows 24-27), the main fence frame's top horizontal rail (rows 4-6) is drawn as a flat front-elevation bar with only a 1px highlight line (row 4) rather than a foreshortened top face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11964
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wire mesh fence frame with concrete base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top horizontal green beam has no top face (only a 1px highlight line on row 4 over rows 5-6), drawn in pure front elevation as a flat horizontal bar. The post cap also lacks depth, and the entire fence structure is rendered as an architectural front view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9757
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.872Z",
+ "cells": {
+  "16": [
+   "8b1bfff2657c8f67",
+   "fdc9b06aa011ac5f"
+  ],
+  "24": [
+   "00ed7ffa705a9bdc",
+   "021e9cd20485a467",
+   "0279d48462b054a5",
+   "17b9d74a04d0ce9a",
+   "1c14ce4bb8920266",
+   "25b9528fb714acad",
+   "6bf3b10711429f3b",
+   "93d830480e8def53",
+   "972ce9dd478498a8",
+   "c7e8c38ea6fc58b6",
+   "f723275cd8775b8e",
+   "fdc2f031e1af3f6c"
+  ],
+  "32": [
+   "62e1283aec201da0",
+   "f4c6c9181a3f2ed1",
+   "f84a0d210d0159d3"
+  ],
+  "48": [
+   "1b31ee2eddba4aae",
+   "1cfb169597b46841",
+   "2e5bbfe58e4dc985",
+   "772fd9109b6fd846",
+   "8dbe1b9d183924c4",
+   "e46714053c1688d1"
+  ]
+ }
+}

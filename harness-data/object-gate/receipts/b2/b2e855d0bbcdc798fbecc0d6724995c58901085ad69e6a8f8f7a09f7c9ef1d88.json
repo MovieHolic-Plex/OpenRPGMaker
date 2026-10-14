@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b2e855d0bbcdc798fbecc0d6724995c58901085ad69e6a8f8f7a09f7c9ef1d88",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "벽 통로(윗줄, 돌 상인방 + 어두운 틈)",
+ "label": "steampunk-city/sp-wall-door-u",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone doorway lintel in wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile featuring a stone doorframe/lintel with a 2px recessed soffit/ceiling visible above the dark passage opening, correctly representing terrain depth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6627
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall doorway with stone lintel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face tile with a recessed stone lintel doorway; correctly classified as terrain, showing the vertical south wall face and recessed lintel soffit.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5718
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall passageway tile (stone lintel and dark doorway cut into wall face)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a wall-face terrain tile depicting the upper section of a doorway with a stone frame/lintel set into the wall. As a vertical wall terrain element rather than a freestanding object, it correctly depicts the vertical wall plane in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5147
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall doorway tile (stone lintel and door opening in wall)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile depicting an archway/passage with stone lintel; wall surfaces in 3/4 view are legitimately vertical front surfaces and classified under terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4766
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.464Z",
+ "cells": {
+  "16": [
+   "77146de4b5ba8228"
+  ],
+  "24": [
+   "0279c07f13c536a8",
+   "1db3ff94128c234f",
+   "2dd29203d056e335",
+   "5c29e6a78f1dc135",
+   "b5b9a688a5739a9f",
+   "ef0215586e03c6e6"
+  ],
+  "32": [
+   "02315034a1dce7be",
+   "62b5eb51008e3d5f",
+   "6d6ede7b040f08da",
+   "e385aa0d964e5f22",
+   "fd90ac405a7e482f",
+   "fdf4e3c9d4236476"
+  ],
+  "48": [
+   "140854f7af084407",
+   "67652a70b8bf279b",
+   "7cdbca1277abc868",
+   "ad803fc5aab838c7",
+   "df32eb56bf522d7e",
+   "fc54532ab746a84e"
+  ]
+ }
+}

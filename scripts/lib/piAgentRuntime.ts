@@ -16,7 +16,7 @@ import { SET_BUILD_SPEC_TOOL } from "../../src/ai/session/sessionTools.ts";
 import { normalizeBuildSpec, plannedGrowthForSpec, validateBuildSpec, type BuildSpec } from "../../src/ai/buildSpec.ts";
 import { growthGuidanceLine } from "../../src/ai/session/buildSpecGate.ts";
 import type { ActivityVisual } from "../../src/ai/activityVisual";
-import { inspectPiLayoutQuality, piLayoutRepairPrompt, piLayoutShortfallPrompt } from "../../src/ai/piAgent/layoutQuality.ts";
+import { composedLayoutMapIds, inspectPiLayoutQuality, piLayoutRepairPrompt, piLayoutShortfallPrompt } from "../../src/ai/piAgent/layoutQuality.ts";
 import { conceptSkipsLayoutQuality } from "../../src/ai/conceptCards.ts";
 import { PiRepeatBreaker } from "../../src/ai/piAgent/repeatBreaker.ts";
 import { inspectPromptPayload } from "../../src/ai/authoring/promptInspection.ts";
@@ -911,16 +911,17 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     }
     // 배치 품질은 권고 한 번뿐이다 — 거부하지 않고, 두 번째 결과는 숫자만 알린다(layoutQuality.ts).
     // 개념 카드가 빈칸이 정상이라고 한 공간(미궁 통로 등)은 빈칸·대칭 수리를 시키지 않는다(src/ai/conceptCards.ts).
+    // 구성기가 구역마다 쓰임을 정해 깐 맵(composed-layout 태그, 예: compose_steampunk_city_map)도 뺀다 — layoutQuality.ts composedLayoutMapIds.
     // 전체 몬스터 게임도 뺀다 — 맵은 검수된 공용 캠페인이 깔고(포켓몬 마을·센터는 원래 트였고 대칭이다), 고칠 도구가 없어
     // 조수가 repair 를 한 번 더 부른 뒤 「마지막 변경 뒤 read/review_monster_game」 완료 검사에 걸려 실행 실패로 끝났다(2026-10-06 실측).
     if (!fatal && !rejected && !request.readOnly && turns < maxTurns && !options.signal?.aborted && !conceptSkipsLayoutQuality(request.task) && !monsterGameProduction.requested) {
       const describe = (issues: typeof layout) => issues.map(i => `${i.mapId} ${i.problems.join(", ")}`).join(" / ");
-      let layout = inspectPiLayoutQuality(ctx.project, base, request.mapIds);
+      let layout = inspectPiLayoutQuality(ctx.project, base, request.mapIds, composedLayoutMapIds(ctx.project));
       // 권고는 한 번뿐이다(팩 세트 맵 check_pack_map 재권고는 2026-10-07 팩 프리셋과 함께 지웠다).
       if (layout.length && turns < maxTurns && !options.signal?.aborted) {
         emit({ type: "execution_status", name: "layout_quality", ok: false, summary: `배치 품질 기준 미달 — 한 번 더 고칩니다: ${describe(layout)}`, data: layout });
         await promptResuming(piLayoutRepairPrompt(layout));
-        layout = inspectPiLayoutQuality(ctx.project, base, request.mapIds);
+        layout = inspectPiLayoutQuality(ctx.project, base, request.mapIds, composedLayoutMapIds(ctx.project));
         emit({ type: "execution_status", name: "layout_quality", ok: layout.length === 0,
           summary: layout.length ? `배치 품질 수리 뒤에도 기준 미달: ${describe(layout)}` : "배치 품질 기준 통과", data: layout });
         // 다시 잰 숫자는 조수가 모른다 — 수리 턴의 보고가 「이상 없음」으로 끝났다(2026-10-11 사막 2건). 미달이면 고치게 하지 않고 보고에 적게만 한다.

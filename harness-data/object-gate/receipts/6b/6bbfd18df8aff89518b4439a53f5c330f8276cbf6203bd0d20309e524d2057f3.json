@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6bbfd18df8aff89518b4439a53f5c330f8276cbf6203bd0d20309e524d2057f3",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "개인 사물함(윗면 + 환기 틈 문 + 손잡이 + 이름 램프)",
+ "label": "sf-station/sf-locker",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "personal locker",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The locker has a clear 4-pixel-tall top surface from row 1 to row 4, followed by a dark dividing seam at row 5 and the south-facing locker door below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4113
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "personal locker",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the locker is clearly depicted across rows 1 to 5 with appropriate shading and front-edge highlight before transitioning to the vertical south face at row 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3727
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "personal locker",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the locker is clearly depicted across rows 1-5 (about 4-5 pixel rows tall) with lighter shading and an edge highlight above the dark separator at row 6, followed by the front face with vents and handle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3410
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "personal locker",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the locker is clearly depicted across rows 1 to 5 (5 pixels tall) with appropriate highlights and shading before transitioning to the front face at row 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3251
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.953Z",
+ "cells": {
+  "16": [
+   "5aa08e8d5d4f1bbd",
+   "e88106838b8c6f89"
+  ],
+  "24": [
+   "3c927628e103c4ae",
+   "41e3495f8980919c",
+   "4a669d6bc22df80c",
+   "6baa34ca406b1bb9",
+   "9900584f0eb80281",
+   "9c8d4631f792c99a",
+   "af62b248dd0ecb2a",
+   "b042881f704cb7bb",
+   "b9290a4602622b8b",
+   "ea84594d558ea030",
+   "ebb3a679860a81f3",
+   "f745ba17a024f052"
+  ],
+  "32": [
+   "542b70070d583cb3",
+   "e117ceed333521cb",
+   "e32d374e4b87e5b3"
+  ],
+  "48": [
+   "0116b2a1a7a7ae94",
+   "1c4606d032fa17dd",
+   "20ed75c4b9a81d9f",
+   "5ca2a9b2f9a5ff57",
+   "8506221dbd872f6e",
+   "fc022b091d556ca2"
+  ]
+ }
+}

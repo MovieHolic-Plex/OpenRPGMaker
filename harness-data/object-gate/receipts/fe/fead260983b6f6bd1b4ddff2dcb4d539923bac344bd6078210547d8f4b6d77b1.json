@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fead260983b6f6bd1b4ddff2dcb4d539923bac344bd6078210547d8f4b6d77b1",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "먼지·깨진 판자 조각",
+ "label": "gothic_manor/gm-ov-dust",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "broken wood plank and scrap/dust patch on floor",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Floor debris consisting of a flat rectangular patch (rows 4-7, 4px tall) and a flat broken wood plank fragment (rows 9-12), both lying flat on the ground viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4637
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "broken wood plank fragment and paper/dust scrap lying on the floor",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Debris and broken plank lying flat on the ground surface, spanning rows 4-7 and 9-12 respectively.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3959
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dust/paper scrap and broken wooden plank lying on the floor",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both debris pieces lie flat on the ground plane; the pale scrap spans rows 4–7 (4 rows) and the broken plank spans rows 9–12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4302
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "broken plank piece and paper/debris",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The broken board piece and paper/dust patch lie flat on the floor as ground clutter/decals, visible from above spanning 4 pixel rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4250
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.502Z",
+ "cells": {
+  "16": [
+   "ab433204ce1ffddb"
+  ],
+  "24": [
+   "39214ab0cc22a9b0",
+   "4795fd71e30fdb25",
+   "4f286e3af86b3b5d",
+   "9ed506c276951d98",
+   "c0b8d02d451c38f4",
+   "e959f03f78602982"
+  ],
+  "32": [
+   "03703b1208813282",
+   "4c33f9a6f9ad3ff0",
+   "8d3e366f71518c55",
+   "cf473fb24db16085",
+   "f62c85b35c016f7b",
+   "f8ffbe92887e55ad"
+  ],
+  "48": [
+   "088af706749f3652",
+   "182906870f050a86",
+   "32a5ed3f18d70d9d",
+   "40634feb424c1bb6",
+   "d775aeff5f9a74b7",
+   "e9b45fc8aa0f6884"
+  ]
+ }
+}

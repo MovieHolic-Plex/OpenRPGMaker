@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8a48b80a54a239b9492356db43b423b9d824314d123e2db6158cfed3bcbc2c62",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "도서 반납 카트(3단)",
+ "label": "modern-campus-int/mc-book-cart",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "three-tier book cart frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cart is drawn as a flat rectangular front elevation with only a 1px border at rows 7-8 and no visible top surface (0 rows). The shelves are also drawn flat without depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4293
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "book return cart (3 tiers)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the cart frame at row 8 is only a 1px outline with no visible horizontal top surface, drawn as a flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4912
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "3-tier book return cart / bookshelf",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the cart consists only of a 1-2px outline frame (rows 7-8) with no visible foreshortened top surface; the entire shelving unit is drawn as a flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3501
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "book return cart",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cart frame has only a 2-pixel dark border at rows 7-8 with no visible horizontal top surface, and the shelves are drawn completely flat from the front (pure front elevation).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3722
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:11.492Z",
+ "cells": {
+  "16": [
+   "6b255a4e66605799",
+   "ae707c2b785efaf6"
+  ],
+  "24": [
+   "05b5c5767d82eb98",
+   "73faeadab28c3a32",
+   "7852db17d6391125",
+   "9870163ef1b603f2",
+   "ae9a360e4e47ba82",
+   "bda65dcb27e7ac8d",
+   "c4f2f26383b8a268",
+   "e0a0c3c306d8f867",
+   "e8ca423fc1fbfc21"
+  ],
+  "32": [
+   "0cc1e97ac037bb46",
+   "c92401483debcda8",
+   "fc4681e126a78207"
+  ],
+  "48": [
+   "457b4eac751fa42c",
+   "5fbdff7663c5feb7",
+   "630c256d0b964012",
+   "c32c1be4f33ef241",
+   "cdacf102e1f4d22c",
+   "d4ef1e9b7682d012"
+  ]
+ }
+}

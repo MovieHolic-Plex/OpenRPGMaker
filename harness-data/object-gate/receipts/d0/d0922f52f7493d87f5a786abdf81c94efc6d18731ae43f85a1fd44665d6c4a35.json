@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d0922f52f7493d87f5a786abdf81c94efc6d18731ae43f85a1fd44665d6c4a35",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "jp-lot-planter",
+ "label": "jp_city/street_hand/jp-lot-planter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rectangular planter box",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": true,
+    "opening_rows": 12,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The planter box clearly displays a large top opening with soil and plants inside (rows 6-17, 12 rows tall) surrounded by a rim, positioned above its south-facing front wall (rows 21-28).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7014
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rectangular planter box with plants in soil",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 12,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The planter opening (filled with brown soil) is clearly visible from above across rows 6 to 17 (12 rows tall), bordered by a 3-row front rim (rows 18-20) and a 9-row front face (rows 21-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6373
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rectangular planter box with plants",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": true,
+    "opening_rows": 12,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The planter box shows a clear top-down view into its interior opening filled with soil (rows 6-17) surrounded by a wide rim, above a south-facing front wall (rows 21-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7212
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rectangular planter box with soil and plants",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 12,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The planter has a clear top-down perspective showing the top rim (rows 18-20, 3px tall in front of the opening) and an interior soil opening spanning rows 6 to 17 (12px tall) above a south-facing front wall (rows 21-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11326
+  }
+ ],
+ "decidedAt": "2026-10-13T17:27:07.784Z",
+ "cells": {
+  "16": [
+   "20a3f2b5fe78f4bb",
+   "7d8046781c32c9a9",
+   "b05984732b53ae0c",
+   "e4c74519bf441e50"
+  ],
+  "24": [
+   "00a33fb61bc84ff8",
+   "1d6ed655c8bb85d1",
+   "2d0434165827e87a",
+   "42904c3083d06a10",
+   "4bd60d9085c59122",
+   "5cede27a0373e331",
+   "76e4dc48114edf7b",
+   "98bd4ff3614e1d17",
+   "99b384b1ed04513a",
+   "a31867f1a89015cc",
+   "a6c768c7ce55636d",
+   "a8e3251fa8ae8ff3",
+   "aac061d874dd22ef",
+   "b7fdb785302545b6",
+   "d40c55f25da1f583",
+   "dbe6ecc7349acbce",
+   "de644283770b2cd1",
+   "dfe994756831dff1",
+   "e6a69a582941506a",
+   "ea151162f62d2d92",
+   "ec084a879103a760",
+   "f1a330c4583b5063",
+   "fc1c0c1ad6fab6be",
+   "feff98727d7daea1"
+  ],
+  "32": [
+   "f692db17e2b394fe"
+  ],
+  "48": [
+   "09d5a7cd84251ad2",
+   "17bc266322deecb9",
+   "4060b212fdbe806e",
+   "4a8de0f75aee9396",
+   "73683b7936424ce6",
+   "a978bc98a2f5ab69"
+  ]
+ }
+}

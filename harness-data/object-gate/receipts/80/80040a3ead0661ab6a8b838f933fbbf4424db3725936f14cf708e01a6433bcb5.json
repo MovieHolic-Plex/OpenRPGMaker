@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "80040a3ead0661ab6a8b838f933fbbf4424db3725936f14cf708e01a6433bcb5",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "jp-lot-board",
+ "label": "jp_city/street_hand/jp-lot-board",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "signboard on pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The board, header, and pole are drawn in completely flat front elevation with only a 1px outline along the top edges (rows 1 and 11) and no visible horizontal top surfaces anywhere on the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7954
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "signboard / lot board on a pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire board and its base are drawn in straight front elevation with only 1-2px horizontal border outlines at rows 1-2, 11, and 40, showing no visible top surface anywhere.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6894
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "signboard mounted on a post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire sign structure (upper panel, main blue board, post, and base) is drawn in pure front elevation with flat horizontal 1-pixel outlines and zero visible top surface or 3/4 perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7196
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "signboard on pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the upper and lower signboards as well as the base are drawn in flat front elevation with only a 1-pixel outline at the top and no foreshortened top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6848
+  }
+ ],
+ "decidedAt": "2026-10-13T17:32:26.915Z",
+ "cells": {
+  "16": [
+   "0bc5f80589d8c82c",
+   "d723db937ec3008e",
+   "dc31838c46e55a78"
+  ],
+  "24": [
+   "21289a32f77d3fbb",
+   "5445541013438150",
+   "961175cbf3ef845f",
+   "bd5bb55b4ed1b7c1",
+   "c8c1cf706e22a26e",
+   "e8c37699c35ccf68"
+  ],
+  "32": [
+   "1b4cbdf1c1fa5b1a",
+   "3da57cb43b6f568d",
+   "4ecc7843de34da99",
+   "4ef0719ee98c6480",
+   "5b77edc20dcaed9a",
+   "7aab5b3089a075a3",
+   "7b846e3e96180bb5",
+   "7cc8e0e17cc4155a",
+   "9096a1997bce961f",
+   "b9e318920afab238",
+   "c05d09535d00ce6b",
+   "f4830a4d71630817"
+  ],
+  "48": [
+   "0662d985c92f8c54",
+   "5829cded22f2e0a1",
+   "bc153a5361ea9fc3"
+  ]
+ }
+}

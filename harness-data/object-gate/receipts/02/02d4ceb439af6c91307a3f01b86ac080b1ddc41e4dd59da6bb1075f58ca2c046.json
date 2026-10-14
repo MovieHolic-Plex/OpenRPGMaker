@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "02d4ceb439af6c91307a3f01b86ac080b1ddc41e4dd59da6bb1075f58ca2c046",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "쌓은 의자(3개)",
+ "label": "modern-campus-int/mc-chair-stack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stacked chairs",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The uppermost chair's horizontal seat surface is clearly foreshortened and visible from above across rows 12-17 (6 source pixels deep), situated between the upright backrest (rows 7-10) and the stacked seat rims and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6268
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stacked chairs (top seat surface and stacked front rims)",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the uppermost chair seat is foreshortened and clearly visible across rows 12-17 (6 rows tall), with the backrest positioned behind it (rows 7-10) and the stacked seat rims and legs facing south below (rows 18-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6050
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stacked chairs",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal seat surface of the top chair is visible from above across rows 12–17 (6 source pixel rows tall), with the front edges of the stacked seats descending in rows 18–24 above the legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7623
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stacked plastic chairs (3 stacked)",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top chair's horizontal seat surface is clearly foreshortened and visible from above across rows 12-18 (7 source pixel rows) above the stacked front seat lips and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7665
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:11.490Z",
+ "cells": {
+  "16": [
+   "36885a54bf9545e1",
+   "443587a502a8355e"
+  ],
+  "24": [
+   "0a8751561bcb3ed2",
+   "0c35c72149ea8c46",
+   "4529d12eabf0df94",
+   "4695a04860baa037",
+   "4a24a46a36c7e81f",
+   "5698b575c2dc6458",
+   "779626bb802ffc19",
+   "8cebb975adb456df",
+   "8ef625f2df2e7969",
+   "ef020f6c183be9aa",
+   "f91b6e208b5493eb",
+   "fcd7042508de4ffe"
+  ],
+  "32": [
+   "145fd161087af94b",
+   "5dc73ac9b2f03913",
+   "eaf82fdcd67a637e"
+  ],
+  "48": [
+   "2999623d350d6ccd",
+   "7cbab06bb6063f16",
+   "9fdbceef5741bfdf",
+   "e8951346d43a3a16",
+   "fb9682fe5e6928e2",
+   "ff3c245c1093ba7a"
+  ]
+ }
+}

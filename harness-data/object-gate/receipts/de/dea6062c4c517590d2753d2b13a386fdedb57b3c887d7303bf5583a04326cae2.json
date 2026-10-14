@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dea6062c4c517590d2753d2b13a386fdedb57b3c887d7303bf5583a04326cae2",
+ "width": 48,
+ "height": 32,
+ "kind": "organic",
+ "name": "바위 무더기(크고 작은 돌덩이 여럿)",
+ "label": "sf-station/sf-boulder-cluster",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cluster of rocks/boulders",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The boulders feature prominent, clearly defined top planes (e.g. top rock rows 5-11, left rock rows 13-19) sloping down to south-facing shadowed cliff faces, properly rendered in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4364
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cluster of rocks/boulders",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each boulder in the rock pile features a clearly defined, light-toned top surface (6-7 rows tall) seen from above at roughly 45 degrees, accompanied by darker downward-facing south faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4859
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pile of rocks",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each rock in the pile features a clearly defined, light-toned top surface visible from above (measuring around 5-7 rows tall on the individual boulders) transitioning into shaded south-facing front planes, correctly fitting the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5066
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cluster of rocks",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rocks in the pile have clearly defined, illuminated top surfaces facing upward (e.g. top rock rows 5-11, left rock rows 12-19) contrasting with shaded south faces, correctly depicting 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5500
+  }
+ ],
+ "decidedAt": "2026-10-13T15:38:14.591Z",
+ "cells": {
+  "16": [
+   "41325f84dfdb99f9",
+   "4ae5ffe81d48b201",
+   "6577daecd5093a21",
+   "690167d7b8c54349",
+   "9aae99951f6bc09f",
+   "e974f0efbe217225"
+  ],
+  "24": [
+   "0cfafc4f96c11582",
+   "3056645012f74c41",
+   "3231e02bb79de9ba",
+   "3fdfd2b95804a69e",
+   "401c1f74c3c11ced",
+   "8ea52e033a7d56d7",
+   "c12e45317efe3345",
+   "fd9b139a80625ea3"
+  ],
+  "32": [
+   "0a51e564b7029d52",
+   "20b90e8e85270524",
+   "33464d9b201fd23f",
+   "70a8c15cb16840b8",
+   "76679a4a9a1162fe",
+   "e8d7361785bc5512"
+  ],
+  "48": [
+   "4cf22dff65f6cd76",
+   "613504634e57999f"
+  ]
+ }
+}

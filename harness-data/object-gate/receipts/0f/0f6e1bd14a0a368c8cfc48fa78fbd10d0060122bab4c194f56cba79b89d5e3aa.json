@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0f6e1bd14a0a368c8cfc48fa78fbd10d0060122bab4c194f56cba79b89d5e3aa",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "수경 재배 선반(보라 재배등 두 단 + 잎 덩이 + 물 트레이)",
+ "label": "sf-station/sf-hydroponic-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hydroponic shelf unit",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body has a clearly depicted top surface across rows 1 to 5 (about 4-5 source pixel rows tall) with top-down shading, above the front shelves and framing.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4879
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hydroponic shelf unit with top surface and two interior tiers",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shelf unit is clearly depicted from rows 1 to 5 (5 pixels tall) with shading before the dark dividing line at row 6, showing the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5162
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hydroponic shelf unit",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body has a clearly depicted top surface on rows 1-5 (5 pixel rows tall) above the front face showing the two tiers of plants and lights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5275
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hydroponic shelf unit",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shelf unit is clearly visible on rows 1 to 5 (about 5 pixel rows tall) viewed from above, followed by a dark dividing edge at row 6, beneath which the front compartments with lights and plants are rendered.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5373
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.953Z",
+ "cells": {
+  "16": [
+   "0b18b883fb571dc5",
+   "8b256d879cb8d4fb",
+   "93ef798ce8c4737c",
+   "f9ac02c73a86064a"
+  ],
+  "24": [
+   "00fe69e132edf7b4",
+   "0e5b924ac64cb671",
+   "10652d0e4da7657a",
+   "1c89dbf51d6c3d7e",
+   "2ca6cbb5eb917838",
+   "4fcdc66d93d0f1ff",
+   "54d0173da52dd9e2",
+   "60349efc7050ba99",
+   "60cadfb82f23c242",
+   "7ad4c4a0444b5f12",
+   "7c7e00c13dbf7bb8",
+   "b091efaef47f5682",
+   "b54c8b9fc003ea20",
+   "bb492fba8d2878ac",
+   "bed80398f8f05923",
+   "c234b2e8b9ceaa10",
+   "d58ae406d80110ba",
+   "d6569bfeb14655bd",
+   "deba289fa311cbb5",
+   "e4337501761e8ea6",
+   "e9b0d74bc7b10145",
+   "f4f0541f9676fac4",
+   "fb0b8e407fba79df",
+   "ff1e9cba0106008f"
+  ],
+  "32": [
+   "2f48fac8c0334892"
+  ],
+  "48": [
+   "0d7e9d1cbc20cbc2",
+   "66a5bdc1f168c202",
+   "c9f0cb1a50c063ff",
+   "ca43ae8fc83e6f70",
+   "ec8d740b089bb74d",
+   "efff89ed45772124"
+  ]
+ }
+}

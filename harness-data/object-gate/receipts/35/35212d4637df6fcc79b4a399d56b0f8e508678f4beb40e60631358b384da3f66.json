@@ -1,0 +1,148 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "35212d4637df6fcc79b4a399d56b0f8e508678f4beb40e60631358b384da3f66",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "내부 에어록 격벽문(사다리꼴 윗면 틀 + 큰 원형 해치 + 위험 띠)",
+ "label": "sf-station/sf-airlock-inner",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "airlock bulkhead door with sloped upper frame/lintel and lower hatch door",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper section (rows 1–11) forms an 11px tall foreshortened trapezoidal top frame/lintel slope seen from above, transitioning via hazard stripes into the 16px tall vertical front door face (rows 15–30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8576
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "airlock bulkhead door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire bulkhead door is drawn in pure front elevation: the chamfered upper frame contains flat indicator screens facing the camera, the hatch is a vertical circle rather than an ellipse, and there is no foreshortened top surface showing depth behind the top edge.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7137
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "airlock bulkhead door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat front elevation of a sci-fi door. The upper trapezoidal section with indicator lights is the front face of the door lintel/casing, terminating at row 0 in a 1px outline with no visible horizontal top surface or depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10866
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "airlock bulkhead door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire bulkhead is rendered in flat 2D front elevation, typical of a side-scroller or architectural elevation. The upper chamfered casing contains front-facing indicator screens and vertical panel lines, and the very top edge at row 1 terminates with a 1px outline with no visible top horizontal surface or depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10566
+  }
+ ],
+ "decidedAt": "2026-10-13T15:30:54.893Z",
+ "cells": {
+  "16": [
+   "260517074cfb85cb",
+   "5820a4fff97a3ca7",
+   "9a7ccc04a4be55ab",
+   "d5d29e0146a39365"
+  ],
+  "24": [
+   "01fa4479271bc826",
+   "10741b9c7a8f8f78",
+   "12bcf8081eecd31f",
+   "18a30d5f38860031",
+   "19b238b3096a8e6e",
+   "1d85a59bdddd80ac",
+   "22dbf651ea2f876a",
+   "37e1d7e326bd3a41",
+   "3e3ae8e07fe21004",
+   "4539424ec5268415",
+   "5272fd6c2b3d758b",
+   "57aded01dc3cc9fa",
+   "5a519044a280033e",
+   "63c405afe1926b10",
+   "6c65ca53bf3986ec",
+   "76ee22a18ddbda08",
+   "8e80d22642e1c99b",
+   "9c7ca24d7173a18a",
+   "b79e35cad7ef802e",
+   "cf878fef4bd6733a",
+   "de0af6d8a5396de7",
+   "e2e1e354b846d85a",
+   "f4b49aec2a06e827",
+   "f835c033aef6323a"
+  ],
+  "32": [
+   "5f44464c5c7480c2"
+  ],
+  "48": [
+   "078d8e8711180532",
+   "21ee0a4da880703f",
+   "5e9b8e62cffbeb3b",
+   "6929ef930d766f22",
+   "d50001d9ad0722d6",
+   "f664ae3bbe971f1b"
+  ]
+ }
+}

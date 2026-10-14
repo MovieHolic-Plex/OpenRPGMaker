@@ -1,9 +1,9 @@
 {
- "ranAt": "2026-10-12T16:14:46.459Z",
+ "ranAt": "2026-10-13T20:18:40.114Z",
  "canon": [
   {
    "path": "test/fixtures/eventEditorFormSurface.baseline.json",
-   "added": 508
+   "added": 522
   },
   {
    "path": "test/fixtures/eventEditorM2Surface.baseline.json",
@@ -11,7 +11,7 @@
   },
   {
    "path": "test/fixtures/eventEditorShellSurface.baseline.json",
-   "added": 300
+   "added": 299
   },
   {
    "path": "test/fixtures/eventEditorConditionSurface.baseline.json",
@@ -19,7 +19,7 @@
   },
   {
    "path": "test/fixtures/eventEditorPortalSurface.baseline.json",
-   "added": 209
+   "added": 206
   },
   {
    "path": "test/fixtures/eventEditorInteractionSurface.baseline.json",
@@ -1051,37 +1051,6 @@
     "src/styles/event/previews/command-preview-3.css"
    ]
   },
-  "add-next": {
-   "props": [
-    "align-items",
-    "background",
-    "border",
-    "border-radius",
-    "color",
-    "cursor",
-    "display",
-    "font-size",
-    "height",
-    "justify-content",
-    "margin"
-   ],
-   "decls": [
-    "align-items:center",
-    "background:transparent",
-    "border-radius:8px",
-    "border:1px dashed var(--border-strong)",
-    "color:var(--text-3)",
-    "cursor:pointer",
-    "display:flex",
-    "font-size:12px",
-    "height:34px",
-    "justify-content:center",
-    "margin:10px 0 0 28px"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-3.css"
-   ]
-  },
   "ai-event-assist": {
    "props": [
     "align-items",
@@ -1508,6 +1477,29 @@
    "sheets": [
     "src/styles/event/command-list-3.css",
     "src/styles/event/command-list-4.css"
+   ]
+  },
+  "ai-event-modal-header": {
+   "props": [
+    "align-items",
+    "display",
+    "font-size",
+    "gap",
+    "grid-column",
+    "justify-content",
+    "margin"
+   ],
+   "decls": [
+    "align-items:center",
+    "display:flex",
+    "font-size:19px",
+    "gap:12px",
+    "grid-column:1 / -1",
+    "justify-content:space-between",
+    "margin:0"
+   ],
+   "sheets": [
+    "src/styles/event/command-workbench.css"
    ]
   },
   "ai-event-preview-actions": {
@@ -2154,46 +2146,6 @@
     "src/styles/dialogue.css",
     "src/styles/dialogueStyles.css",
     "src/styles/runtime/emeraldSurfaces.css"
-   ]
-  },
-  "branch": {
-   "props": [
-    "border-left",
-    "display",
-    "flex-direction",
-    "gap",
-    "margin",
-    "padding"
-   ],
-   "decls": [
-    "border-left:1px solid var(--border-strong)",
-    "display:flex",
-    "flex-direction:column",
-    "gap:2px",
-    "margin:0 0 6px 38px",
-    "padding:2px 0 4px 14px"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-3.css"
-   ]
-  },
-  "branch-h": {
-   "props": [
-    "color",
-    "font-size",
-    "font-weight",
-    "letter-spacing",
-    "padding"
-   ],
-   "decls": [
-    "color:var(--text-3)",
-    "font-size:11px",
-    "font-weight:650",
-    "letter-spacing:0.03em",
-    "padding:8px 8px 4px"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-3.css"
    ]
   },
   "btn": {
@@ -3214,6 +3166,43 @@
     "src/styles/event/shell-2.css"
    ]
   },
+  "choice-cancel": {
+   "props": [
+    "background",
+    "border",
+    "border-color",
+    "border-radius",
+    "color",
+    "flex",
+    "font-size",
+    "font-weight",
+    "line-height",
+    "margin-left",
+    "padding",
+    "white-space"
+   ],
+   "decls": [
+    "background:var(--control-bg)",
+    "background:var(--control-bg, var(--bg-inset))",
+    "border-color:transparent",
+    "border-radius:999px",
+    "border:1px solid var(--border-default)",
+    "color:var(--text-2)",
+    "flex:0 0 auto",
+    "font-size:11px",
+    "font-weight:600",
+    "font-weight:700",
+    "line-height:16px",
+    "line-height:20px",
+    "margin-left:2px",
+    "padding:0 6px",
+    "white-space:nowrap"
+   ],
+   "sheets": [
+    "src/styles/event/command-list.css",
+    "src/styles/event/subdialogs/dialogs-5.css"
+   ]
+  },
   "choice-option": {
    "props": [
     "background",
@@ -3297,6 +3286,22 @@
    "sheets": [
     "src/styles/event/command-list-2.css",
     "src/styles/event/command-list.css"
+   ]
+  },
+  "cmd-branch-add": {
+   "props": [
+    "color",
+    "font-size",
+    "min-height"
+   ],
+   "decls": [
+    "color:var(--accent)",
+    "color:var(--text-3)",
+    "font-size:11.5px",
+    "min-height:22px"
+   ],
+   "sheets": [
+    "src/styles/event/command-list-4.css"
    ]
   },
   "cmd-branch-empty": {
@@ -6765,6 +6770,50 @@
     "src/styles/event/previews/command-preview.css"
    ]
   },
+  "ecp-current-state": {
+   "props": [
+    "color",
+    "font-size",
+    "padding"
+   ],
+   "decls": [
+    "color:var(--text-3, #6b5f52)",
+    "font-size:10px",
+    "padding:2px 0"
+   ],
+   "sheets": [
+    "src/styles/event/previews/command-preview-2.css"
+   ]
+  },
+  "ecp-gold-badge": {
+   "props": [
+    "background",
+    "border",
+    "border-radius",
+    "color",
+    "display",
+    "font-size",
+    "font-weight",
+    "height",
+    "place-items",
+    "width"
+   ],
+   "decls": [
+    "background:radial-gradient(circle at 35% 30%, var(--bg-raised), var(--warning-muted))",
+    "border-radius:50%",
+    "border:1px solid var(--warning)",
+    "color:var(--warning)",
+    "display:grid",
+    "font-size:20px",
+    "font-weight:800",
+    "height:44px",
+    "place-items:center",
+    "width:44px"
+   ],
+   "sheets": [
+    "src/styles/event/previews/command-preview.css"
+   ]
+  },
   "ecp-grid-dot": {
    "props": [
     "fill"
@@ -6774,6 +6823,25 @@
    ],
    "sheets": [
     "src/styles/event/previews/command-preview-2.css"
+   ]
+  },
+  "ecp-icon-stage": {
+   "props": [
+    "align-items",
+    "display",
+    "flex-direction",
+    "gap",
+    "padding"
+   ],
+   "decls": [
+    "align-items:center",
+    "display:flex",
+    "flex-direction:column",
+    "gap:8px",
+    "padding:16px 8px"
+   ],
+   "sheets": [
+    "src/styles/event/previews/command-preview.css"
    ]
   },
   "ecp-message-body": {
@@ -6854,27 +6922,6 @@
     "top:-12px",
     "white-space:nowrap",
     "z-index:2"
-   ],
-   "sheets": [
-    "src/styles/event/previews/command-preview.css"
-   ]
-  },
-  "ecp-message-text": {
-   "props": [
-    "display",
-    "flex",
-    "flex-direction",
-    "gap",
-    "justify-content",
-    "min-width"
-   ],
-   "decls": [
-    "display:flex",
-    "flex-direction:column",
-    "flex:1 1 auto",
-    "gap:4px",
-    "justify-content:center",
-    "min-width:0"
    ],
    "sheets": [
     "src/styles/event/previews/command-preview.css"
@@ -7243,6 +7290,27 @@
    ],
    "sheets": [
     "src/styles/event/previews/command-preview-2.css"
+   ]
+  },
+  "ecp-op-strip": {
+   "props": [
+    "background",
+    "border",
+    "border-radius",
+    "color",
+    "font-size",
+    "padding"
+   ],
+   "decls": [
+    "background:var(--bg-inset, #efe9dc)",
+    "border-radius:999px",
+    "border:1px solid var(--border-subtle, rgba(42,37,33,.20))",
+    "color:var(--text-2, #5c5348)",
+    "font-size:12px",
+    "padding:2px 10px"
+   ],
+   "sheets": [
+    "src/styles/event/previews/command-preview.css"
    ]
   },
   "ecp-runtime-frame": {
@@ -9966,6 +10034,69 @@
     "src/styles/event/subdialogs/dialogs-3.css"
    ]
   },
+  "event-command-face-full-scale": {
+   "props": [
+    "display",
+    "gap",
+    "max-width"
+   ],
+   "decls": [
+    "display:grid",
+    "display:none",
+    "gap:8px",
+    "max-width:420px"
+   ],
+   "sheets": [
+    "src/styles/event/previews/command-preview.css"
+   ]
+  },
+  "event-command-face-full-scale-input": {
+   "props": [
+    "flex",
+    "max-width"
+   ],
+   "decls": [
+    "flex:0 0 72px",
+    "max-width:72px"
+   ],
+   "sheets": [
+    "src/styles/event/previews/command-preview.css"
+   ]
+  },
+  "event-command-face-full-scale-pair": {
+   "props": [
+    "align-items",
+    "display",
+    "flex",
+    "gap",
+    "max-width",
+    "width"
+   ],
+   "decls": [
+    "align-items:center",
+    "display:flex",
+    "flex:0 0 72px",
+    "gap:8px",
+    "max-width:72px",
+    "width:100%"
+   ],
+   "sheets": [
+    "src/styles/event/previews/command-preview.css"
+   ]
+  },
+  "event-command-face-full-scale-range": {
+   "props": [
+    "flex",
+    "min-width"
+   ],
+   "decls": [
+    "flex:1 1 auto",
+    "min-width:120px"
+   ],
+   "sheets": [
+    "src/styles/event/previews/command-preview.css"
+   ]
+  },
   "event-command-face-gallery": {
    "props": [
     "display",
@@ -12433,6 +12564,38 @@
     "src/styles/event/command-forms/forms-3.css",
     "src/styles/event/command-forms/forms-6.css",
     "src/styles/event/command-list-4.css"
+   ]
+  },
+  "event-command-text-tag": {
+   "props": [
+    "display",
+    "font",
+    "min-height",
+    "padding"
+   ],
+   "decls": [
+    "display:inline-flex",
+    "font:600 12px/1 var(--font-mono, \"cascadia mono\", consolas, monospace)",
+    "min-height:26px",
+    "padding:4px 8px"
+   ],
+   "sheets": [
+    "src/styles/event/command-forms/forms-3.css"
+   ]
+  },
+  "event-command-text-tag-row": {
+   "props": [
+    "display",
+    "flex-wrap",
+    "gap"
+   ],
+   "decls": [
+    "display:flex",
+    "flex-wrap:wrap",
+    "gap:4px"
+   ],
+   "sheets": [
+    "src/styles/event/command-forms/forms-3.css"
    ]
   },
   "event-command-text-tool": {
@@ -15474,6 +15637,131 @@
     "src/styles/event/subdialogs/dialogs-5.css"
    ]
   },
+  "event-editor-command-focused": {
+   "props": [
+    "--event-editor-settings-track",
+    "align-items",
+    "background",
+    "border",
+    "border-left",
+    "border-radius",
+    "box-shadow",
+    "container",
+    "display",
+    "flex-direction",
+    "flex-wrap",
+    "font-size",
+    "font-weight",
+    "gap",
+    "grid-column",
+    "grid-row",
+    "grid-template-columns",
+    "grid-template-rows",
+    "height",
+    "inset",
+    "justify-content",
+    "justify-self",
+    "left",
+    "margin",
+    "margin-top",
+    "max-height",
+    "min-height",
+    "min-width",
+    "overflow",
+    "padding",
+    "position",
+    "top",
+    "transform",
+    "width",
+    "z-index"
+   ],
+   "decls": [
+    "--event-editor-settings-track:288px",
+    "align-items:center",
+    "align-items:flex-start",
+    "background:rgb(15 23 42 / 48%)",
+    "background:var(--bg-surface)",
+    "border-left:1px solid var(--border-default)",
+    "border-radius:12px",
+    "border:0",
+    "border:1px solid var(--border-default)",
+    "box-shadow:0 20px 70px rgb(0 0 0 / 24%)",
+    "box-shadow:none",
+    "container:evt-command-column / inline-size",
+    "display:block",
+    "display:flex",
+    "display:grid",
+    "display:none",
+    "flex-direction:column",
+    "flex-wrap:nowrap",
+    "flex-wrap:wrap",
+    "font-size:16px",
+    "font-size:19px",
+    "font-weight:600",
+    "gap:0",
+    "gap:12px",
+    "gap:18px",
+    "gap:6px",
+    "grid-column:1",
+    "grid-column:1 / -1",
+    "grid-column:2",
+    "grid-column:3",
+    "grid-column:4",
+    "grid-row:1",
+    "grid-row:2",
+    "grid-row:3",
+    "grid-template-columns:200px 6px minmax(0, 1fr) 260px",
+    "grid-template-columns:minmax(0, 1fr)",
+    "grid-template-columns:minmax(200px, var(--event-editor-settings-track)) 6px minmax(0, 1fr) minmax(280px, 28%)",
+    "grid-template-columns:minmax(260px, .8fr) minmax(0, 1.2fr)",
+    "grid-template-rows:auto auto auto",
+    "grid-template-rows:minmax(0, 1fr)",
+    "height:auto",
+    "inset:0",
+    "justify-content:center",
+    "justify-content:flex-end",
+    "justify-content:space-between",
+    "justify-self:stretch",
+    "left:50%",
+    "margin-top:auto",
+    "margin:0",
+    "margin:0 0 12px",
+    "max-height:200px",
+    "max-height:48vh",
+    "max-height:calc(100dvh - 80px)",
+    "max-height:none",
+    "min-height:0",
+    "min-height:160px",
+    "min-height:240px",
+    "min-height:320px",
+    "min-height:44px",
+    "min-width:0",
+    "overflow:auto",
+    "overflow:visible",
+    "padding:0",
+    "padding:0 12px",
+    "padding:10px",
+    "padding:12px",
+    "padding:12px 0",
+    "padding:20px",
+    "padding:24px",
+    "position:fixed",
+    "position:static",
+    "position:sticky",
+    "top:0",
+    "top:50%",
+    "transform:none",
+    "transform:translate(-50%, -50%)",
+    "width:6px",
+    "width:auto",
+    "width:min(980px, calc(100vw - 48px))",
+    "z-index:20",
+    "z-index:3"
+   ],
+   "sheets": [
+    "src/styles/event/command-workbench.css"
+   ]
+  },
   "event-editor-command-search": {
    "props": [
     "background",
@@ -16106,6 +16394,32 @@
     "src/styles/event/pages-4.css"
    ]
   },
+  "event-editor-identity-row": {
+   "props": [
+    "align-items",
+    "display",
+    "flex",
+    "gap",
+    "grid-template-columns",
+    "min-height",
+    "min-width"
+   ],
+   "decls": [
+    "align-items:center",
+    "display:grid",
+    "flex:1 1 auto",
+    "gap:12px",
+    "gap:5px",
+    "grid-template-columns:minmax(0, 1.2fr) minmax(170px, 0.9fr)",
+    "grid-template-columns:minmax(0, 1fr)",
+    "min-height:40px",
+    "min-width:0"
+   ],
+   "sheets": [
+    "src/styles/event/pages-2.css",
+    "src/styles/event/pages-3.css"
+   ]
+  },
   "event-editor-inspector-column": {
    "props": [
     "background",
@@ -16185,6 +16499,102 @@
     "src/styles/event/inspector.css",
     "src/styles/event/narrow.css",
     "src/styles/event/subdialogs/dialogs-5.css"
+   ]
+  },
+  "event-editor-name-field": {
+   "props": [
+    "align-items",
+    "background",
+    "border",
+    "border-color",
+    "border-radius",
+    "border-style",
+    "border-width",
+    "box-shadow",
+    "color",
+    "display",
+    "font",
+    "font-size",
+    "font-weight",
+    "gap",
+    "grid-template-columns",
+    "grid-template-rows",
+    "line-height",
+    "min-height",
+    "min-width",
+    "outline",
+    "overflow",
+    "padding",
+    "text-overflow",
+    "text-transform",
+    "transition",
+    "white-space",
+    "width"
+   ],
+   "decls": [
+    "align-items:center",
+    "background:transparent",
+    "background:var(--bg-surface)",
+    "background:var(--event-modern-field)",
+    "border-color:color-mix(in srgb, var(--event-modern-accent) 35%, var(--border-subtle))",
+    "border-color:var(--event-modern-accent)",
+    "border-color:var(--event-rm-light) var(--event-rm-mid) var(--event-rm-mid) var(--event-rm-light)",
+    "border-color:var(--event-rm-mid) var(--event-rm-light) var(--event-rm-light) var(--event-rm-mid)",
+    "border-radius:4px",
+    "border-radius:6px",
+    "border-style:solid",
+    "border-width:1px",
+    "border-width:2px",
+    "border:0",
+    "border:1px solid var(--border-default)",
+    "border:1px solid var(--border-subtle)",
+    "box-shadow:0 0 0 3px color-mix(in srgb, var(--event-modern-accent) 22%, transparent)",
+    "box-shadow:0 1px 2px var(--shadow-pop) inset",
+    "color:var(--event-modern-text)",
+    "color:var(--mk-t2)",
+    "color:var(--text-1)",
+    "color:var(--text-2)",
+    "display:grid",
+    "font-size:11px",
+    "font-size:15px",
+    "font-weight:600",
+    "font:500 13px/1.3 var(--font-ui)",
+    "font:500 14px/20px \"segoe ui\", \"malgun gothic\", system-ui, sans-serif",
+    "font:600 12px/1.2 var(--font-ui)",
+    "font:700 17px/1 \"segoe ui\", \"malgun gothic\", system-ui, sans-serif",
+    "gap:12px",
+    "gap:6px",
+    "gap:8px",
+    "grid-template-columns:42px minmax(0, 1fr)",
+    "grid-template-columns:62px minmax(0, 1fr)",
+    "grid-template-columns:auto minmax(0, 1fr)",
+    "grid-template-rows:40px",
+    "grid-template-rows:auto",
+    "line-height:15px",
+    "min-height:0",
+    "min-height:28px",
+    "min-height:30px",
+    "min-height:32px",
+    "min-height:40px",
+    "min-width:0",
+    "outline:none",
+    "overflow:hidden",
+    "padding:0",
+    "padding:0 8px",
+    "padding:1px 8px 4px",
+    "padding:2px 7px 4px",
+    "padding:5px 10px",
+    "text-overflow:ellipsis",
+    "text-transform:none",
+    "transition:border-color 0.12s ease, box-shadow 0.12s ease",
+    "white-space:nowrap",
+    "width:100%"
+   ],
+   "sheets": [
+    "src/styles/event/pages-2.css",
+    "src/styles/event/pages-4.part-6.css",
+    "src/styles/event/pages.css",
+    "src/styles/event/subdialogs/dialogs-4.css"
    ]
   },
   "event-editor-pagebar": {
@@ -19896,6 +20306,55 @@
     "src/styles/event/settings-rail.css"
    ]
   },
+  "event-page-name-row": {
+   "props": [
+    "align-items",
+    "background",
+    "border",
+    "border-bottom",
+    "border-radius",
+    "color",
+    "display",
+    "font",
+    "gap",
+    "grid-template-columns",
+    "grid-template-rows",
+    "margin",
+    "min-height",
+    "min-width",
+    "padding",
+    "white-space",
+    "width"
+   ],
+   "decls": [
+    "align-items:center",
+    "background:var(--bg-surface)",
+    "border-bottom:1px solid var(--border-subtle)",
+    "border-radius:4px",
+    "border:1px solid var(--border-default)",
+    "color:var(--text-1)",
+    "color:var(--text-2)",
+    "display:block",
+    "display:grid",
+    "font:500 13px/1.3 var(--font-ui)",
+    "font:600 12px/1.2 var(--font-ui)",
+    "gap:8px",
+    "grid-template-columns:auto minmax(0, 1fr)",
+    "grid-template-rows:auto",
+    "margin:0 0 6px",
+    "min-height:0",
+    "min-height:28px",
+    "min-height:30px",
+    "min-width:0",
+    "padding:0 0 6px",
+    "padding:0 8px",
+    "white-space:nowrap",
+    "width:100%"
+   ],
+   "sheets": [
+    "src/styles/event/pages-4.part-6.css"
+   ]
+  },
   "event-page-overlap-hint": {
    "props": [
     "color",
@@ -19922,24 +20381,111 @@
     "src/styles/event/settings-rail.css"
    ]
   },
-  "event-page-preview-host": {
+  "event-page-preview": {
    "props": [
+    "-webkit-box-orient",
+    "-webkit-line-clamp",
+    "align-content",
+    "align-items",
+    "aspect-ratio",
+    "border",
+    "border-style",
+    "clip-path",
+    "color",
+    "cursor",
     "display",
-    "grid-column",
-    "grid-row",
+    "flex",
+    "flex-wrap",
+    "font",
+    "font-size",
+    "font-variant-numeric",
+    "font-weight",
+    "gap",
+    "grid-template-rows",
+    "height",
+    "justify-content",
+    "line-height",
+    "max-height",
+    "max-width",
     "min-height",
-    "overflow"
+    "min-width",
+    "outline",
+    "outline-offset",
+    "overflow",
+    "overflow-wrap",
+    "overscroll-behavior",
+    "padding",
+    "position",
+    "scrollbar-gutter",
+    "text-align",
+    "white-space",
+    "width",
+    "word-break"
    ],
    "decls": [
+    "-webkit-box-orient:vertical",
+    "-webkit-line-clamp:2",
+    "align-content:safe center",
+    "align-content:safe end",
+    "align-content:start",
+    "align-items:center",
+    "aspect-ratio:4 / 3",
+    "aspect-ratio:auto",
+    "border-style:dashed",
+    "border:1px solid var(--border-subtle)",
+    "clip-path:inset(50%)",
+    "color:var(--text-2)",
+    "color:var(--text-3)",
+    "cursor:not-allowed",
+    "cursor:pointer",
+    "display:-webkit-box",
     "display:grid",
-    "display:none",
-    "grid-column:1 / -1",
-    "grid-row:2",
+    "display:inline-flex",
+    "flex-wrap:wrap",
+    "flex:0 0 auto",
+    "flex:1 0 auto",
+    "flex:1 1 auto",
+    "font-size:12px",
+    "font-variant-numeric:tabular-nums",
+    "font-weight:600",
+    "font:500 13px/1.3 var(--font-ui)",
+    "gap:5px",
+    "gap:8px",
+    "grid-template-rows:auto auto minmax(0, 1fr) auto",
+    "height:100%",
+    "height:1px",
+    "justify-content:center",
+    "line-height:1.4",
+    "max-height:5em",
+    "max-width:100%",
     "min-height:0",
-    "overflow:hidden"
+    "min-height:100%",
+    "min-height:30px",
+    "min-width:0",
+    "min-width:7ch",
+    "outline-offset:-2px",
+    "outline:2px solid var(--accent)",
+    "overflow-wrap:anywhere",
+    "overflow:auto",
+    "overflow:hidden",
+    "overflow:visible",
+    "overscroll-behavior:contain",
+    "padding:10px 2px 12px",
+    "padding:4px",
+    "position:absolute",
+    "position:relative",
+    "scrollbar-gutter:stable",
+    "text-align:right",
+    "white-space:nowrap",
+    "white-space:pre-wrap",
+    "width:1px",
+    "width:auto",
+    "word-break:normal"
    ],
    "sheets": [
-    "src/styles/event/previews/command-preview-3.css"
+    "src/styles/event/command-workbench.css",
+    "src/styles/event/previews/command-preview-3.css",
+    "src/styles/event/previews/command-preview-4.css"
    ]
   },
   "event-page-props": {
@@ -20060,6 +20606,21 @@
     "src/styles/event/pages-3.css",
     "src/styles/event/pages-4.css",
     "src/styles/event/pages.css"
+   ]
+  },
+  "event-preview-heading": {
+   "props": [
+    "font-size",
+    "font-weight",
+    "margin"
+   ],
+   "decls": [
+    "font-size:16px",
+    "font-weight:600",
+    "margin:0 0 12px"
+   ],
+   "sheets": [
+    "src/styles/event/command-workbench.css"
    ]
   },
   "event-priority-block": {
@@ -20187,52 +20748,18 @@
     "src/styles/event/subdialogs/dialogs-3.css"
    ]
   },
-  "event-record-picker-rename": {
+  "event-record-picker-rename-open": {
    "props": [
-    "border",
-    "border-radius",
+    "font-size",
     "min-height",
     "padding",
-    "width"
+    "white-space"
    ],
    "decls": [
-    "border-radius:var(--radius-s)",
-    "border:1px solid var(--border-default)",
-    "min-height:30px",
+    "font-size:11px",
+    "min-height:24px",
     "padding:0 8px",
-    "width:100%"
-   ],
-   "sheets": [
-    "src/styles/event/subdialogs/dialogs-3.css"
-   ]
-  },
-  "event-record-picker-rename-label": {
-   "props": [
-    "color",
-    "font-size"
-   ],
-   "decls": [
-    "color:var(--text-3)",
-    "font-size:11.5px"
-   ],
-   "sheets": [
-    "src/styles/event/subdialogs/dialogs-3.css"
-   ]
-  },
-  "event-record-picker-rename-row": {
-   "props": [
-    "align-items",
-    "display",
-    "gap",
-    "grid-template-columns",
-    "padding"
-   ],
-   "decls": [
-    "align-items:center",
-    "display:grid",
-    "gap:var(--space-2)",
-    "grid-template-columns:auto minmax(0, 1fr)",
-    "padding:0 8px 4px 34px"
+    "white-space:nowrap"
    ],
    "sheets": [
     "src/styles/event/subdialogs/dialogs-3.css"
@@ -20753,650 +21280,259 @@
     "src/styles/event/subdialogs/dialogs-5.css"
    ]
   },
-  "event-storyboard": {
+  "event-script-live-caption": {
    "props": [
-    "--balanced-inspector-width",
-    "--balanced-settings-width",
-    "--blk-cat",
-    "--event-editor-settings-track",
-    "--event-inspector-reserved-track",
-    "background",
-    "border-left",
-    "border-radius",
+    "-webkit-box-orient",
+    "-webkit-line-clamp",
     "color",
-    "content",
     "display",
-    "flex-direction",
     "font",
     "font-size",
-    "gap",
-    "grid-column",
-    "grid-row",
-    "grid-template-columns",
-    "grid-template-rows",
-    "min-height",
     "overflow",
-    "overflow-x",
-    "overflow-y",
-    "padding",
-    "position"
+    "overflow-wrap",
+    "text-overflow",
+    "white-space",
+    "word-break"
    ],
    "decls": [
-    "--balanced-inspector-width:324px",
-    "--balanced-settings-width:236px",
-    "--blk-cat:var(--cmdcat-actor)",
-    "--blk-cat:var(--cmdcat-battle)",
-    "--blk-cat:var(--cmdcat-dialogue)",
-    "--blk-cat:var(--cmdcat-flow)",
-    "--blk-cat:var(--cmdcat-map)",
-    "--blk-cat:var(--cmdcat-modern)",
-    "--blk-cat:var(--cmdcat-reward)",
-    "--blk-cat:var(--cmdcat-screen)",
-    "--blk-cat:var(--cmdcat-sound)",
-    "--blk-cat:var(--cmdcat-system)",
-    "--event-editor-settings-track:288px",
-    "--event-inspector-reserved-track:0px",
-    "--event-inspector-reserved-track:var(--balanced-inspector-width)",
-    "background:var(--bg-base)",
-    "background:var(--bg-raised)",
-    "border-left:1px solid var(--border)",
-    "border-radius:6px",
-    "color:var(--text-2)",
-    "content:\"명령을 선택하면 여기에서 편집합니다\"",
-    "display:flex",
-    "display:grid",
-    "display:none",
-    "flex-direction:column",
+    "-webkit-box-orient:vertical",
+    "-webkit-line-clamp:2",
+    "color:var(--text-dim, var(--text-2))",
+    "display:-webkit-box",
     "font-size:12px",
-    "font:400 13px/1.5 var(--font-ui)",
-    "gap:0",
-    "gap:2px",
-    "gap:6px",
-    "grid-column:3",
-    "grid-row:1",
-    "grid-template-columns:200px 6px minmax(0, 1fr) 260px",
-    "grid-template-columns:minmax(0, 1fr)",
-    "grid-template-columns:minmax(200px, var(--event-editor-settings-track)) 6px minmax(0, 1fr) minmax(280px, 28%)",
-    "grid-template-columns:var(--balanced-settings-width) minmax(0, 1fr)",
-    "grid-template-rows:auto auto auto",
-    "grid-template-rows:minmax(0, 1fr)",
-    "grid-template-rows:minmax(0, 1fr) auto",
-    "min-height:0",
-    "min-height:100%",
-    "overflow-x:hidden",
-    "overflow-y:auto",
-    "overflow:auto",
-    "padding:4px 16px 24px",
-    "padding:var(--space-4)",
-    "position:relative"
+    "font:600 11px/1.4 \"malgun gothic\", sans-serif",
+    "overflow-wrap:anywhere",
+    "overflow:hidden",
+    "text-overflow:ellipsis",
+    "white-space:nowrap",
+    "white-space:pre-wrap",
+    "word-break:normal"
    ],
    "sheets": [
-    "src/styles/event/command-forms/forms-6.css",
-    "src/styles/event/command-list-2.css",
-    "src/styles/event/command-list-3.css",
-    "src/styles/event/command-list-4.css",
-    "src/styles/event/command-workbench.css",
-    "src/styles/event/narrow.css"
+    "src/styles/event/previews/command-preview-3.css",
+    "src/styles/event/previews/command-preview-4.css"
    ]
   },
-  "event-storyboard-add": {
+  "event-script-live-context": {
    "props": [
-    "align-items",
-    "appearance",
-    "background",
-    "border",
-    "border-color",
-    "border-radius",
     "color",
     "cursor",
-    "display",
     "font-size",
-    "font-weight",
-    "gap",
-    "grid-template-columns",
-    "height",
-    "justify-content",
-    "margin",
-    "min-height",
-    "min-width",
-    "outline",
-    "outline-offset",
-    "padding",
-    "position",
-    "text-align",
-    "width",
-    "z-index"
-   ],
-   "decls": [
-    "align-items:center",
-    "appearance:none",
-    "background:color-mix(in srgb, var(--bg-inset) 72%, transparent)",
-    "background:transparent",
-    "background:var(--bg-surface)",
-    "border-color:var(--accent)",
-    "border-radius:10px",
-    "border-radius:6px",
-    "border-radius:8px",
-    "border:1px dashed var(--border-default)",
-    "border:1px dashed var(--border-strong)",
-    "border:1px solid transparent",
-    "color:var(--text-2)",
-    "color:var(--text-3)",
-    "cursor:pointer",
-    "display:flex",
-    "display:grid",
-    "font-size:12px",
-    "font-weight:500",
-    "gap:10px",
-    "grid-template-columns:32px minmax(0, 1fr) auto",
-    "height:30px",
-    "height:34px",
-    "justify-content:center",
-    "margin:10px 0 0 28px",
-    "min-height:30px",
-    "min-width:0",
-    "outline-offset:2px",
-    "outline:2px solid var(--accent)",
-    "padding:9px 10px",
-    "position:relative",
-    "text-align:left",
-    "width:100%",
-    "z-index:1"
-   ],
-   "sheets": [
-    "src/styles/event/command-forms/forms-6.css",
-    "src/styles/event/command-list-3.css",
-    "src/styles/event/command-list-4.css"
-   ]
-  },
-  "event-storyboard-branch-command": {
-   "props": [
-    "--storyboard-accent",
-    "-webkit-user-select",
-    "align-items",
-    "appearance",
-    "background",
-    "border",
-    "border-color",
-    "border-radius",
-    "box-shadow",
-    "color",
-    "cursor",
-    "display",
-    "font-size",
-    "gap",
-    "grid-template-columns",
     "line-height",
-    "min-height",
-    "min-width",
-    "opacity",
-    "outline",
-    "outline-offset",
-    "padding",
-    "text-align",
-    "user-select",
-    "width"
-   ],
-   "decls": [
-    "--storyboard-accent:#626b7d",
-    "-webkit-user-select:none",
-    "align-items:center",
-    "align-items:start",
-    "appearance:none",
-    "background:color-mix(in srgb, var(--accent-muted) 35%, var(--bg-surface))",
-    "background:transparent",
-    "background:var(--bg-raised)",
-    "background:var(--bg-surface)",
-    "background:var(--control-bg)",
-    "border-color:var(--accent)",
-    "border-color:var(--border-strong)",
-    "border-radius:6px",
-    "border-radius:7px",
-    "border:0",
-    "border:1px solid var(--border-subtle)",
-    "box-shadow:0 0 0 2px color-mix(in srgb, var(--accent) 18%, transparent)",
-    "color:var(--text-1)",
-    "color:var(--text-2)",
-    "cursor:pointer",
-    "display:grid",
-    "font-size:12px",
-    "font-size:14px",
-    "gap:7px",
-    "gap:8px",
-    "grid-template-columns:24px 52px minmax(0, 1fr) auto",
-    "grid-template-columns:3px minmax(0, 1fr) auto",
-    "line-height:20px",
-    "min-height:31px",
-    "min-width:0",
-    "opacity:1",
-    "outline-offset:-2px",
-    "outline-offset:2px",
-    "outline:2px solid var(--accent)",
-    "padding:4px 7px 4px 5px",
-    "padding:8px 10px",
-    "text-align:left",
-    "user-select:none",
-    "width:100%"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-3.css",
-    "src/styles/event/command-list-4.css",
-    "src/styles/event/subdialogs/dialogs-5.css"
-   ]
-  },
-  "event-storyboard-branch-command-tree": {
-   "props": [
-    "display",
-    "gap",
     "min-width"
    ],
    "decls": [
-    "display:grid",
-    "gap:3px",
+    "color:var(--text-2)",
+    "cursor:pointer",
+    "font-size:12px",
+    "line-height:1.4",
     "min-width:0"
    ],
    "sheets": [
-    "src/styles/event/command-list-3.css"
+    "src/styles/event/previews/command-preview-4.css"
    ]
   },
-  "event-storyboard-branch-empty": {
+  "event-script-live-context-body": {
    "props": [
-    "appearance",
-    "background",
     "border",
-    "border-color",
-    "border-radius",
-    "color",
-    "cursor",
-    "font",
-    "padding",
-    "text-align",
-    "width"
-   ],
-   "decls": [
-    "appearance:none",
-    "background:transparent",
-    "border-color:var(--accent)",
-    "border-radius:7px",
-    "border:1px dashed var(--border-subtle)",
-    "color:var(--accent)",
-    "color:var(--text-3)",
-    "cursor:pointer",
-    "font:500 12px var(--font-ui)",
-    "padding:7px 8px",
-    "text-align:left",
-    "width:100%"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-3.css"
-   ]
-  },
-  "event-storyboard-branch-label": {
-   "props": [
-    "-webkit-user-select",
-    "color",
-    "content",
-    "font",
-    "font-size",
-    "min-width",
-    "overflow",
-    "text-overflow",
-    "user-select",
-    "white-space"
-   ],
-   "decls": [
-    "-webkit-user-select:none",
-    "color:var(--text-1)",
-    "color:var(--text-2)",
-    "color:var(--text-3)",
-    "content:\"↳ \"",
-    "font-size:12px",
-    "font:750 12px var(--font-ui)",
-    "min-width:0",
-    "overflow:hidden",
-    "text-overflow:ellipsis",
-    "user-select:none",
-    "white-space:nowrap"
-   ],
-   "sheets": [
-    "src/styles/event/command-forms/forms-6.css",
-    "src/styles/event/command-list-2.css",
-    "src/styles/event/command-list-3.css",
-    "src/styles/event/command-list-4.css"
-   ]
-  },
-  "event-storyboard-branch-step": {
-   "props": [
-    "align-self",
-    "background",
-    "border-radius",
-    "color",
-    "display",
-    "font",
-    "font-size",
-    "height",
-    "margin-top",
-    "place-items",
-    "width"
-   ],
-   "decls": [
-    "align-self:start",
-    "background:var(--storyboard-accent, var(--text-3))",
-    "border-radius:4px",
-    "border-radius:999px",
-    "color:var(--bg-overlay)",
-    "color:var(--text-2)",
-    "display:grid",
-    "font-size:12px",
-    "font:800 10px var(--font-mono)",
-    "height:20px",
-    "margin-top:1px",
-    "place-items:center",
-    "width:20px"
-   ],
-   "sheets": [
-    "src/styles/event/command-forms/forms-6.css",
-    "src/styles/event/command-list-3.css",
-    "src/styles/event/command-list-4.css"
-   ]
-  },
-  "event-storyboard-branches": {
-   "props": [
-    "border-left",
-    "display",
-    "flex-direction",
-    "gap",
-    "margin",
-    "margin-left",
-    "padding",
-    "padding-left",
-    "position",
-    "z-index"
-   ],
-   "decls": [
-    "border-left:1px solid var(--border-strong)",
-    "border-left:2px solid color-mix(in srgb, var(--border-strong) 70%, transparent)",
-    "display:flex",
-    "display:grid",
-    "flex-direction:column",
-    "gap:2px",
-    "gap:4px",
-    "margin-left:24px",
-    "margin-left:38px",
-    "margin:0 0 6px 38px",
-    "padding-left:10px",
-    "padding-left:8px",
-    "padding:2px 0 4px 14px",
-    "position:relative",
-    "z-index:1"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-3.css"
-   ]
-  },
-  "event-storyboard-card": {
-   "props": [
-    "--storyboard-accent",
-    "-webkit-user-select",
-    "align-content",
-    "align-items",
-    "align-self",
-    "appearance",
-    "background",
-    "border",
-    "border-color",
-    "border-left",
-    "border-left-color",
-    "border-radius",
-    "box-shadow",
-    "box-sizing",
-    "color",
-    "column-gap",
-    "cursor",
-    "display",
-    "flex-basis",
-    "gap",
-    "grid-template-columns",
-    "height",
     "max-height",
-    "min-width",
-    "opacity",
     "outline",
     "outline-offset",
     "overflow",
+    "overflow-wrap",
+    "overscroll-behavior",
     "padding",
-    "position",
-    "row-gap",
-    "text-align",
-    "transform",
-    "user-select",
-    "width",
-    "z-index"
+    "white-space",
+    "word-break"
    ],
    "decls": [
-    "--storyboard-accent:#626b7d",
-    "-webkit-user-select:none",
-    "align-content:center",
-    "align-content:start",
-    "align-items:center",
-    "align-items:start",
-    "align-self:flex-start",
-    "align-self:start",
-    "appearance:none",
-    "background:color-mix(in srgb, var(--accent-muted) 35%, var(--bg-surface))",
-    "background:transparent",
-    "background:var(--bg-raised)",
-    "background:var(--bg-surface)",
-    "background:var(--control-bg)",
-    "border-color:var(--accent)",
-    "border-color:var(--border-strong)",
-    "border-left-color:var(--storyboard-accent)",
-    "border-left:3px solid var(--storyboard-accent)",
-    "border-radius:6px",
-    "border-radius:8px",
-    "border:0",
     "border:1px solid var(--border-subtle)",
-    "box-shadow:0 0 0 2px color-mix(in srgb, var(--accent) 20%, transparent)",
-    "box-shadow:0 3px 10px rgba(42,37,33,.08)",
-    "box-shadow:inset 3px 0 0 var(--accent)",
-    "box-shadow:none",
-    "box-sizing:border-box",
-    "color:var(--text-1)",
-    "column-gap:8px",
-    "cursor:pointer",
-    "display:grid",
-    "flex-basis:158px",
-    "flex-basis:auto",
-    "gap:10px",
-    "gap:8px",
-    "grid-template-columns:28px 52px minmax(0, 1fr)",
-    "grid-template-columns:28px auto 52px minmax(0, 1fr) auto",
-    "grid-template-columns:28px minmax(0, 1fr) auto",
-    "grid-template-columns:auto minmax(0, 1fr)",
-    "height:56px",
-    "height:auto",
-    "max-height:120px",
-    "min-width:0",
-    "opacity:1",
+    "max-height:5em",
     "outline-offset:-2px",
-    "outline-offset:2px",
     "outline:2px solid var(--accent)",
-    "overflow:hidden",
-    "overflow:visible",
-    "padding:10px 12px",
-    "padding:6px 9px",
-    "padding:8px",
-    "position:relative",
-    "row-gap:0",
-    "row-gap:2px",
-    "text-align:left",
-    "transform:translatey(-1px)",
-    "user-select:none",
-    "width:100%",
-    "z-index:1"
+    "overflow-wrap:anywhere",
+    "overflow:auto",
+    "overscroll-behavior:contain",
+    "padding:4px",
+    "white-space:pre-wrap",
+    "word-break:normal"
    ],
    "sheets": [
-    "src/styles/event/command-list-2.css",
-    "src/styles/event/command-list-3.css",
-    "src/styles/event/command-list-4.css",
-    "src/styles/event/narrow.css",
-    "src/styles/event/subdialogs/dialogs-5.css"
+    "src/styles/event/previews/command-preview-4.css"
    ]
   },
-  "event-storyboard-card-cat": {
+  "event-script-live-context-label": {
+   "props": [
+    "font-weight"
+   ],
+   "decls": [
+    "font-weight:600"
+   ],
+   "sheets": [
+    "src/styles/event/previews/command-preview-4.css"
+   ]
+  },
+  "event-script-live-controls": {
    "props": [
     "align-items",
-    "align-self",
+    "display",
+    "flex-wrap",
+    "gap"
+   ],
+   "decls": [
+    "align-items:center",
+    "display:flex",
+    "flex-wrap:wrap",
+    "gap:8px"
+   ],
+   "sheets": [
+    "src/styles/event/previews/command-preview-3.css",
+    "src/styles/event/previews/command-preview-4.css"
+   ]
+  },
+  "event-script-live-position": {
+   "props": [
+    "color",
+    "flex",
+    "font",
+    "font-size",
+    "font-variant-numeric",
+    "margin-left",
+    "min-width",
+    "text-align",
+    "white-space"
+   ],
+   "decls": [
+    "color:var(--text-dim, var(--text-2))",
+    "flex:0 0 auto",
+    "font-size:12px",
+    "font-variant-numeric:tabular-nums",
+    "font:700 11px/16px var(--font-mono, \"cascadia mono\", consolas, monospace)",
+    "margin-left:auto",
+    "min-width:7ch",
+    "text-align:right",
+    "white-space:nowrap"
+   ],
+   "sheets": [
+    "src/styles/event/previews/command-preview-3.css",
+    "src/styles/event/previews/command-preview-4.css"
+   ]
+  },
+  "event-script-live-stage": {
+   "props": [
+    "background",
+    "border",
+    "border-radius",
+    "height",
+    "min-height",
+    "min-width",
+    "outline",
+    "outline-offset",
+    "overflow",
+    "overscroll-behavior",
+    "padding",
+    "scrollbar-gutter"
+   ],
+   "decls": [
+    "background:var(--surface-recessed, var(--bg-raised))",
+    "border-radius:6px",
+    "border:1px solid var(--border-soft, var(--border-subtle))",
+    "height:100%",
+    "min-height:0",
+    "min-height:100%",
+    "min-height:150px",
+    "min-width:0",
+    "outline-offset:-2px",
+    "outline:2px solid var(--accent)",
+    "overflow:auto",
+    "overscroll-behavior:contain",
+    "padding:8px",
+    "scrollbar-gutter:stable"
+   ],
+   "sheets": [
+    "src/styles/event/command-workbench.css",
+    "src/styles/event/previews/command-preview-3.css",
+    "src/styles/event/previews/command-preview-4.css"
+   ]
+  },
+  "event-script-live-status": {
+   "props": [
+    "clip-path",
+    "height",
+    "overflow",
+    "position",
+    "white-space",
+    "width"
+   ],
+   "decls": [
+    "clip-path:inset(50%)",
+    "height:1px",
+    "overflow:hidden",
+    "position:absolute",
+    "white-space:nowrap",
+    "width:1px"
+   ],
+   "sheets": [
+    "src/styles/event/previews/command-preview-4.css"
+   ]
+  },
+  "event-script-preview-disclaimer": {
+   "props": [
     "background",
     "border",
     "border-radius",
     "color",
-    "content",
-    "display",
+    "font",
     "font-size",
-    "font-weight",
+    "padding"
+   ],
+   "decls": [
+    "background:color-mix(in srgb, var(--status-warning, var(--warning)) 10%, var(--surface-recessed, var(--bg-raised)))",
+    "border-radius:6px",
+    "border:1px solid color-mix(in srgb, var(--status-warning, var(--warning)) 42%, var(--border-soft, var(--border-subtle)))",
+    "color:var(--text-2)",
+    "font-size:12px",
+    "font:600 11px/1.45 var(--font-ui)",
+    "padding:7px 9px"
+   ],
+   "sheets": [
+    "src/styles/event/previews/command-preview-3.css",
+    "src/styles/event/previews/command-preview-4.css"
+   ]
+  },
+  "event-script-transport-button": {
+   "props": [
+    "align-items",
+    "border-style",
+    "color",
+    "cursor",
+    "display",
+    "flex",
+    "font",
     "gap",
-    "height",
     "justify-content",
-    "margin-top",
-    "padding",
+    "min-height",
+    "outline",
+    "outline-offset",
     "white-space"
    ],
    "decls": [
     "align-items:center",
-    "align-self:start",
-    "background:color-mix(in srgb, var(--blk-cat, var(--text-3)) 12%, var(--bg-raised))",
-    "border-radius:4px",
-    "border-radius:999px",
-    "border:1px solid color-mix(in srgb, var(--blk-cat, var(--text-3)) 28%, var(--border))",
-    "color:var(--blk-cat, var(--text-3))",
-    "color:var(--cmdcat, currentcolor)",
-    "content:attr(data-label)",
-    "content:none",
+    "border-style:dashed",
+    "color:var(--text-3)",
+    "cursor:not-allowed",
     "display:inline-flex",
-    "font-size:10px",
-    "font-size:9px",
-    "font-weight:700",
-    "gap:6px",
-    "height:20px",
+    "flex:0 0 auto",
+    "font:500 13px/1.3 var(--font-ui)",
+    "gap:5px",
     "justify-content:center",
-    "margin-top:2px",
-    "padding:0 5px",
-    "padding:0 7px",
+    "min-height:30px",
+    "outline-offset:-2px",
+    "outline:2px solid var(--accent)",
     "white-space:nowrap"
    ],
    "sheets": [
-    "src/styles/event/command-list-4.css",
-    "src/styles/event/subdialogs/dialogs-5.css"
-   ]
-  },
-  "event-storyboard-card-detail": {
-   "props": [
-    "-webkit-line-clamp",
-    "color",
-    "font",
-    "font-size",
-    "grid-column",
-    "line-height",
-    "min-width",
-    "overflow",
-    "text-overflow",
-    "white-space"
-   ],
-   "decls": [
-    "-webkit-line-clamp:1",
-    "color:var(--text-1)",
-    "color:var(--text-2)",
-    "font-size:14px",
-    "font:500 12px/1.4 var(--font-ui)",
-    "grid-column:2",
-    "grid-column:auto",
-    "line-height:1.45",
-    "line-height:20px",
-    "min-width:0",
-    "overflow:hidden",
-    "text-overflow:ellipsis",
-    "white-space:nowrap"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-2.css",
-    "src/styles/event/command-list-3.css",
-    "src/styles/event/narrow.css",
-    "src/styles/event/subdialogs/dialogs-5.css"
-   ]
-  },
-  "event-storyboard-card-thumb": {
-   "props": [
-    "background",
-    "border-radius",
-    "box-shadow",
-    "color",
-    "display",
-    "font",
-    "font-size",
-    "font-variant-numeric",
-    "font-weight",
-    "grid-row",
-    "height",
-    "padding-top",
-    "place-items",
-    "width"
-   ],
-   "decls": [
-    "background:var(--storyboard-accent)",
-    "border-radius:4px",
-    "border-radius:7px",
-    "box-shadow:0 0 0 2px var(--bg-surface)",
-    "color:#fff",
-    "color:var(--accent)",
-    "color:var(--text-3)",
-    "display:grid",
-    "font-size:11px",
-    "font-size:12px",
-    "font-variant-numeric:tabular-nums",
-    "font-weight:600",
-    "font:800 11px var(--font-mono)",
-    "grid-row:1 / 3",
-    "grid-row:auto",
-    "height:26px",
-    "padding-top:3px",
-    "place-items:center",
-    "width:26px"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-2.css",
-    "src/styles/event/command-list-3.css",
-    "src/styles/event/command-list-4.css",
-    "src/styles/event/narrow.css"
-   ]
-  },
-  "event-storyboard-card-title": {
-   "props": [
-    "color",
-    "font",
-    "font-size",
-    "font-weight",
-    "grid-column",
-    "padding-top"
-   ],
-   "decls": [
-    "color:var(--text-1)",
-    "color:var(--text-2)",
-    "color:var(--text-3)",
-    "font-size:11px",
-    "font-size:12px",
-    "font-weight:550",
-    "font:750 13px/1.25 var(--font-ui)",
-    "grid-column:2",
-    "grid-column:auto",
-    "padding-top:4px"
-   ],
-   "sheets": [
-    "src/styles/event/command-forms/forms-6.css",
-    "src/styles/event/command-list-2.css",
-    "src/styles/event/command-list-3.css",
-    "src/styles/event/command-list-4.css",
-    "src/styles/event/narrow.css"
+    "src/styles/event/previews/command-preview-4.css"
    ]
   },
   "event-storyboard-host": {
@@ -21460,85 +21596,6 @@
     "src/styles/event/command-list-3.css",
     "src/styles/event/command-workbench.css",
     "src/styles/event/narrow.css"
-   ]
-  },
-  "event-storyboard-row-action": {
-   "props": [
-    "align-items",
-    "appearance",
-    "background",
-    "border",
-    "border-radius",
-    "color",
-    "cursor",
-    "display",
-    "font-size",
-    "font-weight",
-    "gap",
-    "height",
-    "justify-content",
-    "line-height",
-    "min-height",
-    "min-width",
-    "outline",
-    "outline-offset",
-    "padding",
-    "width"
-   ],
-   "decls": [
-    "align-items:center",
-    "appearance:none",
-    "background:transparent",
-    "background:var(--control-bg)",
-    "background:var(--control-bg-hover)",
-    "background:var(--danger-muted)",
-    "border-radius:6px",
-    "border:1px solid transparent",
-    "color:var(--danger)",
-    "color:var(--text-1)",
-    "color:var(--text-2)",
-    "cursor:pointer",
-    "display:inline-flex",
-    "font-size:11px",
-    "font-size:12px",
-    "font-weight:500",
-    "gap:6px",
-    "height:28px",
-    "justify-content:center",
-    "line-height:1",
-    "min-height:24px",
-    "min-height:28px",
-    "min-width:24px",
-    "outline-offset:1px",
-    "outline:2px solid var(--accent)",
-    "padding:0",
-    "padding:0 4px",
-    "width:28px"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-4.css",
-    "src/styles/event/subdialogs/dialogs-5.css"
-   ]
-  },
-  "event-storyboard-row-actions": {
-   "props": [
-    "align-items",
-    "display",
-    "gap",
-    "opacity",
-    "transition"
-   ],
-   "decls": [
-    "align-items:center",
-    "display:flex",
-    "gap:2px",
-    "opacity:0",
-    "opacity:1",
-    "transition:none",
-    "transition:opacity 0.12s"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-4.css"
    ]
   },
   "event-subdialog-backdrop": {
@@ -22905,6 +22962,104 @@
    "sheets": [
     "src/styles/database/light-theme.css",
     "src/styles/event/command-forms/forms-4.css"
+   ]
+  },
+  "game-over-command-editor": {
+   "props": [
+    "align-items",
+    "display",
+    "flex-direction",
+    "gap",
+    "margin",
+    "max-width",
+    "min-width",
+    "text-align",
+    "width"
+   ],
+   "decls": [
+    "align-items:stretch",
+    "display:flex",
+    "flex-direction:column",
+    "gap:16px",
+    "gap:7px",
+    "margin:0",
+    "max-width:none",
+    "min-width:0",
+    "text-align:left",
+    "width:100%"
+   ],
+   "sheets": [
+    "src/styles/event/command-forms/forms.css"
+   ]
+  },
+  "has-command-inspector": {
+   "props": [
+    "--balanced-inspector-width",
+    "--balanced-settings-width",
+    "--event-editor-settings-track",
+    "background",
+    "border-left",
+    "bottom",
+    "box-shadow",
+    "color",
+    "content",
+    "display",
+    "font",
+    "gap",
+    "grid-column",
+    "grid-row",
+    "grid-template-columns",
+    "grid-template-rows",
+    "overflow",
+    "padding",
+    "position",
+    "right",
+    "top",
+    "width",
+    "z-index"
+   ],
+   "decls": [
+    "--balanced-inspector-width:324px",
+    "--balanced-settings-width:236px",
+    "--event-editor-settings-track:288px",
+    "background:var(--bg-raised)",
+    "border-left:1px solid var(--border)",
+    "border-left:1px solid var(--border-default)",
+    "bottom:0",
+    "box-shadow:-12px 0 28px rgba(15, 23, 42, 0.16)",
+    "color:var(--text-2)",
+    "content:\"명령을 선택하면 여기에서 편집합니다\"",
+    "display:grid",
+    "display:none",
+    "font:400 13px/1.5 var(--font-ui)",
+    "gap:0",
+    "grid-column:1 / -1",
+    "grid-column:2",
+    "grid-column:3",
+    "grid-row:1",
+    "grid-template-columns:200px 6px minmax(0, 1fr) 260px",
+    "grid-template-columns:minmax(0, 1fr)",
+    "grid-template-columns:minmax(200px, var(--event-editor-settings-track)) 6px minmax(0, 1fr) minmax(280px, 28%)",
+    "grid-template-columns:var(--balanced-settings-width) minmax(0, 1fr)",
+    "grid-template-columns:var(--balanced-settings-width) minmax(0, 1fr) var(--balanced-inspector-width)",
+    "grid-template-columns:var(--balanced-settings-width) minmax(0, 1fr) var(--event-inspector-reserved-track, 0px)",
+    "grid-template-rows:auto auto",
+    "grid-template-rows:auto auto auto",
+    "grid-template-rows:minmax(0, 1fr)",
+    "overflow:auto",
+    "padding:var(--space-4)",
+    "position:absolute",
+    "right:0",
+    "top:0",
+    "width:min(var(--balanced-inspector-width), 62%)",
+    "z-index:4"
+   ],
+   "sheets": [
+    "src/styles/event/command-list-3.css",
+    "src/styles/event/command-workbench.css",
+    "src/styles/event/inspector.css",
+    "src/styles/event/narrow.css",
+    "src/styles/event/shell.css"
    ]
   },
   "has-speaker": {
@@ -24352,37 +24507,45 @@
     "src/styles/shell/studio-bar.modern.css"
    ]
   },
-  "is-danger": {
+  "is-current": {
    "props": [
+    "animation",
     "background",
     "border-color",
+    "box-shadow",
     "color",
-    "filter",
-    "margin-right"
+    "content",
+    "display",
+    "height",
+    "width"
    ],
    "decls": [
-    "background:var(--danger, #c33)",
-    "background:var(--danger, #c6403d)",
-    "background:var(--danger-muted)",
-    "border-color:var(--danger, #c33)",
-    "border-color:var(--danger, #c6403d)",
-    "color:var(--danger)",
-    "color:var(--on-accent, #fff)",
-    "filter:brightness(0.92)",
-    "margin-right:auto"
+    "animation:none",
+    "animation:project-interview-pulse 1.2s ease-in-out infinite",
+    "background:var(--accent)",
+    "background:var(--accent-muted)",
+    "border-color:var(--accent)",
+    "border-color:var(--accent-border)",
+    "border-color:var(--db-studio-accent)",
+    "box-shadow:0 0 0 2px #1a1622, 0 0 0 4px var(--look-acc, var(--retro-accent)), 0 0 12px color-mix(in srgb, var(--look-acc, var(--retro-accent)) 70%, transparent)",
+    "box-shadow:0 0 0 2px color-mix(in srgb, var(--accent) 32%, transparent), 0 2px 8px color-mix(in srgb, var(--accent) 22%, transparent)",
+    "color:var(--accent)",
+    "color:var(--editor-blue)",
+    "color:var(--on-accent)",
+    "content:\"●\"",
+    "display:flex",
+    "height:38px",
+    "width:18px",
+    "width:38px"
    ],
    "sheets": [
-    "src/styles/components/app-modal.css",
-    "src/styles/database/tabs-b-assistant-panel/06-canvas-guides-panel-chrome.css",
-    "src/styles/database/tabs-b-assistant-panel/07-viewer-modal-settings.css",
-    "src/styles/database/tabs-b-assistant-panel/21-team-panel.css",
-    "src/styles/database/tabs-b-assistant-panel/23-agent-lanes.css",
-    "src/styles/database/tabs-b-assistant-panel/assistant-deck.part-4.css",
-    "src/styles/database/tabs-b-assistant-panel/studio-mode-start-screen.part-4.css",
-    "src/styles/event/command-list-4.css",
-    "src/styles/event/subdialogs/dialogs-5.css",
-    "src/styles/map/inline-assist.css",
-    "src/styles/shell/dialogs/ai-modal-shell.css"
+    "src/styles/database/modern/enemies.css",
+    "src/styles/database/tabs-b-assistant-panel/18-assistant-deck.css",
+    "src/styles/database/tabs-b-assistant-panel/assistant-cards.part-4.css",
+    "src/styles/event/command-list-2.css",
+    "src/styles/map/map-history.css",
+    "src/styles/runtime/battle-skins/_battle-look.css",
+    "src/styles/shell/dialogs/project-interview.css"
    ]
   },
   "is-empty": {
@@ -24885,69 +25048,6 @@
     "src/styles/event/pages-4.css"
    ]
   },
-  "kind": {
-   "props": [
-    "color",
-    "font-size",
-    "font-weight",
-    "padding-top"
-   ],
-   "decls": [
-    "color:var(--text-2)",
-    "color:var(--text-3)",
-    "font-size:11px",
-    "font-size:12px",
-    "font-weight:550",
-    "padding-top:4px"
-   ],
-   "sheets": [
-    "src/styles/event/command-forms/forms-6.css",
-    "src/styles/event/command-list-3.css",
-    "src/styles/event/command-list-4.css",
-    "src/styles/event/shell-2.css"
-   ]
-  },
-  "leaf": {
-   "props": [
-    "align-items",
-    "background",
-    "border",
-    "border-radius",
-    "box-shadow",
-    "color",
-    "cursor",
-    "display",
-    "font-size",
-    "gap",
-    "grid-template-columns",
-    "padding",
-    "text-align",
-    "width"
-   ],
-   "decls": [
-    "align-items:start",
-    "background:transparent",
-    "background:var(--bg-raised)",
-    "border-radius:7px",
-    "border:0",
-    "box-shadow:inset 3px 0 0 var(--accent)",
-    "color:var(--text-1)",
-    "color:var(--text-3)",
-    "cursor:pointer",
-    "display:grid",
-    "font-size:11px",
-    "font-size:13px",
-    "gap:8px",
-    "grid-template-columns:24px 52px minmax(0, 1fr) auto",
-    "padding:8px 10px",
-    "text-align:left",
-    "width:100%"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-3.css",
-    "src/styles/event/shell-2.css"
-   ]
-  },
   "learn-skill-command-body": {
    "props": [
     "display",
@@ -24980,25 +25080,6 @@
    ],
    "sheets": [
     "src/styles/event/command-forms/forms-5.css"
-   ]
-  },
-  "line": {
-   "props": [
-    "color",
-    "font-size",
-    "line-height"
-   ],
-   "decls": [
-    "color:var(--text-1)",
-    "font-size:13px",
-    "font-size:14px",
-    "line-height:1.45",
-    "line-height:20px"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-3.css",
-    "src/styles/event/shell-2.css",
-    "src/styles/event/subdialogs/dialogs-5.css"
    ]
   },
   "loss": {
@@ -26501,26 +26582,6 @@
     "src/styles/event/subdialogs/dialogs-3.css",
     "src/styles/event/subdialogs/dialogs-4.css",
     "src/styles/map/from-shell-shell-density-part-1.css"
-   ]
-  },
-  "n": {
-   "props": [
-    "color",
-    "font-size",
-    "font-variant-numeric",
-    "font-weight",
-    "padding-top"
-   ],
-   "decls": [
-    "color:var(--accent)",
-    "color:var(--text-3)",
-    "font-size:11px",
-    "font-variant-numeric:tabular-nums",
-    "font-weight:600",
-    "padding-top:3px"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-3.css"
    ]
   },
   "narrow": {
@@ -29284,58 +29345,6 @@
     "src/styles/event/command-forms/forms-4.css"
    ]
   },
-  "row": {
-   "props": [
-    "align-items",
-    "background",
-    "border",
-    "border-radius",
-    "box-shadow",
-    "color",
-    "cursor",
-    "display",
-    "font-size",
-    "font-variant-numeric",
-    "font-weight",
-    "gap",
-    "grid-template-columns",
-    "line-height",
-    "padding",
-    "padding-top",
-    "text-align",
-    "width"
-   ],
-   "decls": [
-    "align-items:start",
-    "background:transparent",
-    "background:var(--bg-raised)",
-    "border-radius:8px",
-    "border:0",
-    "box-shadow:inset 3px 0 0 var(--accent)",
-    "box-shadow:none",
-    "color:var(--accent)",
-    "color:var(--text-1)",
-    "color:var(--text-3)",
-    "cursor:pointer",
-    "display:grid",
-    "font-size:11px",
-    "font-size:14px",
-    "font-variant-numeric:tabular-nums",
-    "font-weight:550",
-    "font-weight:600",
-    "gap:10px",
-    "grid-template-columns:28px 52px minmax(0, 1fr)",
-    "line-height:1.45",
-    "padding-top:3px",
-    "padding-top:4px",
-    "padding:10px 12px",
-    "text-align:left",
-    "width:100%"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-3.css"
-   ]
-  },
   "runtime-partial": {
    "props": [
     "background",
@@ -31327,31 +31336,6 @@
     "src/styles/event/command-forms/forms-6.css"
    ]
   },
-  "story": {
-   "props": [
-    "background",
-    "display",
-    "flex-direction",
-    "gap",
-    "min-height",
-    "overflow-x",
-    "overflow-y",
-    "padding"
-   ],
-   "decls": [
-    "background:var(--bg-base)",
-    "display:flex",
-    "flex-direction:column",
-    "gap:2px",
-    "min-height:0",
-    "overflow-x:hidden",
-    "overflow-y:auto",
-    "padding:4px 16px 24px"
-   ],
-   "sheets": [
-    "src/styles/event/command-forms/forms-6.css"
-   ]
-  },
   "sub": {
    "props": [
     "color",
@@ -32630,10 +32614,11 @@
   "ee-icon-info",
   "ee-icon-lines",
   "ee-icon-party",
-  "ee-icon-pencil",
   "ee-icon-person",
+  "ee-icon-play",
   "ee-icon-plus",
   "ee-icon-redo",
+  "ee-icon-refresh",
   "ee-icon-route",
   "ee-icon-sound",
   "ee-icon-spark",
@@ -32652,13 +32637,18 @@
   "event-character-social-disclosure",
   "event-command-face-bust-preset",
   "event-command-face-clear",
+  "event-command-face-face-preset",
   "event-command-face-flip-checkbox",
   "event-command-face-full-preset",
+  "event-command-face-full-stage",
   "event-command-face-pick",
   "event-command-face-position-select",
   "event-command-menu-item",
   "event-command-picker-alternate-route",
   "event-command-switch-form",
+  "event-command-text-style-label",
+  "event-command-text-voice-field",
+  "event-command-text-voice-name",
   "event-command-wait-preset",
   "event-condition-badge",
   "event-condition-badge-any",
@@ -32677,7 +32667,6 @@
   "event-condition-weekdays",
   "event-editor-aux-tool-button",
   "event-editor-column-label-commands",
-  "event-editor-column-label-inspector",
   "event-fork-condition-section",
   "event-fork-options-section",
   "event-fork-timer-warning",
@@ -32703,6 +32692,7 @@
   "page3-anim-cell",
   "page3-anim-play",
   "page3-anim-stage-host",
+  "page3-gallery-record",
   "page3-movie-preview",
   "page3-movie-sample-note",
   "page3-movie-stage",
@@ -32717,6 +32707,7 @@
   "schema-field",
   "schema-field-hint",
   "schema-operand",
+  "schema-present-options",
   "shop-editor-rows",
   "shop-editor-stock",
   "storage-chest-allowed-types",

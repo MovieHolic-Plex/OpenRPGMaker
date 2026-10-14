@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a2f7061ac3272f86ffce56344f2f00abc41a7d8165c8920f3b6ec8205d3bbd57",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "착륙 유도등 상자(낮은 상자 + 윗면 주황 렌즈 + 빛)",
+ "label": "sf-station/sf-beacon",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "guidance light box",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the box is clearly visible from row 3 to row 10 (8 rows tall) containing an orange lens, above a 4-row vertical front face (rows 11-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4608
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "landing guidance light box with orange lens on top surface",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the box is clearly visible across rows 3-10 (approx. 8 rows tall) containing an orange lens, above a 4-row south-facing front panel (rows 11-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4477
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "low landing guide light box with an orange lens on top",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the box is clearly visible across rows 2-10 containing an orange lens, while rows 11-14 form the front south face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3637
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "low guidance light box",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the box occupies rows 3-10 (8 source pixels tall) featuring the top-mounted orange lens, while the front south face spans rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4586
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:09.621Z",
+ "cells": {
+  "16": [
+   "3af70a1564b8261b"
+  ],
+  "24": [
+   "16bf0a1ed289b312",
+   "3b57ad8bffb2bb86",
+   "44556b6ec892707a",
+   "4c643e26d1b17515",
+   "744dd0c63f844db6",
+   "9e077960d283b52c"
+  ],
+  "32": [
+   "6b56fd07244e3a5d",
+   "8c9e7db656cc5add",
+   "d794f631a14a6765",
+   "e20bbb9e0132209a",
+   "eace6fae05901c04",
+   "fad43ecfcc7ffb17"
+  ],
+  "48": [
+   "4b5a0838e3949715",
+   "7025ef69aa2e8e3b",
+   "7bc987d7cb9de208",
+   "972450d2126014e6",
+   "ad7b6dc0beda66c3",
+   "b610b4115c6fd2a6"
+  ]
+ }
+}

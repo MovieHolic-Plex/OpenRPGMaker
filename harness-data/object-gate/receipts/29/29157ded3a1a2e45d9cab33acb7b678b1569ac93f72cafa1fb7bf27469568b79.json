@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "29157ded3a1a2e45d9cab33acb7b678b1569ac93f72cafa1fb7bf27469568b79",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "땅 위 배관 — 남쪽 끝 마개(북으로 이어짐)",
+ "label": "steampunk-city/sp-pipe-n",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pipe end cap and pipe section",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The flanged end cap clearly displays a foreshortened elliptical top surface (rows 5–9, 5 rows tall) and a distinct south-facing thickness/front face (rows 10–12), correctly adhering to the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8327
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pipe end cap on ground",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pipe end cap is rendered as a foreshortened cylindrical disc with a 5-row elliptical top surface (rows 5-9) displaying bolts, and a 2-row front face (rows 10-11) resting above a ground shadow.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10729
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pipe end cap and flange",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pipe cap/flange shows a clearly foreshortened top surface (rows 5-9, 5px tall) above a south-facing front rim/thickness (rows 10-11, 2px tall). The pipe extending north is also visible from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9710
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal ground pipe with south end cap",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pipe extends northwards with its top cylindrical surface clearly visible across rows 0-4 (5 rows), terminated at the south by an angled elliptical end cap/flange across rows 5-10 with visible depth and bolts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9786
+  }
+ ],
+ "decidedAt": "2026-10-13T18:40:36.081Z",
+ "cells": {
+  "16": [
+   "2765d98f0babc091"
+  ],
+  "24": [
+   "10d14ab7b073978d",
+   "23dfc0593cceac8b",
+   "67cfd601e26bc3ab",
+   "939dfcb601c6f9b8",
+   "a6f6ae19c28363d7",
+   "dbc702fcf76e292a"
+  ],
+  "32": [
+   "3318b2376eda280f",
+   "35120ee84dce9beb",
+   "787d1f6ea5b4cc63",
+   "7fec0d5abbc974a3",
+   "9607e112cae00766",
+   "f9683623081f87db"
+  ],
+  "48": [
+   "05be8f035fa369d1",
+   "53b13657c0dd886b",
+   "7481563f7670c927",
+   "a09761b7b1e76867",
+   "aed19a4d160aa8cc",
+   "cdbaa02d23d12674"
+  ]
+ }
+}

@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "01c128bc1f3e87539ce9d7985e15fbb0f666883999d75063bf186b47ddc2b612",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "게시판(지붕 달린 유리 게시판)",
+ "label": "modern-campus/mc-notice-board",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 1.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bulletin board with roof",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat 2D architectural front elevation. The roof is a completely flat horizontal rectangle with no angled slope or visible top surface (0 top rows), and the board frame and posts have no depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6820
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bulletin board with roof",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure front elevation: the roof is a flat horizontal rectangle with gradient band shading rather than a distinct top slope, the frame and posts show no horizontal depth or top surfaces, and the feet are flat 1px-tall horizontal bars.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11767
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bulletin board with pitched/sloped roof",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof shows its top slope as a light green surface across rows 4–6 (3 source pixels tall) above the darker front fascia band on rows 7–9. The structure correctly conveys the 3/4 downward angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8618
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bulletin board with roof",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features a pitched roof whose top slope is visible across rows 4–6 (3 rows of lighter green slope, with rows 7–9 forming the darker eave/fascia), properly foreshortened in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11469
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.870Z",
+ "cells": {
+  "16": [
+   "1afc72abf0822b39",
+   "298f1622cc56aa23",
+   "b3a8cbe3f30a821e",
+   "db689465dea12c53"
+  ],
+  "24": [
+   "0d37cc449bf1542e",
+   "25d5c87b4d4575ac",
+   "32fb4423afbd2ae1",
+   "36da1bf3a883d41b",
+   "3d85cca19f464f36",
+   "3fe53616e8763c0f",
+   "44be84bb1d58979d",
+   "4a51f74e236b7a70",
+   "4db3f31b73b3a4a7",
+   "5f7b121a7f2270af",
+   "657771cb8199e15e",
+   "68466021be954788",
+   "81ccd6f2643e614a",
+   "936f6df2d2ae9072",
+   "a613ad1fd2ec1482",
+   "a822fa07cdb2e9df",
+   "acf22e11c6ca87ac",
+   "b10d1a51e39cf5c1",
+   "c2aeb251bd12d72f",
+   "c81a3b1fd083533c",
+   "ea6f9a056255a84c",
+   "ebd73f82d5533c65",
+   "f516264aaf6dd262",
+   "fdf7e1e75e25d901"
+  ],
+  "32": [
+   "cc0d14e1998c8206"
+  ],
+  "48": [
+   "3030a73699c29212",
+   "4abcc26f0e062069",
+   "6a943dbf28eb2a4e",
+   "8d16ab0951461a8a",
+   "b3a653c1ff963147",
+   "b527740c5174f8b2"
+  ]
+ }
+}

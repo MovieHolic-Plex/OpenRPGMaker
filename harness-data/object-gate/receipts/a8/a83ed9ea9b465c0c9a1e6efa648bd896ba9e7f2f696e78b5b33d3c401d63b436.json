@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a83ed9ea9b465c0c9a1e6efa648bd896ba9e7f2f696e78b5b33d3c401d63b436",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "무쇠 쌍문(닫힘, 돌기둥 둘)",
+ "label": "gothic_manor/gm-gate-iron",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron double gate with stone pillars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate bars, horizontal crossbars, and flanking stone pillars are drawn in pure front elevation with no visible top surface on the pillars, lintel, or horizontal rails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4352
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron gate with flanking stone pillars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cast-iron gate bars, horizontal crossbars, and flanking stone pillars/walls are drawn entirely in flat front elevation with no visible top surfaces or lintel depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5770
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron gate with stone side pillars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate, bars, and flanking stone pillars are drawn in pure front elevation with no visible top surface on any lintel, pillar cap, or beam (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4265
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron gate and flanking stone pillars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate bars, crossbeams, lock, and flanking stone pillars are drawn in pure front elevation with no visible top depth or foreshortened horizontal surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5964
+  }
+ ],
+ "decidedAt": "2026-10-13T16:33:45.368Z",
+ "cells": {
+  "16": [
+   "1a0d8b0318ac7dd9",
+   "262dc169e60a83ab",
+   "2982ccc41026fcaf",
+   "39dbcda5fe292350",
+   "61b8f1721fad54aa",
+   "ff4d935ba01cc8fb"
+  ],
+  "24": [
+   "17680a7ce6dd4fe6",
+   "2e8276c401d83e14",
+   "2fa09f1888211b6d",
+   "30fd4b8910d0ee43",
+   "46dc3b9ad6d18d1d",
+   "5998ef09cb4e0ab2",
+   "70f0d1af92af39b3",
+   "9f0c1f6d75236c6b"
+  ],
+  "32": [
+   "5a8650a6860721e6",
+   "65d2fe6e959db57f",
+   "6c239418536a7705",
+   "a068c2c639d232d9",
+   "ee7ffd7faec69f98",
+   "f842df090d14ebd6"
+  ],
+  "48": [
+   "30cd06cda60f0822",
+   "79e1c76fc1bb0966"
+  ]
+ }
+}

@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0b6f8030cbebf08dc8cc19dd73dce2e8ec41de866a85277e3ba96ff7c8b5b0b9",
+ "width": 48,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "함교 주 조종 콘솔(윗면 화면 셋 + 자판 + 앞 패널 램프 줄)",
+ "label": "sf-station/sf-console-big",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bridge control console desk",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The console surface seen from above occupies rows 1-9 (containing three monitor screens and a keyboard array), while the vertical front face with status lamps spans rows 10-14, presenting a clear 3/4 top-down projection.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7458
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bridge main control console",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The console deck/top surface is clearly foreshortened and visible from row 1 to row 9 (around 9px tall) featuring three inset monitor displays and keyboard keys, above a 5-6px tall south-facing front panel with indicator lights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6506
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bridge control console desk",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The console deck is clearly viewed from above across rows 1-9, displaying three angled/embedded display screens and a keyboard strip, before transitioning at row 10 to a vertical south face with status indicator lights (rows 10-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6651
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bridge main control console",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The console top surface spans rows 1-9 (showing three inset screens and keyboard keys), while the vertical south front face spans rows 10-15 with panel indicator lamps.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7168
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.950Z",
+ "cells": {
+  "16": [
+   "0dc63ef2a1c527b1",
+   "942b393ed16e897c",
+   "b92992265b5800d1"
+  ],
+  "24": [
+   "05fd1f75984fc010",
+   "0e33568acce3f441",
+   "e28fe3b699456568",
+   "fcd0567b018efef0"
+  ],
+  "32": [
+   "01993da7d46e5e78",
+   "2bccdb06a1a191a6",
+   "3a184b64bb75f360",
+   "3bc346d3c7bb98b0",
+   "65ccfb0f41f71201",
+   "8698c4840eb069b6",
+   "8c094f5dd9fdecdc",
+   "9c57d03b1fa73f61",
+   "d6c2cfb7e54d9fac",
+   "dec95401db7756d1",
+   "e68fc00f354353fd",
+   "f2fba414c005016a"
+  ],
+  "48": [
+   "51ff4be807652d9d",
+   "c409987bcc3b3b6d"
+  ]
+ }
+}

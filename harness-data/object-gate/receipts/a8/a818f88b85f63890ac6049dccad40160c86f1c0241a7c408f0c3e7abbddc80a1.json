@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a818f88b85f63890ac6049dccad40160c86f1c0241a7c408f0c3e7abbddc80a1",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "무쇠 가스등(넓은 받침)",
+ "label": "gothic_manor/gm-gaslamp",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cast iron gas lamp / lantern post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top cap/roof of the lantern (rows 0-5) is drawn in flat front elevation with a straight 1px horizontal outline at row 0 and vertical front panels, showing no visible top surface from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6429
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "gas lamp on pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top cap of the lamp (rows 0-5) is drawn in pure front elevation with a completely flat horizontal top edge and no visible top surface, failing the requirement for column-like objects to show a top surface at the upper end.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5526
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "gas lamp post and lantern head",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (lantern head and post, spanning rows 0-33) is drawn in pure front elevation with a flat 1px line at row 0 showing no top surface of the cap. While the base plinth below shows top perspective, base plinths do not substitute for the main body's top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8295
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cast iron gas lamp",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top hood/cap of the gas lamp shows no top surface (0 rows, only a 1px outline at row 0 above a vertical front face). Although the pedestal base shows a top face, the main column/lamp body itself is drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7556
+  }
+ ],
+ "decidedAt": "2026-10-13T16:33:45.368Z",
+ "cells": {
+  "16": [
+   "6315e4526c181ae1",
+   "af8a1eea5b43760f",
+   "ec1db507268fa0f8"
+  ],
+  "24": [
+   "1012d60094cf32a5",
+   "3904343be8393a77",
+   "49a3c23ea588851e",
+   "4d5d5dad96e5bd4f",
+   "c676fde348219118",
+   "ff28b6fcf4d41ae2"
+  ],
+  "32": [
+   "043d013a304a326f",
+   "136bbb5e8f66a758",
+   "18a77105a747a118",
+   "52cc927671f50d2e",
+   "7167f0d5a5bd5341",
+   "7b3e237c88fb5506",
+   "86e38b86d7c7a08b",
+   "cf61bafce59f62d4",
+   "de800881063c0223",
+   "ea888f6eca7369e3",
+   "f1ba037ad006808b",
+   "faa3042533b7a967"
+  ],
+  "48": [
+   "77c8f7c9a58d2ee3",
+   "870cf362ea5a2e65",
+   "ebf1c7b12aa2eaef"
+  ]
+ }
+}

@@ -3,7 +3,7 @@
 //   build_hand_interior_room : 평면 문자열 → 벽·천장 자동, 가구는 v5 물건 id → atlas_biome_interior 새 맵(또는 같은 칩셋 맵 다시 짓기)
 //   두 도구 모두 tileset:"jp_city" 이면 일본 실내(jp_city 번들 안, 화실·LDK·욕실·현관)를 같은 규칙으로 짓는다.
 // 조립 규칙은 src/editor/handInterior/builder.ts, 칸 사전은 src/assets/handInteriorSpec.json · jpInteriorSpec.json.
-import { buildHandInteriorLayers, roomSpecOf, HAND_INTERIOR_SPEC, HAND_INTERIOR_SPECS, HAND_INTERIOR_TILESET_ID, JP_INTERIOR_SPEC, JP_INTERIOR_TILESET_ID, WIZARDING_INTERIOR_SPEC, WIZARDING_INTERIOR_TILESET_ID, HandInteriorError, type HandInteriorInput, type HandInteriorSpec } from "@/editor/handInterior/builder";
+import { buildHandInteriorLayers, roomSpecOf, HAND_INTERIOR_SPEC, HAND_INTERIOR_SPECS, HAND_INTERIOR_TILESET_ID, JP_INTERIOR_SPEC, JP_INTERIOR_TILESET_ID, WIZARDING_INTERIOR_SPEC, WIZARDING_INTERIOR_TILESET_ID, CAMPUS_INTERIOR_SPEC, HandInteriorError, type HandInteriorInput, type HandInteriorSpec } from "@/editor/handInterior/builder";
 import { roomIndex, roomParts, searchParts, fullRow, shortRow } from "@/editor/handInterior/parts";
 import { handInteriorShapeFromPlan, nearestOpening, PLAIN_BOX_MIN_CELLS, type HandInteriorShape } from "@/editor/handInterior/shape";
 import { createAtlasBiomeInteriorTileset, ensureAtlasBiomeInteriorCurrent } from "@/project/defaults/atlasBiomeInterior";
@@ -23,14 +23,14 @@ import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 // 바닥·벽면·천장 id 를 enum 으로 연다 — 자유 문자열이면 모델이 wood·stone·brick 처럼 그럴듯한 이름을 지어
 // 「바닥 "wood" 이 없다」로 거부된 뒤 다시 부른다(2026-10-05 헤드리스 스트레스 13판 중 4판).
-// 두 칩셋 id 를 합친 enum 이다 — 고른 칩셋에 없는 id 는 조립기가 그 칩셋의 목록과 함께 거부한다.
-const uniq = (pick: (s: HandInteriorSpec) => object) => [...new Set([HAND_INTERIOR_SPEC, JP_INTERIOR_SPEC, WIZARDING_INTERIOR_SPEC].flatMap((s) => Object.keys(pick(s))))];
+// 칩셋 사양(손 도트·jp_city·마법 학교·캠퍼스) id 를 합친 enum 이다 — 고른 칩셋에 없는 id 는 조립기가 그 칩셋의 목록과 함께 거부한다.
+const uniq = (pick: (s: HandInteriorSpec) => object) => [...new Set([HAND_INTERIOR_SPEC, JP_INTERIOR_SPEC, WIZARDING_INTERIOR_SPEC, CAMPUS_INTERIOR_SPEC].flatMap((s) => Object.keys(pick(s))))];
 // 타일셋 「방 짓기」 탭에서 사용자가 만든 역할표(src/project/roomKit.ts)는 바닥 floor · 벽면 wall · 천장 default 하나씩이다.
 const FLOOR_IDS = [...uniq((s) => s.floors), "floor"];
 const WALL_IDS = [...uniq((s) => s.walls), "wall"];
 const CEILING_IDS = uniq((s) => s.ceilings);
 const TILESET_IDS = Object.keys(HAND_INTERIOR_SPECS);
-const TILESET_PARAM = { type: "string", description: `실내 칩셋 id — 방 짓기 역할표(roomKit)가 있는 타일셋. ${HAND_INTERIOR_TILESET_ID}(기본, 판타지·중세 손 도트) · ${JP_INTERIOR_TILESET_ID}(일본 현대 집: 현관·화실·LDK·욕실·화장실·침실, 일본 거리 jp_city 와 같은 칩셋) · ${WIZARDING_INTERIOR_TILESET_ID}(마법 학교 성채·병동·온실·도서관 — 가구는 그 칩셋 조립 부품 wz-… id) · 스토어에서 받은 그 사본(store_…)도 된다. 인자 없이 list_hand_interior_parts 를 부르면 이 프로젝트에서 쓸 수 있는 칩셋이 나온다.` } as const;
+const TILESET_PARAM = { type: "string", description: `실내 칩셋 id — 방 짓기 역할표(roomKit)가 있는 타일셋. ${HAND_INTERIOR_TILESET_ID}(기본, 판타지·중세 손 도트) · ${JP_INTERIOR_TILESET_ID}(일본 현대 집: 현관·화실·LDK·욕실·화장실·침실, 일본 거리 jp_city 와 같은 칩셋) · ${WIZARDING_INTERIOR_TILESET_ID}(마법 학교 성채·병동·온실·도서관 — 가구는 그 칩셋 조립 부품 wz-… id) · modern_campus(현대 학교: 교실·복도·도서관·보건실·급식실·기숙사 — 남쪽 출구가 2칸인 예제 평면이면 exitWidth:2) · 스토어에서 받은 그 사본(store_…)도 된다. 인자 없이 list_hand_interior_parts 를 부르면 이 프로젝트에서 쓸 수 있는 칩셋이 나온다.` } as const;
 /** 역할표가 있는 이 프로젝트의 칩셋 + 번들 칩셋(프로젝트에 아직 없어도 짓기 전에 넣는다). */
 function roomTilesetIds(project: Project): string[] {
   return [...new Set([...TILESET_IDS, ...Object.values(project.tilesets).filter((t) => roomSpecOf(t)).map((t) => t.id)])];

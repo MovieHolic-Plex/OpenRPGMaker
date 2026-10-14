@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "637456ce18dd67feb7ea26c25bcbcbfe7c086fd7fba95993233d660d32716f50",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "배관 도랑 — 남쪽 막힌 끝(북으로 이어짐)",
+ "label": "steampunk-city/sp-pipe-n",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "recessed pipe trench in floor",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a terrain feature showing a recessed floor trench with a pipe running through it from the north and terminating at the south end, with proper top-down perspective and inner recess shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5410
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "recessed pipe trench in floor",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a terrain feature showing a recessed trench in the floor with a pipe running north-south and terminating at the south wall. The top-down 3/4 perspective correctly renders the floor lip, trench depth shadow, and horizontal pipe run.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5039
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pipe trench channel in floor",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Floor-level pipe trench terminating at the south end, showing recessed channel walls, inner pipe viewed from above, and surrounding horizontal floor surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4338
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pipe trench recessed into floor",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Floor trench viewed top-down with horizontal floor surfaces and recessed channel containing a pipe ending to the south; correctly rendered terrain tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4803
+  }
+ ],
+ "decidedAt": "2026-10-13T18:45:09.736Z",
+ "cells": {
+  "16": [
+   "5d58b2211944089e"
+  ],
+  "24": [
+   "7b58a62624588538",
+   "90789fe8ad3c148a",
+   "b78f3f6d457979dc",
+   "d6128c61f40ed0da",
+   "dfb89a7ed1e7c53d",
+   "eed0a2407c579020"
+  ],
+  "32": [
+   "02af00be4e096499",
+   "184eaebb5d3c79fa",
+   "63b7f35fdfee5c1f",
+   "adbb1211eac45885",
+   "bfe40175e85c637a",
+   "e4efe4c6f9da862d"
+  ],
+  "48": [
+   "211cdfa4976e4ebe",
+   "27d6cbfc715d9d0c",
+   "7d54765eb2096eca",
+   "95a490af4726a5b8",
+   "d60eab76a31a71ed",
+   "f9f152ff668ba050"
+  ]
+ }
+}

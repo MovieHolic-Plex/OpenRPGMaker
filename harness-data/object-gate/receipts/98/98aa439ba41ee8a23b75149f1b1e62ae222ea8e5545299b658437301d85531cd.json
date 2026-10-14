@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "98aa439ba41ee8a23b75149f1b1e62ae222ea8e5545299b658437301d85531cd",
+ "width": 32,
+ "height": 16,
+ "kind": "organic",
+ "name": "생울타리(네모 다듬은 회양목, 2칸)",
+ "label": "modern-campus/mc-hedge",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "trimmed boxwood hedge",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The trimmed hedge has a clearly demarcated lighter horizontal top surface spanning rows 1-6 (about 6px tall), above a darker vertical south face spanning rows 7-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7193
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "trimmed boxwood hedge",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the hedge is clearly visible from rows 2 to 6 (5 rows tall, lighter green), meeting the darker south-facing vertical face from row 7 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6732
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "trimmed rectangular boxwood hedge",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the hedge is clearly depicted as a lighter green horizontal band spanning rows 2 to 6 (5 pixel rows), with the south front face extending from rows 7 to 14 in darker green.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5624
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "trimmed boxwood hedge",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The trimmed hedge clearly displays a lighter top horizontal plane from row 1 to row 6 (approx. 6px tall) and a shaded front south face from row 7 to row 14, conforming to standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5593
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.871Z",
+ "cells": {
+  "16": [
+   "61429eb520a1617d",
+   "9551613ae7317f71"
+  ],
+  "24": [
+   "0201224685e26eef",
+   "0df630c6e96cc730",
+   "0ffacbbd9f46494b",
+   "3bcc90bda149c106",
+   "4e25ad73d62243b4",
+   "698441e42585dd30",
+   "8da084d4ef294264",
+   "9e2990ac871a34fb",
+   "a4d4db51786d6d78",
+   "a8c8821c9a1954c0",
+   "e46d7ee511de43cc",
+   "e8e31320afd8e701"
+  ],
+  "32": [
+   "226af996c2a28e49",
+   "728209c672917201"
+  ],
+  "48": [
+   "33a949d73143c219",
+   "33dd0dea06f4859a",
+   "7c2c8e3791470928",
+   "a2575b0c4db84912",
+   "b809f95d86371b47",
+   "f7d1c9d656cf2acb"
+  ]
+ }
+}

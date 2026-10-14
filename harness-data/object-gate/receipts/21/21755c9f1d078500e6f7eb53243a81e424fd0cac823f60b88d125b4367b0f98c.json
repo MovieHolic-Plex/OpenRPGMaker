@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "21755c9f1d078500e6f7eb53243a81e424fd0cac823f60b88d125b4367b0f98c",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "구장 흰 선(가로)",
+ "label": "modern-campus/mc-turf-line-h",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass ground tile with horizontal white court line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile representing grass with a painted white boundary line; viewed entirely from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3979
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass ground with horizontal white field line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a grass sports pitch with a painted white line spanning rows 7-8.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3895
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass ground tile with horizontal white court/pitch line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile representing grass with a painted horizontal line across rows 7-8; correctly depicted as overhead terrain surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2946
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass field terrain tile with horizontal white line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing grass surface with a field boundary line painted across rows 7-8, viewed entirely from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3936
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.865Z",
+ "cells": {
+  "16": [
+   "fa1ae325699ceb30"
+  ],
+  "24": [
+   "03f0dc8aa54ff398",
+   "16a24515f27e71a2",
+   "28afd26273deb8a2",
+   "3acd59493c4df114",
+   "4f847c8e8cf39dcf",
+   "50d79d8b7dad9c98"
+  ],
+  "32": [
+   "07eb4414165574c9",
+   "497b6afa8900c11f",
+   "4cd434445f6a33d1",
+   "91ba64e7f1c40b16",
+   "abf2701d14c48248",
+   "fbec34bbb7ed077d"
+  ],
+  "48": [
+   "0a4c6b3992c262ec",
+   "21a153b7db8a1e0d",
+   "5346ad13e7e21eb3",
+   "54368e742ea0ef1c",
+   "67359853c60475e2",
+   "eff14b87b76e5a54"
+  ]
+ }
+}

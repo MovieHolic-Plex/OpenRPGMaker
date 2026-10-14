@@ -1,0 +1,123 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "334ad222a44f3af1755f560d1fdbc91c34f38e818a0542a2dbe28fcf7339af81",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "시안 호버 포드(사다리꼴 지붕 윗면 + 유리 돔 캐노피 + 지붕 짐 받침대 + 밑 추진 빛)",
+ "label": "sf-station/sf-street-pod-car-cyan",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hover pod vehicle / pod structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire hover pod is drawn as a flat front elevation: the bumper stripe, dome canopy base, roof rack, and lower thruster pads are all drawn with flat horizontal lines with no visible horizontal top surfaces or elliptical foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7534
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hover pod vehicle body",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hover pod clearly shows its trapezoidal top roof deck spanning rows 3-14 (11 source pixel rows tall), upon which a dome canopy and roof rack are mounted, before transitioning at row 14 to the vertical front face and bumper.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6218
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hover pod body",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pod features a clearly foreshortened trapezoidal top/roof surface spanning rows 3-14 (11 rows tall), upon which a glass dome canopy and rear cargo rack are situated, above a distinct vertical front face (rows 14-24).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6683
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hover pod structure",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body clearly depicts both a large foreshortened trapezoidal top/roof surface (rows 4–14, 11 px tall) supporting a dome canopy and rack, and a vertical south front face (rows 15–24, 10 px tall) with thrusters below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12313
+  }
+ ],
+ "decidedAt": "2026-10-13T16:16:06.846Z",
+ "cells": {
+  "16": [
+   "1a4dc053e1a08ead",
+   "55997cc6e3ed7a86",
+   "5ce4fed2dbf04915",
+   "68ef39d8ecc241fc",
+   "a2a163f0ad3a506d",
+   "bc6d7f94e1374975"
+  ],
+  "24": [
+   "227e2423fefb9d59",
+   "454325316900dd5c",
+   "48907e38eefbfbbf",
+   "5bd150fd4087f46e",
+   "92c5fa3c6b557f86",
+   "a1f088d7191afb0a",
+   "ae43115473a36a17",
+   "b42629514984ee41"
+  ],
+  "32": [
+   "058611b2ddc6d4d0",
+   "232acb727ed9a356",
+   "53fdf138f1c4bd67",
+   "7728b6a848fdbc6c",
+   "78381fae6b32d9e4",
+   "e8df5148204da4f4"
+  ],
+  "48": [
+   "4f587263a2730d9b",
+   "71ccb22bbb8246a6"
+  ]
+ }
+}

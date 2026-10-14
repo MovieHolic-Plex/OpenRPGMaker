@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3bc216c8684e3b25a40d2324e5ab25b4bb6595508039dc05be0f9752cbd075a8",
+ "width": 48,
+ "height": 16,
+ "kind": "organic",
+ "name": "쓰러진 고목 통나무(버섯)",
+ "label": "gothic_manor/gm-fallen-log",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal fallen log",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": false,
+    "evidence": "The log displays its top curved surface across rows 3-8 (6px) and south face across rows 9-13 (5px), but the right (east) cut cross-section face is drawn obliquely visible across 3-4 columns at rows 3-13, showing an isometric/receding side face.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9586
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fallen log",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontally lying log shows a clear 5-pixel-tall top surface (rows 3–7) shaded lighter with moss, above a 6-pixel-tall front face (rows 8–13) with mushrooms. The cut end on the right is an angled cross-section without isometric receding perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 16704
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal fallen log",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": false,
+    "evidence": "The log body shows a distinct top surface (rows 3-8, 6px tall with moss) and south face (rows 9-13 with mushrooms), but the east-facing circular cut cross-section is drawn fully visible on the right end (cols 37-42), showing an isometric/oblique side face that should not be visible from a pure south camera.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10632
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal fallen log",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": false,
+    "evidence": "The log shows its top surface (rows 3-8, 6px tall), but its right cut cross-section is drawn as a visible east-facing side face (5px wide, rows 3-13), violating the strict 3/4 top-down projection.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11057
+  }
+ ],
+ "decidedAt": "2026-10-13T17:01:50.505Z",
+ "cells": {
+  "16": [
+   "387cf82e1f18f120",
+   "7dc5cbc6af25fccd",
+   "b3b3f16df2cd3166"
+  ],
+  "24": [
+   "37f34b2f84b7475c",
+   "49e323de70754d65",
+   "949e51ebd6b11b6f",
+   "b45b388ca5606b75"
+  ],
+  "32": [
+   "166998dbf607d5da",
+   "1970c71152fbd679",
+   "218326def8081ddf",
+   "36ce6935a0907d2d",
+   "4695765db0831151",
+   "4f7e72d5b4db2d05",
+   "780b6b7c7034c0e0",
+   "a673c2655e5c8885",
+   "b352594d6135664a",
+   "c77213f29721cec6",
+   "dc52e401f851712f",
+   "dea450d04a93dd50"
+  ],
+  "48": [
+   "1bcbce4bd74e88bd",
+   "9def51582eea7dfb"
+  ]
+ }
+}

@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ca4486d24c361fc692709c2b6509929794d6d32f6120c60be6bf4f6b92cef6b8",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "방열 패널(핀이 줄지은 넓은 냉각 판)",
+ "label": "sf-station/sf-radiator-panel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rectangular radiator/heatsink panel with vertical fins and a base stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire panel and its frame are drawn in a direct 2D orthographic front view with only a 1px border line at row 3-4, completely lacking a top surface for both the panel frame and the stand base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4192
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "radiator/cooling panel on a central stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rectangular radiator panel and its base are drawn completely flat from the front with only a 1px outline/border along the top edge (rows 2-3) and no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3938
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rectangular radiator panel on a central stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main panel is drawn in pure front elevation with only a 1px black outline and a 1px inner edge line along the top (rows 2-3); there is no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4354
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rectangular radiator panel on a central stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The panel is drawn in pure front elevation with only a 1px border at row 3; neither the top surface of the outer frame, the cooling fins, nor the supporting base has any top-down depth visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11129
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:27.304Z",
+ "cells": {
+  "16": [
+   "243ea515aa263afc",
+   "4a15699e093d8e4d",
+   "751e61cd72e919fb",
+   "9774c5e554a330ff",
+   "ab1aa2f86eaf0d1c",
+   "c7e67c8b1d61b6e5"
+  ],
+  "24": [
+   "14c579f18a8fd4ee",
+   "4cdbecf8c622a9fb",
+   "505cd9e256586901",
+   "5b2f74213be214aa",
+   "5d61f398275731a9",
+   "91a1ee82a70876c0",
+   "9adb8dcaed5a07df",
+   "e80f0210af2297c7"
+  ],
+  "32": [
+   "224f1e0e0330294f",
+   "54313016db0382d5",
+   "6835c4deed5b6547",
+   "94f227c915027b7f",
+   "998cbcd1beb4ae1d",
+   "bddbc76072a6ee8b"
+  ],
+  "48": [
+   "da0d7299d79d71d2",
+   "deeabc73ec1868ac"
+  ]
+ }
+}

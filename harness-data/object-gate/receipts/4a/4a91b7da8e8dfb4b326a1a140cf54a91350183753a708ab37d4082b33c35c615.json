@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4a91b7da8e8dfb4b326a1a140cf54a91350183753a708ab37d4082b33c35c615",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "낮은 실내화 선반(2단)",
+ "label": "modern-campus-int/mc-shoe-rack-low",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "low 2-tier shoe rack / shelf",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the shelf unit is visible from row 9 to row 13 (5 pixel rows tall), showing objects/wood texture resting on top in proper 3/4 perspective before the front-facing shelf openings begin at row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5385
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "two-tier shoe rack / slipper shelf",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shelf is clearly depicted from row 9 to 13 (5 pixel rows deep) with items on top, followed by the front-facing two open tiers below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5064
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "shoe rack (slipper shelf)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shelf is clearly visible from row 9 to row 13 (5 source pixel rows tall) with items resting on it, meeting the 3/4 top-down perspective requirement.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3634
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "two-tier slipper rack",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the rack spans rows 9 to 13 (5 pixel rows tall) and shows slippers and wood grain resting on it, clearly foreshortened in 3/4 view above the front-facing open shelves.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4311
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.309Z",
+ "cells": {
+  "16": [
+   "0edfb5abf4db2205",
+   "32e7b95d0abe509a",
+   "71c618dbe9e0c49c",
+   "e96305a7df23e70f"
+  ],
+  "24": [
+   "06066195ec7cc44d",
+   "160dba153d81c0e8",
+   "1ba4d5171d727d45",
+   "274adcd2768795f5",
+   "463e4ecbde6dcb9e",
+   "863702930c9a37f7",
+   "a4b701b43a6f0bfb",
+   "a641dabc24888065",
+   "aaac18e3e763c673",
+   "b88e168566c7082d",
+   "ba32396e56b91c5e",
+   "bbf6e5d4d852b8f0",
+   "cd43f45778edea9d",
+   "da0c5f5ca5dfa8f1",
+   "dab58a81c212f0ff",
+   "e07278df52d48396",
+   "e46d466657707795",
+   "fe21c0f8e6af8463"
+  ],
+  "32": [
+   "b9cd26252c2b81a5"
+  ],
+  "48": [
+   "1408711674445645",
+   "7e8610ed9b1ba3e1",
+   "9ccef4d5802bf1b9",
+   "a34304a017138bda",
+   "ad234576a0458d27",
+   "ee7a7ae2809dc1d9"
+  ]
+ }
+}

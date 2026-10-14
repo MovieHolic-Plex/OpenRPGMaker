@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "315728fa774401c73ec35691c1ebf20b754477a07197486d976ebbb1c40ca768",
+ "width": 64,
+ "height": 16,
+ "kind": "terrain",
+ "name": "night city asphalt road, four variants (cracks and wet neon reflections)",
+ "label": "sf-station/sf-asphalt",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "asphalt road terrain tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Four 16x16 flat ground terrain tiles depicting dark asphalt road surface with subtle variations and wet reflection spots.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4420
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "four asphalt road terrain tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tiles representing dark night-city asphalt with puddles and neon reflections viewed directly from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2811
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "asphalt road terrain tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Four 16x16 flat ground/terrain tiles showing dark asphalt with texture, cracks, and wet neon puddle reflections viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3885
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "asphalt road terrain tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tiles representing asphalt road surface with subtle variations, puddle, and wet neon reflections, viewed entirely from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3278
+  }
+ ],
+ "decidedAt": "2026-10-13T15:44:10.256Z",
+ "cells": {
+  "16": [
+   "11f1d9d8de8c0e70",
+   "1eebc7d90f07b3da",
+   "6eecf0101eba29a3",
+   "cb454610a9e077e5"
+  ],
+  "24": [
+   "0192fc41721ce848",
+   "039f620029747626",
+   "4393ab5b4d5ea529",
+   "5490d5f8a4b0af7c",
+   "5805b0ce74beda22",
+   "65fce7f01ff969d8",
+   "710a7d60a6dcb283",
+   "7680d1629f7a340f",
+   "a25f700431872534",
+   "a296593c2ccffa27",
+   "bd3da323074bb520",
+   "bf466af832d0c08e",
+   "c9e2b0aa94c3e565",
+   "cedba35aa13aef30",
+   "d5b02aa6a9cb26ea",
+   "d6ee1019b936da84",
+   "d729c9fc2e6cdfc3",
+   "f94863feb9d68f39"
+  ],
+  "32": [
+   "05cfafbccb8a6bb7",
+   "36b78731b8f0f0f9",
+   "a0cba6344e6dae8b",
+   "e40e938c984e45e2"
+  ],
+  "48": [
+   "03206f16057c0147",
+   "056eeeae7f525bcd",
+   "1b34e4e895ca09db",
+   "1c73b11f6f6aef90",
+   "4e929d8f9cffff9f",
+   "70c021335e5939fb",
+   "745264e5ac11c8ec",
+   "8254dc6eb5c20372",
+   "96bb6591debe6b06",
+   "ddd0839ddacba009",
+   "e8a271ed5cfd5df0",
+   "fb53027025f5f208"
+  ]
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "031728893c0a0f3c3792b3f2de1be42bffc27b679ef218d13c16dd0d4f121dc6",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "개인 사물함(윗면 + 환기 틈 문 + 손잡이)",
+ "label": "sf-station/sf-locker",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall locker",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The locker has a clearly rendered top surface spanning rows 2 to 10 (approx 9 source pixel rows), above the front door with vents and handle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3695
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "personal locker",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the locker is clearly visible across rows 2–9 (8 source pixel rows) with light overhead shading, positioned above the south-facing door (rows 11–29) containing vent slots and a handle. No isometric side faces are present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6022
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "locker",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the locker is clearly visible from rows 2 to 10 (9 pixel rows), with the vertical front door spanning rows 11 to 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3951
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "personal locker",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the locker is clearly visible from rows 2 to 9 (8 rows tall), followed by the south-facing front door with vent slits and handle from row 10 downwards.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5663
+  }
+ ],
+ "decidedAt": "2026-10-13T15:28:17.423Z",
+ "cells": {
+  "16": [
+   "4b502721523ebcff",
+   "b7b53cf85d636e03"
+  ],
+  "24": [
+   "01fc3f400f6d63fe",
+   "08ae253225ab3fd7",
+   "171871935440c796",
+   "20cb6420c45caab0",
+   "594ff529f894c308",
+   "86dc2fc4ddda4773",
+   "9593374b63ea4fb1",
+   "c48c2e76dab8931c",
+   "c5f46cea4d72bfb0",
+   "dcb4848483a14d87",
+   "e5a85bd4d30273bf",
+   "f5af124c1048c3d5"
+  ],
+  "32": [
+   "37a393bdedaac343",
+   "cebfa0dad41ead49",
+   "d9596ddb2a691d71"
+  ],
+  "48": [
+   "26676d0d17108226",
+   "818b04612ab62560",
+   "cc2d505b5072185c",
+   "e1009770d4074054",
+   "f136797f937746bb",
+   "ffc1e0ffb17c97d0"
+  ]
+ }
+}

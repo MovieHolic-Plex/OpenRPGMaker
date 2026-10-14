@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2d9e49cedd2866616fe2ebef1d31e3831490d40a1dd616817bb41879b38432c3",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "까마귀가 앉은 부러진 돌기둥",
+ "label": "gothic_manor/gm-crow-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "broken stone pillar with crow",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone pillar is drawn in pure front elevation with a vertical shaft and a flat/domed cap (rows 12-15) showing no elliptical top surface or cut face. The perched crow is also in pure side profile.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12668
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "broken stone pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillar is drawn in pure front elevation as a vertical rectangle with rounded top corners. The top end has only a 1px outline at row 12 where the crow sits, with no foreshortened top surface or cut face visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10424
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "broken stone pillar",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The truncated top cut face of the broken pillar is clearly visible across rows 12–15 (4 rows tall, lighter top-lit tone) upon which the crow is perched, before transitioning to the darker south-facing pillar shaft at row 16.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 17914
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "broken stone pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillar is drawn in flat front elevation with a straight horizontal top edge where the crow perches. There is no visible top surface or elliptical cut face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14555
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.462Z",
+ "cells": {
+  "16": [
+   "5ec97bc22b60a46b",
+   "c076e16393faf3bb"
+  ],
+  "24": [
+   "1ca80b3ece72c1c6",
+   "3cfcd2e9efa1d80c",
+   "4df08e0b0276c78c",
+   "7f8eca2fd90afb95",
+   "84c3b18e9d566aad",
+   "8cbb1376d6334f41",
+   "91f663a67794e0fa",
+   "a0ecc504e27b0151",
+   "a7d0442c979bf9c7",
+   "c1673202bc6475ba",
+   "d8c942a827122917",
+   "f3233d15889f06ad"
+  ],
+  "32": [
+   "29ca35b50d0140f6",
+   "7906e53d47a4c762",
+   "8604f5a836c347e8"
+  ],
+  "48": [
+   "4a5585887c15783c",
+   "89f2eefdf5ab6f5a",
+   "a7a1db7dd43b335e",
+   "ada0c8226a2b9ce4",
+   "e0397ecf690f12cd",
+   "f4fa0a823af3a378"
+  ]
+ }
+}

@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bcd06dfa3f3532604540a2289fb08c082b3ecc2e3cf159f624cc7b70f2d52309",
+ "width": 48,
+ "height": 32,
+ "kind": "flat",
+ "name": "화물 리프트 발판(바닥 원판 + 노랑 위험 테두리 + 가운데 화살표)",
+ "label": "sf-station/sf-cargo-lift-pad",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cargo lift floor platform with hazard border and central arrow",
+    "kind_matches": true,
+    "top_rows": 30,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire object is a flat floor surface/platform viewed from above in 3/4 top-down projection, spanning rows 1 to 30 with a hazard-striped border, segmented floor tiles, and an elliptical center disk with an arrow.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4343
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cargo lift floor platform",
+    "kind_matches": true,
+    "top_rows": 30,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire object is a flat lift platform lying on the floor with hazard striping, metal plating panels, and a central circular plate with an upward arrow, correctly viewed from above in top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3300
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cargo lift floor platform",
+    "kind_matches": true,
+    "top_rows": 30,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire object is a floor-level cargo lift platform with hazard tape border and central arrow decal, viewed from above as a flat horizontal surface spanning approximately 30 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3386
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cargo lift floor platform with hazard border and central arrow disc",
+    "kind_matches": true,
+    "top_rows": 30,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire object is a floor-level plate/platform seen from above, spanning rows 1 to 30, with a foreshortened central circular disc and arrow.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3328
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.955Z",
+ "cells": {
+  "16": [
+   "70942d4d23bbdd90",
+   "bfc149084d9a21ed",
+   "c7dc7b3b62995386",
+   "ccf4d0f339f32336",
+   "d7b8a32617605496",
+   "ed10a01c959d0d7e"
+  ],
+  "24": [
+   "01f28833952c13ec",
+   "0dc99035ed4e1e51",
+   "32fc08de4724c68b",
+   "66787eb0056fd9b4",
+   "b165887db445068f",
+   "c8a98d0c7f2d01a9",
+   "e261562c1a1a662d",
+   "fa997a68649b821e"
+  ],
+  "32": [
+   "1b3d3a9e6607249b",
+   "1c2eddd2894b9815",
+   "2c77bc5256ec42bb",
+   "93069602890976a9",
+   "a16b453c1a18ba46",
+   "c9418afd0174ba18"
+  ],
+  "48": [
+   "b0a7316a8d8244be",
+   "da886bd7f62354fb"
+  ]
+ }
+}

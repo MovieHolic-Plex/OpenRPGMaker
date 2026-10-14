@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "518e9c0c9918a05b8870dd08907b79e729a316d3af830bad476bf946d9f2190e",
+ "width": 32,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "벽면 네온 막대 간판(벽에 붙은 어두운 판 + 색 막대 램프 + 벽 번짐)",
+ "label": "sf-station/sf-street-neon-bars-wall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall-mounted neon sign panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted rectangular neon sign drawn flat against the vertical wall surface with backing glow, consistent with wall_mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6437
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rectangular wall-mounted neon sign panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a flat neon sign mounted directly to the wall with colored lights and wall glow; wall-mounted objects viewed flat on the wall plane are permitted.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6449
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "neon sign panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted sign mounted flat against a vertical wall with glow effect; correctly rendered flat as allowed for wall-mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6333
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal wall-mounted neon sign board with six square lamps",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted flat neon sign board with mounting tabs and surrounding wall glow, correctly represented flat against the vertical wall surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7797
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:31.922Z",
+ "cells": {
+  "16": [
+   "256694d6170da283",
+   "f4cb6958188e42d2"
+  ],
+  "24": [
+   "0b954c03a5e0efc8",
+   "17e6da698a00030b",
+   "1e627bdce609809d",
+   "28ffa46e93b602cd",
+   "48abc03a5320a9c1",
+   "51703d342ce7f306",
+   "bbec4e2590bf3bc0",
+   "be429c5233b64b76",
+   "caf4bca84f8fa835",
+   "d4682e6a16c05438",
+   "f53d4f42c069bab1",
+   "f75c554df53264bf"
+  ],
+  "32": [
+   "ba5d290d6401468b",
+   "fb944a55e2cad5e2"
+  ],
+  "48": [
+   "31726f556fe98421",
+   "5543dd3fcd79f7dc",
+   "b9a02619eb4d9deb",
+   "c5cb11e8f86435b7",
+   "d8fe2b94e2c508c3",
+   "df5d578c0632a0f2"
+  ]
+ }
+}

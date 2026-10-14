@@ -6,6 +6,10 @@ import modernCitySheet from "./modernCitySheet.json";
 import jpCitySheet from "./jpCitySheet.json";
 import wizardingWorldSheet from "./wizardingWorldSheet.json";
 import skyIslandSheet from "./skyIslandSheet.json";
+import steampunkCitySheet from "./steampunkCitySheet.json";
+import modernCampusSheet from "./modernCampusSheet.json";
+import sfStationSheet from "./sfStationSheet.json";
+import gothicManorSheet from "./gothicManorSheet.json";
 import atlasBiomeInteriorSheet from "./atlasBiomeInteriorSheet.json";
 import { emeraldMonsterKitSheet } from "./emeraldMonsterKitAssets";
 import {
@@ -61,6 +65,10 @@ export function bundledChipsetTilesPerRow(key: string): number {
   if (key === "tex_jp_city") return jpCitySheet.tilesPerRow;
   if (key === "tex_wizarding_world") return wizardingWorldSheet.tilesPerRow;
   if (key === "tex_sky_island") return skyIslandSheet.tilesPerRow;
+  if (key === "tex_steampunk_city") return steampunkCitySheet.tilesPerRow;
+  if (key === "tex_modern_campus") return modernCampusSheet.tilesPerRow;
+  if (key === "tex_sf_station") return sfStationSheet.tilesPerRow;
+  if (key === "tex_gothic_manor") return gothicManorSheet.tilesPerRow;
   if (key === "tex_atlas_biome_interior") return atlasBiomeInteriorSheet.tilesPerRow;
   const monsterKit = monsterKitSheet(key) ?? emeraldMonsterKitSheet(key);
   if (monsterKit) return monsterKit.tilesPerRow;

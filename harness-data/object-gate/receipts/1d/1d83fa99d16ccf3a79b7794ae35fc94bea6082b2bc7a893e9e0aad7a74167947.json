@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1d83fa99d16ccf3a79b7794ae35fc94bea6082b2bc7a893e9e0aad7a74167947",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "현금 단말기 부스(윗면 + 화면 + 카드 투입구)",
+ "label": "sf-station/sf-street-atm-kiosk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ATM booth",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 2 to 10 clearly depict the top surface of the booth (9 rows tall) rendered in lighter grey tones above the front face containing the screen and slots (rows 12-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8588
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ATM kiosk booth with screen and card slot",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 3 to 11 depict a distinct, foreshortened top surface of the ATM, while rows 12 to 31 depict the vertical front face featuring the monitor screen and slots.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4138
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ATM booth kiosk",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the booth is clearly depicted across rows 2–11 with lighter shading and front edge highlight, while the south face below displays the screen and slots.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4206
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ATM kiosk / booth",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the kiosk is clearly rendered as a large horizontal plane across rows 2–11 with an edge highlight before the vertical front face (screen and card slot) beginning at row 12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5048
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:06.342Z",
+ "cells": {
+  "16": [
+   "94de220db5db4a08",
+   "a3b844dad41dd116"
+  ],
+  "24": [
+   "07123eccca118efe",
+   "1391c93615610cca",
+   "178f71ae3536fada",
+   "2961c896f21aabc5",
+   "469305d76400bf98",
+   "56b8d98d8ef2ba33",
+   "6f3b079c6c8194bd",
+   "74bd4278103ec4b6",
+   "bf8f2faa827eef9d",
+   "d575d21af93fb755",
+   "dab799b94f2ddde4",
+   "e5c39f4470b3fbd9"
+  ],
+  "32": [
+   "02d6a6ca7c2f90b7",
+   "27e30be179cc429f",
+   "3c007964aea0c6fe"
+  ],
+  "48": [
+   "06d06ad8c076b3b3",
+   "3809bc35192d7248",
+   "5a898a0e55b0e94e",
+   "63c7f1363c4fc06d",
+   "89d92ada47de0576",
+   "aaa48273e060989f"
+  ]
+ }
+}

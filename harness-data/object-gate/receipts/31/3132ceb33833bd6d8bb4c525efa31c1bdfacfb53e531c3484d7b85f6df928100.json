@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3132ceb33833bd6d8bb4c525efa31c1bdfacfb53e531c3484d7b85f6df928100",
+ "width": 32,
+ "height": 16,
+ "kind": "seat",
+ "name": "돌 벤치(화강암 상판, 등받이 없음)",
+ "label": "modern-campus/mc-bench-stone",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone bench slab",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The granite bench seat surface is seen from above spanning rows 3 through 9 (7 rows tall), with the south-facing front thickness visible at rows 10-12 and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5254
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone bench slab",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The granite benchtop has a clear horizontal top surface visible from rows 3 to 9 (7 rows tall) showing flecked texture, above a 3-row front edge (rows 10-12) and supporting legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5294
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone bench slab",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The granite bench seat surface is clearly viewed from above across rows 3-9 (7 pixel rows), showing flecked texture, with front edge thickness on rows 10-11 and supporting legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5066
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone bench top slab",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The granite bench seat surface is clearly rendered from above spanning rows 3 to 9 (7 rows tall) with granite speckling, followed by the front vertical edge and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6752
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.869Z",
+ "cells": {
+  "16": [
+   "8657dfdc518188f2",
+   "98498d441ab256ee"
+  ],
+  "24": [
+   "25a2dac3c615ec6d",
+   "34f760c6052867bb",
+   "454d0d4a7014199c",
+   "58279cc798f14c3f",
+   "6bfc3c4ac995bdf6",
+   "a01b7118a55c14d3",
+   "a2e8c595bb828c65",
+   "a8208c40a11551c6",
+   "aca7a009737c0e3e",
+   "da656fb626c4c527",
+   "de87b4b1e799bcd7",
+   "f25a94252294afbd"
+  ],
+  "32": [
+   "58373a6a1c362013",
+   "746b93941b0b1734"
+  ],
+  "48": [
+   "0e6ece68851151b2",
+   "639813e4465b8920",
+   "75787c5a59f27c1e",
+   "96b56b0346b35c1d",
+   "9790b5c67e306e13",
+   "bae5a704dc51b784"
+  ]
+ }
+}

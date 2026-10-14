@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a5eb9a9e0e3675954c0b273d26714ac0d63d42bfaacfc53ae6625851bf012070",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "호버 택시(주황 사다리꼴 캐노피 윗면 + 지붕 표지판 슬랩)",
+ "label": "sf-station/sf-street-pod-taxi",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hover taxi vehicle with orange canopy roof and front bumper",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top canopy of the hover taxi is clearly foreshortened and visible from row 3 to row 17 (~15 source pixel rows), atop a vertical front bumper/face from row 18 to 26.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6382
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hover taxi vehicle canopy and front body",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper section (rows 3 to 17) forms a large, clearly visible top surface/canopy (15 rows tall) seen from above at a 3/4 perspective, with the south front face extending from row 18 to row 26.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5262
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hover taxi canopy and front body",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof/canopy surface slopes down from row 3 to row 16 (14 source pixel rows tall), showing clear 3/4 top-down perspective above the south bumper/grille face (rows 17-26).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4822
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hover taxi with orange canopy top surface and front bumper",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top canopy/roof surface spans rows 3 to 16 (~14 rows) showing the roof panels, taxi sign, and glass, while rows 17 to 26 depict the vertical south front bumper with headlights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5684
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:06.341Z",
+ "cells": {
+  "16": [
+   "2ee0b772a0f02cf5",
+   "33544c1c9f640743",
+   "5aa2963d76d76807",
+   "d3d5312859a36af2",
+   "e61e6a219966217d",
+   "f7faf17c6a38efdb"
+  ],
+  "24": [
+   "14f9043815d431c5",
+   "6c1cc462cd919d5a",
+   "88e81f2eabd3ef21",
+   "9a1fc5ce460a14e8",
+   "c5ec710e688e2ebb",
+   "d38a3996262b1d5e",
+   "df9b10eefdfdd42b",
+   "fa01c4c90e4f7484"
+  ],
+  "32": [
+   "124057f7628170c6",
+   "58baddb0554cca76",
+   "62ed715352293b2f",
+   "9c06f7f691aab554",
+   "b7cd63c63cf0f278",
+   "d3697d241571fb2c"
+  ],
+  "48": [
+   "12406d861d6bbe3a",
+   "f63991b81d27e1a1"
+  ]
+ }
+}

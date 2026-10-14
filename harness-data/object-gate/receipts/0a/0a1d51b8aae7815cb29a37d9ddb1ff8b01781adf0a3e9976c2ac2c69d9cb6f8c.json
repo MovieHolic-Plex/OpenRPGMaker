@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0a1d51b8aae7815cb29a37d9ddb1ff8b01781adf0a3e9976c2ac2c69d9cb6f8c",
+ "width": 16,
+ "height": 16,
+ "kind": "figure",
+ "name": "검은 고양이(앉음)",
+ "label": "gothic_manor/gm-black-cat",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sitting black cat",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cat is drawn in a pure front elevation silhouette with eyes facing straight forward and ears directly on the top outline; no top surface of the head or body is visible in 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4297
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sitting black cat",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cat is drawn in a flat front elevation silhouette with yellow eyes looking forward; no top plane of the head or body is visible (top_rows=0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3269
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sitting black cat",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cat is rendered as a flat 2D front silhouette with eyes placed directly on the face. No top surface of the head, back, or shoulders is foreshortened or visible from above (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3296
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sitting black cat",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cat is drawn in pure front elevation with eyes facing straight forward, flat ear outline at rows 0-1, and no visible foreshortened top surface on the head or body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4607
+  }
+ ],
+ "decidedAt": "2026-10-13T17:01:50.506Z",
+ "cells": {
+  "16": [
+   "baa26706885836ca"
+  ],
+  "24": [
+   "2529fac2cf6b4be3",
+   "2d5480389c718c54",
+   "4e97bab7ba882450",
+   "7f8b3a3c7274b256",
+   "cd915017a9045a55",
+   "edfd8c846f39be6c"
+  ],
+  "32": [
+   "05c174521ca57fc8",
+   "68854a23c9826f20",
+   "8da1a78b40d1e452",
+   "8e4c8a66e8a9872b",
+   "a0db435fed2d9120",
+   "b89d140dfe6cf17f"
+  ],
+  "48": [
+   "0425f73ee6eb29da",
+   "065d56484f0d24f0",
+   "2bb2026ecf54ba98",
+   "7205cd13ebcc2b5e",
+   "778dd72333aa66c2",
+   "fa6658ac11840e14"
+  ]
+ }
+}

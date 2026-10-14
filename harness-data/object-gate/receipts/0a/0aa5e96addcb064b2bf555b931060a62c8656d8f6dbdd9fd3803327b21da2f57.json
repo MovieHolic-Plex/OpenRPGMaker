@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0aa5e96addcb064b2bf555b931060a62c8656d8f6dbdd9fd3803327b21da2f57",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "교문 기둥(벽돌 + 돌 갓)",
+ "label": "modern-campus/mc-gate-pillar",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "school gate pillar with stone cap and brick body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire pillar and its cap/lantern are drawn in pure front elevation with straight horizontal bands and no foreshortened top surface visible anywhere.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4011
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick and stone school gate pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire pillar (top lamp/cap, capital, brick shaft, and plinth) is drawn in pure front elevation with perfectly horizontal edge lines and zero visible top surface anywhere.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3752
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brick pillar with stone cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire pillar (light on top, stone cap, brick shaft, and base) is drawn as a flat architectural front elevation with perfectly horizontal edges and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4137
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brick and stone gate pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire pillar, stone cap, and top ornament are drawn in pure front elevation with straight horizontal bands and no visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3690
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.305Z",
+ "cells": {
+  "16": [
+   "54bd48bd3f7165a2",
+   "802dd39c074d0d61",
+   "803586eb14ace2b2"
+  ],
+  "24": [
+   "23622c184bdc1644",
+   "86b9e81e210e8d0b",
+   "a2e84b709cd8b3a2",
+   "a6424449ab31000c",
+   "b99626c93b17fd37",
+   "bf8d563faa416d30"
+  ],
+  "32": [
+   "1310dbf5bc25380c",
+   "171f5aea64f3e146",
+   "24a95d6a062cdd24",
+   "333e570946f2aaf9",
+   "38376326a310b5ce",
+   "3889d6d40074c6ba",
+   "9c26da4a80eaf0c7",
+   "a05d2168ad06c1ab",
+   "b0ddde4874bd7ceb",
+   "b646302d40ee2f5e",
+   "c6ecf626637429dd",
+   "e122b39bc3df87c6"
+  ],
+  "48": [
+   "1327983c4044957c",
+   "5b4d3217c0563d6a",
+   "d0518dc970c4a7d1"
+  ]
+ }
+}

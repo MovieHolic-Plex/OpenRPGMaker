@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "54e2e93175ee86ee78a6362ed60107bd2c2de667eb4a2d7f25b8c4f7c6d36f7b",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "통로 교차 허브(네 방향 통로가 만나는 가압 마디)",
+ "label": "sf-station/sf-tube-cross",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "corridor intersection hub chamber and connected tunnel segments",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The central chamber roof/top surface spans rows 6-13 (8 pixel rows), and the lateral corridor wings clearly display horizontal top surfaces (rows 10-15, 6 pixel rows) above their south vertical faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6349
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cross-shaped passage intersection hub",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure shows clear top surfaces visible from above, including the horizontal corridor roof surfaces (rows 10-15, ~5-6px tall) above their vertical south-facing walls (rows 16-24), as well as the upper module surfaces, adhering to the 3/4 top-down perspective without isometric receding sides.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6869
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "central pressurized junction hub with four connecting passage arms",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The central hub clearly displays an 8-row light-toned top surface (rows 6–13) above a darker vertical south face (rows 14–24). The connecting west, east, and south passage arms likewise show distinct foreshortened top surfaces (3 to 5 rows tall) above their shaded south faces, fully conforming to 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11132
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cross-shaped corridor intersection hub",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure shows clear foreshortened horizontal top surfaces on the lateral corridor arms (rows 11-15, 5px tall) above south-facing vertical walls (rows 16-24), as well as top surfaces on the north and south corridor segments and central node.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5845
+  }
+ ],
+ "decidedAt": "2026-10-13T15:26:12.242Z",
+ "cells": {
+  "16": [
+   "24fb0a5d3f7bcab1",
+   "4477f5ecb537672d",
+   "de63781ad55c7453",
+   "fc3c93ee17d00169"
+  ],
+  "24": [
+   "02640d5200113379",
+   "0ef11e31c57a7550",
+   "2374d924a504e451",
+   "26f6f1ece9b9595f",
+   "2f077d4714fefff3",
+   "3a72bdc51d3e0de4",
+   "3c7208f38c34cb90",
+   "4b0594d4d213a3b9",
+   "579b7b4361d9b54b",
+   "58666bff40534500",
+   "59cc04f48c2fd0e9",
+   "5d28d610a476d9aa",
+   "6435dd607b4a2f71",
+   "696613680a6317bc",
+   "6a281d69f68b3204",
+   "76c4cf81770915e5",
+   "7cb8fcac633949df",
+   "7ec156bcee5490d9",
+   "9a2d30e8ebd470cd",
+   "9b59e6f4a85d8eb6",
+   "a4a83fe9fa491c76",
+   "c416868da519ecb9",
+   "d03d27518db7095d",
+   "d528fc11bf1f353d"
+  ],
+  "32": [
+   "bcc3f1e5d790d27d"
+  ],
+  "48": [
+   "1105d5bca6133363",
+   "3a0c58e440dfb91d",
+   "71b403ab8ccd1c48",
+   "71d692e99476db32",
+   "c9c31554e4b4130c",
+   "e17714eb38384e7f"
+  ]
+ }
+}

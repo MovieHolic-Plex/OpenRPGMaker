@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ec97513efdcad18eae082013c5f10b6cc146fb5596c8a67455281d5961718c52",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "벽돌 바구니 포석(광장)",
+ "label": "steampunk-city/sp-brickpave",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "basketweave brick paving pattern",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile depicting a basketweave brick pavement viewed entirely from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3500
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "basketweave brick pavement",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 basketweave brick paving floor tile representing flat terrain ground.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5178
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "basketweave brick pavement",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless floor/pavement texture depicting basketweave bricks seen from above, valid terrain tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2658
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "basketweave brick pavement",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 ground floor tile showing a top-down basketweave brick paving pattern.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2415
+  }
+ ],
+ "decidedAt": "2026-10-13T18:27:58.050Z",
+ "cells": {
+  "16": [
+   "48f8aa5b2270e283"
+  ],
+  "24": [
+   "51711368dbccb600",
+   "8bd3e35d63403cb2",
+   "b476835ac76b3628",
+   "c5aea5051a1b490f",
+   "d365d0f804d3bc03",
+   "ec7a2aa31541d646"
+  ],
+  "32": [
+   "26cdfaf36240adc7",
+   "67d6510057d7f931",
+   "b66b6f55cc5bfcf5",
+   "c11bb408cd116aac",
+   "c9d9d07199085498",
+   "cd9f29a71c688f08"
+  ],
+  "48": [
+   "0b1609c52997c3dd",
+   "3aa5afec41ebbfa5",
+   "6eca100e5e321d9f",
+   "70a7c588f2d4e41a",
+   "8127d4f46acb9cb6",
+   "974dd31b1a0f405c"
+  ]
+ }
+}

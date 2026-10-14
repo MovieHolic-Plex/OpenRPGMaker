@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e74a46b8b1159109f619d1a2fc31bd1fdb5d2ede23ebe8ed13112e4b536ddcf9",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "승무원 의자(흰 셸 + 회청 쿠션)",
+ "label": "sf-station/sf-crew-chair",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "crew chair with white shell, backrest cushion, and blue-grey seat cushion",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat cushion surface is clearly visible from above across rows 8–11 (4 pixel rows deep) sitting in front of the backrest (rows 1–7) and above the dark south-facing pedestal base (rows 12–15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5820
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "crew chair with backrest, seat cushion, and base",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat cushion surface is clearly visible from above on rows 9-11 (3 source pixel rows tall), situated between the backrest and the front base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 25476
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "crew chair",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chair faces south with the backrest at rows 1-7 and the foreshortened seat cushion clearly visible from above across rows 8-11 (4 rows deep) above the pedestal base (rows 12-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6528
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "crew chair with shell backrest and cushion seat",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chair seat cushion is clearly visible from above across rows 9-11 (3 rows of depth) positioned between the backrest and the dark pedestal base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5755
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.950Z",
+ "cells": {
+  "16": [
+   "21b970c8e22a22b4"
+  ],
+  "24": [
+   "12db6e7671873c9f",
+   "aed498db564ec9a4",
+   "afa2d1947f065885",
+   "ed7b8cc3f0834f42",
+   "f3023e1bf6c9414a",
+   "fae612e65f88b6f0"
+  ],
+  "32": [
+   "1d04a68e713f4877",
+   "7028c24ce27f3fab",
+   "76e1f4a77eadf1c2",
+   "79058d0724747fd8",
+   "88ecb0880cd4caa5",
+   "f78670bc19ffd050"
+  ],
+  "48": [
+   "0770c62149258625",
+   "4821f2d8862927bf",
+   "4c4b3a26f5019b06",
+   "73b21deda3d69f8d",
+   "d046e05a07460189",
+   "dba5e0ac616bdf7e"
+  ]
+ }
+}

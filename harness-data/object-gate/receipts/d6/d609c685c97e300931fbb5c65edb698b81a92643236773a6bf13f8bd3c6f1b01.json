@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d609c685c97e300931fbb5c65edb698b81a92643236773a6bf13f8bd3c6f1b01",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "내부 에어록 격벽문(사다리꼴 윗면 틀 + 큰 원형 해치 + 바퀴 손잡이 + 위험 띠)",
+ "label": "sf-station/sf-airlock-inner",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "airlock bulkhead door and frame",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the bulkhead frame shows a trapezoidal, foreshortened top surface spanning rows 1-5 with an indicator box, sitting atop the front lintel and vertical door face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6883
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "airlock bulkhead door with upper frame",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper lintel frame features a clear 5-row deep top/sloped surface (rows 1-5) with foreshortening and a mounted orange indicator light above the front door face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6321
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "airlock bulkhead door with upper frame",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top frame/lintel of the bulkhead features a clearly foreshortened sloped top surface from row 1 to row 5 (5 source pixel rows tall) with an orange component, leading into the vertical door surface below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6101
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "airlock bulkhead door frame and door",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top frame of the bulkhead door shows a clear trapezoidal sloped top surface from row 1 to row 5 (5 source pixel rows) equipped with an indicator box, satisfying the top surface requirement for gate/door structures in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6775
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.955Z",
+ "cells": {
+  "16": [
+   "6eae812da982d4fb",
+   "96105b007157fd36",
+   "ca6edece6f3449b1",
+   "d1e0de40038a3d2d"
+  ],
+  "24": [
+   "150ba9ddc8970c8b",
+   "17143cd13bba4916",
+   "269579c16a0e60f3",
+   "27b476e451b7b10f",
+   "6118ad1f4f6770ce",
+   "61cafaf358e5f671",
+   "80a9b43555143223",
+   "86ec94fec6fe395e",
+   "8726e07814240a5c",
+   "97fdecd9b6e2fed5",
+   "9c1124a2054687d1",
+   "9d8ee7e64b8694ae",
+   "9e7391c3f09f4220",
+   "a0143c596b462507",
+   "a2b0525c59e8634e",
+   "a9bf68303d765d94",
+   "b3f1252300d00020",
+   "b6380559be8ba6fa",
+   "bbb431b05216c5b4",
+   "ca1c3ec24b04c5d9",
+   "e9f31051ed27cca0",
+   "ec3ca6542a25be27",
+   "eedc9f30098f65ad",
+   "fe601be18ad85b1b"
+  ],
+  "32": [
+   "9aff8465e0d1fe58"
+  ],
+  "48": [
+   "2299f87d86d7a237",
+   "6cd06cd2301f6a2c",
+   "84f51e5c8b77c29c",
+   "918e73362120fc5d",
+   "95c6509fc4362ae2",
+   "f8a802f6b696d44f"
+  ]
+ }
+}

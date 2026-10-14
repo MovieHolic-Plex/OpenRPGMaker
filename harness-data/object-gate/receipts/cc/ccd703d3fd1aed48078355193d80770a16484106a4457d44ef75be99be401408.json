@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ccd703d3fd1aed48078355193d80770a16484106a4457d44ef75be99be401408",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "이동식 게시판 스탠드",
+ "label": "modern-campus-int/mc-bulletin-stand",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bulletin board frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mobile bulletin board is drawn in pure front elevation. The board, frame, legs, and feet are viewed directly from the front with no visible top surface receding into depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6804
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bulletin board on rolling stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire mobile bulletin board is drawn in a pure front elevation: the board frame is a flat 2D rectangle facing the camera, the stand legs are 2D flat diagonal lines, and the caster feet are flat 2D blocks with no depth or top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10412
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "mobile bulletin board stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire mobile bulletin board is drawn in pure front elevation. The board frame, cork surface, pinned papers, legs, and caster feet are all seen straight-on with no foreshortened top surfaces visible on the frame, horizontal beams, or wheel base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9479
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "mobile bulletin board stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire mobile bulletin board and its stand legs/feet are drawn in pure 2D front elevation. Neither the top of the board frame, horizontal crossbars, nor the caster feet show horizontal top surfaces from a 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5990
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.309Z",
+ "cells": {
+  "16": [
+   "84cec591fa8a7dda",
+   "a2b135419621a867",
+   "ba98ac7012297074",
+   "e1919c011bc20c56"
+  ],
+  "24": [
+   "050c0f6e950446e2",
+   "06453addef67d433",
+   "19fdd688a1050020",
+   "21a30d65c12949ef",
+   "251d359cb288b767",
+   "3ab006bc7a1babc8",
+   "48ead039a4ceb3db",
+   "4ba359a454d71a39",
+   "556daade37b4cc92",
+   "5b6ac673226598a1",
+   "64a52faa24bf00b3",
+   "70e2b5bb454b3dcc",
+   "86edabb589b841e5",
+   "8c74cef82dbc26d7",
+   "901b6655de301b18",
+   "92c24ae1a5bd1ba4",
+   "9a61b617106152fa",
+   "a0765313aaee6276",
+   "abb02b7e9fe015eb",
+   "b3357bbfc72d067e",
+   "b8a65e1a79040111",
+   "ba65001003fabded",
+   "bbbe07d60b871444",
+   "e7ec5adeb7539bc5"
+  ],
+  "32": [
+   "3b7648b7754db140"
+  ],
+  "48": [
+   "0af47ffc7f045070",
+   "306dd6c94d24463a",
+   "4485acaa1e70d4bb",
+   "a0abdcc99e1273fc",
+   "d1aa5de4cf0cd4d1",
+   "dd2a9f9b14a1b631"
+  ]
+ }
+}

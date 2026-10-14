@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ace6eb53359d8728900cfa9bce18ad2ea649941a07bafabb21b05793f0205d0c",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "배관 도랑 덮개(가로 — 사람이 건너는 무쇠 격자)",
+ "label": "steampunk-city/sp-pipe-grate-ew",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron trench grate embedded in floor",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a flat terrain tile depicting a horizontal trench covered by an iron walking grate between ground borders (rows 0-2 and 13-15). It lies flat on the floor plane as intended for ground terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5423
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron trench grate on floor",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor/terrain tile showing a trench with an iron grate crossing between top and bottom pavement edges, viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3233
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cast iron trench grate embedded in floor",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a horizontal ditch grate flush with the ground (rows 3–12) bordered by earth/stone edges, properly drawn as a top-down ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3103
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "trench iron grate cover on ground",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor/terrain grate set into the ground spanning rows 3-12, viewed correctly from above in top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3349
+  }
+ ],
+ "decidedAt": "2026-10-13T18:45:09.736Z",
+ "cells": {
+  "16": [
+   "c2efd65fabb55e08"
+  ],
+  "24": [
+   "29bdd7821983e33d",
+   "642a0335e49da754",
+   "85241c840e5e6aa0",
+   "e4e34a850f916339",
+   "ef2d98d92443bded",
+   "f4adcce2756e3f7b"
+  ],
+  "32": [
+   "13bb9e76b2bc4060",
+   "18ef0347440ed753",
+   "2685f88014e23428",
+   "5035ad4fd7f70097",
+   "99f43413030b4611",
+   "df0f10f4b796c143"
+  ],
+  "48": [
+   "26c88063184e0f8c",
+   "66915c5b818f4d20",
+   "82822fde4ea3cc58",
+   "e4f137a472014ac7",
+   "fa4ee0e33a7ca76d",
+   "fded411b8d75b4ed"
+  ]
+ }
+}

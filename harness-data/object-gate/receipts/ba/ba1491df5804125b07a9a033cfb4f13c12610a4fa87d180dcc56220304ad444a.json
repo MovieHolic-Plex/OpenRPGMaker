@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ba1491df5804125b07a9a033cfb4f13c12610a4fa87d180dcc56220304ad444a",
+ "width": 48,
+ "height": 32,
+ "kind": "frame",
+ "name": "교문 미닫이 철문(닫힘, 3칸)",
+ "label": "modern-campus/mc-gate-slide",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sliding iron school gate with right pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate and pillar are drawn in pure front elevation with straight horizontal bands and outlines. Neither the upper/lower horizontal beams nor the pillar have a foreshortened top surface showing depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5746
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sliding iron school gate with pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate and pillar are drawn in pure front elevation with only a 1px dark outline along the top edges (row 3 on the pillar, row 5 on the top beam) and no foreshortened top surfaces visible on the beams or pillar cap.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5111
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sliding iron gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate's upper beam and right gate post are drawn in pure front elevation with only a 1px outline at their tops (rows 5 and 3) instead of foreshortened horizontal top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6245
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sliding iron gate with top/bottom rails and vertical bars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate and its right post are drawn in pure front elevation with completely flat horizontal beams and no visible top depth or foreshortened top surfaces anywhere on the frame.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7065
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:11.494Z",
+ "cells": {
+  "16": [
+   "0c3fd0e71f5e7520",
+   "1ca3b589b7f37a01",
+   "1f3e858ed585901b",
+   "50ce481d8aa81afd",
+   "920bcf72bc601a82",
+   "df2714a4add25145"
+  ],
+  "24": [
+   "288bb3400d4d764b",
+   "4c5ad437f039b295",
+   "5868c26f72174ceb",
+   "6e16d5d1a69fef00",
+   "7738b18655f88f8f",
+   "92f45c055ec6c117",
+   "c67007bb6c30e4af",
+   "e745ac01276aebc7"
+  ],
+  "32": [
+   "2071108aa52e20d3",
+   "61ab0a8b12b690c0",
+   "794ac96112f8c956",
+   "9925ff43aef7289a",
+   "a25917ab80f5b3bf",
+   "a4882d58f3ee8b7d"
+  ],
+  "48": [
+   "cfa4d9f24d382e07",
+   "f56bec6e265fe284"
+  ]
+ }
+}

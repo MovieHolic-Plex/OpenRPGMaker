@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0c0c11672827d8a1f807c6adac815377b3a3b8bb25cb1963eca3db55febeb58c",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "navy rubber crew quarters floor with small dots, two variants",
+ "label": "sf-station/sf-crew-floor",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "navy rubber floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles covering the entire 16x16 tile space, viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 16280
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "navy rubber floor tile variants",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ground/floor terrain tiles spanning the entire 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3821
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rubber floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles representing navy rubber crew quarters flooring covering the entire 16x16 surface area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5389
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "navy rubber floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles viewed top-down across all 16 rows; terrain kind matches correctly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3879
+  }
+ ],
+ "decidedAt": "2026-10-13T15:26:41.508Z",
+ "cells": {
+  "16": [
+   "543649e1d14be36d",
+   "77d75682eb129413"
+  ],
+  "24": [
+   "0d1385f43c8273c8",
+   "3aa59e4ab7fbaf3f",
+   "4411d410514cb5c1",
+   "77280fbab58ed707",
+   "84ebf3806bf39361",
+   "a579f36b575be9e4",
+   "b19ce4b0a12f97b9",
+   "bef2e706a3845731",
+   "d8c0bb599c934fec",
+   "eb337f35eccc8788",
+   "f39fbd983611a179",
+   "f462075502703e4a"
+  ],
+  "32": [
+   "3823775c257cf6e9",
+   "9ca1d2679d87b498"
+  ],
+  "48": [
+   "3ac459fc66eec2db",
+   "51403955088a6bda",
+   "97bec9fb0bbf7572",
+   "b986867014e6c29c",
+   "c5f8e7f97a6def73",
+   "cc460356ee480c70"
+  ]
+ }
+}

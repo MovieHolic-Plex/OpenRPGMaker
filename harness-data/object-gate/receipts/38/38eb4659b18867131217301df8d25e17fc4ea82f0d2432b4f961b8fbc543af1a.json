@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "38eb4659b18867131217301df8d25e17fc4ea82f0d2432b4f961b8fbc543af1a",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "술통 받침대(받침 위 세운 술통 둘 + 꼭지)",
+ "label": "steampunk-city/sp-barrel-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "keg stand / rack holding two upright barrels with taps",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The shelf surface of the stand shows 4 source pixel rows of foreshortened top plane (rows 20-23), and both standing barrels display wide elliptical tops (rows 4-11, ~7-8 rows tall) above their vertical bodies in proper 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4458
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "barrel stand with two upright barrels",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tops of the upright barrels show large, well-foreshortened elliptical top surfaces (rows 5-11, ~7 source pixels tall), and the shelf supporting them shows a clear top horizontal surface (rows 21-23, ~3-4 pixels tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4076
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "barrel stand holding two upright barrels",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both upright barrels show foreshortened circular top lids (rows 5-11, ~7 rows tall), and the wooden stand shelf shows a 4-row visible top surface (rows 20-23) in proper 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4985
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "keg stand with two upright barrels",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stand has a clear top shelf surface visible across rows 20-23 (4 rows tall), and each upright barrel prominently displays its elliptical top lid across rows 5-12 (approx. 7-8 rows tall) in correct 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3562
+  }
+ ],
+ "decidedAt": "2026-10-13T18:44:00.639Z",
+ "cells": {
+  "16": [
+   "04267a5b2200bd3e",
+   "2abcd3544d3b06a4",
+   "ae742f2502480c4f",
+   "ff944441532636d3"
+  ],
+  "24": [
+   "0108b64d055acb14",
+   "0b0b511cc54ecaa8",
+   "21d14e7028488b04",
+   "3a7700b98259e848",
+   "3e1db833b63095ad",
+   "4485f03009980faa",
+   "49b960f365eaeaba",
+   "4bafb087ea39ab50",
+   "4d20b8d51e97a4c4",
+   "65680761d405708c",
+   "6b60572fea24886c",
+   "6c58ad5f84667a18",
+   "8eb30c26e1aaa828",
+   "ac382ae9d7b35c92",
+   "b033da2c7ad05dbd",
+   "b5d7f10a4448ea1d",
+   "c7b1606df597075c",
+   "c902933c262c47a2",
+   "cc312e01cb98520d",
+   "ce543e0335777bda",
+   "d4897deb70345f1f",
+   "e97b5983cc8d7252",
+   "eb9616191e7ca2b0",
+   "f0cc0dccec8ea2d8"
+  ],
+  "32": [
+   "6e40bd553a831e38"
+  ],
+  "48": [
+   "131dc7f9c3b89629",
+   "1c642a25599df94e",
+   "4862b0293547eb76",
+   "7cad67d67bb23640",
+   "ad388e158a31da79",
+   "b73b335745ba09b9"
+  ]
+ }
+}

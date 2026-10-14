@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f13560a4b94176961b16e7ec35d7355773289846f459b34842d36d050bd0aef4",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "테슬라 코일(둥근 받침 + 구리 감은 탑 + 놋쇠 고리 + 구 + 불꽃) (프레임 2)",
+ "label": "steampunk-city/sp-tesla-coil-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Tesla coil column with brass toroid and top sphere",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brass toroid ring (rows 12-17) clearly displays its top surface in 3/4 perspective with an elliptical center hole seen from above. The cylindrical base also shows foreshortened curvature at rows 39-40.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9012
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "copper-wound coil column with brass toroid terminal and base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brass toroid ring near the top clearly shows foreshortened 3/4 perspective with an elliptical top surface and hollow opening (rows 13-16, ~3 rows inside the hole), and the base shows rounded curvature.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4075
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "copper-wound coil column with brass toroid terminal and sphere",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brass toroid ring capping the coil column clearly shows its top surface and center hole foreshortened in 3/4 perspective across rows 12-16 (about 4 rows tall), rather than a flat elevation profile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7856
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "Tesla coil tower",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brass toroid ring below the top sphere is clearly rendered in 3/4 top-down perspective across rows 12-16, showing its upper surface and the foreshortened inner opening around the central stem.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11223
+  }
+ ],
+ "decidedAt": "2026-10-13T18:45:44.248Z",
+ "cells": {
+  "16": [
+   "44adefbcf8930177",
+   "c1e41f0bfcb71ad5",
+   "f696fff684945fbe"
+  ],
+  "24": [
+   "33afff461b53bbd9",
+   "589814878c74fe49",
+   "7b00b960bfc91f30",
+   "a380cc813ac59b28",
+   "a528d8015b053ec0",
+   "e5a9ed75c2c5802a"
+  ],
+  "32": [
+   "1b84b165c5570b8f",
+   "29e42f2ab1bc34e8",
+   "2e65fe12c6863fb5",
+   "364d4364597e0a31",
+   "3e3bcc4371a879c1",
+   "3f647ca7defebab6",
+   "6047eca67546b176",
+   "76671654437c1a16",
+   "85655f206fa42ab1",
+   "8923589b5c755204",
+   "dc1b87610ac111c1",
+   "f9fcf70b6074b9bf"
+  ],
+  "48": [
+   "05a46f6fd7830f17",
+   "1b62f8ab7a0c4908",
+   "fd8f01af4d830ec0"
+  ]
+ }
+}

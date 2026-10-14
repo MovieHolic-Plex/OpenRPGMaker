@@ -1,0 +1,195 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c91351dac16d931c3508f28fabbc478c92c9b2d5aedb285bbd0dc56be06cb266",
+ "width": 64,
+ "height": 64,
+ "kind": "structure",
+ "name": "거주 돔(유리 돔 + 원통 기단)",
+ "label": "sf-station/sf-hab-dome",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "habitat dome with cylindrical base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The structure is drawn almost entirely in flat front elevation: the base wall has a straight horizontal bottom (row 50), the door and wall accents are straight horizontal lines, and the dome's structural latitude beam at row 31 is completely horizontal rather than an elliptical arc foreshortened from above. No top surface is visible on the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14318
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "glass habitat dome on cylindrical base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main building wall is drawn as a flat front elevation: its bottom edge (row 50) is a perfectly flat horizontal line across the entire width instead of curving downward for a cylinder in 3/4 view, the door canopy/frame shows no top surface, and the horizontal dome framing (rows 31-32) is drawn straight across rather than foreshortened in perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5956
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cylindrical base and glass dome structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The dome and cylindrical base are drawn in flat front elevation: the mullions and horizontal seam (row 31) are completely straight, the base wall bottom (row 50) is a flat horizontal line, and no top-down slope or horizontal top surfaces are visible. The structure appears as a flat 2D facade set atop an elliptical ground pad.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9645
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical base and glass habitat dome",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylindrical base is drawn in pure front elevation: its bottom edge along row 50 is a completely straight horizontal line, the door frame, vents, lights, and dome mullions are strictly horizontal without 3/4 perspective curvature, and there is no visible top surface/ledge of the base surrounding the inset dome.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9859
+  }
+ ],
+ "decidedAt": "2026-10-13T15:13:19.238Z",
+ "cells": {
+  "16": [
+   "0067602a37e08f95",
+   "18cb62f28e469c9b",
+   "1d70e1179ae375e0",
+   "32c7ab79799ff196",
+   "79f04a15cb3b6a41",
+   "7bb7f6bf4a1fa963",
+   "864e0f09a9f2c2c8",
+   "9e99200a090af804",
+   "c778559e1101fb56",
+   "c8e836381d304c2e",
+   "f7022429f76e1455",
+   "f944f9fb1de83236"
+  ],
+  "24": [
+   "000e384c1528dae8",
+   "007f6cf7b835a15f",
+   "0a93292171c6f07b",
+   "0de133bb39e30f54",
+   "120c76c2e09f90af",
+   "139ff40ebaf37d69",
+   "1525e0a0476404b4",
+   "1a3e264a9f11c00d",
+   "1ce467d1175a38ea",
+   "1f3fa1f325b542de",
+   "27cc9d89db4b2e24",
+   "27df597175b078fb",
+   "2bbff121e267cb1d",
+   "35190bae72e0db6f",
+   "36aea7d1e85e4c1b",
+   "3995d4d5d7f70008",
+   "3c0b3d02527dacb5",
+   "4196ac6a8d6262f7",
+   "48e2841ed6563a4e",
+   "4ccfe0707a3db773",
+   "4f1a9b848cc5fee8",
+   "516f46fe3f0de979",
+   "59b4bc49896308cd",
+   "6e807687f85d0991",
+   "6eb646a4a181a156",
+   "7c589b34aa372af9",
+   "8a42a0ed60c0efe8",
+   "8f06cbc94e1489a6",
+   "99cfa04fef9a37d5",
+   "9e1200f56a3dd402",
+   "a789eb1f52ad7d79",
+   "b0f8ecf1b8e5735b",
+   "b75255e88bdd789f",
+   "c076bedf272db7ae",
+   "c94c552422fb1c10",
+   "ce68c19b8329d389",
+   "d456452409ec6acf",
+   "dbbae972ea50eb01",
+   "e4fc8b481300c692",
+   "e52b3430e88b5b8a",
+   "e8dbc0ea772c5bfb",
+   "f0523deff043a610",
+   "f7874ca89b7c66a1",
+   "fb06a93e7ecff100"
+  ],
+  "32": [
+   "2341ea60e7a23f92",
+   "30d5c02967ddeed9",
+   "44202d9410f8a0ad",
+   "6e31448a0a20f735"
+  ],
+  "48": [
+   "11b0c54de76cef6a",
+   "26da6e554df523eb",
+   "28aa9b4143765328",
+   "31c81e9eb027f5ab",
+   "4617754c1793ac4b",
+   "5f062391a8803bc3",
+   "64a6ba194bcf9513",
+   "7044b8c855452567",
+   "74f6f253371d468b",
+   "80455aca29aca0c7",
+   "8c248676927fbb01",
+   "94392a80f8c9b23c",
+   "9d27780ea38c8e8d",
+   "a9916401e3ebde04",
+   "b1e3716f7a46e8fd",
+   "b412872136a71c33",
+   "bd03c07bb4dca03e",
+   "d48f655460936611"
+  ]
+ }
+}

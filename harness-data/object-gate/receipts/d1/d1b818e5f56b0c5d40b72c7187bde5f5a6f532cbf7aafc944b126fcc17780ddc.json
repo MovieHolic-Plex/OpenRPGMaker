@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d1b818e5f56b0c5d40b72c7187bde5f5a6f532cbf7aafc944b126fcc17780ddc",
+ "width": 16,
+ "height": 48,
+ "kind": "box",
+ "name": "네온 간판 탑(위 두꺼운 덮개 윗면 5줄 + 램프 상자 앞면 도형 + 기둥 + 받침)",
+ "label": "sf-station/sf-neon-sign-tower",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "neon sign box on a pillar",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap/surface of the sign box is drawn from above spanning rows 1 to 5 (5 pixels tall) with surface detail, sitting atop the front neon display face (rows 7-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7657
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "neon sign lightbox and cap",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the sign housing is clearly visible across rows 1 to 5 (5 pixel rows tall) above the vertical display face (rows 7-30). The object shows both its top surface and front face in proper 3/4 perspective without isometric side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7047
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "neon sign box and top cover",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the sign cap/cover is visible across rows 1-6 (5-6 source pixel rows tall with surface detailing) above the vertical front face (rows 7-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6133
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "neon sign box and cap",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the sign box clearly shows its horizontal top surface spanning rows 1 to 5 (about 4-5 rows tall) before meeting the front face at row 6, displaying proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6436
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:07.397Z",
+ "cells": {
+  "16": [
+   "761d3dbdcd9afabd",
+   "ba750188f449f65c",
+   "c1b394168cf69e48"
+  ],
+  "24": [
+   "0851be7969617e06",
+   "5418d63dc17d66cc",
+   "5a7141d6af99f8df",
+   "bb8b05fb870e0c6f",
+   "ce5c31b168b205ab",
+   "ee10086310e2b540"
+  ],
+  "32": [
+   "0f53f5fb9e40741e",
+   "4a27554cce080e8e",
+   "51b50ce5f22a001c",
+   "645b6dc3018dcdee",
+   "72d78cc705456b71",
+   "866019094d21948d",
+   "9e039841b6dfba42",
+   "ac8aabd8d8a043a7",
+   "b830488b1e659030",
+   "bc2c9f13c75f8923",
+   "e33c59dd8df7fd9f",
+   "f5ecdca26f558270"
+  ],
+  "48": [
+   "4360055b928a593e",
+   "c489bb68e41b4436",
+   "cf64544b22f355e7"
+  ]
+ }
+}

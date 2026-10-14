@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d1b576b89125688c4500c3c7014d8423c9e35226d1fd6847a3b58a4a9433f671",
+ "width": 48,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "동아리방 긴 탁자(3칸, 종이·노트북)",
+ "label": "modern-campus-int/mc-club-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "long table",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from row 1 to row 8 (8 rows tall) with items resting on it, followed by a south front face from rows 9 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4691
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "long table / desk",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop is clearly visible from rows 2 to 8 (7 pixel rows) supporting a laptop, papers, and stationery, with the front apron of the desk visible beneath it on rows 9 to 12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5480
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "long clubroom table with items (laptop, papers, box, cup/notes)",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop occupies rows 1 through 8 (8 pixel rows deep) with clutter placed across it, followed by the south front edge/face in rows 9-12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4954
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "long clubroom table with items (laptop, papers, pencil case, mug/notes)",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface spans rows 2 through 8 (7 pixels tall), clearly displaying items placed on top in top-down 3/4 perspective, with the front edge and face visible below on rows 9-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4798
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.312Z",
+ "cells": {
+  "16": [
+   "68cb6831ba57db34",
+   "d5d91e7ab32050e1",
+   "ef092251cc7482ac"
+  ],
+  "24": [
+   "9beb85a75fd5747c",
+   "ad0cc49d53ebb227",
+   "b495237e991734ef",
+   "f1bc3243be7a4fdc"
+  ],
+  "32": [
+   "085e00a371a64808",
+   "24ed81ce3de7a02b",
+   "43fb067b5371b5a8",
+   "4d3841b6bacc13bb",
+   "7e352a97f54c9ed9",
+   "8fef7b6fcc02f9d9",
+   "92eee6d269136979",
+   "9fa4988f068def47",
+   "ba98048281360149",
+   "c23b6ac776018aa3",
+   "f7458c1c9cb1a0c8",
+   "fba2901aff47cce5"
+  ],
+  "48": [
+   "95121c1a53c029c7",
+   "eedc4fb0e90400f1"
+  ]
+ }
+}

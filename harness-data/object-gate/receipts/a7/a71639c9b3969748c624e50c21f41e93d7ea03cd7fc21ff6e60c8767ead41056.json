@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a71639c9b3969748c624e50c21f41e93d7ea03cd7fc21ff6e60c8767ead41056",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "세로 네온 간판(두꺼운 판 윗면 + 램프 테 + 칸마다 도형 + 고정 다리)",
+ "label": "sf-station/sf-street-sign-vertical",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2.5행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical neon signboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire signboard is drawn in pure front elevation with straight vertical side contours from row 1 to row 29. The upper section (rows 1-5) features a cyan horizontal display bar centered on a front-facing marquee panel rather than a receding top plane, and the uppermost edge is only a 1px rounded outline (row 0). No foreshortened horizontal top surface is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 14241
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical neon signboard",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the signboard structure is clearly rendered from rows 1 to 5 (5 pixels tall) with its own depth and detailing, separated by a distinct edge line at row 6 from the illuminated front face below (rows 7-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8793
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vertical neon signboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main signboard body (rows 6-30) is drawn in pure front elevation with a 1px flat black line at the top. The inset structure on top (rows 1-5) is narrower than the main body and is also rendered as a front-facing panel with a cyan bar rather than a foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 11764
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical neon sign board",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the standing sign board is rendered with a depth of 5 pixel rows (rows 1–5), clearly visible from the elevated 3/4 camera view above the front-facing neon display (rows 6–30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11408
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:07.397Z",
+ "cells": {
+  "16": [
+   "084f7afe731a65de",
+   "f7e296f68e5cd53d"
+  ],
+  "24": [
+   "2157c1134e2c718b",
+   "256371394b17c7ca",
+   "36de03522c4c7987",
+   "4aba90ce6b3460d0",
+   "5c4bc64504b0fd4d",
+   "701a77f8226a5812",
+   "89507bf7f3ac2cef",
+   "a2d3f5e18a0b67f8",
+   "bb11feb8f24e03f3",
+   "da87c876ac6824a2",
+   "e6208ec014984189",
+   "ecba625f9c09fccc"
+  ],
+  "32": [
+   "1473a3da6efa4fe7",
+   "6077d6a2ea40a5a1",
+   "b698cb1e0763a093"
+  ],
+  "48": [
+   "53e16b9d2d6f3f80",
+   "663a181e6795f4fb",
+   "719e09b67eda995f",
+   "93bbcc6494c94a20",
+   "af903b69b85e0259",
+   "ceeb9175602f0704"
+  ]
+ }
+}

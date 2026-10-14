@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f9a71af54ed81f062342c81232827efd710a14314613850c5157ac3c89433d99",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "가시나무 덤불",
+ "label": "gothic_manor/gm-thornbush",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "thorn bush clump",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bush is drawn as a flat side-view silhouette with vertical shading and a flat horizontal base at row 14, lacking any 3/4 top-down foreshortening or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6547
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "thorn bush",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The thorn bush is rendered as a flat side-view silhouette without visible foreshortened top surfaces or clear top-down volumetric shading.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6928
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "thorny bush",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bush is drawn as a flat 2D silhouette with thorns extending in the canvas plane and a flat horizontal base at row 14, lacking any foreshortened top surface visible from a 3/4 overhead perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6008
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "thorn bush clump",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bush is drawn as a flat front silhouette with vertical shading and side-profile thorns, lacking any visible foreshortened top surface or overhead depth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6359
+  }
+ ],
+ "decidedAt": "2026-10-13T17:01:50.505Z",
+ "cells": {
+  "16": [
+   "5ea828654f03b102"
+  ],
+  "24": [
+   "030bc1cdecf94720",
+   "6a0ac65261b7f648",
+   "9397e9ec36982ddb",
+   "970b2886846a1486",
+   "972a91bc3ff07abe",
+   "e3bce8386ddc6997"
+  ],
+  "32": [
+   "2c358cea1459f952",
+   "67ec880664367bbc",
+   "7bb86387cdaf9b3f",
+   "87406f9fcceaeaaa",
+   "96ead82aa7df72bd",
+   "af94d7361977bfd3"
+  ],
+  "48": [
+   "7b3f901891b4552a",
+   "8ef230c1aaab1b37",
+   "a51cf99c82d92499",
+   "ab815e2fbda2c58b",
+   "ae24bea0442ab6cc",
+   "bdcbee6f195c94d0"
+  ]
+ }
+}

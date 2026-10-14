@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "aac20b9a9c8591c9b0d52df951cff25e3604f9cdc08758e5cc235e0802fd7ff7",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "화강암 판석",
+ "label": "modern-campus/mc-pave-granite",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "granite paving stones",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts flat granite flagstone/paving ground terrain seen from above with mortar grooves between rectangular stone slabs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3975
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "granite flagstone floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts flat granite paving stones/flagstones viewed from above as floor terrain, with mortar seams between stones.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6654
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "granite flagstone paving",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing flat granite stone paving seen from above as floor/ground.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4786
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "granite flagstone floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting granite paving stones / flagstones viewed as a ground surface covering the full 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5075
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.863Z",
+ "cells": {
+  "16": [
+   "0be04b0b0e393d0f"
+  ],
+  "24": [
+   "3cd9343c22e7225a",
+   "701e62e801c6fa9e",
+   "9dedc0c4a28f4f0d",
+   "af61caff5cdeb73a",
+   "bfbf7bb3a8f4cdb5",
+   "c93ac5ca5cd7f368"
+  ],
+  "32": [
+   "04b357cfb9e1ccda",
+   "57460b1c4473c4d9",
+   "6cda734d8c42bbad",
+   "7696ed17d9bedaec",
+   "d5a76929601fe3af",
+   "dfd0864bbf196ead"
+  ],
+  "48": [
+   "007c9f9699ac4223",
+   "388a178f37f7f5b0",
+   "7af37f19a1245e2b",
+   "87f0d16fdba1fe5e",
+   "e9042c5bca740b2c",
+   "f1144921cca53359"
+  ]
+ }
+}

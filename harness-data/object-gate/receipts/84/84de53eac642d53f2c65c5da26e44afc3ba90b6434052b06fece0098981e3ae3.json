@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "84de53eac642d53f2c65c5da26e44afc3ba90b6434052b06fece0098981e3ae3",
+ "width": 32,
+ "height": 96,
+ "kind": "column",
+ "name": "비행선 계류탑(무쇠 격자탑 + 꼭대기 원판 발판 + 놋쇠 계류 원뿔)",
+ "label": "steampunk-city/sp-mooring-mast",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lattice mooring tower with top circular platform and plinth",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top circular platform shows a clear foreshortened elliptical top surface spanning rows 10-16 (7 rows tall), and the base plinth also shows a top horizontal plane spanning rows 86-90 (5 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4184
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lattice mooring tower with circular platform and base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top circular platform clearly shows an elliptical top surface spanning rows 10 to 16 (approx 6-7 rows tall), and the base plinth also shows a top surface (rows 86-90).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3858
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lattice mooring tower with top circular platform and cone",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top circular mooring platform shows a well-defined foreshortened elliptical top surface spanning rows 10 to 16 (7 rows) before curving to the front edge at rows 17-20.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6320
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron lattice mooring tower with top circular platform",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mooring platform at the top is drawn as an ellipse viewed from above, with about 6 rows of foreshortened top surface visible (rows 11-16), consistent with 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6393
+  }
+ ],
+ "decidedAt": "2026-10-13T18:42:41.659Z",
+ "cells": {
+  "16": [
+   "323c5a2af16b16f1",
+   "4554d83abfcf345c",
+   "57d881bbf1e01a03",
+   "6b127f09d9d47c42",
+   "86fed364ca94d07b",
+   "928a6f8745acda67",
+   "a81f5cae24cc5989",
+   "a9b86c5bd454a8a0",
+   "b6fe5b9a21c7b663",
+   "bd62314161977fc8",
+   "d216bb58c7d036fd",
+   "f713938dfb033634"
+  ],
+  "24": [
+   "00f64afa3b4bf76b",
+   "0297b093030ddab8",
+   "06e3c7b2ddc853d6",
+   "0856730c85ca4d5d",
+   "0afe378d800771fe",
+   "27d719a764d99a6c",
+   "2942f692e6f5a1e2",
+   "2ea279c06f610d5e",
+   "4cac97c4e2ea6d9e",
+   "5d1af2d40bb37f1e",
+   "61a3192b1ad69f4f",
+   "651e330710254bbc",
+   "691c26c68e817249",
+   "938940a720642826",
+   "cf79cdfdcda5d223",
+   "d4041e9763609787",
+   "d66fa4954456bdc9",
+   "dbc4b383110226a6",
+   "dfd784c2d40e4a57",
+   "e1f372df5731651c",
+   "e363d3d614b2b3d8",
+   "eb64e7b51023b8b7",
+   "f2a5f7d58dddec7c"
+  ],
+  "32": [
+   "528259864e4e16b1",
+   "5705dfb2e6edfe56",
+   "e7cc87e57e68f185"
+  ],
+  "48": [
+   "11c95bbb1b73140f",
+   "46288a1a53e6acac",
+   "917e2f0cac457af7",
+   "b2bb73e72dd4a4c3",
+   "b406f62ad8c396fa",
+   "dd0ca691586bfbcb"
+  ]
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ee957b42c7c062e210ed103bc672363ad9282969af4bd76e81d5743e3f047f9f",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "증기 구멍(쇠 굴뚝 토막에서 김이 오른다)",
+ "label": "steampunk-city/sp-steam-vent",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron steam vent / pipe stub",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pipe stub shows a clear elliptical opening and flange viewed from above spanning rows 15 to 23, with a 6-row deep dark interior opening and steam rising from it, followed by the south-facing pipe wall down to row 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3597
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "short iron chimney / pipe stump",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top flange and dark elliptical opening of the pipe are clearly drawn from an overhead 3/4 angle across rows 15-23, with steam rising from within and a foreshortened vertical south face below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4082
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron steam vent / pipe stub",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the vent displays a foreshortened circular rim with a visible dark opening ellipse spanning rows 17 to 22 (6 rows tall), resting above a cylindrical south face from rows 24 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4815
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron steam vent / chimney stump",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 15-23 depict an elliptical top rim and dark interior opening seen from above, atop a cylindrical front face on rows 24-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3825
+  }
+ ],
+ "decidedAt": "2026-10-13T18:26:16.315Z",
+ "cells": {
+  "16": [
+   "3ba1038a33fba773",
+   "937d9d176e020413"
+  ],
+  "24": [
+   "079075372cca2d00",
+   "38e6e9fa7b40d963",
+   "3ffa88315c88efc6",
+   "4842e4a23e0be5f8",
+   "5420cf332189433d",
+   "5d8b3193b77cfa05",
+   "6791f2ae85ea0ac5",
+   "86600f52ac077f9d",
+   "93625f111d43ceab",
+   "c2132553dd295ba6",
+   "d0502897fcc7f9d2",
+   "e0261931e05ffb62"
+  ],
+  "32": [
+   "4692fb5dad864592",
+   "944b8cbe72558187",
+   "ccbb7b909c3acffd"
+  ],
+  "48": [
+   "4313911b98f5f3e2",
+   "4a2e891e69885ed0",
+   "6d7a7525e457da6b",
+   "9e8b7c4170c5757e",
+   "b9cfac48f13b1f30",
+   "e7a303b2cec586a4"
+  ]
+ }
+}

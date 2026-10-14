@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1a832101369cd504d1228077d54fabaa87bb408598329b1f9ea35967b822bd9f",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "배관 도랑 — 남·서 꺾임",
+ "label": "steampunk-city/sp-pipe-sw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pipe trench corner",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing a recessed trench with an orange pipe turning from west to south, viewed from standard top-down 3/4 perspective with clear trench inner walls and depth shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5066
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pipe trench corner tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting an open floor trench with a pipe bending from south to west. Correct top-down 3/4 ground perspective with visible trench walls and floor.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4704
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pipe trench corner",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting an indented floor trench with a turning pipe, correctly drawn in top-down JRPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5106
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pipe trench bend",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Floor trench terrain tile with a pipe bending from west to south, showing floor borders, recessed trench depth, and correct top-down JRPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4552
+  }
+ ],
+ "decidedAt": "2026-10-13T18:45:09.735Z",
+ "cells": {
+  "16": [
+   "4d8bfdb245ea2ff5"
+  ],
+  "24": [
+   "0c0ea959a5931d4d",
+   "3988e0049d43c0c0",
+   "8787c47cfc71a696",
+   "9e419ddd920b89ab",
+   "a8c8c6870b21e801",
+   "e84e549d801e06a4"
+  ],
+  "32": [
+   "05386ef4daf465dc",
+   "233629d0489402ca",
+   "3c2d5ca548c21f83",
+   "49e2b45bebd714f1",
+   "b55400b48e9b3bf0",
+   "f78992ffa93137dd"
+  ],
+  "48": [
+   "0bee4713fb69a2f7",
+   "6a7058855f80df99",
+   "8467aaafab80a8dd",
+   "b085e41be220eaa9",
+   "b2a12a5d8ccc7210",
+   "fe9eeaf082177138"
+  ]
+ }
+}

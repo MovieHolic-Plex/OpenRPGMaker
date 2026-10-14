@@ -30,6 +30,7 @@ export const ROUTE_STYLES: Readonly<Record<string, RouteStyle>> = {
   joseon_baram: { roadWidth: 2, road: "조선 흙길", yard: "조선 마당" },
   wizarding_world: { roadWidth: 2, noMainStreet: true, road: "숲길 흙", yard: "성채 포석(오토타일)" },
   sky_island: { roadWidth: 1, noMainStreet: true, ground: "풀밭", road: "디딤돌 길(1)", yard: "광장 자갈 포석" },
+  modern_campus: { roadWidth: 2, noMainStreet: true, ground: "캠퍼스 잔디", road: "보도블록", yard: "붉은 벽돌 포석" },
 };
 
 /**
@@ -38,6 +39,7 @@ export const ROUTE_STYLES: Readonly<Record<string, RouteStyle>> = {
  */
 export function startMapSizeFor(tilesetId: string, plan: StartPlan): { width: number; height: number } | undefined {
   const base = tilesetId === "jp_city" ? { w: 52, h: 34 } : tilesetId === "joseon_baram" ? { w: 48, h: 36 } : tilesetId === "wizarding_world" ? { w: 48, h: 36 } : tilesetId === "sky_island" ? { w: 50, h: 34 } : undefined;
+  const base = tilesetId === "jp_city" ? { w: 52, h: 34 } : tilesetId === "joseon_baram" ? { w: 48, h: 36 } : tilesetId === "wizarding_world" ? { w: 48, h: 36 } : tilesetId === "modern_campus" ? { w: 48, h: 36 } : undefined;
   if (!base) return undefined;
   return { width: base.w + (plan.seed % 3) * 4, height: base.h + ((plan.seed >> 2) % 3) * 3 };
 }

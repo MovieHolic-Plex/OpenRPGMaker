@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "40111b6c9fbaa08be71956ca16088885ec38bd2eebb19973d2b59cf8a6211d2d",
+ "width": 16,
+ "height": 32,
+ "kind": "frame",
+ "name": "이동식 화이트보드(삼각 받침)",
+ "label": "modern-campus-int/mc-easel-board",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "whiteboard panel on stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The whiteboard and its frame are drawn in flat front elevation with symmetrical top and bottom borders (rows 1-3 and 19-20) and no top depth surface visible on either the board or the feet.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5487
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "whiteboard on tripod/stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The whiteboard is drawn in a flat orthographic front elevation. Rows 1-3 and 19-20 form symmetrical top and bottom frame bars of the board with no top horizontal surface shown, and the legs/feet at the bottom also lack 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4623
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "whiteboard panel on stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The whiteboard and its stand are drawn in a completely flat front elevation view with no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3672
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "whiteboard and stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The whiteboard is drawn completely flat facing the camera with no visible top surface on the frame or stand (rows 0-1 only show a 2px border rim/outline), resulting in a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4088
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.312Z",
+ "cells": {
+  "16": [
+   "aee8c5e0964bc18b",
+   "c0182d67abe126da"
+  ],
+  "24": [
+   "0a2b150baa7b4bed",
+   "17e916e2c15878cd",
+   "3d387548d7444f57",
+   "5e64cc9f14741dd4",
+   "62e24c3afc3b1794",
+   "8f9444d30cd1ad8c",
+   "954c8fae0dd0fd62",
+   "9c7364b0230da06f",
+   "a5b73fc7590142f4",
+   "dba2fe4d7fd249a4",
+   "ea3cbf4cff0cd051",
+   "f4ce7671693d3f46"
+  ],
+  "32": [
+   "053085458a297d02",
+   "5e7d1c4af59c2bc7",
+   "d8f066a97bce176b"
+  ],
+  "48": [
+   "1afc83e2fddfc98c",
+   "5fd3ca4566d520fa",
+   "6bf0ca903eefe8c6",
+   "86b4a3ab903a8481",
+   "94463f288ab25e1f",
+   "be7dfd4d3a238692"
+  ]
+ }
+}

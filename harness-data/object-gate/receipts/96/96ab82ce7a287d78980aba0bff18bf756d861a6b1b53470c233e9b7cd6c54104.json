@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "96ab82ce7a287d78980aba0bff18bf756d861a6b1b53470c233e9b7cd6c54104",
+ "width": 48,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "돌 제단(촛대·펼친 경전)",
+ "label": "gothic_manor/gm-altar",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone altar",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The altar table surface occupies rows 4 to 15 (12 source pixel rows) with candle holders and an open book placed on top, while the front face with the altar cloth hangs down from row 16 to 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3934
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone altar",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The altar's light-colored top surface spans rows 4 to 15 (12 source pixels tall) displaying an open book and candlesticks, while the vertical front face with the red cross cloth spans rows 16 to 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3263
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone altar",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The altar's flat top surface spans rows 4 through 15 (12 rows tall) displaying candlesticks and an open scripture, while the south front face with the altar cloth spans rows 16 through 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3840
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone altar table",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The altar's horizontal top surface spans rows 4 through 15 (12 pixel rows tall) holding an open book, cup, and candle bases, while the front face extends from row 16 to 29 draped with an altar cloth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3057
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.504Z",
+ "cells": {
+  "16": [
+   "1aea9dabdf20f24b",
+   "597a61d9192ef8f8",
+   "67659c71fb18f8e0",
+   "b255f39928f5d97d",
+   "c9043d5b7fd17ee0",
+   "fc26514e60235e1a"
+  ],
+  "24": [
+   "02e968f6a315fe08",
+   "5e10d9fb33ce03ba",
+   "6522a5a9397211ac",
+   "66f56eb9ec780663",
+   "6ddc9b091d414edf",
+   "722b8798f1cbdb19",
+   "a5868aba57a6b335",
+   "e37a306901a463e9"
+  ],
+  "32": [
+   "1365f770240d2d97",
+   "2f3198d60b150899",
+   "2fe28c28a87ec2ba",
+   "50d1b4bafa1b1230",
+   "a74dcdf7b14e1e06",
+   "e0ccd55084a813dc"
+  ],
+  "48": [
+   "0932bf9c91dd367f",
+   "4f66664f93de16de"
+  ]
+ }
+}

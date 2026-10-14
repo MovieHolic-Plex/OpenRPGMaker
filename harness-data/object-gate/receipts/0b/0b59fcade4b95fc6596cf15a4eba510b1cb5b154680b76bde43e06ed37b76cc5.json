@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0b59fcade4b95fc6596cf15a4eba510b1cb5b154680b76bde43e06ed37b76cc5",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-lot-kiosk",
+ "label": "jp_city/street_hand/jp-lot-kiosk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "market kiosk with striped awning canopy and display shelves",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The striped awning/canopy serves as the roof of the structure and displays its downward-sloping top surface across rows 1-14 (14 pixel rows tall). The structure follows standard 3/4 overhead perspective without isometric side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10742
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "market kiosk / stall with striped awning and counter",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The striped awning/roof slopes toward the camera showing roughly 14 pixel rows of its top surface (rows 1-14), and the lower counter top/tray shows depth around the displayed items (rows 28-33).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6241
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "kiosk stall with striped awning canopy and display counter",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The striped awning canopy spans rows 1-14, clearly showing its sloping top surface in 3/4 perspective above the shelves and counter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5702
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "kiosk stall with striped awning and counter",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The striped fabric awning roof slopes forward and occupies rows 1-14 as a top/sloped surface, and the counter display tray provides another 5-6 rows of top-down depth (rows 28-33).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5383
+  }
+ ],
+ "decidedAt": "2026-10-13T17:35:00.754Z",
+ "cells": {
+  "16": [
+   "1808f0b42bd9c7e8",
+   "1c305d40b8760c5e",
+   "431efa442a504ba2",
+   "772ca728248cd840",
+   "a5c342e14e670a9b",
+   "d1fe42d06be3865a"
+  ],
+  "24": [
+   "051bd007e61c96e7",
+   "3dde476d2e2968c8",
+   "5fba1e0668f897b6",
+   "65e6d8174e64e583",
+   "6c2363d531c5c9bb",
+   "7d9a895a1cb373a5",
+   "801434c973414a1e",
+   "bd27d5626d500cbe",
+   "bdb7b3e8100352dc",
+   "d03c8830cabdad64",
+   "ebbdd395a013f158",
+   "fe1e53be1f4eaa32"
+  ],
+  "32": [
+   "188df39111a43525",
+   "30625a0abc9e779e",
+   "61c7bfc4ad19a78b",
+   "8267b6f4f9bc77b8"
+  ],
+  "48": [
+   "15a9a9363bf0ebcd",
+   "2749cff3ada441c1",
+   "f146b29c5558ec07"
+  ]
+ }
+}

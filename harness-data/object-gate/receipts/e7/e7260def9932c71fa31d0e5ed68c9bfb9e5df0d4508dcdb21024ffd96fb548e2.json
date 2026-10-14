@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e7260def9932c71fa31d0e5ed68c9bfb9e5df0d4508dcdb21024ffd96fb548e2",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "붉은 벽돌 포석(바구니 짜기)",
+ "label": "modern-campus/mc-pave-brick",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick paving tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor/terrain tile showing basket-weave red brick paving viewed from above; entirely a horizontal surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4466
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick paving pattern (basket weave ground tile)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor/ground terrain tile depicting basket weave red brick paving across the entire 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3817
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "red brick basketweave pavement tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile depicting a basketweave brick paving pattern viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5304
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "basket-weave brick pavement floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile showing a top-down basket-weave brick paving pattern covering the entire 16x16 canvas.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5537
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.863Z",
+ "cells": {
+  "16": [
+   "f3b7234d3fabdf70"
+  ],
+  "24": [
+   "05dc6ca64d50a76c",
+   "57e09dfae0ab1ce8",
+   "5dcfaf098fbc6a8f",
+   "76a2df0f1d340a9e",
+   "852124bef6b2c666",
+   "98a024dee28e7e86"
+  ],
+  "32": [
+   "11e68f9bb74fdf47",
+   "87f1fba8c064b026",
+   "895fce6d4badcdd8",
+   "aab8ea6c532a0cb8",
+   "af237934425593bf",
+   "bcdb0a66cb88b6a2"
+  ],
+  "48": [
+   "07d112c4c9844405",
+   "464683778d1c88fc",
+   "701b6ef43f3c96a9",
+   "859c36a08e50d64e",
+   "ad7be7b4dbd50dd3",
+   "f36c359d24e77a13"
+  ]
+ }
+}

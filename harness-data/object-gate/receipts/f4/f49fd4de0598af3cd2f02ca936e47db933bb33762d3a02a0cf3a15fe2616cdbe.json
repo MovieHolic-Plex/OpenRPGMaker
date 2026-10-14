@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f49fd4de0598af3cd2f02ca936e47db933bb33762d3a02a0cf3a15fe2616cdbe",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-lot-hoarding",
+ "label": "jp_city/street_hand/jp-lot-hoarding",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "construction site hoarding wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hoarding wall and its upper beam/fascia are rendered entirely as a flat architectural elevation from row 1 to 29, with no foreshortened top surface showing the thickness or top edge of the wall.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4982
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "construction hoarding wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire hoarding is drawn in flat front elevation with vertical panels, hazard striping, and an upper fascia beam, but lacks any visible top surface showing the thickness/depth of the wall or capping from above (only a 1px outline at row 0-1).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5599
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "construction hoarding wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hoarding wall and top metal beam are drawn entirely in flat front elevation with no visible top surface receding northward (only a 1px outline along row 1).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4915
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "construction lot hoarding wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hoarding wall is drawn entirely in flat front elevation. The top cap has only a 1-2px dark outline (rows 0-1) above the upper fascia beam (rows 2-7), showing zero top surface depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4076
+  }
+ ],
+ "decidedAt": "2026-10-13T17:30:03.089Z",
+ "cells": {
+  "16": [
+   "0c107ba414c5fb3e",
+   "1af0492183d7a0cc",
+   "5548a954d14dee09",
+   "77f2425dff5e8fbd",
+   "939a7c5db6c145db",
+   "d0ede84c94bc733a"
+  ],
+  "24": [
+   "41c754aefb0e0cd6",
+   "63bfd3096adbb5f6",
+   "8d307bc5678f4269",
+   "aae543ff4b39f2d4",
+   "b3934121e3f467ff",
+   "d0b6c48f630190bd",
+   "d30e59ced1a6bd7e",
+   "dccdfdf757714279"
+  ],
+  "32": [
+   "0020dff96984ef93",
+   "06ec14e29b278889",
+   "20ca855dc5d3c547",
+   "bc37e0502596837e",
+   "cd496130722527db",
+   "d96fc307f74ab114"
+  ],
+  "48": [
+   "2afdb000a7812a7c",
+   "a4384576a20c46a6"
+  ]
+ }
+}

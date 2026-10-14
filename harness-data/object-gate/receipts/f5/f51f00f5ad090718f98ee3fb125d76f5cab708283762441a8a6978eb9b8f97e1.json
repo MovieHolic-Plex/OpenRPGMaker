@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f51f00f5ad090718f98ee3fb125d76f5cab708283762441a8a6978eb9b8f97e1",
+ "width": 32,
+ "height": 16,
+ "kind": "container",
+ "name": "콘크리트 화분대(꽃·관목)",
+ "label": "modern-campus/mc-planter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "concrete planter box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The concrete planter wall is drawn as a flat front face from row 9 to row 13 with only a 1px edge line at row 9. No horizontal top rim, soil surface, or interior opening depth is visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 6246
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "concrete planter box with shrubs",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The concrete planter is clearly drawn in 3/4 perspective: the front vertical face spans rows 10-13, while the top opening/interior bed holding the bushes extends back across rows 1-8 with visible side and back rims.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11856
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "concrete planter box with shrubs",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The concrete planter shows a foreshortened top opening spanning rows 2-8 (filled with shrubs and visible interior bed at the edges) and a 5px front face from rows 10-14, matching standard 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5771
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "concrete planter box",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The planter box shows a 5px front south wall (rows 10-14) and a 7px deep open interior seen from above (rows 2-8) containing shrubs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7780
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.871Z",
+ "cells": {
+  "16": [
+   "2b8537d54ec3d554",
+   "e3fbdec021e27c01"
+  ],
+  "24": [
+   "20f6e4bfa71af58c",
+   "24fdbdd50f91f57c",
+   "3f6a4692e6ba29cc",
+   "42d4e90cd5efa2d1",
+   "469614c3978cd07f",
+   "61ec60ff567dce38",
+   "7f5b7e9b6facc38e",
+   "85424759a330d091",
+   "9881d1ef0b8a4043",
+   "b4fddcf70a08a00d",
+   "cb73f7344a21e302",
+   "e3cbe903732b3f3a"
+  ],
+  "32": [
+   "adfab6722c2148ed",
+   "b34fb66259d608c8"
+  ],
+  "48": [
+   "2a46b5e9802fe48b",
+   "4f6eb5be024b103f",
+   "62f31365b072e643",
+   "9f1bc966067565cb",
+   "bf407dabdea42735",
+   "d2008be88dd816bc"
+  ]
+ }
+}

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "aad67c95eaeb3e0c4f87584d393f697b5cda4f7454954fb1d1fa32ca73187fd2",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "흉상 돌기둥(대리석 흉상)",
+ "label": "gothic_manor/gm-bust-column",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone pillar plinth with bust",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire plinth and pillar are drawn in straight horizontal bands with zero top surface visible (top_rows=0). The bust resting on it is also drawn in pure flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4172
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "marble bust on stone pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bust and the stone pillar base are drawn entirely in straight front elevation with perfectly horizontal dividing lines and no visible foreshortened top surface on the plinth/pillar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3362
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone pillar plinth with marble bust",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone pedestal/plinth beneath the bust is drawn in pure front elevation with straight horizontal bands (rows 14-19) and no visible top surface around or behind the bust.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4238
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bust on stone pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone pillar and bust are drawn in pure front elevation with straight horizontal bands at rows 14, 15, and 19; neither the pillar plinth nor the statue base shows any top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4070
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:15.456Z",
+ "cells": {
+  "16": [
+   "a9ba8a178ca13d2a",
+   "f2183add9822b220"
+  ],
+  "24": [
+   "044d01b2153e2a19",
+   "2da5a51ca1439a8d",
+   "42397725f5286a6b",
+   "51617fa77cd9a04a",
+   "5f4c1854a210f2d6",
+   "628e503e4fab195f",
+   "87a426e69b9cc998",
+   "9589da61f6a70fe8",
+   "c3575dd1ba124c4a",
+   "c3a0cbcd81357d72",
+   "d12998b2762ccb09",
+   "fd8e02c61b3870b9"
+  ],
+  "32": [
+   "5bb9aebfea081fb4",
+   "75e45cf3e231db60",
+   "aff50d536a78aac2"
+  ],
+  "48": [
+   "1e4f6a451216d814",
+   "3248b21158c2d79a",
+   "6922db4ec177c13d",
+   "af69616eabb35350",
+   "ceb85858be4e3a78",
+   "e46ce918ebb602c3"
+  ]
+ }
+}

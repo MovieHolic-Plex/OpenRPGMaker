@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "95d868604e55b701c1abe62d16f98376e3515af0a6e69a4b05c19ae41516d6c5",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "가스 가로등(무쇠 기둥·켜진 등)",
+ "label": "steampunk-city/sp-gas-lamp",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lantern head and post",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lantern canopy at the top shows a rounded 3/4 top surface spanning rows 2 to 7 (approx 5 rows), and the base also depicts a rounded top surface seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6741
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lantern head and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern housing (rows 10-16), crossbars, and post collars (rows 30-32) are drawn with completely flat horizontal lines in pure front elevation, showing no top surface or 3/4 downward perspective curvature.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6665
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lantern cap and post base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lantern roof cap is foreshortened over rows 2-7 (6 rows tall) with a visible upper surface and finial, and the circular plinth base shows clear 3/4 view rounding across rows 39-43.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6225
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "gas streetlight",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire streetlight is rendered in pure front elevation: all horizontal features (the lantern frame at rows 10 and 16, the pole collars at rows 20 and 32, and the post base) are completely flat horizontal lines with no 3/4 perspective foreshortening or top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8394
+  }
+ ],
+ "decidedAt": "2026-10-13T18:26:16.314Z",
+ "cells": {
+  "16": [
+   "5f15a006a08bbf84",
+   "a8872e477e4699b4",
+   "bd9e838311ca0c17"
+  ],
+  "24": [
+   "5ab7e8723c1380e6",
+   "b0615a2ed096f478",
+   "b3d2f3cccfd50d5d",
+   "be1276a6415a3d6f",
+   "d98483b2299eb12d",
+   "e66c55553bc0fd6b"
+  ],
+  "32": [
+   "110edffeb8dd9b05",
+   "2e2ce0e271719e49",
+   "42e328e3f0acca70",
+   "6951a633d32d1ba9",
+   "7f1c72a4b19b6252",
+   "82fbff076d9308ff",
+   "8ab40f38d415b8e4",
+   "8c33e20616000be4",
+   "8d165b5201cefeb6",
+   "a2efc6cef3d6746e",
+   "ba63d7cbbf1027f8",
+   "e58bd75ada6b6343"
+  ],
+  "48": [
+   "32dfbb7e3e0e08f7",
+   "9fdf1ae0c0d85e9e",
+   "d3be68c0eeb73cfb"
+  ]
+ }
+}

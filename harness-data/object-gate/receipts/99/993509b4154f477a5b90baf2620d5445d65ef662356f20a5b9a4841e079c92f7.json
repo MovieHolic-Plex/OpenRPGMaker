@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "993509b4154f477a5b90baf2620d5445d65ef662356f20a5b9a4841e079c92f7",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "네온 화분 상자(콘크리트 상자 윗면 테 + 흙 + 둥근 잎 덩이 + 앞 띠 등)",
+ "label": "sf-station/sf-street-planter-neon",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "planter box with bush",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The concrete planter box (rows 8-15) is drawn in pure front elevation; its top edge at row 9 is only a 1px rim line with no visible top surface or open ellipse depth, making the planter appear flat from the front.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8151
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "planter box with bush",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The concrete planter box is drawn in pure front elevation. Its top rim at row 9 is only 1 source pixel tall with no visible top surface, foreshortened box opening, or visible soil depth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8247
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "planter box with bush",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The concrete planter box is drawn in pure front elevation: its front face occupies rows 10-15 with a neon stripe, while the top rim at row 9 is only 1px thick with no visible horizontal top surface or foreshortened opening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7548
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "planter box with shrub",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The concrete planter box has a completely flat front elevation: row 9 is merely a 1px rim line above the front face (rows 10-15), with no visible depth or top surface for the box.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5476
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:31.924Z",
+ "cells": {
+  "16": [
+   "371ff8d1b5299d72"
+  ],
+  "24": [
+   "1960f7d27a9c1ce4",
+   "3839c13f4dbca0b8",
+   "39ec8088e430d66f",
+   "3bb18b7b1d4ace18",
+   "b0be5c25d01530be",
+   "e8c34086b806f8ee"
+  ],
+  "32": [
+   "26a2e409f44221c4",
+   "2d8aa45d8ded00a6",
+   "5028badd91fea629",
+   "914f57fed508683b",
+   "9b5b93df59a5dec9",
+   "be79916ce8513720"
+  ],
+  "48": [
+   "486b344675c8589d",
+   "4eb21421010dc1e0",
+   "51f32d59643d1f54",
+   "6fb68ad50b4c9d76",
+   "74b6ec600d025216",
+   "cd266dbcaa0d0c20"
+  ]
+ }
+}

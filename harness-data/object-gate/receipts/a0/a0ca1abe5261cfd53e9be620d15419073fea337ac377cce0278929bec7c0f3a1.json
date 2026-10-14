@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a0ca1abe5261cfd53e9be620d15419073fea337ac377cce0278929bec7c0f3a1",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "둥근 머리 묘비(두꺼운 돌·십자 새김)",
+ "label": "gothic_manor/gm-tomb-round",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round-topped gravestone with engraved cross",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tombstone is depicted entirely in flat front elevation with a 1-pixel outline at the arched top (rows 0-1) and the front face extending directly down with a cross engraving. No top depth or horizontal surface is visible despite the name specifying 'thick stone'.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10227
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rounded headstone / stele",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tombstone is drawn straight-on in pure front elevation: the arched top is defined only by an outline with no visible depth or top surface, the cross sits flat on the south face, and the stepped base is drawn with perfectly flat horizontal lines.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 17640
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round-topped stone gravestone",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tombstone is drawn purely in front elevation with an arched silhouette and carved cross on the front face, showing no top thickness or receding top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7336
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round-topped stone gravestone with cross carving",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The arched top of the stele/tombstone has only a 1-pixel dark outline with no visible top surface or thickness seen from above, rendering the object as a flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6354
+  }
+ ],
+ "decidedAt": "2026-10-13T16:24:27.171Z",
+ "cells": {
+  "16": [
+   "c27da9f089969423"
+  ],
+  "24": [
+   "0865f201546aa7a4",
+   "1df7677e5f29c78e",
+   "60995a19ba8c335a",
+   "9b40ab5282fc9364",
+   "cd2e288b22932297",
+   "e7f9545f92edc4e0"
+  ],
+  "32": [
+   "0e528aee5dec8eaa",
+   "296cb8ba14cd0611",
+   "5368a5dfa7986e86",
+   "87af5cf4b3877299",
+   "ee13b7a104bd2812",
+   "efa334f3b477021a"
+  ],
+  "48": [
+   "00da7e0019a060ec",
+   "0e604b8f8d3ee9cb",
+   "56c71d5a80b8163a",
+   "8fe097a0a27c7dbb",
+   "ca0e7262ebd8b08d",
+   "edd890eb4e92fdf9"
+  ]
+ }
+}

@@ -1,0 +1,123 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4655b9ab51a78342ff9352b495c7d6c925f7ddc3f6de5f8e22ac70ad547ad555",
+ "width": 32,
+ "height": 16,
+ "kind": "seat",
+ "name": "무쇠 다리 나무 벤치",
+ "label": "steampunk-city/sp-bench",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden bench seat",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal seat surface is visible from above across rows 5–7 (3 rows deep, showing bolt heads and front edge highlight), above the 3-row vertical front face (rows 8–10).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8798
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden bench with iron legs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bench is drawn as a flat 2D front elevation (like a side-scroller asset). There is no horizontal seat surface visible from above; only the front-facing vertical slats, legs, and feet are shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 16836
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden bench seat",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat surface is viewed from above across rows 5–7 (3 rows tall) showing bolt heads and an edge highlight, while rows 8–10 form the shaded front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 16096
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden bench seat and backrest",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bench seat shows a distinct 3-pixel-deep top surface (rows 5–7) with carriage bolt details and an edge highlight on row 7, followed by a shaded 2-pixel south-facing front apron (rows 8–9).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13508
+  }
+ ],
+ "decidedAt": "2026-10-13T18:16:30.907Z",
+ "cells": {
+  "16": [
+   "3683497b89fb3e58",
+   "f90b42ec4b5f0ae2"
+  ],
+  "24": [
+   "2024d41e8e1bedc8",
+   "3b6a1ebf2e42e425",
+   "43397528650e7824",
+   "4deae19f45525597",
+   "6b4819bd440ba667",
+   "794a9d1ebffc185d",
+   "8d2e0ac916641c33",
+   "8f43e45c8d139b6f",
+   "cdfa17ac4907127d",
+   "cff21c17451c5aa3",
+   "f5d336a30a1c0e14",
+   "f8ab19124a18a127"
+  ],
+  "32": [
+   "0504708ad324a466",
+   "ad1471e36d20addc"
+  ],
+  "48": [
+   "25e629f8e532ef61",
+   "5042a0f1426c63b0",
+   "885cb7366b86ebbe",
+   "c55c149d12eeac2b",
+   "cb0aee412aee75fe",
+   "e6bb6e319701144e"
+  ]
+ }
+}

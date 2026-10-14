@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "72ec31e474e4fdd12bb92d25ff24f4cb04eeab91eedd59e5c06e44033a276fb0",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "무쇠 창살 담(남북 줄 — 위에서 길게 보이는 받침 갓)",
+ "label": "steampunk-city/sp-fence-v",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "north-south iron fence base",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical segment displaying the top surface of the wall base continuously across all rows in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12503
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "north-south iron fence base and railing",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Top surface of the N-S wall segment is visible across all 16 rows in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11868
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "north-south iron fence wall segment",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Continuous top surface of the wall base spans all 16 rows with centrally aligned posts viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11287
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "north-south iron fence base rail",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Top surface of N-S running rail extends through all rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10570
+  }
+ ],
+ "decidedAt": "2026-10-13T18:44:04.997Z",
+ "cells": {
+  "16": [
+   "11fee28977c1e396"
+  ],
+  "24": [
+   "137b6076bc98eaf2",
+   "15797f4ff4ef3bfe",
+   "411eb5ebec1cbc69",
+   "78c7d334e48492ef",
+   "cccdf3a696b52087",
+   "d586a38815b7551e"
+  ],
+  "32": [
+   "28d81a9c75be7dfc",
+   "29338b4aed23a031",
+   "39643b806925a45a",
+   "726df5e0b6a8b5cf",
+   "8bb2751ba50b9054",
+   "bb88b9e9bd08f467"
+  ],
+  "48": [
+   "0a91b0d808a5917d",
+   "0cf6ff067a029619",
+   "297ae0d9007465be",
+   "970166de6606674e",
+   "b79376233d9dd0f9",
+   "f0a2e3ef14e64037"
+  ]
+ }
+}

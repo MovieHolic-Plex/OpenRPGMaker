@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c2883009f7be79831119755d03c1ca8decfb75ac7e363b5b4aff33a7a1ca930b",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "네온 노점 B(시안 차양 + 꼬치 진열 + 앞 판 네온 띠)",
+ "label": "sf-station/sf-street-market-stall-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "market stall counter",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter table has a clear 5-row top surface (rows 18-22) displaying food dishes seen from above, positioned above the vertical front face (rows 23-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5746
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "food stall counter with awning",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter surface is visible from above across rows 17-22 (6 source pixel rows) displaying plates of food, with the vertical front face extending below it on rows 23-30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4857
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "market stall counter and awning",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall counter top is clearly visible from rows 17 to 22 (6 rows tall) displaying plates of skewers, while rows 23 to 30 form the front face with the cyan neon bar.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4247
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "street stall counter",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter surface is clearly visible from above across rows 17-22 (6 source pixel rows) displaying plates of food, with the vertical front face extending from rows 23-30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4789
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:31.921Z",
+ "cells": {
+  "16": [
+   "2c4c176764f0ea0c",
+   "4771f070a705e125",
+   "8baf5c966d2f4999",
+   "e065256f502a8291"
+  ],
+  "24": [
+   "0f80ab72713935cf",
+   "12649dd8db781ebb",
+   "1518fa3f9d896f78",
+   "2a4dde738f1d695f",
+   "3696364f7e38e898",
+   "3e7ec31a6423574e",
+   "42ab1b32256b30b2",
+   "54d24807a083a01f",
+   "58153f25de0a3fb9",
+   "73f2c75bebd06c94",
+   "77c89d97da07741b",
+   "80c65e9c1c73b6bc",
+   "85440de75bf94430",
+   "900344e35c5663fa",
+   "971457f45a99140a",
+   "a6f56fe1dc872d5c",
+   "ae647cc87e5bbf66",
+   "b39bad587c12233f",
+   "b78470995649b5f8",
+   "ce14b35de7a3d7ae",
+   "cf37ab5c057a638f",
+   "d00b5dc1cb86f435",
+   "f565ce4ad212d034",
+   "f81afcaf77b212b3"
+  ],
+  "32": [
+   "c37c6d21c7d3ed4d"
+  ],
+  "48": [
+   "3b741346481e1dd8",
+   "9aaa8645e130b779",
+   "af3ce1549dc9950f",
+   "bdf85505e95906fd",
+   "bf06ada62d864bc8",
+   "fd2358c379e35b60"
+  ]
+ }
+}

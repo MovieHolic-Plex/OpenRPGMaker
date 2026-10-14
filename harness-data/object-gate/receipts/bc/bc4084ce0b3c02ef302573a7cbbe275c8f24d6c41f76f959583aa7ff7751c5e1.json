@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bc4084ce0b3c02ef302573a7cbbe275c8f24d6c41f76f959583aa7ff7751c5e1",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "배관 다발(굵은 구리관 셋, 위에서 보이는 관 끝 원 + 위 고정 판 윗면 + 흰 밸브 바퀴 + 받침 상자)",
+ "label": "sf-station/sf-pipe-cluster",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bundle of three copper pipes in a mounting frame",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut ends of the three pipes and top mounting plate are clearly rendered from above across rows 1-4 (4 rows tall), and the base plinth also has a 3-row visible top surface (rows 22-24).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5786
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bundle of three copper pipes with top bracket, valve wheel, and base box",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top bracket and pipe cut ends are visible from above across rows 1-4 (showing pipe top faces and central bores), and the plinth box also clearly displays a 3-row top surface at rows 22-24.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6280
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "three-pipe bundle with mounting plate and base box",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut ends of the three pipes embedded in the top plate are clearly visible from above across rows 1-4 (3-4 rows tall), and the base plinth also shows a 3-row top surface at rows 22-24.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5946
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bundle of copper pipes with base and top bracket",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-4 depict the foreshortened top surface of the mounting plate and the circular cut ends/openings of all three pipes from above; rows 22-24 also show a 3-row top surface for the base box.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5757
+  }
+ ],
+ "decidedAt": "2026-10-13T16:02:53.703Z",
+ "cells": {
+  "16": [
+   "57421ffa68289908",
+   "8964154ffcdb949b"
+  ],
+  "24": [
+   "1296ff76c0060618",
+   "1ba04a67d0f8c9ff",
+   "1bb830108cd65389",
+   "552b3d56dd70b3bd",
+   "5698f436114407dc",
+   "6279df0dcd71a969",
+   "9ec5d64f4655f716",
+   "a66a62b42a1c29ec",
+   "aa8751cee70be124",
+   "c76c19134c733656",
+   "e1329c1e61e13f41",
+   "e337289a9a639aeb"
+  ],
+  "32": [
+   "a2d09a9d26feeb3f",
+   "cb1dd44410af960c",
+   "cb4c0e33998241f5"
+  ],
+  "48": [
+   "00874957a1a79e54",
+   "07da818dbeb14dbe",
+   "129767e9bed8f26d",
+   "b6edfdf0a9166d72",
+   "ef53aa694c4796b8",
+   "ef61f3287ad2a4ea"
+  ]
+ }
+}

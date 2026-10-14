@@ -1,0 +1,138 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "83043274c03f1cafc751884525f0274720ce29ea4dba71c6a5ad427489d55025",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "청소 카트(물통·걸레)",
+ "label": "modern-campus-int/mc-clean-cart",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail",
+  "윗면 2.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "yellow cleaning bucket/cart with mop handle",
+    "kind_matches": false,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a cleaning bucket cart with mop, not tall furniture standing against a wall (kind_matches is false). Geometrically, the bucket has a well-defined top opening showing blue water across rows 16-20.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail"
+   ],
+   "ms": 4270
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "yellow bucket / cleaning cart body",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a mop bucket/cleaning cart, not tall furniture standing against a wall. The bucket opening is drawn in 3/4 view with visible blue water inside spanning rows 16 to 20, but kind_matches fails due to incorrect category.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3624
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "yellow mop bucket / cleaning cart with mop handle",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a mop bucket/cart (a container/utility item), not tall furniture standing against a wall. Although the bucket opening with water is clearly rendered from above across rows 16-20 (5 rows deep), the supplied kind is completely mismatched.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10570
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "mop bucket cart",
+    "kind_matches": false,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a mobile mop bucket cart with a clearly visible top opening and water surface (rows 16-20), but it does not match the supplied kind 'tall_furniture' (tall furniture standing against a wall such as a bookshelf or wardrobe).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail"
+   ],
+   "ms": 5438
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.310Z",
+ "cells": {
+  "16": [
+   "9f4942904f6ead68",
+   "aa994fda163430d6"
+  ],
+  "24": [
+   "11219d0e64d43c30",
+   "23f91e91eb17862f",
+   "4cd8845107b28a89",
+   "535b02e5db8e5cf1",
+   "67337d8a2cafaf77",
+   "70eec52724b0152e",
+   "7807c18878c92f0d",
+   "85edc33835c1c722",
+   "c3beb597f014d60d",
+   "e4ce9e04b694bd64",
+   "f6068098da6738ec",
+   "fc3e1c48b9be4bff"
+  ],
+  "32": [
+   "3a2b37584a232b0f",
+   "4aa22ee9fc8587da",
+   "cb68cb7a7ebf7de6"
+  ],
+  "48": [
+   "207fea743aeeb959",
+   "323628ffa0b81d2e",
+   "588c5552fac28094",
+   "9f47b486da76a53a",
+   "c073657d5673247c",
+   "e8e93d551a764eda"
+  ]
+ }
+}

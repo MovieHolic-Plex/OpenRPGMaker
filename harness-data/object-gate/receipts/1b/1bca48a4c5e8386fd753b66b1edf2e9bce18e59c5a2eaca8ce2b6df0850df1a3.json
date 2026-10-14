@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1bca48a4c5e8386fd753b66b1edf2e9bce18e59c5a2eaca8ce2b6df0850df1a3",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "벽 부착 화면(시안 그래프 막대)",
+ "label": "sf-station/sf-wall-screen-a",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall-mounted screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted screen displayed flat against the wall with a central mount underneath. Flat front elevation is permitted for wall_mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4939
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall-mounted screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted monitor displaying a cyan graph, rendered flat against the vertical wall surface as expected for wall-mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4241
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall-mounted screen with cyan graph display",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a flat screen mounted to the wall showing cyan bar/chart graphics. Per the wall_mounted category specification, flat wall-mounted objects viewed directly on the wall are acceptable without a foreshortened top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7906
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "screen monitor",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted monitor display showing graphs; wall-mounted objects are permitted to be drawn flat facing front.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4126
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.955Z",
+ "cells": {
+  "16": [
+   "3cd1c0632e6f003a"
+  ],
+  "24": [
+   "591fef991f82526d",
+   "5bd8f519e4b69c35",
+   "b5c23be06198bf9b",
+   "d0ac1421e6a07d32",
+   "de67257372f334de",
+   "e69071fada4d9911"
+  ],
+  "32": [
+   "099611d4f0ccd7c2",
+   "16e6bc207a6289ac",
+   "4b043a82c90b4db7",
+   "85088349a32047ed",
+   "c1017aa9d09c3bae",
+   "c6e88db99f6f6c25"
+  ],
+  "48": [
+   "061fd28cea4adc57",
+   "151db3dc906cecce",
+   "30125395788768b9",
+   "b7d32ae60cdfa34e",
+   "c447218c2f6f3437",
+   "ead6683837e3a614"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "40eedcb7e17c3daf18e2450a38247cc75c10c1cda8feabeaba59b2ae4b07a7c5",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "배관 도랑 — 세로 + 동 갈래",
+ "label": "steampunk-city/sp-pipe-nes",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pipe trench with vertical and east-branching pipe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting a recessed pipe trench cut into stone flooring. Viewed correctly from top-down with drop-shadow perspective in the trench recess.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6816
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pipe trench in stone floor",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting a recessed pipe junction (vertical and east branch) within a stone trench. As ground/terrain, it is viewed top-down in standard RPG Maker perspective rather than as a standing object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6077
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pipe trench terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Trench terrain tile viewed from 3/4 top-down perspective showing a recessed floor channel with pipes running vertically and branching to the east.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6535
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pipe trench in stone floor",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a terrain feature depicting an open trench embedded in a stone floor with pipes running vertically and branching east, properly viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4750
+  }
+ ],
+ "decidedAt": "2026-10-13T18:45:09.736Z",
+ "cells": {
+  "16": [
+   "fa26eefa9cadf391"
+  ],
+  "24": [
+   "09f0ecaa83ad03f1",
+   "2dcc5e21b7575125",
+   "6e4089c97942e2b0",
+   "8481fc3a273cab52",
+   "9499eac76e2a77d5",
+   "e0c8666380585862"
+  ],
+  "32": [
+   "22a3663b94298385",
+   "430668b5506b5a22",
+   "9909e1e01156b457",
+   "f0294dedf72e53b4",
+   "f6900c37c3934711",
+   "fb10e65284dca0b8"
+  ],
+  "48": [
+   "0c2a1b68f9a7bcf5",
+   "1a3d4c30de2728bd",
+   "27f8c7cef9e19abf",
+   "9b331f29b298e4d5",
+   "dac23ba8f170168a",
+   "fc52dec8a76a657a"
+  ]
+ }
+}

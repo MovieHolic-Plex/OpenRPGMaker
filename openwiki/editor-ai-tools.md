@@ -468,6 +468,8 @@ paint_tiles·stamp_layer_block 으로 직접 깔라고, 정말 바꾸려면 tile
 
 **compose 우선 지침 (2026-10-13).** 포인터·상세·노트(`jpCityPolicy.ts`)는 거리·마을·동네 한 장을 `compose_jp_city_street({seed, style:shopping|residential, shops})` 로 먼저 짜게 하고(맵 ≥40×28, 높이 46↑ 큰길 둘+하천, 52↑ 상가 고층 — 인자가 아니라 크기+seed 로 나온다), 손 시공(`build_jp_city_building`·`fill_region`)은 짠 뒤의 건물 한두 채 보정에만 둔다. 라우팅: 일본 낱말이 없어도 번화가·상점가·도심·시가지·주택가·downtown 등(`describesCityStreet`)은 **프로젝트에 jp_city 맵이 이미 있고** 미국풍·modern_city 낱말이 없을 때만 jp_city 로 간다. 회귀: `test/jpCityRouting.test.ts`(작성 시 미실행).
 
+**빈터 쓰임 지침 (2026-10-14).** compose 가 끝에 빈 대지를 쓰임(코인 주차·놀이터·텃밭·공사장·광장·골목 틈)으로 채운다고 알리고, 건물을 손으로 더한 뒤엔 `compose_jp_city_street({lotsOnly:true})`, 쓰임이 0~1곳이면 seed 를 바꿔 다시 짜기, 소품 낱개 흩뿌리기 금지를 적었다. 실조수(gemini-3.8-flash high) 시험에서 손 건물 뒤 lotsOnly 를 스스로 불렀다. 세부 `openwiki/jp-city.md` 「빈터 쓰임 단계」.
+
 ## 조수가 보는 네 층 — 읽기 도구·도구 이미지 (MZ식 4층, 2026-09-25)
 
 계획 `docs/superpowers/plans/2026-09-25-mz-layers-assistant.md` Task 1. 쓰기(위 절)와 짝이다.

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "df762faab34ed591c4b3bbec962d0af441ccdec4351b159b15cc46b85c24cef4",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "구급 약장(흰 + 빨간 십자 띠)",
+ "label": "modern-campus-int/mc-aid-cabinet",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "first aid cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn completely in flat front elevation with no visible top surface (0 px) foreshortened from above. Shelves and bottles inside are also rendered straight-on.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6374
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "first-aid medicine cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn completely flat from the front with no visible top surface (top_rows = 0). The top section is a vertical front signboard panel with a blue emblem, and the shelves are drawn as flat horizontal lines without depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5958
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "first aid / medicine cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn entirely in flat front elevation. There is no visible top surface at rows 0-1 (the upper header section with the blue square, the shelves, and the lower compartments are all seen straight on).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4634
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "first aid medicine cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tall medicine cabinet is drawn entirely in flat front elevation with no visible top surface foreshortened at row 0, showing shelf contents and front panels directly facing the camera.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5708
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.311Z",
+ "cells": {
+  "16": [
+   "9b2f6367d626cb44",
+   "a022f88223758b1e"
+  ],
+  "24": [
+   "09c8bf8a434058df",
+   "228f456f65599263",
+   "2a36bb5a9c5b9896",
+   "319fd073ebdc05ed",
+   "44e65853311e1558",
+   "539053d11a2e46fd",
+   "65c349f811f3032a",
+   "684c31f5bb6c4fe0",
+   "743f4934fcee660a",
+   "a80710ccb7ea925d",
+   "ac66fc356edee532",
+   "d6a02a71e6f6053e"
+  ],
+  "32": [
+   "0929bd177cf2446a",
+   "239dbabe0ca14317",
+   "ba7876b0399845ad"
+  ],
+  "48": [
+   "6cc7514752d38fde",
+   "a24a63834f3c584d",
+   "ad9493d2d8b6e0a3",
+   "bdd3fef96f652191",
+   "f099c0dee3c40cc7",
+   "f54c65823ebd2d3f"
+  ]
+ }
+}

@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a1cfcfd68d25a6646d966b4e439eaaf663a0f23cd996345588e7835611434a9b",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "유리 진열장(해골·보석 유물)",
+ "label": "gothic_manor/gm-display-case",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "glass display case on cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The display case and its lower cabinet base are drawn straight-on from the front without any top surface visible (only a 1-2px outer rim at rows 1-2). The internal artifacts and background are also completely flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4465
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "glass display case on wooden cabinet base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The display case and cabinet are drawn in direct front elevation with no visible top surface foreshortened from above (row 0-1 is merely a 1-2px outer frame edge).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4027
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "glass display case on cabinet base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The display case and its base cabinet are drawn strictly from a direct front view with row 0-1 showing only a 1px frame line rather than a foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3151
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "glass display case on wooden base cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The display case and base cabinet are drawn completely straight-on with no visible horizontal top surface (rows 0-1 are merely a 1-2px outline/frame border).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3577
+  }
+ ],
+ "decidedAt": "2026-10-13T16:47:35.281Z",
+ "cells": {
+  "16": [
+   "397ec97f052ab043",
+   "adff6f414b72412e",
+   "afa8208e4def51a7",
+   "ce95e73511f259b5"
+  ],
+  "24": [
+   "0d954f89150da508",
+   "178010a13a3a7ac4",
+   "1ee08c86795cdac0",
+   "1f6bad7b073011bf",
+   "263ce80ee8c1f33e",
+   "2e61d72977244c56",
+   "3777fe67b991c627",
+   "4a1d402fa6023254",
+   "501215a02b5b3abe",
+   "55cb8fad1a987d04",
+   "5c41e336135fffc0",
+   "719196a5572c3e65",
+   "8c2776f373f8c528",
+   "91b09d087a93d6b5",
+   "9dfa92980d496fe6",
+   "a4358eff786363ac",
+   "bdc65ffb279339f1",
+   "c29489b100f5f100",
+   "c792213496e27615",
+   "ccc03b200a58542f",
+   "cf52decbe340ea7e",
+   "d6af5b82326f9b43",
+   "f1e4350d4af7f4e2",
+   "ffb17f4d473dfc21"
+  ],
+  "32": [
+   "0df0d47dd67c7969"
+  ],
+  "48": [
+   "58b57d924e572357",
+   "6b16435962671dfd",
+   "8cbf5dc0686fe202",
+   "a004506761eb53b1",
+   "d797e5748944562f",
+   "e3966a52b7833994"
+  ]
+ }
+}

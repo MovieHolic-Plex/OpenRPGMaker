@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "091534d7145000c8b295db503336e7a01beb17529fcd72205bb998e5aca7537f",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "부서진 묘비(그루터기 + 쓰러진 조각)",
+ "label": "gothic_manor/gm-tomb-broken",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "broken gravestone stump",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The broken top of the gravestone is drawn as a flat jagged 2D silhouette with no foreshortened fracture plane or horizontal top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5217
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "broken gravestone/stele",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The broken stele is drawn from a flat 2D front view with a jagged silhouette along rows 0-3 and a stepped base at rows 10-15. No upward-facing fracture surface or horizontal top plane is depicted.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5240
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "broken gravestone / stele stump on a stepped base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The broken top edge of the stele (rows 1-3) is drawn as a purely 2D jagged silhouette without any foreshortened fractured top surface or cross-section visible from above. The base and shaft are drawn straight-on.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4187
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "broken gravestone / stele stump on a stepped plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The broken top end of the gravestone is drawn as a jagged 2D silhouette viewed from the front with no visible top fracture surface or foreshortened horizontal plane (top_rows = 0). The base plinths also have only 1px highlight lines rather than top surfaces, making it a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6224
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.460Z",
+ "cells": {
+  "16": [
+   "fd819ca24aa3f290"
+  ],
+  "24": [
+   "13274d7ed08c81fd",
+   "53f5f03c141a4b36",
+   "6abb5b6b12bc8a38",
+   "6e9a819033360b93",
+   "8bb55209e791d75e",
+   "b5677b8937947615"
+  ],
+  "32": [
+   "50ca7bec11a444f8",
+   "7710c75f12aaf8f3",
+   "9b00e4c5f1ec0071",
+   "a8c8d9901ea02b00",
+   "ae4fbec66142c824",
+   "c49c0db2ee7a22d2"
+  ],
+  "48": [
+   "387f81d2056aa0d5",
+   "3a795a76fb5e2647",
+   "6d93e7ef4f2c4a92",
+   "7fb71813cd0b2972",
+   "83a8b6e3625d9b95",
+   "e4e3e00cec9d95be"
+  ]
+ }
+}

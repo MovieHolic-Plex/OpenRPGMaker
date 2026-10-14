@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c8a38ed9a1b23134cd7013ca6c91d4cccbd8b663bec60381f2d64f0ce7ae4b64",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "네온 웅덩이(젖은 바닥 웅덩이 + 비친 마젠타·시안 띠 + 테 밝은 반사)",
+ "label": "sf-station/sf-street-puddle-neon",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "neon puddle on floor",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The puddle is drawn foreshortened as a flat ground decal spanning rows 5 to 13 (9 rows tall) with reflected neon stripes inside.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3677
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "neon puddle on the ground",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat puddle lying on the floor surface spanning rows 5 to 13, viewed foreshortened from above in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5286
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "floor puddle with neon reflections",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The puddle is rendered as a foreshortened ellipse lying flat on the floor plane across rows 5 to 13, with horizontal reflection stripes conforming to the 3/4 top-down ground perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4033
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wet floor puddle",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The puddle is drawn lying flat on the floor as a foreshortened ellipse spanning rows 5 to 13 (9 rows tall) with horizontal neon reflections, fitting 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3464
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:31.925Z",
+ "cells": {
+  "16": [
+   "f839b5d32ea40dff"
+  ],
+  "24": [
+   "84ac9ad591eb5887",
+   "8c419dcc97783659",
+   "94fdfd6ca6e827ad",
+   "a23424ce50d3bd24",
+   "a48f3749b7f81733",
+   "b884758dac1b90be"
+  ],
+  "32": [
+   "46be90af0077ac83",
+   "5db42f1475e2eaa3",
+   "7d9795e0c8b26d47",
+   "c2dfa4d0219a1759",
+   "ca6fc78fb9abe7f8",
+   "f209ffadc444beec"
+  ],
+  "48": [
+   "46e0b441710a97db",
+   "85af8e636e58d2eb",
+   "946872d8e3401837",
+   "978a14cd9271891f",
+   "b1ee0ce1e271c066",
+   "ead374d3790c4886"
+  ]
+ }
+}

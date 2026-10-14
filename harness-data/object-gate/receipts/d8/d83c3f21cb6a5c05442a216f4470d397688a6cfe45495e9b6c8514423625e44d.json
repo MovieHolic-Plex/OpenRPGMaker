@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d83c3f21cb6a5c05442a216f4470d397688a6cfe45495e9b6c8514423625e44d",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "테슬라 코일(둥근 받침 + 구리 감은 탑 + 놋쇠 고리 + 구 + 불꽃) (프레임 3)",
+ "label": "steampunk-city/sp-tesla-coil-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "copper coil column with top electrode",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "While the brass ring and base show top surfaces in 3/4 perspective, the top electrode cylinder at rows 4-11 has a flat horizontal 1px line at row 4 with no visible top surface, and the main copper column has no visible top end.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11015
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tesla coil tower with brass ring and cylindrical base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brass toroid ring at rows 12-18 clearly shows a 3/4 top-down foreshortened elliptical shape and opening (rows 13-16), and the cylindrical base at rows 38-41 displays a 3-row visible top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7078
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "copper-wound coil column with brass ring and base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brass ring capital displays a clear elliptical top surface and opening in 3/4 perspective (rows 13-16, ~4 rows deep), and the cylindrical base also shows its curved top surface (rows 38-40, ~3 rows deep).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11591
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tesla coil tower with copper-wound coil, brass toroid ring, top sphere, and cylindrical base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brass toroid ring (rows 12-17) clearly shows an elliptical top surface and opening seen from above, and the cylindrical base (rows 38-41) displays a 3-4 row foreshortened top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7505
+  }
+ ],
+ "decidedAt": "2026-10-13T18:41:09.126Z",
+ "cells": {
+  "16": [
+   "10972a283defd1fd",
+   "49767216345b2abc",
+   "9323ef9cdc5c5232"
+  ],
+  "24": [
+   "0771b19d7f30705f",
+   "1cf6091bba1cc151",
+   "5bde88f02bf49ab2",
+   "a492e1feefd610ba",
+   "bee877dd0bc5fd1e",
+   "e1af6b3ae372cd30"
+  ],
+  "32": [
+   "32aa7819b12b5da1",
+   "3b6f48065a54b5b6",
+   "480ed42222ba0341",
+   "7321be0996308f84",
+   "8426e428acaef8bc",
+   "a28bcfd8f1a1076e",
+   "b3280d6e0db1e5e6",
+   "ca713a2ba6618a12",
+   "d2f242f5feafe10c",
+   "e17d70ebf8ff4e09",
+   "f4cfcebbd14b4f00",
+   "fcac6231d3a36c29"
+  ],
+  "48": [
+   "974b40181901d04d",
+   "d857a6108198969c",
+   "de2f1049a0627dd5"
+  ]
+ }
+}

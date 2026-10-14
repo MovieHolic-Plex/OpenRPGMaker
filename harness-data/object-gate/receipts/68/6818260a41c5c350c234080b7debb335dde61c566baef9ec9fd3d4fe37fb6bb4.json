@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6818260a41c5c350c234080b7debb335dde61c566baef9ec9fd3d4fe37fb6bb4",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "냉동 수면 포드(서리 유리 뚜껑 + 선체 받침 + 상태 램프)",
+ "label": "sf-station/sf-cryo-pod",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cryo sleep pod",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cryo sleep pod is drawn as a flat front elevation. Rows 0-2 only feature an outline and a 1px highlight line with no visible foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5006
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cryo sleep pod",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cryo pod is rendered in a pure front elevation view with no visible top surface foreshortened from above (only a 1-2px outline/highlight along rows 0-1).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6817
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cryo-sleep pod",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cryo-sleep pod is drawn entirely in a flat front elevation. The top only has a 1px rounded outline/rim with no foreshortened top surface visible from a 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 3726
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cryo-sleep pod",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cryo-pod is drawn in a pure front elevation, showing only a 1-2px border rim at the top (rows 0-2) with no foreshortened top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4973
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.951Z",
+ "cells": {
+  "16": [
+   "24838c3ed988a9e4",
+   "3c20ec6d02381858"
+  ],
+  "24": [
+   "0b1440db1be85807",
+   "397596408e1081aa",
+   "4db3c106653278cd",
+   "5eeaa01ed4626007",
+   "878212f39e6f6879",
+   "91c11d0b7cc7e8c3",
+   "950b6e2807a40e76",
+   "98616e9aa8e07aa1",
+   "a86a0bdd3eef7a07",
+   "b3892375b34503e5",
+   "c6383c8bff7de905",
+   "e6724863585198c0"
+  ],
+  "32": [
+   "6078829162b4d992",
+   "a2ef7b847c75a5a8",
+   "e9f261b2920a2a10"
+  ],
+  "48": [
+   "17ac690ddea6303f",
+   "35d004e0b5a0e1a3",
+   "436e78db84713cdb",
+   "53e646ee731c104d",
+   "5d74b574febd958b",
+   "719a3e94c9837538"
+  ]
+ }
+}

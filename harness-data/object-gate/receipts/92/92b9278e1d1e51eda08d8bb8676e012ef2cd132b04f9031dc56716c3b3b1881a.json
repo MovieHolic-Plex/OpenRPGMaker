@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "92b9278e1d1e51eda08d8bb8676e012ef2cd132b04f9031dc56716c3b3b1881a",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "낙엽 흩어짐(덧그림)",
+ "label": "gothic_manor/gm-ov-leaves",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "scattered fallen leaves",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object consists of fallen leaves scattered flat across the ground plane, functioning properly as a floor overlay decal.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4063
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "scattered fallen leaves on the floor",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object consists of small autumn leaves scattered flat on the ground surface as a floor decal/overlay.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4396
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "scattered fallen leaves on the ground",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object consists of fallen leaves scattered flat across the floor surface, properly rendered as a ground decal overlay.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4038
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "scattered fallen leaves on the ground",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Floor decal consisting of individual fallen leaves scattered across the ground plane, viewed from above as flat elements.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3228
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.463Z",
+ "cells": {
+  "16": [
+   "15663756cbbb9473"
+  ],
+  "24": [
+   "03aadd4364a6ef69",
+   "1d01ad99220067dd",
+   "46b72b8725211166",
+   "5d5d5f279fbd7259",
+   "d042c47141683f8c",
+   "ef4703bda98611ff"
+  ],
+  "32": [
+   "964030382eb85a22",
+   "9b64036e2abccda3",
+   "a18a3f6160fe3b75",
+   "b8016e93511f4898",
+   "c8a2565235b1958d",
+   "e0a57a4317672c03"
+  ],
+  "48": [
+   "1f4400b2e6f29c46",
+   "24bd6214a02d4df0",
+   "29c4c42737efbdb1",
+   "5af73d842148ae1b",
+   "94d3260820c45ba4",
+   "c65b0ad13df1a277"
+  ]
+ }
+}

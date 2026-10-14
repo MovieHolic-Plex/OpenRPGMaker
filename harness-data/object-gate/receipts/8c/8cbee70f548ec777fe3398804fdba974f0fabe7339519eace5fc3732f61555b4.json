@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8cbee70f548ec777fe3398804fdba974f0fabe7339519eace5fc3732f61555b4",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "땅 위 배관 — 북쪽 끝 마개(남으로 이어짐)",
+ "label": "steampunk-city/sp-pipe-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pipe with north end cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cap at rows 1-6 is drawn in pure front elevation with an upward-arching silhouette and bolts facing directly forward. There is no visible top horizontal surface (0 top rows) foreshortened from the 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10159
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "capped pipe end with bolted flange",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The northern cap has a clearly foreshortened elliptical top surface spanning rows 1-5 with visible bolts, resting on the pipe body extending south.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3823
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "capped pipe / vertical pipe terminal",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylindrical body has a clearly visible 5-row elliptical top cap/flange (rows 1-5) complete with bolt details, viewed from above at a 3/4 perspective, atop the front-facing pipe section.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5375
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pipe end cap and pipe body",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cap at the top is drawn foreshortened as an ellipse roughly 5 rows tall (rows 1-5) with bolts distributed across its surface, correctly showing the horizontal top face in 3/4 view above the pipe body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15470
+  }
+ ],
+ "decidedAt": "2026-10-13T18:40:36.081Z",
+ "cells": {
+  "16": [
+   "7a8037bd7a1888e9"
+  ],
+  "24": [
+   "347a1fdd8dbaba79",
+   "3dd02e810f1fea63",
+   "6eedee3bfe2e2c88",
+   "7dce1b644921ed6c",
+   "987f69c4ce5845e0",
+   "a38facda7a023cd6"
+  ],
+  "32": [
+   "3ab9863336922262",
+   "7b2f878908563d41",
+   "8c269f5a17d11f4f",
+   "e243e0999fb7af2f",
+   "e8bcb59fdf36f3a1",
+   "ed36b13c348124e2"
+  ],
+  "48": [
+   "0c5b3f181f26b990",
+   "12594e69d60549ef",
+   "13b57770f50746ef",
+   "1897312098343ece",
+   "4c77d167b41b9783",
+   "e3fe3db9b6f37701"
+  ]
+ }
+}

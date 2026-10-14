@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1e6486cf08cc844a0d4548c248c355785d56fab9716ef2fa5b8272cbbcf9420e",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "홀로 테이블(낮은 원판 + 위에 떠 있는 시안 행성 홀로)",
+ "label": "sf-station/sf-holo-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "circular holo table base",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base disk has a wide foreshortened circular top surface visible across rows 16 to 25 (approx. 9-10 rows) with an inner projector well, and a front rim/wall spanning rows 25 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7405
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "circular holo-projector table base with floating hologram sphere",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The circular table top is clearly foreshortened as an ellipse spanning rows 16 to 25 with a recessed central emitter pool, sitting above a 6-row front rim (rows 26-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7455
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "circular holo-projector table base",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylindrical table base displays a clear foreshortened elliptical top surface (rows 17 to 25, ~9 rows tall) with a recessed cyan projector pool, and a front face from row 26 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7023
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "circular holo-table base disc",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base platform is an ellipse viewed from top-down 3/4 perspective, showing around 9 rows of top surface (including the inner cyan emitter well from row 18 to 24) and about 5 rows of south-facing vertical rim (rows 26-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6333
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.953Z",
+ "cells": {
+  "16": [
+   "08f99b199761fa56",
+   "3d00d70f50426379",
+   "85556733569be6ef",
+   "f974ff58dd70a775"
+  ],
+  "24": [
+   "1135459703835aa4",
+   "45197f4cf6cadd1e",
+   "4bb7e809dd26706f",
+   "4c1abd31f486c5af",
+   "5561658f8b375516",
+   "56a38959fbc8fb9c",
+   "57996bd7a1724901",
+   "5a45feea5a866cec",
+   "5c7292aaec260885",
+   "6a05f6b1fc881bf6",
+   "73f490c6a81ca793",
+   "831572b5e9d6af95",
+   "89bd4fcb810975de",
+   "91b28716a35cce4d",
+   "a039ea368cdb6521",
+   "ab30e0f9a43e6c5d",
+   "b0f7cb08d75396f1",
+   "c0ca8a72deb2b8ee",
+   "c37e9ff3ad63aff9",
+   "eeeefb62b458f8cd",
+   "ef35a914ac8c8e95",
+   "fca716ef1bc0518d"
+  ],
+  "32": [
+   "dd968d6e5ff453a6"
+  ],
+  "48": [
+   "09bc7fb331da4bc1",
+   "389c915e4882e542",
+   "5a643fae281f6afd",
+   "84232575826d08c6",
+   "845153873a1b9f0d",
+   "caf34bdc2affb4a3"
+  ]
+ }
+}

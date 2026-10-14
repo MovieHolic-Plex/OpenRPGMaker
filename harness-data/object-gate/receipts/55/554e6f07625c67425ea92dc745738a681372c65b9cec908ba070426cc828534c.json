@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "554e6f07625c67425ea92dc745738a681372c65b9cec908ba070426cc828534c",
+ "width": 48,
+ "height": 32,
+ "kind": "box",
+ "name": "냉동 수면 포드 세 기 묶음(윗면 유리 뚜껑 셋 + 공용 제어 띠)",
+ "label": "sf-station/sf-cryo-bank",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cryosleep pods unit",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface spans rows 1-16 and features three rectangular glass lids seen from above, resting atop a front-facing control panel (rows 17-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5110
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cryo-sleep pod bank",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the pod unit spans rows 1 to 15, showing three rectangular glass viewing lids seen from above. Rows 16 to 31 form the vertical front face with control panels and indicator lights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5918
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cryo-sleep pod cluster with top glass lids and front control panel",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface occupies rows 1-15, clearly showing the three glass lids from above, while the south vertical face with control panels occupies rows 17-30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4470
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "triple cryo-pod unit",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface with three glass lids occupies rows 1-15, clearly seen from above in 3/4 view, while the vertical front face with control panels occupies rows 16-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5942
+  }
+ ],
+ "decidedAt": "2026-10-13T15:26:40.169Z",
+ "cells": {
+  "16": [
+   "4857bbdda96f9139",
+   "5acb11734ef0b9e5",
+   "627cbfb951ae52b5",
+   "7bf8a199561a051e",
+   "a45d5e061311d44e",
+   "b76409f1bbd8484c"
+  ],
+  "24": [
+   "192be6395bb13a30",
+   "393388207a322c64",
+   "820f9b447d223a7c",
+   "939d0f956d2e1d71",
+   "96d3546d39447402",
+   "dd41c7fbc5a30475",
+   "e2badd6cde06ff69",
+   "ec6ccabba8fb03d7"
+  ],
+  "32": [
+   "0e34de12a7bedb63",
+   "2464eac489ea2801",
+   "3ef68878605e4025",
+   "8a470fc848dcc2a8",
+   "8d99ef8f67729aa2",
+   "b516b6e398e0c118"
+  ],
+  "48": [
+   "5412fa6262524785",
+   "7973bfca3782ed84"
+  ]
+ }
+}
