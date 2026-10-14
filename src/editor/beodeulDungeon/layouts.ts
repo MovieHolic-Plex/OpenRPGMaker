@@ -296,7 +296,8 @@ function cropToContent(layout: DungeonLayout & { grid: Grid }): DungeonLayout & 
 export function carveSewer(g: Grid, rooms: readonly PlacedRoom[], seed: number): void {
   rooms.forEach((r, ri) => {
     if (r.kind === "channel") {
-      for (let x = r.x; x < r.x + r.w; x += 1) {
+      // 방 양끝 두 칸은 보행로로 남긴다 — 물이 옆벽에 바로 닿으면 팔레트 경계 경고(물↔벽)가 난다.
+      for (let x = r.x + 2; x < r.x + r.w - 2; x += 1) {
         const top = r.y + 3 + (vnoise(x, 1, 5, seed + ri) > 0.66 ? 1 : 0);
         const bot = r.y + r.h - 4 - (vnoise(x, 9, 5, seed + ri + 3) > 0.66 ? 1 : 0);
         for (let y = top; y <= bot; y += 1) {
