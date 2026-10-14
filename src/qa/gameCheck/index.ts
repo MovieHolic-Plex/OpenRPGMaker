@@ -56,6 +56,7 @@ export function runGameCheck(project: Project, options: GameCheckOptions = {}): 
       where: { mapId: hit.mapId, mapName: project.maps[hit.mapId]?.name, eventId: hit.eventId },
     })),
     ...(options.rawProject !== undefined ? diffLoadNormalization(options.rawProject, project) : []),
+    ...(options.extraFindings ?? []),
   ];
   let autoPlay: GameCheckReport["autoPlay"];
   if (!options.skipAutoPlay) {

@@ -1,0 +1,84 @@
+// 시각 공백 검사 — 「가운데 큰 검은 공백」(2026-10-14 몬스터 감사: 도장 체육관 미로가 통째로 어둠 덮개에 가려졌다).
+//
+// 맵 데이터는 멀쩡해도(바닥·칸막이 타일이 다 있다) 위층 덮개가 불투명에 가깝게 가리면 플레이어에게는 「검은 구멍」이다.
+// 그래서 데이터가 아니라 **그려진 그림**을 칸 단위로 본다: 칸의 안쪽 픽셀이 거의 검은색이거나(dark),
+// 두 층 모두 비어 아무것도 안 그려졌다(empty). 이웃한 어두운·빈 칸 덩이(blob)가 크고, 그 안에 「걸어 들어갈 수 있는 칸」이
+// 많거나 방 안쪽에 갇힌 빈 구멍이면 결함이다. 통행 불가인 검은 덩이(유령관 낭떠러지·밤하늘·용암 틈)는 의도된 함정이라 통과다.
+//
+// 순수 함수만 둔다 — 칸을 그림에서 읽는 일은 `scripts/qa-game/lib/visualVoid.ts`(노드 전용, renderMapPng)가 한다.
+
+import type { Finding } from "./types";
+
+export interface VoidCell {
+  /** 안쪽 픽셀이 거의 검다. */
+  readonly dark: boolean;
+  /** 두 층(위·아래) 모두 비어 아무것도 안 그려졌다. */
+  readonly empty: boolean;
+  /** 플레이어가 그 칸으로 걸어 들어갈 수 있다. */
+  readonly passable: boolean;
+}
+
+export interface VoidBlob {
+  readonly area: number;
+  readonly passable: number;
+  readonly empty: number;
+  readonly touchesBorder: boolean;
+  readonly x0: number; readonly y0: number; readonly x1: number; readonly y1: number;
+}
+
+/** 이 칸 수 미만의 작은 덩이는 소품 그림자·작은 구멍이므로 무시한다. */
+export const VOID_MIN_AREA = 12;
+/** 안쪽 평균 밝기(0~255)가 이 값 미만이면 어두운 칸. 어둠 덮개 칸은 약 25~30, 검은 바탕(바둑판 빈 칸)은 약 47. */
+export const VOID_DARK_LUMA = 40;
+
+/** 어두운·빈 칸의 4방향 연결 덩이. */
+export function voidBlobs(width: number, height: number, cells: readonly VoidCell[]): VoidBlob[] {
+  const seen = new Uint8Array(width * height);
+  const blobs: VoidBlob[] = [];
+  const isVoid = (i: number) => cells[i] !== undefined && (cells[i]!.dark || cells[i]!.empty);
+  for (let start = 0; start < width * height; start++) {
+    if (seen[start] || !isVoid(start)) continue;
+    const queue = [start];
+    seen[start] = 1;
+    let area = 0, passable = 0, empty = 0, touchesBorder = false;
+    let x0 = width, y0 = height, x1 = -1, y1 = -1;
+    while (queue.length > 0) {
+      const i = queue.pop()!;
+      const x = i % width, y = Math.floor(i / width);
+      area += 1;
+      if (cells[i]!.passable) passable += 1;
+      if (cells[i]!.empty) empty += 1;
+      if (x === 0 || y === 0 || x === width - 1 || y === height - 1) touchesBorder = true;
+      x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y);
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+        const nx = x + dx, ny = y + dy;
+        if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
+        const j = ny * width + nx;
+        if (!seen[j] && isVoid(j)) { seen[j] = 1; queue.push(j); }
+      }
+    }
+    blobs.push({ area, passable, empty, touchesBorder, x0, y0, x1, y1 });
+  }
+  return blobs;
+}
+
+/** 결함인 덩이만 — 걸어 들어갈 수 있는 어둠이 넓거나, 방 안에 갇힌 빈 구멍이거나, 맵 대부분이 비었다. */
+export function offendingVoidBlobs(width: number, height: number, cells: readonly VoidCell[]): VoidBlob[] {
+  return voidBlobs(width, height, cells).filter((blob) => {
+    if (blob.area < VOID_MIN_AREA) return false;
+    if (blob.passable >= 6 && blob.passable * 4 >= blob.area) return true;
+    if (blob.empty >= VOID_MIN_AREA && !blob.touchesBorder) return true;
+    return blob.empty * 5 >= width * height;
+  });
+}
+
+export function voidFinding(map: { readonly id: string; readonly name?: string }, blob: VoidBlob): Finding {
+  const kind = blob.passable > 0
+    ? `걸어 들어갈 수 있는 칸 ${blob.passable}개가 검게 가려져 있습니다(위층 어둠·덮개)`
+    : `아무것도 그려지지 않은 빈 칸 ${blob.empty}개가 방 안쪽에 있습니다`;
+  return {
+    severity: "warning", code: "visual-void",
+    message: `시각 공백: 어두운 덩이 ${blob.area}칸(x ${blob.x0}~${blob.x1}, y ${blob.y0}~${blob.y1}) — ${kind}. 플레이어에게는 「가운데 검은 구멍」입니다. 덮개를 걷거나 바닥 그림을 보이게 하세요`,
+    where: { mapId: map.id, ...(map.name ? { mapName: map.name } : {}), x: blob.x0, y: blob.y0 },
+  };
+}

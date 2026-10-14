@@ -75,8 +75,8 @@ export const GAME_SYSTEM_AUTHORING_TOOLS:readonly ToolDefinition[]=[
       if(args.badgeCount!==undefined){
         const n=Number(args.badgeCount);
         if(!Number.isInteger(n)||n<0)throw Error('badgeCount 는 0 이상의 정수여야 합니다.');
-        if(current&&n<current.badges.length){const r=resizeCampaignGyms(p,n);notice.push(`체육관 ${r.before}→${r.after}개(배지 ${r.removedBadges.join('·')||'없음'} 제거, 관장 이벤트 ${r.retiredLeaderEvents.length}개 정리, 잠금 ${r.rewiredConditions}곳 이동)`);}
-        else if(current&&n>current.badges.length)throw Error(`체육관은 늘릴 수 없습니다(현재 ${current.badges.length}개). 새 마을·체육관 맵과 관장 이벤트를 직접 지은 뒤 definition.badges 로 등록하세요.`);
+        if(current&&n<current.badges.length){const r=resizeCampaignGyms(p,n);notice.push(`체육관 ${r.before}→${r.after}개(배지 ${r.removedBadges.join("·")||"없음"} 제거, 체육관 건물·내부 ${r.removedGyms.length}곳 철거, 관장 이벤트 ${r.retiredLeaderEvents.length}개 정리, 잠금 ${r.rewiredConditions}곳 이동)`);}
+        else if(current&&n>current.badges.length)throw Error(`체육관은 늘릴 수 없습니다(현재 ${current.badges.length}개 → ${n}개). 늘리려면 build_monster_game {mode:"create", replace:true, gymCount:${n}} 로 그 규모를 새로 짓거나, 새 마을·체육관 맵과 관장 이벤트를 직접 지은 뒤 definition.badges 로 등록하세요.`);
       }
       const base=p.system.monsterCampaign;
       const next:NonNullable<Project['system']['monsterCampaign']>=base?JSON.parse(JSON.stringify(base)) as NonNullable<Project['system']['monsterCampaign']>:{id:'',name:'',speciesIds:[],speciesNotes:{},badges:[],locations:[],objectives:[]};
