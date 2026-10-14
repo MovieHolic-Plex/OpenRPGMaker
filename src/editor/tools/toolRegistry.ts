@@ -113,7 +113,7 @@ import { CHARACTER_APPEARANCE_TOOLS } from "./characterAppearanceTools";
 import { WORLD_GRAPH_TOOLS } from "./worldGraphTools";
 import { TILE_QUERY_TOOLS } from "./tileQueryTool";
 import { AUTHOR_BEODEUL_TOWN_TOOL } from "./authorBeodeulTown";
-import { AUTHOR_BEODEUL_DUNGEON_TOOL } from "./beodeulDungeonTools";
+import { AUTHOR_BEODEUL_DUNGEON_ALIAS, AUTHOR_DUNGEON_TOOL } from "./dungeonTools";
 import { PROJECT_TOOLS } from "./projectTools";
 import { FIND_TOOLS } from "./discoveryTools";
 import { LIFE_SYSTEM_TOOLS } from "./lifeSystemTools";
@@ -224,7 +224,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...PROJECT_TOOLS,
   ...withDomain(VOCABULARY_TOOLS_V3, "tile"),
   AUTHOR_BEODEUL_TOWN_TOOL,
-  AUTHOR_BEODEUL_DUNGEON_TOOL,
+  AUTHOR_DUNGEON_TOOL,
+  AUTHOR_BEODEUL_DUNGEON_ALIAS,
   ...WORLD_STRUCTURE_TOOLS,
   ...SPATIAL_TOOLS,
   BUILD_CONCEPT_EXAMPLE_TOOL,
