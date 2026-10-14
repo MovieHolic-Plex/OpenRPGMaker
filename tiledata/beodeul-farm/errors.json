@@ -1,0 +1,80 @@
+[
+ {
+  "id": "fence-gap",
+  "code": "fence-gap",
+  "at": [
+   19,
+   14
+  ],
+  "caption": "목장 울타리 서쪽 세로 한 칸을 뺐다",
+  "detected": true,
+  "defects": [
+   {
+    "code": "fence-gap",
+    "x": 19,
+    "y": 13,
+    "note": "울타리가 S 쪽에서 끊긴다"
+   },
+   {
+    "code": "fence-gap",
+    "x": 19,
+    "y": 15,
+    "note": "울타리가 N 쪽에서 끊긴다"
+   }
+  ]
+ },
+ {
+  "id": "crop-off-soil",
+  "code": "crop-off-soil",
+  "at": [
+   16,
+   4
+  ],
+  "caption": "익은 배추를 밭 밖 풀 위에 얹었다",
+  "detected": true,
+  "defects": [
+   {
+    "code": "crop-off-soil",
+    "x": 16,
+    "y": 4,
+    "note": "작물이 경작지 밖(풀·길) 위에 있다"
+   }
+  ]
+ },
+ {
+  "id": "door-unreached",
+  "code": "door-unreached",
+  "at": [
+   10,
+   8
+  ],
+  "caption": "닭장 문 앞 모랫길 칸을 풀로 바꿨다",
+  "detected": true,
+  "defects": [
+   {
+    "code": "door-unreached",
+    "x": 10,
+    "y": 8,
+    "note": "bd-farm-coop 문 앞 칸이 길이 아니다"
+   }
+  ]
+ },
+ {
+  "id": "edge-mismatch",
+  "code": "farmland-edge-mismatch",
+  "at": [
+   18,
+   3
+  ],
+  "caption": "밭 왼쪽 위 모서리 칸을 몸통 칸으로 바꿨다(둑·풀 테가 사라진다)",
+  "detected": true,
+  "defects": [
+   {
+    "code": "farmland-edge-mismatch",
+    "x": 18,
+    "y": 3,
+    "note": "경작지 칸 27777 ≠ 이웃 모양 27648"
+   }
+  ]
+ }
+]

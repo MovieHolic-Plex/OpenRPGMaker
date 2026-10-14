@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2dde8d96e367096862189e7f713d7f10eb447d1cf2a4d214b4dd0901bda822df",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece 'endE' (thick posts with cap tops, rails)",
+ "label": "beodeul_farm/fence_endE",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical fence post and horizontal rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The thick fence post has a clearly defined top surface 4 pixel rows tall (rows 1-4) in a lighter cap perspective, with a front face extending below it down to row 14. The horizontal rails also show top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5204
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fence post and rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The post has a clearly defined 4-row top cap surface visible from above (rows 2-5), distinctly separated from the darker vertical front face starting at row 6. The horizontal rails also show top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4996
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fence post and rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The post has a clearly defined 4-row top surface cap (rows 2-5) visible from above before transitioning to the vertical south face (rows 6-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4189
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden fence post with connecting rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fence post features a clearly drawn top surface measuring 4 rows tall (rows 2-5) above its front vertical face (rows 6-14), providing standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3889
+  }
+ ],
+ "decidedAt": "2026-10-14T05:12:51.330Z",
+ "cells": {
+  "16": [
+   "d34491b0a983ba05"
+  ],
+  "24": [
+   "0d369d0fdf183f8f",
+   "28cae1e6b83afc81",
+   "5f5e542d2bea9b42",
+   "a5ec33d7cfc3a17b",
+   "dbc67fac5bc6fbc3",
+   "f2e751801ba10fe8"
+  ],
+  "32": [
+   "14c58334d335fe8c",
+   "483c8794184e2972",
+   "53e9c92e8d52d3e7",
+   "62c417e4d6b5b1a7",
+   "797cff75c592095d",
+   "8fe1d9fd8003d9d6"
+  ],
+  "48": [
+   "0bf7cd7896454652",
+   "0f80cdcd45bc127f",
+   "2462cb62acdea1c2",
+   "69b34f702c7da846",
+   "6a3386fd67fd6f2d",
+   "ca48c59823b32580"
+  ]
+ }
+}

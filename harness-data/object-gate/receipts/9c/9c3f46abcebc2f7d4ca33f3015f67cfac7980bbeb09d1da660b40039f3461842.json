@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9c3f46abcebc2f7d4ca33f3015f67cfac7980bbeb09d1da660b40039f3461842",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "farm crop plants: tomato sprout (plants only, the soil is a separate tile underneath)",
+ "label": "beodeul_farm/crop_tomato_sprout",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tomato sprouts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each sprout is drawn as a flat 2D front-elevation 'Y' shape (1px vertical stem with two 1px side leaves at row 11) with zero top-down depth or top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4855
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tomato sprouts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sprouts are drawn as flat 2D Y-shapes in pure front elevation with no visible top surface or 3/4 foreshortening on the leaves or stem.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3543
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tiny two-leaf sprouts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sprouts are drawn entirely as flat 2D 'Y' shapes in pure front elevation with a 1px vertical stem and two side pixels for leaves, showing zero top-down foreshortening or depth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4224
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tomato sprouts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each sprout is drawn as a flat 2D Y-shape icon with vertical stems and two side leaves, showing a pure front elevation with 0 rows of visible top surface or 3/4 angle foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3294
+  }
+ ],
+ "decidedAt": "2026-10-14T05:12:51.329Z",
+ "cells": {
+  "16": [
+   "f197fb4c3da3140f"
+  ],
+  "24": [
+   "1a1d83f0104f5d84",
+   "2ecfebf3e59ee6c8",
+   "38da157c28aeeb45",
+   "7424777e53867cbb",
+   "75cab5ba7586de74",
+   "f4eacbf4498e5cf9"
+  ],
+  "32": [
+   "111c3f82ca1ac4b7",
+   "2548d38b2807a363",
+   "ac56b377e22dd337",
+   "d4ddc90cd10df496",
+   "da2a21dbb5ccc6f0",
+   "f02f99162a40f678"
+  ],
+  "48": [
+   "07fb69cf78024edc",
+   "104b0be61148d740",
+   "6a97e251960b89a1",
+   "788fb0de647bf287",
+   "7fc2cd573993f80b",
+   "84ee1dbf819da636"
+  ]
+ }
+}

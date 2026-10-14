@@ -1,0 +1,156 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2059a9eb0b925a15bf15db4887c0c19079f8bcfdd81ab57849ed36d8c3cd6fda",
+ "width": 96,
+ "height": 96,
+ "kind": "structure",
+ "name": "farm barn building (red plank walls, tiled gable roof, hayloft dormer, big double door)",
+ "label": "beodeul_farm/object_barn",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "barn with south-facing tiled roof slope and front wall",
+    "kind_matches": true,
+    "top_rows": 52,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building properly displays a large foreshortened south-facing tiled roof slope (rows 6-58, approximately 52 rows) above its front vertical wall (rows 59-93), standard for 3/4 top-down RPG architecture.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7105
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "farm barn building with red plank walls and tiled roof",
+    "kind_matches": true,
+    "top_rows": 53,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The southern roof slope is viewed from above across rows 6-58 (over 50 pixel rows of tiled roof surface), resting over the vertical front wall facade in classic RPG Maker 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7677
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "barn building with tiled roof slope and red plank front wall",
+    "kind_matches": true,
+    "top_rows": 52,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building properly presents the standard 3/4 perspective with an expansive south-facing roof slope visible across rows 6 to 58 (~52 rows) above the vertical front wall (rows 59-93).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7291
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "farm barn building",
+    "kind_matches": true,
+    "top_rows": 52,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building clearly shows its south-facing tiled roof slope across rows 6 to 57 (approximately 52 source pixels tall) foreshortened above the front wall, exactly matching classic top-down JRPG building perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7476
+  }
+ ],
+ "decidedAt": "2026-10-14T05:12:51.331Z",
+ "cells": {
+  "16": [
+   "230a98ceb87f1fa8",
+   "2bf69caa25d623c2",
+   "3305bc84bdc44c13",
+   "346212462b8be103",
+   "37210651c9e27198",
+   "4034eb7a3686e012",
+   "4d1964d1d2b925e6",
+   "56875fb650a674de",
+   "60af0ea05aefde4b",
+   "69384b919fa184c1",
+   "6a847ed1f049a069",
+   "70c85eb92638c9d9",
+   "8193a907dd0121a9",
+   "84faa7eeceb980d8",
+   "8583db9a1488f5b5",
+   "968819f8eaeda5f6",
+   "a5ce9a4bfad8b9e9",
+   "a9fbc708467a27c9",
+   "bf46ee3ae50c77ed",
+   "ca2bc72a0df22e49",
+   "d01e82ef666a7e4b",
+   "d168df88beffa2a9",
+   "df1506f276cb5140",
+   "e0e4f4ffc19c7289",
+   "e0f6e6a6d4fe323a",
+   "e380e0115bac0d01",
+   "eb29e4562acb403d",
+   "ef806f8c52ecf799",
+   "f2c02ef56cfd8d74",
+   "fadd165ee620d387"
+  ],
+  "24": [
+   "02d4eb7cdda9a366",
+   "066753cf8ee57e3b",
+   "13460c242382c14b",
+   "37e5a519f80f850f",
+   "39472df43f384747",
+   "49315f8470839dac",
+   "589ed66c2ef8e99f",
+   "7f5f3b868c90ba49",
+   "91b2b7ba58a1b844",
+   "96da2508c7fa422a",
+   "98d639903981c92a",
+   "a2a112df2562fe6e",
+   "b42cfd684fec1329",
+   "cf050d59afb2aeb4",
+   "fb21c6b664162bc1",
+   "ffeaad3ed76204ad"
+  ],
+  "32": [
+   "04ce8980e130be94",
+   "31ca94f31069757b",
+   "60c8d297c12e627a",
+   "74d3d0ae794077e2",
+   "883d3b582341339a",
+   "b67336d760b477e6",
+   "db96b9e7cc0628e5",
+   "dc89a4eb05144174",
+   "f7ba93a2da355f77"
+  ],
+  "48": [
+   "0841543468732de2",
+   "2163c9a530e39da0",
+   "3c12ef508ab1544e",
+   "dc69a2ad7059047f"
+  ]
+ }
+}
