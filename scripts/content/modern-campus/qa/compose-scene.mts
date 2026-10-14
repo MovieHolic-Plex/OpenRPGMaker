@@ -7,6 +7,7 @@ import { composeCampus, campusPaletteFromTileset } from "../../../../src/project
 const args = process.argv.slice(2).filter((a) => a !== "--");
 const [out, style, W, H, seed] = args;
 const pal = campusPaletteFromTileset(data as never);
-const r = composeCampus({ width: Number(W), height: Number(H), style: style as "school" | "university", seed: Number(seed) }, pal);
+// 참고문서 예제는 문 그림을 전부 보여 준다(entrances:"all") — 도구에서는 실내에 잇는 건물에만 문이 난다.
+const r = composeCampus({ width: Number(W), height: Number(H), style: style as "school" | "university", seed: Number(seed), entrances: ["all"] }, pal);
 fs.writeFileSync(out!, JSON.stringify({ width: Number(W), height: Number(H), style, seed: Number(seed), lower: r.lower, upper: r.upper, buildings: r.buildings, start: r.start, gate: r.gate, props: r.props, notes: r.notes }));
 console.log(`${style} ${W}x${H} seed ${seed}: 건물 ${r.buildings.length} · 소품 ${r.props.length} · ${r.notes.join(" / ")}`);

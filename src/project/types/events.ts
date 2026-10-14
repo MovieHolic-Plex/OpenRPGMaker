@@ -725,6 +725,12 @@ export interface EventObjectInteraction {
   directions?: Dir[];
 }
 
+/** 시야에 처음 들어온 순간의 놀람 — 머리 위 말풍선을 띄우고 holdMs 동안 멈췄다가 쫓는다(chase 전용). */
+export interface ChaseSightAlert {
+  emote: EmoteKind;
+  holdMs: number;
+}
+
 export interface EventPageMovement {
   type: AutonomousMovement;
   speed: number;
@@ -738,6 +744,8 @@ export interface EventPageMovement {
   pathfind?: boolean;
   /** 추적 결정 간격(ms) 명시 오버라이드. 생략 시 frequency 랭크로 결정. */
   moveIntervalMs?: number;
+  /** chase 전용. 시야에 처음 들어온 순간 말풍선+짧은 멈춤 뒤 추격을 시작한다. */
+  sightAlert?: ChaseSightAlert;
 }
 
 export interface EventPage {

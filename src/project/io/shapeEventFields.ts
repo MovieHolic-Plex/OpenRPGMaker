@@ -495,6 +495,12 @@ function validatePageShape(label: string, value: unknown): void {
   if (movement.sightRange !== undefined) requireNumber(`${label}.movement.sightRange`, movement.sightRange);
   if (movement.giveUpRange !== undefined) requireNumber(`${label}.movement.giveUpRange`, movement.giveUpRange);
   if (movement.pathfind !== undefined) requireBoolean(`${label}.movement.pathfind`, movement.pathfind);
+  if (movement.sightAlert !== undefined) {
+    const alert = requireRecord(`${label}.movement.sightAlert`, movement.sightAlert);
+    requireString(`${label}.movement.sightAlert.emote`, alert.emote);
+    const holdMs = requireNumber(`${label}.movement.sightAlert.holdMs`, alert.holdMs);
+    assert(Number.isFinite(holdMs) && holdMs >= 0 && holdMs <= 5000, `${label}: 시야 놀람 멈춤은 0~5000ms`);
+  }
   if (movement.pursuit !== undefined) {
     const pursuit = requireRecord(`${label}.movement.pursuit`, movement.pursuit);
     assert(pursuit.scope === "map" || pursuit.scope === "connected", `${label}: 추격 범위 오류`);

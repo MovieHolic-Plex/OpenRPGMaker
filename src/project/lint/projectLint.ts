@@ -22,6 +22,7 @@ import { lintHorrorAuthoring } from "./horrorAuthoringLint";
 //  - story-flag:*          (warning) 서사 플래그 read/write/미선언 사용 문제
 //  - quest-graph:*         (error|warning) 퀘스트 그래프 조건/도달성 문제
 //  - reachability          (error)   opts.reachability 지정 시 도달 불가
+//  - campus-dead-door      (error|warning) 캠퍼스 문 그림이 막혔거나 닿지 못하거나 어디로도 이어지지 않음(lint/campusDoorLint.ts)
 //  - map-location-missing-ref (error) 삭제된 명명 로케이션을 가리키는 이벤트 조건/인카운터
 //  - map-location-degenerate  (warning) 맵 축소로 경계 1×1 까지 눌린 로케이션
 //  - map-location-duplicate-name (warning) 같은 맵 안 로케이션 표시명 중복
@@ -57,6 +58,7 @@ import { buildStoryFlagUsageIndex, declaredStoryFlagTargets, usageBucketFor } fr
 import type { Command, GameEvent, GameMap, LintSeverity, Project, Trigger } from "../types";
 import { lintWorldGraph } from "../worldGraph";
 import { clusterRuleLintIssues } from "./clusterRuleLint";
+import { checkCampusDoors } from "./campusDoorLint";
 import { checkReachability, isAdjacentOrOn, type ReachabilitySpec } from "./reachability";
 import { activeTileGrafts } from "@/assets/tileGrafts";
 import { groundSupportIssues } from "../groundSupport";
@@ -112,6 +114,7 @@ export function projectLint(project: Project, opts: LintOptions = {}): LintIssue
   checkShopIntegrity(project, issues);
   checkPresentItemIntegrity(project, issues);
   checkMapNamedLocations(project, issues);
+  checkCampusDoors(project, issues);
   return issues;
 }
 

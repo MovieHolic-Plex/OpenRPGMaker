@@ -107,14 +107,14 @@ export const CAMPUS_POINTER_LINE =
   "학교·학원·캠퍼스·교실·동아리·교정(운동장·교문·기숙사·급식실·강의실) 풍경은 번들 칩셋 modern_campus 로 짓는다(일본풍 학교는 jp_city, 마법 학교는 wizarding_world): "
   + "새 맵 create_map tilesetId:\"modern_campus\"(보는 맵이 다른 계열이면 ask_tileset_change 로 견본을 보이고 묻는다). "
   + "먼저 list_tileset_references({tilesetId:\"modern_campus\"}) 의 교정 배치·교사 조립 예제를 읽고, 야외는 compose_campus_grounds({style:\"school\"|\"university\", seed}) 한 번으로 깐다(학교 교정 48×36 이상·대학 캠퍼스 52×40 이상, 건물은 buildings 로 고른다 — 씨앗마다 운동장 방향·나무·소품 자리가 달라진다). "
-  + "건물 문은 build_hand_interior_room 으로 지은 실내와 link_campus_interior 로 잇는다. 소품을 더 놓을 때는 list_tileset_objects → stamp_tileset_object 로 키트째 찍는다(낱칸 번호로 칠하지 않는다). "
+  + "실내는 build_hand_interior_room 으로 먼저 짓고, 들어갈 건물만 compose_campus_grounds 의 entrances:[{building,interiorMapId}] 로 지정한다 — 거기에만 문이 그려지고 이음까지 한 번에 난다(나머지 건물은 문 없는 벽면, 장식 문 금지). 나중에 건물을 더 열 때는 link_campus_interior({building,interiorMapId}). 소품을 더 놓을 때는 list_tileset_objects → stamp_tileset_object 로 키트째 찍는다(낱칸 번호로 칠하지 않는다). "
   + "교실·복도·교무실·급식실·도서관·보건실·화장실·기숙사 방·동아리방·강의실 실내는 build_hand_interior_room({tileset:\"modern_campus\", floor, wall, layout:{program:\"school-class-wing\"} 또는 layout:{rooms:[{kind:\"classroom\"},{kind:\"classroom\"},{kind:\"corridor\"}]}}) 한 번으로 짓는다(방 구성 " + CAMPUS_PROGRAMS.join("·") + ") — "
   + "부품은 list_hand_interior_parts({tileset:\"modern_campus\", room:\"교실\"}). 교실 문은 같은 맵 안의 문 그림(접근칸 비움)이고 이동 이벤트는 계단·건물 출입구에만 둔다. 사람(학생·교사)은 Actor1 캐릭터 이벤트로 놓는다.";
 
 /** 캠퍼스 맵이 범위에 있을 때만 붙는 상세 순서. */
 export const CAMPUS_DETAIL_LINE =
-  "이 작업의 맵은 캠퍼스 칩셋(modern_campus)이다. ⓪ 야외는 compose_campus_grounds 로 한 번에 깔고(손댄 맵은 replace:true) 결과 data.buildings 의 문 칸을 실내 이음에 쓴다 — 아래 ①~③ 은 그 규칙이고, 직접 칠해야 할 때만 따른다. ① 학교는 남쪽 교문→주 통로→북쪽 건물 줄 앞 광장, 운동장(흙·흰 선·골대·스탠드)은 통로 옆, 정원은 반대쪽이다. 대학은 쿼드 잔디 + 십자 길 + 분수 광장, 북쪽 세 동·남쪽 두 동이다(참고문서 「배치 예제」). 깔고 나서 소품을 더하면 문 접근칸·길을 막지 않는다. "
-  + "② 건물은 키트(mc-bld-*)째 찍는다 — 낱칸 번호로 칠하지 않는다. 깃대·소화전·자판기·철봉·허들·철망 울타리·미닫이 교문은 이 칩셋에 없다(3/4 관문 미통과로 뺐다). ③ 건물 문 앞 접근칸 한 줄은 비우고, 안은 build_hand_interior_room 으로 짓고 문마다 link_campus_interior 로 잇는다(건물 문 그림 ≠ 접근칸 ≠ 이동 이벤트). "
+  "이 작업의 맵은 캠퍼스 칩셋(modern_campus)이다. ⓪ 야외는 compose_campus_grounds 로 한 번에 깔고(손댄 맵은 replace:true) 결과 data.buildings 의 건물 이름을 entrances 에 쓴다(실내가 있는 건물만 문이 생긴다) — 아래 ①~③ 은 그 규칙이고, 직접 칠해야 할 때만 따른다. ① 학교는 남쪽 교문→주 통로→북쪽 건물 줄 앞 광장, 운동장(흙·흰 선·골대·스탠드)은 통로 옆, 정원은 반대쪽이다. 대학은 쿼드 잔디 + 십자 길 + 분수 광장, 북쪽 세 동·남쪽 두 동이다(참고문서 「배치 예제」). 깔고 나서 소품을 더하면 문 접근칸·길을 막지 않는다. "
+  + "② 건물은 키트(mc-bld-*)째 찍는다 — 낱칸 번호로 칠하지 않는다. 깃대·소화전·자판기·철봉·허들·철망 울타리·미닫이 교문은 이 칩셋에 없다(3/4 관문 미통과로 뺐다). ③ 건물 문 앞 접근칸 한 줄은 비우고, 안은 build_hand_interior_room 으로 짓고 건물마다 entrances 또는 link_campus_interior({building}) 로 잇는다. 그려진 문은 접근칸이 걸을 수 있고 실내 이동 이벤트가 있어야 하며, 어기면 projectLint 가 campus-dead-door error 로 막는다. "
   + "④ 교실 동은 교실 둘 + 복도, 특별교실 동은 도서관·보건실·교무실 + 계단, 급식·동아리 동은 급식실·화장실·동아리방, 기숙사는 1층 라운지·방 + 2층 방·공용 욕실을 계단 쌍으로 잇는다(예제 평면 5장). ⑤ check_reachability 로 교문→현관→교실까지 이어지는지 확인한다.";
 
 /** 캠퍼스 실내 줄 — 실내 요청에 칩셋이 있으면 붙는다. */
@@ -147,7 +147,7 @@ export function formatCampusNote(target: CampusTarget, targetMap: { id: string; 
   return [
     "[학교·캠퍼스 시공 — 캠퍼스 칩셋] 이 요청의 칩셋은 번들 캠퍼스 칩셋(modern_campus)이다. author_beodeul_town 은 버들항 전용이라 쓰지 않는다 — 일본풍 학교 키트(jp_city)나 마법 학교 도구도 섞지 않는다.",
     where,
-    "순서: list_tileset_references → read_tileset_reference 로 교정 배치·교사 조립 예제를 읽는다 → resize_map(학교 48×36·대학 52×40 이상) → compose_campus_grounds({style:\"school\"} 또는 {style:\"university\"}) 로 교문·건물·길·운동장(쿼드)을 한 번에 → 건물마다 build_hand_interior_room({tileset:\"modern_campus\", exitWidth:2}) 실내 → link_campus_interior 로 문마다 잇기 → 소품은 stamp_tileset_object → check_reachability.",
+    "순서: list_tileset_references → read_tileset_reference 로 교정 배치·교사 조립 예제를 읽는다 → resize_map(학교 48×36·대학 52×40 이상) → 들어갈 건물마다 build_hand_interior_room({tileset:\"modern_campus\", exitWidth:2}) 실내를 먼저 짓고 → compose_campus_grounds({..., entrances:[{building,interiorMapId}]}) 로 교문·건물·길·운동장·문·이음을 한 번에 → 소품은 stamp_tileset_object → check_reachability.",
   ].join("\n");
 }
 
