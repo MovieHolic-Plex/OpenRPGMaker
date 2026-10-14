@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9a3aea69e9aa7a0702682fa489e2f01eb92657e703accb1f886fe44e651dbe16",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "둥근 회양목",
+ "label": "modern-campus/mc-shrub",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "boxwood shrub",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shrub is drawn in pure 2D front elevation (side-scroller style): straight vertical sides from rows 7 to 12, a completely flat horizontal dividing line at row 6, and a flat horizontal base line at row 13 with no elliptical curving or foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8367
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rounded boxwood bush",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shrub is drawn in pure front elevation with straight horizontal bands (row 6 and row 13) and a perfectly vertical line down row 7-12. In 3/4 top-down view, circular cross-sections and the rounded top should curve into foreshortened ellipses/top-facing surface, but here no top surface is visible (0 rows) and horizontal dividing lines are flat.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6946
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "trimmed round boxwood bush",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bush is drawn in pure front elevation: its horizontal section lines (row 6) and lower rim (row 13) are rendered as completely straight horizontal lines across the entire width instead of foreshortened downward curves/ellipses for a 3/4 perspective, showing no top-down surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7976
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round boxwood shrub",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shrub is drawn in pure 2D front elevation with straight vertical side outlines (cols 3 and 14 across rows 6-12), a flat horizontal bottom cut at row 13, and no foreshortened top surface visible from the 3/4 overhead perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9834
+  }
+ ],
+ "decidedAt": "2026-10-14T08:06:14.291Z",
+ "cells": {
+  "16": [
+   "9e639918192ff881"
+  ],
+  "24": [
+   "041347a6c10fdda8",
+   "41860da2e443771b",
+   "622e0bcb4babe83f",
+   "66fc21dcebb137a0",
+   "7b026dd09d566448",
+   "dbf9980bf83ea50b"
+  ],
+  "32": [
+   "2a2e0394d6b40fb3",
+   "3735ea9bbc7956e3",
+   "3ff3bb37cfda7246",
+   "866a78c8f7724b18",
+   "8e202cb9076b5f8d",
+   "8f8277bedf3f5ecb"
+  ],
+  "48": [
+   "144ca8e4d3b4a1b9",
+   "6258a0cdee516a9c",
+   "632e3d42da8a8d7c",
+   "8025315fbf82292a",
+   "adc768796bb5fee9",
+   "fe7bdb6743b8e537"
+  ]
+ }
+}
