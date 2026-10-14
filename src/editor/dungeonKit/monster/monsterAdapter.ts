@@ -59,6 +59,8 @@ interface MonsterKit {
    * 속 변형이 없어 바깥이 한 장짜리 높은 대지가 된다 — 시트의 「방 바깥 여백」 줄무늬 칸은 쓰지 않는다). 기본 field.
    */
   readonly wallStyle?: "field" | "plateau";
+  /** field 벽을 열린 칸에서 이만큼 안쪽까지만 벽 그림으로 두고 그 바깥은 허공 칸으로 둔다(벽과 바닥 명암이 비슷한 동굴을 어두운 덩이로 읽히게). 생략하면 끝까지 벽. */
+  readonly wallReach?: number;
   /** 입구 표시: 어디에(N 북쪽 벽 앞면 위 / S 입구 방 아래 벽 줄), 어느 층에 그리나. 기본 N·upper(mouth). */
   readonly entry?: { readonly side: "N" | "S"; readonly tile: number; readonly layer: "lower" | "upper" };
   /** 층마다 바닥을 종류별로(방 종류 → 변형 번호). */
@@ -72,7 +74,7 @@ const KIT = (id: string) => `mk-monster-dungeon-${id}`;
 export const MONSTER_KITS: Record<string, MonsterKit> = {
   // 마른 갈색 동굴(포켓몬 길 동굴): monster_overworld 의 cave_wall + 동굴 바닥 + 석순. 물은 없다.
   cave: {
-    label: "마른 동굴(갈색 바위 벽 + 동굴 모래 바닥)", sheet: "overworld", wall: "cave_wall", voidTile: 693,
+    label: "마른 동굴(갈색 바위 벽 + 동굴 모래 바닥)", sheet: "overworld", wall: "cave_wall", voidTile: 693, wallReach: 3,
     floor: [688, 689, 690, 691, 692], floorWeights: [4, 3, 3, 2, 2],
     deco: [
       { kit: "mk-monster-overworld-stalag", w: 1, per: [1, 3], inset: 1 },
@@ -81,7 +83,7 @@ export const MONSTER_KITS: Record<string, MonsterKit> = {
     mouth: 753, ladder: 753, hole: 752, entry: { side: "N", tile: 753, layer: "lower" },
   },
   "cave:wet": {
-    label: "바다 동굴(젖은 바위 벽 + 물웅덩이)", sheet: "dungeon", wall: "se_wall", voidTile: 1520,
+    label: "바다 동굴(젖은 바위 벽 + 물웅덩이)", sheet: "dungeon", wall: "se_wall", voidTile: 1520, wallReach: 3,
     floor: [1056, 1057, 1058, 1059, 1060], floorWeights: [5, 3, 3, 2, 2], speck: { tiles: [1061], p: 0.012 },
     liquid: { group: "se_pool", bridge: "se_isle" },
     deco: [
@@ -93,7 +95,7 @@ export const MONSTER_KITS: Record<string, MonsterKit> = {
     mouth: 1506, ladder: 1505, hole: 1507,
   },
   volcano: {
-    label: "화산 동굴(화산암 벽 + 용암 + 식은 껍질 다리)", sheet: "dungeon", wall: "lv_wall", voidTile: 960,
+    label: "화산 동굴(화산암 벽 + 용암 + 식은 껍질 다리)", sheet: "dungeon", wall: "lv_wall", voidTile: 960, wallReach: 3,
     floor: [176, 177, 178, 179, 180, 181, 182], floorWeights: [3, 3, 3, 3, 2, 1, 1], speck: { tiles: [183], p: 0.02 },
     liquid: { group: "lv_lava", bridge: "lv_cb" },
     deco: [
@@ -117,7 +119,7 @@ export const MONSTER_KITS: Record<string, MonsterKit> = {
     mouth: 65, ladder: 64, hole: 66,
   },
   labyrinth: {
-    label: "유적 미궁(유적 돌담 칸막이 미로 + 모래 바닥)", sheet: "dungeon", wall: "ru_pb", voidTile: 1823, wallStyle: "plateau",
+    label: "유적 미궁(유적 돌담 칸막이 미로 + 모래 바닥)", sheet: "dungeon", wall: "ru_pb", voidTile: 1520, wallStyle: "plateau",
     floor: [1776, 1777, 1778, 1779], floorWeights: [4, 3, 2, 2],
     deco: [
       { upper: 1840, w: 1, per: [0, 2], inset: 0 },
@@ -126,7 +128,7 @@ export const MONSTER_KITS: Record<string, MonsterKit> = {
     mouth: 1792, ladder: 1792, hole: 1792, entry: { side: "S", tile: 1792, layer: "lower" },
   },
   temple: {
-    label: "유적 신전(유적 돌담 + 열주 홀 + 제단)", sheet: "dungeon", wall: "ru_pb", voidTile: 1823, wallStyle: "plateau",
+    label: "유적 신전(유적 돌담 + 열주 홀 + 제단)", sheet: "dungeon", wall: "ru_pb", voidTile: 1520, wallStyle: "plateau",
     floor: [1776, 1777, 1778, 1779], floorWeights: [4, 3, 2, 2],
     floorByKind: { nave: [1780, 1781, 1782, 1783], boss: [1780, 1781, 1782, 1783], vault: [1780, 1781, 1782, 1783], shrine: [1780, 1781, 1782, 1783] },
     deco: [
@@ -199,9 +201,12 @@ export function composeMonsterDungeon(ts: TilesetDef, spec: DungeonSpec): Dungeo
   const ring = false;
   const plateau = kit.wallStyle === "plateau";
   const nearOpen = (x: number, y: number) => { for (let dy = -1; dy <= 1; dy += 1) for (let dx = -1; dx <= 1; dx += 1) if (open(x + dx, y + dy)) return true; return false; };
-  const isWall = (x: number, y: number) => inb(x, y) && !open(x, y) && (!ring || nearOpen(x, y));
+  // plateau(유적 돌담): 속 변형이 없어 방 바깥 전체가 옅은 민트 대지 한 장으로 깔렸다(출하 플레이어에서도 같다 — 칸 1902 = ru_pb 255 마스크). 열린 칸에서 PLATEAU_REACH 칸 안쪽만 돌담 대지로 두고 그 바깥은 어두운 허공 칸으로 둔다.
+  const PLATEAU_REACH = kit.wallReach ?? 2;
+  const nearOpenR = (x: number, y: number, r: number) => { for (let dy = -r; dy <= r; dy += 1) for (let dx = -r; dx <= r; dx += 1) if (open(x + dx, y + dy)) return true; return false; };
+  const isWall = (x: number, y: number) => inb(x, y) && !open(x, y) && (!ring || nearOpen(x, y)) && ((!plateau && kit.wallReach === undefined) || nearOpenR(x, y, PLATEAU_REACH));
   // field: 맵 밖은 벽으로 본다(가장자리 칸이 이어진 벽). ring: 맵 밖은 바깥 여백.
-  const wallOn = (x: number, y: number) => (inb(x, y) ? isWall(x, y) : !ring);
+  const wallOn = (x: number, y: number) => (inb(x, y) ? isWall(x, y) : !ring && !plateau && kit.wallReach === undefined);
   for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
     if (open(x, y)) continue;
     if (!plateau && (x === 0 || y === 0 || x === W - 1 || y === H - 1)) continue;   // 바깥 어둠
