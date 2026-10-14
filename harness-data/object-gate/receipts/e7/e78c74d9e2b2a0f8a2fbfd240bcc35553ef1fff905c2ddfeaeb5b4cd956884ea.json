@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e78c74d9e2b2a0f8a2fbfd240bcc35553ef1fff905c2ddfeaeb5b4cd956884ea",
+ "width": 64,
+ "height": 32,
+ "kind": "terrain",
+ "name": "hull bulkhead wall front face strip under the ceiling autotile: upper and lower face rows, four variants",
+ "label": "sf-station/sf-wall-face-hull",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bulkhead wall face strip",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid wall face terrain autotile strip. As terrain (vertical wall face), it correctly depicts the front surface of the wall designed to sit below ceiling/wall-top tiles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4753
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bulkhead wall front face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile set showing vertical bulkhead wall face strips intended to sit beneath ceiling autotiles; no receding isometric sides.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3669
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bulkhead wall face tiles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall face autotile strip representing terrain bulkhead surfaces; correctly drawn as south-facing vertical terrain with no improper isometric side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5153
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hull bulkhead wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain autotile representing the vertical front face of a sci-fi bulkhead wall; as vertical wall face terrain, it properly depicts the south-facing surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4485
+  }
+ ],
+ "decidedAt": "2026-10-14T08:35:45.463Z",
+ "cells": {
+  "16": [
+   "618777542bc367b2",
+   "6c98d292342b863d",
+   "7f926418d17ab79c",
+   "8d8f8991ffeb5a07",
+   "e231f2acf80b01f9",
+   "f31bc1150f1c9614",
+   "f4cf1770dc9e0c9e",
+   "f683098938c02f34"
+  ],
+  "24": [
+   "0107df09d79c721d",
+   "16d15fec993cf36f",
+   "174668471d5cd79f",
+   "27cd0135215471b7",
+   "2abcee11b8f6ca65",
+   "3f8a5d08dbaf4066",
+   "446f031fe5bd0768",
+   "4471679156c9c42d",
+   "45fb6a1ff3a9f42d",
+   "4862c57a44c226d4",
+   "52f2b27bb6ac2b58",
+   "64f1083024c555a7",
+   "6664828491dfeb09",
+   "693471e2aad5b5ef",
+   "733983cd18eabfdf",
+   "73704e6402c42208",
+   "81541b492f0d00c3",
+   "82c5549f7e98c4ef",
+   "8c7081dfc5cfff8c",
+   "8dc53e2295139c49",
+   "924809016bd24a92",
+   "afa9f54d606e6275",
+   "b9c09f5613e52dcb",
+   "baea0b4d1e231ff5",
+   "bb3fb98b7b9ff303",
+   "bb71c68480007d39",
+   "bd1a810cee5d7565",
+   "c1533a8b72143676",
+   "c7abd403b613c33a",
+   "ce098c9bb92bb2f2",
+   "dae4eb6aaf3b1592",
+   "df2eec59ff60d174",
+   "e7cc08818cee1f4e",
+   "e8bd8d30b87994f2",
+   "effae374e5bfe48d",
+   "f259f6546f7ad161"
+  ],
+  "32": [
+   "2d5307a4324926a1",
+   "300e28a82dea9b49"
+  ],
+  "48": [
+   "0882f40cf644a7d8",
+   "2e2999f7c111975c",
+   "409acdaa98b5d7db",
+   "5c0f6b270ae75a40",
+   "603d914cd8677937",
+   "6ae2e1590a738197",
+   "a6486727e79c2953",
+   "c49f5640709d36d8",
+   "cd6372d0eae1925e",
+   "eff3f71ce755d3a6",
+   "f2c686709d2d74f6",
+   "f7edbdf7ec140f1b"
+  ]
+ }
+}
