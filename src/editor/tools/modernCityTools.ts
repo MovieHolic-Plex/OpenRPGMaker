@@ -1,6 +1,7 @@
 // 도쿄풍 도시(modern_city) 조수 도구 — compose_modern_city_street(거리 블록 한 장), link_modern_city_interior(건물 문 ↔ 실내 맵).
 // 배치는 구성기 src/project/modernCityStreetComposer.ts 가 짠다(도로 단면·교차로 → 건물 키트 남향 → 공원 → 소품 → 차). 이 도구는 결과를 맵에 쓰고
 // 문 칸 막힘·접근칸 걸음·시작 칸에서 모든 접근칸 도달을 엔진 통행(isPassable)으로 다시 확인한다. 실패하면 맵을 바꾸지 않는다.
+import { claimStartIfBlank } from "@/editor/tools/composerStart";
 import { isModernCityTilesetDef } from "@/ai/modernCityPolicy";
 import { isPassable } from "@/project/collision";
 import { setLayerTileAt } from "@/project/mapLayers";
@@ -117,10 +118,13 @@ export const COMPOSE_MODERN_CITY_STREET_TOOL: ToolDefinition = {
     }
     const blocked = (target.events ?? []).filter((e) => !walkable(next, target, e.x, e.y)).map((e) => `${e.name ?? e.id}(${e.x},${e.y})`);
     draft.maps[mapId] = target;
+    // 시작 위치: 이 맵이 시작 맵인데 시작 칸이 건물에 덮였거나, 시작 맵이 빈 기본 맵이면 거리 시작 칸으로(2026-10-14 실조수 argon:
+    // 시작 칸 (10,8) 이 건물 밑이 되어 커밋이 무결성 오류로 거부됐다 → 모델이 set_start_position 후 다시 불렀다).
+    const startNote = claimStartIfBlank(draft, mapId, r.start).note;
     return {
       summary: `도쿄풍 거리를 ${map.width}×${map.height} 맵(${mapId})에 짰다(seed ${seed}) — 가로 도로 ${r.roads.horizontal.length}·세로 도로 ${r.roads.vertical.length}, 건물 ${r.buildings.length}채, 소품·차 ${r.props.length}개${r.park ? `, 공원 (${r.park.x},${r.park.y}) ${r.park.w}×${r.park.h}` : ""}, 시작 칸 (${r.start.x},${r.start.y}) 에서 모든 문 접근칸에 닿음(엔진 통행). `
         + `건물: ${r.buildings.map((d) => `${d.name} 문(${d.doors[0]!.x},${d.doors[0]!.y})${d.program ? `→${d.program}` : ""}`).join(" · ")}.`
-        + (r.notes.length ? ` 참고: ${r.notes.join(" / ")}.` : "") + (blocked.length ? ` 경고: 막힌 칸 위 이벤트 ${blocked.join(", ")}.` : ""),
+        + (r.notes.length ? ` 참고: ${r.notes.join(" / ")}.` : "") + (blocked.length ? ` 경고: 막힌 칸 위 이벤트 ${blocked.join(", ")}.` : "") + startNote,
       data: { mapId, seed, start: r.start, roads: r.roads, park: r.park, buildings: r.buildings.map((d) => ({ name: d.name, kind: d.kind, kit: d.kit, rect: d.rect, doors: d.doors, access: d.access, program: d.program ?? null })), props: r.props.length },
     };
   },

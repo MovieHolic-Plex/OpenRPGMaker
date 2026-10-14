@@ -81,6 +81,21 @@ export function mcBuildingType(kitId: string): string { return kitId.replace(/^m
 
 type Use = "ground" | "road" | "walk" | "front" | "bld" | "prop" | "park" | "veh";
 
+/** 칸 해시 0..1(씨앗 무관 — 같은 칸은 같은 잔디). */
+function cellHash(x: number, y: number, k = 0): number { let h = Math.imul(x * 374761393 + y * 668265263 + k * 2147483647, 1274126177); h ^= h >>> 13; h = Math.imul(h, 1103515245); return ((h ^ (h >>> 16)) >>> 0) / 4294967296; }
+/** 잔디 칸: mc:lawn(2026-10-14, 바탕 4 · 풀 덩이 2 · 꽃 2)이 있으면 섞어 칠하고, 옛 정의면 mc:green 두 칸. */
+function lawnTile(pal: MCPalette, x: number, y: number): number {
+  const lawn = pal.group("mc:lawn");
+  if (lawn.length >= 8) {
+    const j = cellHash(x, y);
+    return lawn[j < 0.9 ? Math.floor(cellHash(x, y, 1) * 4) : j < 0.97 ? 4 + Math.floor(cellHash(x, y, 2) * 2) : 6 + Math.floor(cellHash(x, y, 3) * 2)]!;
+  }
+  const green = pal.group("mc:green");
+  return green[(x * 7 + y * 3) % Math.min(2, green.length)]!;
+}
+/** 큰 가로수(잎 덩이 수관 3×4) — 없으면 옛 2×3 가로수. */
+const BIG_STREET_TREES = ["mc-prop-keyaki-a", "mc-prop-keyaki-b", "mc-prop-ginkgo-big-a"] as const;
+
 class Board {
   readonly lower: number[]; readonly upper: number[]; readonly upper2: number[]; readonly use: Use[]; readonly keep: boolean[];
   readonly buildings: MCBuilding[] = []; readonly props: { kit: string; x: number; y: number }[] = []; readonly notes: string[] = [];
@@ -178,13 +193,17 @@ function frontage(b: Board, r: () => number, x0: number, x1: number, accessY: nu
   const green = b.pal.group("mc:green");
   for (let X = x0; X <= x1; X++) {
     let top = accessY - 1; while (top >= 0 && b.use[b.k(X, top)] === "bld") top--;
-    for (let Y = top; Y >= accessY - maxH && Y >= 0; Y--) { const i = b.k(X, Y); if (b.use[i] !== "ground" && b.use[i] !== "walk") break; if (Y < accessY - 1 && green.length) { b.lower[i] = green[(X * 7 + Y * 3) % Math.min(2, green.length)]!; b.use[i] = "park"; } }
+    for (let Y = top; Y >= accessY - maxH && Y >= 0; Y--) { const i = b.k(X, Y); if (b.use[i] !== "ground" && b.use[i] !== "walk") break; if (Y < accessY - 1 && green.length) { b.lower[i] = lawnTile(b.pal, X, Y); b.use[i] = "park"; } }
   }
-  for (let X = x0; X <= x1 - 1; X += 3 + Math.floor(r() * 3)) {
-    for (let Y = accessY - 2; Y >= Math.max(1, accessY - maxH); Y--) {
-      const id = r() < 0.5 ? pick(r, ["mc-prop-conifer-a", "mc-prop-conifer-b", "mc-prop-street-tree-a"]) : pick(r, ["mc-prop-shrub-a", "mc-prop-shrub-b", "mc-prop-hedge-a"]);
+  // 잎 덩이 큰 나무(있으면)는 한 열에 위아래 둘까지 — 건물 뒤 녹지가 빈 잔디 판으로 남지 않게(버들항처럼 나무 덩이로 채운다).
+  const bigOk = !!b.pal.kit("mc-prop-keyaki-a");
+  for (let X = x0; X <= x1 - 1; X += (bigOk ? 2 : 3) + Math.floor(r() * 3)) {
+    let placed = 0;
+    for (let Y = accessY - 2; Y >= Math.max(1, accessY - maxH) && placed < (bigOk ? 2 : 1); Y--) {
+      let id = r() < (bigOk ? 0.6 : 0.5) ? pick(r, bigOk ? ["mc-prop-keyaki-a", "mc-prop-keyaki-b", "mc-prop-keyaki-a", "mc-prop-conifer-a", "mc-prop-ginkgo-big-a"] : ["mc-prop-conifer-a", "mc-prop-conifer-b", "mc-prop-street-tree-a"]) : pick(r, ["mc-prop-azalea-a", "mc-prop-azalea-b", "mc-prop-shrub-a", "mc-prop-hedge-a"]);
+      if (!b.pal.kit(id)) id = "mc-prop-shrub-a";
       const k = b.pal.kit(id); if (!k) continue;
-      if (b.prop(id, X, Y - k.height + 1, ["park"], 0)) break;
+      if (b.prop(id, X, Y - k.height + 1, ["park"], 0)) { placed++; Y -= k.height; }
     }
   }
 }
@@ -192,7 +211,7 @@ function frontage(b: Board, r: () => number, x0: number, x1: number, accessY: nu
 function park(b: Board, r: () => number, x0: number, y0: number, x1: number, y1: number) {
   const green = b.pal.group("mc:green"), plaza = b.pal.group("mc:plaza");
   const w = x1 - x0 + 1, h = y1 - y0 + 1;
-  for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) { const i = b.k(x, y); b.lower[i] = green[(x * 5 + y * 11) % Math.min(2, green.length)]!; b.use[i] = "park"; }
+  for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) { const i = b.k(x, y); b.lower[i] = green.length ? lawnTile(b.pal, x, y) : b.lower[i]!; b.use[i] = "park"; }
   const cx = x0 + Math.floor(w / 2), cy = y0 + Math.floor(h / 2);
   // 벽돌 길: 남쪽 보도에서 가운데로, 가운데 가로 길
   for (let y = cy - 2; y <= y1; y++) for (const x of [cx - 1, cx]) { const i = b.k(x, y); b.lower[i] = plaza[0]!; b.use[i] = "walk"; }
@@ -201,13 +220,23 @@ function park(b: Board, r: () => number, x0: number, y0: number, x1: number, y1:
   b.prop("mc-prop-fountain-a", cx - 2, cy - 2, ["walk"]);
   for (const [x, y] of [[cx - 4, cy + 3], [cx + 2, cy + 3]] as const) b.prop(pick(r, ["mc-prop-bench-a", "mc-prop-bench-b"]), x, y, ["park"]);
   for (const [x, y] of [[cx - 4, cy - 2], [cx + 3, cy - 2]] as const) b.prop(pick(r, ["mc-prop-park-lamp-a", "mc-prop-park-lamp-b"]), x, y, ["park"]);
-  const trees = ["mc-prop-blossom-a", "mc-prop-blossom-b", "mc-prop-ginkgo-a", "mc-prop-ginkgo-b", "mc-prop-street-tree-a", "mc-prop-conifer-a"];
+  // 큰 공원 나무(4×5) 먼저 하나, 그다음 잎 덩이 큰 나무(3×4)와 옛 꽃나무를 섞는다.
+  const big = b.pal.kit("mc-prop-park-tree-a");
+  if (big) for (let tries = 0; tries < 40; tries++) {
+    const x = x0 + Math.floor(r() * Math.max(1, w - 4)), y = y0 + Math.floor(r() * Math.max(1, h - 5));
+    if (b.prop("mc-prop-park-tree-a", x, y, ["park"], 1)) break;
+  }
+  const trees = b.pal.kit("mc-prop-keyaki-a")
+    ? ["mc-prop-keyaki-a", "mc-prop-keyaki-b", "mc-prop-ginkgo-big-a", "mc-prop-blossom-a", "mc-prop-blossom-b", "mc-prop-conifer-a"]
+    : ["mc-prop-blossom-a", "mc-prop-blossom-b", "mc-prop-ginkgo-a", "mc-prop-ginkgo-b", "mc-prop-street-tree-a", "mc-prop-conifer-a"];
   let n = 0;
   for (let tries = 0; tries < 80 && n < Math.max(4, Math.floor(w * h / 28)); tries++) {
     const x = x0 + Math.floor(r() * (w - 1)), y = y0 + 2 + Math.floor(r() * Math.max(1, h - 3));
-    if (b.prop(pick(r, trees), x, y - 2, ["park"], 1)) n++;
+    const id = pick(r, trees);
+    if (b.prop(id, x, y - (b.kit(id).height - 1), ["park"], 1)) n++;
   }
-  for (let tries = 0; tries < 30; tries++) { const x = x0 + Math.floor(r() * w), y = y0 + Math.floor(r() * h); if (b.prop(pick(r, ["mc-prop-shrub-a", "mc-prop-shrub-b"]), x, y - 1, ["park"], 1)) break; }
+  const shrubs = b.pal.kit("mc-prop-azalea-a") ? ["mc-prop-azalea-a", "mc-prop-azalea-b"] : ["mc-prop-shrub-a", "mc-prop-shrub-b"];
+  for (let tries = 0, m = 0; tries < 40 && m < 2; tries++) { const x = x0 + Math.floor(r() * w), y = y0 + Math.floor(r() * h); if (b.prop(pick(r, shrubs), x, y - 1, ["park"], 1)) m++; }
 }
 
 export function composeModernCityStreet(spec: MCStreetSpec, pal: MCPalette): MCStreetResult {
@@ -277,7 +306,9 @@ export function composeModernCityStreet(spec: MCStreetSpec, pal: MCPalette): MCS
     let alt = r() < 0.5;
     for (let x = 1 + Math.floor(r() * 3); x < W - 2; x += 5 + Math.floor(r() * 3)) {
       if (nearCross(x, 1) || nearCross(x + 1, 1)) continue;
-      if (alt) b.prop(pick(r, trees), x, yy + 9, ["walk", "road"]); else b.prop("mc-prop-lamp-a", x, yy + 9, ["walk", "road"]);
+      // 큰 가로수(3×4): 줄기는 맨 아래 보도 줄(yy+11) 가운데 칸, 수관은 연석·차도 위로 걸친다. 없거나 안 맞으면 옛 2×3.
+      if (alt) { const big = BIG_STREET_TREES.filter((id) => b.pal.kit(id)); if (!(big.length && !nearCross(x + 2, 1) && b.prop(pick(r, big), x, yy + 8, ["walk", "road"]))) b.prop(pick(r, trees), x, yy + 9, ["walk", "road"]); }
+      else b.prop("mc-prop-lamp-a", x, yy + 9, ["walk", "road"]);
       alt = !alt;
     }
     // 버스 정류장 하나(남쪽 보도): 표지 + 벤치
@@ -307,7 +338,9 @@ export function composeModernCityStreet(spec: MCStreetSpec, pal: MCPalette): MCS
   // 세로 도로 보도: 가로등(서쪽 보도 안쪽 열·동쪽 보도 안쪽 열)
   for (const xx of vt) for (let yy = 3; yy < H; yy += 7 + Math.floor(r() * 3)) {
     if (hz.some((h) => yy >= h - 1 && yy < h + 13)) continue;
-    b.prop("mc-prop-lamp-a", xx + 1, yy - 2, ["walk"]); b.prop(pick(r, trees), xx + 10, yy - 2, ["walk"]);
+    b.prop("mc-prop-lamp-a", xx + 1, yy - 2, ["walk"]);
+    const big = BIG_STREET_TREES.filter((id) => b.pal.kit(id));
+    if (!(big.length && b.prop(pick(r, big), xx + 9, yy - 3, ["walk", "road"]))) b.prop(pick(r, trees), xx + 10, yy - 2, ["walk"]);
   }
   // 교차로 모서리 신호등(남쪽 두 모서리 발밑 = 교차로 맨 아래 보도 줄)
   for (const yy of hz) for (const xx of vt) { b.prop("mc-prop-signal-a", xx + 1, yy + 9, ["walk", "road"]); b.prop("mc-prop-ped-signal-g-a", xx + 10, yy + 9, ["walk", "road"]); }

@@ -1,0 +1,129 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "60a377d7a3a51a03e0f9d6819aa0f92f9efec000887f32e09881a762809aafa9",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "철쭉 덤불(잎)",
+ "label": "modern_city/street-green/mc-prop-azalea-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bush / foliage cluster",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Organic bush composed of rounded foliage clumps layered from back to front (rows 7-15 upper tier, rows 16-25 lower tier) with top lighting and ground shadow, consistent with standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4593
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "foliage mound / bush",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush is constructed with multiple overlapping foliage masses; the upper/rear mounds (rows 7-14) are viewed from above looking down onto their top surfaces, stepping down to the front mounds (rows 15-25).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6862
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bush foliage mound",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush is rendered as tiered clumps viewed from a 3/4 top-down angle, with the upper/back rounded foliage masses spanning rows 7-15 before descending into the front clusters and shadow base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2614
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "azalea bush foliage cluster",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Organic bush composed of rounded clusters arranged in depth, with upper/rear foliage masses extending from row 6 down to row 14 above the front foliage clusters.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3649
+  }
+ ],
+ "decidedAt": "2026-10-14T08:05:10.638Z",
+ "cells": {
+  "16": [
+   "0ea17637d0e1ecc3",
+   "3d812b630f535e23",
+   "52d196d4d0e225ec",
+   "562582f00c886b01"
+  ],
+  "24": [
+   "0295bfb32f2ccd50",
+   "0d6dd91d60753c98",
+   "10a3bc2f3ce9b9b1",
+   "1fbbd742a57689a7",
+   "217849920ea24653",
+   "2240b1093b799156",
+   "28691677579f9ecd",
+   "2df87e0a912e400c",
+   "5bb64459f12adde0",
+   "75e45fa9fd943ae7",
+   "7961e59f579a7372",
+   "8cd98f808ab13828",
+   "9021bb52431824fe",
+   "ac62aee2a00e2f82",
+   "b998f4066c9aa590",
+   "baf540c43d80ef47",
+   "c22ad13b851540ad",
+   "dc6365db6f858a8f",
+   "eb33531e56f01e70",
+   "f1f6c9cd9164f94c",
+   "faa2236e4efa2696"
+  ],
+  "32": [
+   "3d463fe74e0536fd"
+  ],
+  "48": [
+   "0854a7967fad7734",
+   "29ce7e1726c4dd62",
+   "2a89eefd834e185e",
+   "3f5aa6d61e119819",
+   "74e1747c7c9f2e16",
+   "99811ebc380570bd"
+  ]
+ }
+}
