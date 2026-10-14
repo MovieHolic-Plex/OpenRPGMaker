@@ -1,9 +1,8 @@
 import { roomSpecOf } from "@/editor/handInterior/builder";
-import { isPirateIslesTilesetDef } from "@/ai/pirateIslesPolicy";
 import { tileAt } from "@/project/collision";
 import { hasRelief } from "@/project/relief/walk";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
-import { isSfStationTilesetDef } from "@/ai/sfStationPolicy";
+import { isComposedLayoutMap } from "@/project/mapNamedLocations";
 
 // 조수가 칠한 맵의 배치 품질(빈 바닥·빈 정사각형·좌우 대칭)을 끝에서 한 번 잰다.
 // 문서·예제만으로는 전체 배치가 옮겨지지 않았다(2026-09-25 Rasak 시험: 문서를 세 번 고쳐도 마을 빈 바닥 44%,
@@ -198,17 +197,11 @@ function paintedShare(map: GameMap, before: GameMap | undefined): number {
   return changed / n;
 }
 
-/**
- * 구성기가 «구역마다 쓰임»을 정해 깐 맵(위치 태그 composed-layout)은 배치 품질 권고에서 뺀다.
- * 이 지표는 차도·선로·승강장·광장 동선의 빈칸을 «빈 바닥»으로 세어, 조수가 권고를 받고 구성기 맵 한가운데에
- * 석탄 통·발전기·노점을 더 찍었다(2026-10-14 steampunk_city 실조수 3건: 보일러실에 석탄 통·더미가 둘씩, 역 광장에 석탄 상자).
- * 사용자는 옛 시안의 «흩뿌린 소품 배치»를 싫어했다. 개념 카드가 빈칸이 정상이라고 한 공간을 빼는 것과 같은 이유다.
- */
-export const COMPOSED_LAYOUT_TAG = "composed-layout";
-export function composedLayoutMapIds(project: Pick<Project, "maps">): string[] {
-  return Object.values(project.maps).filter((m) => (m.locations ?? []).some((l) => (l.tags ?? []).includes(COMPOSED_LAYOUT_TAG))).map((m) => m.id);
-}
-
+// 구성기(compose_* 도구·layout 방 짓기)가 «구역마다 쓰임»을 정해 깐 맵 — 판정은 isComposedLayoutMap(mapNamedLocations.ts, 표식 composed-layout) 하나다.
+// 이 검사가 내는 권고는 전부 «빈 땅 채우기·대칭 깨기»(빈 바닥·빈 정사각형·좌우 대칭)뿐이다. 구성기 맵은 차도·선로·승강장·광장 동선·복도의 빈칸이
+// 용도로 비운 칸이라, 이 권고가 조수에게 석탄 통·드론 패드·광고판을 구성기 맵 한가운데에 흩뿌리게 했다(2026-10-14 steampunk_city·sf_station 실조수).
+// 그래서 구성기 맵은 이 검사 전체를 건너뛴다. 문에 닿지 않는 길·겹침 같은 실제 결함은 이 검사의 몫이 아니다 —
+// 구성기 도구 자신의 검증(접근칸 도달·문 틈 통행 → compose-failed)과 맵 구조 lint 가 따로 막는다.
 export function inspectPiLayoutQuality(project: Project, baseline: Project, scopeMapIds: readonly string[] | undefined,
   skipMapIds: Iterable<string> = []): LayoutQualityIssue[] {
   const skip = new Set(skipMapIds);
@@ -220,13 +213,7 @@ export function inspectPiLayoutQuality(project: Project, baseline: Project, scop
     const map = project.maps[mapId];
     if (!map || skip.has(mapId)) continue;
     if (map.width * map.height < MIN_CELLS) continue;
-    // 구성기(compose_pirate_isles_map)로 짠 해적 군도 맵은 바다·해변·부두·광장이 용도로 비운 칸이다 — 이 검사는 그것을 「빈 바닥」으로 세어 소품을 흩뿌리게 한다.
-    // 구역 이름표(pirate-area)가 있는 pirate_isles 맵은 묻지 않는다(SF 구성기와 같은 이유).
-    if (isPirateIslesTilesetDef(project.tilesets[map.tilesetId]) && (map.locations ?? []).some((l) => (l.tags ?? []).includes("pirate-area"))) continue;
-    // 구성기(compose_sf_station_map)로 짠 SF 맵은 용도(방·도로·보도·착륙장·문 통로)부터 깔린 맵이다 — 이 검사는 도로·복도·착륙장을 「빈 바닥」으로 센다.
-    // 2026-10-14 실제 입력창 3건(gemini-3.8-flash): 빈 바닥 43~56% 권고를 받은 조수가 4줄 도로 한가운데 드론 패드·광고판·벤치를 찍고
-    // 연구실에 흄 후드·프린터를 겹으로 흩뿌렸다(구성기 출력보다 나빠짐). 구역 이름표(sf-area)가 있는 sf_station 맵은 묻지 않는다.
-    if (isSfStationTilesetDef(project.tilesets[map.tilesetId]) && (map.locations ?? []).some((l) => (l.tags ?? []).includes("sf-area"))) continue;
+    if (isComposedLayoutMap(map)) continue;
     if (paintedShare(map, baseline.maps[mapId]) < MIN_PAINTED_SHARE) continue;
     const stats = measureLayoutQuality(project, map);
     if (!stats || stats.floorCells < MIN_FLOOR) continue;

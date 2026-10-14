@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d09d16fc4d0935760d7899e23de9a878fe477de5cb93a6c6f30372150d6ea269",
+ "width": 32,
+ "height": 64,
+ "kind": "organic",
+ "name": "큰 가문비(눈 덮임)",
+ "label": "snow-north/sn-pine-l",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "spruce tree foliage",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The spruce tree is drawn in a flat 2D side-scroller/front elevation style: it tapers to a sharp 2px tip at row 2 with 0 rows of visible top surface, each foliage tier has a flat horizontal profile, and the bottom branches droop downward at the sides rather than curving towards the viewer in 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11088
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "snow-covered spruce canopy",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The spruce tree is drawn as a flat front elevation. Its foliage tiers droop on the left and right while arching up in the center to reveal the trunk beneath, which is a classic side-view silhouette rather than a 3/4 top-down view where south-facing boughs would extend forward and downward over the base. The main body has no foreshortened top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13448
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "snow-covered spruce tree foliage",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The spruce tree is drawn in a pure front elevation (side-scroller view). Tiers droop downward at the outer edges while arching upward in the center to reveal the trunk, which indicates an eye-level or slight worm's-eye perspective rather than a 3/4 top-down downward angle. There is no visible top surface foreshortened toward the viewer.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9212
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "spruce tree foliage",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The spruce tree is drawn entirely in front elevation with horizontal snow bands layered across a flat triangular profile, tapering to a point at the top with no foreshortened top surfaces visible on the foliage tiers.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7507
+  }
+ ],
+ "decidedAt": "2026-10-14T08:02:24.501Z",
+ "cells": {
+  "16": [
+   "1a02fc5a7c9ba596",
+   "27ee396951d1f205",
+   "29a23bf641c58403",
+   "5b0826ccfe41de14",
+   "5dfc77d4dfd27d7f",
+   "6d70c469119932c3",
+   "d5d12b9dc98c5d7a",
+   "f74e41d4a00c3edd"
+  ],
+  "24": [
+   "126e9235ddba3433",
+   "19d3015b3554751f",
+   "1ec984ae7f49e6e5",
+   "299c01f248f76e10",
+   "328da82d88fa4bdc",
+   "36ce9a92f977c0c9",
+   "44ce4a5075010058",
+   "576775f414715d9f",
+   "59096a2a4326b3d6",
+   "59df56277c8a329c",
+   "6914682225eba19b",
+   "6a7b67a8f39d770d",
+   "6d31a4f1c7045d0b",
+   "70e1ee526c73465b",
+   "876f3ad0853d41c5",
+   "8e9e65f358065c2f",
+   "9e5b17ba27062ba8",
+   "a1a50ed16f8532af",
+   "b02cea0c8e85a082",
+   "b1aae3b4868b984a",
+   "b6a63311007fa9bc",
+   "bf5e7aa3b7d2e873",
+   "c50760ed5812dd36",
+   "d3162d5e794a2791",
+   "d3e282b45e1501cb",
+   "d62f12a327d1d258",
+   "d8fc1adccac837db",
+   "e3000a3796b748d0",
+   "e57b0299eabeea42",
+   "efe802a100d2f23a",
+   "f2743bd38552d53e",
+   "fa8c04beb80b49b8",
+   "ffb1973be3f6dc30"
+  ],
+  "32": [
+   "a97ed13b45c4357a",
+   "e5cfd2b81037f635"
+  ],
+  "48": [
+   "33f0b7d04806810e",
+   "3503550249ec5cca",
+   "3c094c34f0ab1009",
+   "5301ce1d48b618ae",
+   "53de8d2a8c254d56",
+   "58563c0ef4f03633",
+   "798526701186bfb8",
+   "7a43ae4b1f4c6eb1",
+   "9041c22d78c4028c",
+   "b66b5c54029adf5d",
+   "c717052e902f6d7f",
+   "e48bdf204f50137b"
+  ]
+ }
+}

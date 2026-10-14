@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0e1498e86ea57927a6111663fd4c53d31363f7c89a9aeadab7bc7b8241d85720",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "오아시스 풀밭(변주)",
+ "label": "desert-east/de-grass-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 grass terrain texture representing ground viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3766
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a flat grass ground texture filling the entire 16x16 grid, appropriate for terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3255
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 pixel ground tile representing grassy terrain viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6348
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full-tile green grass terrain texture viewed from above as ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4328
+  }
+ ],
+ "decidedAt": "2026-10-14T08:01:48.457Z",
+ "cells": {
+  "16": [
+   "2fd4e66c3b50884e"
+  ],
+  "24": [
+   "216f42f3cbaafbae",
+   "6106d9844caecc41",
+   "67ecd6028ceb4588",
+   "c06d1a99e909aaea",
+   "da0993cf47c7c2a4",
+   "f35b40957aecf007"
+  ],
+  "32": [
+   "2e63f47ee7905158",
+   "7c7e45454f963869",
+   "8acf00a317f20d0e",
+   "ccea68ca095b3744",
+   "d1d4b05ac9e1a39f",
+   "e68e6ed55ad90d65"
+  ],
+  "48": [
+   "1c05d06fe4eb2651",
+   "1e32df82c28aeea8",
+   "67219942444cd8dc",
+   "80b79adf64a84bb8",
+   "8e30eb3bfb744f27",
+   "b7bdbd0e82d5688c"
+  ]
+ }
+}

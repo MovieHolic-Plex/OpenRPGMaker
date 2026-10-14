@@ -5,7 +5,7 @@ import { isCampusTilesetDef } from "@/ai/campusPolicy";
 import { isPassable } from "@/project/collision";
 import { setLayerTileAt } from "@/project/mapLayers";
 import { clearTileStack } from "@/project/mapOverlayTiles";
-import { addMapLocation } from "@/project/mapNamedLocations";
+import { addMapLocation, COMPOSED_LAYOUT_TAG } from "@/project/mapNamedLocations";
 import { extractTreeNode, insertTreeNode } from "@/project/mapTree";
 import { CAMPUS_MIN_SIZE, campusPaletteFromTileset, composeCampus, type CampusStyle } from "@/project/campusComposer";
 import type { GameEvent, GameMap, MapId, Project } from "@/project/types";
@@ -121,7 +121,7 @@ export const COMPOSE_CAMPUS_GROUNDS_TOOL: ToolDefinition = {
     target.locations = (target.locations ?? []).filter((l) => !(l.tags ?? []).includes("campus-building"));
     for (const d of r.buildings) {
       const door = d.doors[0]!;
-      addMapLocation(target, { name: `${d.name} 건물`, x: d.rect.x, y: d.rect.y, w: d.rect.w, h: d.rect.h, note: `문 (${door.x},${door.y}) 외 ${d.doors.length - 1}칸 · 접근칸 (${d.access[0]!.x},${d.access[0]!.y}) — 이 문에 ${d.name} 실내를 build_hand_interior_room(tileset:modern_campus) 으로 지어 link_campus_interior 로 잇는다`, tags: ["campus-building", d.kit] });
+      addMapLocation(target, { name: `${d.name} 건물`, x: d.rect.x, y: d.rect.y, w: d.rect.w, h: d.rect.h, note: `문 (${door.x},${door.y}) 외 ${d.doors.length - 1}칸 · 접근칸 (${d.access[0]!.x},${d.access[0]!.y}) — 이 문에 ${d.name} 실내를 build_hand_interior_room(tileset:modern_campus) 으로 지어 link_campus_interior 로 잇는다`, tags: ["campus-building", COMPOSED_LAYOUT_TAG, d.kit] });
     }
     const blocked = (target.events ?? []).filter((e) => !walkable(next, target, e.x, e.y)).map((e) => `${e.name ?? e.id}(${e.x},${e.y})`);
     draft.maps[mapId] = target;

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dac0628327a01468bd1b31a6f66c4824b216d6ede9ffc223dc3b3c325135d2b9",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "캠퍼스 잔디",
+ "label": "modern-campus/mc-lawn",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat horizontal grass terrain ground tile covering the full 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4226
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 grass ground terrain tile viewed from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3256
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile composed of green grass texture filling the full 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 16343
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ground terrain tile representing grass; the entire 16x16 area is a horizontal ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 27382
+  }
+ ],
+ "decidedAt": "2026-10-14T08:06:14.284Z",
+ "cells": {
+  "16": [
+   "e916693515d7d95c"
+  ],
+  "24": [
+   "09932eb1c749c72a",
+   "153d49204828104b",
+   "36bb8ec565860434",
+   "998393e0fc2fcb1e",
+   "a84b2a50127ff501",
+   "f41ef30bdfe799b1"
+  ],
+  "32": [
+   "0f341947e88f3334",
+   "4a1eccc7c061d56b",
+   "64f49ed68ad6473f",
+   "90fc3b084e12a51b",
+   "beff3dc0759ff0bd",
+   "c9611954a06caca7"
+  ],
+  "48": [
+   "41c5ddcdf4f53a0f",
+   "43595896c1ce9cf7",
+   "48ab4ae0a39f32bc",
+   "4d6ae7f452233ec0",
+   "c1615852306b7ba5",
+   "f56473b61ecb3be1"
+  ]
+ }
+}

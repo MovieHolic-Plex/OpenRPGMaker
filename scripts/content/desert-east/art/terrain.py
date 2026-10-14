@@ -42,11 +42,15 @@ def sand_base(x, y, s=3):
     """잔잔한 모래: 5단 바탕 + 아주 옅은 덩이 명암 + 낱알 점."""
     x, y = W(x, y)
     t = 4
+    n = vnoise(x, y, s + 51, 4)                  # 잔 모래 결(밝은 둔덕·옅은 그늘) — 체크 디더로 번진다
+    chk = (x + y) % 2 == 0
+    if n > 0.78 and chk: t = 5
+    elif n < 0.2 and chk: t = 3
     r = rnd(x, y, s + 7)
-    if r < 0.055: t = 3
+    if r < 0.06: t -= 1
     elif r > 0.975: t = 6
-    elif r > 0.90: t = 5
-    return ('sand', t)
+    elif r > 0.92: t = min(6, t + 1)
+    return ('sand', max(2, t))
 
 
 def ripple_marks(x, y, s, n_marks, lo=2, hi=5):
@@ -105,18 +109,28 @@ T('sand-pebble', '자갈 섞인 모래', ['모래', '자갈', '사막'], '바위
 
 
 def road(x, y, s=5):
-    """다진 흙길: 모래보다 한 단 어둡고 따뜻한 덩이 + 발굽·바퀴에 눌린 점."""
+    """다진 흙길(2판): 모래보다 한두 단 어둡고, 눌린 흙 덩이(어두움)·마른 먼지(밝음)가 디더로 번지며,
+    잔돌(밝은 윗점 + 밑 그늘)·발굽 자국(짧은 어두운 홈)이 박힌다."""
     x, y = W(x, y)
+    chk = (x + y) % 2 == 0
+    n = vnoise(x, y, s + 3, 4)
     t = 3
+    if n < 0.32 and (chk or n < 0.22): t = 2
+    elif n > 0.7 and (chk or n > 0.8): t = 4
     r = rnd(x, y, s + 9)
-    if r > 0.86: t = 4
-    if r < 0.05: t = 2
-    if r < 0.012: return ('adobe', 3)
-    if r > 0.97: return ('sand', 5)
-    # 작은 돌: 밝은 윗점 + 밑 그늘
-    if rnd(x, y - 1, s + 13) < 0.025: return ('sand', 1)
-    if rnd(x, y, s + 13) < 0.025: return ('rock', 4)
-    return ('sand', t)
+    if r < 0.05: t -= 1
+    elif r > 0.95: t += 1
+    # 잔돌: (x,y) 가 돌이면 윗점 밝게, 밑은 그늘
+    if rnd(x, y, s + 13) < 0.022: return ('rock', 4)
+    if rnd(x, (y - 1) % 16, s + 13) < 0.022: return ('sand', 1)
+    if rnd(x, y, s + 17) < 0.02: return ('adobe', 3)
+    # 발굽 자국: 짧은 가로 홈 2화소 + 밑 밝은 턱
+    hx, hy = h32(1, 2, s) % 13, h32(3, 4, s) % 13
+    hx2, hy2 = h32(5, 6, s) % 13, (h32(7, 8, s) % 6) + 8
+    for (ax, ay) in ((hx, hy),):
+        if ay == y and ax <= x <= ax + 1: return ('sand', 1)
+        if ay + 1 == y and ax <= x <= ax + 1: return ('sand', 4)
+    return ('sand', max(1, min(5, t)))
 
 
 T('road', '다진 흙길', ['길', '흙길', '대상로'], '마을 큰길·대상 행로. 모래와는 road 왕 타일(de-road-*)로 이어 가장자리가 부드럽다.')(wrap(lambda x, y: road(x, y, 5)))
@@ -150,15 +164,20 @@ T('flag-b', '사암 포석(변주)', ['포석', '광장'], 'flag 와 섞는다.'
 
 
 def grass(x, y, s=5, base=3, dry=0.0):
+    """오아시스 풀(2판): 짙은 풀 덩이(어두운 2단)와 햇빛 받은 풀(밝은 4단)이 디더로 번지는 바탕 위에
+    풀잎 끝 밝은 점·밑동 어두운 점이 촘촘히 박힌다(버들항 잔디 밀도). 같은 칸 반복이 덜 보이게 덩이는 8화소 잡음."""
     x, y = W(x, y)
-    n = vnoise(x, y, s + 3, 4)          # 잔 덩이(4화소) — 칸마다 2×2 큰 얼룩이 반복돼 보이지 않게
+    n = vnoise(x, y, s + 3, 4)
     if dry and n < dry: return sand_base(x, y, s)
-    t = base + 1 if n > 0.7 else base
-    # 풀 포기: 밝은 끝 2화소 세로 + 밑동 어둡게(낱낱이, 주기 덩이 없음)
-    if rnd(x, y, s + 11) < 0.06 or rnd(x, (y + 1) % 16, s + 11) < 0.06: t = min(5, t + 1)
-    xb, yb = W(x, y - 1)
-    if rnd(xb, (yb - 1) % 16, s + 11) < 0.06: t = base - 1
-    if rnd(x, y, s + 31) < 0.03: t = base - 1
+    chk = (x + y) % 2 == 0
+    t = base
+    if n < 0.3 and (chk or n < 0.18): t = base - 1
+    elif n > 0.74 and chk: t = base + 1
+    r = rnd(x, y, s + 11)
+    # 풀잎: 밝은 끝(위) + 바로 밑 어두운 밑동
+    if r < 0.11: t = min(5, t + 1)
+    elif rnd(x, (y - 1) % 16, s + 11) < 0.11: t = max(0, t - 1)
+    elif r > 0.985: t = min(5, t + 2)
     return ('grass', t)
 
 
@@ -268,11 +287,19 @@ wang_set('grass', '모래↔오아시스 풀', SAND, lambda x, y: grass(x, y, 5)
 
 
 def water_px(x, y, s=4):
+    """못물(2판): 깊은 곳(어두움)·얕은 곳(밝음)이 디더로 번지고, 칸 안에 흩어 둔 짧은 물결(밝은 마루 2~3화소 + 밑 그늘 1화소)과
+    드문 반짝임. 같은 글자 무늬가 칸마다 찍혀 보이지 않게 물결 자리는 해시로 흩는다."""
     x, y = W(x, y)
-    n = vnoise(x, y, s, 8)
-    t = 2 if n < 0.55 else 3
-    # 짧은 가로 물결(밝은 줄 2~3화소)
-    if (y + h32(x // 5, 0, s) % 4) % 5 == 0 and rnd(x // 3, y, s) < 0.35: t = 4
+    chk = (x + y) % 2 == 0
+    t = 2
+    r = rnd(x, y, s + 8)
+    if r < 0.07: t = 3
+    elif r > 0.965: t = 1
+    for k in range(3):
+        ax = h32(k, 11, s) % 13; ay = 1 + h32(11, k, s) % 14; L = 2 + h32(k, 12, s) % 2
+        if y == ay and ax <= x < ax + L: return ('water', 4 if x < ax + L - 1 else 3)
+        if y == ay + 1 and ax < x <= ax + L: return ('water', 1)
+    if rnd(x, y, s + 5) < 0.012: return ('water', 5)
     return ('water', t)
 
 

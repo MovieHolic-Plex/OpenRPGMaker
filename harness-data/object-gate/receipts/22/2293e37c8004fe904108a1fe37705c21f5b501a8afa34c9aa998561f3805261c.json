@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2293e37c8004fe904108a1fe37705c21f5b501a8afa34c9aa998561f3805261c",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "풀밭(짙은 변주)",
+ "label": "sengoku-edo/se-grass-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 top-down ground terrain texture showing dark grass.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7371
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dark grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 pixel terrain tile showing a dark grass ground surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5002
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat green ground texture filling the entire 16x16 tile, appropriately depicting terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5521
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 patch of textured grass ground, correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3880
+  }
+ ],
+ "decidedAt": "2026-10-14T08:09:34.102Z",
+ "cells": {
+  "16": [
+   "036bdbed80ff6a99"
+  ],
+  "24": [
+   "3123e68e3b594aed",
+   "332294e2f6dde31f",
+   "5db08d51af68f607",
+   "6bf6a6e33cd318f6",
+   "9859eb59cd3c82af",
+   "cc2b10dd168d5c89"
+  ],
+  "32": [
+   "51f05bdf22ea5b3e",
+   "526a4b122caca498",
+   "7672ee7ff9e241e8",
+   "8d8bdcccd9be02a5",
+   "f99b25bc9b944794",
+   "f9c849380ff91798"
+  ],
+  "48": [
+   "39f275289d373c89",
+   "4121e2080d4b1fa6",
+   "7c23eb27e9e7eb0f",
+   "93b8d7cea4902169",
+   "bc7e93beb884c64b",
+   "dfc5bbf94b9c1365"
+  ]
+ }
+}

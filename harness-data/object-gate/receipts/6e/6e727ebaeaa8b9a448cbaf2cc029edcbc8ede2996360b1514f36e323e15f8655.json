@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6e727ebaeaa8b9a448cbaf2cc029edcbc8ede2996360b1514f36e323e15f8655",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "철쭉 덤불(분홍 꽃)",
+ "label": "sengoku-edo/se-azalea",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bush dome",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rounded azalea bush shows a top-lit upper dome spanning rows 1-8, with shading curving downward toward the base at rows 11-14, matching standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3871
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "azalea bush",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rounded dome-like bush shows its top surface across rows 1 to 6-7 with lighter green tones and pink flowers viewed from an overhead 3/4 angle, graduating to shadowed lower foliage.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4416
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "azalea bush",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush is rendered as a rounded 3/4 dome with its upper foliage illuminated across rows 1-7 and flowers distributed across the visible top and front surfaces, shading down into shadow at rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4819
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "azalea bush",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rounded shrub dome with top-lit crown visible across rows 1-7 before shading down towards the front and base at rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4638
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:28.009Z",
+ "cells": {
+  "16": [
+   "4b6fd7521e65d536"
+  ],
+  "24": [
+   "007b34fba6167544",
+   "0bd2481facf03043",
+   "25ccd2e45159091e",
+   "4059a52161f44fe3",
+   "4e76389c0ff84df8",
+   "93d33e3710275c31"
+  ],
+  "32": [
+   "097417ed3bade153",
+   "58cc4abd9be8627c",
+   "7be3ad328538932b",
+   "7d609ec2cdf35295",
+   "ac5756f85087b540",
+   "c939acf545df04e7"
+  ],
+  "48": [
+   "313594b9fcfefd7a",
+   "59cb638b121cbd4c",
+   "65f5ff44cfc5e110",
+   "9372a4d66ea12155",
+   "c26949df986247af",
+   "cde6f265c39779c9"
+  ]
+ }
+}

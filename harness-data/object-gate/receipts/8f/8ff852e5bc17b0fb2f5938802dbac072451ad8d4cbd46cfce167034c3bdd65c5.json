@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8ff852e5bc17b0fb2f5938802dbac072451ad8d4cbd46cfce167034c3bdd65c5",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "물가 돌 축대(동쪽 뭍)",
+ "label": "sengoku-edo/se-water-e",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water tile with stone embankment edge",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting top-down water meeting a vertical stone embankment edge on the right.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5329
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water and stone embankment edge terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a terrain tile depicting water bordered on the east edge by a stone embankment wall/pavement, viewed from above as top-down terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5217
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water edge and stone revetment terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a terrain autotile/edge tile depicting water surface bordered on the east side by a stone revetment/embankment viewed from the standard top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4024
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water and stone embankment edge terrain",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a water-to-land shoreline/embankment terrain tile composed of a water surface meeting a stone edge, correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3460
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:28.012Z",
+ "cells": {
+  "16": [
+   "2c47e39f85cbca6a"
+  ],
+  "24": [
+   "07f903569c6adaf7",
+   "2b3ad0d854912692",
+   "3112ba1731400c32",
+   "49e8ace7e5c48e16",
+   "4d0aadf09e2b5452",
+   "f2eb5e9183ffa645"
+  ],
+  "32": [
+   "0af8f52797d82caa",
+   "2dd048ae6f021eb7",
+   "cd9e2e154610299a",
+   "d4a00306c9bbbabf",
+   "da7d43712ce29b41",
+   "eeaeef7e021a3bf1"
+  ],
+  "48": [
+   "1ce5417f869ccb6c",
+   "226e4e924eaca4dd",
+   "99f079a66d94b9b9",
+   "c30d9b816757d90b",
+   "e9fd74399e93903f",
+   "f66e74152609c9a7"
+  ]
+ }
+}

@@ -43,25 +43,36 @@ def vnoise(x, y, s, cell=4, per=16):
 
 
 # ═══════════════ 풀밭 ═══════════════
-def grass(x, y, s=5, base=4, flowers=0.0):
-    """풀: 바탕 한 단 + 흩어진 풀 포기(밝은 끝 둘 + 가운데 어두운 밑동) + 아주 옅은 덩이(디더 경계)."""
+def _off(a, b):
+    """16 주기 감긴 거리(-8..7)."""
+    return ((a - b + 8) % 16) - 8
+
+
+# 풀 포기 모양(밑동 어둡게·끝 밝게, 작은 v): (dx, dy, 단 차)
+_TUFT = ((0, -1, 2), (0, 0, 1), (0, 1, -1))
+
+
+def grass(x, y, s=5, base=4, flowers=0.0, clumps=0, dense=0.0):
+    """풀(2판, quality-b): 모든 변주가 같은 바탕 단 → 칸마다 섞어도 네모 덩이가 안 보인다.
+    고운 반점(±1) + 칸 안 아무 자리 풀 포기 11개(v 끝 밝게·밑동 어둡게) + clumps 개 짙은 풀 덩이(칸 가장자리에 닿지 않게)."""
     x, y = W(x, y)
     t = base
-    n = vnoise(x, y, s, cell=8)
-    if n < 0.17 or (n < 0.24 and (x + y) % 2 == 0): t = base - 1
-    elif n > 0.86 and (x + y) % 2: t = base + 1
-    # 풀 포기: 칸을 4×4 로 나눠 칸마다 0~1 포기, 자리는 해시
-    for oy in (0, -1, 1):
-        for ox in (0, -1, 1, -2):
-            cx, cy = (x + ox) // 4, (y + oy) // 4
-            hh = h32(cx % 4, cy % 4, s)
-            if hh % 5 > 1: continue
-            px_, py_ = cx * 4 + (hh >> 4) % 3, cy * 4 + (hh >> 8) % 3
-            dx, dy = x + ox - px_, y + oy - py_
-            if (ox, oy) == (0, 0):
-                if (dx, dy) in ((0, 0), (2, 0)): t = base + 1
-                elif (dx, dy) == (1, 1): t = base - 2
-                elif (dx, dy) == (1, 0): t = base + (1 if hh % 7 == 0 else 0)
+    r = rnd(x, y, s)
+    if r < 0.08 + dense: t = base - 1
+    elif r > 0.95: t = base + 1
+    for k in range(clumps):
+        cx = 4 + h32(k, 5, s) % 8; cy = 4 + h32(k, 6, s) % 7
+        dx = (x + 0.5 - cx) / 3.6; dy = (y + 0.5 - cy) / 2.6
+        d = dx * dx + dy * dy
+        if d <= 1.0 and not (d > 0.7 and (x + y) % 2):
+            t = base - 1 if dy < 0.45 else base - 2
+            if dy < -0.5 and (x + k) % 3 == 0: t = base + 1
+    for k in range(7 + (4 if dense else 0)):
+        hx = h32(k, 1, s) % 16; hy = h32(k, 2, s) % 16
+        dx, dy = _off(x, hx), _off(y, hy)
+        for ox, oy, dt in _TUFT:
+            if (dx, dy) == (ox, oy): t = base + dt
+    t = max(1, min(6, t))
     if flowers and rnd(x, y, s + 29) < flowers:
         return ('sakura', 4) if rnd(x, y, s + 31) < 0.55 else ('kin', 4)
     if flowers:
@@ -71,27 +82,41 @@ def grass(x, y, s=5, base=4, flowers=0.0):
 
 
 T('grass', '풀밭', ['풀밭', '들'], '마을·들의 기본 땅. grass-b 와 덩이로 섞는다.')(wrap(lambda x, y: grass(x, y, 5)))
-T('grass-b', '풀밭(짙은 변주)', ['풀밭', '들'], 'grass 와 칸마다 덩이로 섞는다.')(wrap(lambda x, y: grass(x, y, 17, base=3)))
+T('grass-b', '풀밭(짙은 변주)', ['풀밭', '들'], 'grass 와 칸마다 덩이로 섞는다.')(wrap(lambda x, y: grass(x, y, 17, dense=0.12)))
 T('grass-flower', '들꽃 풀밭', ['풀밭', '꽃'], '풀밭 가장자리·나무 둘레에 드문드문.')(wrap(lambda x, y: grass(x, y, 23, flowers=0.03)))
 
 
 # ═══════════════ 흙길 ═══════════════
 def dirt(x, y, s=3):
-    """다진 흙: 고운 알갱이(밝·어 점) + 디더로 섞인 옅은 얼룩 + 잔돌(밝은 윗점·밑 그늘)."""
+    """다진 흙(2판, quality-b): 고운 알갱이(±1) + 칸마다 다른 자리의 얼룩 디더 + 잔돌 4~5개(밝은 윗면·어두운 밑 그늘, 크기 섞음)
+    + 움푹 팬 자국 둘(어두운 속·밝은 아래 입술). 무늬는 모두 16 주기로 감긴다."""
     x, y = W(x, y)
-    n = vnoise(x, y, s, cell=8)
     t = 3
-    if n < 0.16 or (n < 0.23 and (x + y) % 2): t = 2
-    elif n > 0.86 or (n > 0.80 and (x + y) % 2): t = 4
     r = rnd(x, y, s + 9)
-    if r < 0.05: t = max(1, t - 1)
-    elif r > 0.93: t = min(5, t + 1)
-    q = h32(x // 5, y // 5, s + 3)
-    px_, py_ = (x // 5) * 5 + q % 4, (y // 5) * 5 + (q >> 3) % 4
-    if q % 3 == 0:
-        if (x, y) == (px_, py_): return ('ishi', 5)
-        if (x, y) == (px_ + 1, py_): return ('ishi', 4)
-        if (x, y) in ((px_, py_ + 1), (px_ + 1, py_ + 1)): return ('michi', 1)
+    if r < 0.10: t = 2
+    elif r > 0.86: t = 4
+    for k in range(3):                                   # 옅은 얼룩(밝·어)
+        cx = h32(k, 11, s) % 16; cy = h32(k, 12, s) % 16
+        dx, dy = _off(x, cx) / 4.5, _off(y, cy) / 2.8
+        d = dx * dx + dy * dy
+        if d < 1 and not (d > 0.55 and (x + y) % 2): t = 2 if k == 0 else 4
+    for k in range(2):                                   # 팬 자국
+        cx = h32(k, 21, s) % 16; cy = h32(k, 22, s) % 16
+        dx, dy = _off(x, cx), _off(y, cy)
+        if dy == 0 and 0 <= dx <= 2: return ('michi', 1 if dx == 1 else 2)
+        if dy == 1 and 0 <= dx <= 2: return ('michi', 4)
+    for k in range(5):                                   # 잔돌
+        cx = h32(k, 31, s) % 16; cy = h32(k, 32, s) % 16
+        dx, dy = _off(x, cx), _off(y, cy)
+        big = k < 2
+        if big:
+            if (dx, dy) == (0, 0): return ('ishi', 6)
+            if (dx, dy) == (1, 0): return ('ishi', 4)
+            if (dx, dy) in ((0, 1), (1, 1)): return ('ishi', 3) if dx == 0 else ('ishi', 2)
+            if (dx, dy) in ((0, 2), (1, 2), (2, 1)): return ('michi', 1)
+        else:
+            if (dx, dy) == (0, 0): return ('ishi', 5)
+            if (dx, dy) == (0, 1): return ('michi', 1)
     return ('michi', t)
 
 
@@ -278,16 +303,17 @@ for sd, nm in (('n', '북'), ('s', '남'), ('w', '서'), ('e', '동'), ('nw', '�
 
 # ═══════════════ 해자·강 ═══════════════
 def water(x, y, s=0):
+    """물(2판, quality-b): 바탕 + 칸마다 다른 자리의 깊은 얼룩 둘 + 아무 자리 잔물결 6개(밝은 2~4px 호 + 밑 어두운 그늘) + 반짝 점.
+    가로 줄마다 같은 자리에 반짝임을 두던 1판은 줄무늬로 보였다."""
     x, y = W(x, y)
-    n = vnoise(x, y, 101 + s, cell=8)
     t = 3
-    if n < 0.15 or (n < 0.22 and (x + y) % 2): t = 2
-    # 잔물결: 줄마다 자리가 다른 짧은 가로 반짝임(2~3px) + 그 밑 어두운 점
-    row = y // 3
-    ph = (x - h32(row, 0, 21 + s) % 16) % 16
-    ln = 2 + h32(row, 1, 21 + s) % 2
-    if y % 3 == 0 and ph < ln and h32(row, 2, 21 + s) % 3: t = 5
-    if y % 3 == 1 and 0 < ph <= ln and h32(row, 2, 21 + s) % 3: t = max(1, t - 1)
+    if rnd(x, y, 103 + s) < 0.12: t = 2
+    for k in range(5):
+        cx = h32(k, 51, s) % 16; cy = h32(k, 52, s) % 16
+        ln = 2 + h32(k, 53, s) % 3
+        dx, dy = _off(x, cx), _off(y, cy)
+        if dy == 0 and 0 <= dx < ln: return ('mizu', 5 if (dx == 1 or ln == 2) else 4)
+        if dy == 1 and 0 <= dx < ln: t = min(t, 2)
     return ('mizu', t)
 
 

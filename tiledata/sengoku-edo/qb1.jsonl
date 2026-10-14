@@ -1,0 +1,55 @@
+{"png": "buildings/_gate/se-bell-tower.png", "kind": "structure", "name": "종루(네 기둥 + 범종, 돌 기단, 폭 4)", "label": "sengoku-edo/se-bell-tower"}
+{"png": "buildings/_gate/se-castle-gate.png", "kind": "structure", "name": "성문(망루문, 돌 축대 위 흰 문루 + 열린 큰 문, 폭 6)", "label": "sengoku-edo/se-castle-gate"}
+{"png": "buildings/_gate/se-castle-keep.png", "kind": "structure", "name": "천수각(성의 본루, 돌 축대 위 3층 흰 벽 + 팔작 기와 + 금 샤치, 폭 9)", "label": "sengoku-edo/se-castle-keep"}
+{"png": "buildings/_gate/se-castle-turret.png", "kind": "structure", "name": "망루(야구라, 2층 흰 벽 + 치도리하후, 폭 5)", "label": "sengoku-edo/se-castle-turret"}
+{"png": "buildings/_gate/se-chaya.png", "kind": "structure", "name": "찻집(단층, 발 드리운 열린 앞 + 붉은 초롱)", "label": "sengoku-edo/se-chaya"}
+{"png": "buildings/_gate/se-dojo.png", "kind": "structure", "name": "도장(단층 큰 팔작지붕, 판자벽 + 높은 격자창, 폭 7)", "label": "sengoku-edo/se-dojo"}
+{"png": "buildings/_gate/se-kura.png", "kind": "structure", "name": "창고(흰 회벽 2층 + 나마코 벽 + 무거운 문, 폭 3)", "label": "sengoku-edo/se-kura"}
+{"png": "buildings/_gate/se-machiya-a.png", "kind": "structure", "name": "마치야(2층, 흰 회벽 무시코창 + 격자, 쪽빛 노렌)", "label": "sengoku-edo/se-machiya-a"}
+{"png": "buildings/_gate/se-machiya-b.png", "kind": "structure", "name": "마치야(단층, 짙은 판자벽 + 격자, 감물빛 노렌)", "label": "sengoku-edo/se-machiya-b"}
+{"png": "buildings/_gate/se-machiya-c.png", "kind": "structure", "name": "마치야(2층, 황토 회벽 + 격자, 폭 3)", "label": "sengoku-edo/se-machiya-c"}
+{"png": "buildings/_gate/se-onsen.png", "kind": "structure", "name": "목욕탕·온천(가라하후 박공 현관, 두 빛 노렌, 폭 6)", "label": "sengoku-edo/se-onsen"}
+{"png": "buildings/_gate/se-pagoda.png", "kind": "structure", "name": "오층탑(목탑, 겹 지붕 다섯 + 금 상륜, 폭 4)", "label": "sengoku-edo/se-pagoda"}
+{"png": "buildings/_gate/se-ryokan.png", "kind": "structure", "name": "여관·하타고(2층, 난간 + 장지 + 초롱, 폭 7)", "label": "sengoku-edo/se-ryokan"}
+{"png": "buildings/_gate/se-samurai-gate.png", "kind": "structure", "name": "무가 대문(맞배 기와, 열린 두 짝 문, 폭 4)", "label": "sengoku-edo/se-samurai-gate"}
+{"png": "buildings/_gate/se-samurai-house.png", "kind": "structure", "name": "무가 저택 본채(팔작 기와, 장지 + 툇마루, 현관 박공, 폭 8)", "label": "sengoku-edo/se-samurai-house"}
+{"png": "buildings/_gate/se-shop-cloth.png", "kind": "structure", "name": "포목점(2층, 감물빛 긴 노렌 + 피륙 진열, 폭 5)", "label": "sengoku-edo/se-shop-cloth"}
+{"png": "buildings/_gate/se-shop-rice.png", "kind": "structure", "name": "쌀가게(2층, 열린 가게 앞 + 쌀섬, 쪽빛 긴 노렌)", "label": "sengoku-edo/se-shop-rice"}
+{"png": "buildings/_gate/se-shop-sake.png", "kind": "structure", "name": "술도가(2층, 흰 회벽 + 스기다마, 폭 5)", "label": "sengoku-edo/se-shop-sake"}
+{"png": "buildings/_gate/se-shrine.png", "kind": "structure", "name": "신사 본전(동판 지붕 + 치기·가쓰오기, 붉은 기둥 + 금줄, 폭 6)", "label": "sengoku-edo/se-shrine"}
+{"png": "buildings/_gate/se-smithy.png", "kind": "structure", "name": "대장간(단층, 판자벽 + 열린 화덕 불빛, 연기창 지붕)", "label": "sengoku-edo/se-smithy"}
+{"png": "buildings/_gate/se-temple-gate.png", "kind": "structure", "name": "산문(절 대문, 큰 우진각 지붕 + 붉은 기둥, 가운데 통로, 폭 6)", "label": "sengoku-edo/se-temple-gate"}
+{"png": "buildings/_gate/se-temple-hall.png", "kind": "structure", "name": "절 본당(큰 팔작 기와, 휜 처마 끝, 나무 기둥 + 흰 벽 + 격자문, 폭 9)", "label": "sengoku-edo/se-temple-hall"}
+{"png": "props/_gate/se-azalea.png", "kind": "organic", "name": "철쭉 덤불(분홍 꽃)", "label": "sengoku-edo/se-azalea"}
+{"png": "props/_gate/se-chozuya.png", "kind": "structure", "name": "데미즈야(손 씻는 곳, 지붕 + 돌 물확)", "label": "sengoku-edo/se-chozuya"}
+{"png": "props/_gate/se-notice-board.png", "kind": "structure", "name": "고찰 게시판(작은 지붕 + 빈 나무 판)", "label": "sengoku-edo/se-notice-board"}
+{"png": "props/_gate/se-stall-food.png", "kind": "structure", "name": "포장마차(작은 지붕 + 솥 + 그릇, 야타이)", "label": "sengoku-edo/se-stall-food"}
+{"png": "props/_gate/se-tree-cedar.png", "kind": "organic", "name": "삼나무(곧고 높은 원뿔, 가도 가로수)", "label": "sengoku-edo/se-tree-cedar"}
+{"png": "props/_gate/se-tree-cherry.png", "kind": "organic", "name": "벚나무(분홍 꽃 둥근 수관)", "label": "sengoku-edo/se-tree-cherry"}
+{"png": "props/_gate/se-tree-maple.png", "kind": "organic", "name": "단풍나무(붉은 잎 수관)", "label": "sengoku-edo/se-tree-maple"}
+{"png": "props/_gate/se-tree-pine-small.png", "kind": "organic", "name": "작은 소나무(정원 다듬은 솔)", "label": "sengoku-edo/se-tree-pine-small"}
+{"png": "props/_gate/se-tree-pine.png", "kind": "organic", "name": "흑송(구부러진 줄기 + 층진 잎 판)", "label": "sengoku-edo/se-tree-pine"}
+{"png": "props/_gate/se-tree-willow.png", "kind": "organic", "name": "수양버들(강가, 늘어진 가지)", "label": "sengoku-edo/se-tree-willow"}
+{"png": "terrain/_gate/se-grass-b.png", "kind": "terrain", "name": "풀밭(짙은 변주)", "label": "sengoku-edo/se-grass-b"}
+{"png": "terrain/_gate/se-grass-edge-e.png", "kind": "terrain", "name": "풀밭 가장자리(동쪽 흙길)", "label": "sengoku-edo/se-grass-edge-e"}
+{"png": "terrain/_gate/se-grass-edge-n.png", "kind": "terrain", "name": "풀밭 가장자리(북쪽 흙길)", "label": "sengoku-edo/se-grass-edge-n"}
+{"png": "terrain/_gate/se-grass-edge-ne.png", "kind": "terrain", "name": "풀밭 모서리(북동쪽 흙길)", "label": "sengoku-edo/se-grass-edge-ne"}
+{"png": "terrain/_gate/se-grass-edge-nw.png", "kind": "terrain", "name": "풀밭 모서리(북서쪽 흙길)", "label": "sengoku-edo/se-grass-edge-nw"}
+{"png": "terrain/_gate/se-grass-edge-s.png", "kind": "terrain", "name": "풀밭 가장자리(남쪽 흙길)", "label": "sengoku-edo/se-grass-edge-s"}
+{"png": "terrain/_gate/se-grass-edge-se.png", "kind": "terrain", "name": "풀밭 모서리(남동쪽 흙길)", "label": "sengoku-edo/se-grass-edge-se"}
+{"png": "terrain/_gate/se-grass-edge-sw.png", "kind": "terrain", "name": "풀밭 모서리(남서쪽 흙길)", "label": "sengoku-edo/se-grass-edge-sw"}
+{"png": "terrain/_gate/se-grass-edge-w.png", "kind": "terrain", "name": "풀밭 가장자리(서쪽 흙길)", "label": "sengoku-edo/se-grass-edge-w"}
+{"png": "terrain/_gate/se-grass-flower.png", "kind": "terrain", "name": "들꽃 풀밭", "label": "sengoku-edo/se-grass-flower"}
+{"png": "terrain/_gate/se-grass.png", "kind": "terrain", "name": "풀밭", "label": "sengoku-edo/se-grass"}
+{"png": "terrain/_gate/se-road-b.png", "kind": "terrain", "name": "다진 흙길(변주)", "label": "sengoku-edo/se-road-b"}
+{"png": "terrain/_gate/se-road-c.png", "kind": "terrain", "name": "흙길(발자국)", "label": "sengoku-edo/se-road-c"}
+{"png": "terrain/_gate/se-road.png", "kind": "terrain", "name": "다진 흙길", "label": "sengoku-edo/se-road"}
+{"png": "terrain/_gate/se-water-e.png", "kind": "terrain", "name": "물가 돌 축대(동쪽 뭍)", "label": "sengoku-edo/se-water-e"}
+{"png": "terrain/_gate/se-water-n.png", "kind": "terrain", "name": "물가 돌 축대(북쪽 뭍)", "label": "sengoku-edo/se-water-n"}
+{"png": "terrain/_gate/se-water-ne.png", "kind": "terrain", "name": "물가 돌 축대(북동쪽 뭍)", "label": "sengoku-edo/se-water-ne"}
+{"png": "terrain/_gate/se-water-nw.png", "kind": "terrain", "name": "물가 돌 축대(북서쪽 뭍)", "label": "sengoku-edo/se-water-nw"}
+{"png": "terrain/_gate/se-water-s.png", "kind": "terrain", "name": "물가 돌 축대(남쪽 뭍)", "label": "sengoku-edo/se-water-s"}
+{"png": "terrain/_gate/se-water-se.png", "kind": "terrain", "name": "물가 돌 축대(남동쪽 뭍)", "label": "sengoku-edo/se-water-se"}
+{"png": "terrain/_gate/se-water-sw.png", "kind": "terrain", "name": "물가 돌 축대(남서쪽 뭍)", "label": "sengoku-edo/se-water-sw"}
+{"png": "terrain/_gate/se-water-w.png", "kind": "terrain", "name": "물가 돌 축대(서쪽 뭍)", "label": "sengoku-edo/se-water-w"}
+{"png": "terrain/_gate/se-water.png", "kind": "terrain", "name": "해자·강물", "label": "sengoku-edo/se-water"}

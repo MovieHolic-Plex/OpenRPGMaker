@@ -22,8 +22,15 @@ SEEDS = [
     ('body',  '#8f93a6', 7, '차체·콘크리트 중립 7단 — 색 변형은 이 램프를 다른 램프로 바꿔 만든다'),
     ('white', '#e4e9e8', 3, '흰색 — 지붕 난간 테두리·하이라이트·번호판'),
     ('ink',   '#0b1224', 3, '윤곽·타이어 — 순검정 아님'),
+    # 2026-10-14 quality-b: 버들항 화풍 맞추기 — 잔디·가로수 램프(같은 녹색 계열, 채도만 덜 누름). 끝에 덧붙여 앞 글자는 그대로.
+    ('lawn',   '#4cae3e', 7, '잔디 — 공원·건물 뒤 녹지(밝은 쪽이 햇빛 받는 풀)', .72),
+    ('canopy', '#2f9a52', 7, '가로수 수관 — 잎 덩이 명암 7단', .78),
+    ('grove',  '#123a24', 3, '수관 윤곽·속 그늘 — 순검정·남색 잉크 대신'),
+    ('ginkgo', '#e8b81a', 5, '은행나무 노랑 잎', .8),
+    ('bark',   '#6e4a30', 5, '나무 줄기·뿌리', .7),
+    ('azalea', '#e0508a', 5, '철쭉 꽃', .75),
 ]
-POOL = [c for c in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789']
+POOL = [c for c in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'] + list('αβγδεζηθικλμνξοπρστυφχψωΓΔΘΛΞΠΣΦΨΩ')   # 그리스 글자 = 2026-10-14 덧붙인 램프
 
 def _hex(h): return tuple(int(h[i:i + 2], 16) / 255 for i in (1, 3, 5))
 
@@ -42,9 +49,9 @@ def ramp(seed, n, sat=SAT):
 def build():
     """[(이름, 글자들, 색들, 설명)] — 글자는 풀에서 차례로."""
     res, k = [], 0
-    for name, seed, n, desc in SEEDS:
+    for name, seed, n, desc, *sat in SEEDS:
         letters = POOL[k:k + n]; k += n
-        res.append((name, ''.join(letters), ramp(seed, n), desc))
+        res.append((name, ''.join(letters), ramp(seed, n, *sat), desc))
     assert k <= len(POOL)
     return res
 

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "966819c3d73557940d560a7b1eff36cadd7d3b4d5f5250b84242760065eabbd1",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "다진 흙길(변주)",
+ "label": "desert-east/de-road-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ground texture (packed dirt path)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a packed dirt/earth ground surface across the entire 16x16 grid.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3000
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "packed dirt ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile depicts flat ground terrain (packed dirt with small stones/color variation) viewed from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3311
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "packed dirt ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 ground terrain tile representing packed dirt and small pebbles viewed from above; valid terrain tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6000
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "packed dirt ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a dirt path with scattered small pebbles across the entire 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3087
+  }
+ ],
+ "decidedAt": "2026-10-14T08:01:48.457Z",
+ "cells": {
+  "16": [
+   "6bca96abeca916da"
+  ],
+  "24": [
+   "1baf8c234151cff7",
+   "1c9faeb60eed11d9",
+   "392a5e6b17faf911",
+   "4f8445c00e3f9c54",
+   "a4ed57ba665fd5f9",
+   "bca97f8165247b24"
+  ],
+  "32": [
+   "13921a0cb022f741",
+   "199a252e1d0751a8",
+   "6b0104cd5bbfaa4a",
+   "83b94edba5f169e2",
+   "8bd93b367f983670",
+   "b225e13314899cef"
+  ],
+  "48": [
+   "0a61eadac59d079b",
+   "385bbd2db5908447",
+   "7565a5e681d245b9",
+   "8b3bd666c125fc82",
+   "c77b76f88a6af8ba",
+   "eca63ee3f855e660"
+  ]
+ }
+}

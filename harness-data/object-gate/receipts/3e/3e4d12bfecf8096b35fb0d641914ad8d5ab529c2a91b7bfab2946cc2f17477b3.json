@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3e4d12bfecf8096b35fb0d641914ad8d5ab529c2a91b7bfab2946cc2f17477b3",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "작은 고사목",
+ "label": "gothic_manor/gm-dead-tree-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dead tree trunk and bare branches",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The dead tree is drawn in a pure 2D side-scroller elevation with a completely flat horizontal baseline at row 46 and no visible top surfaces, branch cross-sections, or foreshortened root spread.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5160
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dead tree trunk and branches",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The dead tree is drawn in a pure side-scroller/platformer front elevation with a flat horizontal ground line at rows 45-46, vertical branch silhouettes, and no top surfaces, elliptical ground footprint, or foreshortening for top-down 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4517
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dead tree trunk and branches",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The dead tree is drawn entirely in flat front elevation (side-scroller style). The branches have no foreshortened top surfaces or elliptical cross-sections, and the root base sits on a completely flat horizontal line with zero depth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4856
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dead tree trunk and branches",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The dead tree is drawn in flat front elevation with a straight baseline across rows 44-46 and no top surfaces visible on branches, cut ends, or trunk.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4293
+  }
+ ],
+ "decidedAt": "2026-10-14T07:55:00.835Z",
+ "cells": {
+  "16": [
+   "2a548d94cd2bcfa9",
+   "31db2c1a89f5bccc",
+   "3ca46c13a8e1097f",
+   "85384ef7eaada057",
+   "b5a96053729efde8",
+   "da98797f183cb8da"
+  ],
+  "24": [
+   "06713625c030dcbc",
+   "12fa4b939b6e8771",
+   "131286b0e7b80d2c",
+   "195f52eb1340c372",
+   "229bff917783bddd",
+   "25eb25deaab647d5",
+   "51c78ee76d614463",
+   "8b380bd46d71fe88",
+   "a2b84c7ee0d5f4c9",
+   "a305aad8ce986fce",
+   "cd65b39dce513b7c",
+   "dabc9b169d6b2702"
+  ],
+  "32": [
+   "d8eb4949b44df611",
+   "e1f2bc9af03f8da7",
+   "e68f350c751e5b9f",
+   "ec26cf2ef89c7837"
+  ],
+  "48": [
+   "b70c42b287e737cb",
+   "bbcd6228e3dc754d",
+   "bfe929aea3a81df7"
+  ]
+ }
+}

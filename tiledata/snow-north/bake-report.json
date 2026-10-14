@@ -11,7 +11,7 @@
   "groups": 6
  },
  "tiles": {
-  "count": 975,
+  "count": 976,
   "rows": 21,
   "sheetPx": [
    768,
@@ -27,7 +27,7 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 975,
+  "tiles_checked": 976,
   "kits_checked": 95,
   "groups_checked": 45,
   "autotiles_checked": 6

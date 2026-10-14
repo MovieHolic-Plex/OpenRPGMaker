@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b15a66408ab15b5ccabdd24bcffff62fb53cf2f8024e7b706c37db1eede97498",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "어린 야자",
+ "label": "desert-east/de-palm-young",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "young palm tree crown and trunk",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The foliage crown shows a clear 4-5 row illuminated upper surface (rows 12-16) spreading out toward the viewer before the fronds droop downward, with a cast shadow on the ground plane anchoring the 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4035
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "young palm tree crown and trunk",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The palm canopy displays foreshortened top-facing frond surfaces from row 12 to 16 before draping downward, consistent with 3/4 top-down projection.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4956
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "young palm tree crown and trunk",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The palm canopy displays a clear foreshortened top surface from rows 12 to 16, with light-green highlights showing the upward-facing fronds before they arch downward to the sides and front.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4003
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "young palm tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The foliage canopy forms the main body, viewed from above at a 3/4 angle with highlighted top fronds spanning rows 12 to 17 foreshortened before draping down, properly revealing the top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4885
+  }
+ ],
+ "decidedAt": "2026-10-14T08:01:48.462Z",
+ "cells": {
+  "16": [
+   "2f31159d62b4d039",
+   "397751aeb528ccee",
+   "9f563e8b4358aec0",
+   "ab7df517f77008a0"
+  ],
+  "24": [
+   "03a86dffc2ca520e",
+   "13f6dcb401fe16d1",
+   "41a42cd51a83095b",
+   "486bd165715251a0",
+   "51f4e5468f5b7fc1",
+   "74cbc4a4b220d680",
+   "7e54e68be460f5a0",
+   "8d68aac5a2564d79",
+   "91a8f22faa45b13e",
+   "9aae2b3f9733a1a7",
+   "9de1cc283e001201",
+   "bb75568fdb08f255",
+   "c71a91e887ff6cf8",
+   "ca398c0715ff6b8e",
+   "d285fadcf85c6b4b",
+   "d2a631273658a121",
+   "e3da5ec6192f7996",
+   "fcee1a982a38bf53"
+  ],
+  "32": [
+   "6c513f9c72d3bbef"
+  ],
+  "48": [
+   "66882322032db6c5",
+   "6f482f7dd7bec505",
+   "6f91ee8fb1a94763",
+   "bd6118350dad056d",
+   "cfbe73bfb02ef98e",
+   "f581d612d5a37595"
+  ]
+ }
+}

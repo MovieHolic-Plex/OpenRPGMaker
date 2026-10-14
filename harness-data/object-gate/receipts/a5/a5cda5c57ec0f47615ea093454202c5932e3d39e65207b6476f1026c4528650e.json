@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a5cda5c57ec0f47615ea093454202c5932e3d39e65207b6476f1026c4528650e",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "오벨리스크",
+ "label": "desert-east/de-obelisk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall rectangular stone pillar / obelisk with layered blocks and a wide base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillar ends abruptly at row 1 with a flat 1px horizontal outline. There is no visible top surface, cut face, or pyramidion seen from above; all horizontal divider lines are drawn completely flat in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6887
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall stone column / obelisk shaft",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The column ends at the top (row 1) with a flat horizontal outline with no visible top surface or cut face shown from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6054
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "shaft and capital of an obelisk / pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The column ends flat at row 1 with only a 1px border; no foreshortened top surface or cut face is visible at the top, rendering it a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5486
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "obelisk pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the obelisk ends abruptly with a flat 1px outline at row 1 without any visible top surface or pyramidion face seen from above, drawn entirely in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6670
+  }
+ ],
+ "decidedAt": "2026-10-14T08:07:31.957Z",
+ "cells": {
+  "16": [
+   "5c10ed28339fb497",
+   "b29e33fc346df634",
+   "bb373d22f0135f85"
+  ],
+  "24": [
+   "1928bd6ff37ca2c5",
+   "2136fc0000b61a82",
+   "88e9e1cdc2a76526",
+   "a29f82986371ec02",
+   "c0f1b93fe9d9e505",
+   "f11ce3f1405ea2c0"
+  ],
+  "32": [
+   "06899d890607f327",
+   "2b84d44fa53ef7f4",
+   "2e721f6dcaf08ee4",
+   "5bbff9602ba055d9",
+   "7d0095d81150264f",
+   "824ac349ae44d87c",
+   "a8432b3a9afb1619",
+   "af740703124b75c7",
+   "de96256d24e818b7",
+   "e531bd08de49c961",
+   "f02c5ca7d0d563b7",
+   "f18344ba37127889"
+  ],
+  "48": [
+   "bc53dca91690d2b7",
+   "e145dad1ad930d82",
+   "e29034baad84a2b2"
+  ]
+ }
+}

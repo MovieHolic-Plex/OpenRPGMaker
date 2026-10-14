@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0757171792236843f8e812b5aab5dbec473a34ef5a4752f3c55462fa7a185731",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "얼음 낚시 오두막(썰매 밑판, 외쪽 지붕, 연통)",
+ "label": "snow-north/sn-fishing-hut",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ice fishing shack with snow-covered shed roof",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered roof slope is clearly visible from above, spanning approximately 12 pixel rows (rows 10-21) above the south-facing front wall (rows 22-42).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4243
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ice fishing shack with shed roof and chimney",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered shed roof slope is clearly visible from above across rows 11-21 (~11 rows), correctly foreshortened in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5052
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ice fishing hut with snow-covered shed roof, door, window, chimney, and sled base",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered roof slope is visibly angled towards the viewer, spanning rows 10 to 21 (approx 11 rows) above the front facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4982
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ice fishing shack with shed roof",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered shed roof slope occupies rows 11 to 21 (~11 pixel rows) facing toward the 3/4 camera view above the front wall, showing proper roof foreshortening with icicles hanging along the eave.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4048
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:35.383Z",
+ "cells": {
+  "16": [
+   "05efb5e657793ba6",
+   "2789500c13f97d8d",
+   "2d069f9ec476b9e4",
+   "80a854dc643c7614",
+   "a6713f05f6007667",
+   "a9b47c89166f048a"
+  ],
+  "24": [
+   "0afd4ba1881387fd",
+   "48cbc1cb3df1b964",
+   "4ef8e573abfb116b",
+   "57af2d19f3128753",
+   "676b339fdeafb8be",
+   "94aff5f10e6c2968",
+   "b3234baa45a462c1",
+   "b4de7a9bb97412b2",
+   "c27a0206b2b9390f",
+   "f8638aa7dda0660a",
+   "fa186db4cc221a32",
+   "fabb8f5dec3a89a4"
+  ],
+  "32": [
+   "20fb47bf1ff95790",
+   "5c749e4e44bbd99e",
+   "9fb1b1ad9d073f09",
+   "c8b38d7d0251f634"
+  ],
+  "48": [
+   "0ae2a967c2423ee6",
+   "61a5403d8c27f453",
+   "9afc2b41079d948b"
+  ]
+ }
+}

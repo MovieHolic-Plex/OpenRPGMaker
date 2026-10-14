@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "38928f13396780be3a445496e9b134d738b3304a6f2e398aff9ce2631b83bf23",
+ "width": 48,
+ "height": 48,
+ "kind": "terrain",
+ "name": "안개 이끼 덩이(풀밭 가장자리)",
+ "label": "gothic_manor/gm-fogmoss",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fog moss clump terrain patch",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain patch depicting a moss clump / border overlaid on grass; flat terrain surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3913
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "moss terrain patch with border",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat terrain/autotile patch of moss with borders set against grass, viewed from above as appropriate for top-down ground tiles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3612
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "moss terrain patch with border",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain/autotile patch representing moss or ground cover, viewed from above with full top-down surface visible across rows 4 to 44.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3771
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "moss terrain patch on ground",
+    "kind_matches": true,
+    "top_rows": 42,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain autotile depicting a moss patch surrounded by ground; viewed flat from above as standard 3/4 top-down ground terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4705
+  }
+ ],
+ "decidedAt": "2026-10-14T07:55:00.837Z",
+ "cells": {
+  "16": [
+   "2001677a067bf59c",
+   "2a0550434645ef3e",
+   "5d685a65edcdd307",
+   "83d44a4b6625f7c2",
+   "b44773f4b3980119",
+   "c8c3656270b08cfb",
+   "ca77d4d05fbe08aa",
+   "d55155231ca45c14",
+   "eb394f5aed2d045f"
+  ],
+  "24": [
+   "4b6c938a8c429b0b",
+   "8c81dbf35f64b2b3",
+   "b3fe7ccb641967d6",
+   "bab52b36ac0e4956"
+  ],
+  "32": [
+   "02f8cdec12dda89e",
+   "0c819243c85936e3",
+   "1624c490caa68dbf",
+   "262e5d4cbca2ce78",
+   "32139e838e4b66d0",
+   "35f13cca4fb59f6c",
+   "402e2d4d4ce29622",
+   "4d4bf05fcd33a5a2",
+   "807f7a4693bc689e",
+   "80c4ba2990a7a56d",
+   "92edf39a0b61f25a",
+   "a37ca7bec3ff1f0d",
+   "a974ada375c5e46b",
+   "ad4a6933036d6040",
+   "b1f4244004b207f2",
+   "b2baf69961a9cdb2",
+   "baea76672c7eb93b",
+   "bb10272dba3e6aef",
+   "c217bba495089715",
+   "d7092a703f9e5b46",
+   "d819a74b22677190",
+   "d9d31a84706e8610",
+   "eeb6a86f07ea13ee",
+   "fc149db4087ec6cc"
+  ],
+  "48": [
+   "45667f7dfa41aef7"
+  ]
+ }
+}

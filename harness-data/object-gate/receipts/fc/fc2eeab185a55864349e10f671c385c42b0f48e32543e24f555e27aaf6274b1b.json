@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fc2eeab185a55864349e10f671c385c42b0f48e32543e24f555e27aaf6274b1b",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "잎 진 자작(눈 얹힌 잔가지)",
+ "label": "snow-north/sn-birch",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bare birch tree with snow on branches",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire bare tree structure (trunk and branching canopy) is drawn flat in the 2D screen plane as a pure front elevation, with branches spreading only left and right and no depth or top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7063
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bare birch tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree trunk and bare branches are drawn entirely flat in the 2D plane like a side-scroller asset, with no foreshortened branches projecting forward/south to convey 3/4 top-down depth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5537
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "birch tree trunk and bare branches with snow",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bare birch tree and its branching canopy are drawn entirely in flat 2D front elevation (side-scroller style) with no depth or top surface foreshortening across the branches or canopy volume.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6635
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bare birch tree with snow",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The birch tree and its branch crown are drawn completely flat in 2D side-scroller elevation; branches fan out solely left and right without forward foreshortening or 3/4 depth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4440
+  }
+ ],
+ "decidedAt": "2026-10-14T08:02:24.502Z",
+ "cells": {
+  "16": [
+   "3fec85be629ec25b",
+   "511162e4c4604c32",
+   "dae5780f5696cbb1",
+   "e52d355a7736c144",
+   "e8dc4f5a94d6c1b2",
+   "f99e9b6577ee5413"
+  ],
+  "24": [
+   "2566c30ce58240c2",
+   "450887ebcf0334f7",
+   "646c879afc877640",
+   "8ddccaa5c166a250",
+   "ac3738d25d0f8d2d",
+   "ca0fa4191ed87732",
+   "dbb3ea676d23e7dc",
+   "e35829692fc9216a",
+   "e87175075203e1fc",
+   "f1eeafd37c8f92ad"
+  ],
+  "32": [
+   "229109736b5fdca7",
+   "4a0b31c4173f97ce",
+   "7958280eba30eb82",
+   "b9319c4ebc2a8312"
+  ],
+  "48": [
+   "254c7c39b7fab50c",
+   "a7a529aef5547b03",
+   "b99fdd568ccd9820"
+  ]
+ }
+}

@@ -20,15 +20,56 @@
 .cf-root.cf-launcher { position: fixed; inset: 0; }
 .cf-root.cf-overlay { position: fixed; inset: 0; z-index: var(--z-modal, 2100); }
 .cf-root [hidden] { display: none !important; }
+ .cf-main { display: flex; flex: 1; flex-direction: column; min-width: 0; min-height: 0; }
+ .cf-main > .cf-body { flex: 1; }
+ .cf-root.cf-launcher.cf-has-rail { display: grid; grid-template-columns: 232px minmax(0, 1fr); grid-template-rows: 100dvh; }
+ .cf-root.cf-launcher.cf-has-rail .cf-main { min-width: 0; min-height: 0; }
+ .cf-rail {
+   display: flex; flex-direction: column; min-width: 0; min-height: 0; padding: 22px 14px 16px;
+   border-right: 1px solid var(--cf-line); background: #15161d; color: var(--cf-fg);
+ }
+ .cf-rail-brand { display: flex; align-items: center; gap: 10px; padding: 0 6px 22px; }
+ .cf-rail-brand > span:last-child { display: grid; gap: 1px; min-width: 0; line-height: 1.2; }
+ .cf-rail-brand strong { font-size: 16px; letter-spacing: -.02em; }
+ .cf-rail-brand small { color: var(--cf-sub); font-size: 11px; }
+ .cf-rail-mark { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(145deg, #8f8cff, #5547c5 58%, #27255e); color: #fff; font-weight: 900; box-shadow: 0 8px 20px rgba(91, 80, 191, .28); }
+ .cf-rail-nav { display: grid; gap: 3px; padding-top: 14px; border-top: 1px solid var(--cf-line); }
+ .cf-rail-nav-item { display: flex; align-items: center; width: 100%; min-height: 40px; padding: 0 11px; border: 0; border-radius: 9px; background: transparent; color: var(--cf-sub); font: inherit; text-align: left; cursor: pointer; }
+ .cf-rail-nav-item:hover { background: rgba(255, 255, 255, .06); color: var(--cf-fg); }
+ .cf-rail-nav-item.is-active { background: rgba(122, 113, 255, .18); color: #e2e1ff; font-weight: 700; }
+ .cf-rail-label { margin: 26px 8px 9px; color: #777886; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+ .cf-rail-recent { display: grid; gap: 4px; min-height: 0; overflow: auto; }
+ .cf-rail-recent-item { display: flex; align-items: center; gap: 9px; min-width: 0; padding: 7px 6px; border: 0; border-radius: 8px; background: transparent; color: var(--cf-fg); font: inherit; text-align: left; cursor: pointer; }
+ .cf-rail-recent-item:hover { background: rgba(255, 255, 255, .06); }
+ .cf-rail-recent-art { display: block; flex: 0 0 36px; width: 36px; aspect-ratio: 1; overflow: hidden; border-radius: 7px; background: #262733; }
+ .cf-rail-recent-art img { width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; }
+ .cf-rail-recent-art.is-empty { display: grid; place-items: center; color: #9d9eea; font-size: 15px; }
+ .cf-rail-recent-copy { display: grid; min-width: 0; gap: 2px; }
+ .cf-rail-recent-copy strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; font-weight: 700; }
+ .cf-rail-recent-copy small { overflow: hidden; color: #777886; text-overflow: ellipsis; white-space: nowrap; font-size: 10px; }
+ .cf-rail-foot { display: grid; gap: 2px; margin-top: auto; padding: 12px 8px 0; border-top: 1px solid var(--cf-line); }
+ .cf-rail-foot-title { font-size: 11px; font-weight: 700; }
+ .cf-rail-foot-sub { color: #777886; font-size: 10px; line-height: 1.35; }
+ .cf-resume-hero { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 320px; min-height: 268px; margin: 2px 0 28px; overflow: hidden; border: 1px solid rgba(255, 255, 255, .12); border-radius: 16px; background: #1b2040; isolation: isolate; }
+ .cf-resume-hero::before { content: ""; position: absolute; inset: 0; z-index: -2; background: linear-gradient(115deg, #20275c, #30285d 44%, #a35e6b); }
+ .cf-resume-hero::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(10, 12, 24, .97), rgba(17, 19, 39, .82) 45%, rgba(29, 22, 41, .2) 100%); }
+ .cf-resume-art { position: absolute; z-index: -1; inset: 0 0 0 auto; width: 62%; height: 100%; overflow: hidden; opacity: .72; mix-blend-mode: screen; }
+ .cf-resume-art img { width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; }
+ .cf-resume-art.is-empty { display: grid; place-items: center; background: repeating-linear-gradient(45deg, rgba(255,255,255,.025) 0 10px, transparent 10px 20px), #24284a; color: #c2c4ff; font-size: 44px; }
+ .cf-resume-copy { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end; max-width: 620px; padding: 30px 34px; }
+ .cf-resume-kicker { margin-bottom: 10px; color: #dcd7ff; font-size: 12px; font-weight: 800; letter-spacing: .04em; }
+ .cf-resume-copy h1 { max-width: 560px; margin: 0 0 8px; font-size: clamp(28px, 3.4vw, 46px); letter-spacing: -.055em; line-height: 1; overflow-wrap: anywhere; }
+ .cf-resume-copy p { max-width: 500px; margin: 0; color: #d0d3e6; font-size: 14px; }
+ .cf-resume-action { margin-top: 20px; min-height: 42px; padding: 0 17px; border: 0; border-radius: 10px; background: #fff; color: #2b2759; font: inherit; font-weight: 800; cursor: pointer; }
+ .cf-resume-action:hover { background: #ebe8ff; }
+ .cf-resume-hero.is-empty { grid-template-columns: 1fr; background: linear-gradient(120deg, #20275c, #221d42); }
+.cf-resume-hero[aria-busy="true"] { background: linear-gradient(120deg, #20275c, #29244b); }
+ .cf-resume-hero.is-empty::after { background: radial-gradient(circle at 85% 35%, rgba(129, 122, 255, .38), transparent 34%), linear-gradient(90deg, rgba(10, 12, 24, .88), rgba(17, 19, 39, .28)); }
 
-.cf-top {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 12px 24px;
-  border-bottom: 1px solid var(--cf-line);
-  background: rgba(15, 15, 18, 0.96);
-}
+ .cf-top {
+   position: sticky; top: 0; z-index: 4; display: flex; align-items: center; gap: 16px; padding: 12px 24px;
+   border-bottom: 1px solid var(--cf-line); background: rgba(15, 15, 18, 0.96); backdrop-filter: blur(16px);
+ }
 .cf-brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 18px; white-space: nowrap; }
 .cf-brand-mark { color: var(--cf-accent); }
 .cf-search {
@@ -57,12 +98,16 @@
 .cf-close { background: var(--cf-chip); color: var(--cf-fg); border: 0; border-radius: 50%; width: 34px; height: 34px; font-size: 15px; cursor: pointer; }
 .cf-close:hover { background: #33333d; }
 
-.cf-body { flex: 1; min-height: 0; overflow-y: auto; }
-.cf-feed { padding: 0 24px 48px; }
-.cf-chips { position: sticky; top: 0; z-index: 2; display: flex; gap: 8px; padding: 14px 0 12px; overflow-x: auto; background: var(--cf-bg); scrollbar-width: none; }
-.cf-chip { white-space: nowrap; background: var(--cf-chip); color: var(--cf-fg); border: 0; border-radius: 8px; padding: 6px 12px; font: inherit; cursor: pointer; }
-.cf-chip:hover { background: #2f2f39; }
-.cf-chip.is-on { background: var(--cf-fg); color: #0b0b0e; font-weight: 700; }
+ .cf-body { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
+ .cf-feed { padding: 0 24px 48px; }
+ .cf-root.cf-launcher .cf-feed { width: min(100%, 1480px); margin: 0 auto; padding: 24px 30px 72px; }
+.cf-root.cf-launcher .cf-grid { grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr)); }
+ .cf-root.cf-launcher .cf-chips { top: 0; }
+ .cf-chips { position: sticky; top: 0; z-index: 2; display: flex; gap: 8px; padding: 14px 0 12px; overflow-x: auto; background: var(--cf-bg); scrollbar-width: none; }
+ .cf-chip { white-space: nowrap; background: var(--cf-chip); color: var(--cf-fg); border: 0; border-radius: 8px; padding: 6px 12px; font: inherit; cursor: pointer; }
+ .cf-chip:hover { background: #2f2f39; }
+ .cf-chip.is-on { background: var(--cf-fg); color: #0b0b0e; font-weight: 700; }
+ .cf-root button:focus-visible, .cf-root input:focus-visible, .cf-root select:focus-visible { outline: 2px solid #9b91ff; outline-offset: 2px; }
 
 .cf-continue { margin: 4px 0 20px; }
 .cf-continue h2 { font-size: 15px; margin: 0 0 10px; color: var(--cf-sub); font-weight: 600; }
@@ -127,10 +172,25 @@
 
 .cf-error { margin: 0; padding: 10px 24px; background: #3b1d22; color: #ffd0d5; }
 
+@media (max-width: 1100px) {
+  .cf-root.cf-launcher.cf-has-rail { grid-template-columns: 204px minmax(0, 1fr); }
+  .cf-root.cf-launcher .cf-feed { padding-inline: 24px; }
+  .cf-resume-hero { grid-template-columns: minmax(0, 1fr) 260px; }
+}
 @media (max-width: 900px) {
   .cf-detail { grid-template-columns: 1fr; }
   .cf-top { flex-wrap: wrap; }
   .cf-search { order: 3; max-width: none; flex-basis: 100%; }
+  .cf-root.cf-launcher.cf-has-rail { display: flex; flex-direction: column; }
+  .cf-root.cf-launcher .cf-rail { flex: 0 0 auto; flex-direction: row; align-items: center; min-height: 58px; padding: 10px 14px; border-right: 0; border-bottom: 1px solid var(--cf-line); overflow: hidden; }
+  .cf-root.cf-launcher .cf-rail-brand { padding: 0; }
+  .cf-root.cf-launcher .cf-rail-brand small, .cf-root.cf-launcher .cf-rail-label, .cf-root.cf-launcher .cf-rail-recent, .cf-root.cf-launcher .cf-rail-foot { display: none; }
+  .cf-root.cf-launcher .cf-rail-nav { display: flex; gap: 2px; margin-left: auto; padding: 0; border: 0; overflow-x: auto; }
+  .cf-root.cf-launcher .cf-rail-nav-item { min-height: 36px; padding-inline: 10px; white-space: nowrap; }
+  .cf-root.cf-launcher .cf-feed { padding: 18px 16px 56px; }
+  .cf-resume-hero { grid-template-columns: 1fr; min-height: 300px; }
+  .cf-resume-art { width: 100%; opacity: .5; }
+  .cf-resume-copy { padding: 24px; }
 }
 
 /* 데스크톱 앱 창 단추(화면 전환·앱 닫기)가 오른쪽 위에 떠 있다 — 위 막대가 그 밑으로 들어가지 않게 비운다. */

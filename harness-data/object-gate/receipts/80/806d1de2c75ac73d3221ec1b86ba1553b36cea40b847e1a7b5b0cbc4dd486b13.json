@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "806d1de2c75ac73d3221ec1b86ba1553b36cea40b847e1a7b5b0cbc4dd486b13",
+ "width": 48,
+ "height": 48,
+ "kind": "terrain",
+ "name": "검은 연못(돌 테)",
+ "label": "gothic_manor/gm-pond",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water surface of the pond with stone border",
+    "kind_matches": true,
+    "top_rows": 38,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a black water pond bordered by stone, showing the full horizontal surface of the water from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3920
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dark pond with stone border",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain water surface enclosed by a stone rim seen from top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3238
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pond with stone border",
+    "kind_matches": true,
+    "top_rows": 38,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain water surface bordered by stones, viewed from above as appropriate for top-down terrain tiles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3443
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water surface of the pond with stone rim",
+    "kind_matches": true,
+    "top_rows": 38,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat terrain feature (pond) surrounded by a stone border. The entire dark water surface is viewed from above across rows 5 to 42.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3912
+  }
+ ],
+ "decidedAt": "2026-10-14T07:55:00.836Z",
+ "cells": {
+  "16": [
+   "35015954d68355a7",
+   "39e560b571a62804",
+   "48b8687524ef32ea",
+   "48ede6ad8f4502c9",
+   "5b0441ca3ea8b81d",
+   "5c006f6cba0e103d",
+   "77a207d605002751",
+   "b796950c7d32fc03",
+   "b9591cb89552bf74"
+  ],
+  "24": [
+   "0626cb7754448b35",
+   "29e3b61c3442a00c",
+   "2bac7cb43e3f6ed8",
+   "bec346aec67dbc73"
+  ],
+  "32": [
+   "01593ff1ff8a0c46",
+   "02f3c02c16ec72a7",
+   "08a32a157b181606",
+   "15187c6cb7dfd73b",
+   "1e7e29c9b2b54031",
+   "21fb634e46828676",
+   "23810e55c1ccb8c2",
+   "25c3c8183e0ba9ca",
+   "26558c70eee62401",
+   "27c026ddb58aee04",
+   "2f32dc64ab071c02",
+   "2f59a423a623688b",
+   "2fd5e795f7f1b672",
+   "35f1bd9c78fd574a",
+   "41cd6ded8290f45b",
+   "4e5a2c972caf0e34",
+   "5221ceb340187a36",
+   "5a8606e98dbd33d6",
+   "67d6251aea375713",
+   "769e1ca5e0dbb113",
+   "77a5491492c40161",
+   "8694508e4798a96c",
+   "b8bb1a89fde2612f",
+   "f450e7551cf2df52"
+  ],
+  "48": [
+   "676d6fe4d5999d88"
+  ]
+ }
+}

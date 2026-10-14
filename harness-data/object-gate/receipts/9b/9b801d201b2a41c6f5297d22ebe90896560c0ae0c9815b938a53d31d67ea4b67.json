@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9b801d201b2a41c6f5297d22ebe90896560c0ae0c9815b938a53d31d67ea4b67",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "돌 벽난로(넓은 선반 + 화덕 석판 + 장작불) (프레임 3)",
+ "label": "snow-north/sn-hearth-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone fireplace with mantel and hearth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone chimney and fireplace structure is drawn entirely in pure front elevation with no visible top surface at the top of the body (cuts off flat at row 0). The wooden mantel beam at row 9-12 shows only a 1-2px edge line, not a foreshortened top surface, and the entire masonry facade is a flat vertical elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10326
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone fireplace",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fireplace is rendered in flat front elevation. The main stone structure extends vertically with no top surface visible (top_rows: 0), and the wooden mantel shelf only has a 1px top edge line (row 9) above its 3px front face instead of a properly foreshortened horizontal surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14945
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone fireplace with mantel shelf and chimney breast",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body of the stone fireplace extends vertically to the top of the frame with no top surface shown (top_rows = 0). The wooden mantel shelf shows only a 2px highlight strip (rows 9-10), which does not qualify as a 3/4 perspective top surface, and the entire structure is rendered as a flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12614
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone fireplace with wooden mantel shelf and hearth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire stone fireplace is drawn in flat front elevation. The wooden mantel shelf only has a 1px top highlight line (row 9) with no foreshortened top surface, and the stones, arch, and chimney structure show no top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7692
+  }
+ ],
+ "decidedAt": "2026-10-14T08:01:22.991Z",
+ "cells": {
+  "16": [
+   "7f5162f87fc8eafa",
+   "9ba429b004807d66",
+   "b246ca93cd92d0e3",
+   "e9b8a1dab4ce7327"
+  ],
+  "24": [
+   "0b0269fb1b11a4e8",
+   "129c688f2fb4b218",
+   "2838e9ac5ac50200",
+   "2bd60ca69866dbde",
+   "3419779cc6663d47",
+   "35717092e1352a05",
+   "57e3010b641a11cb",
+   "5bf6a235ec2b9348",
+   "5c9dc1e4e5fcbab0",
+   "687db49c6c9146c7",
+   "70f9be0f845d3b06",
+   "7ef66ec6dfbf44b9",
+   "8050a83fa363b3f3",
+   "9b63527496e71d7e",
+   "a10231738e88f128",
+   "b2edfdad3d017fc0",
+   "bbcafaa69faa2223",
+   "bbd1000519716d2a",
+   "bda9a74b56f6a01a",
+   "c0e20581780cccdb",
+   "c523660b7d972baf",
+   "c52a966c5eee5bb0",
+   "c726971e5f0c4282",
+   "fb4a516f2e9eb71c"
+  ],
+  "32": [
+   "ac48a0f9900f09e7"
+  ],
+  "48": [
+   "09a44dba635d253b",
+   "40fd033189f8d4d8",
+   "447da524060bdbf7",
+   "5509d829100ea204",
+   "d2ab81d0e918a14d",
+   "f0d50dc0e4caf457"
+  ]
+ }
+}

@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2606bd83d2466929554cb44450bdffe4c94f885b0c189bed474ca84e03a8f87c",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "벚나무(봄 꽃)",
+ "label": "modern-campus/mc-tree-cherry",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cherry tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The foliage and trunk are drawn in a flat side/front elevation, showing the vertical profile and even the underside of the canopy above the trunk rather than a 3/4 top-down view of the canopy. The elliptical grass patch at the base cannot substitute for 3/4 perspective on the main body.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13214
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cherry blossom tree (canopy and trunk)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree canopy and trunk are drawn in a flat front elevation (side-scroller style), with the foliage undercut visible from below at rows 33-35 and a straight vertical trunk. Only the grass base patch has top-down perspective, but the main body lacks any top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13607
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cherry blossom tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tree's canopy is constructed of layered volumetric blossom clusters stepping downward from the rear/top cluster (rows 0-8) to the front cluster, shaded with top-down illumination. The base sits on an elliptical ground plane patch (rows 41-47) establishing proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8800
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cherry blossom tree (canopy and trunk)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (canopy and trunk) is drawn in pure front elevation as if for a side-scroller, with foliage clumps stacked vertically and shaded with horizontal under-shadows at eye level. The trunk is a flat vertical rectangle with no 3/4 perspective. Only the ground grass patch underneath shows top-down perspective, but base plinths do not count.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15891
+  }
+ ],
+ "decidedAt": "2026-10-14T08:06:14.290Z",
+ "cells": {
+  "16": [
+   "1374ddb10927b1ae",
+   "507c24578dec151e",
+   "8067cde5185a18b6",
+   "9fb428a81daef8c8",
+   "d59187f41a7acaa6",
+   "e3caa1bfae135043"
+  ],
+  "24": [
+   "03bff79c3ea45d64",
+   "048f463edcab0c8d",
+   "1f1cef316edf9da8",
+   "2728226c00f6642b",
+   "2c0f7fdd93d08dca",
+   "3b2455813ab3835e",
+   "75f3e40d241255d2",
+   "9a9352f2ffad92df",
+   "a4ab6d5d477e1340",
+   "dc1c976ec57a0675",
+   "e1b9de5cf5c9acc1",
+   "e9b3ce67a7451d03"
+  ],
+  "32": [
+   "6b78d58002771f45",
+   "9d2c0c1c39ff52bf",
+   "d3f2763cf10f70bf",
+   "fd4d35bc08e33210"
+  ],
+  "48": [
+   "7d2608255b2b3a6d",
+   "a698b2b0b1ee1135",
+   "cdd65b12f64979b9"
+  ]
+ }
+}

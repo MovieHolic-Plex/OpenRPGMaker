@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "326645a0eb3854049a8d074d39395e342b0c66598f4eb130dc1ae72e3d23986e",
+ "width": 48,
+ "height": 64,
+ "kind": "organic",
+ "name": "느티나무 가로수(큰 수관)",
+ "label": "modern_city/street-green/mc-prop-keyaki-a",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "foliage canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tree canopy is rendered with foreshortened spherical foliage clumps showing upper lit surfaces across rows 1-10, with an elliptical ground shadow at the trunk base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5001
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tree canopy is rendered with multi-tiered rounded foliage clusters shaded from above, and the base of the trunk flares out over an elliptical ground shadow consistent with 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5502
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "canopy and trunk of a tree",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The foliage canopy is rendered as overlapping spherical clusters with clearly visible top surfaces and top-down directional lighting across rows 1-15, resting on a flared trunk anchored onto an elliptical ground shadow.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 20024
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "foliage canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The foliage canopy is sculpted in rounded overlapping spherical clusters seen from an elevated 3/4 angle, with the uppermost crown dome spanning rows 1-9 (approx. 9 rows) showing clear top-down volume.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7508
+  }
+ ],
+ "decidedAt": "2026-10-14T08:05:10.637Z",
+ "cells": {
+  "16": [
+   "07173929dde4e98d",
+   "0c5679008f265235",
+   "13ed595330cc3fa7",
+   "1d41c1b34b4c0e40",
+   "3ed2a6dc48492816",
+   "4acebd1f96dc134a",
+   "558ff9e1118aa8dc",
+   "6566afff4e1433bf",
+   "801928408f88ba41",
+   "9ad5c1b2db4385d8",
+   "baf37ab328295702",
+   "ed2c274ddd92643e"
+  ],
+  "24": [
+   "09db786469ae3399",
+   "3a4daf9beeecad4f",
+   "3ea7aa51686b441b",
+   "6bdc0ec6026dff28",
+   "6fb2ce1cd2eb854b",
+   "749edeb73889c5bf",
+   "868e3507c674ff55",
+   "b049689b4cee54ca",
+   "b28abace93d777ab",
+   "d2c4fdd85e5345b3",
+   "d9923a3e04b5fd83",
+   "f3c0b9498a676840"
+  ],
+  "32": [
+   "03a38cd34c64f071",
+   "0c693ca2bf22eefe",
+   "238e5329c428a58a",
+   "4c9dba3f7d2bb651",
+   "5bc0b465f6c7cd52",
+   "5f19f9fd775d25a2",
+   "5fb1132d722806ea",
+   "7f8c90b6d9167299",
+   "b65da8c93e781afe",
+   "ccc29d9954f49a5d",
+   "d46b5b6e7307b356",
+   "dd7a186756efdfab"
+  ],
+  "48": [
+   "0f1dfc359ce99c2e",
+   "35f50f0f686d2534",
+   "476c07b33ca8d639",
+   "d3429e267fa24287"
+  ]
+ }
+}
