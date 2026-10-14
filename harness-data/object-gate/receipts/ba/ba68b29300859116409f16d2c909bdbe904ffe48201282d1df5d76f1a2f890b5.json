@@ -1,0 +1,147 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ba68b29300859116409f16d2c909bdbe904ffe48201282d1df5d76f1a2f890b5",
+ "width": 16,
+ "height": 64,
+ "kind": "column",
+ "name": "jp-lot-clock",
+ "label": "jp_city/street_hand/jp-lot-clock",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "clock head and base pedestal",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the clock head (rows 3-7, 5px tall) and the base plinth (rows 51-54, 4px tall) clearly show their horizontal top surfaces facing up towards the 3/4 perspective camera.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10675
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "clock head and pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The clock housing at the top is drawn in pure front elevation with a circular clock face and a flat top border at row 2 with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7131
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "clock housing atop pole",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The clock head features a clearly delineated, light-shaded top surface spanning rows 3-8 (6px tall) above its darker front face containing the clock dial (rows 9-22). The base plinth also shows a corresponding top surface (rows 50-54).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15867
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "street clock on pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The clock head and base are drawn in pure front elevation with flat rectangular profiles and no foreshortened top surfaces visible (0px top surface above the clock head outline at row 2).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10831
+  }
+ ],
+ "decidedAt": "2026-10-13T17:27:07.783Z",
+ "cells": {
+  "16": [
+   "2bb01dfcbbe8de18",
+   "319d65bc011b6733",
+   "3cca0a95a350701b",
+   "782f8c4f25932783"
+  ],
+  "24": [
+   "04e3cb6dd9386539",
+   "0f943112ae885a66",
+   "75f2ba7a51776b79",
+   "81064dd51d9eb60b",
+   "a2e94c274d3f7954",
+   "bba05ca393774115",
+   "bc45750b12e34c20",
+   "be42f2273dd58a9f",
+   "c8bd47574691725d",
+   "d1359ed377d5d4b1",
+   "d4c2212345f30c80",
+   "d5fd89e7281f093d",
+   "dbfdecd9729eb8e9",
+   "e63b6db13d1c86e3",
+   "e98605a2db265d8b",
+   "ee6fcdd9b8be74ce",
+   "f563837f9988b2fc",
+   "f9c6d4184edbbb35"
+  ],
+  "32": [
+   "4f7a0e3980ae7af9",
+   "7eaaf1c2c6591bac",
+   "aa68cac9d23f95c6",
+   "c2ebb6fc2f2423fe",
+   "dd7388572a09b13a",
+   "fa54c1f7900196ef"
+  ],
+  "48": [
+   "0695ecad5b63be89",
+   "08bb438f36410b6a",
+   "2c51702f5c3f6e49",
+   "5ef7c41ce8dd01ad",
+   "63b208cc0195db50",
+   "904c2edbac0cc868",
+   "a78334a10dc9dafe",
+   "b9e09a68e9c14be0",
+   "d3691f4e8df3c3d2",
+   "da4dc11e9b7b4fda",
+   "dfa7635674ef5f4e",
+   "eb86f0c2354ed4ec"
+  ]
+ }
+}

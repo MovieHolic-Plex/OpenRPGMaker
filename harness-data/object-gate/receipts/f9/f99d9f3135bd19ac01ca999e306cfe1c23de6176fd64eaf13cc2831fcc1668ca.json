@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f99d9f3135bd19ac01ca999e306cfe1c23de6176fd64eaf13cc2831fcc1668ca",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-lot-cabin",
+ "label": "jp_city/street_hand/jp-lot-cabin",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cabin / modular building with sloped roof",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabin features a clearly visible top roof slope occupying rows 3-13 (11 pixels tall) above the front facade (rows 16-42), conforming to standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7898
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cabin with sloped roof and front facade",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabin features a sloped roof visible from row 3 to row 13 (approx 11 source pixel rows) above the eave and front facade, providing the correct top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5227
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cabin / small building",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building has a clearly visible sloped roof surface extending from row 3 to row 13 (~11 rows), meeting the 3/4 top-down perspective requirement.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7421
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cabin / small prefab building with sloped roof, door, and windows",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabin features a clearly depicted top/slanted roof surface from rows 2-13 (~11 rows) above the eave and southern wall facade, correctly rendering 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4522
+  }
+ ],
+ "decidedAt": "2026-10-13T17:27:07.783Z",
+ "cells": {
+  "16": [
+   "0d68ccec38da4087",
+   "47d57f2b7fd9341d",
+   "4f940f006507e41b",
+   "6e0d6b36c499829f",
+   "7edd63d0933e96df",
+   "9d91c8b9ee9458c7",
+   "a15b8b83c0acce74",
+   "a309985bfab07122",
+   "a5ac903ea2f3278d"
+  ],
+  "24": [
+   "5086f32dad5c5af7",
+   "878bdbd3d2e18ed6",
+   "bc287acbcb8078d3",
+   "fe8fe2540206a9ae"
+  ],
+  "32": [
+   "01faa58b0f2902fe",
+   "06206b290358dcd4",
+   "0e089721141aa253",
+   "176e9607f8d32392",
+   "1b990a0061617456",
+   "1ba566754259ce3a",
+   "1e35c565b775075a",
+   "2190e785e2223a58",
+   "347f81a1b7ce8a55",
+   "3dfa53429ba5ad48",
+   "5ba28eea08987818",
+   "69d30eb7ca5007c1",
+   "74b77d0f43e69739",
+   "7c19f7d60f1ddf9c",
+   "831864e26f7bc6d9",
+   "9774097feaae631c",
+   "9a7e2e176b99c2eb",
+   "9e2c9c53dc191e49",
+   "a9c51109aaf651ac",
+   "b09daefd63621bdd",
+   "ce33c005264860a5",
+   "d0c7b687b0d43355",
+   "de0a86bc1f58be58",
+   "ea6c27465bffb9c9"
+  ],
+  "48": [
+   "60349c8a64b7e8fc"
+  ]
+ }
+}

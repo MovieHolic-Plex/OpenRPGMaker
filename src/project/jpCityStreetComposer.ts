@@ -12,6 +12,7 @@
 
 import { addMapLocation } from "@/project/mapNamedLocations";
 import type { GameMap } from "@/project/types";
+import { fillLotUses, type LotUsePlaced, type LotUseView } from "@/project/jpCityLotUse";
 
 export type JpStreetStyle = "shopping" | "residential";
 
@@ -40,6 +41,7 @@ export interface JpStreetPlan {
   readonly summary: string;
   readonly mapId: string;
   readonly seed: number;
+  readonly style?: JpStreetStyle;
 }
 
 function mulberry(seed: number): () => number {
@@ -762,7 +764,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
     steps,
     buildings: placed,
     propRects: propRectsOut,
-    mapId, seed: opts.seed,
+    mapId, seed: opts.seed, style,
     walkRows: [...bands.flatMap((b) => (b.gap ? (b.gap.river ? [b.foot + 2, b.gap.sw2] : [b.foot + 2, b.gap.road0, b.gap.road0 + 1, b.gap.sw2]) : [])), H - 2],
     summary: `${style === "residential" ? "주택가" : "상가 거리"} ${W}×${H} — 띠 ${N}줄(발 ${bands.map((b) => `y${b.foot}`).join("·")}), 큰길 ${N - 1}(폭 ${roadWs.join("·")}), 세로 길 ${streets.length}${riverGap >= 0 ? ", 하천(가로)" : ""}, 구획 ${zones.map((z) => zoneNames[z.zone]).join("·")}, 건물 ${placed.length}채(${placed.map((p) => p.role).join("·")})`,
   };
@@ -782,7 +784,7 @@ function segmentsAround(width: number, alleys: readonly { x: number; w: number }
  */
 export interface JpStreetBuiltBuilding extends JpStreetBuilding { readonly rect?: { x0: number; y0: number; w: number; h: number }; readonly doors: readonly { x: number; y: number }[] }
 
-export function runJpStreetPlan(plan: JpStreetPlan, call: (tool: string, args: Record<string, unknown>) => { rect?: { x0: number; y0: number; w: number; h: number }; doors?: readonly { x: number; y: number }[] } | void): { built: number; skipped: number; props: number; buildings: JpStreetBuiltBuilding[] } {
+export function runJpStreetPlan(plan: JpStreetPlan, call: (tool: string, args: Record<string, unknown>) => { rect?: { x0: number; y0: number; w: number; h: number }; doors?: readonly { x: number; y: number }[] } | void, view?: () => LotUseView): { built: number; skipped: number; props: number; buildings: JpStreetBuiltBuilding[]; lotUses: readonly LotUsePlaced[] } {
   let built = 0, skipped = 0, props = 0;
   const buildings: JpStreetBuiltBuilding[] = [];
   const done = new Set<string>();
@@ -846,7 +848,18 @@ export function runJpStreetPlan(plan: JpStreetPlan, call: (tool: string, args: R
       try { call("stamp_object", { objectId: `kit:jp_city/${id}`, mapId: plan.mapId, x, y: dy + 1 }); props++; taken.push(r); } catch { /* 자리가 막히면 건너뜀 */ }
     }
   }
-  return { built, skipped, props, buildings };
+  // 빈터 쓰임(2026-10-14): 남은 대지를 코인 주차·골목 자판기·놀이터·텃밭·공사장·광장 꾸밈으로 — 지도를 읽어야 하므로 view 를 준 호출에서만.
+  let lotUses: readonly LotUsePlaced[] = [];
+  if (view) {
+    const rects = [
+      ...buildings.filter((b) => b.rect).map((b) => ({ x: b.rect!.x0, y: b.rect!.y0, w: b.rect!.w, h: b.rect!.h })),
+      ...plan.buildings.filter((b) => b.role === "landmark" && b.h).map((b) => ({ x: b.x, y: b.foot - b.h! + 1, w: b.w, h: b.h! })),
+    ];
+    const lot = fillLotUses({ mapId: plan.mapId, seed: plan.seed, style: plan.style ?? "shopping", buildings: rects, view, call: (tool, args) => call(tool, args) });
+    props += lot.props; lotUses = lot.uses;
+    if (nodeEnvFlag("LOTDBG")) console.error("[lot-use]", (lot.emptyBefore * 100).toFixed(1), "→", (lot.emptyAfter * 100).toFixed(1), lot.uses.map((u) => `${u.use}@${u.x},${u.y} ${u.w}x${u.h}`).join(" "));
+  }
+  return { built, skipped, props, buildings, lotUses };
 }
 
 const ROLE_KO: Readonly<Record<string, string>> = { tower: "고층 빌딩", konbini: "편의점", izakaya: "이자카야", ramen: "라멘집", cafe: "카페", shop: "상점", office: "사무소", garage: "차고", apartment: "아파트", machiya: "마치야", house: "주택", sento: "센토(목욕탕)", bento: "도시락집" };

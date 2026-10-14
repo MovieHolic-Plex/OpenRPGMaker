@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "95bfab2256765b906982362c3c134e6820632ae146a5df22a0d46dec3d1f3bd9",
+ "width": 16,
+ "height": 32,
+ "kind": "frame",
+ "name": "jp-lot-notice",
+ "label": "jp_city/street_hand/jp-lot-notice",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "notice board",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire notice board, including its arched canopy/roof, board frame, posts, and base plinth, is drawn as a flat 2D front elevation with zero top-down perspective or visible horizontal depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8853
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "notice board",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The notice board and its arched roof cap are drawn as a flat architectural front elevation without visible depth or foreshortened top surfaces on the board frame, posts, or cap.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8319
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "notice board panel and roof",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The notice board and its arched roof are drawn entirely in flat front elevation with no visible top surface on the frame or main panel.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5669
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "notice board with roof canopy on twin posts and base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The notice board is sheltered by a prominent pitched/sloped canopy roof at rows 1-6 (about 5-6 pixel rows tall), presenting its top surface foreshortened from above. The horizontal base plinth also shows a top face at row 28.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7482
+  }
+ ],
+ "decidedAt": "2026-10-13T17:27:07.784Z",
+ "cells": {
+  "16": [
+   "4c682cd4d6a13885",
+   "97117b623ae29ac0"
+  ],
+  "24": [
+   "2a3c1b8ce3f0d6b3",
+   "63a15d19ae44f5d3",
+   "75d89fe557ab9ac8",
+   "76d17ab6389589bd",
+   "8de2941d04c6dc21",
+   "97c2ab084fb2699c",
+   "9ffccf68ea5c8534",
+   "b37a7ef97d33a117",
+   "c051984bcae9c2dc",
+   "d66e3b8799e934cb",
+   "eb10609c4d48f551",
+   "feaadc0bef7f799e"
+  ],
+  "32": [
+   "8f0aa97f651720bf",
+   "d4e37c3aa205c1c3",
+   "fea4758574bd1ec0"
+  ],
+  "48": [
+   "2f0bc58abe4801b3",
+   "424e2302c8c4d8e3",
+   "54c5517e21e0df0b",
+   "872de3ddfcd262fb",
+   "b0696ae508800e26",
+   "e8db6c74b9a58cc7"
+  ]
+ }
+}

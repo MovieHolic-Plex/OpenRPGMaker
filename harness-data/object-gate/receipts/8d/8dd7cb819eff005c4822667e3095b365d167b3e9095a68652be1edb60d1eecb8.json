@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8dd7cb819eff005c4822667e3095b365d167b3e9095a68652be1edb60d1eecb8",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-lot-kiosk",
+ "label": "jp_city/street_hand/jp-lot-kiosk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "market kiosk / stall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire kiosk, including the striped awning, shelves, and counter, is drawn in pure flat front elevation. The counter shows at most a 2px horizontal edge line (rows 35-36) with no top surface foreshortening, and the awning is viewed completely straight-on.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6130
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "market stall kiosk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The kiosk is drawn in a flat 2D side-scroller front elevation. All horizontal surfaces (shelves, counter top) are drawn as 2px-thick horizontal lines with zero depth or visible top plane, and the counter and back wall face straight toward the viewer without any 3/4 top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9823
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "kiosk with striped awning and display shelves",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire kiosk, including the striped awning and lower counter, is drawn in pure front elevation with no visible top surface or roof slope; the counter and shelves have only 1-2px edge lines.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5170
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "kiosk stall with awning, shelves, and counter",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The striped awning/roof and lower counter are rendered completely flat from the front with 0 rows of visible top surface; shelves are only 1-2px lines with no depth visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5887
+  }
+ ],
+ "decidedAt": "2026-10-13T17:30:03.090Z",
+ "cells": {
+  "16": [
+   "3a45cf1588fabc09",
+   "45c8c05ff70f2985",
+   "6e26e9c88c7df29d",
+   "82b1dc5a3d78df72",
+   "ad62959041becf46",
+   "e1f4c61c01a4df24"
+  ],
+  "24": [
+   "07c7f229efc96daa",
+   "310899d4755aa664",
+   "4b41bef4eb3529a7",
+   "51639e06406c25f6",
+   "5b028cae8d136d69",
+   "743204eeb05dd307",
+   "7708c8aa567b6c85",
+   "9372db1364ae3591",
+   "aeeca5cd2e06931a",
+   "b493a8a461cbf57d",
+   "c0a97c5e45588057",
+   "dda7831a7528037f"
+  ],
+  "32": [
+   "2ada2d284c011c35",
+   "cd2ab6de506acfb1",
+   "e7c3fa5ad3406a4b",
+   "f27e99a93c3261e8"
+  ],
+  "48": [
+   "0613b27d57be7953",
+   "7952476d4016ed99",
+   "e3d6f0b9eb9d1d41"
+  ]
+ }
+}
