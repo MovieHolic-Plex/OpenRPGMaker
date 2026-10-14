@@ -1,0 +1,4 @@
+round 2 (interior+murim only, rules v5 w/o ellipse rule, prompt c586b6aec75ca443): 3/4 violations 44/47 caught, good 15/29 passed (stricter).
+round 3a (subset 35 items, +ellipse rule 11b incl. columns, prompt ef6fdc7db2b934c0): bad 11/17, good 14/18.
+round 3b (subset, ellipse rule excludes columns/rune stones; prompt 33d76d35224ff83d): bad 13/17, good 13/18.
+round 4 = full run with 3b wording + measured-facts footnote (prompt a8d1d081395698ac, profile 3989203095df6a2f). Ties-fail for 3/4 majority was tried offline on round 1: 41/47 caught but good 17/29 -> not adopted.
