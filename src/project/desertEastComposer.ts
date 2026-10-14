@@ -1189,6 +1189,11 @@ function furnish(r: Room, kind: DesertRoomKind, room: Rect, rng: () => number, c
         r.putSafe(pick(rng, ["de-jar-tall", "de-canopic-jars", "de-vase-tall"]), x0, y, door);
         r.putSafe(pick(rng, ["de-jar-tall", "de-canopic-jars", "de-treasure-chest"]), x1, y, door);
       }
+      // 묘실 가운데 줄: 석관 앞 제단 양옆에 보물 더미(궤 + 단지)와 횃대 — 빈 바닥이 넓게 남지 않게(조수 실행 2026-10-14 검수)
+      const my = y0 + Math.floor((y1 - y0) / 2) + 1;
+      for (const [x, d] of [[cx - 3, -1], [cx + 3, 1]] as const) {
+        r.putSafe("de-treasure-chest", x, my, door); r.putSafe("de-canopic-jars", x + d, my, door); r.putSafe("de-torch-stand", x, my + 2, door);
+      }
       r.put("de-sand-pile", x0, y1); r.put("de-sand-pile", x1, y1);
       void corridor;
       break;

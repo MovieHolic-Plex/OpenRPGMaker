@@ -120,7 +120,7 @@ export const DESERT_EAST_DETAIL_LINE =
   "이 작업의 맵은 사막·동양풍 칩셋(desert_east)이다. ⓪ 땅·길·건물·소품은 compose_desert_east_map 이 조화 규칙(바닥은 모래 한 재질 + 길·광장·풀·물·사구만 모서리 왕 타일, 건물 문은 남향·접근칸은 길, 소품은 맞는 땅 위·겹침 없음, 빈 땅마다 용도)을 지켜 한 번에 깐다. 손댄 맵을 다시 깔려면 replace:true. "
   + "① 결과 data.buildings[].doors 가 건물 문 칸(막힘)이고 access 가 문 앞 접근칸(걷는다) — 실내를 잇는 이동은 link_desert_east_interior 가 접근칸에 건다. "
   + "② 피라미드 입구(de-pyramid-door)는 compose 결과에 건물로 들어 있다 — 묘실(compose_desert_east_room kind:\"tomb\")과 잇는다. "
-  + "③ 소품을 더할 때는 길·광장·문 접근칸과 그 아래 한 칸, 물 칸을 피하고, 야자·갈대는 풀 위, 노점·분수는 포석 위, 낙타·천막은 모래 위에 둔다. ④ 마지막에 check_reachability 로 시작 칸 → 모든 문을 확인한다.";
+  + "③ compose 결과는 완성본이다 — 사용자가 따로 원하지 않으면 유적 조각·석재·소품을 낱개로 더 흩지 않는다(흩은 조각은 땅·짝 규칙을 모르고 떠 보인다). 소품을 더할 때는 길·광장·문 접근칸과 그 아래 한 칸, 물 칸을 피하고, 야자·갈대는 풀 위, 노점·분수는 포석 위, 낙타·천막은 모래 위에 둔다. ④ 마지막에 check_reachability 로 시작 칸 → 모든 문을 확인한다.";
 
 export function desertEastPromptLines(project: Pick<Project, "tilesets" | "maps">, mapIds: readonly string[]): string[] {
   if (!hasDesertEastTileset(project)) return [];
@@ -151,6 +151,7 @@ export function formatDesertEastNote(target: DesertEastTarget, targetMap: { id: 
     where,
     `순서: (선택) list_tileset_references({tilesetId:"desert_east"}) 로 배치 규칙·예제를 읽는다 → create_map/resize_map → compose_desert_east_map({mapId, kind, seed}) — 이 요청의 kind: ${kinds.map((k) => `${k}(${SIZE[k] ?? "48×36"})`).join(" · ")}`
       + " → 실내를 말했으면 compose_desert_east_room 으로 방 맵을 짓고 link_desert_east_interior 로 문과 잇는다 → check_reachability. 길·집을 손으로 깔지 않는다.",
+    "compose 결과는 완성본이다: 사용자가 더 원하지 않으면 stamp_tileset_object 로 유적 조각·석재·소품을 낱개로 더 흩지 않는다(구성기는 땅 재질·짝·용도를 맞춰 놓지만 낱개 찍기는 그 규칙을 모른다). 확인은 show_map_region 한두 번이면 된다.",
     ...(target.rooms?.length ? [`이 요청은 실내도 말했다: ${target.rooms.map((k) => `${k}(${ROOM_SIZE[k] ?? "13×10"})`).join(" · ")} — 야외를 깐 뒤 방 맵마다 create_map(tilesetId:"desert_east") → compose_desert_east_room → link_desert_east_interior(door = 야외 결과 data.buildings 의 문 칸, interiorMapId).`] : []),
   ].join("\n");
 }
