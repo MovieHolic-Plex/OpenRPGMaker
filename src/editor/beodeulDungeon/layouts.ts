@@ -1,0 +1,323 @@
+// 던전 배치 문법 — 사각 방+통로(compose.layoutDungeon) 말고 마스크 문법 둘과 액체 파기(2026-10-14 던전 종류 확장).
+//   · layoutMaze  : 격자 노드 + 갈림길 미로(깊이 우선 + 고리), 막다른 길 보물·위쪽 보스 방·아래 입구 방
+//   · layoutBlob  : 불규칙한 동굴 방(타원+잡음) + 굽은 넓은 통로 + 호수(액체) — 동굴·화산
+//   · carveSewer  : 사각 방 배치 위에 수로·저수조를 판다(양옆 보행로가 남는다)
+// 모두 Grid(바닥·방 번호·액체·다리)를 만들고, 벽 두께 규칙·연결은 grid.settle 이 고정점까지 맞춘다.
+import { DungeonComposeError } from "./errors";
+import type { DungeonLayout, DungeonSpec, PlacedCorridor, PlacedRoom } from "./compose";
+import { Grid, carveDisc, edgeDistance, rng, smooth, vnoise, type Rect } from "./grid";
+import type { DungeonRoomKind, TypeProfile } from "./profiles";
+
+const MARGIN = 2;
+const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, Math.round(v)));
+
+const sizeIndex = (spec: DungeonSpec): number => {
+  const area = spec.width && spec.height ? spec.width * spec.height : 0;
+  if (area) return area < 2400 ? 0 : area < 4800 ? 1 : 2;
+  return spec.size === "small" ? 0 : spec.size === "large" ? 2 : 1;
+};
+
+// ---------------------------------------------------------------- 미궁(미로)
+
+export function layoutMaze(spec: DungeonSpec): DungeonLayout & { grid: Grid } {
+  const seed = spec.seed ?? 7;
+  const random = rng(seed * 2654435761 + 11);
+  const si = sizeIndex(spec);
+  const nx = spec.width ? clamp((spec.width - 6) / 6 + 1, 6, 16) : [6, 8, 11][si]!;
+  const ny = spec.height ? clamp((spec.height - 28) / 7 + 2, 3, 6) : [3, 4, 5][si]!;
+  const PX = 6, PY = 7;
+  const ox = MARGIN + 1, oy = MARGIN + 4;
+  const mazeBottom = oy + (ny - 1) * PY + 3;            // 마지막 노드 줄 바닥 아래 경계(배타)
+  const ENT_W = 11, ENT_H = 6;
+  const entY = mazeBottom + 4;
+  const W = ox + (nx - 1) * PX + 3 + MARGIN + 1;
+  const H = entY + ENT_H + MARGIN + 1;
+  const g = new Grid(W, H);
+
+  // 보스 방 = 노드 3×2 덩어리(위쪽 두 줄)
+  const bx = 1 + Math.floor(random() * Math.max(1, nx - 4));
+  const inRegion = (i: number, j: number) => i >= bx && i < bx + 3 && j >= 0 && j < 2;
+  const key = (i: number, j: number) => j * nx + i;
+  const links = new Set<string>();
+  const lk = (a: number, b: number) => (a < b ? `${a}-${b}` : `${b}-${a}`);
+  const neighbors = (i: number, j: number): [number, number][] => ([[i + 1, j], [i - 1, j], [i, j + 1], [i, j - 1]] as [number, number][])
+    .filter(([a, b]) => a >= 0 && b >= 0 && a < nx && b < ny && !inRegion(a, b));
+  const startI = Math.floor(nx / 2), startJ = ny - 1;
+  // 깊이 우선(긴 굽이길)
+  const seen = new Set<number>([key(startI, startJ)]);
+  const stack: [number, number][] = [[startI, startJ]];
+  while (stack.length) {
+    const [i, j] = stack[stack.length - 1]!;
+    const next = neighbors(i, j).filter(([a, b]) => !seen.has(key(a, b)));
+    if (!next.length) { stack.pop(); continue; }
+    const [a, b] = next[Math.floor(random() * next.length)]!;
+    links.add(lk(key(i, j), key(a, b))); seen.add(key(a, b)); stack.push([a, b]);
+  }
+  // 고리: 막다른 길 일부를 이웃에 잇는다
+  const degree = (i: number, j: number) => neighbors(i, j).filter(([a, b]) => links.has(lk(key(i, j), key(a, b)))).length;
+  for (let j = 0; j < ny; j += 1) for (let i = 0; i < nx; i += 1) {
+    if (inRegion(i, j) || degree(i, j) !== 1 || random() > 0.28) continue;
+    const cand = neighbors(i, j).filter(([a, b]) => !links.has(lk(key(i, j), key(a, b))));
+    if (cand.length) { const [a, b] = cand[Math.floor(random() * cand.length)]!; links.add(lk(key(i, j), key(a, b))); }
+  }
+  // 입구에서 거리
+  const dist = new Map<number, number>([[key(startI, startJ), 0]]);
+  const queue: [number, number][] = [[startI, startJ]];
+  for (let qi = 0; qi < queue.length; qi += 1) {
+    const [i, j] = queue[qi]!;
+    for (const [a, b] of neighbors(i, j)) if (links.has(lk(key(i, j), key(a, b))) && !dist.has(key(a, b))) { dist.set(key(a, b), dist.get(key(i, j))! + 1); queue.push([a, b]); }
+  }
+  // 보스 방 붙일 곳: 보스 덩어리와 이웃한 노드 중 입구에서 가장 먼 것
+  let bossLink: { from: [number, number]; to: [number, number] } | null = null;
+  let bestD = -1;
+  for (let j = 0; j < 2; j += 1) for (let i = bx; i < bx + 3; i += 1) {
+    for (const [a, b] of ([[i + 1, j], [i - 1, j], [i, j + 1]] as [number, number][])) {
+      if (a < 0 || b < 0 || a >= nx || b >= ny || inRegion(a, b)) continue;
+      const d = dist.get(key(a, b)) ?? -1;
+      if (d > bestD || (d === bestD && random() < 0.5)) { bestD = d; bossLink = { from: [a, b], to: [i, j] }; }
+    }
+  }
+  if (!bossLink) throw new DungeonComposeError("미궁 보스 방을 붙일 자리가 없다 — 미궁이 너무 작다.", "layout-failed");
+  // 보물 방: 막다른 길 중 입구에서 가장 먼 노드(보스 연결 노드 제외)
+  let vault: [number, number] | null = null; let vd = -1;
+  for (let j = 0; j < ny; j += 1) for (let i = 0; i < nx; i += 1) {
+    if (inRegion(i, j) || (i === bossLink.from[0] && j === bossLink.from[1]) || (i === startI && j === startJ)) continue;
+    if (degree(i, j) !== 1) continue;
+    const d = dist.get(key(i, j)) ?? -1;
+    if (d > vd) { vd = d; vault = [i, j]; }
+  }
+
+  // ---- 칠하기 ----
+  const nodeRect = (i: number, j: number): Rect => ({ x: ox + i * PX, y: oy + j * PY, w: 3, h: 3 });
+  const linkRect = (i: number, j: number, a: number, b: number): Rect => (a !== i
+    ? { x: ox + Math.min(i, a) * PX + 3, y: oy + j * PY, w: PX - 3, h: 3 }
+    : { x: ox + i * PX, y: oy + Math.min(j, b) * PY + 3, w: 3, h: 4 });
+  const rooms: PlacedRoom[] = [];
+  const corridors: PlacedCorridor[] = [];
+  // 방 0 = 입구(아래), 1 = 보스, 2 = 보물
+  const entX = nodeRect(startI, startJ).x + 1 - Math.floor(ENT_W / 2);
+  const entrance: PlacedRoom = { id: "entrance", kind: "entrance", x: entX, y: entY, w: ENT_W, h: ENT_H, from: null, dir: null, depth: 0 };
+  const region: Rect = { x: ox + bx * PX, y: oy, w: 2 * PX + 3, h: PY + 3 };
+  const boss: PlacedRoom = { id: "boss", kind: "boss", ...region, from: "entrance", dir: "N", depth: 1 + bestD };
+  rooms.push(entrance, boss);
+  if (vault) rooms.push({ id: "vault", kind: "vault", ...nodeRect(vault[0], vault[1]), from: "entrance", dir: "N", depth: 1 + vd });
+  const paint = (r: Rect, room: number) => { for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) { g.floor[g.idx(x, y)] = 1; g.roomAt[g.idx(x, y)] = room; } };
+  for (let j = 0; j < ny; j += 1) for (let i = 0; i < nx; i += 1) if (!inRegion(i, j)) paint(nodeRect(i, j), -1);
+  for (const l of links) {
+    const [ka, kb] = l.split("-").map(Number) as [number, number];
+    const i = ka % nx, j = Math.floor(ka / nx), a = kb % nx, b = Math.floor(kb / nx);
+    paint(linkRect(i, j, a, b), -1);
+  }
+  paint(region, 1);
+  if (vault) paint(nodeRect(vault[0], vault[1]), 2);
+  paint(entrance, 0);
+  const entLink: Rect = { x: nodeRect(startI, startJ).x, y: mazeBottom, w: 3, h: 4 };
+  paint(entLink, -1);
+  corridors.push({ a: "entrance", b: "maze", dir: "N", rect: entLink });
+  // 보스 연결
+  const [fi, fj] = bossLink.from, [ti, tj] = bossLink.to;
+  const bl = linkRect(fi, fj, ti, tj);
+  // 보스 덩어리 안쪽 칸은 이미 칠했다 — 연결 칸만 칠하면 된다
+  paint(bl, -1);
+  corridors.push({ a: "maze", b: "boss", dir: ti !== fi ? (ti > fi ? "E" : "W") : "N", rect: bl });
+  if (vault) {
+    const near = neighbors(vault[0], vault[1]).find(([a, b]) => links.has(lk(key(vault![0], vault![1]), key(a, b))));
+    if (near) corridors.push({ a: "maze", b: "vault", dir: near[0] !== vault[0] ? (near[0] > vault[0] ? "W" : "E") : "S", rect: linkRect(vault[0], vault[1], near[0], near[1]) });
+  }
+  return { rooms, corridors, width: W, height: H, notes: [], grid: g };
+}
+
+// ---------------------------------------------------------------- 동굴·화산(불규칙)
+
+interface Chamber { cx: number; cy: number; rx: number; ry: number; kind: DungeonRoomKind; index: number }
+
+export function layoutBlob(spec: DungeonSpec, profile: TypeProfile): DungeonLayout & { grid: Grid } {
+  const seed = spec.seed ?? 7;
+  const random = rng(seed * 40503 + 17);
+  const si = sizeIndex(spec);
+  const [dw, dh] = [[72, 52], [88, 62], [112, 78]][si]! as [number, number];
+  const W = spec.width ? clamp(spec.width, 48, 200) : dw;
+  const H = spec.height ? clamp(spec.height, 40, 150) : dh;
+  const g = new Grid(W, H);
+  const wantN = spec.width && spec.height ? clamp((W * H) / 640, 4, 14) : [4, 7, 10][si]!;
+  const ENT_W = 13, ENT_H = 6;
+  const entX = Math.floor(W / 2) - 6, entY = H - MARGIN - 1 - ENT_H;
+  const entrance: Rect = { x: entX, y: entY, w: ENT_W, h: ENT_H };
+
+  // ---- 방 자리(타원) ----
+  const chambers: Chamber[] = [];
+  const yLo = MARGIN + 6, yHi = entY - 10;
+  for (let attempt = 0; attempt < 600 && chambers.length < wantN; attempt += 1) {
+    const rx = 5 + Math.floor(random() * 4);
+    const ry = Math.max(4, Math.round(rx * (0.62 + random() * 0.22)));
+    const cx = MARGIN + rx + 3 + Math.floor(random() * (W - 2 * (MARGIN + rx + 3)));
+    const cy = yLo + ry + Math.floor(random() * Math.max(1, yHi - yLo - ry * 2));
+    if (cy + ry > yHi + 2) continue;
+    if (chambers.some((c) => ((cx - c.cx) / (rx + c.rx + 3)) ** 2 + ((cy - c.cy) / (ry + c.ry + 3)) ** 2 < 1)) continue;
+    if (((cx - (entX + 6)) / (rx + 11)) ** 2 + ((cy - (entY + 2)) / (ry + 12)) ** 2 < 1) continue;
+    chambers.push({ cx, cy, rx, ry, kind: "cavern", index: chambers.length + 1 });
+  }
+  if (chambers.length < 2) throw new DungeonComposeError("동굴 방을 놓을 자리가 없다 — 맵 크기를 키워라.", "layout-failed");
+  // ---- 연결: 입구 → 가장 가까운 방 → 최소 신장 트리(+ 고리) ----
+  const ent = { cx: entX + 6, cy: entY - 4 };
+  type Node = { cx: number; cy: number; ci: number };
+  const nodes: Node[] = [{ cx: ent.cx, cy: ent.cy, ci: -1 }, ...chambers.map((c, ci) => ({ cx: c.cx, cy: c.cy, ci }))];
+  const inTree = new Set<number>([0]);
+  const edges: [number, number][] = [];
+  while (inTree.size < nodes.length) {
+    let best: [number, number] | null = null; let bd = Infinity;
+    for (const a of inTree) for (let b = 0; b < nodes.length; b += 1) {
+      if (inTree.has(b)) continue;
+      const d = Math.hypot(nodes[a]!.cx - nodes[b]!.cx, (nodes[a]!.cy - nodes[b]!.cy) * 1.4);
+      if (d < bd) { bd = d; best = [a, b]; }
+    }
+    if (!best) break;
+    edges.push(best); inTree.add(best[1]);
+  }
+  const depth = new Array<number>(nodes.length).fill(0);
+  for (const [a, b] of edges) depth[b] = depth[a]! + 1;
+  const wantLoops = chambers.length >= 8 ? 2 : chambers.length >= 5 ? 1 : 0;
+  let loops = 0;
+  const loopPairs: [number, number][] = [];
+  for (let a = 1; a < nodes.length; a += 1) for (let b = a + 1; b < nodes.length; b += 1) if (!edges.some(([x, y]) => (x === a && y === b) || (x === b && y === a))) loopPairs.push([a, b]);
+  loopPairs.sort((p, q) => Math.hypot(nodes[p[0]]!.cx - nodes[p[1]]!.cx, nodes[p[0]]!.cy - nodes[p[1]]!.cy) - Math.hypot(nodes[q[0]]!.cx - nodes[q[1]]!.cx, nodes[q[0]]!.cy - nodes[q[1]]!.cy));
+  for (const [a, b] of loopPairs) { if (loops >= wantLoops) break; if (depth[a]! >= 1 && Math.abs(depth[a]! - depth[b]!) >= 1) { edges.push([a, b]); loops += 1; } }
+
+  // ---- 역할 ----
+  const byDepth = [...chambers].sort((a, b) => depth[b.index]! - depth[a.index]!);
+  const boss = byDepth[0]!;
+  boss.kind = "boss"; boss.rx = Math.max(boss.rx, 8); boss.ry = Math.max(boss.ry, 6);
+  const vault = byDepth.find((c) => c !== boss && edges.filter(([a, b]) => a === c.index || b === c.index).length <= 1) ?? byDepth[1];
+  if (vault && vault !== boss) { vault.kind = "vault"; vault.rx = Math.min(vault.rx, 6); vault.ry = Math.min(vault.ry, 5); }
+  const rest = chambers.filter((c) => c.kind === "cavern");
+  const lakeWant = profile.liquid ? (si === 0 ? 1 : si === 1 ? 2 : 3) : 0;
+  const lakeCands = [...rest].filter((c) => c.rx >= 6).sort((a, b) => b.rx * b.ry - a.rx * a.ry);
+  for (const c of lakeCands.slice(0, lakeWant)) { c.kind = "lake"; c.rx = Math.max(c.rx, 10); c.ry = Math.max(c.ry, 7); }
+  const others = rest.filter((c) => c.kind === "cavern");
+  if (profile.id === "volcano" && others[0]) others[0].kind = "forge";
+  others.filter((c) => c.kind === "cavern").forEach((c, i) => { if (i % 2 === 1) c.kind = "grotto"; });
+
+  // ---- 칠하기: 통로 먼저, 방은 그 위 ----
+  const stubTop = entY - 4;
+  for (let y = stubTop; y < entY; y += 1) for (let x = entX + 5; x < entX + 8; x += 1) { g.floor[g.idx(x, y)] = 1; }
+  const passage = (a: Node, b: Node) => {
+    const len = Math.hypot(b.cx - a.cx, b.cy - a.cy);
+    const steps = Math.ceil(len * 1.5);
+    const nxv = -(b.cy - a.cy) / len, nyv = (b.cx - a.cx) / len;
+    const amp = Math.min(7, len * 0.22);
+    const phase = random() * 100;
+    for (let s = 0; s <= steps; s += 1) {
+      const t = s / steps;
+      const wob = (vnoise(t * len, phase, 6, seed) - 0.5) * 2 * amp * Math.sin(Math.PI * t);
+      const x = a.cx + (b.cx - a.cx) * t + nxv * wob, y = a.cy + (b.cy - a.cy) * t + nyv * wob;
+      carveDisc(g, x, y, 1.6 + vnoise(x, y, 5, seed + 3) * 0.9, -1);
+    }
+  };
+  for (const [a, b] of edges) passage(nodes[a]!, nodes[b]!);
+  chambers.forEach((c) => {
+    for (let y = c.cy - c.ry - 2; y <= c.cy + c.ry + 2; y += 1) for (let x = c.cx - c.rx - 2; x <= c.cx + c.rx + 2; x += 1) {
+      if (!g.inb(x, y) || y < MARGIN + 4 || x < MARGIN || x >= W - MARGIN || y >= H - MARGIN) continue;
+      const d = ((x - c.cx) / c.rx) ** 2 + ((y - c.cy) / c.ry) ** 2;
+      const wob = (vnoise(x, y, 4.5, seed + c.index * 13) - 0.5) * 0.85;
+      if (d < 1 + wob) { g.floor[g.idx(x, y)] = 1; g.roomAt[g.idx(x, y)] = c.index; }
+    }
+  });
+  for (let y = entY; y < entY + ENT_H; y += 1) for (let x = entX; x < entX + ENT_W; x += 1) { g.floor[g.idx(x, y)] = 1; g.roomAt[g.idx(x, y)] = 0; }
+  // 가장자리 안쪽으로 강제
+  for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) if (x < MARGIN || y < MARGIN + 4 || x >= W - MARGIN || y >= H - MARGIN) { g.floor[g.idx(x, y)] = 0; g.roomAt[g.idx(x, y)] = -1; }
+  smooth(g, 2, (x, y) => x >= entX - 2 && x < entX + ENT_W + 2 && y >= stubTop - 1 && y < entY + ENT_H + 2);
+
+  // ---- 액체(호수·용암 못): 방 안쪽, 가장자리 두 칸은 걸을 수 있게 ----
+  if (profile.liquid) {
+    const ed = edgeDistance(g, 7);
+    for (const c of chambers) {
+      if (c.kind !== "lake") continue;
+      let count = 0;
+      for (let y = c.cy - c.ry; y <= c.cy + c.ry; y += 1) for (let x = c.cx - c.rx; x <= c.cx + c.rx; x += 1) {
+        if (!g.inb(x, y) || g.roomAt[g.idx(x, y)] !== c.index) continue;
+        if (ed[g.idx(x, y)]! < 2) continue;
+        if (vnoise(x, y, 5, seed + c.index * 7) < 0.22) continue;
+        g.liquid[g.idx(x, y)] = 1; count += 1;
+      }
+      if (!count) c.kind = "cavern";
+    }
+    // 큰 방에 작은 못 하나씩(화산은 용암 웅덩이가 더 많다)
+    const pools = profile.id === "volcano" ? 0.6 : 0.3;
+    for (const c of chambers) {
+      if (c.kind !== "cavern" && c.kind !== "grotto") continue;
+      if (c.rx < 6 || random() > pools) continue;
+      for (let y = c.cy - 2; y <= c.cy + 2; y += 1) for (let x = c.cx - 3; x <= c.cx + 3; x += 1) {
+        if (!g.inb(x, y) || g.roomAt[g.idx(x, y)] !== c.index || ed[g.idx(x, y)]! < 3) continue;
+        if (((x - c.cx) / 3) ** 2 + ((y - c.cy) / 2) ** 2 + (vnoise(x, y, 3, seed + c.index) - 0.5) * 0.5 < 1) g.liquid[g.idx(x, y)] = 1;
+      }
+    }
+  }
+  // 문 앞 칸은 액체가 아니다
+  const rooms: PlacedRoom[] = [{ id: "entrance", kind: "entrance", ...entrance, from: null, dir: null, depth: 0 }];
+  const kindCount: Partial<Record<DungeonRoomKind, number>> = {};
+  const idOf = new Map<number, string>();
+  for (const c of chambers) {
+    kindCount[c.kind] = (kindCount[c.kind] ?? 0) + 1;
+    const id = c.kind === "boss" ? "boss" : c.kind === "vault" ? "vault" : `${c.kind}${kindCount[c.kind]}`;
+    idOf.set(c.index, id);
+  }
+  for (const c of chambers) {
+    // 부모 = 트리에서 이 방으로 들어오는 간선의 앞쪽
+    const e = edges.find(([, b]) => b === c.index);
+    const from = e ? (e[0] === 0 ? "entrance" : idOf.get(e[0])!) : "entrance";
+    rooms.push({ id: idOf.get(c.index)!, kind: c.kind, x: c.cx - c.rx, y: c.cy - c.ry, w: c.rx * 2 + 1, h: c.ry * 2 + 1, from, dir: null, depth: depth[c.index]! });
+  }
+  const corridors: PlacedCorridor[] = [{ a: "entrance", b: "cave", dir: "N", rect: { x: entX + 5, y: stubTop, w: 3, h: 4 } }];
+  return { rooms, corridors, width: W, height: H, notes: [], grid: g };
+}
+
+// ---------------------------------------------------------------- 하수도: 사각 방 위에 수로
+
+/** 수로 방(channel)은 가로로 물길을 파고 양옆에 3줄 보행로를 남긴다. 저수조(cistern)는 안쪽을 파고 가운데 섬을 남긴다. */
+export function carveSewer(g: Grid, rooms: readonly PlacedRoom[], seed: number): void {
+  rooms.forEach((r, ri) => {
+    if (r.kind === "channel") {
+      for (let x = r.x; x < r.x + r.w; x += 1) {
+        const top = r.y + 3 + (vnoise(x, 1, 5, seed + ri) > 0.66 ? 1 : 0);
+        const bot = r.y + r.h - 4 - (vnoise(x, 9, 5, seed + ri + 3) > 0.66 ? 1 : 0);
+        for (let y = top; y <= bot; y += 1) {
+          const i = g.idx(x, y);
+          if (!g.floor[i] || g.roomAt[i] !== ri || g.protect[i]) continue;
+          g.liquid[i] = 1;
+        }
+      }
+    } else if (r.kind === "cistern") {
+      const x0 = r.x + 3, x1 = r.x + r.w - 4, y0 = r.y + 3, y1 = r.y + r.h - 4;
+      const cxm = (x0 + x1) / 2, cym = (y0 + y1) / 2;
+      for (let y = y0; y <= y1; y += 1) for (let x = x0; x <= x1; x += 1) {
+        const i = g.idx(x, y);
+        if (!g.floor[i] || g.roomAt[i] !== ri || g.protect[i]) continue;
+        const island = Math.abs(x - cxm) <= 1.2 && Math.abs(y - cym) <= 0.6;
+        if (!island) g.liquid[i] = 1;
+      }
+    }
+  });
+}
+
+/** 수로 방마다 곧은 다리를 몇 개 더 놓는다(7~9칸 간격) — 물길을 건널 곳이 문 앞 한 군데뿐이면 심심하다. */
+export function addCrossings(g: Grid, rooms: readonly PlacedRoom[], seed: number): number {
+  const random = rng(seed * 977 + 5);
+  let placed = 0;
+  rooms.forEach((r, ri) => {
+    if (r.kind !== "channel") return;
+    for (let x = r.x + 4; x < r.x + r.w - 3; x += 7 + Math.floor(random() * 3)) {
+      const run: number[] = [];
+      let y = r.y;
+      while (y < r.y + r.h && !(g.liquid[g.idx(x, y)] && g.roomAt[g.idx(x, y)] === ri)) y += 1;
+      while (y < r.y + r.h && g.liquid[g.idx(x, y)]) { run.push(g.idx(x, y)); y += 1; }
+      if (!run.length) continue;
+      const above = g.walk(x, (run[0]! / g.W | 0) - 1), below = y < g.H && g.walk(x, y);
+      if (!above || !below) continue;
+      // 다리 옆 칸이 이미 다리면 건너뛴다
+      if (run.some((i) => g.bridge[i - 1] || g.bridge[i + 1])) continue;
+      for (const i of run) { g.liquid[i] = 0; g.bridge[i] = 1; }
+      placed += 1;
+    }
+  });
+  return placed;
+}

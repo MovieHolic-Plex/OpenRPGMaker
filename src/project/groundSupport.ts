@@ -27,7 +27,7 @@ export function supportSurfaceOf(ts: TilesetDef, tile: number): SupportSurface {
 
 const isDungeonKit = (kit: StructureKitDef): boolean => (kit.ai?.themes ?? []).some((t) => t === "dungeon" || t === "던전");
 /** 벽 앞면에 붙는 물건 — 바닥 위에 서면 허공에 걸린 것처럼 보인다. */
-const WALL_MOUNT = /torch-wall|banner|niche|chains|sconce|wall-lamp/;
+const WALL_MOUNT = /torch-wall|banner|niche|chains|sconce|wall-lamp|vines|hanging-chain/;
 /** 벽에 뚫린 문·아치 — 그 밑 줄은 벽 앞면 위, 바로 남쪽은 걷는 바닥. */
 const WALL_DOOR = /arch-|secret-door|door-/;
 

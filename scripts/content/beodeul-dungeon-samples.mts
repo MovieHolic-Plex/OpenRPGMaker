@@ -34,6 +34,10 @@ function randomRooms(seed: number): DungeonSpec {
   const rooms = [{ kind: "entrance" as const }, ...Array.from({ length: 2 + Math.floor(rnd() * 9) }, () => ({ kind: KINDS[Math.floor(rnd() * KINDS.length)]!, ...(rnd() < 0.3 ? { w: 6 + Math.floor(rnd() * 18), h: 5 + Math.floor(rnd() * 9) } : {}) }))];
   return { rooms, seed, style: seed % 2 ? "catacomb" : "castle", ...(seed % 3 === 0 ? { width: 60, height: 45 } : {}) };
 }
+// 종류별 표본(2026-10-14 던전 종류 확장): 종류마다 시드 3개 × 크기
+for (const t of ["catacomb", "castle", "labyrinth", "sewer", "cave", "temple", "mine", "volcano"] as const) {
+  for (const seed of [3, 7, 12]) SAMPLES[`t-${t}-${seed}`] = { type: t, seed, size: seed === 12 ? "large" : seed === 3 ? "small" : "medium" };
+}
 const only = process.argv.slice(3);
 for (const [name, spec] of Object.entries(SAMPLES)) {
   if (only.length && !only.includes(name)) continue;
