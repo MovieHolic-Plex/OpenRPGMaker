@@ -22,7 +22,9 @@ import { currentHumanEditorIdentity, type EditorIdentity } from "./editorIdentit
 //  이미 기준선에서 빨강이라 새 오류 하나가 그 속에 묻힌다).
 import { projectViewWithoutEventDrafts } from "./eventDrafts";
 import { projectWireView } from "./io/serialize";
-import { jsonContentDigest, trustSharedProjectEntries, withTrustedSharedEntries } from "./persistence/core/contentDigest";
+import { jsonContentDigest, primeSharedEntryDigests, trustSharedProjectEntries, withTrustedSharedEntries } from "./persistence/core/contentDigest";
+import { afterBootSettled } from "@/util/bootSettled";
+import { yieldToTask } from "@/util/yieldToTask";
 import type { CommitReviewStatus } from "./persistence/types";
 import { projectRepository } from "./persistence/repository";
 import type { ChangeSummary } from "@/project/types";
@@ -242,10 +244,12 @@ export function resetManualProjectCommitBaseline(project: Project): void {
   pendingManualDigestProject = project;
   if (!pendingManualDigestScheduled) {
     pendingManualDigestScheduled = true;
-    scheduleWhenIdle(() => {
+    // 첫 화면 뒤에 시작하고(src/util/bootSettled.ts), 타일셋은 하나씩 양보하며 먼저 요약한다 — 문서 전체를 한 번에 세면
+    // 98MB 타일셋 프로젝트에서 첫 화면 뒤 메인 스레드가 5~6s 멈췄다(2026-10-14 실측).
+    afterBootSettled(() => scheduleWhenIdle(() => {
       pendingManualDigestScheduled = false;
-      settlePendingManualDigest();
-    });
+      void settlePendingManualDigestSliced();
+    }));
   }
   // 프로젝트 전환/재베이스라인 시 남아 있던 pending 엔트리를 버린다 — 안 버리면 이전
   // 프로젝트의 편집이 다음 프로젝트의 첫 커밋에 실려 엉뚱한 맵 id 로 읽힌다.
@@ -255,6 +259,14 @@ export function resetManualProjectCommitBaseline(project: Project): void {
 
 let pendingManualDigestProject: Project | null = null;
 let pendingManualDigestScheduled = false;
+
+/** 한가한 때의 기준 요약: 공유 항목을 양보하며 먼저 데운 뒤 센다. 그 사이 새 기준·사람 저장 커밋이 오면 그쪽이 센다. */
+async function settlePendingManualDigestSliced(): Promise<void> {
+  const project = pendingManualDigestProject;
+  if (!project) return;
+  await primeSharedEntryDigests(projectWireView(projectViewWithoutEventDrafts(project)), yieldToTask, () => pendingManualDigestProject !== project);
+  if (pendingManualDigestProject === project) settlePendingManualDigest();
+}
 
 /** 미뤄 둔 기준 요약을 지금 센다. 그 사이 새 기준이 오면 마지막 것만 센다. */
 function settlePendingManualDigest(): void {
