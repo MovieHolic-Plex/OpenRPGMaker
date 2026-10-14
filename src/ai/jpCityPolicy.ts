@@ -54,6 +54,32 @@ export interface JpCityTarget {
   readonly mapId?: string;
   /** 대상 맵에 이미 내용이 있으면 true. */
   readonly lived?: boolean;
+  /** 시설 실내(일본 학교·사무실·병원) 요청 — 새 실내 맵을 build_hand_interior_room({tileset:"jp_city", layout:{program}}) 으로 짓는다. */
+  readonly facility?: JpFacility;
+}
+
+/** jp_city 시설 실내 종류(2026-10-14). */
+export type JpFacility = "school" | "office" | "hospital";
+
+/**
+ * 시설 실내 낱말 — 갈림 규칙(2026-10-14, openwiki/jp-city.md 「시설 실내」):
+ *  - 사무실·회사·회의실·급탕실·병원·진료실·대기실·병실·약국 같은 현대 시설 실내는 jp_city 가 맡는다(이 저장소에서 그 실내를 가진 번들은 jp_city 하나 — 캠퍼스 칩셋은 학교·기숙사만).
+ *  - 학교 실내는 «일본» 표지(일본·日本·신발장·昇降口·下駄箱·上履き·우와바키·한자 교실 이름)가 있을 때만 jp_city, 표지 없는 교실·교무실·대학 강의실은 캠퍼스 칩셋(campusPolicy)에 남긴다.
+ *  - 시대·세계 낱말(우주·SF·마법·저택·고딕·해적·판타지·중세·던전·폐병원·폐교·좀비·스팀펑크·원시·에도)이 있으면 잡지 않는다 — 그 테마·현대 던전 장소가 맡는다.
+ */
+const JP_OFFICE_RE = /사무실|오피스|회사|사옥|회의실|탕비실|급탕실|엘리베이터\s*홀|자유석|업무\s*층|\b(?:office|meeting\s*room)\b|事務所|オフィス|会議室|給湯室/iu;
+const JP_HOSPITAL_RE = /병원|진료실|진찰실|외래|대기실|병실|병동|간호사|간호\s*스테이션|의원|클리닉|약국|조제실|\b(?:hospital|clinic|ward|waiting\s*room|pharmacy)\b|病院|診察室|待合室|病室|病棟|薬局|ナースステーション/iu;
+const JP_SCHOOL_MARK_RE = /일본|日本|japan|신발장|昇降口|下駄箱|上履き|우와바키|教室|職員室|保健室|音楽室|理科室|図書室|中学校|高校|小学校|소학교/iu;
+const JP_SCHOOL_WORD_RE = /학교|교실|복도|교무실|보건실|음악실|과학실|이과실|도서실|체육관|옥상|신발장|昇降口|下駄箱|教室|職員室|保健室|school|classroom/iu;
+const JP_FACILITY_OTHER_RE = /우주|\bSF\b|정거장|함선|사이버|네온|마법|호그|저택|고딕|해적|판타지|중세|던전|폐병원|폐교|폐건물|좀비|스팀펑크|증기|선사|원시|에도|전국|사무라이|미국|아메리칸|wizard|gothic|pirate|fantasy|space\s*station/iu;
+
+/** 문장이 jp_city 시설 실내(일본 학교·사무실·병원)를 말하는가 — 종류 또는 null. */
+export function jpFacilityOf(text: string | undefined): JpFacility | null {
+  if (!text || JP_FACILITY_OTHER_RE.test(text)) return null;
+  if (JP_HOSPITAL_RE.test(text)) return "hospital";
+  if (JP_SCHOOL_WORD_RE.test(text) && JP_SCHOOL_MARK_RE.test(text)) return "school";
+  if (JP_OFFICE_RE.test(text)) return "office";
+  return null;
 }
 
 /**
@@ -70,10 +96,13 @@ export function jpCityTargetFor(
 ): JpCityTarget | null {
   if (intent.source !== "llm" || (intent.mode !== "create" && intent.mode !== "modify")) return null;
   const map = mapId ? project.maps[mapId] : undefined;
-  if (map && isJpCityTilesetDef(project.tilesets[map.tilesetId])) return { mapId: map.id, lived };
+  const text = requestText ?? "";
+  // 시설 실내(일본 학교·사무실·병원) — 실내 의도이거나 공간이 불분명할 때. 대상 맵이 이미 jp_city 실내여도 종류를 실어 보낸다.
+  const facility = intent.mode === "create" && (intent.space === "interior" || intent.space === "unclear" || intent.space === "both") ? jpFacilityOf(text) : null;
+  if (map && isJpCityTilesetDef(project.tilesets[map.tilesetId])) return facility ? { mapId: map.id, lived, facility } : { mapId: map.id, lived };
+  if (facility && project.tilesets[JP_CITY_TILESET_ID]) return { facility };
   if (intent.mode !== "create" || (intent.space !== "outdoor" && intent.space !== "both" && intent.space !== "unclear")) return null;
   if (!project.tilesets[JP_CITY_TILESET_ID]) return null;
-  const text = requestText ?? "";
   if (NAMES_JP_CITY_RE.test(text) || JP_STREET_RE.test(text)) return {};
   // 일본이라고 안 했어도 이 프로젝트가 이미 jp_city 맵을 쓰고 있으면 도시 거리 요청은 jp_city 로 간다(보는 맵이 modern_city 계열이면 제외).
   const viewedTileset = map ? project.tilesets[map.tilesetId] : undefined;
@@ -105,6 +134,7 @@ export const JP_CITY_POINTER_LINE =
   + "결과 요약의 「빈터 쓰임 N곳」과 show_map_region 으로 확인한다: 쓰임이 0~1곳인데 맨 자갈이 넓게 남았으면 seed 를 바꿔 replace:true 로 다시 짠다. 사용자가 놀이터·코인 주차·텃밭·광장 분수를 콕 집어 원했는데 안 나왔으면 맵을 키우거나(50×36 이상) seed 를 바꾼다 — 빈터 쓰임은 남은 땅의 크기·위치로 고르므로 손으로 한 칸씩 찍어 맞추지 않는다. 건물 지붕 너머 1~2칸 틈에 남은 자갈은 숨 쉴 자리로 둔다. "
   + "짠 뒤: 건물 하나만 고칠 때만 build_jp_city_building(id 는 list_jp_city_building_parts), 땅·소품 보정은 fill_region·stamp_object(kit:jp_city/…), 탈것은 set_map_transit. author_beodeul_town 은 쓰지 않는다. "
   + "집·가게 실내(현관·LDK·편의점·음식점·목욕탕·의원)는 완성 장소(import_region_reference) 또는 build_hand_interior_room({tileset:\"jp_city\", layout:{program:\"house-1f\" 또는 rooms:[{kind:\"genkan\"},…]}}) — 부품은 list_hand_interior_parts({tileset:\"jp_city\"}). "
+  + "사무실·회의실·급탕실·병원(대기실·진찰실·병실·약국)과 일본 학교(교실·신발장 복도·교무실·보건실·특별교실) 실내도 jp_city 다 — layout:{program:\"office-floor\"|\"office-1f\"|\"hospital-1f\"|\"hospital-2f\"|\"school-1f\"|\"school-2f\"|\"school-3f\"} (일본 표지 없는 교실·대학 강의실은 캠퍼스 칩셋). "
   + "건물 문과 잇기는 link_jp_city_interior({door:{x,y}, place:<실내 장소 id> 또는 interiorMapId}) 하나로 한다(문 좌표·이름표는 list_map_locations).";
 
 /**
@@ -131,7 +161,33 @@ export function jpCityPromptLines(project: Pick<Project, "tilesets" | "maps">, m
 }
 
 /** 의도 노트(모델 지시문 뒤에 붙는다) — buildPiIntentNote 가 숲마을 노트 대신 쓴다. */
+/** 시설 실내 노트 — 방 구성(program)과 방 종류(rooms)를 한 줄로. */
+const FACILITY_NOTE: Record<JpFacility, { ko: string; programs: string; rooms: string; floor: string }> = {
+  school: { ko: "일본 학교(中学校・高校) 실내",
+    programs: "교실 둘 + 복도 → {program:\"school-2f\"}; 昇降口(신발장)·복도·교무실·보건실·화장실 → {program:\"school-1f\"}; 음악실·도서실·이과실 → {program:\"school-3f\"}; 취주악부실·인쇄실·트로피장 복도(특별교실동) → {program:\"school-annex\"}; 옥상 → {program:\"school-roof\"}; 체육관 → {program:\"gym\"}",
+    rooms: "classroom·corridor·shoegenkan·staffroom·infirmary·musicroom·library·sciencelab·schooltoilet·rooftop·bandroom·printroom·annexcorridor",
+    floor: "교실 sc-classroom-wood, 복도 sc-corridor, 현관 sc-genkan-tile, 벽 sc-wall" },
+  office: { ko: "일본 사무 빌딩 실내",
+    programs: "사무층(자유석·책상 섬·회의실·급탕실·엘리베이터 홀) → {program:\"office-floor\"}; 1층 로비·접수·엘리베이터 홀 → {program:\"office-1f\"}; IT 회사·스타트업 자유석 층(1인 부스·스탠딩 회의·라운지) → {program:\"office-free\"}, 그 1층(경비 데스크·방문자 접수) → {program:\"office-tower-1f\"}",
+    rooms: "openoffice·freeoffice·meetingroom·pantry·elevatorhall·lobby·towerlobby·stairwell",
+    floor: "사무 of-carpet-tile, 로비 of-lobby-stone, 급탕실 of-pantry-tile, 벽 of-wall" },
+  hospital: { ko: "일본 병원 실내",
+    programs: "외래 대기실·종합 접수·진찰실·처치실·원내 약국 → {program:\"hospital-1f\"}; 병동 복도·2인 병실·간호사 대기소 → {program:\"hospital-2f\"}; 작은 동네 의원 하나면 {program:\"clinic\"}",
+    rooms: "hosp-lobby·hosp-exam·hosp-treat·hosp-pharmacy·hosp-corridor·hosp-ward·hosp-nurse",
+    floor: "대기실·복도 hs-floor-sheet, 병실·진찰실 hs-floor-ward, 벽 hs-wall·hs-wall-room" },
+};
+
 export function formatJpCityNote(target: JpCityTarget, targetMap: { id: string; width: number; height: number } | null): string {
+  if (target.facility) {
+    const f = FACILITY_NOTE[target.facility];
+    return [
+      `[${f.ko} — jp_city] 이 요청은 ${f.ko}다. 칩셋은 번들 일본 도시(jp_city)의 손 도트 실내다 — 판타지 손 도트 실내(atlas_biome_interior)·캠퍼스 칩셋·폐병원/폐교 던전 장소는 쓰지 않는다.`,
+      "짓는 법: build_hand_interior_room({tileset:\"jp_city\", name, exitWidth:2, layout:{…}}) 한 번 — 방 배치·칸막이·문·출구는 도구가 짜고 방마다 예제 가구 한 벌을 심는다. plan·objects 를 손으로 쓰지 않는다. "
+        + `layout: ${f.programs}. 방 종류만 고를 때는 layout:{rooms:[{kind:"…"}]} (종류: ${f.rooms}).`,
+      `floor·wall 은 꼭 준다(건물 기본 — 방마다 바닥·벽은 견본이 덮는다): ${f.floor}. 부품 확인은 list_hand_interior_parts({tileset:\"jp_city\", room:"<방 종류>"}).`,
+      "만든 뒤 결과 data.layout.picture 로 배치를 보고 출입구에서 닿지 못한 바닥이 0인지 확인한다. 거리 건물 문과 이을 때는 link_jp_city_interior. 사람(교사·직원·의사·환자)은 Actor1 캐릭터 이벤트로 놓는다.",
+    ].join("\n");
+  }
   const where = target.mapId && !target.lived
     ? `지금 맵 '${target.mapId}'(${targetMap?.width ?? "?"}×${targetMap?.height ?? "?"})은 jp_city 이고 비어 있다 → 이 맵에 짓는다.`
     : target.mapId

@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2a54656914af1a7ecca5e2b37c3842711f1b224245bf7c186c9a666cbad9c640",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "조제대",
+ "label": "jp_city/interior_hospital/hs-dispense-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dispensing counter with drawers and tabletop equipment",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter top surface spans rows 6 to 18 (13 pixel rows) supporting various equipment, above the front drawer face which extends from row 19 to row 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3993
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "counter with drawers and equipment on top",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter surface is visible from row 6 to 18 (approx. 13 rows), showing a broad top surface with equipment on it, and the front face with drawers occupies rows 19 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3970
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dispensing counter with items on top and drawers on front",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter's top surface extends from row 7 to row 18 (12 pixel rows tall) supporting various lab instruments, while the front face with drawers occupies rows 19 to 30 in proper 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3907
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "counter with drawers and equipment on top",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter surface is visible from row 6 to row 18 (13 rows deep) with lab/pharmacy equipment placed on it, and the front face with drawers extends from row 19 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3503
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.783Z",
+ "cells": {
+  "16": [
+   "2f910c173f13b538",
+   "8da629be0f88752d",
+   "c837e6ea88b4965e",
+   "e8e2d1117d33143f"
+  ],
+  "24": [
+   "0785a898aaf7a543",
+   "2268dfabae8ff52d",
+   "33269852aa2efe7c",
+   "360e08801600da2d",
+   "37b5b18383d4bd5d",
+   "382d0db53cf9b34f",
+   "4789af0c440d66f1",
+   "5b274f4524a41ee7",
+   "771ab4df226392fd",
+   "7893775b00e2f80a",
+   "78b70a5cc0e6be25",
+   "8084a6104ac5a050",
+   "880e9b47c3550f5a",
+   "8e9c99d24dbd1932",
+   "91b5aa27690391ee",
+   "93296c32db216ce4",
+   "a3a66a24d32300f7",
+   "a47b4d9dff9017a2",
+   "d618f93f3413a330",
+   "dbb9b418d93515d6",
+   "de91bd44017cff68",
+   "dfdd3bf77fda2730",
+   "f4bc708c7fa3c37f",
+   "face6b437c710568"
+  ],
+  "32": [
+   "856dd292112f4d00"
+  ],
+  "48": [
+   "60ae18336240fce3",
+   "62cf6794a9cc9a0f",
+   "a554ce7535a9f948",
+   "ca213f482196ec7d",
+   "e2174230de463b5a",
+   "e38feedb77a2952f"
+  ]
+ }
+}

@@ -1,0 +1,150 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f713c67bd368451fffa408dcfdebd03535979f68a86d342aa744d4e33ac72fa9",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "이송용 침대(스트레처)",
+ "label": "jp_city/interior_hospital/hs-stretcher",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hospital stretcher bed",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stretcher is drawn in a pure 2D side elevation (profile view) like a side-scroller sprite. The mattress, headrest, guardrail, undercarriage, and wheels show no top surface visible from above (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5281
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hospital stretcher bed",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stretcher is drawn in a pure side profile elevation (side-scroller style) with zero top surface visible on the mattress, frame, or base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3691
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hospital stretcher / gurney",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stretcher is drawn in pure 2D side elevation (side-scroller view). The mattress, side rail, raised backrest, frame, and caster wheels show no foreshortened top surfaces or 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5050
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hospital stretcher bed",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stretcher is drawn as a 2D side-scroller elevation profile rather than a top-down 3/4 view. The bed surface, raised headrest, side safety rail, undercarriage, and caster wheels are all viewed directly from the side with zero foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5707
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.782Z",
+ "cells": {
+  "16": [
+   "2d585c755588f8c0",
+   "2fcf92130432c130",
+   "36acbda5ba6b536d",
+   "fedc75ad9fe6ceed"
+  ],
+  "24": [
+   "00bdc4efadc48dcf",
+   "07a2a66c3c60d9dc",
+   "0db32a8fa75151c4",
+   "22aa93f382506fa7",
+   "2378f2ce62348fa5",
+   "32fd5ad3bc73ab1c",
+   "341621977326368c",
+   "3c6f8349ecc0dc92",
+   "3cc8675f9aa26bef",
+   "416c979d218187f4",
+   "49c9bbf9b3b9efba",
+   "6d173ea9d712e93e",
+   "78932161c2efe653",
+   "797e6b29190d87e1",
+   "8919e250212f355f",
+   "993d31b0a3b3b18c",
+   "9c2aa4f958fe013c",
+   "b3e67ac5c7a6dfba",
+   "d606ee0682726ad1",
+   "e27861e6e1dae14f",
+   "f1ebcb0f6260fec8",
+   "f8d99baf013479cd"
+  ],
+  "32": [
+   "22a86e62e88bbdbb"
+  ],
+  "48": [
+   "165db97aa7fdbca8",
+   "2acc6bd6c8fc4ccb",
+   "4ae32dcbacc74978",
+   "9d7cdf7443eb8411",
+   "de82bb2ee7b0cf83",
+   "fe619401da4c8184"
+  ]
+ }
+}

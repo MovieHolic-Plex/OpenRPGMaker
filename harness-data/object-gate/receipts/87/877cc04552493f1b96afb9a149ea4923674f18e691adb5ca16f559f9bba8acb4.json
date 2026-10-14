@@ -1,0 +1,146 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "877cc04552493f1b96afb9a149ea4923674f18e691adb5ca16f559f9bba8acb4",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "분리수거통 3개(캔·페트·종이)",
+ "label": "jp_city/interior_school2/sx-recycle-bins",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "recycling bins in a frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bins and outer frame are rendered in pure front elevation with only a 1-2px border at row 8-9 and no foreshortened top surfaces visible. The recycling openings are drawn flat on the front face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4653
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "set of three recycling bins in a dark outer frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire unit and bins are drawn straight from the front; the top border of the frame is only a 1px outline at row 8, and the lids/bins show purely vertical front faces with front-facing disposal holes rather than any visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4055
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "recycling bin station with three bins in a dark frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire recycling station and bins are drawn straight-on in pure front elevation with only a 1-2px outline along row 8-9, lacking any foreshortened top surface for the unit or bin tops.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 3740
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "three recycling bins in a dark frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire recycling station is drawn straight-on from the front: the outer frame top is a 1px border at row 8, and the lids and bodies of the bins are flat vertical rectangles with front-facing disposal cutouts and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4476
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.784Z",
+ "cells": {
+  "16": [
+   "423d4790d1f8c56b",
+   "6908d1f7e2926111",
+   "cf8f329310825ae5",
+   "dc572cee25bfe153"
+  ],
+  "24": [
+   "03eacf49a1edfda4",
+   "055a948a694c204a",
+   "0ac5325ceabb2913",
+   "1e5600b82573b8a9",
+   "2a50f87eb58b316f",
+   "415c370c0ddf0afb",
+   "53b2e5f70cfdea59",
+   "627a74a50f1c5dfc",
+   "6597214b042f6db7",
+   "6eed2ebab349ac43",
+   "7411422d62a87ae5",
+   "7d005245b93d84e2",
+   "84c361803e0b8b2d",
+   "867aa3f698a3d6e4",
+   "8d46094e3652027c",
+   "989e49cb9e87f656",
+   "e4df31921a5faec8",
+   "ff226690ad766992"
+  ],
+  "32": [
+   "a3f88a4d895c14af"
+  ],
+  "48": [
+   "98fd3ce5848c1476",
+   "9b29844d6785a7c4",
+   "bfa765356af08d65",
+   "c3ecbd5711519e01",
+   "f374443233232ca7",
+   "f5e1b52b6a90168d"
+  ]
+ }
+}

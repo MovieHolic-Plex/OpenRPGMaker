@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "046e284d5eccbb7e217b97c342cb3992881887140211f54dce116b9916e4fbc2",
+ "width": 16,
+ "height": 32,
+ "kind": "round_body",
+ "name": "소화기(받침 위)",
+ "label": "jp_city/interior_school2/sx-extinguisher",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fire extinguisher cylinder",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The red cylinder is drawn straight-on in pure front elevation from row 10 to row 25. The top of the cylinder has no foreshortened elliptical top surface or rounded cap viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4285
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fire extinguisher cylinder",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The red cylinder is drawn straight-on in pure front elevation with no visible elliptical top surface or shoulder seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3454
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fire extinguisher cylinder",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The red cylinder is drawn in a pure front elevation with straight vertical sides, a flat horizontal bottom, and no foreshortened elliptical top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5837
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical fire extinguisher tank",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The red cylinder body is drawn in pure front elevation with vertical lighting bands and a flat/straight top profile around the nozzle neck, lacking any foreshortened elliptical top cap.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3741
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.783Z",
+ "cells": {
+  "16": [
+   "6a9381ddc5f25fa1",
+   "88f26d2cd47e59f0"
+  ],
+  "24": [
+   "04228b5b7294438c",
+   "1faba7093d15536b",
+   "381a61f040eb0ed6",
+   "3b5e26850bd7d109",
+   "5a41c90fc4ebc5f8",
+   "64d830de6540c6a1",
+   "8c130185437478d9",
+   "987fb4b1ca4a60e7",
+   "b63bc3038424b377",
+   "ce5f65462edd77dc",
+   "e167bf666952b3e2",
+   "f6917b7d131c198c"
+  ],
+  "32": [
+   "4246cd4a93e096a5",
+   "5ff83c3e17f39532",
+   "95cbc2e2385bcb12"
+  ],
+  "48": [
+   "20822e6473b07f21",
+   "367669463384d64c",
+   "526dcf7e3d53e53c",
+   "85268d4c312b4635",
+   "8c3601b18af74ce1",
+   "df9e1f8888ad19d6"
+  ]
+ }
+}

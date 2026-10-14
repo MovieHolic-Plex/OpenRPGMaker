@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "61b18c634ad998ab0893a7513e400f27c788690543f949f29f6cf43e8f3d5bef",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "휠체어(접이식·남향)",
+ "label": "jp_city/interior_hospital/hs-wheelchair",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wheelchair seat and frame",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The south-facing wheelchair shows the backrest at rows 5-11 and a clear 7-row-deep horizontal seat surface from rows 12 to 18 seen from above, correctly rendered in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5812
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wheelchair seat and backrest",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wheelchair faces south; its backrest is visible at rows 6-11 and the horizontal seat surface is clearly seen from above across rows 13-18 (6 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3767
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wheelchair seat and backrest",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The south-facing wheelchair clearly shows the backrest (rows 6-11) and the horizontal seat cushion surface viewed from above (rows 12-18, approx 7 rows tall) with a front seat edge at row 19.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4132
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wheelchair seat and backrest",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat surface is clearly rendered from above across rows 12 to 18 (7 pixel rows), showing proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4039
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.779Z",
+ "cells": {
+  "16": [
+   "a9c90935e64b0bec",
+   "ea1a24c8555ce1a3"
+  ],
+  "24": [
+   "0371a27c86380f90",
+   "0a140e3a72fe5f17",
+   "4c29c0956d126151",
+   "545f1c83cf3d8a4f",
+   "5d74f099925901a9",
+   "632256d556c3df8d",
+   "682a408049067827",
+   "889045cc5b1f9dbe",
+   "b3f96c5558e1035c",
+   "c654d4cb8edf700f",
+   "d4a7d24e2b7b5dd4",
+   "f39c8a20f15e50dd"
+  ],
+  "32": [
+   "a93462c36889edba",
+   "da375c9d549556e6",
+   "f6101efc901a09b4"
+  ],
+  "48": [
+   "0a841981ba0fbb8f",
+   "26aa89a2a7cb0304",
+   "34b859f852eb7323",
+   "67ce0a07a4ecd6d0",
+   "a6010b70698eb869",
+   "f65b5110bd707ecd"
+  ]
+ }
+}

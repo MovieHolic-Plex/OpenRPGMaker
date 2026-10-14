@@ -1,0 +1,43 @@
+{
+ "map": {
+  "id": "jp-city-school-annex",
+  "size": [
+   26,
+   16
+  ]
+ },
+ "start": [
+  11,
+  14
+ ],
+ "summary": "손 도트 실내 '학교 특별교실동 1층(취주악부실·인쇄실·현관 복도)' 26×16 (jp-city-school-annex, jp_city) — 출입구에서 닿는 칸 169, 닿지 못한 빈 바닥 0, 경고 0",
+ "tool": {
+  "mapId": "jp-city-school-annex",
+  "tilesetId": "jp_city",
+  "width": 26,
+  "height": 16,
+  "reachable": 169,
+  "floorCells": 218,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 11,
+    "y": 14
+   }
+  ],
+  "exitWidth": 2,
+  "exits": [
+   {
+    "x": 11,
+    "y": 15,
+    "width": 2
+   }
+  ],
+  "links": 0,
+  "warnings": []
+ },
+ "warnings": [],
+ "links": [],
+ "reach": 169,
+ "ok": true
+}

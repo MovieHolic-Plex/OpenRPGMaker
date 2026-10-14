@@ -1,0 +1,330 @@
+{
+ "name": "학교 특별교실동 1층(취주악부실·인쇄실·현관 복도)",
+ "plan": [
+  "##########################",
+  "#...........#......#.....#",
+  "#...........#......#.....#",
+  "#...........#......#.....#",
+  "#...........#......#.....#",
+  "#...........#......#.....#",
+  "#...........#......#.....#",
+  "#...........#......#.....#",
+  "#...........#......#.....#",
+  "######.#########.#####..##",
+  "#........................#",
+  "#........................#",
+  "#........................#",
+  "#........................#",
+  "#........................#",
+  "###########..#############"
+ ],
+ "floor": "sc-corridor",
+ "wall": "sc-wall",
+ "ceiling": "default",
+ "zones": [
+  {
+   "x0": 1,
+   "y0": 0,
+   "x1": 11,
+   "y1": 8,
+   "floor": "sc-classroom-wood",
+   "wall": "sc-soundwall"
+  },
+  {
+   "x0": 13,
+   "y0": 0,
+   "x1": 18,
+   "y1": 8,
+   "floor": "pb-linoleum"
+  }
+ ],
+ "objects": [
+  {
+   "id": "window-sash",
+   "x": 3,
+   "y": 1
+  },
+  {
+   "id": "wall-clock",
+   "x": 6,
+   "y": 1
+  },
+  {
+   "id": "sx-pa-speaker",
+   "x": 9,
+   "y": 1
+  },
+  {
+   "id": "sc-instrument-shelf",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "sx-xylophone",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "sx-timpani",
+   "x": 8,
+   "y": 3
+  },
+  {
+   "id": "sx-timpani",
+   "x": 9,
+   "y": 3
+  },
+  {
+   "id": "sc-instrument-shelf",
+   "x": 10,
+   "y": 3
+  },
+  {
+   "id": "sc-music-stand",
+   "x": 6,
+   "y": 4
+  },
+  {
+   "id": "sc-music-stand",
+   "x": 6,
+   "y": 7
+  },
+  {
+   "id": "sc-music-chair-n",
+   "x": 2,
+   "y": 6
+  },
+  {
+   "id": "sc-music-chair-n",
+   "x": 3,
+   "y": 6
+  },
+  {
+   "id": "sc-music-chair-n",
+   "x": 4,
+   "y": 6
+  },
+  {
+   "id": "sc-music-chair-n",
+   "x": 8,
+   "y": 6
+  },
+  {
+   "id": "sc-music-chair-n",
+   "x": 9,
+   "y": 6
+  },
+  {
+   "id": "sc-music-chair-n",
+   "x": 10,
+   "y": 6
+  },
+  {
+   "id": "sx-drum-kit",
+   "x": 2,
+   "y": 8
+  },
+  {
+   "id": "sc-classroom-door",
+   "x": 6,
+   "y": 9
+  },
+  {
+   "id": "sc-key-box",
+   "x": 13,
+   "y": 1
+  },
+  {
+   "id": "sc-whiteboard",
+   "x": 15,
+   "y": 1
+  },
+  {
+   "id": "sx-letter-shelf",
+   "x": 13,
+   "y": 3
+  },
+  {
+   "id": "sc-tea-shelf",
+   "x": 15,
+   "y": 3
+  },
+  {
+   "id": "of-cabinet",
+   "x": 18,
+   "y": 3
+  },
+  {
+   "id": "sx-riso-printer",
+   "x": 14,
+   "y": 6
+  },
+  {
+   "id": "sc-copy-machine",
+   "x": 17,
+   "y": 6
+  },
+  {
+   "id": "sc-staff-chair-s",
+   "x": 13,
+   "y": 7
+  },
+  {
+   "id": "sc-staff-desk",
+   "x": 13,
+   "y": 8
+  },
+  {
+   "id": "sx-recycle-bins",
+   "x": 17,
+   "y": 8
+  },
+  {
+   "id": "sc-classroom-door",
+   "x": 16,
+   "y": 9
+  },
+  {
+   "id": "sc-stairs-up",
+   "x": 20,
+   "y": 3
+  },
+  {
+   "id": "sx-art-display",
+   "x": 23,
+   "y": 3
+  },
+  {
+   "id": "sx-hall-bench",
+   "x": 20,
+   "y": 7
+  },
+  {
+   "id": "houseplant",
+   "x": 24,
+   "y": 7
+  },
+  {
+   "id": "sc-notice-board",
+   "x": 2,
+   "y": 10
+  },
+  {
+   "id": "sx-class-plate",
+   "x": 7,
+   "y": 10
+  },
+  {
+   "id": "sx-hydrant-box",
+   "x": 9,
+   "y": 10
+  },
+  {
+   "id": "sc-notice-board",
+   "x": 13,
+   "y": 10
+  },
+  {
+   "id": "sx-class-plate",
+   "x": 17,
+   "y": 10
+  },
+  {
+   "id": "wall-clock",
+   "x": 20,
+   "y": 10
+  },
+  {
+   "id": "sx-trophy-case",
+   "x": 11,
+   "y": 12
+  },
+  {
+   "id": "sx-hall-bench",
+   "x": 2,
+   "y": 14
+  },
+  {
+   "id": "sx-recycle-bins",
+   "x": 5,
+   "y": 14
+  },
+  {
+   "id": "sx-extinguisher",
+   "x": 8,
+   "y": 14
+  },
+  {
+   "id": "sx-umbrella-rack",
+   "x": 13,
+   "y": 14
+  },
+  {
+   "id": "sc-cleaning-locker",
+   "x": 16,
+   "y": 14
+  },
+  {
+   "id": "sx-mop-bucket",
+   "x": 17,
+   "y": 14
+  },
+  {
+   "id": "sx-hall-bench",
+   "x": 20,
+   "y": 14
+  },
+  {
+   "id": "houseplant",
+   "x": 24,
+   "y": 14
+  }
+ ],
+ "tables": [],
+ "goods": [],
+ "rooms": [
+  {
+   "room": "bandroom",
+   "x0": 0,
+   "y0": 0,
+   "x1": 11,
+   "y1": 9
+  },
+  {
+   "room": "printroom",
+   "x0": 12,
+   "y0": 0,
+   "x1": 18,
+   "y1": 9
+  },
+  {
+   "room": "annexstairs",
+   "x0": 19,
+   "y0": 0,
+   "x1": 25,
+   "y1": 9
+  },
+  {
+   "room": "annexcorridor",
+   "x0": 0,
+   "y0": 10,
+   "x1": 25,
+   "y1": 15
+  }
+ ],
+ "start": [
+  11,
+  14
+ ],
+ "exitWidth": 2,
+ "links": [],
+ "open": [
+  {
+   "x0": 20,
+   "y0": 3,
+   "x1": 24,
+   "y1": 11,
+   "why": "계단 앞 층계참 — 복도에서 트인 계단 홀"
+  }
+ ]
+}

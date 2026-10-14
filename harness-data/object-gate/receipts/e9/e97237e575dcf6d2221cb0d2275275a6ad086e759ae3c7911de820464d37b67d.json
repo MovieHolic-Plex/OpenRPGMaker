@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e97237e575dcf6d2221cb0d2275275a6ad086e759ae3c7911de820464d37b67d",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "진찰용 회전 의자",
+ "label": "jp_city/interior_hospital/hs-exam-stool",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "swivel stool seat cushion",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round stool seat clearly shows its top surface as a large foreshortened ellipse with shading and highlights spanning rows 11-17, resting on a central column and splayed caster base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5604
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "swivel stool seat cushion",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round seat cushion is rendered as a foreshortened ellipse showing roughly 6 rows of top surface with shading and highlights before curving downward.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4684
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round cushion seat of swivel stool",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round stool seat cushion is drawn as a 3/4 view ellipse with roughly 6 rows of top surface visible (rows 11-16) above the south-facing rim and shading, supported by a 5-spoke caster base spread across the floor.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6120
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "swivel stool cushion and base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round stool seat is drawn as a foreshortened ellipse spanning rows 10-19 with clear top surface highlights spanning roughly 6 rows, correctly presenting both top surface and south edge above the wheeled base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6950
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.780Z",
+ "cells": {
+  "16": [
+   "7d0da45e3c18beb4",
+   "a06081a592c79131"
+  ],
+  "24": [
+   "2950701b71f71f35",
+   "3014eb0dd94d7c8d",
+   "4e2dcf39b8e537c1",
+   "646839b2e80353b5",
+   "81343a9d32cd6b75",
+   "d7d2335c2fb2d179",
+   "e3ef050dd8f1e01d",
+   "ea49ffdcf1dd1534",
+   "ed0fab4bc3b3c942"
+  ],
+  "32": [
+   "81118af1a2670a87",
+   "813f1e8e40e401c0",
+   "81e9ab1155294250"
+  ],
+  "48": [
+   "11eb1df36fc0dd95",
+   "2c1d8177007a7b2e",
+   "32aab9704b611f61",
+   "6a72d4808ebddc77",
+   "7c40562e049901bf",
+   "9671608ecbd46012"
+  ]
+ }
+}

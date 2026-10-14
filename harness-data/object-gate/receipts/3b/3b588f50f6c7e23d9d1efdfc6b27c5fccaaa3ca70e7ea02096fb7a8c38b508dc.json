@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3b588f50f6c7e23d9d1efdfc6b27c5fccaaa3ca70e7ea02096fb7a8c38b508dc",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "투약 카트",
+ "label": "jp_city/interior_hospital/hs-med-cart",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "medication cart",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cart is drawn in pure front elevation within a flat rectangular frame. The top edge consists only of a 1px outline (row 5) with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 8723
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "medication cart (투약 카트)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire cart is drawn in flat front elevation. The vertical frame posts (cols 5 and 13) run continuously from top to bottom (rows 5 to 27), proving the upper section is on the same vertical front plane as the drawers. The top surface is represented only by a 1px outline at row 4.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 12239
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "medication cart",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cart is drawn entirely in a flat front elevation. The continuous vertical side frame runs from row 6 to 28 enclosing an upper shelf/compartment and four drawers, with only a 1px outline at row 5 where the top surface should be.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 12395
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "medication cart with drawers and top shelf/compartment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire cart cabinet is drawn in flat front elevation with a 1px horizontal outline cap at row 4 and straight vertical sides down to the wheels, showing no foreshortened top surface of the cabinet body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5489
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.782Z",
+ "cells": {
+  "16": [
+   "9efd6908c0a04f6a",
+   "e2dda592daba9fb1"
+  ],
+  "24": [
+   "04946d2e1fc0f3f6",
+   "25d73995c2ab7652",
+   "38fe7d8ca17bae8d",
+   "5be59defbc9ead11",
+   "7dd569efc1b49140",
+   "9d20a4582b21409f",
+   "ae1a4a7f74af8fb7",
+   "c790fbe14c91b7ae",
+   "cadd75157be75fbb",
+   "d3db13dc8e7ef3a3",
+   "e1baad9ece0ef394",
+   "e3d34af7576fb313"
+  ],
+  "32": [
+   "0062b235467dc018",
+   "5d8b47595d80a7df",
+   "d708c5f966a63578"
+  ],
+  "48": [
+   "052a079d37691bc9",
+   "0a03324ddb7245c6",
+   "2238ca303b45259a",
+   "2c6f069eaddefc59",
+   "4a3ed3ccd9ddd5c0",
+   "fb30fde9f54a4649"
+  ]
+ }
+}

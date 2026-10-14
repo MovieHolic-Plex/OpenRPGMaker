@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "31f122d3ac3f45fe2c43ee06bc6ff1b2ecaaa77ecfef478af8d0e3005848cb18",
+ "width": 16,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "옥내 소화전함(빨간 함·위 표시등)",
+ "label": "jp_city/interior_school2/sx-hydrant-box",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "indoor fire hydrant cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is an indoor fire hydrant box mounted flat on a wall with a top indicator light. As a wall-mounted fixture viewed on the north wall, it is drawn flat from the front as permitted for this kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9006
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "red wall-mounted fire hydrant cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Indoor fire hydrant cabinet is mounted flat on the wall (wall_mounted kind). In 3/4 top-down perspective, wall fixtures on south-facing walls correctly present flat front faces without top depth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10313
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "indoor fire hydrant wall cabinet",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet is wall-mounted and shows a 3-row foreshortened top surface (rows 6-8) in lighter red above the darker south face with the door and handle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11414
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "indoor fire hydrant cabinet with top indicator light",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a wall-mounted indoor fire hydrant box shown flat against the wall, which is valid for wall-mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5122
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.783Z",
+ "cells": {
+  "16": [
+   "7daa696d6dd5c976",
+   "c4c08d3347d83e7c"
+  ],
+  "24": [
+   "0727b5f62ea8a443",
+   "27970583590920d4",
+   "2cb3a5b6f14a2c65",
+   "64c52ecf3fd7122f",
+   "bdef2db928bdb9fb",
+   "c30e6aedf63d1109",
+   "c7bbf9f362dfc2d3",
+   "cf4ad3c5cd10fcfe",
+   "d39e944b73e07acb",
+   "dfdf09a5c404e33f",
+   "e55980484359cf94",
+   "eb05b20da190d063"
+  ],
+  "32": [
+   "080ce8d060280d2d",
+   "9df1d6e5e96e4acb",
+   "c22f668c0ad5838f"
+  ],
+  "48": [
+   "02da899580285ef8",
+   "3f8dd3672e13c8df",
+   "9fb1ba4b36121157",
+   "bfc81c4808043547",
+   "db2b915c7f71fc55",
+   "f560a15a504d5ca6"
+  ]
+ }
+}

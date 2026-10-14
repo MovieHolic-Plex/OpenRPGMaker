@@ -83,6 +83,21 @@ def gate_kits() -> list[str]:
     return sorted(f[:-4] for f in os.listdir(GATE_DIR) if f.endswith('.png'))
 
 
+INST_BLOCKS = ('interior_hospital', 'interior_school2', 'interior_office2')
+
+
+def inst_items():
+    """[(블록, id, png, 종류)] — 시설 실내 블록이 내보낸 _gate/kinds.json(바닥·벽면 = terrain, 문 = part)."""
+    import json
+    out = []
+    for b in INST_BLOCKS:
+        d = os.path.join(REPO, 'tiledata', 'jp-city', 'blocks', b, '_gate')
+        kj = os.path.join(d, 'kinds.json')
+        if not os.path.exists(kj): continue
+        for k, v in json.load(open(kj, encoding='utf-8')).items(): out.append((b, k, os.path.join(d, k + '.png'), v))
+    return out
+
+
 _CUR = None
 def current_profile() -> str:
     """현재 판정 프로필 해시(npm run harness -- object-gate status 의 「현재 규칙 프로필 <해시>」). 한 번만 조회."""
@@ -127,11 +142,25 @@ def check_all(context: str = 'bundle') -> dict:
         if st == 'provisional':                                  # 현재 프로필의 PASS 이지만 프로필이 아직 보정 전 → 임시 통과(보고에 「미보정」 표기)
             prov.append(kid); continue
         (bad if why else ok).append((kid, kind, why) if why else kid)
+    # 시설 실내 블록(병원 hs- · 학교 보강 sx- · 사무실 보강 ox-, 2026-10-14): 새 그림이라 관문을 거친다(옛 실내 블록은 소급 면제).
+    # 종류표 = 블록이 내보낸 _gate/kinds.json. 문(part)은 조립 방 조각 영수증(gate_rooms.py, kind structure)으로 덮는다.
+    import gate_rooms as GR
+    for b, kid, png, kind in inst_items():
+        if kind == 'part':
+            name, st = GR.covering(kid, png, context)
+            if name: covered.append((kid, 'room ' + name + (' [미보정 프로필 임시]' if st == 'provisional' else ''))); continue
+            bad.append((kid, kind, st)); continue
+        try:
+            st, why = state(png, kind, context)
+        except Exception as e:
+            st, why = None, f'확인 실패: {e}'
+        if st == 'provisional': prov.append(kid); continue
+        (bad if why else ok).append((kid, kind, why) if why else kid)
     return dict(ok=ok, prov=[p if isinstance(p, str) else p[0] for p in prov], covered=covered, bad=bad, total=len(ok) + len(prov) + len(covered) + len(bad))
 
 
 def report(res: dict, file=sys.stdout) -> None:
-    print(f"[3/4 관문] street_hand 키트 {res['total']}개 중 통과 {len(res['ok'])} + 조립 건물 영수증으로 덮임 {len(res.get('covered', []))} + 미보정 프로필 임시통과 {len(res.get('prov', []))}, 영수증 없음/불합격 {len(res['bad'])}", file=file)
+    print(f"[3/4 관문] street_hand·시설 실내 키트 {res['total']}개 중 통과 {len(res['ok'])} + 조립 건물 영수증으로 덮임 {len(res.get('covered', []))} + 미보정 프로필 임시통과 {len(res.get('prov', []))}, 영수증 없음/불합격 {len(res['bad'])}", file=file)
     for kid, name in res.get('covered', [])[:3]: print(f'  {kid}: covered by assembled {name}', file=file)
     if res.get('covered'): print(f"  … 띠 {len(res['covered'])}개 모두 'covered by assembled <표본>' (조립 건물 영수증, kind=structure)", file=file)
     if res['bad']:

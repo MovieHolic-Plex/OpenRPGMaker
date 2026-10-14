@@ -1,0 +1,110 @@
+{
+ "program": "school-1f",
+ "size": [
+  35,
+  16
+ ],
+ "summary": "손 도트 실내 'program school-1f' 35×16 (jp-program-school-1f, jp_city) — 배치 후보 1/3(방 5개, 견본 가구 53점 — data.layout.picture 로 배치를 보고, 다른 배치는 layout.variant 를 바꿔 replace:true) — 출입구에서 닿는 칸 176, 닿지 못한 빈 바닥 0, 경고 0",
+ "warnings": [],
+ "layout": {
+  "variant": 0,
+  "variants": 3,
+  "score": 2.9,
+  "notes": [],
+  "picture": [
+   "###################################",
+   "#####AAAAAAAAAAA#######BBBBBB######",
+   "#####AAAAAAAAAAA#######BBBBBB######",
+   "#####AAAAAAAAAAA#######BBBBBB######",
+   "#####AAAAAAAAAAA#CCCCC#BBBBBB######",
+   "#####AAAAAAAAAAA#CCCCC#BBBBBB######",
+   "#####AAAAAAAAAAA#CCCCC#BBBBBB######",
+   "#####AAAAAAAAAAA#CCCCC#BBBBBB######",
+   "#####AAAAAAAAAAA#CCCCC#BBBBBB######",
+   "##########+########+#######+#######",
+   "#DDDDDDDDDDDDDDDDDDDDDDDD#EEEEEEEE#",
+   "#DDDDDDDDDDDDDDDDDDDDDDDD+EEEEEEEE#",
+   "#DDDDDDDDDDDDDDDDDDDDDDDD+EEEEEEEE#",
+   "#DDDDDDDDDDDDDDDDDDDDDDDD+EEEEEEEE#",
+   "#DDDDDDDDDDDDDDDDDDDDDDDD#EEEEEEEE#",
+   "#############################+#####"
+  ],
+  "rooms": [
+   {
+    "letter": "A",
+    "id": "staffroom",
+    "kind": "staffroom",
+    "x0": 5,
+    "y0": 1,
+    "x1": 15,
+    "y1": 8,
+    "template": "school-1f:staffroom#0",
+    "furniture": {
+     "template": "school-1f:staffroom#0",
+     "placed": 27,
+     "dropped": 0
+    }
+   },
+   {
+    "letter": "B",
+    "id": "infirmary",
+    "kind": "infirmary",
+    "x0": 23,
+    "y0": 1,
+    "x1": 28,
+    "y1": 8,
+    "template": "school-1f:infirmary#1",
+    "furniture": {
+     "template": "school-1f:infirmary#1",
+     "placed": 11,
+     "dropped": 0
+    }
+   },
+   {
+    "letter": "C",
+    "id": "schooltoilet",
+    "kind": "schooltoilet",
+    "x0": 17,
+    "y0": 4,
+    "x1": 21,
+    "y1": 8,
+    "template": "school-1f:schooltoilet#2",
+    "furniture": {
+     "template": "school-1f:schooltoilet#2",
+     "placed": 4,
+     "dropped": 0
+    }
+   },
+   {
+    "letter": "D",
+    "id": "corridor",
+    "kind": "corridor",
+    "x0": 1,
+    "y0": 10,
+    "x1": 24,
+    "y1": 14,
+    "template": "school-1f:corridor#3",
+    "furniture": {
+     "template": "school-1f:corridor#3",
+     "placed": 3,
+     "dropped": 0
+    }
+   },
+   {
+    "letter": "E",
+    "id": "shoegenkan",
+    "kind": "shoegenkan",
+    "x0": 26,
+    "y0": 10,
+    "x1": 33,
+    "y1": 14,
+    "template": "school-1f:shoegenkan#4",
+    "furniture": {
+     "template": "school-1f:shoegenkan#4",
+     "placed": 8,
+     "dropped": 0
+    }
+   }
+  ]
+ }
+}

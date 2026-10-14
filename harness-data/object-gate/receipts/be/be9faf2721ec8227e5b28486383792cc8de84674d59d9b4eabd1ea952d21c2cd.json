@@ -1,0 +1,111 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "be9faf2721ec8227e5b28486383792cc8de84674d59d9b4eabd1ea952d21c2cd",
+ "width": 32,
+ "height": 32,
+ "kind": "seat",
+ "name": "옥상 벤치(바랜 널·쇠 틀)",
+ "label": "jp_city/interior_school2/sx-roof-bench",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 답을 읽지 못함",
+  "종류 불일치",
+  "판정자 과반 fail",
+  "정면 입면도",
+  "옆면(아이소)",
+  "윗면 -1행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 488,
+   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h9m52s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google"
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 454,
+   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h9m52s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google"
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 387,
+   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h9m52s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google"
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 579,
+   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h9m52s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google"
+  }
+ ],
+ "decidedAt": "2026-10-14T01:57:02.970Z",
+ "cells": {
+  "16": [
+   "11fa1d71dcb5fbd2",
+   "1a905eef2df631d6",
+   "7a107ac50f4a28f9",
+   "b02267a4e99c73e0"
+  ],
+  "24": [
+   "0d7ed0a5f3092d4b",
+   "174c1dfa6b7d62be",
+   "19caf5485d4b1503",
+   "1c501558564238cd",
+   "218be4f37997cb71",
+   "223a428c7a4a5f08",
+   "2343e3748ee7b252",
+   "45af9b590207b9b0",
+   "4bbfb5a7f13e03df",
+   "51d189dc294d04ca",
+   "58b66a299b07cd7c",
+   "5d2a564aa02495d5",
+   "945c7c0801576d9c",
+   "9719d198e289d1d3",
+   "af467a09849ec63c",
+   "b90146743b90e9b6",
+   "c3d3dd54c6d29695",
+   "c938d65d53d4f43c",
+   "cddfccd23b140343",
+   "ebb46f66eb0e9b70",
+   "ed48866f208b25f2",
+   "f22823528f1253b7",
+   "f3894cc83bda08fc",
+   "f4cc21fbf80a402c"
+  ],
+  "32": [
+   "bb5a06162dc4075b"
+  ],
+  "48": [
+   "28e30af37b8aaf16",
+   "2d571d65539e33e9",
+   "595633808db5d809",
+   "825b6221e9421ce9",
+   "c06a1f307f17de78",
+   "c1047f0bb5d2b842"
+  ]
+ }
+}

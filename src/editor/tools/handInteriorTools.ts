@@ -642,7 +642,8 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
     if (shape.plainBox && shape.innerCells >= PLAIN_BOX_MIN_CELLS) warnings.push(`방이 칸막이·알코브 없는 직사각형 하나(ㅁ자, 실내 ${shape.innerCells}칸)다 — 큰 방은 ㄱ·ㄷ자 외곽, 벽에서 들어간 알코브, 두꺼운 칸막이('#' 덩이)로 공간을 나누거나 평면을 줄인다`);
     warnings.push(...fitNotes);
     if (!composed) warnings.push(...floatingZones(input, shape));
-    const copied = copiedExample(draft, tileset, input.plan);
+    // layout.program 은 도구가 예제 구성대로 짠 평면이다 — 예제를 손으로 베꼈는지 보는 경고는 모델이 plan·rooms 를 줄 때만(2026-10-14: 병원 1층 program 이 예제와 96% 같다고 경고해 조수가 다시 짜게 했다).
+    const copied = picked ? undefined : copiedExample(draft, tileset, input.plan);
     if (copied) warnings.push(`평면이 참고 예제 「${copied.name}」와 ${copied.same}% 같다 — 사용자가 그 예제를 달라고 한 게 아니면 요청(방 수·쓰임·크기)에 맞게 새로 짠다(rooms 로 방 사각형을 다시 놓는다). 예제는 문법을 배우는 자료다`);
     warnings.push(...doorNotes.map((note) => `자동 맞춤: ${note}`));
     return {

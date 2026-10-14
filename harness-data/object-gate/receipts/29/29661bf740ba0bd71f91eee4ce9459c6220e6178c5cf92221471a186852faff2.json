@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "29661bf740ba0bd71f91eee4ce9459c6220e6178c5cf92221471a186852faff2",
+ "width": 32,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "판독용 라이트 박스",
+ "label": "jp_city/interior_hospital/hs-xray-viewer",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "x-ray viewing light box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Medical x-ray illuminator light box mounted flat against the wall. Frame rows 4-5 are outline/border rather than an exposed horizontal top surface. As a valid wall-mounted object, it is permitted to be flat.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14652
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "medical X-ray viewing light box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted X-ray viewing lightbox mounted flat against the wall; as a wall-mounted flat fixture, a direct front-facing depiction is appropriate.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5715
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "medical film lightbox",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted X-ray viewing light box mounted flush to the wall, correctly showing a slight top casing highlight (rows 3-4) and flat illuminated front display panel.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5547
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall-mounted X-ray / film viewing light box",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Object is a medical lightbox mounted flat on the wall, showing its front-facing viewing screens and a slight top frame rim (rows 4-5). Allowed to be flat as a wall-mounted item.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6897
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.781Z",
+ "cells": {
+  "16": [
+   "5bf3a4480d8c870f",
+   "5f929e326ab6e1f9",
+   "a2ef73099d4d0580",
+   "ac77e437b7b4257e"
+  ],
+  "24": [
+   "10ce2d75ccbc88bb",
+   "25b12a6aad3aa6c4",
+   "36286c3f176e9b42",
+   "3c0bc3b143c2657f",
+   "4c15ec0a7521f9b2",
+   "53384222b63855f0",
+   "5aacb973a93c203b",
+   "5e5f0860e27926b5",
+   "75ec8ab4d8f3dd3c",
+   "79e2d7664fd41552",
+   "8a4718ccfad94510",
+   "8d142099cc02ac57",
+   "91a52b7545cd332c",
+   "bd36fa82a4576820",
+   "c0a99e4d527b6b4e",
+   "c2366c1e63dde214",
+   "c2ea44c3657a158c",
+   "ccb6e7a25cad6ee0",
+   "d238df58f8d864ed",
+   "dea7feac7c790c09",
+   "ee6ed67ba5f2c9b8",
+   "efedf8c869192990",
+   "f9758c92383a6a1a",
+   "fbd3aa0b8b055a2b"
+  ],
+  "32": [
+   "37572a8d67280b1c"
+  ],
+  "48": [
+   "4c18d20b083f03d6",
+   "7960723d1796692c",
+   "8326d73160622053",
+   "90dfcd00f9c0922b",
+   "94c65b87da77f4bc",
+   "e3d9d78c61fa8d52"
+  ]
+ }
+}

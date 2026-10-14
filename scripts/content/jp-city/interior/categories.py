@@ -174,6 +174,32 @@ CATEGORIES = [
     ('cinema', '영화관', ['ml-ticket-counter', 'ml-concession', 'ml-concession-counter', 'ml-poster', 'ml-poster-b', 'ml-poster-c', 'ml-screen',
                        'ml-seat-row', 'ml-step', 'ml-aisle-light', 'ml-ticket-gate', 'ml-cinema-entrance', 'ml-mall-passage']),
     # (쇼핑몰 끝)
+    # ── 6묶음(2026-10-14): 시설 실내 보강 — 병원(깨끗한 종합병원) · 학교 보강 · 사무실 보강. 블록마다 자기 칸 아래에만. ──
+    # [interior_hospital hs-]
+    ('hospital-lobby', '병원 대기실·접수', ['hs-bench-row-s', 'hs-bench-row-n', 'hs-front-counter', 'hs-reception-kiosk', 'hs-pay-machine',
+                                         'hs-call-display', 'hs-tv-wall', 'hs-kids-mat', 'hs-toy-shelf', 'hs-sanitizer-stand', 'hs-wheelchair',
+                                         'hs-aed', 'hs-door-sliding', 'hs-door-side']),
+    ('hospital-exam', '진찰실·처치실', ['hs-exam-stool', 'hs-ultrasound', 'hs-vitals-monitor', 'hs-xray-viewer', 'hs-instrument-cart',
+                                      'hs-folding-screen', 'hs-sharps-bin']),
+    ('hospital-ward', '병동·병실', ['hs-ward-bed', 'hs-overbed-table', 'hs-bedside-cabinet', 'hs-iv-stand', 'hs-bed-headwall', 'hs-curtain-wide',
+                                  'hs-patient-locker', 'hs-nurse-counter', 'hs-chart-cart', 'hs-med-cart', 'hs-stretcher']),
+    ('hospital-pharmacy', '원내 약국', ['hs-drug-drawers', 'hs-dispense-table', 'hs-med-fridge', 'hs-pickup-window']),
+    # (병원 끝)
+
+    # [interior_school2 sx-]
+    ('school-hall', '학교 복도·현관 보강', ['sx-hydrant-box', 'sx-extinguisher', 'sx-trophy-case', 'sx-art-display', 'sx-umbrella-rack',
+                                           'sx-recycle-bins', 'sx-pa-speaker', 'sx-class-plate', 'sx-hall-bench', 'sx-mop-bucket']),
+    ('school-staff2', '교무실·특별교실 보강', ['sx-letter-shelf', 'sx-riso-printer', 'sx-timpani', 'sx-drum-kit', 'sx-xylophone', 'sx-book-cart',
+                                              'sx-newspaper-rack']),
+    ('school-roof2', '학교 옥상 보강', ['sx-roof-bench', 'sx-roof-vent', 'sx-roof-ac-big']),
+    # (학교 보강 끝)
+
+    # [interior_office2 ox-]
+    ('office2', '사무실 보강(자유석·회의)', ['ox-phone-booth', 'ox-projector-screen', 'ox-display-stand', 'ox-standing-table', 'ox-bar-stool',
+                                          'ox-bench-desk', 'ox-lounge-sofa', 'ox-planter-box', 'ox-shredder', 'ox-desk-wagon', 'ox-whiteboard-wall']),
+    ('office2-common', '급탕실·로비 보강', ['ox-coffee-counter', 'ox-water-boiler', 'ox-security-desk', 'ox-trash-column', 'ox-umbrella-bagger',
+                                          'ox-floor-guide', 'ox-visitor-kiosk']),
+    # (사무실 보강 끝)
 ]
 
 BY_ID = {}

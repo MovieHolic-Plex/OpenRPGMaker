@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fac1b67daa7fc212579f1af9c06b88c4c5a442af5b8258b7a952e65d561b7f83",
+ "width": 16,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "침대 머리맡 벽 단자 띠",
+ "label": "jp_city/interior_hospital/hs-bed-headwall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bedside wall terminal panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted terminal panel with outlets, switches, and a nurse-call button pendant, correctly depicted flat against the wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4158
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bedside wall terminal panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted medical/bedside panel with outlets, switches, and a nurse call pendant hanging down; mounted flat against the wall as appropriate for the kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8718
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall-mounted bedside terminal panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat bedside terminal panel mounted directly on the wall with buttons, sockets, and a hanging nurse call pendant. As a flat wall-mounted fixture, it is viewed directly on the wall face without a foreshortened top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9911
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bedside wall terminal panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted hospital/bedside terminal panel mounted flat against the north wall, correctly rendered flat with nurse call cord hanging down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5146
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.781Z",
+ "cells": {
+  "16": [
+   "51fa363f1d099695",
+   "e5bf685122f32e99"
+  ],
+  "24": [
+   "06a0d47094d08555",
+   "223bb05c47f80aca",
+   "2e9c74c879e72745",
+   "311f1669a8dd0311",
+   "4771bba6ec68c446",
+   "493da1bc11c70fcc",
+   "5504c50e637e72e0",
+   "7fcb5e53cf839051",
+   "8b95dc0ea8d111dd",
+   "8fb9017337f86a7e",
+   "93d7c9a4068b8212",
+   "fb5bf8ae6dcce6bd"
+  ],
+  "32": [
+   "0ee45f098aabdbcb",
+   "9e3de588ac32696c",
+   "adc563c13145add7"
+  ],
+  "48": [
+   "1f5d6a0836e82225",
+   "8f805620052f7d32",
+   "925baf612b2f3c75",
+   "a250a37d0d0eca7b",
+   "e27daed998a3ac93",
+   "eada65f947189503"
+  ]
+ }
+}

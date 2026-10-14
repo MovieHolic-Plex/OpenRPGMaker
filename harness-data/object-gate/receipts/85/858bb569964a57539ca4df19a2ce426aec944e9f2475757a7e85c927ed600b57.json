@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "858bb569964a57539ca4df19a2ce426aec944e9f2475757a7e85c927ed600b57",
+ "width": 32,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "약품 서랍장(유리장 겸)",
+ "label": "jp_city/interior_hospital/hs-drug-drawers",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "medicine cabinet with upper glass shelves and lower drawers",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cabinet is visible across rows 2-5 (4 source pixel rows deep) with a front highlight rim at row 5 casting a shadow onto the upper shelf recess at row 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8864
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "medicine cabinet with glass doors and drawers",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the cabinet is clearly visible across rows 2–5 (4 pixels tall) with a front-edge highlight on row 5 and a cast shadow on row 6 before the front face begins.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8585
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "medicine drawer and glass cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire piece of furniture is drawn in flat 2D front elevation: the drawers, handles, shelf dividers, and bottles are drawn straight-on with zero top-down foreshortening. Rows 2-5 form a vertical front-facing header panel rather than a visible top surface (highlighted at the bottom edge above the row 6 trim).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7163
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "medicine cabinet with upper glass display and lower drawers",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 2–5 form the foreshortened top surface of the cabinet (4 rows deep) with a front-edge highlight on row 5 above the row 6 front molding/cornice.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6896
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.782Z",
+ "cells": {
+  "16": [
+   "1126183f653a5c87",
+   "1b096cdc4452c7eb",
+   "23ebaaf03db37825",
+   "246ee0ca34c3eef0",
+   "cfa993517575e304",
+   "ed039cd30ce60212"
+  ],
+  "24": [
+   "068dc9614ade2709",
+   "0a51c9372ad2686c",
+   "0ca0e203cfcc1cb3",
+   "0cdf4b174a9c9151",
+   "326c595bd8953431",
+   "4aec89205b04815e",
+   "6136941ce02720a4",
+   "7e827b26bac4cede",
+   "84792d82187fefa2",
+   "e46e5d7d86078479",
+   "e4710106a6233b3a",
+   "eb34637b3ed3af01"
+  ],
+  "32": [
+   "26055bb981ec8c69",
+   "5f822ef7bfba3f97",
+   "be9401aca177284e",
+   "fdb58d92bc440359"
+  ],
+  "48": [
+   "505f8db636ad6109",
+   "7d22981f53a0be8d",
+   "94195fad678ff8e9"
+  ]
+ }
+}

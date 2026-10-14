@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "71af57cee61e23bde9a5a274a17068a46532fbe10b30acba0e9218db4d21f10c",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "청소 양동이와 대걸레",
+ "label": "jp_city/interior_school2/sx-mop-bucket",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cleaning bucket",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bucket opening is drawn in 3/4 perspective with an elliptical top showing the interior cavity (rows 13-19) holding the mop head, above the south front face (rows 20-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4595
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cleaning bucket",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bucket opening is rendered as an elliptical bowl looking inside from rows 13 to 18 (around 6 rows tall) containing the mop head, clearly showing the top-down 3/4 interior view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3439
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cleaning bucket",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bucket opening is drawn from above showing its interior cavity from row 13 to 17 (around 5 rows tall), with the mop head resting inside. The front wall of the bucket extends below it to row 27.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3664
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cleaning bucket",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bucket opening is drawn as an elliptical view looking inside from row 13 to row 19 (about 6 rows deep), showing the interior wall and mop head resting within before reaching the front rim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3560
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.784Z",
+ "cells": {
+  "16": [
+   "1c0a468e12816a0b",
+   "8eb3fdeef2be6b1d"
+  ],
+  "24": [
+   "058924a46676d070",
+   "113b75f16ae3cc62",
+   "52403e209a2e7d1e",
+   "6a32174581465a1e",
+   "90272a1fc82ce123",
+   "931cce9d78532285",
+   "bcfa9f46389f8653",
+   "bde063c40b1b174b",
+   "cce9532497506d16",
+   "d25b0b4974ae5eb0",
+   "e0613b65525d9c91",
+   "eedf0c8901dfb442"
+  ],
+  "32": [
+   "4367704177bf93f4",
+   "79446786c4e232c2",
+   "acb5f279b2b7cc18"
+  ],
+  "48": [
+   "1286e7af49c29913",
+   "2395f496d47501b3",
+   "41e062ee3a83c2c6",
+   "45bd7b94ecdabfec",
+   "7a9af8016bfb7c71",
+   "e0299895e6943211"
+  ]
+ }
+}

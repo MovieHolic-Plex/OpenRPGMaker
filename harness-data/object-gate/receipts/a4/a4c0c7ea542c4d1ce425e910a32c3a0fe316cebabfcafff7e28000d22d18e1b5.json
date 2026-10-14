@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a4c0c7ea542c4d1ce425e910a32c3a0fe316cebabfcafff7e28000d22d18e1b5",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "환자용 로커",
+ "label": "jp_city/interior_hospital/hs-patient-locker",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "patient locker",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The locker is drawn strictly as a flat front elevation. Rows 2-5 form the top portion of the vertical front frame matching the same vertical lighting (highlight in col 3, shadow in col 12) and color as the front face, with no visible foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 22310
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall locker cabinet",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the locker spans rows 1-5 (approx. 5 pixel rows tall) with a distinct front-edge highlight on row 5 and an overhang shadow line on row 6 before the front doors begin.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9875
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "patient locker",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The locker has a clear 5-row visible top surface (rows 1-5) with a highlighted front edge at row 5 casting a shadow at row 6 above the front doors, correctly rendering the 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11304
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "patient locker",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the locker is clearly visible across rows 1–5 (about 5 source pixels deep) with a front-edge highlight on row 5 and a drop shadow on row 6 above the front doors.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8370
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.782Z",
+ "cells": {
+  "16": [
+   "4276d034c7edf70b",
+   "b3ada3479fc5185b"
+  ],
+  "24": [
+   "137f0178096fdfd8",
+   "25c79e9e5146a50e",
+   "4f8fff6679ac22fd",
+   "5de9e0589d5d8208",
+   "8688955451a40882",
+   "a870bcaf9fc0ea12",
+   "af9fc36cfe340287",
+   "be9725a0792f8798",
+   "d2c714d0f6658f41",
+   "db41c57f65070e5e",
+   "f5aa73c34e5b262f",
+   "ff168219e7f36825"
+  ],
+  "32": [
+   "394ae9939c2d5f96",
+   "3d47ca00d2138bd3",
+   "7b37ee3db0487d71"
+  ],
+  "48": [
+   "0c1c017339441d4e",
+   "19b0ca9e4bc87b39",
+   "28e4e1d49ee10398",
+   "6b4bdc8704ecac77",
+   "a193412d5b35cb5f",
+   "e9a8167495d75d99"
+  ]
+ }
+}

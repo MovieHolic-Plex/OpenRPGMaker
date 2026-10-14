@@ -5,7 +5,7 @@
    "name": "일본 도시 · 읽는 순서·시트 지도",
    "documents": 3,
    "images": 3,
-   "chars": 52611
+   "chars": 53190
   },
   {
    "id": "jp-autotile",
@@ -65,10 +65,10 @@
   },
   {
    "id": "jp-interior",
-   "name": "일본 도시 · 일본 집 실내 (가구 720종 · 바닥 68 · 벽면 54)",
-   "documents": 16,
-   "images": 27,
-   "chars": 461516
+   "name": "일본 도시 · 일본 집 실내 (가구 794종 · 바닥 70 · 벽면 56)",
+   "documents": 17,
+   "images": 28,
+   "chars": 503702
   },
   {
    "id": "jp-interior-shop",
@@ -99,6 +99,13 @@
    "chars": 104244
   },
   {
+   "id": "jp-interior-hospital",
+   "name": "일본 도시 · 일본 병원·학교 별관·IT 사옥 실내 (3곳, 맵 5장)",
+   "documents": 6,
+   "images": 5,
+   "chars": 62344
+  },
+  {
    "id": "jp-errors",
    "name": "일본 도시 · 정상/오류·자동 좌표 검증·층 정정",
    "documents": 3,
@@ -107,16 +114,16 @@
   }
  ],
  "totals": {
-  "categories": 15,
-  "documents": 145,
-  "images": 268,
-  "chars": 1712505,
+  "categories": 16,
+  "documents": 152,
+  "images": 274,
+  "chars": 1817614,
   "maxDocChars": 52857,
   "maxImagePx": 820
  },
- "tilesEmitted": 14746,
- "kitsEmitted": 1348,
- "kitArrayItemsRoundtrip": 1348,
+ "tilesEmitted": 15132,
+ "kitsEmitted": 1422,
+ "kitArrayItemsRoundtrip": 1422,
  "unknownTokens": [
   "jp-interior-dungeon-index:jp-city-abandoned-hospital-1f",
   "jp-interior-dungeon-index:jp-city-abandoned-hospital-1f-24x16",
@@ -164,6 +171,8 @@
   "jp-interior-ex-harbor-warehouse-1:jp-city-harbor-warehouse-1",
   "jp-interior-ex-harbor-warehouse-2:jp-city-harbor-warehouse-2",
   "jp-interior-ex-hiraya:jp-city-hiraya",
+  "jp-interior-ex-hospital-1f:jp-city-hospital-1f",
+  "jp-interior-ex-hospital-2f:jp-city-hospital-2f",
   "jp-interior-ex-house-1f:jp-city-house-1f",
   "jp-interior-ex-house-2f:jp-city-house-2f",
   "jp-interior-ex-izakaya:jp-city-izakaya",
@@ -182,6 +191,8 @@
   "jp-interior-ex-mokuchin:jp-city-mokuchin",
   "jp-interior-ex-office-1f:jp-city-office-1f",
   "jp-interior-ex-office-floor:jp-city-office-floor",
+  "jp-interior-ex-office-free:jp-city-office-free",
+  "jp-interior-ex-office-tower-1f:jp-city-office-tower-1f",
   "jp-interior-ex-pachinko:jp-city-pachinko",
   "jp-interior-ex-parking-b1:jp-city-parking-b1",
   "jp-interior-ex-parking-b2:jp-city-parking-b2",
@@ -194,6 +205,7 @@
   "jp-interior-ex-school-1f:jp-city-school-1f",
   "jp-interior-ex-school-2f:jp-city-school-2f",
   "jp-interior-ex-school-3f:jp-city-school-3f",
+  "jp-interior-ex-school-annex:jp-city-school-annex",
   "jp-interior-ex-school-roof:jp-city-school-roof",
   "jp-interior-ex-sento:jp-city-sento",
   "jp-interior-ex-sewer-1:jp-city-sewer-1",
@@ -208,6 +220,9 @@
   "jp-interior-ex-undermall-1:jp-city-undermall-1",
   "jp-interior-ex-undermall-2:jp-city-undermall-2",
   "jp-interior-ex-yaoya:jp-city-yaoya",
+  "jp-interior-hospital-index:jp-city-hospital-1f-30x19",
+  "jp-interior-hospital-index:jp-city-office-tower-1f-16x11",
+  "jp-interior-hospital-index:jp-city-school-annex-26x16",
   "jp-interior-leisure-index:jp-city-business-hotel-1f-13x9",
   "jp-interior-leisure-index:jp-city-famires-18x13",
   "jp-interior-leisure-index:jp-city-game-center-18x14",
@@ -261,7 +276,7 @@
   "jp-transit-rules:jp-truck-kei"
  ],
  "sha256": {
-  "json": "b743de0d05002a328305988c9abeb1c5ce72f508a3dac6a9e096877505369431",
-  "images": "b253bfca432844587c136af98e66816f1b2376a04aab988a9ec1a5741a296bf7"
+  "json": "6105216e90af04b076b341d08d1e9cdd6477d23f255029e852e0fe704dc56187",
+  "images": "c8dbfb4124006f4d29ef28c7a5a3d53c0404b96abbd00688c915208c8aef5efb"
  }
 }

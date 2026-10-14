@@ -149,7 +149,12 @@ for (const p of v5maps.plans as { key: string; plan: string[]; floor: string; wa
 // ── 일본 집 실내: tiledata/jp-city/interior/examples/*.json 의 rooms 사각형이 방 종류 ──
 const EX = "tiledata/jp-city/interior/examples";
 const places2 = JSON.parse(fs.readFileSync(`${EX}/places2.json`, "utf8")) as { file: string; building: string }[];
-const jpMaps: [string, string][] = [["house-1f", "jp_house"], ["house-2f", "jp_house"], ["apartment-1k", "jp_apartment"], ...places2.map((p) => [p.file, p.building] as [string, string])];
+// 3·5·6묶음(학교·역·사무실·우체국 / 오락·숙박·상업 / 병원)도 방 견본·방 구성으로 — 「교실·학교 복도·사무실·병원」 요청이 layout.program 으로 지어진다(2026-10-14).
+// 4묶음(현대 던전: 폐병원·폐교 …)은 넣지 않는다 — 같은 방 종류 이름의 깨끗한 견본에 잔해·녹이 섞이지 않게.
+const placesN = fs.readdirSync(EX).filter((f) => /^places[3-9].*\.json$/.test(f) && !f.startsWith("places4")).sort()
+  .flatMap((f) => JSON.parse(fs.readFileSync(`${EX}/${f}`, "utf8")) as { file: string; maps?: string[]; building: string }[]);
+const jpMaps: [string, string][] = [["house-1f", "jp_house"], ["house-2f", "jp_house"], ["apartment-1k", "jp_apartment"], ...places2.map((p) => [p.file, p.building] as [string, string]),
+  ...placesN.flatMap((p) => (p.maps ?? [p.file]).map((m) => [m, p.building] as [string, string]))];
 for (const [file, building] of jpMaps) {
   const ex = JSON.parse(fs.readFileSync(`${EX}/${file}.json`, "utf8")) as FullInput;
   const rooms = ex.rooms ?? [];

@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5a8d58c30f2640fba936ef15485db3f085170486cd5c3fca8304fddd4a499147",
+ "width": 32,
+ "height": 32,
+ "kind": "flat",
+ "name": "키즈 코너 퍼즐 매트",
+ "label": "jp_city/interior_hospital/hs-kids-mat",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "puzzle mat",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Four-color interlocking foam puzzle mat lying flat on the floor, fully viewed from above as appropriate for flat category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3225
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "interlocking foam puzzle playmat",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a four-piece foam puzzle mat lying flat on the floor, viewed top-down across all 32 pixel rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5015
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "interlocking foam puzzle mat (4 tiles)",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire object is a floor puzzle mat lying flat on the ground, properly depicted from above filling the 32x32 tile area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3161
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "interlocking foam puzzle mat tiles",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat four-color interlocking puzzle play mat covering the entire floor tile, correctly rendered flat on the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3384
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.780Z",
+ "cells": {
+  "16": [
+   "4c8afd4d522dbc4e",
+   "72824611fb28d466",
+   "8ac57ba162a8d382",
+   "c702c91949344ee9"
+  ],
+  "24": [
+   "250ea767f11ee68b",
+   "31a9e439c988da3e",
+   "34693ee6e4d4cf74",
+   "351f5f9cddfe7141",
+   "4371c48bcdf3ea9b",
+   "45f1bc099a9be6c4",
+   "490c05c64a75a797",
+   "4adbe3cb48a5431d",
+   "597db8ee3b2701b2",
+   "6162b602476eb793",
+   "6934f8441be45b98",
+   "70edf56dc0f1a358",
+   "73c04395fc1c8332",
+   "7b354327698a6e82",
+   "96925e6939966862",
+   "a4ed66d34f716cae",
+   "a53935bd29cac04e",
+   "a755fb2a8ea377d6",
+   "bb2ac4cbe49d5ba3",
+   "c4815901de8320d4",
+   "cdfb219fa6f6d686",
+   "dd09e3d6a61b64ca",
+   "e0b3681445cf7df2",
+   "fd949eae516128f1"
+  ],
+  "32": [
+   "7a7c2d5a6b79c2fc"
+  ],
+  "48": [
+   "459cab3d27cc9fe3",
+   "8ab1e262a5bf9dce",
+   "bfc1a0ac3b2522f8",
+   "d2bcc2a274d8351e",
+   "f1e9d7d0e7380225",
+   "f439d7ab239b2de7"
+  ]
+ }
+}
