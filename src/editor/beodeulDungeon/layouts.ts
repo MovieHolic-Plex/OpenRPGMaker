@@ -191,7 +191,9 @@ export function layoutBlob(spec: DungeonSpec, profile: TypeProfile): DungeonLayo
   if (vault && vault !== boss) { vault.kind = "vault"; vault.rx = Math.min(vault.rx, 6); vault.ry = Math.min(vault.ry, 5); }
   const rest = chambers.filter((c) => c.kind === "cavern");
   const lakeWant = profile.liquid ? (si === 0 ? 1 : si === 1 ? 2 : 3) : 0;
-  const lakeCands = [...rest].filter((c) => c.rx >= 6).sort((a, b) => b.rx * b.ry - a.rx * a.ry);
+  // 작은 판에서 반지름 6 이상 방이 하나도 없어도 액체 종류(화산·동굴)는 못이 하나는 있어야 한다 — 그 땐 가장 큰 방을 쓴다.
+  const bySize = [...rest].sort((a, b) => b.rx * b.ry - a.rx * a.ry);
+  const lakeCands = bySize.filter((c) => c.rx >= 6).length ? bySize.filter((c) => c.rx >= 6) : bySize;
   for (const c of lakeCands.slice(0, lakeWant)) { c.kind = "lake"; c.rx = Math.max(c.rx, 10); c.ry = Math.max(c.ry, 7); }
   const others = rest.filter((c) => c.kind === "cavern");
   if (profile.id === "volcano" && others[0]) others[0].kind = "forge";
