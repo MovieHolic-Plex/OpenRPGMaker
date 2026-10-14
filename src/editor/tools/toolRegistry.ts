@@ -83,6 +83,7 @@ import { TILESET_OBJECT_TOOLS } from "./tilesetObjectTools";
 import { HAND_INTERIOR_TOOLS } from "./handInteriorTools";
 import { JP_CITY_TOOLS } from "./jpCityTools";
 import { CAMPUS_TOOLS } from "./campusTools";
+import { MODERN_CITY_TOOLS } from "./modernCityTools";
 import { WIZARDING_SPACE_TOOLS } from "./wizardingSpaceTools";
 import { PIRATE_ISLES_TOOLS } from "./pirateIslesTools";
 import { SENGOKU_EDO_TOOLS } from "./sengokuEdoTools";
@@ -231,6 +232,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(JP_CITY_TOOLS, "tile"),
   // 현대 학교·캠퍼스(modern_campus) 야외 구성(학교 마당·교외 거리)과 건물 문 ↔ 실내 이음. modern_campus 맵에서만 동작한다.
   ...withDomain(CAMPUS_TOOLS, "tile"),
+  // 도쿄풍 도시(modern_city) 거리 구성기(도로·교차로·건물 키트·공원·소품·차)와 건물 문 ↔ 실내 이음. modern_city 맵에서만 동작한다.
+  ...withDomain(MODERN_CITY_TOOLS, "tile"),
   // 마법 학교(해리포터풍, wizarding_world) 공간 빌더 — 13공간 레시피로 방·야외 한 장을 한 번에 짓는다(통행 한 덩이 보장).
   ...withDomain(WIZARDING_SPACE_TOOLS, "tile"),
   // 열대 군도·해적 항구(pirate_isles) 맵 구성기 — 항구·섬 마을·요새·난파선 섬·배/술집/오두막/동굴 안을 씨앗으로 한 장째 짠다. oprn-pirate 맵에서만 동작한다.
