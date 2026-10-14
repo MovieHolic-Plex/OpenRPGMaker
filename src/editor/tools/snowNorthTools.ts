@@ -63,7 +63,7 @@ export const COMPOSE_SNOW_NORTH_MAP_TOOL: ToolDefinition = {
     properties: {
       mapId: { type: "string", description: "대상 맵 id(생략하면 지금 보는 맵). newMap 이 있으면 새 맵의 부모" },
       style: { type: "string", enum: [...ALL_STYLES], description: "village | lake | cave | market | cabin | longhall | tavern | sauna | ice-cave" },
-      newMap: { type: "object", properties: { name: { type: "string" }, width: { type: "integer" }, height: { type: "integer" } }, required: ["name"], additionalProperties: false, description: "새 맵을 만들어 짓는다. 크기는 생략을 권한다 — style 기본 크기가 가장 알차다(크게 잡아도 집·광장은 늘지 않고 빈 땅이 숲·바위·작은 마당으로 채워질 뿐이다)" },
+      newMap: { type: "object", properties: { name: { type: "string" }, width: { type: "integer" }, height: { type: "integer" } }, required: ["name"], additionalProperties: false, description: "새 맵을 만들어 짓는다. 크기는 생략한다 — style 기본 크기가 가장 알차다(집·광장 수는 늘지 않는다). 주더라도 기본 크기 + 8 칸에서 잘린다" },
       seed: { type: "integer", minimum: 0, description: "배치 씨앗(생략 0)" },
       replace: { type: "boolean", description: "이미 칠한 맵을 지우고 다시 깐다" },
     },
@@ -85,8 +85,10 @@ export const COMPOSE_SNOW_NORTH_MAP_TOOL: ToolDefinition = {
     let created: GameMap | null = null;
     if (nm && typeof nm === "object") {
       const name = typeof nm.name === "string" && nm.name.trim() ? nm.name.trim() : STYLE_KO[style];
-      const w = Number.isInteger(nm.width) ? Math.max(min.w, Number(nm.width)) : DEFAULT_SIZE[style].w;
-      const h = Number.isInteger(nm.height) ? Math.max(min.h, Number(nm.height)) : DEFAULT_SIZE[style].h;
+      // 크기는 기본 크기 + 8 칸까지만 — 구성기는 집·광장 수를 늘리지 않아 큰 맵은 빈 눈밭만 넓어진다(실측: 조수가 64×40 을 골라 마을이 성겼다).
+      const cap = (n: number, lo: number, d: number) => Math.min(d + 8, Math.max(lo, n));
+      const w = Number.isInteger(nm.width) ? cap(Number(nm.width), min.w, DEFAULT_SIZE[style].w) : DEFAULT_SIZE[style].w;
+      const h = Number.isInteger(nm.height) ? cap(Number(nm.height), min.h, DEFAULT_SIZE[style].h) : DEFAULT_SIZE[style].h;
       created = createBlankMap(name, w, h, SNOW_NORTH_TILESET_ID, tileset.tileSize, tileset);
       mapId = created.id;
     }
