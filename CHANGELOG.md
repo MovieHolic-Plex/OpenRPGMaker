@@ -5,6 +5,19 @@
 
 <!-- releases -->
 
+## 0.220.0 — 2026-10-15
+
+### 기능
+
+- **ai** — OpenAI 호환 사용자 지정 제공자 (CLIProxyAPI·LiteLLM·Ollama…) + Argon 전용 허용/차단 패턴 (#2585) (`92dcb3d`)
+- **object-gate** — Sonnet 5.5 high judge + exact measurements; calibration rejected (43/47 · 19/36) (#2583) (`a80e9ea`)
+- **dungeon** — 던전 종류 8가지 — 미궁·하수도·동굴·신전·광산·화산 (author_beodeul_dungeon type) (#2579) (`90ec00c`)
+
+### 수정
+
+- **ci** — drop unused dungeon symbols and type the gym shrink (`402e8f5`)
+- **monster** — gym void check, volcano campaign theme, 0-gym annex, shrink cleanup, visual-flat (#2581) (`f38fa38`)
+
 ## 0.219.1 — 2026-10-15
 
 ### 수정
