@@ -34,6 +34,8 @@ model = buildModel({ id: md.id, name: md.name, api: prov.api, provider, baseUrl:
 const imageProvider = arg('image-provider', 'openai-codex')!, imageModel = arg('image-model', 'codex-image-default')!;
 const providerApiKeys: Record<string, string | undefined> = { [provider!]: prov.apiKey };
 for (const p of [imageProvider, 'google-antigravity', 'openai-codex']) { try { providerApiKeys[p] ??= (await resolveRequestApiKey(p)) as string | undefined; } catch { /* absent */ } }
+// 긴 실행(20분+) 도중 OAuth 키가 만료된다 — getApiKey 는 요청마다 providerApiKeys 를 다시 읽으니 여기서 주기적으로 갱신해 둔다(px4·b2·b3 가 22분쯤에 이 오류로 끝났다).
+if (antigravity) setInterval(async () => { try { const k = (await resolveRequestApiKey(provider!)) as string | undefined; if (k) providerApiKeys[provider!] = k; } catch { /* 다음 주기에 다시 */ } }, 240000).unref();
 const log: unknown[] = [];
 const t0 = Date.now();
 const note = (e: any) => {
