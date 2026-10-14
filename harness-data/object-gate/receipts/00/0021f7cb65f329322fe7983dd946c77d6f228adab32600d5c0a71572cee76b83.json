@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0021f7cb65f329322fe7983dd946c77d6f228adab32600d5c0a71572cee76b83",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "벽 통로(윗줄, 통나무 인방 + 어두운 틈)",
+ "label": "snow-north/sn-wall-door-u",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall passage lintel and doorway opening",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile representing a wall face and doorway opening. In standard top-down 3/4 perspective, vertical wall faces and doorways are viewed directly from the south, with horizontal depth provided by adjoining floor/ceiling tiles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7981
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall passageway lintel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting the top part of a doorway/passageway cut into a wooden/earthen wall face, featuring a lintel and the top of a dark threshold.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6589
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall passage frame and doorway",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Classified as terrain (wall face tile featuring a wooden lintel frame and dark doorway opening into the wall). As a standard wall tile, it correctly represents a vertical wall surface in the 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4336
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall passage with wooden lintel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile depicting an archway/doorway opening cut into a wall; appropriately rendered as a vertical wall surface in standard JRPG 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5153
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.162Z",
+ "cells": {
+  "16": [
+   "fe7e3f59c78da81b"
+  ],
+  "24": [
+   "2910af8c7dea8b84",
+   "3aebdcbecfced190",
+   "5ad2cec9cde618ae",
+   "6dd9d4bb0e5490ad",
+   "bf7bb74a62a50b92",
+   "e0c863f6d2c5bf4a"
+  ],
+  "32": [
+   "0f97867439507550",
+   "74ea71146d0c2023",
+   "7622b24ea3d51bbf",
+   "80d35854dea2e937",
+   "e58b078f095ad866",
+   "eee4564205dd2d56"
+  ],
+  "48": [
+   "1800f54eaea28cee",
+   "3ecc02cfa44c5543",
+   "5a598c27c9756173",
+   "5f6d2a1e22d692a7",
+   "63eeddec338d1f56",
+   "fd6f9b450723a960"
+  ]
+ }
+}

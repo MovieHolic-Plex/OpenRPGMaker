@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0f1280168082565df74102cd9f643f34904659b7cea40ddc2affb5213f284017",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "깃대(무늬 없는 천)",
+ "label": "desert-east/de-banner-pole",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flagpole / column with decorative finial and banner",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire flagpole is drawn in pure front elevation. The base (rows 25-30), golden collar (rows 8-10), and decorative top finial (rows 0-7) are all rendered as flat frontal profiles without any foreshortened horizontal top surfaces visible from a 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11186
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flagpole / column",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, finial, collar, and base plinth are all rendered as flat, symmetrical front silhouettes with horizontal cross-sections and no visible foreshortened top surface or elliptical rim.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6649
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flagpole / column with cloth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, capital, golden ring, and base plinth are all drawn in pure flat front elevation like a chess piece, with completely straight horizontal dividers and no foreshortened top surfaces or circular perspective visible anywhere.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5219
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flagpole with pedestal base and top finial/capital",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire flagpole—including the pedestal base, shaft, collar, and capital—is rendered in pure front elevation with straight horizontal bands and vertical shading, showing no foreshortened top surfaces or elliptical cross-sections.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6542
+  }
+ ],
+ "decidedAt": "2026-10-14T00:49:10.255Z",
+ "cells": {
+  "16": [
+   "1113c6f591440d00",
+   "d59e3e320e332cae"
+  ],
+  "24": [
+   "1424be10607fc166",
+   "566a24aa91934796",
+   "94c50680ec977121",
+   "987b4d3d0d756384",
+   "ad3e3b74ecb24d3a",
+   "b0a23b8e9d9dcd53",
+   "d3b48b98026f6b18",
+   "eaa2d4c55bc764bd",
+   "eefe4e0f5370ea48",
+   "f0f283c59813b116",
+   "f7dfb35a7c5d68a4",
+   "feb228e552fffe10"
+  ],
+  "32": [
+   "3134dd3b80f912ff",
+   "3c84afe277d7040d",
+   "ec854b287c7701cb"
+  ],
+  "48": [
+   "17402944a711244a",
+   "4bce5d40a898d6c9",
+   "54194fc321067a25",
+   "867b40508ba5fef7",
+   "8d3ed22a58f57217",
+   "95be579edd754ca3"
+  ]
+ }
+}

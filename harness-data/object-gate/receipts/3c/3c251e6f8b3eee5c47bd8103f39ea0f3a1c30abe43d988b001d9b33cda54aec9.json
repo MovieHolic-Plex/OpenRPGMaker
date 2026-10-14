@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3c251e6f8b3eee5c47bd8103f39ea0f3a1c30abe43d988b001d9b33cda54aec9",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "피라미드 입구(돌 문틀)",
+ "label": "desert-east/de-pyramid-door",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone entrance wall with doorway and relief frieze",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire stone wall, relief frieze, and doorway lintel are drawn straight-on in pure front elevation without any top surface or horizontal depth visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5051
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pyramid entrance wall and stone doorframe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat vertical facade with 0px of visible top surface for the main structure, relief tablet, or doorframe lintel (only a 1px edge line at row 15).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5142
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone pyramid entrance facade and doorway",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire portal and upper relief wall are drawn in pure front elevation with 0 visible top surface rows on the upper structure or door frame.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13715
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone doorway and pyramid entrance wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat front architectural elevation with zero visible top surfaces (the lintel at row 16 is only 1px thick and the top of the wall has no foreshortened horizontal depth).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4739
+  }
+ ],
+ "decidedAt": "2026-10-14T00:30:49.531Z",
+ "cells": {
+  "16": [
+   "8837d533d730aa17",
+   "8b70c3a59441a345",
+   "ca17893f72fe20c0",
+   "daf3cbda7871d3b1"
+  ],
+  "24": [
+   "09a8783c0ba73dfb",
+   "33905ef1edbacabc",
+   "3524d3ac2fbe39bf",
+   "5fceabdc1df59d8d",
+   "67b08117ebd97c98",
+   "73febfe49705a8c8",
+   "8624aba18cde4c64",
+   "882b5f9c436548cd",
+   "8861366ad698bf31",
+   "8b087144a4525cad",
+   "96dc74fd25bb3504",
+   "9e360e31f0b4fa7a",
+   "abd458172531a3bf",
+   "b055a56df3947404",
+   "b0742b8bdc35d1b7",
+   "b45f0ca16a9857c0",
+   "ba8f4fbb212a7ac6",
+   "d71d522c9e983660",
+   "dbf954fcdfd2920c",
+   "dc341a89c291f596",
+   "ea71065fa034f39b",
+   "f29bdc0e8c6f86ff",
+   "f8a1c8decb1a07f5",
+   "fe7bda15d2ec10df"
+  ],
+  "32": [
+   "935abc846d851066"
+  ],
+  "48": [
+   "04c8595b065c8ea5",
+   "173a4a7c63641dfc",
+   "a5e1092a623369b4",
+   "b88195bcd021cf64",
+   "c87c2367c0799510",
+   "c9a78ffdf4f1db0d"
+  ]
+ }
+}

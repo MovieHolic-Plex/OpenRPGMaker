@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "324c3a854bd48fe48002f730fe444c4f3d09277301de14f30e0a5beeb83583cf",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "역청 세로 널 벽면(아랫줄, 돌 굽)",
+ "label": "snow-north/sn-wall-plank-d",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall face with stone footing",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall face terrain tile with wooden planks and stone baseboard; correctly classified as terrain, which does not require a top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4103
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical wood plank wall face with stone base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile representing the bottom portion of a vertical wooden wall face with a stone base course.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5981
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vertical wood plank wall face with stone base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting the bottom section of a vertical plank wall with a stone base plinth. As a wall face terrain tile, it represents a vertical plane in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3936
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical plank wall face with stone plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile showing vertical wood planks and bottom stone base trim; as a wall face terrain element it correctly renders the vertical surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4023
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.162Z",
+ "cells": {
+  "16": [
+   "c7254560135a6613"
+  ],
+  "24": [
+   "02ba829bc1a1469d",
+   "3b5a52ea1b32f8ff",
+   "557ec7a57491df92",
+   "64ea7cf1fd0a4d8f",
+   "a271c54eb70c3e8f",
+   "d71ad9856f5a4b55"
+  ],
+  "32": [
+   "4d38e1c476daf0f8",
+   "4e19d1f830a1a15f",
+   "547fc2d09e3fb3bd",
+   "6c9d4fa947cb9d5f",
+   "b06e17843743c94a",
+   "c2cc7b35aef33bd2"
+  ],
+  "48": [
+   "03507ced9906b3ea",
+   "2693429fc03339e2",
+   "42c963c7d1f1e95f",
+   "58fb4fdc1deca2c0",
+   "c04fddfbfd1be64b",
+   "c743f20d4fc2ca2f"
+  ]
+ }
+}

@@ -5,6 +5,49 @@
 
 <!-- releases -->
 
+## 0.209.1 — 2026-10-14
+
+### 수정
+
+- **gothic** — gate cell keeps the drive's paving; dead-tree groves in the gallery plaza's upper lawns (`ce145ef`)
+- **gothic** — chapel altar centred at the runner end with flanking candles, cobwebs only in the NW corner, paintings only on bare wall, single dust decals; gemini-4-argon assistant config (`d965186`)
+
+## 0.209.0 — 2026-10-14
+
+### 기능
+
+- **prehistoric** — stone-age chipset + composer + assistant routing (#2519) (`bf7c019`)
+- **pirate-isles** — tropical archipelago / pirate harbor chipset + composer + assistant routing (#2513) (`3ca3b2d`)
+- **sengoku-edo** — 전국·에도 일본 칩셋 — 손 도트 1014칸, 구성 도구, 다다미 실내 (#2512) (`2e2d7af`)
+- **sky-island** — 하늘섬 손 도트 칩셋 sky_island + compose_sky_island_map 조수 길 (#2509) (`956164c`)
+- **steampunk-city** — 스팀펑크 공업 도시 번들 칩셋 + compose_steampunk_city_map (#2508) (`a500d86`)
+- **modern_campus** — redraw the campus chipset by hand, procedural campus composer, interior layout programs (#2500) (`44f3a58`)
+- **sf-station** — SF station / colony / lab / cyber-neon chipset (172 Opus hand-pixel pieces), composer, assistant routing, references (#2499) (`80b2590`)
+- **jp-city** — fill leftover street land by use (coin parking, nooks, playgrounds, gardens, construction, plaza dressing) (#2505) (`324155c`)
+- **desert_east** — redraw 57 gate failures with visible top faces, gated bake (245/247 pieces), references, blank-map ground tile (`3b5f4cb`)
+
+### 수정
+
+- **ci** — type the desert temple floor uses so typecheck passes (`91cfa53`)
+- **ci** — drop unused chipset composer locals that fail typecheck (`972d712`)
+- **desert_east** — tag composed maps and rooms composed-layout so the layout-quality nudge does not make the assistant scatter props (`73a101d`)
+- **desert_east** — assistant guidance — compose output is final, no loose stamping; fuller tomb chamber (`9633345`)
+- repair syntax/duplicate breakage from the five stacked chipset merges (plainTurn routing chain, executionRoute note chain, hand-interior spec map/imports/enum, startRoutePaint map sizes, concept seed json) (#2520) (`0db604a`)
+
+### 문서
+
+- **desert_east** — status — gate counts, QA pass, assistant scores (`1f2eb06`)
+- **desert_east** — openwiki page and final review page builder (`66a8751`)
+
+### 잡무
+
+- **desert_east** — object-gate receipts, first full run (115/172 items pass) (`35f26be`)
+
+### 기타
+
+- **desert_east** — adversarial QA single improvement pass — ground seams, prop footing, camp/bazaar/palace/caravanserai/pyramid layouts, great pyramid, rug runner (`dcf0288`)
+- **desert_east** — art, composer, tools, policy and wiring before the gate run (`e2b44f1`)
+
 ## 0.208.0 — 2026-10-14
 
 ### 기능

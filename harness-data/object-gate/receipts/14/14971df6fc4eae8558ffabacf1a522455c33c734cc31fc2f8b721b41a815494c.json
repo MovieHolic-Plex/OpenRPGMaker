@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "14971df6fc4eae8558ffabacf1a522455c33c734cc31fc2f8b721b41a815494c",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "물동이와 국자",
+ "label": "snow-north/sn-water-bucket",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden water bucket with ladle",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The opening of the bucket is clearly visible from above across rows 2-8 showing the water surface and a ladle resting inside, with the south wooden face extending down from row 9 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3840
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water tub/bucket with ladle",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bucket opening is clearly visible from above spanning rows 2 to 9 filled with blue water and a ladle, atop a south front face spanning rows 10 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3102
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden water tub with water and ladle",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden tub clearly shows its top opening filled with water (rows 3-8) and a ladle resting inside, with the front rim and south wooden face below it (rows 9-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4084
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water bucket",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden water bucket clearly shows its wide circular opening from above (rows 3 to 8), displaying water and a ladle inside, before transitioning to the south-facing front wall (rows 9 to 15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3621
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.166Z",
+ "cells": {
+  "16": [
+   "c31e5928387515cb"
+  ],
+  "24": [
+   "0b6ea4d9ce1cd5d4",
+   "532d6710bc2419bb",
+   "8b34400100052981",
+   "ba81eae7ada88eb1",
+   "d5300f4c67c7bfae",
+   "fc05eacd875b7c77"
+  ],
+  "32": [
+   "231c94335f6e8842",
+   "2795bc020ccf0d20",
+   "39110ce70e95b92e",
+   "7b2532b6e21070d6",
+   "bc3578e47d44c9eb",
+   "f833189cb794d2c2"
+  ],
+  "48": [
+   "4f7823b8ca99267e",
+   "5ef648fd04e3f70e",
+   "be24df048f2abdcc",
+   "c12ad7d4798da429",
+   "dc58c8dada8c31d9",
+   "f5e91b95a9d5cdca"
+  ]
+ }
+}

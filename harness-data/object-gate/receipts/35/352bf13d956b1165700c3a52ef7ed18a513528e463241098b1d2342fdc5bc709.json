@@ -1,0 +1,134 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "352bf13d956b1165700c3a52ef7ed18a513528e463241098b1d2342fdc5bc709",
+ "width": 32,
+ "height": 32,
+ "kind": "seat",
+ "name": "금 옥좌(단 위)",
+ "label": "desert-east/de-throne",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "gold throne",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The red seat cushion shows a 3-pixel-tall top surface (rows 12-14) foreshortened from above between the backrest and the front base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11353
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "gold throne",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The throne backrest spans rows 2-11, followed by a clearly visible red cushion seat surface across rows 12-14 (3 source pixel rows of depth) before reaching the front face of the seat frame at rows 16-19. The seat surface is properly foreshortened and visible from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12460
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "golden throne with red cushion on dais",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The red seat cushion shows a foreshortened top surface across rows 12-15 (4 rows) between the backrest and the front apron. Armrests also show 2px top surfaces at rows 10-11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5520
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "gold throne on dais",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn as a flat front elevation. The backrest, armrests, seat cushion (rows 12-15, shaded vertically as a front-facing cushion), base, and stepped dais (rows 20-30) are all rendered strictly from the front with 0 rows of top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14339
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.215Z",
+ "cells": {
+  "16": [
+   "3df66ab74c82c130",
+   "66d0b3fdac0038f2",
+   "ab1c9f5280adfa6b",
+   "cc38ea31d14b0422"
+  ],
+  "24": [
+   "16f1c77ea0b60d3e",
+   "1ae84a9456a5b36a",
+   "22ffb20308eee83b",
+   "27d304e9577136d8",
+   "44391d1f5412c661",
+   "46592774a9fc3877",
+   "545111f55bf4e6bb",
+   "5ce7152cc382875b",
+   "63c4a2538eb0e7b9",
+   "64f4f0d4c6dc42c6",
+   "759a6b1e13707973",
+   "7607566249072f3f",
+   "79c96b759b067bd4",
+   "7d8c9ef24727bc98",
+   "82e00b7c6b887e4c",
+   "b4420427da57ddad",
+   "bc391dabea85f87a",
+   "c39e38bff10972f1",
+   "d4f1fb2037385e5b",
+   "dbfdaa1f80b39391",
+   "dee8ac0602e7330b",
+   "f14182f960bde30f"
+  ],
+  "32": [
+   "624b411a5f6be4da"
+  ],
+  "48": [
+   "15514828762e96c1",
+   "2e205847ce3b0c35",
+   "62d129161d82ac65",
+   "6d2ee9717ece1037",
+   "85e5880690603ae7",
+   "f537cc972470f002"
+  ]
+ }
+}

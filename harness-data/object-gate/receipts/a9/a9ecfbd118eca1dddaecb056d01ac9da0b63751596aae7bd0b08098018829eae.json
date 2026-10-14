@@ -1,0 +1,129 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a9ecfbd118eca1dddaecb056d01ac9da0b63751596aae7bd0b08098018829eae",
+ "width": 32,
+ "height": 16,
+ "kind": "container",
+ "name": "물항아리 시렁",
+ "label": "desert-east/de-jars-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "아가리 2행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water jars on a wooden shelf",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The jars show elliptical openings viewing down into their interiors (approx. 3 rows of visible interior depth with front and back rim curvature), and the wooden shelf shows a 2-3px deep horizontal top surface.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 14577
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water jars on a wooden shelf",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each jar features a clear 2-row-deep elliptical cavity showing the dark interior opening (rows 3-4), and the wooden shelf shows a 2-row top surface (rows 11-12).",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 2행 < 4"
+   ],
+   "ms": 5343
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water jars on a wooden shelf",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The shelf clearly displays its horizontal top surface (rows 9-11, ~2-3px tall) from the 3/4 high angle. Each jar shows an elliptical top opening into a dark cavity (rows 3-4, 2px tall) with a visible front rim below it.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 2행 < 4"
+   ],
+   "ms": 12974
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water jars on a wooden shelf",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each jar shows an elliptical opening with dark interior cavity visible across rows 3-4 (2 rows tall), and the shelf below clearly shows its horizontal top surface across rows 10-12 (3 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 2행 < 4"
+   ],
+   "ms": 13142
+  }
+ ],
+ "decidedAt": "2026-10-14T00:27:26.540Z",
+ "cells": {
+  "16": [
+   "747b959370689093",
+   "75021510cc5d5c61"
+  ],
+  "24": [
+   "1b801a9ba38f5c39",
+   "361b5968344373c4",
+   "622a55fe4c31d262",
+   "8a8942c06c6a1d53",
+   "9c14426df229c13f",
+   "adfce13d63e18222",
+   "b0859d343371a4fe",
+   "c87fb7b948c42ecc",
+   "c904a1bc2676abc5",
+   "d0f91e5e65cc2586",
+   "d542f5d14eab878f",
+   "ef0f0737b8dcfd22"
+  ],
+  "32": [
+   "a4216d194e0bd4df",
+   "e54628ee01587748"
+  ],
+  "48": [
+   "44e7eefab44bc32c",
+   "4752f56dcc8d1a86",
+   "7482e356b18d8168",
+   "b17f68232a74492d",
+   "b272454a80856959",
+   "b4c3789526455639"
+  ]
+ }
+}

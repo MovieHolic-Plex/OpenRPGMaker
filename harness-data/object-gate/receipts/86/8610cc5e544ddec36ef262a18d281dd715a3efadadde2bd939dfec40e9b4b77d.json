@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8610cc5e544ddec36ef262a18d281dd715a3efadadde2bd939dfec40e9b4b77d",
+ "width": 16,
+ "height": 32,
+ "kind": "debris",
+ "name": "굴뚝 연기 프레임 3",
+ "label": "snow-north/sn-smoke-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "chimney smoke puffs",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a rising column of chimney smoke puffs, not scattered debris lying on the floor. Kind is completely mismatched.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 4250
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "chimney smoke puff column",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sprite depicts rising chimney smoke, not scattered debris lying on the floor. The supplied kind does not match.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 5038
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "chimney smoke column",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a vertical puff of chimney smoke rising into the air, which does not match the debris category (floor-lying rubble/bones/papers).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 5706
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "column of chimney smoke puffs",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a vertical puff column of chimney smoke (굴뚝 연기 프레임 3), completely mismatched with the kind 'debris' (scattered debris on the floor).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 4702
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.506Z",
+ "cells": {
+  "16": [
+   "1e6a643467ffb929",
+   "2b55eed40c5ac064"
+  ],
+  "24": [
+   "32bb3c0d82fb24ad",
+   "48eeaf80441d6409",
+   "4ab5bfd3dd659074",
+   "6b63f07ac099c424",
+   "78a2dc356ee621ea",
+   "8282c65f9dad6243",
+   "a63105657c6c9af0",
+   "aef030e442564dba",
+   "b19eb218c2b6d91c",
+   "b592ec3d8a30b729",
+   "db758860d814fc12",
+   "e0a6e3d4d6dfcf16"
+  ],
+  "32": [
+   "0b32a734c59380a3",
+   "70335fe7e59beb81",
+   "7e9ad18649d10626"
+  ],
+  "48": [
+   "38bd2dbf7eb2bf4f",
+   "72c35a27b3e1696e",
+   "b06ba2ec166a9389",
+   "d58158a5358b6f7e",
+   "e1b14bb2d2678aad",
+   "ea0545fc6e428e5e"
+  ]
+ }
+}

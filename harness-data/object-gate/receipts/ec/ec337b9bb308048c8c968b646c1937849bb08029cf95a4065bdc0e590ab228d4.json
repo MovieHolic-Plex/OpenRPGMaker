@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ec337b9bb308048c8c968b646c1937849bb08029cf95a4065bdc0e590ab228d4",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "얼음 담 기둥(끝·모퉁이)",
+ "label": "snow-north/sn-ice-wall-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ice wall pillar",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the pillar spans rows 0 to 5 (6 rows tall), featuring a snow/frost cap and right-edge shading. It terminates at a bright horizontal front-edge highlight on row 6, below which the front vertical face extends from rows 7 to 14 with ice brick mortar lines.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10981
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ice wall pillar",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the pillar is clearly rendered in a lighter tone across rows 0–3 (4 pixel rows tall), with the south-facing block wall extending below from row 4 to row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6353
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ice wall pillar",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap/surface of the ice pillar is clearly visible at rows 0-3 (about 4 pixels tall) with foreshortening, above the front vertical face with ice block brick lines.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4728
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ice wall pillar",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the ice pillar is rendered in rows 0-3 with pale ice tones, showing the horizontal top surface in 3/4 view above the vertical front wall face (rows 4-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5475
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.508Z",
+ "cells": {
+  "16": [
+   "a9b737c93dbb633f"
+  ],
+  "24": [
+   "1612d84782887b9b",
+   "1be501d4c8c89cc8",
+   "68226d643da7c741",
+   "7383e98c4a2ebe2a",
+   "8674e4fd0bc8a56f",
+   "942e9ab5ac7805e9"
+  ],
+  "32": [
+   "6f18c4a894b80417",
+   "71354ae42fcb5187",
+   "9be35c7da57186ff",
+   "a5b626f4e0366c7c",
+   "a606a94e38490066",
+   "eddc0a1b1b0ec1c8"
+  ],
+  "48": [
+   "3d190eaff42ff5a4",
+   "a1cf1d4db2c3e5f1",
+   "b888203c33efcb88",
+   "cc2e1d360807f099",
+   "e574f62d0ea062b9",
+   "e81b44345ccbf3f0"
+  ]
+ }
+}

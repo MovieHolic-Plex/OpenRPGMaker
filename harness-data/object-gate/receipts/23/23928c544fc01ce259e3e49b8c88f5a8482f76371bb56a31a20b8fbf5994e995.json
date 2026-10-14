@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "23928c544fc01ce259e3e49b8c88f5a8482f76371bb56a31a20b8fbf5994e995",
+ "width": 48,
+ "height": 16,
+ "kind": "other",
+ "name": "뒤집어 둔 나무배(배 밑이 위로, 눈 덮임)",
+ "label": "snow-north/sn-boat",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "upturned wooden boat hull",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bottom of the overturned boat forms a clear top surface spanning rows 2 to 7 (partially covered in snow), transitioning at row 8 to the shaded south-facing hull side (rows 8-12).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6036
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "upturned wooden boat hull covered with snow",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upturned boat's top surface (the bottom of the hull with snow) is clearly shown from rows 2 to 7 (approx 5-6 rows deep), with the south-facing side of the hull descending from row 8 to 12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3510
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "upturned wooden boat hull",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The inverted hull clearly displays its upward-facing bottom surface across rows 2–7 (with a snow patch covering part of it), followed by a 5-row south-facing side planking from rows 8–12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3628
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "upturned wooden boat hull",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upturned boat's bottom surface is viewed from above across rows 2-7 (covered with snow), while rows 8-12 depict the south-facing side of the hull in shadow.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5938
+  }
+ ],
+ "decidedAt": "2026-10-14T01:15:54.503Z",
+ "cells": {
+  "16": [
+   "55e1dfc27adbd018",
+   "e5e538b55d34f8cf",
+   "f8770e01da3cc0ca"
+  ],
+  "24": [
+   "32f19eb1658657ae",
+   "465f00c5a798d5d2",
+   "487a0972c946cd92",
+   "550e24ac28c830c0"
+  ],
+  "32": [
+   "0a40dd35bda9cdbf",
+   "18fe3a627fc50a7f",
+   "24fb63521a4477c5",
+   "29187534e1c3ad81",
+   "4a8063eafc6e69cc",
+   "4be07a7d2464981f",
+   "72914795a50a83ee",
+   "9bce8a43b503dc8c",
+   "a1c9aa8fd142a06a",
+   "d6ac9c5fc0627e7f",
+   "daecb2de7376c53a",
+   "de440b528a2aaee0"
+  ],
+  "48": [
+   "4400bf02ac7c873f",
+   "56480abbe3349efb"
+  ]
+ }
+}

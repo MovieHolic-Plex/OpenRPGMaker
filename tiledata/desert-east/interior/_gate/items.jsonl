@@ -1,0 +1,63 @@
+{"png": "de-floor-zellige.png", "kind": "terrain", "name": "찻집 젤리주 타일 바닥", "label": "desert-east/de-floor-zellige"}
+{"png": "de-floor-zellige-b.png", "kind": "terrain", "name": "찻집 젤리주 타일 바닥(이 빠진)", "label": "desert-east/de-floor-zellige-b"}
+{"png": "de-floor-wood.png", "kind": "terrain", "name": "여관 널마루", "label": "desert-east/de-floor-wood"}
+{"png": "de-floor-wood-b.png", "kind": "terrain", "name": "여관 널마루(변주)", "label": "desert-east/de-floor-wood-b"}
+{"png": "de-floor-flag.png", "kind": "terrain", "name": "가게 사암 포석", "label": "desert-east/de-floor-flag"}
+{"png": "de-floor-flag-b.png", "kind": "terrain", "name": "가게 사암 포석(변주)", "label": "desert-east/de-floor-flag-b"}
+{"png": "de-floor-marble.png", "kind": "terrain", "name": "궁전 대리석 바닥", "label": "desert-east/de-floor-marble"}
+{"png": "de-floor-marble-b.png", "kind": "terrain", "name": "궁전 대리석 바닥(변주)", "label": "desert-east/de-floor-marble-b"}
+{"png": "de-floor-tomb.png", "kind": "terrain", "name": "무덤 석회암 바닥", "label": "desert-east/de-floor-tomb"}
+{"png": "de-floor-tomb-b.png", "kind": "terrain", "name": "무덤 석회암 바닥(모래 들이침)", "label": "desert-east/de-floor-tomb-b"}
+{"png": "de-wall-plaster.png", "kind": "terrain", "name": "회칠 벽(청록 타일 징두리)", "label": "desert-east/de-wall-plaster"}
+{"png": "de-wall-window-plaster.png", "kind": "terrain", "name": "회칠 벽(나무 격자 창)", "label": "desert-east/de-wall-window-plaster"}
+{"png": "de-wall-stone.png", "kind": "terrain", "name": "사암 마름돌 벽", "label": "desert-east/de-wall-stone"}
+{"png": "de-wall-niche-stone.png", "kind": "terrain", "name": "사암 벽(등잔 벽감)", "label": "desert-east/de-wall-niche-stone"}
+{"png": "de-wall-palace.png", "kind": "terrain", "name": "궁전 대리석 벽(금테 뾰족 아치 판)", "label": "desert-east/de-wall-palace"}
+{"png": "de-wall-tomb.png", "kind": "terrain", "name": "무덤 석회암 벽(돋을새김·채색 띠)", "label": "desert-east/de-wall-tomb"}
+{"png": "de-wall-hammam.png", "kind": "terrain", "name": "목욕탕 청록 타일 벽(회칠 아치 벽감)", "label": "desert-east/de-wall-hammam"}
+{"png": "de-ceil-warm.png", "kind": "terrain", "name": "따뜻한 천장(집·궁전) · 천장 속(벽 위·방 밖)", "label": "desert-east/de-ceil-warm"}
+{"png": "de-ceil-warm-w.png", "kind": "terrain", "name": "따뜻한 천장(집·궁전) · 천장 — 방 서쪽 경계(테 동쪽)", "label": "desert-east/de-ceil-warm-w"}
+{"png": "de-ceil-warm-e.png", "kind": "terrain", "name": "따뜻한 천장(집·궁전) · 천장 — 방 동쪽 경계(테 서쪽)", "label": "desert-east/de-ceil-warm-e"}
+{"png": "de-ceil-warm-s.png", "kind": "terrain", "name": "따뜻한 천장(집·궁전) · 천장 — 방 남쪽 경계(테 북쪽)", "label": "desert-east/de-ceil-warm-s"}
+{"png": "de-ceil-warm-sw.png", "kind": "terrain", "name": "따뜻한 천장(집·궁전) · 천장 — 남서 바깥 모서리(테 북·동)", "label": "desert-east/de-ceil-warm-sw"}
+{"png": "de-ceil-warm-se.png", "kind": "terrain", "name": "따뜻한 천장(집·궁전) · 천장 — 남동 바깥 모서리(테 북·서)", "label": "desert-east/de-ceil-warm-se"}
+{"png": "de-ceil-tomb.png", "kind": "terrain", "name": "무덤 천장(어두운 돌) · 천장 속(벽 위·방 밖)", "label": "desert-east/de-ceil-tomb"}
+{"png": "de-ceil-tomb-w.png", "kind": "terrain", "name": "무덤 천장(어두운 돌) · 천장 — 방 서쪽 경계(테 동쪽)", "label": "desert-east/de-ceil-tomb-w"}
+{"png": "de-ceil-tomb-e.png", "kind": "terrain", "name": "무덤 천장(어두운 돌) · 천장 — 방 동쪽 경계(테 서쪽)", "label": "desert-east/de-ceil-tomb-e"}
+{"png": "de-ceil-tomb-s.png", "kind": "terrain", "name": "무덤 천장(어두운 돌) · 천장 — 방 남쪽 경계(테 북쪽)", "label": "desert-east/de-ceil-tomb-s"}
+{"png": "de-ceil-tomb-sw.png", "kind": "terrain", "name": "무덤 천장(어두운 돌) · 천장 — 남서 바깥 모서리(테 북·동)", "label": "desert-east/de-ceil-tomb-sw"}
+{"png": "de-ceil-tomb-se.png", "kind": "terrain", "name": "무덤 천장(어두운 돌) · 천장 — 남동 바깥 모서리(테 북·서)", "label": "desert-east/de-ceil-tomb-se"}
+{"png": "de-tea-table.png", "kind": "low_furniture", "name": "놋쟁반 찻상", "label": "desert-east/de-tea-table"}
+{"png": "de-cushion.png", "kind": "seat", "name": "수놓은 바닥 방석", "label": "desert-east/de-cushion"}
+{"png": "de-divan.png", "kind": "seat", "name": "긴 방석 의자(디완)", "label": "desert-east/de-divan"}
+{"png": "de-tea-counter.png", "kind": "low_furniture", "name": "사모바르 찻대", "label": "desert-east/de-tea-counter"}
+{"png": "de-hookah.png", "kind": "other", "name": "물담배(시샤)", "label": "desert-east/de-hookah"}
+{"png": "de-lantern-wall.png", "kind": "wall_mounted", "name": "놋 투각 등(벽걸이)", "label": "desert-east/de-lantern-wall"}
+{"png": "de-rug-medallion.png", "kind": "flat", "name": "메달리온 양탄자", "label": "desert-east/de-rug-medallion"}
+{"png": "de-rug-runner.png", "kind": "flat", "name": "양탄자 길(세로)", "label": "desert-east/de-rug-runner"}
+{"png": "de-shelf-pottery.png", "kind": "tall_furniture", "name": "그릇 선반", "label": "desert-east/de-shelf-pottery"}
+{"png": "de-sacks-spice.png", "kind": "container", "name": "열린 향신료 자루", "label": "desert-east/de-sacks-spice"}
+{"png": "de-carpet-stack.png", "kind": "box", "name": "접어 쌓은 양탄자", "label": "desert-east/de-carpet-stack"}
+{"png": "de-shop-counter.png", "kind": "low_furniture", "name": "놋 저울 계산대", "label": "desert-east/de-shop-counter"}
+{"png": "de-jar-tall.png", "kind": "container", "name": "큰 저장 항아리", "label": "desert-east/de-jar-tall"}
+{"png": "de-chest-brass.png", "kind": "box", "name": "놋 띠 궤짝", "label": "desert-east/de-chest-brass"}
+{"png": "de-throne.png", "kind": "seat", "name": "금 옥좌(단 위)", "label": "desert-east/de-throne"}
+{"png": "de-column-palace.png", "kind": "column", "name": "궁전 대리석 기둥", "label": "desert-east/de-column-palace"}
+{"png": "de-brazier-stand.png", "kind": "container", "name": "놋 화로대", "label": "desert-east/de-brazier-stand"}
+{"png": "de-vase-tall.png", "kind": "container", "name": "군청 금테 꽃병", "label": "desert-east/de-vase-tall"}
+{"png": "de-fountain-indoor.png", "kind": "container", "name": "대리석 실내 분수", "label": "desert-east/de-fountain-indoor"}
+{"png": "de-divan-royal.png", "kind": "seat", "name": "궁전 긴 의자(금틀)", "label": "desert-east/de-divan-royal"}
+{"png": "de-sarcophagus.png", "kind": "box", "name": "채색 석관", "label": "desert-east/de-sarcophagus"}
+{"png": "de-canopic-jars.png", "kind": "round_body", "name": "뚜껑 단지 셋(석고)", "label": "desert-east/de-canopic-jars"}
+{"png": "de-guardian-statue.png", "kind": "figure", "name": "좌상 사자 석상(받침)", "label": "desert-east/de-guardian-statue"}
+{"png": "de-offering-table.png", "kind": "low_furniture", "name": "제물 돌상", "label": "desert-east/de-offering-table"}
+{"png": "de-torch-stand.png", "kind": "container", "name": "돌 화톳대", "label": "desert-east/de-torch-stand"}
+{"png": "de-sand-pile.png", "kind": "debris", "name": "들이친 모래 더미", "label": "desert-east/de-sand-pile"}
+{"png": "de-treasure-chest.png", "kind": "box", "name": "열린 보물 궤", "label": "desert-east/de-treasure-chest"}
+{"png": "de-plunge-pool.png", "kind": "container", "name": "타일 탕(물)", "label": "desert-east/de-plunge-pool"}
+{"png": "de-marble-bench.png", "kind": "low_furniture", "name": "대리석 걸상", "label": "desert-east/de-marble-bench"}
+{"png": "de-basin-tap.png", "kind": "container", "name": "대리석 세면 대야(벽 꼭지)", "label": "desert-east/de-basin-tap"}
+{"png": "de-towel-rack.png", "kind": "frame", "name": "수건걸이", "label": "desert-east/de-towel-rack"}
+{"png": "de-bed-mat.png", "kind": "low_furniture", "name": "낮은 나무 침상(담요)", "label": "desert-east/de-bed-mat"}
+{"png": "de-tannur-oven.png", "kind": "container", "name": "흙 화덕(탄누르)", "label": "desert-east/de-tannur-oven"}
+{"png": "de-shelf-inn.png", "kind": "tall_furniture", "name": "여관 좁은 선반", "label": "desert-east/de-shelf-inn"}

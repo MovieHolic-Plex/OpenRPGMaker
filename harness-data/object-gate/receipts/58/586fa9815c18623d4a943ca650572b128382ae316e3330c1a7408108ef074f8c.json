@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "586fa9815c18623d4a943ca650572b128382ae316e3330c1a7408108ef074f8c",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "돌 벤치",
+ "label": "desert-east/de-bench-stone",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bench slab",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bench slab is drawn as a flat 2D rectangle with vertical gradient shading and no distinct top surface plane. The legs project straight down in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7372
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bench seat slab",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bench is drawn in flat 2D front elevation (side-scroller style), showing a thick vertical front face of the slab with banded shading across rows 3-10 resting on two downward legs (rows 10-14). There is no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9128
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bench seat slab and legs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bench is rendered as a flat front elevation: a vertical rectangular slab (rows 3–10) with two legs extending downwards (rows 10–14). There is no visible horizontal top surface (seat depth) extending into the background; only a vertical gradient on the front face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5843
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone bench slab and legs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire upper slab (rows 3–10) is drawn with a vertical light-to-dark gradient representing a single front-facing vertical surface, with only a 1px outline along the top (row 3). There is no distinct horizontal top surface/seat visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6535
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.225Z",
+ "cells": {
+  "16": [
+   "8d72540d5b410761",
+   "ec7c0817cc2b8256"
+  ],
+  "24": [
+   "0ca7211e3ab3072b",
+   "2e939668a789fba2",
+   "372f44c39496a8cd",
+   "40d49ec130dcfc09",
+   "55c736532a2bb404",
+   "71e779724c7b92e7",
+   "7818f97baeb2f544",
+   "797ca17619301d40",
+   "9ba2840e80a28a31",
+   "9eed4dad679c7f2e",
+   "eadd7d390e5948a6",
+   "edc327a72317dab7"
+  ],
+  "32": [
+   "6dfb6fb2b1c14ec6",
+   "e68e580f79b66fbc"
+  ],
+  "48": [
+   "0aef43a38b6aa172",
+   "45d83aeb98e46197",
+   "8c8e38f2a61c8a9d",
+   "9bb7c828287018fa",
+   "a6fa553477775927",
+   "f04b0ba56a75bae7"
+  ]
+ }
+}

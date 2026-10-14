@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5bad5741151070dfff47d726bbfe225bb65a20ee52c8c1caca8a6f788c090f02",
+ "width": 32,
+ "height": 16,
+ "kind": "container",
+ "name": "항아리 무리",
+ "label": "desert-east/de-jars-group",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "group of jars",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The jars clearly show their open tops in 3/4 perspective; the largest jar's dark interior opening is visible across rows 3-6 (4 rows tall) with rim and front body below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4155
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cluster of ceramic jars",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "All three jars show foreshortened circular/elliptical openings visible from above into dark interiors (the largest jar's opening interior spans rows 3-6, 4 rows tall) sitting atop visible cylindrical south faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3023
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cluster of three ceramic jars/pots",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "All three jars show distinct elliptical openings viewed from above (the largest jar interior spans rows 3-6, 4 px tall) with clear front rims and cylindrical front faces below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4915
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "large ceramic jar in cluster",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The jars clearly show foreshortened elliptical openings seen from above (the largest jar has an interior opening 4 rows tall from rows 3 to 6, with visible front and back rims) atop vertical front faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5617
+  }
+ ],
+ "decidedAt": "2026-10-14T00:33:14.417Z",
+ "cells": {
+  "16": [
+   "505b81273e89b30f",
+   "fb6b0a9a6fea4e22"
+  ],
+  "24": [
+   "0c40c9ff03427720",
+   "0cfd30b1bd2abe74",
+   "1411b8388a92cc19",
+   "27baec6f9dbbd3c6",
+   "37216bdda90223fb",
+   "45a6cd11466f3352",
+   "8211de918bbb9777",
+   "c486bcd103a882e1",
+   "d16565942cf1d41b",
+   "d3cca9b682965dde",
+   "f0da6039ec14b773",
+   "fd08612f20b596e4"
+  ],
+  "32": [
+   "0c774b08baff9c7c",
+   "b2e7e44a796ed559"
+  ],
+  "48": [
+   "0d679428d093caf0",
+   "30e3b36b60d064e8",
+   "5a3c956b6df9096e",
+   "8983bde848c2c744",
+   "b8d8e5d3be25f39d",
+   "f0499fcecfe893e6"
+  ]
+ }
+}

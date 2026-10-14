@@ -40,6 +40,7 @@
     "조선·사극·한양": "joseon_baram",
     "마법 학교·마법 학원": "wizarding_world",
     "해적·열대 섬·군도·해적 항구·보물섬": "pirate_isles",
+    "사막·오아시스·아라비안": "desert_east",
     "현대 일본 도시·골목": "jp_city",
     "항구 도시·로마풍": "beodeul_city",
     "전국·에도 일본·사무라이": "sengoku_edo",
@@ -49,6 +50,7 @@
     "호러·추리·갤러리·저택": "gothic_manor",
     "SF·우주 정거장·연구 기지·사이버펑크 네온 거리·달 기지": "sf_station",
     "선사 시대·원시 부족·공룡 세계": "prehistoric",
+    "북방 설원·눈 덮인 북쪽 마을": "snow_north",
     "도심 오피스·병원·편의점 직장물(도쿄풍 고층 거리)": "modern_city"
   },
   "rules": [

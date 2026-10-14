@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bd283274889634f0116565104470a4b28c6cedfd30ef3eb4e334154344853f7c",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "무너진 사암 벽",
+ "label": "desert-east/de-ruin-wall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "collapsed sandstone wall",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The ruined wall segments clearly depict both the horizontal top surfaces (tan pavement/brick surface, 7 to 17 rows tall) and the vertical south front faces (dark brown shaded face, 5 to 10 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7502
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ruined sandstone wall sections",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The ruined wall clearly shows top horizontal walking/cap surfaces (light tan regions, 6 to 18 pixel rows deep) and south-facing vertical wall faces (darker brown lower sections, 6 to 10 pixel rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7380
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ruined sandstone wall sections",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the ruined wall is clearly visible from above in light sandstone (rows 3–19 on the tall section, rows 14–19 on the mid section) above the south-facing front wall face (rows 20–29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5878
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ruined sandstone wall sections",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure clearly displays both top horizontal surfaces (tan planes, between 5 and 18 source pixel rows tall with highlighted southern rims) and vertical front faces (dark brown stone faces, 2 to 10 pixel rows tall). No receding isometric side faces are present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 18087
+  }
+ ],
+ "decidedAt": "2026-10-14T00:36:21.264Z",
+ "cells": {
+  "16": [
+   "4d23f6cd4c3a1791",
+   "5a2a79363eec7756",
+   "80023c66d0eaf797",
+   "93d3b5d347931669",
+   "cc87e0237cccc083"
+  ],
+  "24": [
+   "05ffa9bf9c352b5a",
+   "5a00ea1a93b540f4",
+   "8922037af595754e",
+   "bdb6491536301e2f",
+   "c61756ea55910495",
+   "cb7fd189c8907197",
+   "f3a5315268e1f9ed"
+  ],
+  "32": [
+   "67bad9c27f043987",
+   "933a63f92cff33fa",
+   "d723b77cb5079e7a",
+   "e7dfb6defc656dae",
+   "e82d869b40b8b7a9",
+   "f11e6b1a8de57192"
+  ],
+  "48": [
+   "30dca07a686d6795",
+   "9026c025df71bc44"
+  ]
+ }
+}

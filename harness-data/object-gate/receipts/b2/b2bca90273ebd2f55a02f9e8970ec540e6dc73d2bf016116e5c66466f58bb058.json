@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b2bca90273ebd2f55a02f9e8970ec540e6dc73d2bf016116e5c66466f58bb058",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "그루터기 걸상(나이테 윗면)",
+ "label": "snow-north/sn-stool",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tree stump stool",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut surface of the stump is visible from above spanning rows 3 to 7 (5 pixel rows) with tree ring details, followed by the cylindrical bark front face below from row 8/9 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5806
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tree stump stool",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut surface of the tree stump with wood rings is clearly visible from row 3 through row 8 (approx 6 rows tall), with the front bark face extending down from row 9 to row 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3355
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tree stump stool",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stump stool shows a large rounded top surface spanning rows 3-8 with tree ring detailing seen from above, resting on a south-facing bark trunk spanning rows 9-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5295
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stump stool",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut surface of the stump (showing wood grain/rings) is clearly visible across rows 3-8 (6 rows tall), with the cylindrical front bark surface extending below from row 9 to 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3931
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.164Z",
+ "cells": {
+  "16": [
+   "359db79742e50fe0"
+  ],
+  "24": [
+   "5b83687a48ec365d",
+   "7b1ccb80c6b5ef91",
+   "7eabf4ba52754b84",
+   "836d5cd8027ea940",
+   "c99cf55a6b7ee9cc",
+   "f2ff96b57a95b21b"
+  ],
+  "32": [
+   "1c7bb79ca397ac1c",
+   "27941d5cba67bdbf",
+   "522e05dd0ec33a24",
+   "a2fa2f51e925c824",
+   "e2ce1310a860b917",
+   "fb2132434815a644"
+  ],
+  "48": [
+   "1060781730139ac4",
+   "567e7def6c695f6d",
+   "a4667ac46b5d31ee",
+   "b1103ee19c481976",
+   "bde71bd9558b65c4",
+   "de084086c322e6e3"
+  ]
+ }
+}

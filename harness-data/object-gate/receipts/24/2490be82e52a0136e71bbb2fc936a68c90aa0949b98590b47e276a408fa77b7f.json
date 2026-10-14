@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2490be82e52a0136e71bbb2fc936a68c90aa0949b98590b47e276a408fa77b7f",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "따뜻한 천장(집·궁전) · 천장 속(벽 위·방 밖)",
+ "label": "desert-east/de-ceil-warm",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ceiling void terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Solid dark terrain tile representing ceiling void or out-of-bounds space with subtle noise texture; kind terrain is correct.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5445
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ceiling void / out-of-bounds terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Dark textured surface representing ceiling/void terrain across the full 16x16 tile; no standing object present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4214
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ceiling void / black space tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 2D terrain tile representing ceiling void or out-of-bounds space; correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3647
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ceiling void / ceiling interior terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile representing ceiling interior / black space filling the entire 16x16 canvas.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4018
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.211Z",
+ "cells": {
+  "16": [
+   "9e3ffbf7b5578c6d"
+  ],
+  "24": [
+   "12841681744924ed",
+   "6e43e523e352fa27",
+   "77699821a1a6b9cc",
+   "7ca0d49e5415bee8",
+   "b9ebfa7795e83a4c",
+   "c0c7400096a3f90b"
+  ],
+  "32": [
+   "772c4c3f2894666c",
+   "7e71cf3711236e65",
+   "9e5cc5e634aa1813",
+   "b27d2de889bffe8b",
+   "cc523aceca0f450c",
+   "f0ced89e3f1db446"
+  ],
+  "48": [
+   "03900d67ff82542b",
+   "240901cc3e726da3",
+   "3c6910fe897c9e45",
+   "4d6c43b0fccf87d8",
+   "bf82379f530be48a",
+   "e693293750f21d17"
+  ]
+ }
+}

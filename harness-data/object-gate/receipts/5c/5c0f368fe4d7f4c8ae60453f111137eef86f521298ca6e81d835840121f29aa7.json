@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5c0f368fe4d7f4c8ae60453f111137eef86f521298ca6e81d835840121f29aa7",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "무너진 사암 벽",
+ "label": "desert-east/de-ruin-wall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ruined sandstone wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ruined wall is drawn in pure 2D front elevation (side-scroller style) with zero North-South depth. The stepped bricks show only their vertical front faces with no foreshortened top surface displaying the wall's thickness.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8117
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ruined sandstone wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire sprite is drawn as a flat front elevation of a brick wall stepping downwards. The 4-pixel-tall rectangular segments (both lighter and darker) are vertical brick courses of the south face, with no horizontal top surface showing the thickness or top cap of the wall in 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9996
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ruined sandstone wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall is depicted as a flat 2D front elevation (side-scroller style) with vertical brick courses and mortar lines. There is no visible horizontal top surface showing the depth/thickness of the wall.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8354
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "crumbled sandstone brick wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire wall is drawn in pure 2D front elevation (side-scroller style), showing only the vertical front face of the brick courses stepping downward. It has no horizontal top surface showing the wall's thickness/depth from the 45-degree top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7150
+  }
+ ],
+ "decidedAt": "2026-10-14T00:24:39.344Z",
+ "cells": {
+  "16": [
+   "3460e3987e71a017",
+   "39375da9c0569630",
+   "4d1bd66499f23338",
+   "5f1fbf4bf0ff80a3",
+   "89375661294f19e9"
+  ],
+  "24": [
+   "2299acfdc99ad6a5",
+   "51f2399b52e41a53",
+   "7fc69dd354591f7b",
+   "97fa347b0dcb4e13",
+   "d3707630bf2c1a67",
+   "ed89122bee6f9fc6",
+   "fec6dc7269f56524"
+  ],
+  "32": [
+   "2074dadb17a6b36d",
+   "30ce07ea15ec7634",
+   "7c73056e4187b9cf",
+   "9a9ea852622476b7",
+   "b225dfd41c7a3d29",
+   "e2055daefefedeca"
+  ],
+  "48": [
+   "68a5a95f1663a61a",
+   "a27bd695e62528cd"
+  ]
+ }
+}

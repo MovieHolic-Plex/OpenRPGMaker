@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e9390867dc53aec9bc3a93b0b44460a3dfa11e52fc1afaaff2306ef86fdbbb64",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "오로라 깃발(보라·청록 물결, 반대 무늬)",
+ "label": "snow-north/sn-banner-aurora-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "banner pole with decorative cap and hanging cloth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The banner pole, horizontal crossbeam, and ornamental top finial (rows 0-8) are drawn in a flat architectural front elevation with no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10042
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical banner on a wooden pole with an ornamental top cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, banner, and top crest/cap are drawn in pure front elevation with straight horizontal bands and no visible top surface foreshortened from above. Although the base plinth shows a top surface, the main body does not.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7544
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "banner pole with snow-covered top cap and stone pedestal",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone pedestal at the base clearly shows 3 pixel rows of horizontal top surface (rows 40-42) around the pole foot. The top cap structure also features snow accumulation showing depth across rows 1-6. The banner itself hangs vertically as expected.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5865
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "banner pole with decorative top finial and hanging cloth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (pole, crossbeam, top finial, and hanging banner) is drawn in pure front elevation with 0 rows of visible top surface. Only the bottom base plinth shows a top surface, which per the instructions cannot be credited for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9755
+  }
+ ],
+ "decidedAt": "2026-10-14T01:20:58.722Z",
+ "cells": {
+  "16": [
+   "5774804b52e2513c",
+   "843a5116faecd97f",
+   "c5b122b08957d3d1"
+  ],
+  "24": [
+   "0d5824a53e5e3d34",
+   "355bc2361d921cf8",
+   "7453d0fe21466f7a",
+   "7ac30f5b002fbb0a",
+   "bfed11a4420ac777",
+   "e37535bba111b075"
+  ],
+  "32": [
+   "0598ed3692706eab",
+   "1b06ad0c76aee9b8",
+   "20e589becda9e4da",
+   "2779de89ad6d15f3",
+   "3c45d22a0ec799f5",
+   "434670a684557a1c",
+   "544be0366724d303",
+   "743c1fd28fb30de9",
+   "8c6226975c22f04f",
+   "a181604d99f755a5",
+   "a891e22cb1da5df1",
+   "b571490d8f6b4afa"
+  ],
+  "48": [
+   "2782d264435a4f5e",
+   "6bdf0f54acf532d9",
+   "bd0dbb4e7edaeb6c"
+  ]
+ }
+}

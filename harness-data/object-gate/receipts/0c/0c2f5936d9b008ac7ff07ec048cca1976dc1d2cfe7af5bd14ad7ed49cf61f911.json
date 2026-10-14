@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0c2f5936d9b008ac7ff07ec048cca1976dc1d2cfe7af5bd14ad7ed49cf61f911",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "깃대(무늬 없는 천)",
+ "label": "desert-east/de-banner-pole",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flagpole with flag and finial",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The base plinth has a top surface, but the plinth cannot be credited for the main body. The flagpole, crossbeam, and finial are drawn in pure front elevation with no visible top surface (0 rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8242
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flagpole with finial and flag",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, horizontal crossbar, and top spherical finial are drawn in pure front elevation with no visible top surface. Although the base plinth shows a top surface, base plinths do not count toward the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10574
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flagpole with banner and finial",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (vertical pole, crossbeam, banner, and golden finial) is rendered entirely in flat front elevation with 0 visible top rows. The base plinth has a top surface, but the main body itself shows no top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8425
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flagpole with banner and top finial",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, finial, and horizontal banner arm are drawn in pure front elevation with no visible top surfaces (0 top rows). While the base plinth shows a top surface, base plinths do not count for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6429
+  }
+ ],
+ "decidedAt": "2026-10-14T00:27:26.539Z",
+ "cells": {
+  "16": [
+   "05602a24aba1ed0c",
+   "d5f4b722e1e8cb9c"
+  ],
+  "24": [
+   "19f38cdd9f42b67d",
+   "27ec1c3d224edd6d",
+   "328d56a677effafd",
+   "41f16b8817e0c1cc",
+   "47ae909517394eaa",
+   "54dae709ab30d347",
+   "5b36fe6563264121",
+   "5bc654db667a1b6a",
+   "5c545cd9a07b7d2c",
+   "7a8e36a134359032",
+   "a8c28849e8ce883d",
+   "d14338aa94dc57b3"
+  ],
+  "32": [
+   "068767736be8c6c4",
+   "07535f66c785bd51",
+   "a3e26d9e045ba30c"
+  ],
+  "48": [
+   "2683fcc1069a928c",
+   "2dd7df0eec397991",
+   "311bce440152089c",
+   "9c035ef7c6ac3398",
+   "d6170213d7c2ad41",
+   "d98f8aeff053c404"
+  ]
+ }
+}

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "260ba1d01e80c051f2d9911e02d5e210e20cfe02c4d2fe15e0b2c0bb9829e1af",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "좌상 사자 석상(받침)",
+ "label": "desert-east/de-guardian-statue",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "seated lion statue on plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The statue and its base plinth are drawn entirely in front elevation with no visible horizontal top surface on the plinth (rows 20-31 are flat frontal bands) or on the statue's features.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5725
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lion statue on pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The statue and its base are rendered entirely in front elevation with horizontal stripe banding across the base (rows 26-30) and no visible top surface on either the plinth or the figure.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4934
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lion statue on pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The statue and its multi-banded pedestal are drawn in pure front elevation with horizontal stripes (rows 20-31) and no visible foreshortened top surface on the plinth or head.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4806
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "seated lion statue and decorative plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire figure and its plinth are drawn in pure front elevation with straight horizontal bands and stripes (rows 21-31). The base/plinth shows 0px of top surface in front of or around the seated figure.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4789
+  }
+ ],
+ "decidedAt": "2026-10-14T00:23:19.735Z",
+ "cells": {
+  "16": [
+   "386d3c3f2dd72a72",
+   "3be2e5976bd0918a"
+  ],
+  "24": [
+   "0194002138819ff9",
+   "318bf8b2fc6d99f7",
+   "5ceffbcdf8d5d24a",
+   "71647f5d9d8913db",
+   "721a576d2900f72f",
+   "7a75d44005526e90",
+   "c1046f557b39b01f",
+   "c82bd05d570576e9",
+   "cd6b442f77c72fbd",
+   "d12b6092878b6ffc",
+   "e2e74bc8afc73b4d",
+   "eb114ced88fa70b4"
+  ],
+  "32": [
+   "511f0554d9ec1e8f",
+   "5b0dc440371e979d",
+   "c38ad3fffa61429c"
+  ],
+  "48": [
+   "0e259033bcb29016",
+   "107b2815ee92697e",
+   "4924579dc1f6ab66",
+   "bfecbfe2ad4ad4d5",
+   "cbedbf60d83c3222",
+   "f235e8271099cd02"
+  ]
+ }
+}

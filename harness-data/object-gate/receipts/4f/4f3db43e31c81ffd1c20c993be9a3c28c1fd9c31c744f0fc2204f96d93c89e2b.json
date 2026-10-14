@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4f3db43e31c81ffd1c20c993be9a3c28c1fd9c31c744f0fc2204f96d93c89e2b",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "우물(돌 둘레·눈 지붕·두레박)",
+ "label": "snow-north/sn-well",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "snow-covered well with roof and bucket",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof shows a clear foreshortened snow slope (rows 1-7) and the well basin displays an elliptical opening (rows 17-21) consistent with top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6378
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "well with snow-covered roof and stone basin",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered roof slope is shown from above across rows 0-7, and the well opening is drawn as an elliptical basin opening (rows 17-21) showing the interior in proper 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6552
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "well with snow-covered roof and stone basin",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered roof displays its sloped top surface across rows 1-8 (about 7 rows tall), and the well basin shows a clear top-down elliptical opening into the dark water (rows 17-21, 5 rows tall) above the south stone wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5932
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "covered well with snow roof and stone basin",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered roof slope is foreshortened across rows 0-7, and the stone well basin clearly exposes an elliptical opening (rows 17-22) viewed from above in proper 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6059
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.507Z",
+ "cells": {
+  "16": [
+   "13e98a2c37fadb50",
+   "8b3afdbb1cfb74f1",
+   "f53afa0abeee8340",
+   "f6d29aca47dc0492"
+  ],
+  "24": [
+   "06d5d48d084c89e6",
+   "10c2ffdde4a84127",
+   "1965b2e471e298e9",
+   "5caec1c1faa7ee92",
+   "5d4e47e51b43dd92",
+   "5df73f010bffb40b",
+   "6d249cb71df2c12c",
+   "6d87e9756ef631ec",
+   "6dc6574ff32e4c30",
+   "7ba99c4fe97e321f",
+   "84a46042ce8744c8",
+   "99e7842468056e59",
+   "9ac3b358a0accb99",
+   "a5413aa669d0d0f1",
+   "a8e79379da085da9",
+   "b0f1a0c270502111",
+   "b35cb48e4bf4a4b0",
+   "b63a922c06291f9e",
+   "bab547744290c208",
+   "e319a83d849d707b",
+   "ed278a323872059f",
+   "f3ac3a9f851f3eef",
+   "faf181a553e99dd8",
+   "ff9087e40cec4cb1"
+  ],
+  "32": [
+   "9624b9b7b686cc1f"
+  ],
+  "48": [
+   "0231b739b1232d2c",
+   "1d773c614adc792f",
+   "5d159bd04016756a",
+   "7c4cd64d95bf92d8",
+   "d6807bef6ff4a329",
+   "f0cefc4f20bd701b"
+  ]
+ }
+}

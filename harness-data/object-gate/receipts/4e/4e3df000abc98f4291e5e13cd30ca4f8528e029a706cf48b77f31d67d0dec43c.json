@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4e3df000abc98f4291e5e13cd30ca4f8528e029a706cf48b77f31d67d0dec43c",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "나무 궤짝",
+ "label": "desert-east/de-crate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden crate",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the crate is clearly depicted across rows 2-6 with lighter wood and a highlighted front edge, while the front face spans rows 7-14 in typical 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9009
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden crate",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid is clearly visible from rows 2 to 6 (5 rows tall) with plank details and an edge highlight, while rows 7 to 14 form the front south-facing side.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3816
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden crate",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid is visible across rows 2-6 (lighter wood with vertical planks and a front rim highlight) above the south-facing front panel spanning rows 7-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5426
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden crate",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid of the wooden crate is clearly visible from above across rows 2-6 (approx. 5 pixel rows) with distinct lighting and planks, above the south front face extending from row 7 to 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4887
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.225Z",
+ "cells": {
+  "16": [
+   "e9f1d286c3229cab"
+  ],
+  "24": [
+   "46bae5e056c0fbcb",
+   "4ad74b9aeba4eff6",
+   "74a45a9bbc48c76c",
+   "9c81186ea023b38b",
+   "d4509c7000fb0284",
+   "ea8b32591c728cce"
+  ],
+  "32": [
+   "14342be5ace6a09f",
+   "393cfc5029b9ddff",
+   "84f38fd03efade0c",
+   "9bb142c09067d40e",
+   "e48d57eadad28668",
+   "e9c2bb5754ac2450"
+  ],
+  "48": [
+   "4420abc37e713917",
+   "67cc54235c185f8d",
+   "77c7c05e1348a4f7",
+   "83903262488823e5",
+   "bf72914e657b6111",
+   "c28e28f091875bff"
+  ]
+ }
+}

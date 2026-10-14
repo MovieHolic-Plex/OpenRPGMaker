@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2dd4075b1cc5262006e08e6edee95ae81e8ba08c8d552969b52f144fb4af1188",
+ "width": 32,
+ "height": 16,
+ "kind": "round_body",
+ "name": "통 두 개와 상자",
+ "label": "snow-north/sn-barrels",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "two barrels and a box",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both barrels show their top ellipses (around 3-4 rows tall) and the adjacent box clearly displays a 5-row deep top surface and south front face in classic 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7166
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "barrels (two wooden barrels beside a box)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrels are drawn in pure front elevation without foreshortened elliptical top caps or visible top surfaces. The white patches appear flat on the front face rather than as a top surface viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9390
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two barrels and a box (composite cluster)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrels are drawn from a straight-on front elevation with no visible elliptical top cap showing the circular top surface from a 3/4 top-down angle (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7056
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "two barrels and a box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The two barrels are rendered from a straight side/front elevation with rounded tops and front specular highlights, showing no foreshortened elliptical top cap surface (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8298
+  }
+ ],
+ "decidedAt": "2026-10-14T01:19:07.397Z",
+ "cells": {
+  "16": [
+   "b93a017d8877e0fc",
+   "e5af0c37bca73342"
+  ],
+  "24": [
+   "38f20b8917c5954f",
+   "40d42c8d159ce887",
+   "44f2c18b903835cb",
+   "47026b045f4396b0",
+   "5120427658a21737",
+   "55010bac435b022f",
+   "9f2d78fb5f76e2bb",
+   "b155765edf95ac55",
+   "b48584091f0f6d9b",
+   "bf098840924666b7",
+   "e34df1e322eb15b5",
+   "fdf93aadf2e8f164"
+  ],
+  "32": [
+   "796b72daf42874f3",
+   "9307bee449d57d57"
+  ],
+  "48": [
+   "2fe69d8ed6c8fec1",
+   "3bd16b37bc9c64ab",
+   "429c845eabd40ef4",
+   "77dd48527fc7c90d",
+   "81360658a78819f2",
+   "d0873989b6e6bbe5"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "478fbc2c6ef971c9116387dbcc34bc287318c6aaf368757e5661910cefeb822f",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "얼음 동굴 벽면(윗줄, 얼음 벽돌·바위)",
+ "label": "snow-north/sn-wall-ice-u",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ice cave wall texture",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ice cave wall face terrain tile with faceted ice blocks/bricks. As standard wall face terrain, it correctly depicts the vertical surface of the wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4014
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ice cave wall face tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile depicting blue ice bricks/crystals with dark mortar, designed as a vertical surface for 3/4 view dungeon walls.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3713
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ice cave wall tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ice brick and crystal wall face terrain tile seamlessly tileable as a vertical cave wall surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4055
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ice cave wall surface",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting an ice cave wall face composed of ice rocks/bricks; correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3441
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.162Z",
+ "cells": {
+  "16": [
+   "43c80d4d8b6e0970"
+  ],
+  "24": [
+   "05da7ea26d3ce997",
+   "530f0c423f060475",
+   "72c87507f802c4ae",
+   "7520d9cbaf9a08fa",
+   "93223c767c8b6e2c",
+   "d98313bce3e81f38"
+  ],
+  "32": [
+   "1ba0b074fddda307",
+   "5cd1528e2cbd6e48",
+   "602ec93c90e2517e",
+   "a129aed18330ad00",
+   "cf03a758c7ff0183",
+   "e00c6033f6f552c8"
+  ],
+  "48": [
+   "3701e143afc651e2",
+   "4fb0158062ad9414",
+   "657a8d3e7df6bcc0",
+   "942ac1f4a57625dd",
+   "b6afed8c771d5de9",
+   "ec9bc0e47e840876"
+  ]
+ }
+}

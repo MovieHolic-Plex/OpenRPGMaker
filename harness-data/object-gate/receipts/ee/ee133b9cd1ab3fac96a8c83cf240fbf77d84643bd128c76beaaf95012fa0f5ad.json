@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ee133b9cd1ab3fac96a8c83cf240fbf77d84643bd128c76beaaf95012fa0f5ad",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "사막 덤불",
+ "label": "desert-east/de-scrub",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "desert bush foliage and base stems",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bush is drawn as a flat side-view sprite typical of a 2D platformer. The four brown stem legs at the bottom (rows 12-14) stand in a straight horizontal line, allowing the viewer to look straight underneath the bush horizontally rather than looking down from a 45-degree angle. The foliage silhouette is a purely vertical side profile with no foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9918
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "desert bush canopy and stems",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bush is drawn in a flat side-view/platformer elevation. All ground contact stems terminate along the same horizontal baseline (row 13) without depth separation, and the foliage is rendered as a flat vertical silhouette with 2D lighting rather than foreshortened top-down volume.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9459
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bush foliage and stems",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bush is drawn as a flat 2D side/front silhouette with an upper lobe (cloud-like silhouette) rather than a foreshortened top surface seen from above. Furthermore, all four base stems terminate along the exact same horizontal baseline (row 13), typical of a side-scroller front elevation.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8854
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bush canopy",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush canopy displays a top surface across rows 3-5 with top-down lighting and curvature, transitioning into the front face below down to the base stems at row 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6333
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.221Z",
+ "cells": {
+  "16": [
+   "bd52c546ec218f9f"
+  ],
+  "24": [
+   "0cf65677e2cf4ad8",
+   "1393f415ac9e4c0f",
+   "14b40fb4719e2655",
+   "28931a6fb56009aa",
+   "68c6a14783562577",
+   "9560aff0be0070dc"
+  ],
+  "32": [
+   "12d87eafa02e9164",
+   "22096995d2644c68",
+   "436b1ad40beb9334",
+   "6563e52700d3fa49",
+   "bf8ba12a1216a682",
+   "f8f19dd3cbaef840"
+  ],
+  "48": [
+   "09b41703272cdab2",
+   "494f919a069c1aa7",
+   "4eab3a7240262888",
+   "8c0d491e19bfdaa5",
+   "9f84ae5a5e44ad9f",
+   "dcb47d31e1ec8957"
+  ]
+ }
+}

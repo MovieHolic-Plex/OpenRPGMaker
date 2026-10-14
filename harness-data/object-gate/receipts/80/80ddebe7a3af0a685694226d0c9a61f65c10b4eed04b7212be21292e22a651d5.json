@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "80ddebe7a3af0a685694226d0c9a61f65c10b4eed04b7212be21292e22a651d5",
+ "width": 32,
+ "height": 16,
+ "kind": "structure",
+ "name": "사암 성벽(세로, 위에서 본 성가퀴 길)",
+ "label": "desert-east/de-wall-v",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sandstone rampart walkway (viewed from above)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts the walkway surface atop a sandstone wall running north-south, flanked by parapet crenellations, fully presenting the horizontal top walkway surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4844
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sandstone rampart walkway with battlements",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a vertical battlement walkway seen from above: the central walkway surface spans the full 16 rows, while the flanking merlons clearly show 3px tall top horizontal surfaces alongside their south-facing drop-offs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6541
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sandstone rampart walkway (wall top path)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile depicts the top surface of a vertical sandstone wall walkway with flanking parapets seen from above in top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5032
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sandstone rampart walkway (vertical path viewed from above)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts the top-down surface of a rampart walkway flanked by parapets/crenellations, with the horizontal walking surface visible across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5265
+  }
+ ],
+ "decidedAt": "2026-10-14T00:12:08.964Z",
+ "cells": {
+  "16": [
+   "1e65ab4b58694ac6",
+   "21a69c9c04600f4c"
+  ],
+  "24": [
+   "0c220dd5e0e89970",
+   "2820433e18b12d0b",
+   "31ce5e9a5872d73d",
+   "45987033fcb53331",
+   "522884eefdf94563",
+   "674ffa43919e4f04",
+   "7096d67b7194c60b",
+   "7b6928b8c8a9b683",
+   "94590d20ac37a2d1",
+   "b0e30134e0aa14bc",
+   "b1661119d9348e6d",
+   "fa59bc9fccf94291"
+  ],
+  "32": [
+   "41bfb2f5e98aea9b",
+   "b7ac0bed4efbd3ac"
+  ],
+  "48": [
+   "23564f5838430a39",
+   "529c61396c8d363f",
+   "583b487f9a1739f4",
+   "8b0b9a6d8743ea94",
+   "95357b7d6dffa08a",
+   "ce60189759e04926"
+  ]
+ }
+}

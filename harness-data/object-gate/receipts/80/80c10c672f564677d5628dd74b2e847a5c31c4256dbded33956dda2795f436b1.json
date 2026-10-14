@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "80c10c672f564677d5628dd74b2e847a5c31c4256dbded33956dda2795f436b1",
+ "width": 48,
+ "height": 32,
+ "kind": "organic",
+ "name": "바위 언덕(노두)",
+ "label": "desert-east/de-outcrop",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stepped rock outcrop / cliff ledge",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The outcrop clearly shows light-colored horizontal top surfaces (e.g. rows 7-11 on the upper tier, rows 12-16 on the right tier, each ~5 rows tall) paired with darker, striated vertical south faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6720
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rock outcrop / tiered rock ledge",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock outcrop features distinct horizontal plateau/top surfaces (each approximately 5 pixel rows tall, rendered in lighter tones at rows 7-11 and 12-16) paired with vertical cliff faces below them, fitting the standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6677
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stepped rock outcrop / cliff hill",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock outcrop is drawn in stepped tiers, each featuring a visible horizontal top surface rendered in light beige (3 to 5 pixel rows tall, e.g. rows 7-11 on the upper tier and rows 13-16 on the right tier) above a stratified vertical south cliff face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9516
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stepped rock outcrop / cliff ledge",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rocky outcrop tiers clearly show horizontal top surfaces (4-5 rows of lighter stone, e.g. rows 7-11 and 12-15) distinct from the shaded, stratified vertical front faces below them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10364
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.222Z",
+ "cells": {
+  "16": [
+   "1ff57e05c837d704",
+   "7bd97cf1b0369ff7",
+   "8edf66ddf865f226",
+   "bdf225c16bdbbc9f",
+   "dae18e445b3d4cba",
+   "dea740626ea72836"
+  ],
+  "24": [
+   "0591b8cf17bcf388",
+   "360ac2313cf227ba",
+   "44721231b23f5600",
+   "514937faeca733eb",
+   "7dc829d298e65462",
+   "827471b583163e46",
+   "add5b0fd9e34b3fb",
+   "e8e03264d100b75b"
+  ],
+  "32": [
+   "02c5c542d346a3ff",
+   "3b0fbe6d9773cc32",
+   "4329aace6babaf3a",
+   "a5c08e08879b5659",
+   "b733129a966ec612",
+   "d68b11e2bab7bb52"
+  ],
+  "48": [
+   "61e1aca0eeb92cad",
+   "f39e8f33f456d100"
+  ]
+ }
+}

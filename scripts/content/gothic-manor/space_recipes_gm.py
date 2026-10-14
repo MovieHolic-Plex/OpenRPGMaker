@@ -39,6 +39,7 @@ WALLSETS = {
     'gallery': _ws('g', '미술관 회녹색 회벽', ['n', 'n', 'n', 'n-sconce', 'n', 'n', 'n', 'n-window']),
 }
 RUNNER = dict(ns='gm-runner-ns', ew='gm-runner-ew', nEnd='gm-runner-n-end', sEnd='gm-runner-s-end')
+CHAPEL_RUNNER = dict(RUNNER, northGap=2)   # 러너는 제단 앞에서 끝난다 — 제단이 러너 끝 가운데에 선다
 
 
 def F(kit, placement, lo, hi, clearance=1, **kw):
@@ -58,36 +59,37 @@ def FL(base, mix=True):
     return dict(tile=base + '-a', **({'mix': [base + '-b']} if mix else {}))
 
 
-PAINTINGS = [F('gm-paint-portrait', 'north-wall', 1, 3, 0, wallTop=1, wallMatch='plain'),
-             F('gm-paint-cursed', 'north-wall', 0, 1, 0, wallTop=1, wallMatch='plain'),
-             F('gm-paint-landscape', 'north-wall', 0, 2, 0, wallTop=2, wallMatch='plain')]
+PAINTINGS = [F('gm-paint-portrait', 'north-wall', 1, 3, 0, wallTop=1, wallMatch='bare'),
+             F('gm-paint-cursed', 'north-wall', 0, 1, 0, wallTop=1, wallMatch='bare'),
+             F('gm-paint-landscape', 'north-wall', 0, 2, 0, wallTop=2, wallMatch='bare')]
 CANDLES = F('gm-candelabra', 'corner', 1, 2, 0, access=False)
-HORROR_DECALS = [D('gm-ov-cobweb', 1, 2), D('gm-ov-dust', 1, 3), D('gm-ov-stain', 0, 1)]
+HORROR_DECALS = [D('gm-ov-dust', 1, 1), D('gm-ov-stain', 0, 1)]
+COBWEB = F('gm-ov-cobweb', 'corner', 1, 1, 0, access=False, corners=['nw'])   # 왼쪽 위 모서리 그림 — 서북 구석에만(바닥 한가운데 줄로 찍히면 끊긴 테두리로 보였다)
 
 SPACES = {
     'hall': dict(
         ko='저택 현관 홀', indoor=True, layout='room', wall='manor',
         size=dict(min=[14, 11], default=[16, 12], max=[40, 30]), floor=FL('gm-fl-marble'), runner=RUNNER,
         defaultDoors=[dict(side='s', kind='double'), dict(side='n', kind='double')],
-        furniture=[F('gm-clock', 'north-wall', 1, 1, 0, wallTop=2, wallMatch='plain'),
+        furniture=[F('gm-clock', 'north-wall', 1, 1, 0, wallTop=2, wallMatch='bare'),
                    *PAINTINGS,
                    F('gm-armor', 'side-wall', 2, 4, 1),
                    F('gm-sofa', 'edge', 0, 1, 1),
                    F('gm-table-round', 'beside', 0, 1, 0, near=['gm-sofa']),
-                   F('gm-candelabra', 'side-wall', 1, 2, 1, access=False),
-                   F('gm-vase-plinth', 'corner', 1, 2, 0, access=False)],
+                   F('gm-candelabra', 'beside', 1, 2, 0, near=['gm-armor'], access=False),
+                   F('gm-vase-plinth', 'corner', 1, 2, 0, access=False), COBWEB],
         decals=HORROR_DECALS,
         variants=dict(
             corridor=dict(ko='저택 복도', size=dict(min=[8, 14], default=[9, 22], max=[14, 44]),
                           floor=FL('gm-fl-parquet'), defaultDoors=[dict(side='s'), dict(side='n')],
                           furniture=[*PAINTINGS, F('gm-armor', 'side-wall', 1, 3, 1), F('gm-candelabra', 'side-wall', 1, 2, 1, access=False),
-                                     F('gm-clock', 'north-wall', 0, 1, 0, wallTop=2, wallMatch='plain')]),
+                                     F('gm-clock', 'north-wall', 0, 1, 0, wallTop=2, wallMatch='bare')]),
             dining=dict(ko='저택 식당', size=dict(min=[14, 11], default=[16, 12], max=[32, 24]),
                         floor=FL('gm-fl-parquet'), runner=None, defaultDoors=[dict(side='s')],
                         furniture=[F('gm-dining-table', 'center', 1, 1, 1, with_=[['gm-chair', 0, -1], ['gm-chair', 1, -1], ['gm-chair', 2, -1], ['gm-chair', 3, -1],
                                                                                   ['gm-chair', 0, 2], ['gm-chair', 1, 2], ['gm-chair', 2, 2], ['gm-chair', 3, 2]]),
-                                   F('gm-wm-n-fireplace', 'north-wall', 1, 1, 1, wallTop=0, wallMatch='plain'),
-                                   *PAINTINGS, F('gm-clock', 'north-wall', 0, 1, 0, wallTop=2, wallMatch='plain'),
+                                   F('gm-wm-n-fireplace', 'north-wall', 1, 1, 1, wallTop=0, wallMatch='plain', align='center'),
+                                   *PAINTINGS, F('gm-clock', 'north-wall', 0, 1, 0, wallTop=2, wallMatch='bare'),
                                    F('gm-candelabra', 'corner', 2, 3, 0, access=False),
                                    F('gm-pot-shelf', 'side-wall', 0, 1, 0)]),
         )),
@@ -95,56 +97,55 @@ SPACES = {
         ko='저택 서재', indoor=True, layout='room', wall='manor',
         size=dict(min=[14, 11], default=[18, 13], max=[36, 28]), floor=FL('gm-fl-parquet'), runner=None,
         defaultDoors=[dict(side='s')],
-        furniture=[F('gm-wm-n-fireplace', 'north-wall', 1, 1, 1, wallTop=0, wallMatch='plain'),
-                   F('gm-bookshelf', 'north-wall', 2, 5, 0, wallTop=2, wallMatch='plain'),
+        furniture=[F('gm-wm-n-fireplace', 'north-wall', 1, 1, 1, wallTop=0, wallMatch='plain', align='center'),
+                   F('gm-bookshelf', 'north-wall', 2, 5, 0, wallTop=2, wallMatch='bare'),
                    F('gm-bookshelf', 'grid', 2, 6, 0, gapX=0, gapY=1),
                    F('gm-rug-persian', 'center', 1, 1, 0, access=False, with_=[['gm-table-round', 1, 0]]),
                    F('gm-armchair', 'beside', 1, 2, 0, near=['gm-wm-n-fireplace']),
                    F('gm-desk', 'edge', 1, 1, 1, with_=[['gm-chair', 0, 2]]),
                    F('gm-candelabra', 'beside', 1, 2, 0, near=['gm-desk', 'gm-wm-n-fireplace'], access=False),
-                   F('gm-paint-cursed', 'north-wall', 0, 1, 0, wallTop=1, wallMatch='plain')],
+                   F('gm-paint-cursed', 'north-wall', 0, 1, 0, wallTop=1, wallMatch='bare'), COBWEB],
         decals=HORROR_DECALS),
     'bedroom': dict(
         ko='저택 침실', indoor=True, layout='room', wall='manor',
         size=dict(min=[12, 10], default=[16, 12], max=[30, 24]), floor=FL('gm-fl-parquet'), runner=None,
         defaultDoors=[dict(side='s')],
-        furniture=[F('gm-bed', 'north-wall', 1, 1, 1, wallTop=3, wallMatch='plain'),
-                   F('gm-vanity', 'north-wall', 0, 1, 0, wallTop=3, wallMatch='plain'),
+        furniture=[F('gm-bed', 'north-wall', 1, 1, 1, wallTop=3, wallMatch='bare'),
+                   F('gm-vanity', 'north-wall', 0, 1, 0, wallTop=3, wallMatch='bare'),
                    F('gm-wardrobe', 'side-wall', 1, 1, 0),
                    F('gm-candelabra', 'beside', 1, 1, 0, near=['gm-bed'], access=False),
-                   F('gm-paint-portrait', 'north-wall', 0, 2, 0, wallTop=1, wallMatch='plain'),
+                   F('gm-paint-portrait', 'north-wall', 0, 2, 0, wallTop=1, wallMatch='bare'),
                    F('gm-armchair', 'edge', 0, 1, 0),
-                   F('gm-rug-persian', 'center', 0, 1, 0, access=False)],
+                   F('gm-rug-persian', 'center', 0, 1, 0, access=False), COBWEB],
         decals=HORROR_DECALS),
     'kitchen': dict(
         ko='저택 부엌', indoor=True, layout='room', wall='stone',
         size=dict(min=[12, 10], default=[16, 12], max=[30, 24]), floor=FL('gm-fl-tile'), runner=None,
         defaultDoors=[dict(side='s')],
-        furniture=[F('gm-stove', 'north-wall', 1, 1, 1, wallTop=3, wallMatch='plain'),
-                   F('gm-pot-shelf', 'north-wall', 1, 3, 0, wallTop=3, wallMatch='plain'),
+        furniture=[F('gm-stove', 'north-wall', 1, 1, 1, wallTop=3, wallMatch='bare'),
+                   F('gm-pot-shelf', 'north-wall', 1, 3, 0, wallTop=3, wallMatch='bare'),
                    F('gm-kitchen-table', 'center', 1, 2, 1, with_=[['gm-chair', 0, 2]]),
                    F('gm-barrel', 'corner', 1, 2, 0),
                    F('gm-barrel', 'beside', 1, 3, 0, near=['gm-barrel'])],
-        decals=[D('gm-ov-stain', 1, 2, near=['gm-kitchen-table']), D('gm-ov-dust', 2, 3)]),
+        decals=[D('gm-ov-stain', 1, 1, near=['gm-kitchen-table']), D('gm-ov-dust', 1, 1)]),
     'cellar': dict(
         ko='지하실·포도주 창고', indoor=True, layout='room', wall='stone',
         size=dict(min=[12, 10], default=[16, 12], max=[36, 28]), floor=FL('gm-fl-flag'), runner=None,
         defaultDoors=[dict(side='n')],
-        furniture=[F('gm-wine-rack', 'north-wall', 2, 4, 0, wallTop=3, wallMatch='plain'),
+        furniture=[F('gm-wine-rack', 'north-wall', 2, 4, 0, wallTop=3, wallMatch='bare'),
                    F('gm-wine-rack', 'grid', 2, 4, 0, gapX=1, gapY=1),
-                   F('gm-barrel', 'corner', 2, 3, 0),
+                   F('gm-barrel', 'corner', 1, 3, 0),
                    F('gm-barrel', 'beside', 1, 3, 0, near=['gm-barrel']),
-                   F('gm-candelabra', 'edge', 1, 1, 0, access=False)],
-        decals=[D('gm-ov-stain', 1, 2), D('gm-ov-cobweb', 1, 2), D('gm-bones', 0, 2), D('gm-ov-puddle', 1, 2)]),
+                   F('gm-candelabra', 'edge', 1, 1, 0, access=False), COBWEB],
+        decals=[D('gm-ov-stain', 1, 1), D('gm-bones', 0, 1), D('gm-ov-puddle', 1, 1)]),
     'chapel': dict(
         ko='예배당 안', indoor=True, layout='room', wall='chapel',
-        size=dict(min=[13, 12], default=[17, 16], max=[30, 30]), floor=FL('gm-fl-flag'), runner=RUNNER,
+        size=dict(min=[13, 12], default=[17, 16], max=[30, 30]), floor=FL('gm-fl-flag'), runner=CHAPEL_RUNNER,
         defaultDoors=[dict(side='s', kind='double')],
-        furniture=[F('gm-altar', 'north-wall', 1, 1, 1, wallTop=4, wallMatch='plain'),
-                   F('gm-candelabra', 'beside', 2, 2, 0, near=['gm-altar'], access=False),
+        furniture=[F('gm-altar', 'north-wall', 1, 1, 1, wallTop=4, wallMatch='bare', align='center', with_=[['gm-candelabra', -1, 0], ['gm-candelabra', 3, 0]]),
                    F('gm-pew', 'grid', 4, 10, 0, gapX=2, gapY=1),
-                   F('gm-statue-gargoyle', 'corner', 0, 2, 0, access=False)],
-        decals=[D('gm-ov-dust', 1, 3), D('gm-ov-cobweb', 1, 2)]),
+                   F('gm-statue-gargoyle', 'corner', 0, 2, 0, access=False), COBWEB],
+        decals=[D('gm-ov-dust', 1, 1)]),
     'crypt': dict(
         ko='지하 납골당', indoor=True, layout='room', wall='stone',
         size=dict(min=[12, 10], default=[16, 13], max=[32, 26]), floor=FL('gm-fl-flag'), runner=None,
@@ -154,22 +155,22 @@ SPACES = {
                    F('gm-coffin-open', 'edge', 0, 1, 0),
                    F('gm-urn', 'beside', 1, 2, 0, near=['gm-sarcophagus']),
                    F('gm-statue-gargoyle', 'corner', 0, 2, 0, access=False),
-                   F('gm-candelabra', 'corner', 1, 2, 0, access=False)],
-        decals=[D('gm-bones', 1, 3), D('gm-ov-cobweb', 1, 2), D('gm-ov-puddle', 0, 2)]),
+                   F('gm-candelabra', 'corner', 1, 2, 0, access=False), COBWEB],
+        decals=[D('gm-bones', 1, 2), D('gm-ov-puddle', 0, 1)]),
     'gallery': dict(
         ko='미술관 전시실', indoor=True, layout='room', wall='gallery',
         size=dict(min=[14, 11], default=[20, 13], max=[44, 30]), floor=FL('gm-fl-marble'), runner=None,
         defaultDoors=[dict(side='s', kind='double'), dict(side='e')],
-        furniture=[F('gm-paint-portrait', 'north-wall', 2, 5, 0, wallTop=1, wallMatch='plain'),
-                   F('gm-paint-landscape', 'north-wall', 1, 3, 0, wallTop=2, wallMatch='plain'),
-                   F('gm-paint-cursed', 'north-wall', 1, 1, 0, wallTop=1, wallMatch='plain'),
+        furniture=[F('gm-paint-portrait', 'north-wall', 2, 5, 0, wallTop=1, wallMatch='bare'),
+                   F('gm-paint-landscape', 'north-wall', 1, 3, 0, wallTop=2, wallMatch='bare'),
+                   F('gm-paint-cursed', 'north-wall', 1, 1, 0, wallTop=1, wallMatch='bare'),
                    F('gm-display-case', 'grid', 2, 4, 1, gapX=3, gapY=2),
                    F('gm-museum-bench', 'center', 1, 1, 1),
                    F('gm-bust-plinth', 'side-wall', 2, 4, 1),
                    F('gm-armor', 'side-wall', 0, 2, 1),
                    F('gm-stanchion', 'edge', 1, 2, 0),
                    F('gm-vase-plinth', 'corner', 1, 2, 0, access=False)],
-        decals=[D('gm-ov-dust', 1, 3), D('gm-ov-cracks', 0, 1)]),
+        decals=[D('gm-ov-dust', 1, 1), D('gm-ov-cracks', 0, 1)]),
 }
 
 
@@ -284,7 +285,7 @@ def main(check=False):
         o['floor'] = clean_floor(sp['floor'], key)
         if o['floor'] is None: raise SystemExit(f'{key} 바닥이 굽기에 없다')
         if sp.get('runner'):
-            r = {k: v for k, v in sp['runner'].items() if ok(v, f'{key} 러너')}
+            r = {k: v for k, v in sp['runner'].items() if not isinstance(v, str) or ok(v, f'{key} 러너')}
             if 'ns' in r or 'ew' in r: o['runner'] = r
         o['furniture'] = clean_furniture(sp['furniture'], key)
         o['decals'] = []

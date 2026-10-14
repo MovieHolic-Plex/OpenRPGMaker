@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d691024995dccea5ca26b7e550fbc128447273545519270814adb122571d68f0",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "따뜻한 천장(집·궁전) · 천장 — 방 서쪽 경계(테 동쪽)",
+ "label": "desert-east/de-ceil-warm-w",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ceiling boundary terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ceiling terrain tile with an eastern border edge, correctly representing planar terrain across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5607
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ceiling border tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat autotile ceiling/edge boundary terrain tile viewed from directly above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4234
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ceiling border tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ceiling/roof terrain tile with vertical border trim; valid terrain autotile element.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4006
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ceiling border tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat overhead ceiling/boundary terrain tile with no standing volume.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6849
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.211Z",
+ "cells": {
+  "16": [
+   "35decbbdcbc53c7d"
+  ],
+  "24": [
+   "10c6d0bdcc0b187d",
+   "4e9ee32ddf6dd969",
+   "a758785be5ff6361",
+   "ea6ae9e38c4420d1",
+   "edf9b71150a3086a",
+   "f4b31555e3d4aad4"
+  ],
+  "32": [
+   "61d2d2c9bfe5a023",
+   "76edce9f2f10b540",
+   "9256b1ba84a706f2",
+   "a5feecadff53343d",
+   "e4e4731b93366858",
+   "feaea773b318c72f"
+  ],
+  "48": [
+   "841e03cbe5c61a71",
+   "89bbe6a1e56a3648",
+   "cbd8736027462928",
+   "cf415637c70f38b8",
+   "d49349197dcbb99f",
+   "dfdca715ed75b524"
+  ]
+ }
+}

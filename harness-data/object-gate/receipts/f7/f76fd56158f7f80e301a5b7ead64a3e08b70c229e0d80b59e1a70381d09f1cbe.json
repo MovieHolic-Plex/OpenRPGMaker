@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f76fd56158f7f80e301a5b7ead64a3e08b70c229e0d80b59e1a70381d09f1cbe",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "사암 포석",
+ "label": "desert-east/de-flag",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sandstone paving stones",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting sandstone paving stones on the ground.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5465
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sandstone paving stones",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing sandstone flagstones/paving stones viewed from above, with appropriate edge beveling and mortar lines.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5164
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sandstone paving stones",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Sandstone paving stone ground tiles viewed from above with mortar lines; valid terrain tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5030
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sandstone paving stones",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting sandstone flagstones/paving stones viewed from above as floor surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4364
+  }
+ ],
+ "decidedAt": "2026-10-14T00:10:56.815Z",
+ "cells": {
+  "16": [
+   "731d3f9ae98e8cf0"
+  ],
+  "24": [
+   "58b862b972000d73",
+   "99fac530553a4bce",
+   "a21432f0102cf3d2",
+   "a809ee58c4cabe7c",
+   "c0330f7336747572",
+   "cccd03ca6ca72b0b"
+  ],
+  "32": [
+   "43d6a87e3ddeb68e",
+   "6e54e66ebf27708d",
+   "70b3df06d7585be9",
+   "aec1dbb10a82067d",
+   "c5c2bb8dc3d686db",
+   "eec405efcd118bc8"
+  ],
+  "48": [
+   "3716aec5997d936b",
+   "6fdf0e4613c65a6d",
+   "7bb06033451aca1a",
+   "c31031f3b81d6e7e",
+   "de4d420ebbd6b821",
+   "f3df0479e3e739d5"
+  ]
+ }
+}

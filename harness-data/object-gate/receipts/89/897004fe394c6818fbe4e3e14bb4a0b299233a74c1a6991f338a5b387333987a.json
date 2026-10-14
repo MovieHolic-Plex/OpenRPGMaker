@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "897004fe394c6818fbe4e3e14bb4a0b299233a74c1a6991f338a5b387333987a",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "마른 풀 포기",
+ "label": "desert-east/de-tuft",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "clump of dry grass",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The grass stalks are drawn as flat vertical strips rising from a straight horizontal base, with no circular/elliptical ground footprint or foreshortened top-down spread. It is drawn as a flat 2D side elevation.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6064
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dry grass clump",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The grass tuft and base are drawn entirely as a 2D side elevation with vertical stalks rising from a flat horizontal base line, showing no depth, ground footprint, or foreshortened top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7242
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "clump of dry grass",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The dry grass stalks rise as flat vertical strips from a flat 2px horizontal base with no visible ground plane depth or foreshortened top surfaces, resembling a 2D side-scroller grass tuft.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4263
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "clump of dry grass",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The grass stalks and base are drawn in pure front elevation with straight vertical columns on a flat horizontal base, showing no elliptical footprint, depth, or top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6655
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.222Z",
+ "cells": {
+  "16": [
+   "b0c756cebb4b13fd"
+  ],
+  "24": [
+   "0c4abb43e652377b",
+   "960a8a7bc15b01a7",
+   "9ac80e080381ca5d",
+   "d1bb865ac813e33d",
+   "d7506f9aab34765c",
+   "db287bcd1768df16"
+  ],
+  "32": [
+   "245f4e3d698e9344",
+   "2fde3d1dc7dc1d85",
+   "85bec1a8fc9112a8",
+   "b557da7b2d4ca8d2",
+   "ce406804c591c0bb",
+   "e1416919e3f2990b"
+  ],
+  "48": [
+   "5e8785debf1af5d3",
+   "6537251b939a6885",
+   "967fc70c7620bfbd",
+   "adc317ae9566426f",
+   "c2e1d8377b387106",
+   "ed36d7814826657a"
+  ]
+ }
+}

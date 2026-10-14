@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d4e281c2e11728b3ff67c3cb0845c7004b541b60c709ba71ca2280052cf01f22",
+ "width": 32,
+ "height": 16,
+ "kind": "structure",
+ "name": "언 여물통",
+ "label": "snow-north/sn-trough",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden trough with frozen water",
+    "kind_matches": false,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a feed/water trough (a container), not a large structure such as a gate, pavilion, door, or building. While the 3/4 perspective is drawn correctly with a visible opening and frozen water surface (rows 5-7), it fails because the kind does not match.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail"
+   ],
+   "ms": 16705
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "frozen wooden trough",
+    "kind_matches": false,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a frozen trough (container/prop), not a large structure. However, in terms of perspective, it clearly shows its interior opening/frozen surface (rows 5-7, 3px tall) and its south front face (rows 9-14).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail"
+   ],
+   "ms": 5649
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden trough with frozen water/ice",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The frozen trough clearly displays its top opening with 3 rows of ice (rows 5-7) plus an ice mound on the back rim, alongside the front rim (row 8) and front face (rows 9-14), correctly rendered in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10783
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "frozen trough",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a frozen trough/manger (container), not a large structure (gate, pavilion, sealed door, building). Evaluated as a structure it fails because it has no top surface (only a 1px rim), although as a container it shows a 3px frozen opening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "윗면 0행 < 3"
+   ],
+   "ms": 15815
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.509Z",
+ "cells": {
+  "16": [
+   "3fc791aa1195d7f2",
+   "a9fd35f2cf6fba99"
+  ],
+  "24": [
+   "162775684916bc73",
+   "1d92c77185bc235d",
+   "586f5d03551243e6",
+   "72e9cdbe41b69584",
+   "908f143533b7a5ca",
+   "943745c1ee1e2570",
+   "a421287f5e1af754",
+   "a8b8c35b55556399",
+   "b67533e52f1638a0",
+   "c050b4d5eef67c10",
+   "c800339d3a01a131",
+   "cfcaaf0b7cefa937"
+  ],
+  "32": [
+   "9795cbece3054101",
+   "d64a2da6d1992cd0"
+  ],
+  "48": [
+   "00ba473dab0b3c69",
+   "239162d9e9ea0691",
+   "47e0d5e22a3f1911",
+   "56743464cdce4a96",
+   "b680d4af335b3f53",
+   "edc0cf0b0f24ba68"
+  ]
+ }
+}

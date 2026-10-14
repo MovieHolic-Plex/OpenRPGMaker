@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "07f15e8218aa4a40c88e5c7295b23ae4222fad002ffdb361c3bfea84239d0b96",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "여관 좁은 선반",
+ "label": "desert-east/de-shelf-inn",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden shelving unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire shelf is drawn in pure front elevation. The top horizontal frame consists of only a 2px light band (rows 1-2) with an underside shadow, which is merely an edge cap rather than a foreshortened top surface. The interior shelves and stored items also show no top surfaces or 3/4 depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9312
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "narrow wooden shelving unit / bookcase with three compartments",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire bookcase is rendered in pure architectural front elevation: the vertical side uprights run all the way to row 0 framing a front lintel, none of the shelf surfaces show horizontal depth from above, and the items inside (folded cloth, pyramid stack, woven basket) are drawn completely flat from the front.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7374
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "narrow wooden shelving unit with three open shelves holding folded linens, stacked items, and a basket",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shelving unit is drawn as a flat architectural front elevation. The top band at rows 1-2 is only a 2px cap/rim, and none of the internal shelf surfaces show top depth foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6095
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall wooden shelving unit with three open compartments",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet/shelf is drawn in pure front elevation. The top cap across rows 1-2 is only a 2px edge/cornice with no visible receding top surface, and the shelf interiors and dividers show no floor depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11211
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.217Z",
+ "cells": {
+  "16": [
+   "44833ef4fe415cec",
+   "694c23417e83e740"
+  ],
+  "24": [
+   "08785f8bcda5922e",
+   "2bcd553505c8fa0a",
+   "5c0ecc543730c5ec",
+   "6f92a728079251da",
+   "ade0f8dadaa3527b",
+   "ae04058e5467c6bc",
+   "c833e7089f03be8b",
+   "d5e2dabb104b8231",
+   "d8d9ae03bbf3f8fa",
+   "ea2f7301833d23ea",
+   "fa3a6f0601a56f39",
+   "fb1d37910d0fe394"
+  ],
+  "32": [
+   "06cc62bcd8de2f71",
+   "878c096dd63fb60e",
+   "9033700ab547900b"
+  ],
+  "48": [
+   "407e29cb38051abb",
+   "4a35f0a75d31b654",
+   "692f410a6f719082",
+   "a15298deb5aec9dc",
+   "b7b0fc90fa855923",
+   "c9db2adbbd9b9019"
+  ]
+ }
+}

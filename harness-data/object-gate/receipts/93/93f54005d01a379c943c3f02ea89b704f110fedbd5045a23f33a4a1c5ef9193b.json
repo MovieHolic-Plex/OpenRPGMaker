@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "93f54005d01a379c943c3f02ea89b704f110fedbd5045a23f33a4a1c5ef9193b",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "무너진 아치 문",
+ "label": "desert-east/de-ruin-arch",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ruined stone archway",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The arch and pillars are drawn as completely flat 2D cutouts in pure front elevation (platformer style). Neither the pillar capitals, broken ends, nor the arch show any depth, top surface, or barrel vault soffit receding along the Y/Z axis.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9244
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ruined stone archway with two pillars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure 2D front elevation. The right ruined pillar terminates at row 10 with a flat horizontal outline and shows 0px of horizontal top surface, and the left pillar and curving arch show only their front faces with no 3/4 perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9198
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "broken stone arch gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The broken stone arch and pillars are drawn strictly in front elevation. The right broken pillar ends abruptly at row 9 with a straight horizontal outline and 0px of visible top surface. The capitals and stone blocks are viewed straight-on with no top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7278
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ruined stone archway",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The arch and pillars are drawn strictly as a 2D flat architectural front elevation with no depth along the north-south axis. The pillar capitals at rows 10-15 have flat 0-1px horizontal boundary lines with zero visible top surfaces, and the arch structure shows no top depth or jamb thickness.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7598
+  }
+ ],
+ "decidedAt": "2026-10-14T00:24:39.344Z",
+ "cells": {
+  "16": [
+   "07d01ace611b2001",
+   "3719a848e8e10551",
+   "43c90f77a7be7f57",
+   "64580585842faead",
+   "690cfa1daa0e26d2",
+   "7fed653dfa14a121",
+   "8806faf8cda9fb37",
+   "cd7187f83ba59d4a",
+   "ec29703ef93757c0"
+  ],
+  "24": [
+   "15c52cf4e4b74198",
+   "62127f33def569ca",
+   "a7d0f1ffe0f4cc5f",
+   "a8dfa93bb340e989"
+  ],
+  "32": [
+   "077a6a3aca897448",
+   "08c10c33b3fc880f",
+   "1008c2a218e8d826",
+   "178b0ba9eab99b71",
+   "2ada3a3e99fb6084",
+   "3385bf84bec27751",
+   "4aee7ab44b22d4d0",
+   "4b71d35591f3f809",
+   "52b8ba94a252a8a8",
+   "581afb2886408c22",
+   "67cfa31df897e974",
+   "7fbdffac19568ea0",
+   "94b1563f55dd4a3f",
+   "958d2775e925b083",
+   "af8eab50fc33f8f6",
+   "b434fb918cddca17",
+   "baa0641b6f19b177",
+   "bf5ccb4ba3fcc430",
+   "e42de0cc9c522cfd",
+   "e8491ac1dcb7d33e",
+   "ea7bd9ad69ad53da",
+   "ec44cf11bd032c4a",
+   "fa301ff6d470e4f8",
+   "fac4cf3db4414b8a"
+  ],
+  "48": [
+   "d89c659c27605da5"
+  ]
+ }
+}

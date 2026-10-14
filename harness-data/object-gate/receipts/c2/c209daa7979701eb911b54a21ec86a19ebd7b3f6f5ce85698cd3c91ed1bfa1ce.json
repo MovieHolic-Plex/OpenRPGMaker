@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c209daa7979701eb911b54a21ec86a19ebd7b3f6f5ce85698cd3c91ed1bfa1ce",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "잔잔한 모래(변주)",
+ "label": "desert-east/de-sand-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sand ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A full 16x16 flat sand terrain tile with subtle texturing, functioning as a ground surface seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 19507
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sand ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat sand ground terrain texture filling the entire 16x16 tile, viewed top-down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3757
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sand terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing a textured sand surface across the entire 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4907
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sand ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing a textured sand surface filling the entire 16x16 canvas.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3639
+  }
+ ],
+ "decidedAt": "2026-10-14T00:10:56.783Z",
+ "cells": {
+  "16": [
+   "82108d2bd8fca547"
+  ],
+  "24": [
+   "1ee33661b00dddb3",
+   "1ee758b4b3a8b063",
+   "62456b6998f930f8",
+   "6914491b0e5c9c4d",
+   "b80b62df389e4faa",
+   "d405bc9490533f83"
+  ],
+  "32": [
+   "1a82b3228087aedd",
+   "2e626da40e6cd439",
+   "54000434c52343c9",
+   "7258ceb10d8cdf36",
+   "797d3b5ef9c4de8f",
+   "932bf7923dbaa0fc"
+  ],
+  "48": [
+   "1686f9c4a6832610",
+   "243cbb802421e9cc",
+   "92fc4d5f792e6775",
+   "a2175a564250f925",
+   "cdc859abcecebefa",
+   "fe3b13f5cff8cfe3"
+  ]
+ }
+}

@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d5ea3e0c5afe826ef79b28cbae5a1e57dd2c22b6a17123fd4183c39d7cf077a5",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "수건걸이",
+ "label": "desert-east/de-towel-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "towel rack frame with hanging towel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The towel rack and hanging towel are drawn purely in front elevation; neither the top crossbar, towel fold, nor the bottom base beam show a visible horizontal top surface foreshortened from above (the bottom beam is only 1-2px tall, representing a front face).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8260
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "towel rack frame with hanging towel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire towel rack and hanging towel are drawn in a flat front elevation. The horizontal bars and base show only 1px lines without any foreshortened top surface, and the towel hangs as a flat front-facing rectangle with a straight horizontal stripe.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8472
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "towel rack with hanging towel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The towel rack and draped towel are drawn in a completely flat front elevation with no visible top surface on the frame, shelf, or towel fold (only 1px edge lines).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7732
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "towel rack and towel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire towel rack and the hanging towel are drawn in pure front elevation. Neither the top bar, the towel fold, nor the lower shelf/frame shows a foreshortened top surface (only 1px horizontal bands).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8104
+  }
+ ],
+ "decidedAt": "2026-10-14T00:23:19.736Z",
+ "cells": {
+  "16": [
+   "68bdf958d2dbdee3"
+  ],
+  "24": [
+   "1fffc4fdbd21d35b",
+   "36cc29814bd60077",
+   "9bd0e8a5973ddc52",
+   "d4a875e115c3f326",
+   "f8edda2ecabb763b",
+   "ff98b201516f3617"
+  ],
+  "32": [
+   "03c5317af25bc29d",
+   "408c81d7a06af53f",
+   "51cb4a3d2bd775e1",
+   "552afb50c9e14459",
+   "875bf6c1cae95e48",
+   "88992b7ca321cd2f"
+  ],
+  "48": [
+   "4fd8ff487e9b9dc3",
+   "63026f4940dc8d35",
+   "89dd74e753d7cdf8",
+   "9055d92e8122608b",
+   "90e2c304cee11c03",
+   "b9083dcbc16420b6"
+  ]
+ }
+}

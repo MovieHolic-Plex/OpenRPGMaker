@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "66e1f750b030e4d7322c2f8d0ddfffbe153b6fc91415b71caaaaf5378db1887d",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "원뿔 가죽 천막(장대 끝 + 연기 구멍)",
+ "label": "snow-north/sn-tent",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "conical teepee tent",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The teepee is drawn in a pure front/side elevation. The smoke hole at the top lacks any top-down elliptical opening (only a 2px flat dark silhouette), the horizontal seams are nearly flat, and the entire structure shows no downward foreshortening or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7051
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "conical leather tent (teepee)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The teepee is drawn from a pure front elevation: the seams across the leather panels are essentially flat horizontal lines, the entrance is a vertical front-facing cutout, and the smoke hole at the top lacks any elliptical opening or visible interior viewed from above (just a 2px flat notch). The entire structure lacks top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6805
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "conical teepee tent",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The teepee is drawn as a flat front elevation: the entrance cutout is a straight vertical profile, the seams across the leather are essentially horizontal lines, and the smoke hole at rows 7-8 is a flat notch rather than an elliptical opening viewed from above (0-2px dark slit). There is no visible top surface or perspective showing the interior of the smoke hole.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7360
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "conical teepee tent",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The teepee is rendered in a pure front elevation view. The horizontal seams and base are drawn essentially flat across rather than bowing downward in elliptical curves, and the smoke hole at rows 6-8 is rendered as a flat silhouette cutout with no visible foreshortened elliptical opening from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5529
+  }
+ ],
+ "decidedAt": "2026-10-14T01:19:07.398Z",
+ "cells": {
+  "16": [
+   "50b363474f6c4117",
+   "52fd680605ab4fd5",
+   "689ad8a78b11e9aa",
+   "9dc474897b432ad8",
+   "b5775a44585722f3",
+   "d432e548593abd59"
+  ],
+  "24": [
+   "1f456be92860efab",
+   "23755b588686641b",
+   "3e3caf240a8126ce",
+   "578942a73267f983",
+   "63325df651e83da5",
+   "890f7963be52f01c",
+   "c1a34ae00c9a68db",
+   "c84b953fba18d22b",
+   "cca2dab260732ea6",
+   "e2a6d40a0ea93d35"
+  ],
+  "32": [
+   "3753896a679cda93",
+   "379366f8fa7582ac",
+   "7f998817cc10cb0f",
+   "e7c85abc1c7220bc"
+  ],
+  "48": [
+   "12ea9ca7a551ebef",
+   "36b77aeedf153337",
+   "9531672dcb6e9032"
+  ]
+ }
+}

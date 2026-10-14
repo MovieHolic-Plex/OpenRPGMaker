@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b1274b82df240ff8879740160535b2143bd7471b8edbbb355cfff2b75da733e9",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "벽 사슴뿔 걸이(나무 판, 머리 없음)",
+ "label": "snow-north/sn-antler-mount",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden wall mount with antlers",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted antler plaque shown flat on the wall plane as appropriate for wall-mounted decoration.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3957
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden plaque with antlers",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted plaque with antlers attached; wall_mounted objects hang flat against the vertical wall face and are correctly rendered from the front.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3400
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden wall plaque with mounted antlers",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a wall-mounted plaque with antlers intended for a north wall; wall-mounted flat objects appropriately show their front face directly toward the camera without a top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4368
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden wall plaque with antlers",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted plaque with antlers mounted flat against the wall, consistent with wall_mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3034
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.164Z",
+ "cells": {
+  "16": [
+   "8483d2efa6fe054a"
+  ],
+  "24": [
+   "0a64510e15bfe2df",
+   "3e1a18a29ee3f3f7",
+   "3f48e1e79fbadcd9",
+   "5be7792812b9efc9",
+   "7ab8f60a39ff3ecc",
+   "98814d765ff6e9fa"
+  ],
+  "32": [
+   "17ff9304508db03d",
+   "781b8a75451cafc5",
+   "97178bac65384ea1",
+   "a6c5730a8de3325c",
+   "e52c612e9ec5fdda",
+   "f59c661ebf47acb1"
+  ],
+  "48": [
+   "722076838a28ec32",
+   "a5e550b38726dc9e",
+   "aad9e37c4309ec4b",
+   "ab5f799559858935",
+   "da029ef32a2d1b03",
+   "f6fb77b0c5daba28"
+  ]
+ }
+}

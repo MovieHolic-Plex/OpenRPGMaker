@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3834cd1749c362d61368a6a97f0b5958ad8c86de511b056188b3cafc40c24fc5",
+ "width": 32,
+ "height": 32,
+ "kind": "flat",
+ "name": "펼친 청색 메달리온 양탄자",
+ "label": "desert-east/de-rug-blue",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "blue medallion rug lying flat on the floor",
+    "kind_matches": true,
+    "top_rows": 26,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire rug is displayed as a flat surface viewed from above spanning rows 3 to 28 with front/back edges and side fringes properly laid out on the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4557
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "blue medallion rug",
+    "kind_matches": true,
+    "top_rows": 26,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rug lies flat on the ground plane, fully visible from above across rows 3-28 with correct top-down JRPG framing.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 21264
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "blue medallion rug lying flat on the floor",
+    "kind_matches": true,
+    "top_rows": 26,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat floor rug viewed from above spanning rows 3 to 28, correctly depicting a floor surface with fringe and a central medallion.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4421
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "blue medallion rug",
+    "kind_matches": true,
+    "top_rows": 26,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rug is drawn flat on the ground viewed from above in top-down projection, spanning rows 3 to 28 across its entire visible surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4572
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.224Z",
+ "cells": {
+  "16": [
+   "867dd3c75c83b089",
+   "8c56aaeb3d2a9cc6",
+   "b5cd59e6163c52b5",
+   "e6b802d9921e0da6"
+  ],
+  "24": [
+   "13b097c6f85b7c3f",
+   "14702b5370634496",
+   "1f5963670d1615ce",
+   "2271bfcc98023923",
+   "2933b6eb9e6b6bf1",
+   "2cb8e65ff1a3d257",
+   "361af9efe86f47ba",
+   "39218ed8465aba70",
+   "3e9b85bc25fb68c0",
+   "3f40afe1d897ae00",
+   "672b1d3ace4ee421",
+   "71f4c17333a7ca60",
+   "723c56049382936c",
+   "8741e5f1cdcc8e77",
+   "8d3d7fdcfbd6b188",
+   "9d82b02c8d4e8c5a",
+   "9f8e51e6d62273a9",
+   "a02790fbdded1e2a",
+   "b0073922c73200e5",
+   "b11f938622062fa7",
+   "c54c0e12cf8fed56",
+   "dc42e53a1c2f0777",
+   "e2b572521ab7429b",
+   "f7843ec85369c632"
+  ],
+  "32": [
+   "bfeddc3dba38b1bc"
+  ],
+  "48": [
+   "043f2cb06b58e150",
+   "1323da84736ea8b4",
+   "27ced6ce03291854",
+   "81af9b73537b93e6",
+   "e696a4a255402e08",
+   "ebd6d2bbe5858c36"
+  ]
+ }
+}

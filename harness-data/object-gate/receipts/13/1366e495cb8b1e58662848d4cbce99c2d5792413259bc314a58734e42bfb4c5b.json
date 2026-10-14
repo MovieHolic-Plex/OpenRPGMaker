@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1366e495cb8b1e58662848d4cbce99c2d5792413259bc314a58734e42bfb4c5b",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "가로대 나무 울타리(남북 한 칸)",
+ "label": "snow-north/sn-fence-v",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 1행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence rail with central post block",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The central block shows only a 1px highlight line along the top without proper foreshortened depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 15006
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical fence post and cross joint",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The central joint shows only a 1px white highlight line at row 6 without a foreshortened top surface, depicting a flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 16990
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden fence rail and post block",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The central block shows only a 1px white highlight line at row 6 above a flat front face, lacking a visible foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 13534
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden fence segment",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence and central block are rendered flatly without a foreshortened top surface, having only a single-pixel highlight row.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 12870
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.508Z",
+ "cells": {
+  "16": [
+   "c4c93e5cf4d23c12"
+  ],
+  "24": [
+   "348632f0679d26e1",
+   "38e464fa854c8e1c",
+   "47ecfce02eb7dc19",
+   "4a408197b715d29e",
+   "b6c95aedc29d9471",
+   "ede5a6b2654ddc5c"
+  ],
+  "32": [
+   "3364e83803835a00",
+   "92b643a53331738c",
+   "bb6450199b2eef30",
+   "c8d536282cc8e950",
+   "d0139da9982eb142",
+   "db02086cdc3b0118"
+  ],
+  "48": [
+   "02b73b3434a6ae1b",
+   "1a7944728cc5a29c",
+   "a3d83e94405e503b",
+   "be690a784e52b9d6",
+   "c8695dd418556415",
+   "e50bb07b1777850b"
+  ]
+ }
+}

@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "35272a857ac6ba9086e7612f3515c0335a14e0cfbe3c0e917917efc05743cd09",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "말아 쌓은 양탄자",
+ "label": "desert-east/de-carpet-rolls",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rolled carpets standing upright",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rolled carpets are drawn as vertical rectangles viewed straight-on from the side (pure front elevation). In 3/4 top-down perspective, standing cylinders must display a foreshortened elliptical top surface, but here the tops terminate in a flat horizontal line with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6667
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rolled carpets standing upright",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rolled carpets are drawn in pure front elevation with completely flat rectangular tops at row 1; there is no elliptical foreshortened top surface showing the rolled ends from above (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5329
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rolled carpets standing in a rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rolled carpets are drawn in pure front elevation with completely flat 1-row tops (row 1) and no elliptical top surfaces visible from above. The wooden rack/frame is also drawn as a flat front view without any visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6086
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "three rolled carpets standing vertically",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The standing carpet rolls have flat horizontal top edges at row 1 with 0 pixel rows of foreshortened circular/elliptical top surface visible. They are depicted in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4856
+  }
+ ],
+ "decidedAt": "2026-10-14T00:27:26.537Z",
+ "cells": {
+  "16": [
+   "12e78bc26ca34489"
+  ],
+  "24": [
+   "81dcdef683477c44",
+   "9d7c19a96ceff8b1",
+   "b44f6bf23d8ae647",
+   "c16922b7b6f24ba6",
+   "ccc559ca8f647f46",
+   "dce446eb52d830b7"
+  ],
+  "32": [
+   "689775bf2c9fdda8",
+   "7ac7d1d6b27977ab",
+   "8a5e3f183958ab1f",
+   "a04f0fa95b1449ce",
+   "c88092d2e43dad89",
+   "f195fbabaf1500cb"
+  ],
+  "48": [
+   "0dd989752997940c",
+   "464c18e4d4cdf9ca",
+   "5f0cb27f3754f4ca",
+   "a4a399ed4457e30c",
+   "d81ada6b4a6656f1",
+   "eb777c0742d8eb83"
+  ]
+ }
+}

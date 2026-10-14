@@ -1,0 +1,138 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f75ad8fbc2fbf99b6c6f06178751ec41b5aa2d86c5421649eb87bf33a45630b8",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "작은 피라미드",
+ "label": "desert-east/de-pyramid-small",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stepped pyramid structure",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each tier clearly shows both its vertical south face (brick-textured riser, ~5px) and its foreshortened horizontal top surface (tread, 6-7px, with the top platform ~12px). Proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8687
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stepped pyramid / ziggurat",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure is drawn in standard 3/4 top-down perspective with each tier displaying a 6-7 pixel row top horizontal surface (tread) and a 5 pixel row vertical south face (riser with brick texture).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6477
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stepped pyramid structure with three tiers and a top capstone",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each tier clearly shows both a horizontal top surface (tread) in light tan (top tier: 13 rows, middle tier: 7 rows, bottom tier: 6 rows) and a vertical south face (riser) in darker brown stone blocks, properly rendered in 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9549
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stepped pyramid (ziggurat)",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each tier of the stepped pyramid clearly displays both a large foreshortened horizontal top terrace (tier 1: rows 6-17, tier 2: rows 23-29, tier 3: rows 36-41) and a textured vertical south face (rows 18-22, 30-35, 42-46) conforming properly to the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5061
+  }
+ ],
+ "decidedAt": "2026-10-14T00:34:24.555Z",
+ "cells": {
+  "16": [
+   "12d9efe38185a2c8",
+   "14a119837eeebc3d",
+   "26e0a1675b12845c",
+   "571c2589a3cacbf9",
+   "6c501e8788411051",
+   "823a46ef027da21e",
+   "9b1d7479956415f1",
+   "c5383da1678329ca",
+   "dcef664c9c4f7930",
+   "fb7a8a835702784e"
+  ],
+  "24": [
+   "462e3237142e0d29",
+   "49b0a0e4d496836d",
+   "4d8d7a59fef88a5d",
+   "594297f5b2b42965",
+   "5ff72cbb20b517f7",
+   "6610e0d247460c2c",
+   "83d086e079c0535a",
+   "85ba40334c8b9279",
+   "ade0a4c207e00a44",
+   "b8c4c71b737676f0",
+   "ba517306ef49076b",
+   "c0e76f23b3160b3f",
+   "e0ec70ad8b2cb5e7",
+   "ecb01505ec814fbf",
+   "efee53e5d26db831",
+   "f0f5ed710768a651",
+   "fc60f949d79a93b4"
+  ],
+  "32": [
+   "3678c55ce0c2d9ad",
+   "38a2b5c4cf8609fb",
+   "63060b679edd93b2",
+   "7ca7a7a651764d1f",
+   "956de3792eddb5d7",
+   "ac9a7ddfbe2fc267",
+   "b03bc9318c20320e",
+   "bc0b40f8b23c9ba1"
+  ],
+  "48": [
+   "234ecc33560de0eb",
+   "2cfeeaf3480e8b07",
+   "4f81d7c0b6c390da",
+   "ac6f9ff323b7e974",
+   "e8efd15848350bdd",
+   "e9017e49d7a4af3d"
+  ]
+ }
+}

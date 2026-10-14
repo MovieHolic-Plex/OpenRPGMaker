@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1f90ad17ea448647a812b76a98fc0d35c30dd26dccd04c1e5f282f93b853edd2",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "등잔 기둥",
+ "label": "desert-east/de-lantern-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lamp stand with lantern head, central pole, and square base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap/dish shows its top-facing surface across rows 1-4 down to the widest rim at row 4, tapering inwards on the underside at rows 5-7. The square base also clearly displays a 4-row deep top horizontal surface (rows 25-28).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7963
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "standing oil lamp post with lantern head and square base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the base plinth (rows 24-28, 4-5 rows deep) and the top lamp head/cap (rows 1-5, 4-5 rows deep) display distinct foreshortened horizontal/top surfaces viewed from above in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8046
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lantern head and column stand",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof/cap of the lantern shows a clear foreshortened top surface across rows 1-4, and the square base also shows its top horizontal surface across rows 25-28.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4097
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "oil lamp stand / lantern pole with top dish, lamp chamber, shaft, and base plinth",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top circular lamp saucer/cap shows an elliptical top surface spanning rows 2 to 5 (~4 source pixel rows), and the base plinth shows a clear top surface spanning rows 25 to 28 before its front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3638
+  }
+ ],
+ "decidedAt": "2026-10-14T00:27:26.538Z",
+ "cells": {
+  "16": [
+   "4375c20ca935b3e2",
+   "d864d824fd754f70"
+  ],
+  "24": [
+   "2e4f50c6e5b0883e",
+   "4ee0770b5a4df916",
+   "7c4ab459e636351c",
+   "803c9d09b81a0eb9",
+   "97e8b1858cbef7d6",
+   "999ce42a0e26b7a3",
+   "ac47e0ed23d70c88",
+   "b32dbc6d8639f51d",
+   "c9b9022e2cf959ea",
+   "d3c79e0096533843",
+   "e22c7bc776b269b3",
+   "e46784f42d0b70da"
+  ],
+  "32": [
+   "34d7380fe755a5cc",
+   "642d88fe01adb989",
+   "bf6a9aa02b28e958"
+  ],
+  "48": [
+   "11ac9ede808672ae",
+   "475db314cc8d7b86",
+   "8cca1985b2a567d6",
+   "adeb230aba3e2a1c",
+   "c346430a9888245b",
+   "c3af673f7cdfae03"
+  ]
+ }
+}

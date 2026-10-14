@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b733fdbb4802eb23357eac255c58ce1f5a507f906e03ba575cc5fa6bdb824a4d",
+ "width": 32,
+ "height": 48,
+ "kind": "frame",
+ "name": "두레박 장대(샤두프)",
+ "label": "desert-east/de-shaduf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal beam and frame of shadoof",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal crossbeam/platform shows a clear top surface spanning rows 14-20 (7 rows tall) with objects resting on it, above a front south face spanning rows 21-23.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4088
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal beam and support frame of shaduf",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal crossbeam shows a clearly foreshortened top surface (rows 14-20, 7 pixels tall) above its south face (rows 21-23, 3 pixels tall), with the shaduf arm, pivot, counterweight, and bucket properly positioned in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4469
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal beam and frame of the shadoof",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The crossbeam clearly shows a foreshortened top surface across rows 14-20 (7 rows tall) with items mounted on it, above a 2-3px front face (rows 21-23).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5660
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal beam structure and posts of a shadoof",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal cross-structure shows a clear top surface spanning rows 14 to 20 (7 pixel rows) with its front face below it on rows 21-23.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4167
+  }
+ ],
+ "decidedAt": "2026-10-14T00:35:53.799Z",
+ "cells": {
+  "16": [
+   "019bc68b59180872",
+   "39003a01a67e062a",
+   "8c0669fd98515e47",
+   "be0307ad5041775e",
+   "e39536fc521c9bf1",
+   "ebde4abec4aa1e25"
+  ],
+  "24": [
+   "17551a63907b66ee",
+   "35c661164603cde0",
+   "36e573dc58afd968",
+   "4279b281647104f8",
+   "521467a21c2f4c7d",
+   "724c9ea391d9fef3",
+   "944e00584c481ac3",
+   "9bba9da66b2b3343",
+   "aa2105ac0963b792",
+   "eecf141bbbe7cfb0",
+   "fae35ef1902b46f6"
+  ],
+  "32": [
+   "0fc92188b88da08e",
+   "57538c9945bc4426",
+   "5d732baf5ab7d4e8",
+   "9cb20d77d7c69db8"
+  ],
+  "48": [
+   "008780c129a3f743",
+   "7ac759fc73d9838b",
+   "ed324bc44473edf7"
+  ]
+ }
+}

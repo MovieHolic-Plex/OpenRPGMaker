@@ -84,6 +84,7 @@ import { HAND_INTERIOR_TOOLS } from "./handInteriorTools";
 import { JP_CITY_TOOLS } from "./jpCityTools";
 import { CAMPUS_TOOLS } from "./campusTools";
 import { MODERN_CITY_TOOLS } from "./modernCityTools";
+import { DESERT_EAST_TOOLS } from "./desertEastTools";
 import { WIZARDING_SPACE_TOOLS } from "./wizardingSpaceTools";
 import { PIRATE_ISLES_TOOLS } from "./pirateIslesTools";
 import { SENGOKU_EDO_TOOLS } from "./sengokuEdoTools";
@@ -92,6 +93,7 @@ import { STEAMPUNK_CITY_TOOLS } from "./steampunkCityTools";
 import { SF_STATION_TOOLS } from "./sfStationTools";
 import { GOTHIC_PLACE_TOOLS } from "./gothicPlaceTools";
 import { PREHISTORIC_TOOLS } from "./prehistoricTools";
+import { SNOW_NORTH_TOOLS } from "./snowNorthTools";
 import { TRANSIT_TOOLS } from "./transitTools";
 import { AI_DOC_TOOLS } from "./aiDocTools";
 import { RETRO_CHOREOGRAPHY_TOOLS } from "./retroChoreographyTools";
@@ -234,6 +236,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(CAMPUS_TOOLS, "tile"),
   // 도쿄풍 도시(modern_city) 거리 구성기(도로·교차로·건물 키트·공원·소품·차)와 건물 문 ↔ 실내 이음. modern_city 맵에서만 동작한다.
   ...withDomain(MODERN_CITY_TOOLS, "tile"),
+  // 사막·동양풍(desert_east) 야외·실내 구성과 건물 문 ↔ 실내 이음. desert_east 맵에서만 동작한다.
+  ...withDomain(DESERT_EAST_TOOLS, "tile"),
   // 마법 학교(해리포터풍, wizarding_world) 공간 빌더 — 13공간 레시피로 방·야외 한 장을 한 번에 짓는다(통행 한 덩이 보장).
   ...withDomain(WIZARDING_SPACE_TOOLS, "tile"),
   // 열대 군도·해적 항구(pirate_isles) 맵 구성기 — 항구·섬 마을·요새·난파선 섬·배/술집/오두막/동굴 안을 씨앗으로 한 장째 짠다. oprn-pirate 맵에서만 동작한다.
@@ -249,6 +253,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(GOTHIC_PLACE_TOOLS, "tile"),
   // 선사 시대 원시 세계(prehistoric) 구성기 — 부족 마을·늪지·화산 골짜기·화석 계곡·실내 넷을 한 번에 짓고(배치·통행·바닥 가장자리는 구성기), 집·동굴 문 ↔ 실내를 잇는다.
   ...withDomain(PREHISTORIC_TOOLS, "tile"),
+  // 북방 설원(snow_north) 구성기 — 눈 마을·얼어붙은 호수·얼음 동굴 입구·겨울 장터·실내 다섯을 한 번에 짓고(배치·통행·오토타일 덩이는 구성기), 집 문 ↔ 실내를 잇는다.
+  ...withDomain(SNOW_NORTH_TOOLS, "tile"),
   // 맵 위 탈것(차 흐름·버스·노면전차·전철·지하철) — 길 그림에서 자동으로 또는 칸 경로로 노선을 깐다. 런타임이 실제로 움직인다.
   ...withDomain(TRANSIT_TOOLS, "map"),
   ...withDomain(STRUCTURE_KIT_TOOLS, "tile"),

@@ -1,0 +1,150 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a96ce76835cc3a48da97ef8028c8b2f63b577f40cd080053f72dc53564007c9b",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "작은 천 천막",
+ "label": "desert-east/de-tent-small",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "striped conical tent",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tent is drawn in flat 2D front elevation as an isosceles triangle with horizontal, straight stripes and a completely flat horizontal base line, displaying no top-down tilt or curved elliptical contours.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5338
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "conical cloth tent",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tent is drawn in pure 2D front elevation: the stripes are perfectly horizontal flat bands, the base is a flat horizontal line, the central door flap is a vertical front-facing triangle, and there is no elliptical foreshortening or visible top slope from the 3/4 camera angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7273
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cloth tent",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The conical tent is drawn in pure front elevation: all horizontal stripe boundaries, the entrance flap, and the base line are completely straight horizontal lines with no curvature or elliptical foreshortening to indicate a 3/4 top-down angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5556
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tent",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tent is drawn in a pure flat front elevation: the base is a flat horizontal line, the center seam and entrance slit are purely vertical, the guy lines stretch straight out to 2D sides, and there is no top-down foreshortening or top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5893
+  }
+ ],
+ "decidedAt": "2026-10-14T00:12:08.965Z",
+ "cells": {
+  "16": [
+   "33d2472c1dd06f8d",
+   "365c377388c7ce5d",
+   "96fe732319569ec9",
+   "c4aad2e8a31fb481"
+  ],
+  "24": [
+   "06d4182af4fe26be",
+   "091871cd1e3ec9ba",
+   "17149e5e77d16b89",
+   "2543f45b96fb45f5",
+   "2cc69c3d0f32d8de",
+   "425de77281e378f0",
+   "4406b16e493ef23d",
+   "5d7874cae174db27",
+   "64579da190d6958e",
+   "6b47985d770002be",
+   "7fc66d205d81cda1",
+   "80ed63292f527dad",
+   "8316da2b3e2b02d3",
+   "936a0a35ea758100",
+   "947b80a404955e1c",
+   "af56d0242911914f",
+   "b8d3ea3a37b33ff9",
+   "ba0e113ba0f63a82",
+   "cbfd9a3679ff87c8",
+   "cdc32570dd1959e4",
+   "d0d92addaae68573",
+   "f89fd030c2ded422"
+  ],
+  "32": [
+   "f240bd3d70ef95db"
+  ],
+  "48": [
+   "41394fcc9e284879",
+   "4722e0b9ca76178e",
+   "47eff2e710cd9463",
+   "4e8aa0c3b223f078",
+   "519ee07f328f4146",
+   "c0e88767f4984b1d"
+  ]
+ }
+}

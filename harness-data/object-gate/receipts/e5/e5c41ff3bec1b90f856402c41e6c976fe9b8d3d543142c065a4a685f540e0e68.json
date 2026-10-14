@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e5c41ff3bec1b90f856402c41e6c976fe9b8d3d543142c065a4a685f540e0e68",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "역청 세로 널 벽면(윗줄, 띠장)",
+ "label": "snow-north/sn-wall-plank-u",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical plank wall face with horizontal batten",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a south-facing wooden wall surface with a horizontal runner and metal studs; as a vertical wall face terrain element, it correctly displays the front plane of the wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7004
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden wall face with horizontal batten",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile depicting vertical wood planks with a horizontal batten and metal studs. As a wall surface terrain tile, top-surface visibility requirements for freestanding objects do not apply.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4897
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden wall face tile with horizontal beam",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a 16x16 terrain wall-face tile consisting of vertical wooden planks and a horizontal bracing beam with iron studs. As a wall surface terrain tile, it represents a vertical architectural face in the standard JRPG style.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7444
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden wall face with horizontal crossbeam",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile showing vertical wood planks with a horizontal crossbeam and metal studs; as a wall surface terrain element, standard vertical face projection applies.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6411
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.161Z",
+ "cells": {
+  "16": [
+   "b2c36d7714e64726"
+  ],
+  "24": [
+   "5269ada13609427d",
+   "697d06f368d55d74",
+   "748fd3e8ff469f0c",
+   "a28a006c26c555a7",
+   "c0c148b3bfd3d3cb",
+   "d16a1aaff937068f"
+  ],
+  "32": [
+   "1394c57b0320fffc",
+   "1e0f96282d230a9d",
+   "4d4327d3b31b1b87",
+   "b59e692c9528d80e",
+   "cee6e9c2ec5bd673",
+   "fd337722135940f0"
+  ],
+  "48": [
+   "0f02f9e543e8b9d0",
+   "3b3af32e071c176e",
+   "3c7c364b9e047a9c",
+   "3d9a41661a4c3173",
+   "abd4d7bee52b10ab",
+   "befe4b4996b0ac03"
+  ]
+ }
+}

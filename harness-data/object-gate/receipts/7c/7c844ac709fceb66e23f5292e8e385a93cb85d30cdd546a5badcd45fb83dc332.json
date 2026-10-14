@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7c844ac709fceb66e23f5292e8e385a93cb85d30cdd546a5badcd45fb83dc332",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "꽃 핀 협죽도 덤불",
+ "label": "desert-east/de-oleander",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flowering bush mound",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush is rendered as a 3/4 view dome with the upper surface spanning rows 4 to 10 showing top-down lighting and flower clusters, rounding down to shaded south-facing lower rows 11 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7083
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flowering bush mound",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush is rendered as a rounded volume in 3/4 perspective with an illuminated upper surface showing flowers across rows 4-10 (~7 rows) and a shaded front-facing lower section across rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5453
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flowering bush mound",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush is drawn in 3/4 top-down perspective with the illuminated upper canopy occupying rows 4-10 (approx. 7 source rows) and the south-facing shadowed under-edge spanning rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6081
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flowering bush mound",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush is rendered as a rounded volume in 3/4 view with lit top surface spanning rows 4-10 and shadowed south base along rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3659
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.222Z",
+ "cells": {
+  "16": [
+   "c027688b027fd538"
+  ],
+  "24": [
+   "14f4b5403fbd0426",
+   "1af9dd6c248d6cb1",
+   "439921d85b9a31d2",
+   "5d1f31ae0ba7125a",
+   "cb6959db5c450822",
+   "e42294d83bdc14e5"
+  ],
+  "32": [
+   "520b5000da1f52fc",
+   "62ab41cf3b9fe75b",
+   "835ce5fca1e697de",
+   "9998d80d90a1a9dd",
+   "dc73ddc90323f9c7",
+   "effad67283b76005"
+  ],
+  "48": [
+   "9c2726782853569a",
+   "9f3e3fa914a7e6d9",
+   "a92e0b42c446f23f",
+   "c0c27025c26a9028",
+   "dce9518563d47bea",
+   "ef060bb541e9e2a4"
+  ]
+ }
+}

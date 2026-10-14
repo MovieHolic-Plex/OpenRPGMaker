@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5168dd3839b73507d1c50cd6c109f7bc20a91b7d895aadd506a51da67b202f01",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "여관 널마루",
+ "label": "desert-east/de-floor-wood",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden floorboards",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless horizontal wooden plank floor texture viewed from above, filling the entire tile as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5091
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "inn wooden floorboards terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts wooden floorboards viewed from above, perfectly matching the terrain kind with no standing structure.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3980
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden floorboards",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing horizontal wooden planks/floorboards viewed from above, filling the 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4128
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden plank floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image depicts a repeating wooden plank floor texture seen from a top-down perspective, correctly matching the terrain category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3396
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.210Z",
+ "cells": {
+  "16": [
+   "20361178ab83f5e4"
+  ],
+  "24": [
+   "0ad1089cd768d259",
+   "35a9e4ce985e4f92",
+   "b1cf92f6cc403312",
+   "ccf6a3ba460d65af",
+   "d8456ea63835dd5c",
+   "e148df6ae29b3d7f"
+  ],
+  "32": [
+   "30e3755cbc15b495",
+   "aee32df05fef5128",
+   "c0a8409609a5ed59",
+   "de37a0446bfd43cf",
+   "e5a2093a205cf816",
+   "ee3fc98ba6e95535"
+  ],
+  "48": [
+   "33e9a9ade19b15bf",
+   "514f4555ed285f73",
+   "79844f5fc1089eb7",
+   "ced20944309155a3",
+   "ee759277a8edd4b0",
+   "ffa2f32a856ed5d3"
+  ]
+ }
+}

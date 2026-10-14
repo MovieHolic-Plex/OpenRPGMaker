@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f0cec827cc98ff16be3cfcc0a03797b9084139a03f622ac093e41604a7e25f15",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "따뜻한 천장(집·궁전) · 천장 — 방 동쪽 경계(테 서쪽)",
+ "label": "desert-east/de-ceil-warm-e",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ceiling border autotile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a top-down ceiling surface with an eastern/vertical boundary trim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4464
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ceiling border edge tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing the ceiling edge/trim border of a room; valid 2D map terrain element.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5223
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ceiling edge / boundary tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile representing a ceiling border edge seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3599
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ceiling border terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain edge tile representing ceiling border and surface; top surface perspective requirements do not apply to flat terrain tiles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4551
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.212Z",
+ "cells": {
+  "16": [
+   "4213fb7fe1c53a54"
+  ],
+  "24": [
+   "a3b9dcb0a7dabdf8",
+   "bcf80740611c6940",
+   "c70f92f5f48712c1",
+   "e708631f09d90b15",
+   "eef38725d8f400d0",
+   "fc7e90023d4a8133"
+  ],
+  "32": [
+   "0668e54f4ac94a03",
+   "1b1744d2e3e93d7e",
+   "22a38adb9be071d6",
+   "32c4ddcc8e385c23",
+   "415a39672770c4c3",
+   "41f77a8e35c8a46a"
+  ],
+  "48": [
+   "0f23cb8e924269d1",
+   "3b60942c9259f306",
+   "43649d24ccf83aab",
+   "97a1a97ef71ab112",
+   "b535edde169dd953",
+   "f6e85bdfe9ed979b"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bd09bd4422125ad886dc81488d39f7cf0a5f7fa81d09c2b61154a66bd166892e",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "무덤 천장(어두운 돌) · 천장 속(벽 위·방 밖)",
+ "label": "desert-east/de-ceil-tomb",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ceiling/wall-top terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Dark stone texture covering the entire 16x16 tile, functioning as top-down terrain/ceiling fill.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4555
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ceiling/void rock terrain texture",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless dark stone/dirt terrain tile representing tomb ceiling or fill above walls, filling the entire 16x16 surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4099
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ceiling/void terrain texture",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat dark stone texture representing dungeon/tomb ceiling or void terrain filling the entire 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5070
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ceiling/rock terrain texture",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting dark stone ceiling/void texture filling the entire 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3574
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.212Z",
+ "cells": {
+  "16": [
+   "78faff87d6f60df6"
+  ],
+  "24": [
+   "25ec08b2b2688b19",
+   "2d92efbc462d3bb4",
+   "ae699c187fde0fe1",
+   "c0b144cfc998b7bc",
+   "d8bb38d7a3eb87b4",
+   "ef977555efe291b6"
+  ],
+  "32": [
+   "101b4bab6100737b",
+   "20f2b9f0f8acaff5",
+   "5f77fb4604c09fcf",
+   "67bb140534930608",
+   "7d412cc754f8ebef",
+   "fad38abb2d3ed1d1"
+  ],
+  "48": [
+   "223bc730d690f188",
+   "5e0db8577865d2c5",
+   "66ae973fb08f216f",
+   "83f0341ce78d6368",
+   "9412ce3d119ccd69",
+   "d0eaffcf16021d3f"
+  ]
+ }
+}

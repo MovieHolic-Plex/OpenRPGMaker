@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d20d18c5b4ecf51efbc1f7056ae3a30fc148cdf6376b0d575de1dbc880436ecd",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "들이친 모래 더미",
+ "label": "desert-east/de-sand-pile",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mound of blown-in sand",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sand drift is viewed from an elevated 3/4 angle, spreading across rows 3 to 14 with foreshortened upper slopes (rows 3-7) and south-facing illuminated slope (rows 8-13), clearly reading as a mound resting on the floor plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4968
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sand drift / mound on floor",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sand pile slopes across the floor spanning rows 3 to 13 with extensive top/sloped surface visible from the 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5057
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "blown sand drift / pile on floor",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sand mound is viewed from a high 3/4 angle spread across rows 3 to 14, showing its foreshortened upper surface with depth on the floor.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4983
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sand pile / drift",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sand mound spreads across the ground plane from row 3 to row 14 (~11 rows of depth) in standard 3/4 perspective, showing both rear and forward sloping surfaces with cast shadow beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6962
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.216Z",
+ "cells": {
+  "16": [
+   "a26ef4375befc9ba"
+  ],
+  "24": [
+   "101ff33d9f40f18e",
+   "5d5122cf6264d6b9",
+   "810ade08cac53b37",
+   "897da7651fc7e056",
+   "8ae149e8465a5846",
+   "bc3cfaa6b4eb734e"
+  ],
+  "32": [
+   "37c680bd65e3da32",
+   "7098661d317d3734",
+   "75da4197ce6069bc",
+   "867b9e5d5d0c5495",
+   "9d6d53b9a1cbfc9e",
+   "c00e6846738abeca"
+  ],
+  "48": [
+   "042cc2568c4c9119",
+   "14bfb42d9dd39842",
+   "8fc98d7252dcafc2",
+   "a0c65d816dcd299b",
+   "b49c200429ff35df",
+   "e3f584b361bb0179"
+  ]
+ }
+}

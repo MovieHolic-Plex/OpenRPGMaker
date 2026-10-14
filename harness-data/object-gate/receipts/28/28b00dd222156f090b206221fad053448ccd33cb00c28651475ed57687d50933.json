@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "28b00dd222156f090b206221fad053448ccd33cb00c28651475ed57687d50933",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "생선 노점(얼음 위 생선, 줄무늬 천막)",
+ "label": "snow-north/sn-stall-fish",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "market stall counter and striped awning",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall counter has a clearly visible top surface spanning rows 17 to 22 (6 source pixel rows) displaying the ice trough and a container, above the vertical front face spanning rows 23 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5661
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fish stall counter and awning",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall counter top is clearly visible in 3/4 perspective across rows 17 to 22 (6 source pixel rows deep), showing the ice bed and counter surface above the dark vertical front face (rows 23-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4212
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fish market stall with striped awning and counter",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall counter has a clearly visible top surface spanning rows 17 to 22 (6 pixels tall) containing the ice tray and block, with its front face extending from row 23 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5979
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fish stall counter and awning",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall counter shows a clear foreshortened horizontal top surface spanning rows 17-21 (5 rows tall) containing the ice tray, before the vertical front face in rows 22-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4011
+  }
+ ],
+ "decidedAt": "2026-10-14T01:15:54.503Z",
+ "cells": {
+  "16": [
+   "3cfe739fdc0bd593",
+   "4c2001bd9449feae",
+   "750ffce5cb2efb00",
+   "c2f32092b234efbb",
+   "de27753966a91b29",
+   "feb610261d448f80"
+  ],
+  "24": [
+   "0c5ca916882a33ec",
+   "550e7badb0d16dee",
+   "57a9e133d09ecf9e",
+   "7999d245fcede21b",
+   "9b911c4dcbd5ec23",
+   "9e3169c24c507452",
+   "a03ae7203bd2d4e9",
+   "ff1fe2ad0da16a4e"
+  ],
+  "32": [
+   "17cd60e61787f0c7",
+   "40a9a11286910a30",
+   "c1da82580a0fcb7d",
+   "cf42e1b25abd763f",
+   "d757e56a4d03f04f",
+   "de22d91c47789c72"
+  ],
+  "48": [
+   "98c105d3bf6b2432",
+   "fc0d5846f9dd19ba"
+  ]
+ }
+}

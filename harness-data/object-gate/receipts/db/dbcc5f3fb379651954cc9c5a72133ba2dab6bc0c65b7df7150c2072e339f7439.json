@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dbcc5f3fb379651954cc9c5a72133ba2dab6bc0c65b7df7150c2072e339f7439",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "자갈 섞인 모래",
+ "label": "desert-east/de-sand-pebble",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sand with gravel ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile covering the full 16x16 tile area with sand and scattered pebbles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4149
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sand ground with gravel pebbles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile filling the 16x16 canvas with sand texture and small pebbles seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4233
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ground tile (sand with gravel)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile composed of sand with small pebbles and gravel variations across the entire 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3623
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ground tile (sand with gravel)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing sand texture with scattered small pebbles, occupying the entire 16x16 floor surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2831
+  }
+ ],
+ "decidedAt": "2026-10-14T00:10:56.814Z",
+ "cells": {
+  "16": [
+   "55e1759d7ef06df7"
+  ],
+  "24": [
+   "2522bdb7288fbdac",
+   "272c5b43c90ba2d6",
+   "b203ed0cac1c6d87",
+   "c5f2304830d48872",
+   "f0feaa9a658af8a1",
+   "f1336f7cf88a9959"
+  ],
+  "32": [
+   "4af3cb1b86d28b63",
+   "9659c58bb658f35a",
+   "999e235d5cfbe307",
+   "b866dbeb2063172a",
+   "cf121e632dac309e",
+   "e9d77cf6d6d4d4ab"
+  ],
+  "48": [
+   "26bb9225ee171757",
+   "2b4e820787de868b",
+   "31f21a42a9dc7a08",
+   "926fdc06ef89ca09",
+   "afa4686c661c7fa3",
+   "c9b225368b2e8c61"
+  ]
+ }
+}

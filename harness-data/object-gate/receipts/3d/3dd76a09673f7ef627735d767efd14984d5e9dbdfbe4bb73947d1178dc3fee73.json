@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3dd76a09673f7ef627735d767efd14984d5e9dbdfbe4bb73947d1178dc3fee73",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "좌상 사자 석상(받침)",
+ "label": "desert-east/de-guardian-statue",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "seated lion statue on plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire statue and its multi-tiered plinth are drawn in pure front elevation. The base/plinth (rows 21-31) shows only its vertical front faces without any visible horizontal top surface extending in front of the seated figure.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11534
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lion statue on pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The seated lion statue and its pedestal are drawn in pure front elevation. The lion's face and paws are seen straight-on with no visible top surfaces (0 px), and the stone plinth underneath is drawn as a flat vertical block (rows 21-25) and tiered base (rows 26-30) without an foreshortened top surface showing around the figure.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12466
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "seated lion statue on plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lion and its plinth are depicted in a flat front elevation. The lion's head, face, and front legs face straight forward with no visible top surface (0px of crown/top visible), and the plinth underneath shows only its vertical front face with no foreshortened top surface visible in front of or around the statue.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7602
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lion statue on tiered plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The statue and plinth are drawn in pure front elevation. Neither the head/shoulders of the figure nor the base plinth shows a visible top horizontal surface (the figure sits directly on the top edge of the plinth with no foreshortened top plane visible).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7473
+  }
+ ],
+ "decidedAt": "2026-10-14T00:27:00.228Z",
+ "cells": {
+  "16": [
+   "771bc8f9799f11e8",
+   "a54a48fa8952af27"
+  ],
+  "24": [
+   "13fdab797ceccda8",
+   "1efadc7106b04f5b",
+   "2b537d8e1e699c1e",
+   "726f475079b7c695",
+   "90a06223ea091b10",
+   "9a2b7505c0b30c63",
+   "c7784fb2161353ee",
+   "eb519274306ce073",
+   "ecfb9975f4246826",
+   "f31e1a68a7d2e4f7",
+   "f50c50afa68c4d50",
+   "f71181243e4a9a17"
+  ],
+  "32": [
+   "35b35f4be741040f",
+   "4d4c7227f771ad1c",
+   "b0e71d0f5b04ae40"
+  ],
+  "48": [
+   "030735ed9a701e54",
+   "3819314b5f959e4d",
+   "4adcffdbf43b6a93",
+   "8ed5cb7f534926f2",
+   "980d3b13c31c4145",
+   "986e5cfaa7f02905"
+  ]
+ }
+}
