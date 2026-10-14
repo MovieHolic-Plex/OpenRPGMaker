@@ -677,3 +677,27 @@ revision 16 기와 변경은 사용자 지적을 오해한 것이며 철회했�
 - **남은 한계(정직):** 바닥은 여전히 2×2 무늬 한 종류(금·이끼 변형 칸이 없음 — 새 그림이 필요), 물·높이 차·계단식 구역 없음, 큰 홀 기둥은 반듯한 열주, 보스방 가운데는 싸울 자리로 비움, 칸막이 위 천장 띠는 가는 선으로 보임, 세로 통로가 4칸으로 밀리면 두 방 사이 벽이 한 줄 띠. 증거·전후 비교: `~/claude-viz/dungeon-qa.html`.
 
 
+
+### 던전 시공기 3판 — 종류(`type`) 8가지 (2026-10-14, 사용자: 「던전 종류가 좀 다양해야 할 것 같다」)
+
+2판까지는 지하묘지·성(`catacomb|castle`) 두 가지뿐이라 전부 회색 석벽 지하 묘지였다. 3판은 **배치 문법이 다른** 종류를 더했다 — 팔레트만 바꾼 것이 아니다. 도구 인자는 `type`(옛 `style` 은 별칭). 코드: `src/editor/beodeulDungeon/{profiles,grid,layouts,dress,errors}.ts` + `compose.ts`(조립), 도구 설명·낱말 표는 `beodeulDungeonTools.ts`·`intentDeclaration.ts`·`toolCapabilityIndex.ts`.
+
+| type | 문법 | 한 줄 | 액체 |
+|---|---|---|---|
+| catacomb / castle | rooms | 방+통로 나무(옛 그대로, 출력 불변) | - |
+| labyrinth | maze | 3칸 폭 통로 미로(깊이 우선+고리), 한가운데 3×2 보스 덩어리, 막다른 길 보물 | - |
+| sewer | rooms | 수로 방(양옆 보행로+다리), 저수조(섬), 펌프실 | 물 |
+| cave | blob | 타원 방+넓은 굽은 통로, 지하 호수·웅덩이, 석순·버섯·덩굴·보트, 맵을 내용 크기로 잘라냄 | 물 |
+| temple | rooms | 현관→열주 신랑→제단 성소 + 곁방 좌우 대칭(shift 0), 무너진 구역·덩굴 | - |
+| mine | rooms | 수평 주 갱도(판자 길) + 갈래 갱·채굴장(광석·광차·램프)·적재장, 갈색 흙 바닥 | - |
+| volcano | blob | 용암 못·강, 재 바닥·흑요석 뾰족돌·열 구멍·대장간 방 | 용암 |
+
+- **액체는 막힌 칸이다.** 마스크 `Grid.liquid` 는 열린 칸(천장 안 깔림)이지만 통행에서는 `water`(canMove 가 solid) · 용암(막힘 키트)이다. 길이 액체에 갈라지면 `bridgeComponents` 가 가장 짧은 액체 경로를 다리(1×1 통행 조각)로 바꿔 잇고, 못 잇는 조각은 `pruneUnreachable` 이 막는다. 벽 두께 규칙(`fixThickness`)과 연결이 서로를 깨뜨릴 수 있어 `settle` 이 고정점까지 돈다. 수로 방 양끝 두 칸은 보행로로 남긴다(물↔벽 `tileset-palette-boundary` 경고 방지).
+- **받침 규칙(#2563) 유지·확장.** `groundSupport.ts`: 벽걸이 정규식에 `vines|hanging-chain`, 액체 위에 서도 되는 물체 `boat|dock|driftwood|fish-net|bridge|lily|raft` 만, 그 밖의 물체가 액체 칸 위에 있으면 `supportProblems`·`ground-support` lint 가 오류. 비던전 테마 키트(채굴 계곡)는 `put()` 이 자체 받침 검사.
+- **방 종류가 늘었다**: channel cistern pump(하수도) · cavern lake grotto forge(동굴·화산) · nave(신전) · junction stope depot(광산·미궁). 그 종류에 없는 방 종류를 주면 경고하고 가까운 종류로 접는다. `rooms` 를 주지 않으면 종류별 계획기(`planSewer/planTemple/planMine`)가 구성한다. 미궁·동굴·화산은 방 목록을 무시하고(경고) 크기(`size`/`width×height`)만 쓴다.
+- **종류 추정**: `inferDungeonType`(낱말: 광산·갱도→mine, 화산·용암→volcano, 하수도·수로→sewer, 미궁·미로→labyrinth, 신전·유적→temple, 동굴→cave, 성채→castle, 그 밖→catacomb). 「하수도 미로」는 sewer. 도구 설명·`intentDeclaration`·`toolCapabilityIndex` 에 같은 표. 얼음 요청은 cave 로 대신하고 `iceRequested` 로 알린다.
+- **검증(엔진 출력)**: 8종 × 시드 3·7·12 = 24판 — 도구 ok, `check_reachability` 전부 도달(spots·계단·문 앞), `check_terrain_access`, `run_lint` error 0. 액체 칸을 목표로 주면 실제 `canMove` 가 0/6 거부(음성 시험). 종류 8 × 시드 40 × 크기 3 = 960판 훑기: 실패·가지치기 경고·계단/보스 누락 0, 방 목록 무작위 500판(rooms 문법) 전부 ok.
+- **조수 대용 실경로(Claude Sonnet 5.5 high 역할극 — Argon 사용 불가)**: `scripts/oprn-tools.mjs` 로 find_tools → 도구 → place_field_enemy → check_reachability → run_lint 를 실제 실행기·저장·재로드까지. 「광산 던전 만들어 줘」→mine 76×43, 「화산 동굴」→volcano 82×61, 「하수도 미로」→sewer(조수가 고름) 62×67. 정본 저장·재로드: `scripts/oprn-store.mjs init/import-json/export-json` 로 SQLite 폴더에 저장 후 내보내 맵 JSON 일치 확인(A 프로젝트 a66a9f7b-ffed-4060-80b7-39353fe42021 sha256 0fca1e40…, B 14b909cd-b62b-443b-bc2c-6580e29cba29 7f49dc2c…, C ebbeaeec-c849-4e8c-ba76-8548466ac7ae 8c1413c5…). 실제 에디터 조수·Argon 경로는 **미검증**.
+- **역할극에서 나온 마찰(미수정, 도구 쪽 별건)**: `place_field_enemy` 는 `required` 에 없는데 troopId 나 graphic 이 없으면 거절한다. 기본 부대(`troop_golem_guard`·박쥐 선두)는 필드용으로 거절돼 조수가 `upsert_troop` 으로 슬라임·오크 계열 부대를 만들어야 했다. 거절 메시지의 허용 목록이 잘린다. `run_lint` 상세는 `data.issues`.
+- **없는 그림(MISSING, `profiles.ts`)** — 이번에 한 장도 새로 그리지 않았다(그래서 3/4 관문 해당 없음, 영수증 0). 목록: 광산 — 선로 타일(가로·세로·모서리·T), 갱목 지지대(벽 걸이 1×2·바닥 기둥 1×2), 광맥 벽 앞면 변형, 채굴장 벽 광석 장식. 화산 — 현무암·재 바닥 2×2 변형 3종, 현무암 벽 앞면 3h/2h, 용암 가장자리 식은 껍질 오토타일. 동굴 — 갈색 테두리 동굴 천장 오토타일(지금은 회색 석벽 띠), 종유석 천장 늘어짐. 얼음 동굴 — 전부(beodeul_city 에 없음). 선로·광차(`props.cart` RAIL/RAIL_END/CART)와 용암 가장자리(`edges.lava`)는 `dungeon-chipset` 하네스에 **후보만 있고 사람이 안 골랐다** — 고른 뒤 굽기는 별도 단계. 후속은 Opus tile-artist 몫.
+- **남은 결함(정직)**: 광산은 석재 통로+주황 판자 길이라 선로·갱목이 없어 「광산」 느낌이 약하다. 화산은 용암이 가장자리 그림 없이 평평하고 벽은 성 벽돌, 바닥은 보랏빛 재색. 미궁은 바닥이 단조롭다. 동굴·화산에서 방 끝 코너에 천장 1칸 검은 점이 남는 곳이 있다(벽 앞면 양옆). 하수도 다리는 두꺼운 돌 띠로 보인다. 증거·점수: `~/claude-viz/dungeon-types.html`.

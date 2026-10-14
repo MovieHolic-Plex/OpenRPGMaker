@@ -7,7 +7,7 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 장소마다 문서 하나: 용도·구역(원래 계획), 조각 표(번호 = 조각 판 그림의 번호), 각 키트의 역할 글자와 아래층/윗층 전체 배열.
 
 ## 던전·카타콤·지하 감옥 층은 도구 하나로 (2026-10-14, 아래 순서를 손으로 따르지 않는다)
-`author_beodeul_dungeon({rooms:[{kind:'entrance'},{kind:'hall'},{kind:'crypt'},{kind:'cell',from:'hall'},{kind:'boss'},{kind:'vault',from:'boss'}]})`(방 구성을 맡기려면 `({size:'medium'})`) 한 번이 방 배치(동서남북 나무 모양 + 고리 통로)·통로·천장(벽 두께 띠)·벽 앞면·바닥·횃불·기둥·관·계단을 깔고, 받침 없는 물체 0·입구에서 모든 방 도달을 스스로 검사한다. 적·상자·NPC 는 결과 `data.rooms[].spots` 좌표에만, 보스는 `data.anchors.boss` 방, 잠긴 문은 `data.anchors.gate` 칸에 둔다.
+`author_beodeul_dungeon({rooms:[{kind:'entrance'},{kind:'hall'},{kind:'crypt'},{kind:'cell',from:'hall'},{kind:'boss'},{kind:'vault',from:'boss'}]})`(방 구성을 맡기려면 `({size:'medium'})`) 한 번이 방 배치(동서남북 나무 모양 + 고리 통로)·통로·천장(벽 두께 띠)·벽 앞면·바닥·횃불·기둥·관·계단을 깔고, 받침 없는 물체 0·입구에서 모든 방 도달을 스스로 검사한다. 적·상자·NPC 는 결과 `data.rooms[].spots` 좌표에만, 보스는 `data.anchors.boss` 방, 잠긴 문은 `data.anchors.gate` 칸에 둔다. 종류는 `type` 인자 하나다(catacomb 지하묘지 · castle 성 지하 · labyrinth 미궁 · sewer 하수도 · cave 자연 동굴 · temple 폐허 신전 · mine 광산 · volcano 화산 동굴): 「광산」→mine, 「화산·용암」→volcano, 「동굴」→cave, 「하수도·수로」→sewer, 「미궁·미로」→labyrinth, 「신전·유적」→temple, 말이 없으면 catacomb. 종류마다 배치 문법·바닥·장식이 다르고 물·용암은 막힘이며 도구가 다리·도달을 보장한다. 얼음 동굴은 이 시트에 그림이 없어 cave 로 대신하고 알린다.
 키트를 `stamp_object` 로 한 개씩 찍거나 `paint_tiles` 로 천장·벽을 덧칠하지 않는다 — 실측(2026-10-14 field-enemy fe1): 그렇게 한 던전 층은 stamp_object 112번 + paint_tiles 67번에 25분이 걸려 시간 초과로 끝났고, 횃불·화로·통·기둥이 허공에 뜨고 벽 조각이 바닥에 서고 상자 이벤트가 천장 칸에 놓였다. 던전 테마 키트의 `stamp_object` 는 받침 없는 칸(천장 위·벽 위에 선 물체·바닥에 건 벽걸이·허공을 향한 벽)을 거절하고, `run_lint` 는 같은 위반을 오류로 본다.
 
 ## 작업 순서 (이 순서를 바꾸지 않는다)
