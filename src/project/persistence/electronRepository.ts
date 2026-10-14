@@ -111,7 +111,13 @@ export type OprnAssetBrowser = {
 };
 
 export type OprnBridge = {
-  readonly windowControl?: (action: "toggle-fullscreen" | "close") => Promise<boolean>;
+  readonly windowControl?: (action: import("../../../electron/shared/windowControl").WindowControlAction) => Promise<boolean>;
+  /** 데스크톱 전용 — 창 단추 방식. darwin 은 OS 신호등, 그 밖은 렌더러가 직접 그린다. */
+  readonly platform?: import("../../../electron/shared/windowControl").WindowPlatform;
+  /** 데스크톱 전용 — 최대화·전체화면 상태 조회. */
+  readonly windowState?: () => Promise<import("../../../electron/shared/windowControl").WindowState>;
+  /** 데스크톱 전용 — 최대화·전체화면 변화 구독. 해지 함수를 돌려준다. */
+  readonly onWindowState?: (callback: (state: import("../../../electron/shared/windowControl").WindowState) => void) => () => void;
   /** 데스크톱 앱 창의 네이티브 전체화면 여부. 브라우저 Fullscreen API 와는 별개다. */
   readonly windowFullscreen?: () => Promise<boolean>;
   /** 네이티브 전체화면 변화(F11·메뉴 포함) 구독. 해지 함수를 돌려준다. */

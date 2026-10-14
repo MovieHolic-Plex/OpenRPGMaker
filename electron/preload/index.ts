@@ -1,11 +1,23 @@
 import { contextBridge, ipcRenderer } from "electron";
 import { OPRN_CHANNELS } from "../shared/channels";
+import { windowChromeFor } from "../shared/windowControl";
 
 const invoke = (channel: string) => (payload?: unknown) => ipcRenderer.invoke(channel, payload);
 
 const bridge = {
   closeIsHostDriven: true,
   windowControl: invoke(OPRN_CHANNELS.windowControl),
+  /** 렌더러가 창 단추 방식(OS 신호등 vs 직접 그림)을 동기로 고르도록 프리로드 시점에 준다. */
+  platform: windowChromeFor(process.platform).platform,
+  windowState: invoke(OPRN_CHANNELS.windowState),
+  onWindowState: (callback: (state: { fullscreen: boolean; maximized: boolean }) => void): (() => void) => {
+    const listener = (_event: unknown, state: unknown): void => {
+      const value = (state ?? {}) as { fullscreen?: unknown; maximized?: unknown };
+      callback({ fullscreen: Boolean(value.fullscreen), maximized: Boolean(value.maximized) });
+    };
+    ipcRenderer.on(OPRN_CHANNELS.windowState, listener);
+    return () => ipcRenderer.removeListener(OPRN_CHANNELS.windowState, listener);
+  },
   windowFullscreen: invoke(OPRN_CHANNELS.windowFullscreen),
   onWindowFullscreen: (callback: (fullscreen: boolean) => void): (() => void) => {
     const listener = (_event: unknown, fullscreen: unknown): void => callback(Boolean(fullscreen));

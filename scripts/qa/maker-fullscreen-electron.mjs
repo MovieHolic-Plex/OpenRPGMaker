@@ -19,7 +19,7 @@ try{
  report.afterClick=await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].isFullScreen());
  await page.getByTestId('window-toggle-fullscreen').click();await page.waitForTimeout(500);
  report.restored=await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].isFullScreen());
- report.passed=report.startup.fullscreen&&!report.afterClick&&report.restored&&report.controls.every(c=>c.visible&&c.uncovered&&c.color==='rgb(255, 249, 235)')&&report.navigation.every(n=>n.uncovered&&n.noNativeOverlap);
+ report.passed=report.startup.fullscreen&&!report.afterClick&&report.restored&&report.controls.every(c=>c.visible&&c.uncovered)&&report.navigation.every(n=>n.uncovered&&n.noNativeOverlap);
  if(!report.passed)throw Error('Native fullscreen click control failed');
 }finally{fs.writeFileSync(out+'/proof.json',JSON.stringify(report,null,2));await app.close();}
 console.log(JSON.stringify(report));

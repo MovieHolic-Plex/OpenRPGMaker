@@ -132,6 +132,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - **조수에게 타일셋 까는 법 가르치기** (조수가 실제로 보는 것·업로드 타일셋에서 비는 것·참고문서/이름표/조립법 순서·재배포 금지 팩): `openwiki/teaching-assistant-tilesets.md`
    - 타일 레이어·배경 정책 (투명 여부와 홈 레이어·받침·다중 조각 제약의 분리, 커스텀 칩셋 검토 흐름): `openwiki/tile-layer-policy.md`
    - 공통 지연 툴팁 (아이콘 컨트롤 툴팁 동작 계약·명시 롤아웃 목록·문구 규칙): `openwiki/delayed-tooltip.md`
+   - 데스크톱 창 컨트롤 (Windows·Linux 오른쪽 위 최소화/최대화/전체화면/닫기, macOS 신호등, 끌기 영역·톱바 여백·큰 모달 머리줄 비켜 주기, 닫기 절차 우회 금지): `openwiki/desktop-window-controls.md`
    - 편집기 다국어 (ko/en/ja/zh 언어 결정 순서·DOM 번역 계층·화면 글자 역참조 금지 계약·카탈로그 추가 절차): `openwiki/i18n.md`
    - Interior room harness: `openwiki/editor-interior-room-harness.md`
    - **월드맵 아이콘은 하네스를 거친다:** `src/harnesses/worldmap-icons/README.md` — 검수자(시점 계약: 윗면+정면 벽, 옆면 금지)가 판정하고 사용자가 http://mdc-server:18313/ 에서 받기/버리기. 결정 `harness-data/worldmap-icons/decisions.json`. 감독이 대신 고르거나 바로 번들·지도에 넣지 않는다.
