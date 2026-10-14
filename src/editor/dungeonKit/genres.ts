@@ -141,7 +141,7 @@ export function planPopulation(genre: DungeonGenre, composed: DungeonCompose, se
   // 열쇠: 입구에서 먼 곁방(보물 방·보스방 제외) 한 곳.
   const keyRoom = [...inner].sort((a, b) => b.depth - a.depth).find((r) => spotsOf(r.id).length > 0) ?? null;
   const gate = composed.anchors.gate;
-  const lockedGate = gate && keyRoom ? { x: gate.x, y: gate.y, to: gate.to, keyRoom: keyRoom.id, keySpot: spotsOf(keyRoom.id)[0] ?? null } : null;
+  const lockedGate = gate && keyRoom ? { x: gate.x, y: gate.y, to: gate.to, keyRoom: keyRoom.id, keySpot: spotsOf(keyRoom.id).find((q) => !enemies.some((e) => e.x === q.x && e.y === q.y) && !chests.some((c) => c.x === q.x && c.y === q.y)) ?? null } : null;
   if (!lockedGate) notes.push("잠긴 문 자리가 없다(보물 방·보스방 통로가 없는 배치) — 문 없이 보스를 둔다.");
   for (const e of enemies) notes.push(`${e.room} (${e.x},${e.y}) ${e.behavior} 시선 ${e.sightRange}칸`);
   return { genre, wildZones: [], enemies, chests, boss, lockedGate, shortcut: null, notes };
