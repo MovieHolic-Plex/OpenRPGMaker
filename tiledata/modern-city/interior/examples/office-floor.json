@@ -1,0 +1,293 @@
+{
+ "name": "도쿄풍 사무실 한 층",
+ "kind": "office",
+ "plan": [
+  "####################",
+  "#..........#.......#",
+  "#..........#.......#",
+  "#..........#.......#",
+  "#..........#.......#",
+  "#..........#.......#",
+  "#..........#.......#",
+  "#..........##.######",
+  "#..................#",
+  "#..................#",
+  "#..................#",
+  "#..................#",
+  "#..................#",
+  "########..##########"
+ ],
+ "floor": "mci-carpet-office",
+ "wall": "mci-wall-office",
+ "exitWidth": 2,
+ "zones": [
+  {
+   "x0": 12,
+   "x1": 18,
+   "y0": 1,
+   "y1": 6,
+   "floor": "mci-wood-oak",
+   "wall": "mci-wall-office"
+  }
+ ],
+ "objects": [
+  {
+   "id": "mci-window-city",
+   "x": 2,
+   "y": 1
+  },
+  {
+   "id": "mci-window-city",
+   "x": 5,
+   "y": 1
+  },
+  {
+   "id": "mci-wall-clock",
+   "x": 8,
+   "y": 1
+  },
+  {
+   "id": "mci-whiteboard",
+   "x": 13,
+   "y": 1
+  },
+  {
+   "id": "mci-window-blind",
+   "x": 16,
+   "y": 1
+  },
+  {
+   "id": "mci-notice-board",
+   "x": 12,
+   "y": 8
+  },
+  {
+   "id": "mci-ac-wall",
+   "x": 16,
+   "y": 8
+  },
+  {
+   "id": "mci-shelf-office",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "mci-filing",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "mci-coffee-station",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "mci-copier",
+   "x": 10,
+   "y": 3
+  },
+  {
+   "id": "mci-plant-tall",
+   "x": 5,
+   "y": 3
+  },
+  {
+   "id": "mci-chair-office-s",
+   "x": 1,
+   "y": 5
+  },
+  {
+   "id": "mci-chair-office-s",
+   "x": 4,
+   "y": 5
+  },
+  {
+   "id": "mci-desk-pc-back",
+   "x": 1,
+   "y": 6
+  },
+  {
+   "id": "mci-desk-pc-back",
+   "x": 3,
+   "y": 6
+  },
+  {
+   "id": "mci-desk-pc",
+   "x": 1,
+   "y": 7
+  },
+  {
+   "id": "mci-desk-pc",
+   "x": 3,
+   "y": 7
+  },
+  {
+   "id": "mci-chair-office-n",
+   "x": 2,
+   "y": 8
+  },
+  {
+   "id": "mci-chair-office-n",
+   "x": 3,
+   "y": 8
+  },
+  {
+   "id": "mci-chair-office-s",
+   "x": 7,
+   "y": 5
+  },
+  {
+   "id": "mci-chair-office-s",
+   "x": 10,
+   "y": 5
+  },
+  {
+   "id": "mci-desk-pc-back",
+   "x": 7,
+   "y": 6
+  },
+  {
+   "id": "mci-desk-pc-back",
+   "x": 9,
+   "y": 6
+  },
+  {
+   "id": "mci-desk-pc",
+   "x": 7,
+   "y": 7
+  },
+  {
+   "id": "mci-desk-pc",
+   "x": 9,
+   "y": 7
+  },
+  {
+   "id": "mci-chair-office-n",
+   "x": 8,
+   "y": 8
+  },
+  {
+   "id": "mci-chair-office-n",
+   "x": 9,
+   "y": 8
+  },
+  {
+   "id": "mci-chair-office-s",
+   "x": 2,
+   "y": 10
+  },
+  {
+   "id": "mci-chair-office-s",
+   "x": 3,
+   "y": 10
+  },
+  {
+   "id": "mci-desk-pc-back",
+   "x": 1,
+   "y": 11
+  },
+  {
+   "id": "mci-desk-pc-back",
+   "x": 3,
+   "y": 11
+  },
+  {
+   "id": "mci-plant-tall",
+   "x": 6,
+   "y": 12
+  },
+  {
+   "id": "mci-chair-office-s",
+   "x": 14,
+   "y": 3
+  },
+  {
+   "id": "mci-chair-office-s",
+   "x": 15,
+   "y": 3
+  },
+  {
+   "id": "mci-chair-office-s",
+   "x": 16,
+   "y": 3
+  },
+  {
+   "id": "mci-plant-tall",
+   "x": 18,
+   "y": 3
+  },
+  {
+   "id": "mci-door-wood",
+   "x": 13,
+   "y": 7
+  },
+  {
+   "id": "mci-server-rack",
+   "x": 17,
+   "y": 10
+  },
+  {
+   "id": "mci-partition",
+   "x": 12,
+   "y": 11
+  },
+  {
+   "id": "mci-copier",
+   "x": 11,
+   "y": 10
+  }
+ ],
+ "tables": [
+  {
+   "style": "mci-t-meeting",
+   "x": 14,
+   "y": 4,
+   "w": 3,
+   "h": 2
+  }
+ ],
+ "goods": [
+  {
+   "id": "mci-g-laptop",
+   "x": 14,
+   "y": 4
+  },
+  {
+   "id": "mci-g-coffee",
+   "x": 16,
+   "y": 5
+  },
+  {
+   "id": "mci-g-papers",
+   "x": 15,
+   "y": 4
+  }
+ ],
+ "start": [
+  9,
+  12
+ ],
+ "rooms": [
+  {
+   "room": "open-office",
+   "x0": 0,
+   "y0": 0,
+   "x1": 11,
+   "y1": 13
+  },
+  {
+   "room": "meeting",
+   "x0": 11,
+   "y0": 0,
+   "x1": 19,
+   "y1": 7
+  },
+  {
+   "room": "hall",
+   "x0": 11,
+   "y0": 7,
+   "x1": 19,
+   "y1": 13
+  }
+ ]
+}

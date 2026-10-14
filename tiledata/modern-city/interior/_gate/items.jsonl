@@ -1,0 +1,100 @@
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-carpet-office.png", "kind": "terrain", "name": "사무실 카펫 타일(청회색)", "label": "modern_city/interior/mci-carpet-office"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-stone-lobby.png", "kind": "terrain", "name": "로비 대리석(크림 판)", "label": "modern_city/interior/mci-stone-lobby"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-vinyl-store.png", "kind": "terrain", "name": "매장 흰 비닐 타일", "label": "modern_city/interior/mci-vinyl-store"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-wood-oak.png", "kind": "terrain", "name": "아파트 마루(밝은 참나무)", "label": "modern_city/interior/mci-wood-oak"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-wood-dark.png", "kind": "terrain", "name": "카페 짙은 마루(헤링본)", "label": "modern_city/interior/mci-wood-dark"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-vinyl-hospital.png", "kind": "terrain", "name": "병원 연녹 시트 바닥", "label": "modern_city/interior/mci-vinyl-hospital"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-tile-concourse.png", "kind": "terrain", "name": "지하 통로 화강암 판", "label": "modern_city/interior/mci-tile-concourse"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-concrete.png", "kind": "terrain", "name": "창고 콘크리트", "label": "modern_city/interior/mci-concrete"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-tile-small.png", "kind": "terrain", "name": "주방·욕실 작은 흰 타일", "label": "modern_city/interior/mci-tile-small"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-wall-office.png", "kind": "terrain", "name": "사무실 벽(밝은 회색)", "label": "modern_city/interior/mci-wall-office"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-wall-lobby.png", "kind": "terrain", "name": "로비 석재 판벽", "label": "modern_city/interior/mci-wall-lobby"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-wall-store.png", "kind": "terrain", "name": "편의점 벽(흰 패널·빨강 띠)", "label": "modern_city/interior/mci-wall-store"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-wall-home.png", "kind": "terrain", "name": "집 벽(크림 벽지·나무 몰딩)", "label": "modern_city/interior/mci-wall-home"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-wall-hospital.png", "kind": "terrain", "name": "병원 벽(흰 칠·세이지 허리판·손잡이 난간)", "label": "modern_city/interior/mci-wall-hospital"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-wall-brick.png", "kind": "terrain", "name": "카페 벽돌 벽", "label": "modern_city/interior/mci-wall-brick"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-wall-tile.png", "kind": "terrain", "name": "지하 통로 타일 벽(청록 띠)", "label": "modern_city/interior/mci-wall-tile"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-wall-metal.png", "kind": "terrain", "name": "창고 골판 철벽", "label": "modern_city/interior/mci-wall-metal"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-window-city.png", "kind": "wall_mounted", "name": "도시가 보이는 큰 창", "label": "modern_city/interior/mci-window-city"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-window-blind.png", "kind": "wall_mounted", "name": "블라인드 창", "label": "modern_city/interior/mci-window-blind"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-window-curtain.png", "kind": "wall_mounted", "name": "커튼 창", "label": "modern_city/interior/mci-window-curtain"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-wall-clock.png", "kind": "wall_mounted", "name": "벽시계", "label": "modern_city/interior/mci-wall-clock"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-tv-wall.png", "kind": "wall_mounted", "name": "벽걸이 TV", "label": "modern_city/interior/mci-tv-wall"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-art-frame.png", "kind": "wall_mounted", "name": "추상화 액자", "label": "modern_city/interior/mci-art-frame"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-whiteboard.png", "kind": "wall_mounted", "name": "화이트보드", "label": "modern_city/interior/mci-whiteboard"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-ac-wall.png", "kind": "wall_mounted", "name": "벽걸이 에어컨", "label": "modern_city/interior/mci-ac-wall"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-menu-board.png", "kind": "wall_mounted", "name": "카페 메뉴 칠판", "label": "modern_city/interior/mci-menu-board"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-notice-board.png", "kind": "wall_mounted", "name": "코르크 게시판", "label": "modern_city/interior/mci-notice-board"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-route-map.png", "kind": "wall_mounted", "name": "노선도 판", "label": "modern_city/interior/mci-route-map"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-desk-pc.png", "kind": "low_furniture", "name": "사무 책상(화면 남향)", "label": "modern_city/interior/mci-desk-pc"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-desk-pc-back.png", "kind": "low_furniture", "name": "사무 책상(화면 북향)", "label": "modern_city/interior/mci-desk-pc-back"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-chair-office-s.png", "kind": "seat", "name": "사무용 의자(남향)", "label": "modern_city/interior/mci-chair-office-s"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-chair-office-n.png", "kind": "seat", "name": "사무용 의자(북향)", "label": "modern_city/interior/mci-chair-office-n"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-partition.png", "kind": "frame", "name": "사무 칸막이", "label": "modern_city/interior/mci-partition"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-copier.png", "kind": "box", "name": "복합기", "label": "modern_city/interior/mci-copier"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-server-rack.png", "kind": "tall_furniture", "name": "서버 랙 둘", "label": "modern_city/interior/mci-server-rack"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-filing.png", "kind": "low_furniture", "name": "낮은 서류 캐비닛", "label": "modern_city/interior/mci-filing"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-coffee-station.png", "kind": "low_furniture", "name": "탕비 카운터", "label": "modern_city/interior/mci-coffee-station"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-reception.png", "kind": "low_furniture", "name": "접수 카운터", "label": "modern_city/interior/mci-reception"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-plant-tall.png", "kind": "organic", "name": "키 큰 화분", "label": "modern_city/interior/mci-plant-tall"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-shelf-office.png", "kind": "tall_furniture", "name": "서류철 서가", "label": "modern_city/interior/mci-shelf-office"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-gondola.png", "kind": "tall_furniture", "name": "진열대(양면)", "label": "modern_city/interior/mci-gondola"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-gondola-v.png", "kind": "tall_furniture", "name": "세로 진열대", "label": "modern_city/interior/mci-gondola-v"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-cooler.png", "kind": "tall_furniture", "name": "음료 냉장고", "label": "modern_city/interior/mci-cooler"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-freezer.png", "kind": "container", "name": "아이스크림 냉동고", "label": "modern_city/interior/mci-freezer"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-counter-register.png", "kind": "low_furniture", "name": "계산대", "label": "modern_city/interior/mci-counter-register"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-magazine.png", "kind": "low_furniture", "name": "잡지 진열대", "label": "modern_city/interior/mci-magazine"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-atm.png", "kind": "box", "name": "ATM", "label": "modern_city/interior/mci-atm"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-basket-stack.png", "kind": "container", "name": "장바구니 더미", "label": "modern_city/interior/mci-basket-stack"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-bed-double.png", "kind": "low_furniture", "name": "더블 침대", "label": "modern_city/interior/mci-bed-double"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-bed-single.png", "kind": "low_furniture", "name": "싱글 침대", "label": "modern_city/interior/mci-bed-single"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-sofa.png", "kind": "seat", "name": "3인 소파", "label": "modern_city/interior/mci-sofa"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-armchair.png", "kind": "seat", "name": "1인 안락의자", "label": "modern_city/interior/mci-armchair"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-coffee-table.png", "kind": "low_furniture", "name": "거실 탁자", "label": "modern_city/interior/mci-coffee-table"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-tv-stand.png", "kind": "low_furniture", "name": "TV 장", "label": "modern_city/interior/mci-tv-stand"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-kitchen.png", "kind": "low_furniture", "name": "부엌 조리대", "label": "modern_city/interior/mci-kitchen"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-fridge.png", "kind": "tall_furniture", "name": "냉장고", "label": "modern_city/interior/mci-fridge"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-wardrobe.png", "kind": "tall_furniture", "name": "옷장", "label": "modern_city/interior/mci-wardrobe"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-chair-wood-s.png", "kind": "seat", "name": "나무 의자(남향)", "label": "modern_city/interior/mci-chair-wood-s"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-chair-wood-n.png", "kind": "seat", "name": "나무 의자(북향)", "label": "modern_city/interior/mci-chair-wood-n"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-rug.png", "kind": "flat", "name": "거실 깔개", "label": "modern_city/interior/mci-rug"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-toilet.png", "kind": "container", "name": "양변기", "label": "modern_city/interior/mci-toilet"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-washbasin.png", "kind": "container", "name": "세면대", "label": "modern_city/interior/mci-washbasin"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-cafe-table.png", "kind": "low_furniture", "name": "카페 원탁", "label": "modern_city/interior/mci-cafe-table"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-cafe-chair-e.png", "kind": "seat", "name": "카페 의자(동향)", "label": "modern_city/interior/mci-cafe-chair-e"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-cafe-chair-w.png", "kind": "seat", "name": "카페 의자(서향)", "label": "modern_city/interior/mci-cafe-chair-w"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-bar-stool.png", "kind": "seat", "name": "높은 둥근 의자", "label": "modern_city/interior/mci-bar-stool"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-pastry-case.png", "kind": "low_furniture", "name": "진열 냉장 케이스", "label": "modern_city/interior/mci-pastry-case"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-hosp-bed.png", "kind": "low_furniture", "name": "병원 침대", "label": "modern_city/interior/mci-hosp-bed"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-curtain.png", "kind": "frame", "name": "병상 칸막이 커튼", "label": "modern_city/interior/mci-curtain"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-iv-stand.png", "kind": "column", "name": "링거 걸대", "label": "modern_city/interior/mci-iv-stand"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-bedside.png", "kind": "low_furniture", "name": "침대 옆 협탁", "label": "modern_city/interior/mci-bedside"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-wait-bench.png", "kind": "seat", "name": "대기 의자(셋)", "label": "modern_city/interior/mci-wait-bench"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-med-cart.png", "kind": "low_furniture", "name": "약품 카트", "label": "modern_city/interior/mci-med-cart"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-teller.png", "kind": "low_furniture", "name": "은행 창구", "label": "modern_city/interior/mci-teller"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-stanchion.png", "kind": "column", "name": "줄 세우기 기둥", "label": "modern_city/interior/mci-stanchion"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-elevator.png", "kind": "wall_mounted", "name": "엘리베이터 문", "label": "modern_city/interior/mci-elevator"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-security-gate.png", "kind": "low_furniture", "name": "출입 보안 게이트", "label": "modern_city/interior/mci-security-gate"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-planter.png", "kind": "container", "name": "긴 화분 상자", "label": "modern_city/interior/mci-planter"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-mailboxes.png", "kind": "tall_furniture", "name": "우편함", "label": "modern_city/interior/mci-mailboxes"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-ticket-gate.png", "kind": "low_furniture", "name": "개찰구", "label": "modern_city/interior/mci-ticket-gate"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-ticket-machine.png", "kind": "tall_furniture", "name": "발권기", "label": "modern_city/interior/mci-ticket-machine"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-bench-metal.png", "kind": "seat", "name": "금속 벤치", "label": "modern_city/interior/mci-bench-metal"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-tactile.png", "kind": "flat", "name": "점자 블록", "label": "modern_city/interior/mci-tactile"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-stairs-up.png", "kind": "structure", "name": "오르는 계단", "label": "modern_city/interior/mci-stairs-up"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-stairs-down.png", "kind": "structure", "name": "내려가는 계단", "label": "modern_city/interior/mci-stairs-down"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-rack.png", "kind": "tall_furniture", "name": "창고 선반", "label": "modern_city/interior/mci-rack"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-pallet.png", "kind": "box", "name": "팔레트 상자 더미", "label": "modern_city/interior/mci-pallet"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-drums.png", "kind": "round_body", "name": "드럼통 둘", "label": "modern_city/interior/mci-drums"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-t-meeting.png", "kind": "low_furniture", "name": "회의 탁자(흰 상판)", "label": "modern_city/interior/mci-t-meeting"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-t-wood.png", "kind": "low_furniture", "name": "나무 식탁·탁자", "label": "modern_city/interior/mci-t-wood"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-t-counter.png", "kind": "low_furniture", "name": "카운터(베이지 앞판)", "label": "modern_city/interior/mci-t-counter"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-g-laptop.png", "kind": "other", "name": "노트북", "label": "modern_city/interior/mci-g-laptop"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-g-coffee.png", "kind": "other", "name": "머그잔 둘", "label": "modern_city/interior/mci-g-coffee"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-g-papers.png", "kind": "other", "name": "서류 더미", "label": "modern_city/interior/mci-g-papers"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-g-phone.png", "kind": "other", "name": "사무 전화기", "label": "modern_city/interior/mci-g-phone"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-g-register.png", "kind": "other", "name": "계산 단말", "label": "modern_city/interior/mci-g-register"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-g-espresso.png", "kind": "other", "name": "에스프레소 머신", "label": "modern_city/interior/mci-g-espresso"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-g-cake.png", "kind": "other", "name": "케이크 접시", "label": "modern_city/interior/mci-g-cake"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-g-vase.png", "kind": "other", "name": "꽃병", "label": "modern_city/interior/mci-g-vase"}
+{"png": "/home/main/z-project/rpg-zzu-modern-city-int/tiledata/modern-city/interior/_gate/mci-g-books.png", "kind": "other", "name": "책 더미", "label": "modern_city/interior/mci-g-books"}

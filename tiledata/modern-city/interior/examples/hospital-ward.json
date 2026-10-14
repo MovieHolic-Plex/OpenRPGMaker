@@ -1,0 +1,164 @@
+{
+ "name": "도쿄풍 병원 병동",
+ "kind": "hospital",
+ "plan": [
+  "##################",
+  "#................#",
+  "#................#",
+  "#................#",
+  "#................#",
+  "#................#",
+  "#................#",
+  "#................#",
+  "#................#",
+  "#................#",
+  "#................#",
+  "########..########"
+ ],
+ "floor": "mci-vinyl-hospital",
+ "wall": "mci-wall-hospital",
+ "exitWidth": 2,
+ "zones": [],
+ "objects": [
+  {
+   "id": "mci-window-blind",
+   "x": 2,
+   "y": 1
+  },
+  {
+   "id": "mci-window-blind",
+   "x": 7,
+   "y": 1
+  },
+  {
+   "id": "mci-wall-clock",
+   "x": 10,
+   "y": 1
+  },
+  {
+   "id": "mci-window-blind",
+   "x": 13,
+   "y": 1
+  },
+  {
+   "id": "mci-iv-stand",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "mci-hosp-bed",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "mci-bedside",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "mci-iv-stand",
+   "x": 5,
+   "y": 3
+  },
+  {
+   "id": "mci-hosp-bed",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "mci-bedside",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "mci-iv-stand",
+   "x": 10,
+   "y": 3
+  },
+  {
+   "id": "mci-hosp-bed",
+   "x": 11,
+   "y": 3
+  },
+  {
+   "id": "mci-bedside",
+   "x": 12,
+   "y": 3
+  },
+  {
+   "id": "mci-iv-stand",
+   "x": 14,
+   "y": 3
+  },
+  {
+   "id": "mci-hosp-bed",
+   "x": 15,
+   "y": 3
+  },
+  {
+   "id": "mci-bedside",
+   "x": 16,
+   "y": 3
+  },
+  {
+   "id": "mci-curtain",
+   "x": 2,
+   "y": 6
+  },
+  {
+   "id": "mci-curtain",
+   "x": 6,
+   "y": 6
+  },
+  {
+   "id": "mci-curtain",
+   "x": 11,
+   "y": 6
+  },
+  {
+   "id": "mci-curtain",
+   "x": 15,
+   "y": 6
+  },
+  {
+   "id": "mci-med-cart",
+   "x": 9,
+   "y": 8
+  },
+  {
+   "id": "mci-wait-bench",
+   "x": 1,
+   "y": 10
+  },
+  {
+   "id": "mci-plant-tall",
+   "x": 4,
+   "y": 10
+  },
+  {
+   "id": "mci-wait-bench",
+   "x": 12,
+   "y": 10
+  },
+  {
+   "id": "mci-plant-tall",
+   "x": 16,
+   "y": 9
+  }
+ ],
+ "tables": [],
+ "goods": [],
+ "start": [
+  8,
+  10
+ ],
+ "rooms": [
+  {
+   "room": "ward",
+   "x0": 0,
+   "y0": 0,
+   "x1": 17,
+   "y1": 11
+  }
+ ]
+}

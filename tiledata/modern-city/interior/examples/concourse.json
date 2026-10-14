@@ -1,0 +1,124 @@
+{
+ "name": "도쿄풍 지하철 대합실",
+ "kind": "station",
+ "plan": [
+  "####################",
+  "#..................#",
+  "#..................#",
+  "#..................#",
+  "#..................#",
+  "#..................#",
+  "#..................#",
+  "#..................#",
+  "#..................#",
+  "#..................#",
+  "#..................#",
+  "########....########"
+ ],
+ "floor": "mci-tile-concourse",
+ "wall": "mci-wall-tile",
+ "exitWidth": 4,
+ "zones": [],
+ "objects": [
+  {
+   "id": "mci-route-map",
+   "x": 2,
+   "y": 1
+  },
+  {
+   "id": "mci-route-map",
+   "x": 7,
+   "y": 1
+  },
+  {
+   "id": "mci-wall-clock",
+   "x": 11,
+   "y": 1
+  },
+  {
+   "id": "mci-route-map",
+   "x": 15,
+   "y": 1
+  },
+  {
+   "id": "mci-ticket-machine",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "mci-ticket-machine",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "mci-ticket-machine",
+   "x": 5,
+   "y": 3
+  },
+  {
+   "id": "mci-stairs-up",
+   "x": 15,
+   "y": 3
+  },
+  {
+   "id": "mci-ticket-gate",
+   "x": 6,
+   "y": 6
+  },
+  {
+   "id": "mci-ticket-gate",
+   "x": 9,
+   "y": 6
+  },
+  {
+   "id": "mci-ticket-gate",
+   "x": 12,
+   "y": 6
+  },
+  {
+   "id": "mci-bench-metal",
+   "x": 1,
+   "y": 8
+  },
+  {
+   "id": "mci-bench-metal",
+   "x": 16,
+   "y": 8
+  },
+  {
+   "id": "mci-bench-metal",
+   "x": 16,
+   "y": 10
+  },
+  {
+   "id": "mci-tactile",
+   "x": 10,
+   "y": 8
+  },
+  {
+   "id": "mci-tactile",
+   "x": 10,
+   "y": 9
+  },
+  {
+   "id": "mci-tactile",
+   "x": 10,
+   "y": 10
+  }
+ ],
+ "tables": [],
+ "goods": [],
+ "start": [
+  10,
+  10
+ ],
+ "rooms": [
+  {
+   "room": "concourse",
+   "x0": 0,
+   "y0": 0,
+   "x1": 19,
+   "y1": 11
+  }
+ ]
+}

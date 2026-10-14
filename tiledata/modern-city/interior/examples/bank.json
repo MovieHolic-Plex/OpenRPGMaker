@@ -1,0 +1,152 @@
+{
+ "name": "도쿄풍 은행 지점",
+ "kind": "bank",
+ "plan": [
+  "##################",
+  "#................#",
+  "#................#",
+  "#................#",
+  "#................#",
+  "#................#",
+  "#................#",
+  "#................#",
+  "#................#",
+  "#................#",
+  "#................#",
+  "#######....#######"
+ ],
+ "floor": "mci-stone-lobby",
+ "wall": "mci-wall-lobby",
+ "exitWidth": 4,
+ "zones": [
+  {
+   "x0": 1,
+   "x1": 16,
+   "y0": 1,
+   "y1": 4,
+   "floor": "mci-carpet-office",
+   "wall": "mci-wall-office"
+  }
+ ],
+ "objects": [
+  {
+   "id": "mci-wall-clock",
+   "x": 3,
+   "y": 1
+  },
+  {
+   "id": "mci-art-frame",
+   "x": 8,
+   "y": 1
+  },
+  {
+   "id": "mci-notice-board",
+   "x": 14,
+   "y": 1
+  },
+  {
+   "id": "mci-filing",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "mci-shelf-office",
+   "x": 14,
+   "y": 3
+  },
+  {
+   "id": "mci-chair-office-s",
+   "x": 5,
+   "y": 4
+  },
+  {
+   "id": "mci-chair-office-s",
+   "x": 8,
+   "y": 4
+  },
+  {
+   "id": "mci-chair-office-s",
+   "x": 11,
+   "y": 4
+  },
+  {
+   "id": "mci-teller",
+   "x": 4,
+   "y": 5
+  },
+  {
+   "id": "mci-teller",
+   "x": 10,
+   "y": 5
+  },
+  {
+   "id": "mci-stanchion",
+   "x": 5,
+   "y": 7
+  },
+  {
+   "id": "mci-stanchion",
+   "x": 7,
+   "y": 7
+  },
+  {
+   "id": "mci-stanchion",
+   "x": 9,
+   "y": 7
+  },
+  {
+   "id": "mci-stanchion",
+   "x": 11,
+   "y": 7
+  },
+  {
+   "id": "mci-wait-bench",
+   "x": 1,
+   "y": 9
+  },
+  {
+   "id": "mci-wait-bench",
+   "x": 13,
+   "y": 9
+  },
+  {
+   "id": "mci-plant-tall",
+   "x": 16,
+   "y": 6
+  },
+  {
+   "id": "mci-plant-tall",
+   "x": 1,
+   "y": 6
+  }
+ ],
+ "tables": [
+  {
+   "style": "mci-t-counter",
+   "x": 7,
+   "y": 5,
+   "w": 3,
+   "h": 1
+  }
+ ],
+ "goods": [
+  {
+   "id": "mci-g-papers",
+   "x": 8,
+   "y": 5
+  }
+ ],
+ "start": [
+  8,
+  10
+ ],
+ "rooms": [
+  {
+   "room": "bank",
+   "x0": 0,
+   "y0": 0,
+   "x1": 17,
+   "y1": 11
+  }
+ ]
+}

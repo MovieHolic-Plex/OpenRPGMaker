@@ -1,0 +1,180 @@
+{
+ "name": "도쿄풍 아파트 1LDK",
+ "kind": "apartment",
+ "plan": [
+  "################",
+  "#......#.......#",
+  "#......#.......#",
+  "#......#.......#",
+  "#......#.......#",
+  "#..............#",
+  "#..............#",
+  "#..............#",
+  "#......#.......#",
+  "#......#.......#",
+  "#......#.......#",
+  "##########..####"
+ ],
+ "floor": "mci-wood-oak",
+ "wall": "mci-wall-home",
+ "exitWidth": 2,
+ "zones": [],
+ "objects": [
+  {
+   "id": "mci-window-curtain",
+   "x": 2,
+   "y": 1
+  },
+  {
+   "id": "mci-ac-wall",
+   "x": 4,
+   "y": 1
+  },
+  {
+   "id": "mci-window-city",
+   "x": 9,
+   "y": 1
+  },
+  {
+   "id": "mci-art-frame",
+   "x": 12,
+   "y": 1
+  },
+  {
+   "id": "mci-bedside",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "mci-bed-double",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "mci-bedside",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "mci-wardrobe",
+   "x": 5,
+   "y": 3
+  },
+  {
+   "id": "mci-desk-pc",
+   "x": 1,
+   "y": 9
+  },
+  {
+   "id": "mci-chair-office-n",
+   "x": 1,
+   "y": 10
+  },
+  {
+   "id": "mci-plant-tall",
+   "x": 6,
+   "y": 10
+  },
+  {
+   "id": "mci-sidedoor-wood",
+   "x": 7,
+   "y": 7
+  },
+  {
+   "id": "mci-sofa",
+   "x": 8,
+   "y": 3
+  },
+  {
+   "id": "mci-fridge",
+   "x": 11,
+   "y": 3
+  },
+  {
+   "id": "mci-kitchen",
+   "x": 12,
+   "y": 3
+  },
+  {
+   "id": "mci-rug",
+   "x": 8,
+   "y": 4
+  },
+  {
+   "id": "mci-coffee-table",
+   "x": 9,
+   "y": 5
+  },
+  {
+   "id": "mci-chair-wood-s",
+   "x": 12,
+   "y": 5
+  },
+  {
+   "id": "mci-chair-wood-s",
+   "x": 13,
+   "y": 5
+  },
+  {
+   "id": "mci-chair-wood-n",
+   "x": 12,
+   "y": 8
+  },
+  {
+   "id": "mci-chair-wood-n",
+   "x": 13,
+   "y": 8
+  },
+  {
+   "id": "mci-armchair",
+   "x": 8,
+   "y": 8
+  },
+  {
+   "id": "mci-plant-tall",
+   "x": 14,
+   "y": 10
+  }
+ ],
+ "tables": [
+  {
+   "style": "mci-t-wood",
+   "x": 12,
+   "y": 6,
+   "w": 2,
+   "h": 2
+  }
+ ],
+ "goods": [
+  {
+   "id": "mci-g-vase",
+   "x": 12,
+   "y": 6
+  },
+  {
+   "id": "mci-g-coffee",
+   "x": 13,
+   "y": 7
+  }
+ ],
+ "start": [
+  10,
+  10
+ ],
+ "rooms": [
+  {
+   "room": "bedroom",
+   "x0": 0,
+   "y0": 0,
+   "x1": 7,
+   "y1": 11
+  },
+  {
+   "room": "living",
+   "x0": 7,
+   "y0": 0,
+   "x1": 15,
+   "y1": 11
+  }
+ ]
+}
