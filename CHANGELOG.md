@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.219.0 — 2026-10-14
+
+### 기능
+
+- **monster** — campaign scale parameters, definition-consistency check, post-save write rejection root-cause fix (#2573) (`03db7aa`)
+
+### 수정
+
+- **ci** — type the expedition rival rows and ferry menu (`9da5416`)
+
 ## 0.218.0 — 2026-10-14
 
 ### 기능
