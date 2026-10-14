@@ -1,0 +1,286 @@
+{
+ "name": "검투사 투기장",
+ "building": "arena",
+ "floor": "sand",
+ "wall": "arenawall",
+ "ceiling": "rock",
+ "rooms": [
+  {
+   "id": "stands",
+   "kind": "arena_stands",
+   "x0": 1,
+   "y0": 1,
+   "x1": 22,
+   "y1": 6,
+   "floor": "sandstone",
+   "wall": "arenawall"
+  },
+  {
+   "id": "floor",
+   "kind": "arena_floor",
+   "x0": 1,
+   "y0": 8,
+   "x1": 22,
+   "y1": 18,
+   "floor": "sand",
+   "wall": "arenawall"
+  },
+  {
+   "id": "cell1",
+   "kind": "gladiator_cell",
+   "x0": 1,
+   "y0": 20,
+   "x1": 6,
+   "y1": 25,
+   "floor": "sandstone",
+   "wall": "rubble"
+  },
+  {
+   "id": "armory",
+   "kind": "arena_armory",
+   "x0": 8,
+   "y0": 20,
+   "x1": 15,
+   "y1": 26,
+   "floor": "sandstone",
+   "wall": "arenawall"
+  },
+  {
+   "id": "cell2",
+   "kind": "gladiator_cell",
+   "x0": 17,
+   "y0": 20,
+   "x1": 22,
+   "y1": 25,
+   "floor": "sandstone",
+   "wall": "rubble"
+  }
+ ],
+ "connect": [
+  {
+   "a": "stands",
+   "b": "floor",
+   "open": true,
+   "span": 2,
+   "at": 11
+  },
+  {
+   "a": "floor",
+   "b": "armory",
+   "at": 11
+  },
+  {
+   "a": "cell1",
+   "b": "armory"
+  },
+  {
+   "a": "armory",
+   "b": "cell2"
+  }
+ ],
+ "exit": {
+  "room": "armory"
+ },
+ "objects": [
+  {
+   "id": "tier back 3",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "tier back 3",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "tier back 3",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "curule seat",
+   "x": 11,
+   "y": 4
+  },
+  {
+   "id": "arena banner",
+   "x": 10,
+   "y": 1
+  },
+  {
+   "id": "arena banner",
+   "x": 13,
+   "y": 1
+  },
+  {
+   "id": "tier back 3",
+   "x": 14,
+   "y": 3
+  },
+  {
+   "id": "tier back 3",
+   "x": 17,
+   "y": 3
+  },
+  {
+   "id": "tier back 3",
+   "x": 20,
+   "y": 3
+  },
+  {
+   "id": "war drum",
+   "x": 10,
+   "y": 4
+  },
+  {
+   "id": "laurel trophy",
+   "x": 13,
+   "y": 4
+  },
+  {
+   "id": "portcullis",
+   "x": 3,
+   "y": 10
+  },
+  {
+   "id": "portcullis open",
+   "x": 18,
+   "y": 10
+  },
+  {
+   "id": "gate winch",
+   "x": 5,
+   "y": 10
+  },
+  {
+   "id": "gate winch",
+   "x": 17,
+   "y": 10
+  },
+  {
+   "id": "wall torch",
+   "x": 8,
+   "y": 8
+  },
+  {
+   "id": "wall torch",
+   "x": 15,
+   "y": 8
+  },
+  {
+   "id": "arena emblem",
+   "x": 11,
+   "y": 13
+  },
+  {
+   "id": "brazier",
+   "x": 1,
+   "y": 17
+  },
+  {
+   "id": "brazier",
+   "x": 22,
+   "y": 17
+  },
+  {
+   "id": "training dummy",
+   "x": 6,
+   "y": 15
+  },
+  {
+   "id": "training dummy",
+   "x": 17,
+   "y": 15
+  },
+  {
+   "id": "straw pile",
+   "x": 1,
+   "y": 22
+  },
+  {
+   "id": "shackles",
+   "x": 3,
+   "y": 20
+  },
+  {
+   "id": "stone bench",
+   "x": 4,
+   "y": 25
+  },
+  {
+   "id": "water bucket",
+   "x": 6,
+   "y": 22
+  },
+  {
+   "id": "gladiator rack",
+   "x": 8,
+   "y": 22
+  },
+  {
+   "id": "shield rack",
+   "x": 13,
+   "y": 20
+  },
+  {
+   "id": "armor bench",
+   "x": 14,
+   "y": 22
+  },
+  {
+   "id": "arena banner",
+   "x": 10,
+   "y": 20
+  },
+  {
+   "id": "barrel",
+   "x": 8,
+   "y": 26
+  },
+  {
+   "id": "archery target",
+   "x": 15,
+   "y": 25
+  },
+  {
+   "id": "prison cot",
+   "x": 21,
+   "y": 22
+  },
+  {
+   "id": "shackles",
+   "x": 19,
+   "y": 20
+  },
+  {
+   "id": "slop bucket",
+   "x": 22,
+   "y": 25
+  },
+  {
+   "id": "beast cage",
+   "x": 17,
+   "y": 22
+  },
+  {
+   "id": "tier seat 3",
+   "x": 1,
+   "y": 5
+  },
+  {
+   "id": "tier seat 3",
+   "x": 5,
+   "y": 5
+  },
+  {
+   "id": "tier seat 3",
+   "x": 14,
+   "y": 5
+  },
+  {
+   "id": "tier seat 3",
+   "x": 18,
+   "y": 5
+  }
+ ]
+}
