@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.216.2 — 2026-10-14
+
+### 수정
+
+- **field-enemy,campus** — field sprite follows battle enemy, return-home + "!" at sight + patrol/chase; campus dead doors enforced (#2565) (`2083f4a`)
+
 ## 0.216.1 — 2026-10-14
 
 ### 수정
