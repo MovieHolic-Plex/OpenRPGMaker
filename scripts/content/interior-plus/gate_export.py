@@ -15,6 +15,11 @@ def export():
     for pid in reg.order:
         p = reg.pieces[pid]; path = os.path.join(OUT, slug(pid) + '.png'); iplib.render(p).save(path)
         rows.append(dict(png=path, kind=p['gate'], name=f"{p['ko']} ({pid})", label=f'atlas_biome_interior/plus/{pid}'))
+    import gate_rooms   # 바닥·벽면 조립 방(kind structure)
+    os.makedirs(gate_rooms.OUT, exist_ok=True)
+    for r in gate_rooms.rooms(reg):
+        path = os.path.join(gate_rooms.OUT, r['label'].split('/')[-1] + '.png'); r['img'].save(path)
+        rows.append(dict(png=path, kind=r['kind'], name=r['name'], label=r['label']))
     with open(os.path.join(OUT, 'items.jsonl'), 'w') as f:
         for x in rows: f.write(json.dumps(x, ensure_ascii=False) + '\n')
     return rows

@@ -25,7 +25,7 @@
 {"png": "/home/main/z-project/rpg-zzu-interior-v5-plus/tiledata/hand-interior/plus/_gate/geode_stand.png", "kind": "container", "name": "자수정 정동 받침 (geode stand)", "label": "atlas_biome_interior/plus/geode stand"}
 {"png": "/home/main/z-project/rpg-zzu-interior-v5-plus/tiledata/hand-interior/plus/_gate/shield_display.png", "kind": "wall_mounted", "name": "청동 원형 방패 걸이 (shield display)", "label": "atlas_biome_interior/plus/shield display"}
 {"png": "/home/main/z-project/rpg-zzu-interior-v5-plus/tiledata/hand-interior/plus/_gate/mosaic_panel.png", "kind": "wall_mounted", "name": "고대 모자이크 벽판(2칸) (mosaic panel)", "label": "atlas_biome_interior/plus/mosaic panel"}
-{"png": "/home/main/z-project/rpg-zzu-interior-v5-plus/tiledata/hand-interior/plus/_gate/sarcophagus.png", "kind": "box", "name": "채색 석관(2칸) (sarcophagus)", "label": "atlas_biome_interior/plus/sarcophagus"}
+{"png": "/home/main/z-project/rpg-zzu-interior-v5-plus/tiledata/hand-interior/plus/_gate/painted_sarcophagus.png", "kind": "box", "name": "채색 석관(2칸) (painted sarcophagus)", "label": "atlas_biome_interior/plus/painted sarcophagus"}
 {"png": "/home/main/z-project/rpg-zzu-interior-v5-plus/tiledata/hand-interior/plus/_gate/map_case.png", "kind": "low_furniture", "name": "옛 지도 진열대(2칸) (map case)", "label": "atlas_biome_interior/plus/map case"}
 {"png": "/home/main/z-project/rpg-zzu-interior-v5-plus/tiledata/hand-interior/plus/_gate/porthole.png", "kind": "wall_mounted", "name": "놋쇠 둥근 창(배) (porthole)", "label": "atlas_biome_interior/plus/porthole"}
 {"png": "/home/main/z-project/rpg-zzu-interior-v5-plus/tiledata/hand-interior/plus/_gate/stern_windows.png", "kind": "wall_mounted", "name": "선미 격자 창(3칸) (stern windows)", "label": "atlas_biome_interior/plus/stern windows"}
@@ -46,7 +46,7 @@
 {"png": "/home/main/z-project/rpg-zzu-interior-v5-plus/tiledata/hand-interior/plus/_gate/mast.png", "kind": "column", "name": "돛대 밑동 (mast)", "label": "atlas_biome_interior/plus/mast"}
 {"png": "/home/main/z-project/rpg-zzu-interior-v5-plus/tiledata/hand-interior/plus/_gate/capstan.png", "kind": "round_body", "name": "닻 감는 고패 (capstan)", "label": "atlas_biome_interior/plus/capstan"}
 {"png": "/home/main/z-project/rpg-zzu-interior-v5-plus/tiledata/hand-interior/plus/_gate/ship_ladder.png", "kind": "frame", "name": "갑판 사다리 (ship ladder)", "label": "atlas_biome_interior/plus/ship ladder"}
-{"png": "/home/main/z-project/rpg-zzu-interior-v5-plus/tiledata/hand-interior/plus/_gate/cargo_hatch.png", "kind": "flat", "name": "화물 승강구 창살 (cargo hatch)", "label": "atlas_biome_interior/plus/cargo hatch"}
+{"png": "/home/main/z-project/rpg-zzu-interior-v5-plus/tiledata/hand-interior/plus/_gate/deck_grate.png", "kind": "flat", "name": "화물 승강구 창살 (deck grate)", "label": "atlas_biome_interior/plus/deck grate"}
 {"png": "/home/main/z-project/rpg-zzu-interior-v5-plus/tiledata/hand-interior/plus/_gate/binnacle.png", "kind": "container", "name": "나침반 함 (binnacle)", "label": "atlas_biome_interior/plus/binnacle"}
 {"png": "/home/main/z-project/rpg-zzu-interior-v5-plus/tiledata/hand-interior/plus/_gate/instrument_shelf.png", "kind": "wall_mounted", "name": "항해 도구 선반(2칸) (instrument shelf)", "label": "atlas_biome_interior/plus/instrument shelf"}
 {"png": "/home/main/z-project/rpg-zzu-interior-v5-plus/tiledata/hand-interior/plus/_gate/rope_pin_rail.png", "kind": "wall_mounted", "name": "밧줄 걸이 핀 막대(2칸) (rope pin rail)", "label": "atlas_biome_interior/plus/rope pin rail"}
@@ -72,3 +72,7 @@
 {"png": "/home/main/z-project/rpg-zzu-interior-v5-plus/tiledata/hand-interior/plus/_gate/war_drum.png", "kind": "round_body", "name": "북(전투 신호) (war drum)", "label": "atlas_biome_interior/plus/war drum"}
 {"png": "/home/main/z-project/rpg-zzu-interior-v5-plus/tiledata/hand-interior/plus/_gate/laurel_trophy.png", "kind": "column", "name": "월계관 우승 기둥 (laurel trophy)", "label": "atlas_biome_interior/plus/laurel trophy"}
 {"png": "/home/main/z-project/rpg-zzu-interior-v5-plus/tiledata/hand-interior/plus/_gate/curule_seat.png", "kind": "seat", "name": "귀빈 접이 의자 (curule seat)", "label": "atlas_biome_interior/plus/curule seat"}
+{"png": "/home/main/z-project/rpg-zzu-interior-v5-plus/tiledata/hand-interior/plus/_gate/_rooms/room-hull.png", "kind": "structure", "name": "범선 선체 판자 벽 방(갑판 판자·짐칸 판자 바닥) — 바닥·벽면 조립(위에서 본 3/4 방 한 칸)", "label": "atlas_biome_interior/plus/room-hull"}
+{"png": "/home/main/z-project/rpg-zzu-interior-v5-plus/tiledata/hand-interior/plus/_gate/_rooms/room-cabin.png", "kind": "structure", "name": "선장실 판벽 방(갑판 판자 바닥) — 바닥·벽면 조립(위에서 본 3/4 방 한 칸)", "label": "atlas_biome_interior/plus/room-cabin"}
+{"png": "/home/main/z-project/rpg-zzu-interior-v5-plus/tiledata/hand-interior/plus/_gate/_rooms/room-gallery.png", "kind": "structure", "name": "미술관 벽지 전시실(쪽모이 마루) — 바닥·벽면 조립(위에서 본 3/4 방 한 칸)", "label": "atlas_biome_interior/plus/room-gallery"}
+{"png": "/home/main/z-project/rpg-zzu-interior-v5-plus/tiledata/hand-interior/plus/_gate/_rooms/room-arenawall.png", "kind": "structure", "name": "투기장 사암 벽 마당(모래·사암 포석 바닥) — 바닥·벽면 조립(위에서 본 3/4 방 한 칸)", "label": "atlas_biome_interior/plus/room-arenawall"}

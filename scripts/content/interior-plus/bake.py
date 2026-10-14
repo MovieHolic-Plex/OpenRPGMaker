@@ -106,10 +106,7 @@ def main(no_gate=False, repack=False):
     for o in plus_prev: sp['objects'].pop(o, None)
 
     if not no_gate:
-        sys.path.insert(0, os.path.join(ROOT, 'src', 'harnesses', '_core'))
-        from object_gate import require_all
-        require_all([(im, kind, f'atlas_biome_interior/plus/{pid}') for pid, im, kind in gate_items(reg)], context='bundle')
-        import gate_rooms
+        import gate_rooms   # 기물 영수증 + 바닥·벽면 조립 방 영수증(미보정 프로필이면 현재 프로필 PASS 를 임시 통과로 센다 — 보고에 적힌다)
         gate_rooms.require_structure(reg)
 
     tiles = {}   # 칸 번호 → (그림, meta, pass, prio)
