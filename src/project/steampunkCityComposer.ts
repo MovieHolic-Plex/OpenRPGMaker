@@ -255,6 +255,16 @@ class Board {
       const k = y * this.W + x;
       if (this.lower[k] === fl && hash2(x, y, seed + 77) < 0.025) this.lower[k] = flb;
     }
+    // 낱칸 변주(화풍 정렬 2026-10-14): 같은 16px 무늬 반복을 깨는 금 간 돌·그을린 벽돌·잔돌 적은 마당 — 이음새 없이 이어지는 칸이라 낱칸으로 흩는다.
+    const singles: [string, string, number][] = [["cobble", "cobble-c", 0.16], ["flag", "flag-c", 0.07], ["brickpave", "brickpave-b", 0.22], ["cinder", "cinder-c", 0.3]];
+    for (const [base, alt, p] of singles) {
+      const a = this.pal.tile(base), b = this.pal.tile(alt);
+      if (a < 0 || b < 0) continue;
+      for (let y = 0; y < this.H; y++) for (let x = 0; x < this.W; x++) {
+        const k = y * this.W + x;
+        if (this.lower[k] === a && hash2(x, y, seed + base.length * 13 + 5) < p) this.lower[k] = b;
+      }
+    }
     // 기름 밴 자갈: 공장 앞·선로 곁 자갈에 드문 덩이
     const cob = this.pal.tile("cobble"), oil = this.pal.tile("cobble-oil");
     if (cob >= 0 && oil >= 0) for (let y = 0; y < this.H; y++) for (let x = 0; x < this.W; x++) {

@@ -10,7 +10,7 @@
 {"png": "sp-boiler-house.png", "kind": "structure", "name": "보일러실(그을린 벽돌, 폭 6, 배관·압력계)", "label": "steampunk-city/sp-boiler-house"}
 {"png": "sp-warehouse.png", "kind": "structure", "name": "창고(붉은 벽돌 2층, 폭 8, 화물 문)", "label": "steampunk-city/sp-warehouse"}
 {"png": "sp-station.png", "kind": "structure", "name": "기차역(다듬은 돌 2층, 폭 8, 양개문)", "label": "steampunk-city/sp-station"}
-{"png": "sp-clock-tower.png", "kind": "structure", "name": "시계탑(다듬은 돌 밑동 + 벽돌 몸 + 놋쇠 시계 + 녹청 첨탑, 폭 4)", "label": "steampunk-city/sp-clock-tower"}
+{"png": "sp-clock-tower.png", "kind": "structure", "name": "시계탑(다듬은 돌 밑동 + 벽돌 몸 + 놋쇠 시계 + 녹청 구리 모임지붕·피뢰침, 폭 4)", "label": "steampunk-city/sp-clock-tower"}
 {"png": "sp-guild-hall.png", "kind": "structure", "name": "조합 회관(다듬은 돌 3층, 폭 8, 발코니·양개문)", "label": "steampunk-city/sp-guild-hall"}
 {"png": "sp-workshop.png", "kind": "structure", "name": "기계 공방(벽돌 1층, 폭 6, 화물 문·천창)", "label": "steampunk-city/sp-workshop"}
 {"png": "sp-lab.png", "kind": "structure", "name": "연구소(다듬은 돌 2층, 폭 6, 구리 돔·피뢰침)", "label": "steampunk-city/sp-lab"}

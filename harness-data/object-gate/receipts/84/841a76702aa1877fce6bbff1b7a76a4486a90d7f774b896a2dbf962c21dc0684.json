@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "841a76702aa1877fce6bbff1b7a76a4486a90d7f774b896a2dbf962c21dc0684",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "보도 연석(북쪽 차도에서 오르는 턱)",
+ "label": "steampunk-city/sp-curb-n",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sidewalk curb and paving slabs",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This terrain tile depicts a sidewalk curb stepping up from a northern roadway. The horizontal top surfaces of both the curb and the sidewalk paving slabs are clearly visible spanning rows 1–7 and rows 8–14 in top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6583
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sidewalk curb and pavement",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal terrain transition representing a curb step up to a sidewalk, viewed top-down with visible ground/pavement surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4504
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "curb and sidewalk terrain tile",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts ground terrain (granite curb strip and pavement slabs) viewed from above in top-down perspective, with horizontal surface visible across the full tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10606
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "curb and sidewalk paving stones",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a terrain tile depicting paved sidewalk and curb stones viewed from above. The horizontal surfaces of the paving blocks occupy the tile (rows 1-15) with standard top-down perspective and mortar seams.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6966
+  }
+ ],
+ "decidedAt": "2026-10-14T08:37:24.707Z",
+ "cells": {
+  "16": [
+   "9b9f482f195b43be"
+  ],
+  "24": [
+   "4b6ec7a6e74da191",
+   "627b9ac984e0bcbd",
+   "7509b1fc3f4bbaae",
+   "b703fe18fa14b2d1",
+   "c52707600909bc78",
+   "f671215931e4076d"
+  ],
+  "32": [
+   "30dd04b0e12c3bff",
+   "3b1712247e98c6cf",
+   "8793c921b455d5f2",
+   "9b1ba8758e76f885",
+   "9f4b3650510dc67e",
+   "d993cb31021d15f1"
+  ],
+  "48": [
+   "37933bf0f99d543d",
+   "72df0f80214eccb9",
+   "7ad1b69d4711de14",
+   "831511ff612c7901",
+   "b13a6e3023a82d55",
+   "f580cff69e0a54a9"
+  ]
+ }
+}
