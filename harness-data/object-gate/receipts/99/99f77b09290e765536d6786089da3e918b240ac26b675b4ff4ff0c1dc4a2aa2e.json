@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "99f77b09290e765536d6786089da3e918b240ac26b675b4ff4ff0c1dc4a2aa2e",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "받침 위 돌 항아리(장례 항아리)",
+ "label": "gothic_manor/gm-urn",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "아가리 2행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone funerary urn on a pedestal",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The urn opening at the top is clearly foreshortened in 3/4 view with a visible interior ellipse spanning rows 3-4 between the back and front rims.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 2행 < 4"
+   ],
+   "ms": 5013
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone funerary urn on a pedestal",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The urn mouth shows an elliptical opening from row 3 to row 4 (2 rows of dark interior cavity visible from above) enclosed by the top rim.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 2행 < 4"
+   ],
+   "ms": 8643
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "funerary stone urn on pedestal",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The urn opening shows an elliptical interior at rows 3-4 (2 rows tall with visible green contents) viewed from above, enclosed by a back rim (row 2) and front rim (row 5).",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 2행 < 4"
+   ],
+   "ms": 7828
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone funerary jar on pedestal",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The jar's top opening is clearly visible from above as an ellipse spanning rows 2 to 5 with a 2-row dark interior (rows 3-4) containing visible contents.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 2행 < 4"
+   ],
+   "ms": 5558
+  }
+ ],
+ "decidedAt": "2026-10-13T16:24:27.172Z",
+ "cells": {
+  "16": [
+   "0ad3b2c3c48be174",
+   "6b6a69936ac04c36"
+  ],
+  "24": [
+   "08d74fc9ee04220b",
+   "20bd66aa40909ba1",
+   "59857fedf81e9eb3",
+   "7997052770d5f94f",
+   "9dc8e48a8924a1f0",
+   "ac659f23a339e834",
+   "ac7acb6925389743",
+   "b54aaef6232e09a3",
+   "c60d37b1a21330e7",
+   "cdcc972f5ba409e6",
+   "f43ec92b865821fe",
+   "f4b59348ef594a97"
+  ],
+  "32": [
+   "bc122ec75260b20b",
+   "e606b9dab2834cf2",
+   "f008eaa52cf108c6"
+  ],
+  "48": [
+   "2b6c3c165b353690",
+   "3f962b8ed9206a64",
+   "71655f1d54ab7f5f",
+   "775f6073536e553e",
+   "877bbe1fd3a9cb77",
+   "ac0332e341ea31ba"
+  ]
+ }
+}

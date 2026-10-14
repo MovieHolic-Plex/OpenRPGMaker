@@ -1,0 +1,138 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "44b48765ce8a20879ee90300333d291e732c2a050ef9209cc5f121184e023117",
+ "width": 48,
+ "height": 16,
+ "kind": "seat",
+ "name": "예배당 긴 의자",
+ "label": "gothic_manor/gm-pew",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 1행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "chapel pew / bench",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pew is drawn in a pure front elevation. The backrest is a flat vertical panel (rows 1-8) and the seat is represented by merely a 2px horizontal bar (rows 10-11) with no foreshortened top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6515
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "chapel pew (bench)",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pew is drawn in pure front elevation: the backrest occupies rows 1-8, while the seat board is depicted only as a flat 2-pixel-tall horizontal strip (rows 10-11) rather than a foreshortened horizontal surface seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 5921
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "chapel pew (bench)",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pew is drawn in pure front elevation: the vertical backrest spans rows 1-8, while the seat plank is seen completely flat/edge-on at rows 10-11 (only 2px tall), showing no foreshortened horizontal seat surface seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 5491
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "chapel pew",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pew is drawn in pure front elevation: the backrest spans rows 1–8, but the horizontal seat board below it is only a 2px strip (rows 10–11) with no top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6508
+  }
+ ],
+ "decidedAt": "2026-10-13T16:47:35.280Z",
+ "cells": {
+  "16": [
+   "4be0845a8099a259",
+   "4e0595366168790b",
+   "96a7f7eb370a1e79"
+  ],
+  "24": [
+   "5b3a14957583b3e2",
+   "66180f386aa08640",
+   "9da2a559f35232cb",
+   "e2cb95d4f4393b57"
+  ],
+  "32": [
+   "07e35b1dc9aca977",
+   "101bcbac95fc626c",
+   "3929039915063a7a",
+   "4681c1ff5e21b4de",
+   "580f354211107b3f",
+   "60b687d8c91a3d51",
+   "923ba15f0879acb4",
+   "95aa456a5e639b1b",
+   "a211949bb8e23826",
+   "d143f2f4be34cb0b",
+   "e3ca2ecc0711e9de",
+   "fc6ccfff3e8d9d87"
+  ],
+  "48": [
+   "77eec6b3250d6b00",
+   "d68c58273a8a81d0"
+  ]
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0a3b0146b95aa3028cba1f3264f2a84796ad0c5557ec32c41cf1a054db63dd8f",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "서 있는 촛대(깜빡임 3프레임)",
+ "label": "gothic_manor/gm-candelabra",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "standing candlestick with upper tray and base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the upper candle tray (rows 7-12) and the pedestal base (rows 24-30) are drawn as foreshortened ellipses viewed from above in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6658
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "standing candelabra plate and base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the upper candle tray (rows 7-11) and the bottom base (rows 24-28) clearly show foreshortened elliptical top surfaces about 4-5 pixel rows deep.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5022
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "standing candelabra with an upper tray, central pole, and base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the upper candle tray (rows 7-11) and the circular base (rows 24-28) are drawn as foreshortened ellipses clearly showing their top surfaces from the 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5012
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "candelabra stand with top tray, stem, and base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the upper candle tray (rows 7-10) and the circular base (rows 24-29) are drawn as foreshortened ellipses clearly showing their horizontal top surfaces in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5780
+  }
+ ],
+ "decidedAt": "2026-10-13T16:47:35.280Z",
+ "cells": {
+  "16": [
+   "12f57cf1bb815ed9",
+   "941c66d1a6f2f863"
+  ],
+  "24": [
+   "56bdb7cfb169085a",
+   "8625011ff914333e",
+   "8cb7408f50631f04",
+   "9ca689956f74ff37",
+   "a1014e6325496f3c",
+   "a620e38c91946829",
+   "c450cd44b3ee345e",
+   "c998015d7b70edb9",
+   "d655b571257f697b",
+   "f52d71ed6360dc04",
+   "f74bc38406b8e8fc",
+   "fc2fefd872cddaf4"
+  ],
+  "32": [
+   "177951c4dd1fc567",
+   "18c49976e7168a34",
+   "57346a46cfce93ed"
+  ],
+  "48": [
+   "145834cc18995142",
+   "146b1906e2f7b980",
+   "82536e3548e614a3",
+   "9412a14d1988e34a",
+   "a855e52d8dc74cd3",
+   "fd31f8eaf7c3da4a"
+  ]
+ }
+}

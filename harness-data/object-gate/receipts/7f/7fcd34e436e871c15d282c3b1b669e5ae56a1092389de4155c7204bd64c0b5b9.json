@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7fcd34e436e871c15d282c3b1b669e5ae56a1092389de4155c7204bd64c0b5b9",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "독수리 강론대",
+ "label": "gothic_manor/gm-lectern",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lectern with open book on a pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire lectern, including the open book at the top, the central post, and the rounded base, is drawn in pure front elevation with no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5253
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lectern with open book on a pedestal",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object (base, shaft, shelf, and book) is drawn in straight architectural front elevation with strictly horizontal lines, lacking any 3/4 top-down foreshortening or visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7434
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lectern with open book on a stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lectern and open book are drawn in a flat front elevation facing directly south. There is no visible top surface foreshortened from above (top_rows: 0), neither on the pages/lectern top nor the horizontal ledge, which is only a 2px horizontal bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4544
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "eagle lectern / book stand with open book on a pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lectern and book are drawn completely in front elevation. The book pages, shelf rim (rows 11-12), pole, and base show no foreshortened top surfaces visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4849
+  }
+ ],
+ "decidedAt": "2026-10-13T16:52:42.786Z",
+ "cells": {
+  "16": [
+   "65a315aa7a957f52",
+   "d260cb9b1d7e0a58"
+  ],
+  "24": [
+   "39561670d7f09f25",
+   "4e43f8cbfe42ceb9",
+   "58865236335bc1c2",
+   "6530b6f2a28c092f",
+   "6a1786f2712156d0",
+   "730852139a093ee8",
+   "8a1eaae5ef176842",
+   "a3017141ef65ad87",
+   "cf238e7bc301d3a1",
+   "d5ac1198ae163325",
+   "f78ef183311ba553",
+   "fb139fbdc772f415"
+  ],
+  "32": [
+   "8b66392c5fcf7b42",
+   "de284960be4a9231",
+   "e2672c4a5abe060e"
+  ],
+  "48": [
+   "103fe96553cdd9d9",
+   "2e6d1a29a89b2b28",
+   "88af983c16a998c2",
+   "a6bbfa409d4393a4",
+   "cafef46c79375a08",
+   "f1cd93736f648ac6"
+  ]
+ }
+}

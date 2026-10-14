@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1c61e7fe666e588d65419e668b4ac295d7518ace6fd784d31e943cee08a8fcc6",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "헤링본 오크 마루 B",
+ "label": "gothic_manor/gm-fl-parquet-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "herringbone oak parquet floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat herringbone wooden floor pattern filling the entire 16x16 tile as a top-down ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3605
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "herringbone parquet flooring tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 herringbone wooden floor pattern filling the entire tile, representing a flat horizontal floor surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2655
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "herringbone parquet wood floor",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 herringbone oak floor tile correctly representing top-down floor terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3103
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "herringbone oak floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A seamless herringbone parquet wooden floor texture filling the entire 16x16 terrain tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3331
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.499Z",
+ "cells": {
+  "16": [
+   "53f8719da7d93f2c"
+  ],
+  "24": [
+   "1aa41ef27a83e856",
+   "2381a302519d8db8",
+   "26381bb3c0cb3b75",
+   "67356491d6b1f738",
+   "85f986117cea03e8",
+   "99a7550e560787b3"
+  ],
+  "32": [
+   "629b47d5794c1a9a",
+   "84aa36a0dd416f88",
+   "a64b56b6a41173d8",
+   "a944d7c359013ca3",
+   "d59b593323ca16ea",
+   "e53845d10dc94990"
+  ],
+  "48": [
+   "338e45dde013f71e",
+   "5afc8098f5800dff",
+   "93da8778d035a02f",
+   "baa449b8b5dc6455",
+   "c07037b0675828b0",
+   "d5a074a698e8c1ad"
+  ]
+ }
+}

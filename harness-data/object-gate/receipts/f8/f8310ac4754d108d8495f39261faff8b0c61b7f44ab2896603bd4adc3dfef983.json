@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f8310ac4754d108d8495f39261faff8b0c61b7f44ab2896603bd4adc3dfef983",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "돌 새 물그릇",
+ "label": "gothic_manor/gm-birdbath",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone birdbath basin and pedestal",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The birdbath basin at the top clearly shows an elliptical opening filled with water spanning rows 5 to 10 inside the rim, viewed from an overhead 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4724
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone birdbath basin and pedestal",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The birdbath basin clearly displays an open interior basin with water spanning rows 5 to 9 (5 source pixel rows) surrounded by a visible rim and front bowl curve.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4117
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone birdbath bowl on pedestal",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The birdbath bowl clearly shows an elliptical opening filled with water across rows 5-10, demonstrating proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4062
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "birdbath bowl and pedestal",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The birdbath bowl at rows 3-11 clearly shows an elliptical opening with water inside, spanning 6 interior rows (rows 5-10) with visible top rim and front bowl curvature.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3664
+  }
+ ],
+ "decidedAt": "2026-10-13T16:24:27.174Z",
+ "cells": {
+  "16": [
+   "ed70607e2b9d4bb0",
+   "fd150389a2f77bc9"
+  ],
+  "24": [
+   "4fde87cab9207816",
+   "68e2c0073ea224b1",
+   "73f13fca70ce2fb5",
+   "7601ff01b1475cb7",
+   "92fd31d6b349d988",
+   "930db77bfde23a54",
+   "a826976e9b86da0f",
+   "b8ecaaf5d712d187",
+   "cc953dd68dbe265d",
+   "d6f064cea392bd5a",
+   "ecfad219a23d99d9",
+   "f31152eb47c0baf9"
+  ],
+  "32": [
+   "4df40c38923f8230",
+   "d57cf168c69cb4ab",
+   "f549023dd0e22e69"
+  ],
+  "48": [
+   "41f9f272da818013",
+   "444c73f68e05be1c",
+   "65db9adc24c35521",
+   "81b6289df4cda0e7",
+   "eacb7a1ed610fd9e",
+   "f573caaaa4d92867"
+  ]
+ }
+}

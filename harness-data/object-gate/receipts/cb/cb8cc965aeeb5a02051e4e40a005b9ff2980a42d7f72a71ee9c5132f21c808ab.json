@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cb8cc965aeeb5a02051e4e40a005b9ff2980a42d7f72a71ee9c5132f21c808ab",
+ "width": 16,
+ "height": 32,
+ "kind": "frame",
+ "name": "jp-lot-notice",
+ "label": "jp_city/street_hand/jp-lot-notice",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "notice board",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The notice board is drawn in completely flat front elevation: the board, upper header panel, posts, and roof have no visible top surface (only a 1px top outline on row 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7285
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "notice board panel and frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The notice board and its upper panel are drawn in flat front elevation with only a 1px outline at row 0 where the top surface should be. Neither the main board frame nor the posts show any visible depth/top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5194
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "notice board sign",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The notice board and panels are drawn in a completely flat front elevation with no visible top surface on the frame or main board body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6029
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "notice board panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The notice board and its frame are drawn in a completely flat front elevation with straight horizontal bands and no visible top surface (0px top depth on the main body).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5330
+  }
+ ],
+ "decidedAt": "2026-10-13T17:32:26.915Z",
+ "cells": {
+  "16": [
+   "1aac60ecf7995fa6",
+   "d1768b8204e4eddf"
+  ],
+  "24": [
+   "195579a53dff7977",
+   "1f0cae74681c18ad",
+   "4ffaecf914c40deb",
+   "58d1bf614a2dc3a9",
+   "63a15d19ae44f5d3",
+   "6a36c57c48fe0cf6",
+   "74c594deabb8014f",
+   "97c2ab084fb2699c",
+   "a53bcb337be38f25",
+   "d66e3b8799e934cb",
+   "f3189d974dc82c9b",
+   "f5304f23ee50e0cd"
+  ],
+  "32": [
+   "53d6898ec24c7f92",
+   "69e39bb7007708f4",
+   "b26bf1647a3ab998"
+  ],
+  "48": [
+   "70a281dc54e06075",
+   "a9c93b9e3d5ba545",
+   "ac7fd549b563d1d7",
+   "adf758f8c53820aa",
+   "e71e12209e3e7d10",
+   "f5d7b54f0d61e830"
+  ]
+ }
+}

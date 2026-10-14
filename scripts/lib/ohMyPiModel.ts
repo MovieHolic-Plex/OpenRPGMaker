@@ -36,6 +36,17 @@ export function resolveOhMyPiModel(provider: string, requested?: string) {
       },
     } };
   }
+  // Gemini 4 Argon: `agy` 모델 목록(2026-10-14)에 gemini-4-argon-{low,medium,high} 로 올라와 있다. 3.8 과 같은 전송이고
+  // 사고 강도 라우팅 이름만 다르다. 번들 카탈로그가 이 모델을 싣게 되면 위 exact 경로가 먼저 잡는다.
+  if (provider === "google-antigravity" && id === "gemini-4-argon") {
+    const base = getBundledModel("google-antigravity", "gemini-3.7-flash");
+    if (base) return { ...base, id, name: "Gemini 4 Argon", thinking: {
+      ...base.thinking!, effortRouting: {
+        minimal: "gemini-4-argon-low", low: "gemini-4-argon-low",
+        medium: "gemini-4-argon-medium", high: "gemini-4-argon-high",
+      },
+    } };
+  }
   if (provider === "openai-codex" && CODEX_GPT6_EXTENSION[id]) {
     const base = getBundledModel("openai-codex", "gpt-5.6-sol");
     // 웹소켓 핸드셰이크는 옛 클라이언트 버전을 박아 보내 새 모델을 거절당한다 — SSE 로 보내야

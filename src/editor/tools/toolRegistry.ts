@@ -84,6 +84,7 @@ import { HAND_INTERIOR_TOOLS } from "./handInteriorTools";
 import { JP_CITY_TOOLS } from "./jpCityTools";
 import { WIZARDING_SPACE_TOOLS } from "./wizardingSpaceTools";
 import { SF_STATION_TOOLS } from "./sfStationTools";
+import { GOTHIC_PLACE_TOOLS } from "./gothicPlaceTools";
 import { TRANSIT_TOOLS } from "./transitTools";
 import { AI_DOC_TOOLS } from "./aiDocTools";
 import { RETRO_CHOREOGRAPHY_TOOLS } from "./retroChoreographyTools";
@@ -226,6 +227,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(WIZARDING_SPACE_TOOLS, "tile"),
   // SF 정거장·네온 거리(sf_station) 맵 구성기 — 정거장·연구 기지 실내·네온 거리·달 기지를 씨앗으로 한 장째 짠다. oprn-scifi 맵에서만 동작한다.
   ...withDomain(SF_STATION_TOOLS, "tile"),
+  ...withDomain(GOTHIC_PLACE_TOOLS, "tile"),
   // 맵 위 탈것(차 흐름·버스·노면전차·전철·지하철) — 길 그림에서 자동으로 또는 칸 경로로 노선을 깐다. 런타임이 실제로 움직인다.
   ...withDomain(TRANSIT_TOOLS, "map"),
   ...withDomain(STRUCTURE_KIT_TOOLS, "tile"),

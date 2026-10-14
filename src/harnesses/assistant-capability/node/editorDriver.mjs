@@ -41,8 +41,13 @@ const freePort = () => new Promise((done, fail) => {
 });
 export async function startHost(projectDir, dir) {
   const port = await freePort();
-  const child = spawn(process.execPath, ['scripts/oprn-serve.mjs','--project-dir',projectDir,'--host','127.0.0.1','--port',String(port)], {
-    cwd: process.cwd(), env: { ...process.env, OPRN_HOST_OWNER_AI: '1',
+  const repoRoot = process.cwd();
+  const child = spawn(process.execPath, ['scripts/oprn-serve.mjs','--project-dir',projectDir,'--host','127.0.0.1','--port',String(port),...(process.env.HARNESS_DIST_DIR ? ['--dist',resolve(process.env.HARNESS_DIST_DIR)] : [])], {
+    cwd: repoRoot, env: { ...process.env, OPRN_HOST_OWNER_AI: '1',
+      // A developer shell may carry a worker path from another checkout. The
+      // native matrix must exercise this checkout's code and installed deps.
+      OPRN_REPO_ROOT: repoRoot,
+      OPRN_OH_MY_PI_WORKER_SCRIPT: resolve(repoRoot, 'scripts/oh-my-pi-worker.ts'),
       ...(existsSync(resolve(dir,'shared-content.sqlite')) ? { OPRN_SHARED_CONTENT_SQLITE: resolve(dir,'shared-content.sqlite') } : {}) }, stdio: ['ignore','pipe','pipe'], detached: true,
   });
   let log=''; const append = data => { log += data.toString(); };
@@ -92,7 +97,8 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
     const original=window.fetch;
     window.fetch=async function(...args){
       const response=await original.apply(this,args);
-      if(String(args[0]).includes('/v1/agent/run') && response.body){
+      const endpoint=String(args[0]);
+      if(endpoint.includes('/v1/agent/run') && response.body){
         const reader=response.clone().body.getReader(),decoder=new TextDecoder();let pending='';
         const consume=line=>{try{
           const outer=JSON.parse(line.replace(/^data:\s*/,'')),event=outer.type==='agent_event'?outer.event:outer;
@@ -108,6 +114,29 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
         void(async()=>{try{for(;;){const {done,value}=await reader.read();if(done)break;
           pending+=decoder.decode(value,{stream:true});const lines=pending.split('\n');pending=lines.pop();for(const line of lines)consume(line);
         }pending+=decoder.decode();if(pending.trim())consume(pending);window.__capEvents.push({type:'stream_closed',at:Date.now()});
+        }catch(error){window.__capEvents.push({type:'stream_error',message:error.message,at:Date.now()});}})();
+      }
+      // Read-only questions can use the chat-completion lane. Expose their
+      // settled response to the harness so a real read is not mistaken for a
+      // hung Pi turn merely because it did not open an agent SSE stream.
+      if(endpoint.includes('/v1/chat/completions') && response.body){
+        void(async()=>{try{
+          const raw=await response.clone().text();
+          let emitted=false;
+          for(const line of raw.split(/\r?\n/u)){
+            const payload=line.replace(/^data:\s*/u,'').trim();
+            if(!payload||payload==='[DONE]')continue;
+            try{
+              const outer=JSON.parse(payload), text=outer?.choices?.[0]?.message?.content ?? outer?.choices?.[0]?.delta?.content;
+              if(typeof text==='string'&&text.length){window.__capEvents.push({type:'assistant',text,at:Date.now()});emitted=true;}
+            }catch{/* provider returned a non-JSON stream line */}
+          }
+          if(!emitted){try{
+            const body=JSON.parse(raw), text=body?.choices?.[0]?.message?.content;
+            if(typeof text==='string')window.__capEvents.push({type:'assistant',text,at:Date.now()});
+          }catch{/* provider returned a non-JSON error body */}}
+          window.__capEvents.push({type:'chat_done',at:Date.now()});
+          window.__capEvents.push({type:'stream_closed',at:Date.now()});
         }catch(error){window.__capEvents.push({type:'stream_error',message:error.message,at:Date.now()});}})();
       }
       return response;

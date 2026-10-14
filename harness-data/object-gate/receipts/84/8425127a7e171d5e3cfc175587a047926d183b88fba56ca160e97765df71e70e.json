@@ -1,0 +1,151 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8425127a7e171d5e3cfc175587a047926d183b88fba56ca160e97765df71e70e",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "녹슨 쇠 우리",
+ "label": "gothic_manor/gm-cage",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron cage / cell bars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cage bars and horizontal crossbars are drawn entirely in a flat front elevation. Neither the horizontal beams nor the base/top show a foreshortened top surface (only 1-2px border bands).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4908
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cell bars / iron cage frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cage bars and horizontal crossbeams are drawn in flat 2D front elevation; horizontal beams at rows 7-8 and 29-31 are only 1-2px lines with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5131
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cell bars / iron cage frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bars and horizontal crossbeams are drawn in a flat 2D architectural front elevation. The horizontal beams are only 1-2 pixels tall with no foreshortened top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4600
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron cage bars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cage frame and bars are drawn in pure front elevation with horizontal rails only 1-2px thick and no visible top surface on any beam or base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5011
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.504Z",
+ "cells": {
+  "16": [
+   "204c6284ab2c3aac",
+   "2745f9d1bd4c1006",
+   "78b4520a7d34a974",
+   "c84b448a3b2b024d"
+  ],
+  "24": [
+   "04448ca068f765e4",
+   "065b23c11ec3b59f",
+   "14d577a193e87631",
+   "33f5a9401792d9c5",
+   "3ffa25c6e9e2469b",
+   "45c9830071236212",
+   "4f793bd2a64fdae2",
+   "53d074889407f4a1",
+   "54caa0777f5b0ff3",
+   "62889da9789ae811",
+   "65b029b86f023c7c",
+   "6606087d12062ed8",
+   "6cbce147de11c98a",
+   "73f298ee82bc229f",
+   "84e670502e892fc7",
+   "912202d0d3b9789f",
+   "92302e4344563d41",
+   "96bd600e402f660b",
+   "9a0042f33134dff5",
+   "9e984408ff4ed8d8",
+   "a8d36b83a47d9b53",
+   "b4e59d2a5b577881",
+   "ba1e612617fd486b"
+  ],
+  "32": [
+   "6545f7881d20d657"
+  ],
+  "48": [
+   "14845f5bf18100f6",
+   "16873f2767490793",
+   "34b516120636f9f2",
+   "6e9723920afb50aa",
+   "6fc399e6ea66a0b1",
+   "cf00e590be7e884d"
+  ]
+ }
+}

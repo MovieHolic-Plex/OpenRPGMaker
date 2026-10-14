@@ -1,0 +1,182 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "31a3166ee5e48dada6f5673e562124dc4e14c9c9f523caf363d5453112e92395",
+ "width": 96,
+ "height": 96,
+ "kind": "structure",
+ "name": "무너진 예배당(지붕 없는 벽·빈 장미창)",
+ "label": "gothic_manor/gm-bld-chapel-ruin",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ruined chapel wall facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat front elevation / 2D platformer view. The arched doorway, circular window, broken gable, and wall edges have no horizontal top surfaces visible from a 45-degree top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6057
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ruined chapel wall facade with broken rose window and arched doorway",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The structure is drawn as a flat 2D architectural front elevation. The ruined top of the wall shows no visible top surface/wall thickness seen from above, only a jagged 2D outline of the front stones, and all horizontal features (lintels, ledges, broken gable) lack foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7363
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ruined chapel wall facade with broken pediment and arched doorway",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire ruined chapel wall, doorway, window, and broken top edge are drawn as a flat 2D front elevation. The broken wall top has no visible horizontal depth/top surface showing wall thickness from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6874
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ruined chapel facade wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat 2D architectural front elevation. The broken top edge of the wall (rows 8-14) shows no horizontal top thickness or depth surface seen from above, and all architectural features (arch doorway, broken pediment, rose window) are viewed purely straight-on.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5907
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:15.454Z",
+ "cells": {
+  "16": [
+   "06af47f984f846c2",
+   "13fad4db1f9a1f63",
+   "18792a92a99f3c87",
+   "342e24551d221ebd",
+   "34c40fb31b599863",
+   "458dacc9fa20ebb4",
+   "4dfafee99684e9b8",
+   "51dd5dfb64a27cb0",
+   "5221f4d5d05830af",
+   "562011c29085bda5",
+   "6044509176a3b082",
+   "62baa7e117946aab",
+   "6906efc7d61f7e9b",
+   "6bd48e1cb7404cda",
+   "7066bfef982c87f7",
+   "73e7381a1d50d98d",
+   "845b26df3f37db10",
+   "85c7ea7d8c163872",
+   "8afd1910c0eaf46e",
+   "904fd9cacd9c1e08",
+   "993944564367394f",
+   "9e8ec0bcb51f1d82",
+   "a03c1c441ba15b9c",
+   "a1702159166bac0c",
+   "a8db09b666e3444f",
+   "ac583c33ad2f363a",
+   "acc1eeba861ea673",
+   "acdbf7804ebb1370",
+   "ad0901ad8ed8c6a1",
+   "bfaf6dd56bf4de38",
+   "d9a6def6f6d0988d",
+   "e532b63577a3d5dc",
+   "e5d2c70386890c70",
+   "eff9260111bb8a40",
+   "f36eba7e494ffdd4",
+   "f616e645fbb7234c"
+  ],
+  "24": [
+   "00ce58a8b30d67e1",
+   "0daa403f6021acd1",
+   "167c469f2295b91b",
+   "32de10a8008c43b2",
+   "38f899bc02703862",
+   "3e7cad9b3cb9d0d1",
+   "4418c70849c79729",
+   "4b29db1574c7680e",
+   "72a8ce6566f3fd88",
+   "765531d50316a16b",
+   "9f6ecb98e2de5982",
+   "a4a0093d461b0eea",
+   "aac93ee594475e91",
+   "b08ac64481f0372f",
+   "b832431aefb2dbeb",
+   "e4eaeb81f36dc048"
+  ],
+  "32": [
+   "4614663436b88ac5",
+   "4df993c9051e0ede",
+   "4ed776b785dcc312",
+   "66330a05ceee1be6",
+   "883862ea0e7f7d62",
+   "aa2b4e696e29b6e6",
+   "d01d028fc2ec783e",
+   "f2fbc2d065adb358",
+   "f5ce348145460990"
+  ],
+  "48": [
+   "6289fa6b32f29851",
+   "769f3f4160d9474e",
+   "a8cdd1ec2a510dd4",
+   "c2ffcc5620031d8b"
+  ]
+ }
+}

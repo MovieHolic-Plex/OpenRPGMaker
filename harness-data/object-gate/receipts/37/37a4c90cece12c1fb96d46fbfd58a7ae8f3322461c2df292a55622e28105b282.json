@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "37a4c90cece12c1fb96d46fbfd58a7ae8f3322461c2df292a55622e28105b282",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "천사 묘비(날개 접은 천사상)",
+ "label": "gothic_manor/gm-tomb-angel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "angel statue on rectangular stone pedestal",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone pedestal shows a clear 4-pixel tall horizontal top plane (rows 22-25) in top-down 3/4 perspective, with the dark front face extending below it (rows 26-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4240
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "angel statue on a rectangular stone plinth",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The plinth beneath the angel statue clearly shows a 4-pixel-tall top surface (rows 22-25) in a lighter top-lit tone where the statue stands, leading to the south-facing vertical front face (rows 27-31) separated by a distinct edge line at row 26.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5643
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "angel statue on a rectangular stone plinth",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The plinth clearly exhibits a 4-pixel-tall top surface (rows 22-25) in lighter stone above its shaded south face (rows 26-31), upon which the angel figure stands.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5330
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "angel statue on rectangular plinth",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The plinth clearly displays a 5-pixel-tall top surface (rows 21-25) in lighter stone upon which the angel figure stands, followed by a dark shadow/border line at row 26 and a 5-pixel-tall south face at rows 27-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5496
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:15.455Z",
+ "cells": {
+  "16": [
+   "eb2f8617e54ac607",
+   "f76b48dc741130e5"
+  ],
+  "24": [
+   "2a26bb3295357e05",
+   "4f14fba33a3fbee9",
+   "71a29aaaf3d314cf",
+   "7e94ee8df3bd41fe",
+   "8294af6cc1fb6790",
+   "a706bf0f4b4cb0d2",
+   "aeee340e80c89068",
+   "b8fe3b8efb238934",
+   "bfc2e95c0ed9ac23",
+   "d6d201e84da0b7fd",
+   "dff6afb27d2f237e",
+   "e1e94f1192e5af02"
+  ],
+  "32": [
+   "2d619a17cce41c48",
+   "64f56a249e6f3346",
+   "a9ea858dfe84d169"
+  ],
+  "48": [
+   "05888ed466cf7f2b",
+   "120ab44b7a0cab9e",
+   "1fc60721dd3eb508",
+   "6f74efba723280bd",
+   "c3af734fbd504bec",
+   "d9131306d9df0637"
+  ]
+ }
+}

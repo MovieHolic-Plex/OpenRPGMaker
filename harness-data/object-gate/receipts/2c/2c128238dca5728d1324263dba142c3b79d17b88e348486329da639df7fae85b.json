@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2c128238dca5728d1324263dba142c3b79d17b88e348486329da639df7fae85b",
+ "width": 32,
+ "height": 16,
+ "kind": "flat",
+ "name": "복도 러너(남북)",
+ "label": "gothic_manor/gm-runner-ns",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hallway carpet runner",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat carpet runner lying directly on the floor spanning all 16 rows from top to bottom, viewed fully from above as intended for floor tiles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3469
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hallway carpet runner",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The runner is viewed directly from above lying flat on the floor across all 16 rows, with gold borders on both sides and a patterned red center.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3166
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hallway carpet runner",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat floor runner viewed from above spanning rows 0 to 15, correctly textured for a flat ground surface in top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2758
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hallway carpet runner",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor runner carpet shown from above across all 16 rows with gold borders and diagonal weave pattern.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2435
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.501Z",
+ "cells": {
+  "16": [
+   "08b3d9a34a3ad6ff",
+   "75414ad8fa4ffead"
+  ],
+  "24": [
+   "0098dfbb51fde61e",
+   "17eb2cf6d0b790c4",
+   "1dd888d997161821",
+   "2fae8539c1ea0c46",
+   "31a99fe7928b4dfe",
+   "3a92f07b99009677",
+   "5e712f0b0f5f7c4d",
+   "69c4bad2b35de143",
+   "7b70e84c28de2bf0",
+   "981e677b7483a015",
+   "eec2c91575773901",
+   "fc3f60eaee1d19e0"
+  ],
+  "32": [
+   "9457fe208b4796c1",
+   "f84baaaf83ac0c48"
+  ],
+  "48": [
+   "0795c3bb98aaf6bd",
+   "1fc1ec40c38aefc3",
+   "5df2c6c479193797",
+   "6494e69069649741",
+   "a1e7a1e42bd4011f",
+   "e2c570cb0486fbe4"
+  ]
+ }
+}

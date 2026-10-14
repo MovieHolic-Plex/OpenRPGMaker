@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "285b07f3fb4a12c15df06ac25b4d9363fbe5759091bdc6e5214277bd1cd4d5ae",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-lot-kiosk",
+ "label": "jp_city/street_hand/jp-lot-kiosk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "옆면(아이소)"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "market stall kiosk with awning",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": false,
+    "evidence": "The awning slope is visible for 13 rows (rows 1-13), but an asymmetrical receding isometric side panel of the awning is drawn on the right edge (rows 6-12), violating the south-facing top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "옆면(아이소)"
+   ],
+   "ms": 13727
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "kiosk stall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": true,
+    "evidence": "The entire interior and counter are drawn in flat front elevation with 1-2px shelf lines and no visible top surface on the counter or shelves. Furthermore, the awning shows an asymmetric receding isometric side face on the right side.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "옆면(아이소)",
+    "윗면 0행 < 3"
+   ],
+   "ms": 18695
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "kiosk / market stall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire kiosk, including the striped awning, display shelves, and counter, is drawn in a flat 2D front elevation. Horizontal shelf and counter surfaces are depicted only as 1-2px edge lines without foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7314
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "kiosk stall",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": false,
+    "evidence": "The striped awning has an isometric/oblique side face drawn on the right side (rows 6-12), violating the 3/4 top-down perspective where receding side faces must not be visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "옆면(아이소)"
+   ],
+   "ms": 16829
+  }
+ ],
+ "decidedAt": "2026-10-13T17:27:07.784Z",
+ "cells": {
+  "16": [
+   "0b18060aea179530",
+   "256a7a39a89d4eb5",
+   "6b4dbd0739b9a16c",
+   "b5f8b2faa8259d3d",
+   "be42bf64979e34a6",
+   "f857d044f42dd20c"
+  ],
+  "24": [
+   "207360332a2c0af0",
+   "2fa060963cdef388",
+   "34eee901b6d840a8",
+   "5e98c5f7413c9fb8",
+   "7082061da0de0fcc",
+   "7e5356d40a230d63",
+   "b57d1da623a6d509",
+   "b6b58b17d1ba346e",
+   "b810370c822c3a78",
+   "bc1997beaf4b46cc",
+   "d2b822478d6fdec4",
+   "db21b8793426cf50"
+  ],
+  "32": [
+   "448b6a0bb8261f8f",
+   "ca7dce1ffe6683b4",
+   "e3a984885ef5a326",
+   "e4a49edb085d43fd"
+  ],
+  "48": [
+   "a7f4586def0bbe43",
+   "dc035a406f86c02f",
+   "f1740fbebac2f939"
+  ]
+ }
+}

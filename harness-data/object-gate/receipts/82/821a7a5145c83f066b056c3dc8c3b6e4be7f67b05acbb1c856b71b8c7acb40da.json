@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "821a7a5145c83f066b056c3dc8c3b6e4be7f67b05acbb1c856b71b8c7acb40da",
+ "width": 32,
+ "height": 16,
+ "kind": "flat",
+ "name": "복도 러너 남쪽 끝(술 장식)",
+ "label": "gothic_manor/gm-runner-s-end",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hallway carpet runner with fringe",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a floor runner rug lying flat on the ground with decorative fringe along the south border, correctly presented in top-down projection.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3337
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "carpet runner south end with gold border and fringe",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a floor runner lying flat on the ground, correctly rendered from a top-down perspective with its surface and south fringe visible.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4611
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hallway runner carpet end with tassels",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The runner lies flat on the floor viewed from above, with rows 0-11 showing the top surface and decorative border, followed by fringe tassels extending south.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3783
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "carpet runner south edge with fringes",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat floor rug/runner viewed directly from above in 3/4 perspective, complete with south fringe tassels lying flat on the floor tiles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4090
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.501Z",
+ "cells": {
+  "16": [
+   "525e601517bb0589",
+   "d700f3957c6035f1"
+  ],
+  "24": [
+   "1832b6cc5e048806",
+   "2b7b3ae23bb99a9d",
+   "5c024ba19e384743",
+   "5f14f4d57d7d47dd",
+   "8922de52fdfae098",
+   "9ad8fd7d7cf9d31f",
+   "a9028ab188cc5607",
+   "c9251a9ea0b4aca8",
+   "ca987b7f7f71e79f",
+   "dc6f31d56d85d5ee",
+   "f7aac858228d680a",
+   "ff08ec86afbb9d46"
+  ],
+  "32": [
+   "73514eb74aaf9ee9",
+   "d4318c2bf411261f"
+  ],
+  "48": [
+   "2d7907ccfe59cb14",
+   "8d51c067657534d3",
+   "8e4cb53e4459f1c0",
+   "9ea5ec38b2f27e78",
+   "b094f433bd22e1b8",
+   "ca24920c3ad36b4e"
+  ]
+ }
+}

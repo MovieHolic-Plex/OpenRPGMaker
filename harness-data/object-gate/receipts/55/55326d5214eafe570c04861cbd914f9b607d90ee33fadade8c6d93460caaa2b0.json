@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "55326d5214eafe570c04861cbd914f9b607d90ee33fadade8c6d93460caaa2b0",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "이끼 덩이(덧그림)",
+ "label": "gothic_manor/gm-ov-moss",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "moss patches (floor overlay)",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object consists of two flat moss decals lying directly on the floor plane. The larger patch spans 4 pixel rows vertically (rows 4-7) showing its full top-facing area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4736
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "moss patch decal",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object consists of flat moss patches meant to lie flat on the floor; the main patch spans 4 pixel rows (rows 4-7) viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5854
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "moss patch decals on ground",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object consists of two flat moss patches acting as floor decals, spanning 3-4 rows each directly on the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6297
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "moss patches (floor decal)",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Two small moss patches intended as floor decals lying flat on the ground plane, occupying 3-4 pixel rows vertically.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5990
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.463Z",
+ "cells": {
+  "16": [
+   "b6cc957023d2dd65"
+  ],
+  "24": [
+   "06dc10e809a1ec5c",
+   "4fac9273513842e6",
+   "5b12b809eda0fb98",
+   "79c9c66a619be19b",
+   "994435c1e5ddee1e",
+   "a686f901cfc5536d"
+  ],
+  "32": [
+   "10083fdb39bc3b8d",
+   "4f194190ca5e045c",
+   "890fbbaf3d96ac55",
+   "8cec314fa67a97d4",
+   "ec469a74ce82ba14",
+   "fff041f7a3c1d047"
+  ],
+  "48": [
+   "25be052aab06c2e0",
+   "44952d3c06b0175b",
+   "4a3a5c7771b7e0e5",
+   "76bc21083ee85ebf",
+   "904727ac41fa94ba",
+   "ba8f548be7d2b4a8"
+  ]
+ }
+}

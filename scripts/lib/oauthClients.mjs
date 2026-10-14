@@ -12,15 +12,28 @@ const decodeBase64 = (value) => Buffer.from(value, "base64").toString("utf8");
 
 /** @returns {Partial<import("../../src/ai/oauth/clientConfig.ts").OAuthClients>} */
 export function readOAuthClientsFromPiAi() {
+  const packageSearchPaths = (packageName) => {
+    const paths = new Set();
+    const addResolved = (resolver) => {
+      try {
+        for (const candidate of resolver.resolve.paths(packageName) ?? []) paths.add(candidate);
+      } catch {
+        // Bundled host modules run from a temporary directory, where the
+        // import.meta.url resolver has no path back to the checkout.
+      }
+    };
+    try { addResolved(createRequire(import.meta.url)); } catch { /* CJS bundle has no import.meta.url. */ }
+    const repoRoot = process.env.OPRN_REPO_ROOT?.trim();
+    if (repoRoot) paths.add(path.join(repoRoot, "node_modules"));
+    paths.add(path.resolve(process.cwd(), "node_modules"));
+    return [...paths];
+  };
+  const packageRoot = (packageName) => packageSearchPaths(packageName)
+    .map((dir) => path.join(dir, ...packageName.split("/")))
+    .find((dir) => existsSync(path.join(dir, "package.json")));
   // pi-ai 의 exports 는 import 조건만 열어 require.resolve 가 ERR_PACKAGE_PATH_NOT_EXPORTED 로 실패한다 —
   // node_modules 탐색 경로를 받아 패키지 폴더를 직접 찾는다.
-  let root;
-  try {
-    const candidates = createRequire(import.meta.url).resolve.paths("@oh-my-pi/pi-ai") ?? [];
-    root = candidates.map((dir) => path.join(dir, "@oh-my-pi", "pi-ai")).find((dir) => existsSync(path.join(dir, "package.json")));
-  } catch {
-    return {};
-  }
+  const root = packageRoot("@oh-my-pi/pi-ai");
   if (!root) return {};
   const read = (relative) => {
     try {
@@ -32,12 +45,28 @@ export function readOAuthClientsFromPiAi() {
   const antigravity = read("src/registry/oauth/google-antigravity.ts");
   const codex = read("src/registry/oauth/openai-codex.ts");
   const encoded = (name) => antigravity.match(new RegExp(`const ${name} = decode\\(\\s*"([A-Za-z0-9+/=]+)"`))?.[1];
-  const id = encoded("CLIENT_ID");
-  const secret = encoded("CLIENT_SECRET");
-  const codexId = codex.match(/const CLIENT_ID = "([^"]+)"/)?.[1];
+  // pi-ai 18.x moved OAuth metadata into the shared pi-catalog KDL rules and
+  // no longer keeps CLIENT_ID constants in the provider source. Keep the
+  // source parser for older installs, then fall back to the installed catalog
+  // instead of forcing every local harness to export credentials manually.
+  const catalogRoot = packageRoot("@oh-my-pi/pi-catalog");
+  const readCatalog = (relative) => {
+    if (!catalogRoot) return "";
+    try { return readFileSync(path.join(catalogRoot, relative), "utf8"); } catch { return ""; }
+  };
+  const antigravityRule = readCatalog("src/compat/rules/auth/google-antigravity.kdl");
+  const catalogValue = (name) => {
+    const match = antigravityRule.match(new RegExp(`${name}\\s+"([^"]+)"(?:\\s+encoding="([^"]+)")?`));
+    if (!match?.[1]) return undefined;
+    return match[2] === "base64" ? decodeBase64(match[1]) : match[1];
+  };
+  const id = encoded("CLIENT_ID") ? decodeBase64(encoded("CLIENT_ID")) : catalogValue("client-id");
+  const secret = encoded("CLIENT_SECRET") ? decodeBase64(encoded("CLIENT_SECRET")) : catalogValue("client-secret");
+  const codexId = codex.match(/const CLIENT_ID = "([^"]+)"/)?.[1]
+    ?? readCatalog("src/compat/rules/auth/openai-codex.kdl").match(/client-id\s+"([^"]+)"/)?.[1];
   return {
-    ...(id ? { antigravityClientId: decodeBase64(id) } : {}),
-    ...(secret ? { antigravityClientSecret: decodeBase64(secret) } : {}),
+    ...(id ? { antigravityClientId: id } : {}),
+    ...(secret ? { antigravityClientSecret: secret } : {}),
     ...(codexId ? { codexClientId: codexId } : {}),
   };
 }

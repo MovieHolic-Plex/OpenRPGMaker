@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8862a318b62ec4093e58362d18e62abd64fcce5dd65c29384ed286067f63f1b3",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "유리 진열장(해골·보석 유물)",
+ "label": "gothic_manor/gm-display-case",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "glass display case on cabinet",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top glass display surface showing the velvet bed with artifacts spans approximately 14 pixel rows (rows 2–16), resting above a south-facing cabinet base with a drawer (rows 18–29). The perspective correctly shows both the foreshortened top display surface and the front vertical face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11417
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "glass display case / museum vitrine counter",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The display case rests on a wooden base with a south front face (rows 18–31). The top showcase surface/velvet bed is viewed from above in clear 3/4 perspective across rows 3–15 (13 pixel rows) with relics resting on it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5385
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "glass display case on wooden cabinet base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The showcase and its wooden base are drawn in straight front elevation: the drawer and legs show no top surface (0px), and the display case above is depicted as a vertical front window tapering upwards with only a 1-2px cap line at rows 1-2, lacking any foreshortened top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12493
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "glass display case on wooden base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire piece of furniture is drawn in pure front elevation: the relics are mounted/hanging vertically inside the glass section, the wooden base with drawer is viewed completely flat from the front, and the top of the case is represented by a single 1px outline with no visible receding horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 16008
+  }
+ ],
+ "decidedAt": "2026-10-13T16:52:42.786Z",
+ "cells": {
+  "16": [
+   "25aa81ea10723f8b",
+   "76afe148f922d741",
+   "f511dad5a983772e",
+   "fff79a335564a5a3"
+  ],
+  "24": [
+   "0e1967e96890de13",
+   "0e647b4c0493fe80",
+   "13164f4671ea07c4",
+   "1d1b7f7f59ae1c75",
+   "32cc0eadff42fb8a",
+   "461ad27f7ee84312",
+   "46a0ffb98558e20b",
+   "53ace78447944228",
+   "68a8aa702db578a8",
+   "7090c758d93d353b",
+   "764fc19c25557660",
+   "7c4a21db2103a68d",
+   "8c6eb156d844d5c8",
+   "8d0f0e90b6a08e33",
+   "8db9fbeb64cef9ae",
+   "8f702ab5b0fa1ee0",
+   "9dbc4e748aad1679",
+   "b644c7d387a97bf2",
+   "c353345b3d17647d",
+   "ca642033553a7321",
+   "d315685161edaadc",
+   "d7119ae57d4c24c8",
+   "de5c605f279a3810",
+   "ebb3b4bbb377b475"
+  ],
+  "32": [
+   "14323c0a65ae11a9"
+  ],
+  "48": [
+   "a1912eb42df865af",
+   "a809252de8aeeaa0",
+   "c49b0002cce7b450",
+   "c6bcd1326dfe4adc",
+   "db6d4b4c3c5ae547",
+   "ddc97b14d9846b01"
+  ]
+ }
+}

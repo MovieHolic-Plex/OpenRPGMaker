@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "52375e8d5f6b625f0d9b0e959d57d4d6ada99b0a37fb726645009ab9cc6f6376",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "쇠 띠 두른 여행 트렁크",
+ "label": "gothic_manor/gm-trunk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2.5행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "travel trunk / chest",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The trunk is drawn almost entirely in front elevation. The front face (lid front and body front) spans rows 4–14 (11 rows tall) with a front-facing latch at rows 9–12. The lid top is represented by only 2 source pixel rows (rows 2–3) of shading between the top edge and the front face, lacking the prominent foreshortened top surface required for the 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 4"
+   ],
+   "ms": 12930
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "travel trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The trunk is drawn in a pure front elevation: the entire height shows the front face (lid front in rows 1-8, base front in rows 9-14, and lock clasp centered on the front seam in rows 9-12) with no visible horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 7692
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "travel trunk",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-3 form the top surface of the trunk lid (3 source pixel rows tall), with straps visibly converging inward toward the back edge. The front face of the lid extends from rows 4-8, and the lower trunk body spans rows 9-14.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 3행 < 4"
+   ],
+   "ms": 13454
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "travel trunk",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid surface is visible across rows 1–3 (3 rows tall). The iron straps visibly bend and converge towards the back on this top surface (cols 5-6 and 10-11) compared to the front face (cols 4-5 and 11-12), clearly rendering the horizontal plane in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 3행 < 4"
+   ],
+   "ms": 18333
+  }
+ ],
+ "decidedAt": "2026-10-13T16:52:42.785Z",
+ "cells": {
+  "16": [
+   "ca300b908c301620"
+  ],
+  "24": [
+   "36a4d5df23d9b5c2",
+   "64117a0dcea10e46",
+   "65910c4e01e745f9",
+   "955dbcd243e59dc3",
+   "a911eba7973560f7",
+   "fc8b2d7e27ac48b5"
+  ],
+  "32": [
+   "0936f31e0b50bbf1",
+   "1336bb6e9bb49131",
+   "af430503afb09570",
+   "c76352e89ab90109",
+   "d51322ef093088e1",
+   "f3ab0304278a1df7"
+  ],
+  "48": [
+   "1fcd6401f8d3d392",
+   "5f4d184946d1fdb9",
+   "7a674a7436868625",
+   "8db3248dd6a6151f",
+   "c3fcc28a80f6afdb",
+   "f03b769ebc0f52ce"
+  ]
+ }
+}

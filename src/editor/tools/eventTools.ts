@@ -1,3 +1,4 @@
+import { jsonEqual } from "@/util/structuralJson";
 import { passageBlockWarning } from "../../project/eventPassageBlock";
 import { CONFIGURE_OBJECT_BEHAVIOR, PURSUIT_SCHEMA, parsePursuit } from "./horrorBehaviorTools";
 // editor/tools/eventTools.ts
@@ -1104,6 +1105,12 @@ const upsertEvent: ToolDefinition = {
       : rawPatch;
     const warnings: string[] = [];
     if (!patch || typeof patch.id !== "string" || !patch.id.trim()) throw new ToolError("event.id(문자열)가 필요합니다.");
+    // transfer 는 m2Command 가 아니다 — direction·fade 는 명령 바로 아래에 둔다. `fields` 에 넣으면 조용히 무시돼 변경이 사라진다
+    // (실측 2026-10-13: 「출입구 방향을 맞춰줘」가 fields:{direction} 로 저장돼 방향이 그대로였다).
+    const misplaced = (node: unknown): boolean => Array.isArray(node)
+      ? node.some(misplaced)
+      : !!node && typeof node === "object" && (((node as { kind?: unknown }).kind === "transfer" && "fields" in (node as object)) || Object.values(node as object).some(misplaced));
+    if (misplaced(patch)) throw new ToolError("transfer 명령에는 fields 가 없습니다. direction(up/down/left/right/retain)·fade·mapId·x·y 를 명령 바로 아래에 직접 적으세요.", { code: "invalid-args" });
     // A trigger describes when to run; commands belong beside it. Do this on the
     // incoming patch before normalization can turn an omitted command list into [].
     const commandOwners = [
@@ -1767,7 +1774,7 @@ const makeVillager: ToolDefinition = {
 const setShopStock: ToolDefinition = {
   name: "set_shop_stock",
   description:
-    "기존 이벤트의 첫 shop 커맨드에 계절 재고(stock)를 설정한다. shop 커맨드가 없으면 첫 페이지(없으면 이벤트 루트)에 상점 커맨드를 추가한다. 상인 NPC 에 판매 재고를 연결하는 정본 — itemId 에는 아이템 id 와 착용 장비(database.equipment) id 를 모두 쓸 수 있다(무기점·방어구점). id 는 get_database_records 로 먼저 확인.",
+    "기존 이벤트의 첫 shop 커맨드에 계절 재고(stock)를 설정한다. shop 커맨드가 없으면 첫 페이지(없으면 이벤트 루트)에 상점 커맨드를 추가한다. 상인 NPC 에 판매 재고를 연결하는 정본이며, 「이 NPC 와 대화하면 상점이 열리게」 같은 요청은 이 도구 하나로 끝난다(기존 대사·이름·이동·그림은 그대로 두고 상점 명령만 붙는다 — patch_event_page 로 대사·이동을 새로 쓰지 마라). itemId 에는 아이템 id 와 착용 장비(database.equipment) id 를 모두 쓸 수 있다(무기점·방어구점). id 는 get_database_records 로 먼저 확인.",
   mode: "write",
   parameters: {
     type: "object",
@@ -2610,7 +2617,7 @@ function cleanOptionalString(raw: unknown): string | undefined {
 const createTransferPair: ToolDefinition = {
   name: "create_transfer_pair",
   description:
-    "두 맵 사이 양방향 출입구를 원자적으로 생성한다. 출입구는 벽·맵 가장자리에 바짝 붙인 통행 가능 칸에 놓는다 인자 {a:{mapId,x,y}, b:{mapId,x,y}} — 문·계단·텔레포트의 왕복 쌍을 한 번에 만든다. 좌표는 벽·맵 끝에 바짝 붙인 통행 칸(1칸 띄우지 말 것). 문의 시각 배치는 place_door."
+    "두 맵 사이 양방향 출입구를 원자적으로 생성한다. 이미 있는 왕복 출입구의 「방향을 맞춰줘」는 patch_event_page 로 **두 문 모두**의 transfer.direction 을 바꾼다(가는 문은 도착해서 바라볼 쪽, 돌아오는 문은 그 반대쪽 — 한쪽만 바꾸면 안 맞는다). 「이 맵을 월드맵의 북쪽에 연결」은 월드맵의 **북쪽 가장자리(y 가 작은 쪽)** 에 이 맵으로 가는 출입구를 놓는다는 뜻이다(남쪽 가장자리가 아니다). 출입구는 벽·맵 가장자리에 바짝 붙인 통행 가능 칸에 놓는다 인자 {a:{mapId,x,y}, b:{mapId,x,y}} — 문·계단·텔레포트의 왕복 쌍을 한 번에 만든다. 좌표는 벽·맵 끝에 바짝 붙인 통행 칸(1칸 띄우지 말 것). 문의 시각 배치는 place_door."
     + "(1칸 안쪽 좌표는 자동으로 당기고, 벽 칸 위 요청은 바로 앞 통행 칸으로 옮긴다 — playerTouch는 벽 위에서 발동하지 않음)."
     + " 착지점은 상대 출입구에 인접한 실제 왕복 통행 가능 칸으로 자동 선정(즉시 재전이 방지). 닿지 않는 출입구·봉쇄는 실패한다. 문 그림을 연결할 때는 place_door 결과의 transferEndpoint(x,y,doorAt)를 a/b에 넣는다. doorAt이 있으면 문앞을 옆 칸으로 옮기지 않는다.",
   mode: "write",
@@ -2684,6 +2691,11 @@ const createTransferPair: ToolDefinition = {
         },
       ],
     });
+    // 새 문 때문이 아니라 원래부터 막혀 있던 문은 이 요청의 책임이 아니다 — 그걸 풀려고 무관한 타일을 지우게 하지 않는다(실측 2026-10-14: 덤불 칸이 지워졌다).
+    const sealedBefore = new Set<string>();
+    for (const map of a.mapId === b.mapId ? [mapA] : [mapA, mapB]) {
+      for (const entry of transferGatesStayApproachable(draft, map).sealed) sealedBefore.add(`${map.id}:${entry.replace(/\(.*$/u, "")}`);
+    }
     upsertEventIntoMap(mapA, gate(idA, gateA.x, gateA.y, transferTo(b.mapId, landingB.x, landingB.y)));
     upsertEventIntoMap(mapB, gate(idB, gateB.x, gateB.y, transferTo(a.mapId, landingA.x, landingA.y)));
     // 배치가 끝난 뒤 두 맵의 모든 transfer 문이 방 바닥으로 열리는지 최종 점검(같은 맵 쌍·후보가
@@ -2691,7 +2703,8 @@ const createTransferPair: ToolDefinition = {
     const sealedAfter: string[] = [];
     for (const map of a.mapId === b.mapId ? [mapA] : [mapA, mapB]) {
       const check = transferGatesStayApproachable(draft, map);
-      if (!check.ok) sealedAfter.push(`${map.name}: ${check.sealed.join(", ")}`);
+      const fresh = check.sealed.filter((entry) => !sealedBefore.has(`${map.id}:${entry.replace(/\(.*$/u, "")}`));
+      if (fresh.length) sealedAfter.push(`${map.name}: ${fresh.join(", ")}`);
     }
     if (sealedAfter.length) throw new ToolError(`출입구 설치로 기존 문이 봉쇄됩니다: ${sealedAfter.join(' / ')}`, { code: 'transfer-sealed' });
     const adjustedA = gateA.x !== a.x || gateA.y !== a.y;
@@ -4062,7 +4075,7 @@ export { ensureNamedSwitch };
  */
 const patchEventPage: ToolDefinition = {
   name: "patch_event_page",
-  description: "기존 이벤트의 페이지 하나에서 set 에 넣은 페이지 필드만 바꾼다(graphic·commands·conditions·trigger·movement·animationType·priority·name 등). 그 페이지의 나머지 칸, 다른 페이지, 이벤트 좌표는 그대로 둔다. commands 를 바꾸면 그 페이지의 명령 배열 전체가 바뀌므로 유지할 명령도 포함한다. 페이지를 추가·삭제·순서 변경할 때는 upsert_event 에 replacePages:true.",
+  description: "기존 이벤트의 페이지 하나에서 set 에 넣은 페이지 필드만 바꾼다(graphic·commands·conditions·trigger·movement·animationType·priority·name 등). 그 페이지의 나머지 칸, 다른 페이지, 이벤트 좌표는 그대로 둔다. commands 를 바꾸면 그 페이지의 명령 배열 전체가 바뀌므로 유지할 명령도 포함한다. 요청하지 않은 필드(대사의 speaker·얼굴, 명령의 다른 인자)는 원래 값 그대로 다시 적는다. 페이지를 추가·삭제·순서 변경할 때는 upsert_event 에 replacePages:true.",
   mode: "write",
   parameters: {
     type: "object",
@@ -4095,14 +4108,72 @@ const patchEventPage: ToolDefinition = {
     const { id: _ignoredId, ...fields } = set as Record<string, unknown>;
     const nextPages = pages.map((page, i) => i === index ? { ...structuredClone(page), ...structuredClone(fields), id: page.id } : structuredClone(page));
     const result = upsertEvent.run(draft, { mapId: args.mapId, event: { id: event.id, pages: nextPages } });
-    return { ...result, summary: `페이지 ${index}의 ${Object.keys(fields).join(", ")} 수정 — ${result.summary}`,
+    // commands 는 배열 통째 교체라 유지할 명령을 빠뜨리기 쉽다. 사라진 원래 명령을 결과에 적어 모델이 바로 되살리게 한다
+    // (실측 2026-10-13: 「화면 흔들림 추가」가 기존 화면 숨기기·대기·표시 명령을 지웠다).
+    const dropped: string[] = [];
+    if (Array.isArray(fields.commands)) {
+      const kept = fields.commands as unknown[];
+      for (const old of pages[index]!.commands ?? []) {
+        if (!kept.some((next) => jsonEqual(next, old))) dropped.push(String((old as { kind?: string }).kind ?? "?") + ((old as { commandId?: string }).commandId ? `(${(old as { commandId?: string }).commandId})` : ""));
+      }
+    }
+    const warnings = dropped.length ? [...(result.warnings ?? []), `원래 명령 ${dropped.length}개가 빠졌습니다: ${dropped.join(", ")}. 지우라는 요청이 아니었다면 get_event 로 원본을 읽어 다시 포함해 patch_event_page 를 한 번 더 호출하세요.`] : result.warnings;
+    return { ...result, ...(warnings ? { warnings } : {}), summary: `페이지 ${index}의 ${Object.keys(fields).join(", ")} 수정 — ${result.summary}${dropped.length ? ` ⚠ 원래 명령 ${dropped.length}개 빠짐(${dropped.join(", ")}) — 지우라는 요청이 아니면 되살릴 것` : ""}`,
       data: { ...(result.data as Record<string, unknown> | undefined), pageIndex: index } };
   },
 };
 
+/**
+ * 한쪽 문의 착지 방향만 바꾸면 반대쪽 문과 어긋난다 — 「두 맵 사이 출입구 방향을 맞춰줘」에서 모델이 가는 문만 고치고
+ * 끝냈다(실측 2026-10-13, 5회 중 4회). 방향이 바뀐 transfer 가 있으면, 그 목적지 맵에서 이 맵으로 돌아오는 문을 결과에 적는다.
+ */
+function withReturnDoorNote(base: ToolDefinition): ToolDefinition {
+  return {
+    ...base,
+    run(draft, args) {
+      const mapId = String(args.mapId ?? "");
+      const eventId = String((args.event as { id?: unknown } | undefined)?.id ?? args.eventId ?? "");
+      const transfersOf = (event: GameEvent | undefined): Array<{ mapId?: string; direction?: string }> =>
+        (event?.pages ?? []).flatMap((page) => (page.commands ?? []).filter((command) => command.kind === "transfer") as Array<{ mapId?: string; direction?: string }>);
+      const before = transfersOf(draft.maps[mapId]?.events.find((event) => event.id === eventId)).map((entry) => ({ ...entry }));
+      const eventBefore = draft.maps[mapId]?.events.find((event) => event.id === eventId);
+      const nameBefore = eventBefore?.name;
+      const fadeBalance = (event: GameEvent | undefined): number => (event?.pages ?? []).flatMap((page) => page.commands ?? []).reduce((sum, command) => {
+        const id = String((command as { commandId?: unknown }).commandId ?? "");
+        return sum + (command.kind === "m2Command" && /m2-044/u.test(id) ? 1 : command.kind === "m2Command" && /m2-045/u.test(id) ? -1 : 0);
+      }, 0);
+      const balanceBefore = fadeBalance(eventBefore);
+      const result = base.run(draft, args);
+      const eventAfter = draft.maps[mapId]?.events.find((event) => event.id === eventId);
+      const editNotes: string[] = [];
+      // 이벤트 이름만 바꾸면 대화창에 뜨는 화자명은 옛 이름 그대로다(실측 2026-10-14: 이름 변경 후에도 대사 화자가 「마을 주민」).
+      if (nameBefore && eventAfter?.name && eventAfter.name !== nameBefore) {
+        const stale = (eventAfter.pages ?? []).flatMap((page) => page.commands ?? []).filter((command) => command.kind === "text" && (command as { speaker?: string }).speaker === nameBefore).length;
+        if (stale) editNotes.push(`대사 ${stale}개의 speaker 가 옛 이름 '${nameBefore}' 그대로입니다 — 이름 변경 요청이면 speaker 도 '${eventAfter.name}' 으로 바꾸세요.`);
+      }
+      // 화면 숨기기(m2-044)만 남고 보이기(m2-045)가 지워지면 장면이 끝나도 화면이 어두운 채 남는다.
+      if (fadeBalance(eventAfter) > balanceBefore) editNotes.push("화면 숨기기만 남고 화면 보이기가 없어 화면이 어두운 채 남습니다 — 페이드는 숨기기·보이기를 짝으로 다루세요.");
+      const changed = transfersOf(draft.maps[mapId]?.events.find((event) => event.id === eventId))
+        .filter((entry) => entry.mapId && entry.direction && !before.some((old) => old.mapId === entry.mapId && old.direction === entry.direction));
+      const notes: string[] = [];
+      for (const entry of changed) {
+        for (const door of draft.maps[entry.mapId!]?.events ?? []) {
+          const back = transfersOf(door).find((candidate) => candidate.mapId === mapId);
+          if (back) {
+          const opposite = ({ up: "down", down: "up", left: "right", right: "left" } as Record<string, string>)[entry.direction!];
+          if (opposite && back.direction !== opposite) notes.push(`돌아오는 문 '${door.id}'(${draft.maps[entry.mapId!]!.name})의 착지 방향은 ${back.direction ?? "(없음)"} 입니다. 「출입구 방향을 맞춰줘」 요청이면 가는 쪽을 ${entry.direction} 으로 둔 채 그 문의 transfer.direction 을 ${opposite} 로 바꾸세요(가는 쪽을 다시 바꾸지 말 것). 다른 요청이면 무시하세요.`);
+        }
+        }
+      }
+      const all = [...editNotes, ...notes];
+      return all.length ? { ...result, summary: `${result.summary} ⚠ ${all.join(" ⚠ ")}` } : result;
+    },
+  };
+}
+
 export const EVENT_TOOLS: readonly ToolDefinition[] = [
-  upsertEvent,
-  patchEventPage,
+  withReturnDoorNote(upsertEvent),
+  withReturnDoorNote(patchEventPage),
   placeNpc,
   setNpcSchedule,
   makeVillager,

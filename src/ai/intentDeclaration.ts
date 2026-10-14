@@ -148,7 +148,7 @@ Fields:
 - "space": 시설·집·방을 세울 때 어디에 — "interior" (외장 없이 새로 짓는 독립 실내 방·시설 실내. 예: 여관 실내만, 빈 방 꾸미기) | "outdoor" (지금 맵 위에 건물 외장) | "both" (야외 외곽+들어가서 걷는 실내 둘 다. 예: 집 지어줘+들어갈 수 있게, 민가·상점·대장간을 짓고 안에도 들어가게) | "none" (공간 시공이 아닌 요청) | "unclear" (집·건물·방을 만들라는데 어느 쪽인지 표지가 없음).
 - "facility": 입력의 개념 꾸러미 시설 라벨 중 하나를 만들라는 요청이면 그 라벨 그대로, 아니면 null. 모든 신규 실내는 build_hand_interior_room(plan) 로 짓는다(손 도트 v5) — 야외 표지("맵 위에", "외장", "마을에 건물")가 없으면 space="interior".
 - "targetMapId": mode=create/modify 모두 작업할 기존 대상 맵을 알 수 있으면 id. 「여기/이 맵/이 마을/이 방」은 현재 열린 맵. 새 맵 자체를 요청하거나 모르면 null.
-- "useSelection": 선택 영역이 주어졌고 그 안에서 작업해야 하면 true. 새 맵을 만드는 요청이면 false. 선택 영역이 없으면 false.
+- "useSelection": 선택 영역이 주어졌고 그 안에서 작업해야 하면 true. 새 맵을 만드는 요청이면 false. 선택 영역이 없으면 false. 「이 작업·이걸·여기」처럼 가리키는 말만 있고 이름 붙은 대상이 없으면, 선택 영역이 주어진 한 그 선택 영역을 가리키는 것이니 true(계획만·미리보기·추천 요청도 마찬가지).
 - "clarify": 도구가 실제로 갈릴 만큼 모호할 때만(예: 실내/야외 표지 없는 「집 지어줘」) 사용자에게 할 한 문장 질문. 그 외 null. 진행할 수 있으면 되묻지 않는다.
 - "clarifyOptions": clarify 가 있을 때 2~4개의 짧은 선택지 라벨. 없으면 [].
 - "needsPlan": 여러 산출물·여러 맵·마을/도시/RPG/캠페인·퀘스트 체인처럼 한두 번의 툴 호출로 끝나지 않으면 true. NPC 한 명, 소품 몇 개, 시설 하나, 질문은 false. 생성/수정 분류와 작업 규모는 독립이다. 「이 맵에 집을 만들어라」는 현재 맵의 집 한 채 시공이므로 space="outdoor", targetMapId=현재 맵 id, clarify=null, needsPlan=false다. 집 한 채(place_terrain_house)는 별도 다단계 계획의 근거가 아니다. 마을 전체나 여러 독립 시설을 조성하는 요청은 true.
@@ -176,6 +176,7 @@ Rules:
 - 마을·도시를 짓는 요청은 tools 에 author_beodeul_town 을 적는다(버들항 블록 키트 조립). 집 한 채는 inspect_terrain·place_terrain_house. 숲마을 author_village·author_house 는 없다.
 - 일본 상가·상점가·골목 거리(번들 칩셋 jp_city)나 jp_city 맵 위의 건물 짓기는 author_beodeul_town 이 아니다 — tools 에 create_map·fill_region·list_jp_city_building_parts·build_jp_city_building 을 적는다.
 - 해리포터풍·마법 학교·호그와트풍 장소(대연회장·성채 복도·기숙사 휴게실·기숙사 침실·마법약 교실·부엉이 탑·도서관·온실·병동·퀴디치 경기장·검은 호수 보트 창고·금지된 숲 마차 승차장 등, 번들 칩셋 wizarding_world)는 손 도트 실내가 아니다 — tools 에 list_wizarding_spaces·build_wizarding_space 를 적는다.
+- 고딕 호러 장소(흉가·저택 정원·공동묘지·예배당·납골당·미술관·갤러리·박물관 전시실·저택 홀·서재·지하실, 번들 칩셋 gothic_manor)는 손 도트 실내·버들항 마을이 아니다 — tools 에 list_gothic_places·build_gothic_place 를 적는다.
 - 사용자와 같은 언어로 clarify·summary 를 쓴다.
 
 JSON schema:

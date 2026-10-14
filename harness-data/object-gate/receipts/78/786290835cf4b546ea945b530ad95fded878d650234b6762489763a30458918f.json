@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "786290835cf4b546ea945b530ad95fded878d650234b6762489763a30458918f",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-lot-slide",
+ "label": "jp_city/street_hand/jp-lot-slide",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical slide tower with yellow chute",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylindrical tower displays a large foreshortened elliptical top surface spanning rows 3 to 14 (12 rows tall), correctly showing the top platform/roof from the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5624
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "playground slide tower and chute",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn as a 2D side/front elevation typical of a platformer, complete with flat horizontal ladder rungs on the tower, a straight horizontal ground baseline at row 45, and a side-profile slide chute with a flat vertical exit rim. The circular blue shape on the tower is a flat front-facing element/dome, not a horizontal top surface (the bands below it are completely horizontal rather than curved).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11076
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cylindrical slide tower with yellow slide chute",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the cylindrical tower features a clearly visible elliptical platform surface spanning rows 3 to 14 (12 source pixels tall) surrounded by a railing, properly foreshortened in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4959
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "playground tower with slide",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylindrical tower platform shows an elliptical top surface spanning rows 3-13 (~11 source pixels tall), correctly foreshortened for 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4624
+  }
+ ],
+ "decidedAt": "2026-10-13T17:35:00.754Z",
+ "cells": {
+  "16": [
+   "110a3ba3626522d3",
+   "1a5a64617081f452",
+   "2132738f58656358",
+   "4f948cb9aaee34c5",
+   "7eb9488cb445fe2e",
+   "82aaf09865fca344",
+   "a0a52d485aa4a990",
+   "c55d083798d2fc57"
+  ],
+  "24": [
+   "5abf635a67041529",
+   "7f948a5bfcc073fa",
+   "ad73bc2796bb5b37",
+   "d1abd57031839fb8"
+  ],
+  "32": [
+   "0b30e0f4343a86e8",
+   "0c91364321067004",
+   "0e9d902e62f5a4c7",
+   "0ed105743c8f67ac",
+   "237f14cb7d3c04e1",
+   "37292bb5cb92e688",
+   "37a9624526b1f2ca",
+   "43720194ac4364c8",
+   "452368612a81af82",
+   "609783684cef7e56",
+   "65c2e387c971ec23",
+   "675b4f7c34a64cee",
+   "72d758923fa14810",
+   "8c4fcb22cfe4ed03",
+   "ac424643058001c4",
+   "ad89bf4bc36a62ec",
+   "b693597a71f18d3d",
+   "c235415fad8975f2",
+   "d18bd35aa64fe3ca",
+   "d8a40675efc71970",
+   "df2e50e2595d356e",
+   "f82d5b0825fee27c"
+  ],
+  "48": [
+   "2fecb7a22ae28592"
+  ]
+ }
+}

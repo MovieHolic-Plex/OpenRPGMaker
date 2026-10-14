@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "00fc9491cde16ba2cba49e4e7ac99941cb1911ef160077aeea11eed7c7016f12",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "받침 위 큰 도자기 항아리",
+ "label": "gothic_manor/gm-vase-plinth",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "아가리 3.5행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ceramic jar on wooden pedestal",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The jar rim and opening are clearly drawn as an ellipse seen from above at rows 0-5, with a dark interior opening spanning rows 2-4 (3 rows tall). The wooden pedestal also displays a prominent foreshortened top surface across rows 18-23.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 5999
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ceramic jar on a pedestal",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The jar's opening is clearly depicted as an open ellipse with a dark interior spanning rows 1-4 (4 rows high), surrounded by a foreshortened rim. The wooden pedestal beneath it also shows a top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5898
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ceramic jar on a pedestal",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The jar's opening is rendered as a foreshortened ellipse with 3 rows of dark interior visible (rows 2-4). In addition, the pedestal below shows a distinct top surface of about 5-6 rows (rows 19-23).",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 5392
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "porcelain jar on wooden pedestal",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The jar's opening is clearly drawn as an ellipse showing the dark interior (rows 1-4, 4px tall), and the wooden pedestal also shows a foreshortened top surface (rows 19-23).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6286
+  }
+ ],
+ "decidedAt": "2026-10-13T16:47:35.281Z",
+ "cells": {
+  "16": [
+   "39e1c8c73a1a5e71",
+   "c91880d574caa3ed"
+  ],
+  "24": [
+   "0e7e6bcf13f50285",
+   "19528532b12bf618",
+   "245e44d6f2034729",
+   "31f8f9d19731f8cb",
+   "5309ca569a28a370",
+   "60aad182aca375a1",
+   "6383c66fe4023482",
+   "6bcd5d271ce205eb",
+   "7c1696d6a5a3879e",
+   "a6d062091e84f0ea",
+   "c40d61cb6ea30b0d",
+   "ce223d1d1c5ca2cd"
+  ],
+  "32": [
+   "0255fde21b593938",
+   "11e4644c2fa5eb54",
+   "a3408736be383fb9"
+  ],
+  "48": [
+   "491134d85fa8489f",
+   "4b965a68b706cc52",
+   "62bd3f1ccfadd0aa",
+   "a48f397ca1d3666b",
+   "b2dd0a4ad0bf279b",
+   "de1bbf4fa0d84925"
+  ]
+ }
+}

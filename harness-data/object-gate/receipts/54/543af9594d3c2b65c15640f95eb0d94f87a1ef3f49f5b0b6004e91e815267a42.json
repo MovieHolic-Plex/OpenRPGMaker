@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "543af9594d3c2b65c15640f95eb0d94f87a1ef3f49f5b0b6004e91e815267a42",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "돌 오벨리스크",
+ "label": "gothic_manor/gm-tomb-obelisk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone obelisk shaft and pyramidion",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The obelisk and its base tiers are drawn in pure front elevation with straight horizontal bands and a 2D triangular pyramidion tip. No horizontal top surfaces or foreshortening are visible on any tier, step, or cap (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6343
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "obelisk shaft and tiered base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The obelisk and its tiered plinths are drawn entirely in straight front elevation: all ledges, steps, and base transitions are flat horizontal lines with 0 pixels of horizontal top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6067
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone obelisk and tiered base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The obelisk and its stepped plinth are drawn entirely in flat 2D front elevation. The pyramidion tapers symmetrically as a flat triangle with no top-down slope, and none of the stepped base tiers show a visible top surface (0 pixel rows of top depth throughout).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5642
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "obelisk shaft and pyramidion",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The obelisk shaft, pyramidion, and stepped base are drawn in pure front elevation. The pyramidion is rendered as a 2D side silhouette with a vertical center dividing line, and the stepped base tiers show only front faces with 1px highlight lines and no top horizontal depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6285
+  }
+ ],
+ "decidedAt": "2026-10-13T16:24:27.172Z",
+ "cells": {
+  "16": [
+   "2b963eacfeeb7d60",
+   "9043e5038ddeb362",
+   "f56aa9b573ac9555"
+  ],
+  "24": [
+   "5d6448dd1ef30b9a",
+   "6265ef54fa663c50",
+   "817d9543037637a1",
+   "89166d243b7ea83c",
+   "aafdb3ada1b6cbd9",
+   "ff1582c3f6fb32e9"
+  ],
+  "32": [
+   "1b156c86265daea0",
+   "276a8277d5d21dfc",
+   "3fdd5d90f737fbd0",
+   "4f63e987f617ea9c",
+   "6509a5de97c94489",
+   "786a36c7a704b610",
+   "92f66a49c9c0f55d",
+   "9b66233f4079b30d",
+   "b8f352436252ba42",
+   "c6656dabbcf22db0",
+   "cb4ca2edcdb7886e",
+   "f6c2d093d0a5d1d3"
+  ],
+  "48": [
+   "39b214cc34b444c1",
+   "af886b3a1a0cb286",
+   "dc2c3bfb555e8c3c"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2943cc7bdfbed1f68cb8860e3c0a83fa712b076994baff3423b78540d75460a7",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "낙엽 덮인 땅",
+ "label": "gothic_manor/gm-ground-leaves",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ground tile with fallen leaves",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting ground covered in autumn leaves, viewed top-down across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3737
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "leaf-covered ground terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Entire 16x16 tile represents ground terrain covered in autumn leaves viewed from above, perfectly matching the terrain kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3799
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ground tile with fallen leaves",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile showing dirt ground covered with autumn foliage viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5306
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ground tile with fallen leaves",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 tile represents top-down terrain (soil/ground covered with fallen autumn leaves).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3289
+  }
+ ],
+ "decidedAt": "2026-10-13T17:01:50.504Z",
+ "cells": {
+  "16": [
+   "a093e2a0ae8730f6"
+  ],
+  "24": [
+   "159cd827d0f5ecff",
+   "4c9b16d4b7a45e97",
+   "84b3a27b35806721",
+   "983bb1c2d89d18d8",
+   "f4a89339a5841039",
+   "fa08d947be879b84"
+  ],
+  "32": [
+   "20a64b96d72e10d0",
+   "2b3d806bb3de376f",
+   "66a2967e9f525480",
+   "6fd72e686b05a253",
+   "90652b967a038344",
+   "de5dd395a60affe3"
+  ],
+  "48": [
+   "0893d4ebb7de55f3",
+   "6c056450b2d3a7f7",
+   "8658b4d92eec6910",
+   "93edce3b6096d1b5",
+   "e0362902caf23412",
+   "f656040d36de3dcd"
+  ]
+ }
+}

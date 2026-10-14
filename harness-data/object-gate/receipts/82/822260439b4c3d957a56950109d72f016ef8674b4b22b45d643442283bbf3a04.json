@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "822260439b4c3d957a56950109d72f016ef8674b4b22b45d643442283bbf3a04",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "대리석 흉상 받침",
+ "label": "gothic_manor/gm-bust-plinth",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "marble bust and pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn from a flat eye-level front view: the bust faces directly forward with eyes and chin on the front plane and no foreshortened top of the head/shoulders, and the pedestal shows only its vertical front face with a plaque and no visible horizontal top surface around the base of the bust.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10580
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pedestal / bust",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object (bust and pedestal) is drawn in pure front elevation. The pedestal shows no foreshortened top surface (top_rows = 0) around or behind the bust, and the pedestal face is completely flat facing the viewer.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7676
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "marble bust on pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire lower portion and pedestal (from row 13 to 31) are drawn with straight vertical sides and flat horizontal division lines, showing a pure front elevation with no visible top surface foreshortening for the pedestal or plinth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6612
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "marble pedestal with bust",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire pedestal (rows 12-31) has straight vertical side outlines and horizontal tier divisions drawn as a pure front elevation with no visible top surface around the base of the bust.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7452
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.505Z",
+ "cells": {
+  "16": [
+   "c5fd6114dd4b5d5b",
+   "f7b53115aeca6445"
+  ],
+  "24": [
+   "0b642a4713fb66a8",
+   "15cd650d6b8dd098",
+   "2e062b1320f3fac7",
+   "4c169fc21e8ec171",
+   "509dc87332bebac4",
+   "546708156a7b7d48",
+   "812c7826021d0948",
+   "95e443beaa27fcfa",
+   "b699a8265515c0b3",
+   "c39aa5daaceee156",
+   "dc2de2c7a38df908",
+   "dff51919905257c0"
+  ],
+  "32": [
+   "99b31712c15f0466",
+   "ae0d172d39cdbe69",
+   "b77aa61d9d0ec4a0"
+  ],
+  "48": [
+   "11ceb44099114457",
+   "37c509fee22c20f5",
+   "38fe4059ceed2a44",
+   "494d67038d5aa15d",
+   "5d415132439e700c",
+   "c1ea397b06a3d6b3"
+  ]
+ }
+}

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "24b94e0e210eb238163f8de65f7aea25dfff80dc4f1763b474598131eded9737",
+ "width": 16,
+ "height": 32,
+ "kind": "frame",
+ "name": "jp-lot-notice",
+ "label": "jp_city/street_hand/jp-lot-notice",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "notice board on posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The notice board and its frame are drawn in a flat 2D orthographic front view. Neither the board, roof/header structure, nor horizontal beams possess a foreshortened top surface visible from above (only 1px outline/highlight lines).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5499
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "notice board",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The notice board and its upper panel are drawn straight-on in pure front elevation without any foreshortened top surface (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4944
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "notice board / sign frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The notice board, upper panel, horizontal beam, and posts are all drawn in pure flat front elevation with no visible top surface (0 rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5256
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "notice board",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The notice board and its frame are drawn in flat front elevation with straight vertical borders and horizontal text lines; neither the board nor its frame shows a top surface seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5456
+  }
+ ],
+ "decidedAt": "2026-10-13T17:30:03.090Z",
+ "cells": {
+  "16": [
+   "d1768b8204e4eddf",
+   "ed58a83bbab29bc3"
+  ],
+  "24": [
+   "148019edaae965f1",
+   "15bae212034857b8",
+   "1f9ec9ab3c6cb76f",
+   "3f226f91de9c175c",
+   "4772b5ece37757e2",
+   "53098b3b5cb65f91",
+   "63a15d19ae44f5d3",
+   "71ab7f0c4a4cbef0",
+   "97c2ab084fb2699c",
+   "b16b86ab2ae21c49",
+   "c2636e999f991c71",
+   "d66e3b8799e934cb"
+  ],
+  "32": [
+   "95c6f3ace06fb6c9",
+   "bd9d3651b6846f96",
+   "e70cc7cea018a6b1"
+  ],
+  "48": [
+   "025417deebc76eaa",
+   "29298102d772ac35",
+   "2df58e934a44938d",
+   "664d8b198c258cf6",
+   "a02e36c377bd9457",
+   "e3523052d3a0b564"
+  ]
+ }
+}

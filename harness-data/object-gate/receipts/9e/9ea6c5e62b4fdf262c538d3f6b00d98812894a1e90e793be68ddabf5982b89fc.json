@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9ea6c5e62b4fdf262c538d3f6b00d98812894a1e90e793be68ddabf5982b89fc",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "떠도는 유령(일렁임 3프레임)",
+ "label": "gothic_manor/gm-ghost",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ghost figure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ghost is drawn in pure front elevation with eyes and mouth facing straight forward; the rounded head has only a 1px highlight along row 3 and shows no foreshortened top surface or top-down angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3882
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ghost sheet figure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ghost is drawn as a flat 2D front elevation with centered eyes and mouth facing directly forward; the rounded head has only a 1px highlight line at row 3 with no foreshortened top surface visible from a 3/4 overhead perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3996
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ghost figure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ghost is drawn in a flat front elevation with a 1px highlight at the crown (row 3) rather than a foreshortened top surface, and straight-on vertical facial features.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4689
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ghost figure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ghost is drawn entirely in flat front elevation with straight-on eyes and mouth and a 1px highlight at the top (row 3) rather than a foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3522
+  }
+ ],
+ "decidedAt": "2026-10-13T17:01:50.506Z",
+ "cells": {
+  "16": [
+   "02161b2e9c638aca",
+   "6822ce47269a25bb"
+  ],
+  "24": [
+   "1379ba4f01083ed0",
+   "1bbb87d4fbff5d63",
+   "21ccb83001749411",
+   "2cea771f6204e655",
+   "2e98670bd7740635",
+   "44a6fd67eadbdf76",
+   "6e92a4a5360429f7",
+   "82e058e614d75c18",
+   "9796e0411b10ae38",
+   "bc164c5082556793",
+   "e74bb54a0add6bc5",
+   "f9d5b82edb3a10b0"
+  ],
+  "32": [
+   "5e22426de91a6385",
+   "767e9600e7dcfeff",
+   "ecadb8016122d377"
+  ],
+  "48": [
+   "0709011a1a76d9bd",
+   "587158f60e635f93",
+   "766ad29700914ff3",
+   "865da30c115ae089",
+   "94311ee9a1f861a9",
+   "d90f9b4caa3fc1a1"
+  ]
+ }
+}

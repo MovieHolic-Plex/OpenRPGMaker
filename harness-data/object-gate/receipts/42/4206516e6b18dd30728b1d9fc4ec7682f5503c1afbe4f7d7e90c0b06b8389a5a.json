@@ -1,0 +1,123 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4206516e6b18dd30728b1d9fc4ec7682f5503c1afbe4f7d7e90c0b06b8389a5a",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "무쇠 쌍문(열림)",
+ "label": "gothic_manor/gm-gate-iron-open",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "open iron double gate with stone pillars and threshold",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The gateway features a visible threshold/passageway floor (rows 22-29, 8px deep) between the open door leaves, angled tops on the swung gate doors, and large dome-capped pillar tops (rows 1-6) indicating proper 3/4 top-down projection.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6314
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "open iron double gate with stone pillars and threshold floor",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The gate features spherical/domed pillar caps seen from above (rows 1-10) and an 8-row deep threshold floor between the open door leaves (rows 22-29), correctly showing the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5401
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "open iron double gate with flanking stone pillars and threshold",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The gateposts feature foreshortened domed top surfaces (rows 2-9, ~8 rows deep) and the gate opening includes a prominent 8-row deep floor threshold (rows 22-29), conforming to 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6956
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cast iron gate and flanking stone pillars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The flanking stone pillars and walls are drawn in pure front elevation with horizontal mortar lines and spherical caps seen straight on. Neither the pillars nor the iron gate leaves show any horizontal top surfaces visible from a 3/4 overhead perspective (top_rows is 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9378
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.505Z",
+ "cells": {
+  "16": [
+   "3787e3904b300ba9",
+   "62e8444aae3b4ae3",
+   "7bdf22a49f93d898",
+   "7c1082cc67208bef",
+   "9d1ed3e77752b1c3",
+   "be5230f7a08eb84b"
+  ],
+  "24": [
+   "02cdd44f2921c642",
+   "2bca3840ef7ff162",
+   "2c260445afb20edc",
+   "4b55e00bafad7d48",
+   "6945b19e79ae2cae",
+   "69d0990c55643108",
+   "90e627d2bc9de82d",
+   "ac270a8cbccfe154"
+  ],
+  "32": [
+   "404d7f385043bc8c",
+   "49f1a227f87ff8ac",
+   "971b2d14d32ad31f",
+   "9a4ae6b17a4ab6f3",
+   "d24191c4e2fe41b6",
+   "f08b8f878cec7fb0"
+  ],
+  "48": [
+   "a7f0c41110992689",
+   "cd0eb4d5a1bad379"
+  ]
+ }
+}

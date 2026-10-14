@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d4cef93c3d3d2b9d238934a47f16ac789ec6d5bce073263a55787703621f1bde",
+ "width": 48,
+ "height": 32,
+ "kind": "container",
+ "name": "jp-lot-sandbox",
+ "label": "jp_city/street_hand/jp-lot-sandbox",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sandbox frame and sand interior",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 15,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sandbox displays its top wooden rims (4 rows wide) and south front face (3 rows), with a large clearly visible 15-row interior opening showing the sand bed in standard 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6726
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden sandbox basin filled with sand",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 16,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sandbox interior (sand bed) is seen from above spanning rows 8 to 23 (16 rows deep), bounded by top and front rims, with a south-facing front vertical border visible at rows 27-29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6176
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden sandbox frame filled with sand",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 15,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sandbox shows its top horizontal rim surfaces (rows 4-7 and 23-25), front south face (rows 26-29), and a wide interior opening revealing the sand inside (rows 8-22) in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6710
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden sandbox basin filled with sand",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 15,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sandbox interior sand pit is widely visible from above across 15 pixel rows (rows 8-22), bounded by top and bottom wooden rims (top rim 4 rows, bottom rim top surface 3 rows) and a front south-facing vertical face (rows 26-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5566
+  }
+ ],
+ "decidedAt": "2026-10-13T17:27:07.784Z",
+ "cells": {
+  "16": [
+   "2a94c04c80de41ee",
+   "36d4101090059bbd",
+   "a9365bcb8f0ccf5c",
+   "b2cffaab549fddf5",
+   "bb8015f02c071456",
+   "c091ad7487f3b22f"
+  ],
+  "24": [
+   "139f63e9291f3442",
+   "2a5f613e2bd6213e",
+   "56fad040d155040f",
+   "64f3a7175203962c",
+   "7ac99265b98e931c",
+   "8a8b6333ced6883f",
+   "904be779cc4965a5",
+   "c819e99d206a1f67"
+  ],
+  "32": [
+   "073470c44315ea79",
+   "30166ad20caa3109",
+   "31ef424e0049b4db",
+   "8025b48e76b179c4",
+   "97699c70cfb9f99f",
+   "e49501912cf3c45e"
+  ],
+  "48": [
+   "4b49e3b9beaccaa0",
+   "b665fc04d5fa8d36"
+  ]
+ }
+}

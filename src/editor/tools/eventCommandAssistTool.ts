@@ -16,7 +16,7 @@ export function eventCommandAssistTarget(project: Project, args: Record<string, 
 
 export const EVENT_COMMAND_ASSIST_TOOLS: readonly ToolDefinition[] = [{
   name: EVENT_COMMAND_ASSIST_TOOL,
-  description: "기존 이벤트의 한 페이지 명령을 자연어로 만들기·고치기·지우기. 이벤트 편집기 AI와 같은 리소스·참조·착지·세계관 검증과 자가수정을 사용한다. get_event로 페이지 ID를 먼저 확인하라. 다른 페이지와 페이지 설정은 보존한다. 긴 페이지는 mode:'append'로 끝에 추가만 가능하다. 새 NPC 배치는 place_npc, 컷신은 script_cutscene을 사용하라.",
+  description: "기존 이벤트의 한 페이지 명령을 자연어로 만들기·고치기·지우기. 이벤트 편집기 AI와 같은 리소스·참조·착지·세계관 검증과 자가수정을 사용한다. get_event로 페이지 ID를 먼저 확인하라. 다른 페이지와 페이지 설정은 보존한다. 긴 페이지는 mode:'append'로 끝에 추가만 가능하다. 「~를 추가해줘」는 mode:'append' 한 번으로 끝낸다 — edit 는 명령 배열을 다시 쓰므로 유지할 명령이 사라질 수 있다(실측: 4개 페이지가 edit 한 번에 2개로 줄었다). 대사 문구만 바꾸라는 요청은 화자(speaker)·얼굴·다른 필드를 그대로 두도록 prompt 에 적어라. 호출 뒤 get_event 로 원래 명령이 남았는지 확인하고, 사라졌으면 patch_event_page 로 되살려라. 새 NPC 배치는 place_npc, 컷신은 script_cutscene을 사용하라.",
   mode: "write",
   parameters: {
     type: "object",

@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0d0ad2585e52d457357c856640f160cbfbdbdd0638f51de81e6dc89ddf912ef6",
+ "width": 32,
+ "height": 16,
+ "kind": "organic",
+ "name": "장작더미(통나무 끝 나이테)",
+ "label": "gothic_manor/gm-woodpile",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pile of firewood logs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stacked logs are drawn directly from the front end showing circular cross-sections in pure front elevation; there is no top surface or receding log depth visible from the 3/4 camera view.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4400
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pile of stacked logs showing circular cut ends",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The logs are stacked with their cut circular ends facing directly toward the camera in a 2D cross-section layout (4-3-2 stack), with 0px of cylindrical length or top surface visible receding back into depth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5388
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stacked firewood pile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The logs are drawn directly head-on with perfectly circular cut ends facing south. There are no top surfaces of the cylindrical logs receding backward (0 px of top visible), making it a pure 2D front elevation.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7183
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "woodpile of stacked logs showing cut circular ends",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stacked logs show their circular cut ends facing purely flat south in a 2D pyramid arrangement with 0 pixels of cylindrical top surface extending back, creating a flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6309
+  }
+ ],
+ "decidedAt": "2026-10-13T16:24:27.175Z",
+ "cells": {
+  "16": [
+   "733ea1e11d23e4ec",
+   "7a89971e93fd0c88"
+  ],
+  "24": [
+   "0da86c5bed759aae",
+   "190289d81dc64c93",
+   "2fa31b2f086e1dae",
+   "3391d8f07e36004e",
+   "49ddfcfa0db2c54f",
+   "5ce70fe019a0b848",
+   "639c15658aa24758",
+   "6bbd167321a4e00c",
+   "cd3da6ad44560b25",
+   "cea349b215770ae3",
+   "ec823ec894688860",
+   "ef2f034b51e3aace"
+  ],
+  "32": [
+   "b0adb7b9906fe1a5",
+   "ca786734314a92e2"
+  ],
+  "48": [
+   "1ac4f2439f38cee1",
+   "27b48e0b02ea17a5",
+   "8300ceb57dc5ed30",
+   "882448c5b4c4e3a5",
+   "c051a407e78ca52c",
+   "f6bc40e9f1257bcb"
+  ]
+ }
+}

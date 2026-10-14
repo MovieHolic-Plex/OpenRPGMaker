@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "96f5a1a1e70f107ee35f2e3719445a6bf5bb9f0641ca3e5156908571cf208ff3",
+ "width": 16,
+ "height": 32,
+ "kind": "frame",
+ "name": "미술관 안내판(액자 그림 판)",
+ "label": "gothic_manor/gm-sign-gallery",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 1.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "signboard / framed board on stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire board, frame, and supporting legs are drawn in pure front elevation. The main frame body (rows 7-17) has no visible top surface, the crossbar (rows 23-24) is a flat 1px bar without top depth, and the feet simply terminate vertically with no base perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10327
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "museum display board on wooden stand",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top wooden roof/cap of the board shows a clear 3-row top surface (rows 2-4) before descending to the darker front edge (row 5) and frame below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6315
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "framed museum display board on a wooden stand",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden top cap of the display board shows a clear 3-row foreshortened top surface (rows 2-4) above its front face/shadow line (row 5) and the framed panel below (rows 6-16).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7291
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "museum signboard frame and stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signboard, frame, and supporting legs/crossbar are drawn in a flat front elevation. The crossbeam at row 24 and the frame structure show no top surfaces, and the cap at the top is drawn flat with an underside shadow rather than as a foreshortened top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6351
+  }
+ ],
+ "decidedAt": "2026-10-13T16:24:27.174Z",
+ "cells": {
+  "16": [
+   "7dd24e3a7b4dda13",
+   "ac5a7d993ef3479f"
+  ],
+  "24": [
+   "1a501d0dcce8b86c",
+   "35d316f8e22554c7",
+   "393a9cee25b7eb0d",
+   "827b2af620ff15b8",
+   "86f91b0841cc06ef",
+   "8c73e2c4264a2837",
+   "956e4e2a93b38150",
+   "bf1ff1ff267de2c0",
+   "d8c70eaa3987a541",
+   "e9b502270269627d",
+   "edd648270cf7a9f7",
+   "fc87c4aa6efbb306"
+  ],
+  "32": [
+   "57e23cefab19254f",
+   "58bba9e0f8b9bab8",
+   "e6a43ca44aa77a12"
+  ],
+  "48": [
+   "2cdc26d7b0e8cd86",
+   "392ad4a24bf55eaa",
+   "7461d7dd9c4c3dd3",
+   "7d772084daf85ff9",
+   "914cc1c1f21dae26",
+   "ab1eea632214b923"
+  ]
+ }
+}

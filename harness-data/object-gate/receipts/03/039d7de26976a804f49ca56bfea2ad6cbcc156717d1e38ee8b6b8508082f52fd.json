@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "039d7de26976a804f49ca56bfea2ad6cbcc156717d1e38ee8b6b8508082f52fd",
+ "width": 32,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "큰 옷장(반쯤 열린 문)",
+ "label": "gothic_manor/gm-wardrobe",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "large wardrobe with half-open right door showing hanging clothes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wardrobe is depicted in pure front elevation against a wooden wall (rows 0-5). The wardrobe's top (around row 5-7) has only a 1px horizontal molding line and no visible horizontal top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7105
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wardrobe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wardrobe is rendered in pure front elevation. Rows 0-5 depict a front-facing architectural cornice with vertical corbels/dentils rather than a receding top surface seen from above. There is no visible horizontal top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8441
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "large wardrobe with half-open right door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wardrobe is drawn in pure front elevation. Rows 0-5 depict a front-facing decorative cornice with brackets rather than a foreshortened top surface, leaving 0 rows of visible top surface for the cabinet body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8372
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "large wardrobe with half-open door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Rows 0-5 depict the vertical front face of a decorative cornice with corbel/dentil details rather than a foreshortened top horizontal surface. The main body of the wardrobe has 0 top rows visible and is drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5242
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.503Z",
+ "cells": {
+  "16": [
+   "02b45a12af8d5d01",
+   "0d4fed8b0353665c",
+   "47292d2c3448f349",
+   "4a163f7fb1d2acc3",
+   "4d3fe144c94dc9f2",
+   "edfc25c054f8b7d0"
+  ],
+  "24": [
+   "00bda19d9abe3dd2",
+   "1c3944d44ff6a658",
+   "25d6059c40e19347",
+   "2de2ed9f63eccf89",
+   "402400ee559230bd",
+   "4a07b9f844207c8e",
+   "4bb9ba6f075918e0",
+   "7400fd67cea07bde",
+   "9e47dec805b1aa0f",
+   "b3675d48a1f1a990",
+   "d772d32c506ab5ec",
+   "de1f2ef523e59a92"
+  ],
+  "32": [
+   "0147426fd03b9733",
+   "05f21551d8fb20b5",
+   "ccbeb7b964dd126e",
+   "ec19dcbab0eddc7d"
+  ],
+  "48": [
+   "120875a9c2a1cf20",
+   "6a9597725314ce5f",
+   "c47d6b906d28fa14"
+  ]
+ }
+}
