@@ -146,9 +146,10 @@ export function composeGothicPlace(input: GothicPlaceInput, tileset: TilesetDef)
   const groundMix: Record<GothicPlaceKind, [string, number][]> = {
     // 비슷한 명도의 땅만 섞는다 — 낙엽·진흙 땅을 섞으면 4칸 덩이가 붉은·갈색 네모로 떠서 바닥이 조각보처럼 보였다(QA D2·D3).
     // 낙엽·이끼는 덧그림(gm-ov-leaves·gm-ov-moss)으로 흩는다.
-    "manor-grounds": [["gm-ground-grass-a", 0.62], ["gm-ground-grass-b", 0.26], ["gm-ground-grass-c", 0.12]],
+    // D = 짙은 풀 덩이(칸 가운데 둥근 그늘) — 바탕 결이 평평하지 않게 드문드문.
+    "manor-grounds": [["gm-ground-grass-a", 0.52], ["gm-ground-grass-d", 0.16], ["gm-ground-grass-b", 0.21], ["gm-ground-grass-c", 0.11]],
     graveyard: [["gm-ground-moss-a", 0.64], ["gm-ground-moss-b", 0.36]],
-    "gallery-plaza": [["gm-ground-grass-a", 0.66], ["gm-ground-grass-b", 0.34]],
+    "gallery-plaza": [["gm-ground-grass-a", 0.56], ["gm-ground-grass-d", 0.14], ["gm-ground-grass-b", 0.30]],
   };
   const mix = groundMix[input.place].map(([id, w]) => [floors.get(id) ?? floors.get("gm-ground-grass-a") ?? 1, w] as const);
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {

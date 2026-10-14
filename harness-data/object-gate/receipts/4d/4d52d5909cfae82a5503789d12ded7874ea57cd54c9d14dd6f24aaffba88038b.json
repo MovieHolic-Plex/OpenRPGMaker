@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4d52d5909cfae82a5503789d12ded7874ea57cd54c9d14dd6f24aaffba88038b",
+ "width": 48,
+ "height": 48,
+ "kind": "terrain",
+ "name": "잔디(민들레) (16px 칸 3×3 반복)",
+ "label": "modern_city/street-green/lawn-dandelion-809",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass ground surface with dandelion flowers",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Repeating 16x16 ground terrain tile representing grass speckled with dandelions, viewed from above as a continuous horizontal surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4040
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass ground tile with dandelion flowers",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 ground terrain tile repeated 3x3 showing top-down grass with small dandelion details; correctly categorized as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5568
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 3x3 repeat of 16px grass ground tiles with small dandelion accents. Being flat terrain viewed from above, there is no standing front elevation or isometric side face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7512
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass ground terrain with dandelion flowers",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile pattern repeating over a 3x3 grid (48x48 pixels) depicting grass with small yellow dandelion blossoms; correctly rendered as top-down terrain surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4170
+  }
+ ],
+ "decidedAt": "2026-10-14T08:05:10.643Z",
+ "cells": {
+  "16": [
+   "9582694b3d17b11b"
+  ],
+  "24": [
+   "d7262021e7cc8f52",
+   "d7f1a24a15ae4cf8",
+   "d96157bd9cf91deb",
+   "e73de6c4dfe91c25"
+  ],
+  "32": [
+   "2c8667fa73709c6e",
+   "2fb66e0ac63bf52f",
+   "32b1df7bb7a8fd67",
+   "35cec1d624d0cb4f",
+   "573235f3b0c3c2e7",
+   "6bfb6f8f5dcfc5e0",
+   "92f9e18581bd2324",
+   "b957b9af2fb46fe7",
+   "cc27c98b03a43d6f",
+   "d6a68660253bea1a",
+   "dbffe066a853c8d2",
+   "df11ee878a2a0159",
+   "f5f03ae056d39259",
+   "f68b445acc4deddf",
+   "f7422e2201589f13"
+  ],
+  "48": [
+   "0e1a25f6d83b67c4"
+  ]
+ }
+}

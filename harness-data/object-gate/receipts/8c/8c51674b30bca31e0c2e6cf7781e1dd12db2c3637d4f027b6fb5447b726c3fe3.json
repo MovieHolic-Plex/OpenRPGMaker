@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8c51674b30bca31e0c2e6cf7781e1dd12db2c3637d4f027b6fb5447b726c3fe3",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "흙길(발자국)",
+ "label": "sengoku-edo/se-road-c",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dirt road ground tile with pebbles and indentations",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing top-down surface viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2925
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dirt path ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile depicting dirt path with small pebbles; the entire tile represents the top-down ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3279
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dirt path ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing a dirt surface with small stones/tracks viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3027
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dirt path terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tile depicting a flat dirt surface with pebbles across the entire 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2482
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:28.012Z",
+ "cells": {
+  "16": [
+   "739577fd0ecb10f7"
+  ],
+  "24": [
+   "23433db85b5e807d",
+   "6a22bdd2dea36048",
+   "6fa883b8c2916b45",
+   "75c08c392c4dcafa",
+   "9144d5caf2b3a5e4",
+   "effcd751997325f6"
+  ],
+  "32": [
+   "0aa78bc6fcf5f06a",
+   "3c9ca8cea5c2d272",
+   "7df6a165de1274dc",
+   "86586ddc17acfc8c",
+   "a1ce3646f3d067e7",
+   "d7e88365670e8d3b"
+  ],
+  "48": [
+   "16157b26df35eba0",
+   "454ebee8dc456633",
+   "4c9b45a1ffe280f1",
+   "6031c4d52029bd79",
+   "79fe093830486e37",
+   "fc3d0fbbfe2428fd"
+  ]
+ }
+}

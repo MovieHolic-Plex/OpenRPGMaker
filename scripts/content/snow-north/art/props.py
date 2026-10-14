@@ -57,42 +57,123 @@ def beam(c, x, y, w, topn=4, front=3, mat='log', snow=True, s=0):
 
 
 # ═══════════════════════ 나무 ═══════════════════════
+def _sm(x, s, k=0):
+    """부드러운 1차원 잡음 0..1"""
+    a = rnd(int(math.floor(x)), k, s); b = rnd(int(math.floor(x)) + 1, k, s)
+    f = x - math.floor(x); f = f * f * (3 - 2 * f)
+    return a + (b - a) * f
+
+
 def pine(c, cx, ytop, ybot, half, tiers, s=0, trunk_h=4):
-    """눈 쌓인 가문비: 아래로 넓어지는 층층 치마(가지 층). 층마다 윗쪽을 매끈한 눈 덩이가 덮고(왼쪽이 두껍다),
-    아랫면은 짙은 바늘잎 + 톱니 끝 + 처진 눈 방울. 빛 왼쪽 위: 왼쪽 잎 밝게 · 오른쪽 어둡게. 밑동 줄기 + 푸른 눈 그늘."""
     H = ybot - ytop - trunk_h
-    c.ell(cx + 2, ybot - 1, half * 0.85, 2.2, lambda X, Y, dx, dy, d: ('snow', 3 if d < 0.6 else 4))
-    for j in range(ybot - trunk_h - 2, ybot):
-        c.P(int(cx) - 1, j, 'log', 3); c.P(int(cx), j, 'log', 2); c.P(int(cx) + 1, j, 'log', 1)
+    # 바닥 그늘(오른쪽 아래로 끌림, 가장자리 디더)
+    c.ell(cx + 2.5, ybot - 1.2, half * 0.9, 2.4, lambda X, Y, dx, dy, d: ('snow', 3) if d < 0.55 else ('snow', 4) if d < 0.85 or (X + Y) % 2 else None)
+    for j in range(ybot - trunk_h - 3, ybot):
+        c.P(int(cx) - 1, j, 'log', 4); c.P(int(cx), j, 'log', 3); c.P(int(cx) + 1, j, 'log', 1)
+        if j % 3 == 0: c.P(int(cx), j, 'log', 2)
     th = H / tiers
+    snowmask = set()
     for k in reversed(range(tiers)):
-        t0 = ytop + int(k * th * 0.7)
+        t0 = ytop + int(k * th * 0.68)
         t1 = ytop + int((k + 1) * th)
         prev_end = ytop + int(k * th) + 1 if k > 0 else t0
         f_vis = (prev_end - t0) / max(1, t1 - t0)
         w_top = max(1.0, half * (k + 0.1) / tiers * 0.7)
         w_bot = half * (k + 1.0) / tiers
-        for j in range(t0, t1 + 1):
+        # 아랫선: 가지 덩이(폭 4~5)마다 가운데가 처지고 끝은 바깥으로 뾰족
+        def droop(X):
+            q = (X - cx) / max(1.0, w_bot)
+            cl = (X + k * 2 + s) % 5
+            return (1 if cl in (1, 2) else 0) + (1 if abs(q) > 0.75 else 0)
+        for j in range(t0, t1 + 3):
             f = (j - t0) / max(1, t1 - t0)
-            hw = w_top + (w_bot - w_top) * (f ** 0.55)
-            for X in range(int(round(cx - hw)), int(round(cx + hw)) + 1):
-                u = (X - (cx - hw)) / max(1, 2 * hw)
-                g = 3 if u < 0.3 else 2 if u < 0.62 else 1
-                if f > 0.8: g -= 1
-                if (X + j * 2 + k) % 9 == 0 and u < 0.6: g += 1
-                c.P(X, j, 'pine', max(0, min(4, g)))
-                # 눈 덩이: 층 윗쪽, 왼쪽일수록 깊게
-                sf = f_vis + (0.42 if k == 0 else 0.3) * (1 - 0.75 * u)
+            hw = w_top + (w_bot - w_top) * (min(1.0, f) ** 0.55) + (1.3 if f > 0.82 and k > 0 else 0.6 if f > 0.82 else 0)
+            hw += (_sm(j * 0.7, s + k, 3) - 0.35) * 1.4 * (1 if f > 0.25 else 0.4)
+            for X in range(int(round(cx - hw - 1)), int(round(cx + hw + 1)) + 1):
+                if j > t1 + droop(X) - 1: continue
+                dxn = (X + 0.5 - cx) / max(1.0, hw)
+                if abs(dxn) > 1.0: continue
+                u = (dxn + 1) / 2
+                # 덩이: 5칸 단위, 덩이 안 왼쪽 위가 밝다
+                cl = (X + k * 2 + s) % 5
+                lit = 0.62 * (1 - u) + 0.38 * (1 - min(1.0, f))
+                lit += (0.16 if cl in (0, 1) else -0.1 if cl == 4 else 0)
+                lit += (rnd(X, j, s + 9) - 0.5) * 0.22
+                if j >= t1 + droop(X) - 1: lit -= 0.55
+                elif j >= t1 + droop(X) - 3: lit -= 0.25            # 가지 밑 그늘
+                g = 1 + int(max(0, min(3.99, lit * 4.4)))
+                if (X * 2 + j + k) % 7 == 0 and u < 0.55: g = min(5, g + 1)   # 바늘잎 반짝
+                c.P(X, j, 'pine', g)
+                # 눈 덩이: 층 윗부분(왼쪽 두껍게) + 물결 경계
+                sf = f_vis + (0.34 if k == 0 else 0.2) * (1 - 0.75 * u) + (_sm(X * 0.55, s + k, 7) - 0.5) * 0.18
                 if f < sf:
-                    t = 6 if (u < 0.45 and f < sf - 0.1) else 5 if u < 0.8 else 4
-                    if f > sf - 0.08: t = 4 if u < 0.6 else 3
-                    c.P(X, j, 'snow', t)
-        # 톱니 아랫선(짙게) + 눈 방울
-        hw = w_bot
-        for X in range(int(round(cx - hw)), int(round(cx + hw)) + 1):
-            if (X + k) % 3 == 0: c.P(X, t1 + 1, 'pine', 0)
-            elif (X + k) % 3 == 1: c.P(X, t1 + 1, 'pine', 1)
-    c.P(int(cx), ytop - 1, 'snow', 6); c.P(int(cx), ytop, 'snow', 6); c.P(int(cx) - 1, ytop + 1, 'snow', 6); c.P(int(cx) + 1, ytop + 1, 'snow', 5)
+                    depth = sf - f
+                    if depth < 0.07: t = 3 if u > 0.5 else 4
+                    elif depth < 0.15: t = 4 if u > 0.6 else 5
+                    else: t = 6 if u < 0.42 else 5
+                    if t == 5 and rnd(X, j, s + 13) < 0.08: t = 6
+                    c.P(X, j, 'snow', t); snowmask.add((X, j))
+            # 눈 방울(가지 끝 처진 덩이)
+        for X in range(int(round(cx - w_bot)), int(round(cx + w_bot)) + 1):
+            if (X + k * 3 + s) % 6 == 0 and abs(X - cx) > 1:
+                y = t1 - 1 + droop(X) - 1
+                if c.on(X, y) and c.get(X, y)[0] == 'pine':
+                    c.P(X, y, 'snow', 4)
+    # 꼭대기 눈 모자
+    c.P(int(cx), ytop - 1, 'snow', 5); c.P(int(cx), ytop, 'snow', 6); c.P(int(cx) - 1, ytop + 1, 'snow', 6); c.P(int(cx) + 1, ytop + 1, 'snow', 4)
+    tone_outline(c, ground_rows=4)
+
+
+def tone_outline(c, ground_rows=4, SNOWTONE=('pine', 0)):
+    """실루엣 바깥 1px 을 재질 색조의 짙은 톤으로(잎 → pine 0, 눈 → snow 1, 나무 → log 0, 돌 → stone 1). 바닥 그늘 행은 건너뛴다."""
+    from px import MI, MATS
+    m0 = c.m.copy(); t0 = c.t.copy(); pts = []
+    tone = {'pine': ('pine', 0), 'snow': SNOWTONE, 'log': ('log', 0), 'stone': ('stone', 1), 'birch': ('birch', 0), 'fur': ('fur', 0)}
+    for y in range(c.h):
+        for x in range(c.w):
+            if m0[y, x] >= 0: continue
+            best = None
+            for dx, dy in ((0, 1), (1, 0), (-1, 0), (0, -1)):
+                X, Y = x + dx, y + dy
+                if 0 <= X < c.w and 0 <= Y < c.h and m0[Y, X] >= 0:
+                    mat = MATS[m0[Y, X]]
+                    if mat == 'snow' and Y > c.h - ground_rows - 1 and t0[Y, X] <= 4: continue
+                    if mat in tone: best = tone[mat]; break
+            if best: pts.append((x, y, best))
+    for x, y, b in pts: c.P(x, y, *b)
+
+
+def bush2(c, s=0):
+    """덩이 셋 겹친 눈 덮인 덤불."""
+    c.ell(9, 13.5, 6.5, 1.8, lambda X, Y, dx, dy, d: ('snow', 3) if d < 0.6 else ('snow', 4))
+    for (bx, by, r) in ((5, 9.5, 4.2), (11, 9, 4.6), (8, 6.5, 4.4)):
+        c.ell(bx, by, r, r * 0.85, lambda X, Y, dx, dy, d: ('pine', max(1, min(5, int(1 + 4.2 * (0.55 * (1 - (dx + 1) / 2) + 0.45 * (1 - (dy + 1) / 2) + (rnd(X, Y, s) - 0.5) * 0.3))))))
+    for (x, y) in ((3, 10), (7, 12), (13, 11), (10, 8), (5, 7)): c.P(x, y, 'pine', 0)
+    for (bx, by, r) in ((5, 8.6, 3.6), (11, 7.8, 3.8), (8, 4.8, 3.6)):
+        c.ell(bx - 0.3, by, r, r * 0.55, lambda X, Y, dx, dy, d: (('snow', 6 if dx < -0.1 and dy < 0 else 5) if d < 0.75 else ('snow', 4 if dx < 0.4 else 3)) if dy < 0.45 else None)
+    c.P(6, 3, 'snow', 6); c.P(12, 6, 'snow', 6)
+    tone_outline(c, ground_rows=3)
+
+
+def boulder2(c, cx, cy, rx, ry, s=0):
+    """깎인 면이 있는 바위 + 두꺼운 눈 모자(4단) + 균열."""
+    def body(X, Y, dx, dy, d):
+        lit = 0.55 * (1 - (dx + 1) / 2) + 0.45 * (1 - (dy + 1) / 2)
+        facet = h32(int((X - cx) // 3), int((Y - cy) // 3), s) % 3
+        lit += (facet - 1) * 0.08 + (rnd(X, Y, s + 5) - 0.5) * 0.14
+        t = 1 + int(max(0, min(4.99, lit * 5.5)))
+        if d > 0.8 and dy > 0.2: t = max(1, t - 1)
+        return ('stone', t)
+    c.ell(cx + 1, cy + ry * 0.75, rx * 0.95, ry * 0.4, lambda X, Y, dx, dy, d: ('snow', 3) if d < 0.7 else ('snow', 4))
+    c.ell(cx, cy, rx, ry, body)
+    for k in range(3):
+        x0 = int(cx + (h32(k, s, 1) % 5) - 2); y0 = int(cy + 1)
+        for q in range(int(ry * 0.7)):
+            c.P(x0 + (q // 2) * (1 if k % 2 else -1), y0 + q, 'stone', 1)
+    c.ell(cx - rx * 0.1, cy - ry * 0.38, rx * 0.88, ry * 0.6,
+          lambda X, Y, dx, dy, d: (('snow', 6 if dx < -0.15 and dy < 0.1 else 5 if dx < 0.45 else 4) if d < 0.7 else ('snow', 4 if dx < 0.3 else 3)) if dy < 0.5 + (_sm(X * 0.6, s, 2) - 0.5) * 0.5 else None)
+    c.P(int(cx - rx * 0.4), int(cy - ry * 0.75), 'snow', 6)
+    tone_outline(c, ground_rows=3, SNOWTONE=('stone', 1))
 
 
 def outline_dark(c, mat_ok=('pine',)):
@@ -111,22 +192,22 @@ def outline_dark(c, mat_ok=('pine',)):
 
 
 @R.add('pine-s', '어린 가문비(눈 덮임)', 1, 2, 'organic', tags=['나무', '가문비', '숲'], rules='숲 가장자리·길가에 2~4 그루 덩이로. 한 줄로 늘어놓지 않는다.')
-def _(c): pine(c, 7.5, 3, 31, 7, 3, s=1, trunk_h=3); outline_dark(c)
+def _(c): pine(c, 7.5, 3, 31, 7, 3, s=1, trunk_h=3)
 
 
 @R.add('pine-m', '가문비(눈 덮임, 중간)', 2, 3, 'organic', tags=['나무', '가문비', '숲'], rules='숲 덩이의 몸통. 간격을 흔들어 3~7 그루 덩이로.')
-def _(c): pine(c, 15.5, 4, 46, 12, 4, s=2); outline_dark(c)
+def _(c): pine(c, 15.5, 4, 46, 12, 4, s=2)
 
 
 @R.add('pine-l', '큰 가문비(눈 덮임)', 2, 4, 'organic', tags=['나무', '가문비', '숲'], rules='숲 안쪽·마을 뒤 큰 나무. 덩이 가운데에.')
-def _(c): pine(c, 15.5, 4, 62, 14, 5, s=3, trunk_h=5); outline_dark(c)
+def _(c): pine(c, 15.5, 4, 62, 14, 5, s=3, trunk_h=5)
 
 
 @R.add('pine-pair', '가문비 두 그루(겹침)', 3, 4, 'organic', tags=['나무', '가문비', '숲'], rules='숲 덩이 메우기. 홀로 두지 않는다.')
 def _(c):
     pine(c, 30.5, 10, 62, 13, 4, s=4)
     pine(c, 16.5, 2, 63, 15, 5, s=5, trunk_h=5)
-    outline_dark(c)
+    pass
 
 
 def birch(c, cx, ytop, ybot, s=0, spread=10, leaves=False):
@@ -136,8 +217,9 @@ def birch(c, cx, ytop, ybot, s=0, spread=10, leaves=False):
     tw = 4
     for j in range(ytop + 8, ybot):
         for i in range(tw):
-            t = 4 if i == 0 else 3 if i < 3 else 2
-            if h32(j // 2, i, s + 3) % 5 == 0: t = 0
+            t = 4 if i == 0 else 4 if i == 1 and j % 3 else 3 if i < 3 else 2
+            if h32(j // 2, i, s + 3) % 5 == 0: t = 0 if i < 3 else 1
+            elif h32(j // 2, i, s + 3) % 5 == 1 and i in (1, 2): t = 1
             c.P(int(cx) - 1 + i, j, 'birch', t)
     # 가지(재귀 없이 몇 갈래)
     import random
@@ -148,8 +230,9 @@ def birch(c, cx, ytop, ybot, s=0, spread=10, leaves=False):
         n = max(1, int(ln))
         for q in range(n + 1):
             X = round(x + (x1 - x) * q / n); Y = round(y + (y1 - y) * q / n)
-            c.P(X, Y, 'birch', 3 if depth < 2 else 2)
+            c.P(X, Y, 'birch', 3 if depth < 1 else 2 if depth < 3 else 1)
             if depth < 2 and math.cos(ang) < 0.4: c.P(X + 1, Y, 'birch', 1)
+            if depth >= 1 and q % 3 == 1 and not c.on(X, Y - 1): c.P(X, Y - 1, 'snow', 6 if X < cx else 5)   # 가지 위 눈
         if depth >= 4 or ln < 2.2: tips.append((x1, y1)); return
         for da in (-0.5, 0.45):
             branch(x1, y1, ang + da + rr.uniform(-0.15, 0.15), ln * 0.62, depth + 1)
@@ -159,7 +242,8 @@ def birch(c, cx, ytop, ybot, s=0, spread=10, leaves=False):
         branch(cx, base_y + 2, a, spread * 0.7, 1)
     for (x, y) in tips:
         X, Y = int(round(x)), int(round(y))
-        c.P(X, Y - 1, 'snow', 6); c.P(X + 1, Y - 1, 'snow', 5)
+        c.P(X, Y - 1, 'snow', 6); c.P(X + 1, Y - 1, 'snow', 4)
+    tone_outline(c, ground_rows=3, SNOWTONE=('birch', 1))
     c.P(int(cx), ybot - 1, 'birch', 1); c.HL(int(cx) - 2, ybot - 1, 5, 'snow', 5)
 
 
@@ -175,19 +259,11 @@ def _(c):
 
 
 @R.add('bush', '눈 덮인 덤불', 1, 1, 'organic', tags=['덤불', '풀'], rules='집 둘레·길가·바위 곁에 1~3 개.')
-def _(c):
-    c.ell(8, 10, 7, 5, lambda X, Y, dx, dy, d: ('pine', 2 if dx < 0 else 1) if dy > -0.1 else ('pine', 3))
-    for (x, y) in ((3, 8), (6, 6), (10, 7), (12, 9), (5, 11), (9, 12)): c.P(x, y, 'pine', 0)
-    c.ell(7, 7.5, 6, 3, lambda X, Y, dx, dy, d: ('snow', 6 if dx < 0.1 else 5) if dy < 0.3 else None)
-    c.HL(3, 15, 10, 'snow', 3)
-    outline_dark(c)
+def _(c): bush2(c)
 
 
 def boulder(c, cx, cy, rx, ry, s=0):
-    """눈 모자 쓴 바위: 몸(돌, 왼쪽 위 밝게) + 윗면 눈 모자(두껍게, 앞 가장자리 처짐) + 밑 접지."""
-    c.ell(cx, cy, rx, ry, lambda X, Y, dx, dy, d: ('stone', 5 if dx + dy < -0.7 else 4 if dx < 0 else 3 if dx < 0.5 else 2) if h32(X, Y, s) % 9 else ('stone', 1))
-    c.ell(cx - rx * 0.1, cy - ry * 0.35, rx * 0.9, ry * 0.62, lambda X, Y, dx, dy, d: ('snow', 6 if dx < -0.1 else 5 if dx < 0.5 else 4) if dy < 0.55 else ('snow', 3))
-    c.ell(cx, cy, rx, ry, lambda X, Y, dx, dy, d: ('ink', 1) if d > 0.86 and dy > -0.2 else None)
+    boulder2(c, cx, cy, rx, ry, s)
 
 
 @R.add('boulder-s', '눈 덮인 바위(작음)', 1, 1, 'organic', tags=['바위', '돌'], rules='숲가·길 모퉁이·호숫가에 덩이로. 길을 막지 않게.')

@@ -1,0 +1,151 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "35e4f8e2729d0490049b104fbd0f42b814c86cd8a4bc9619da77db625cf268f9",
+ "width": 32,
+ "height": 64,
+ "kind": "organic",
+ "name": "삼나무(곧고 높은 원뿔, 가도 가로수)",
+ "label": "sengoku-edo/se-tree-cedar",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cedar tree (foliage and trunk)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tall conical cedar tree is drawn as a flat side-scroller/architectural front elevation. The foliage tiers and the trunk base are viewed straight-on at eye level with no foreshortened top surfaces visible from the top-down 45-degree camera angle.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10305
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cedar tree (canopy and trunk)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn in a pure front/side elevation. Foliage tiers are stacked vertically with horizontal underside shadows showing no top-down foreshortening, and the canopy bottom forms a flat horizontal base under which the trunk attaches with no front branches overlapping down towards the viewer.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11558
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "conical cedar / pine tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn entirely in a flat front elevation / side-scroller profile. In a 3/4 top-down view at 45 degrees, a conifer canopy should show foreshortened front-facing boughs draping down in front of the trunk connection, and tiers curved downward towards the camera. Here, the foliage tiers extend strictly left and right, the bottom of the foliage forms a flat horizontal base above the trunk without overlapping it, and the trunk base rests on a flat horizontal line with no depth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8984
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "conical foliage canopy",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cedar tree is drawn in a flat side-scroller/platformer front elevation. The foliage tiers and bottom skirt (rows 51-54) are horizontal across without the curved elliptical foreshortening expected of a conical volume viewed from a 45-degree top-down angle, and the trunk is drawn straight-on with no visible downward depth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10702
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:28.010Z",
+ "cells": {
+  "16": [
+   "21251362c1052470",
+   "2f8b7ef624f5fff7",
+   "31c50b4694b247c0",
+   "3e16898ccd3339e2",
+   "68a3a084ea74da41",
+   "96d770e301a3b3a0",
+   "ac850cc060e147f9",
+   "ec04da093ba18f45"
+  ],
+  "24": [
+   "097b3536270899a2",
+   "1a1e95cc0b3ba6d1",
+   "1c0ee90eb6263b65",
+   "1f81dcec428088c1",
+   "253d17b871c67826",
+   "3f300b8cd65144af",
+   "4b36181a20ff8281",
+   "51f6973b806b5557",
+   "57e23fbe55398d8a",
+   "5e58825652f6f0ff",
+   "62472e4ab4a0fe4b",
+   "71812dd07568d504",
+   "7645d46698cbe6c3",
+   "7a2e0aaf87cfc21e",
+   "848bcb5fe26189a6",
+   "849d437368098875",
+   "9878c3f69c87b022",
+   "998e538893504506",
+   "9a63bf8a8e531d9b",
+   "ac17fec82741b3ab",
+   "b027b47d7fc950f1",
+   "b4605cf1d07440d7",
+   "be1d2348dba72897",
+   "cd5e86f445b4a2b4",
+   "dcb030edd73be22a",
+   "dd1b0d84a74e8e05",
+   "e71e62933d6a6777",
+   "f051ac859d6ad8a0",
+   "f3a0e3209bb722ff",
+   "f3e9e21f49658d2b",
+   "f929c81f062e67fd",
+   "ff44ad522e8716a4"
+  ],
+  "32": [
+   "1ac4ea373e637d7a",
+   "a5c10a231969ea24"
+  ],
+  "48": [
+   "022b1e193d70d791",
+   "1327dbd5a545acb0",
+   "73050e1f2cb5b9b3",
+   "885023fb868ca27c",
+   "8daf6132646e39d9",
+   "9003671840f192da",
+   "c6f38ab90b83a06d",
+   "cb677389875c0196",
+   "cf24a547a4f7ae5e",
+   "d4f67110b2222288",
+   "dad265cdfb4caa35",
+   "fac4be4c7bad7a7a"
+  ]
+ }
+}

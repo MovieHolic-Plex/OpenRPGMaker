@@ -1,0 +1,162 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9d6a293d8029a6b4570ebcb82beee8467366432d41c38eeaadd077e2fb0bab3e",
+ "width": 96,
+ "height": 96,
+ "kind": "structure",
+ "name": "둥근 지붕 회당(큰 돔·아치 문루)",
+ "label": "desert-east/de-domed-hall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "synagogue / gatehouse with turquoise dome and flat roof terrace",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure clearly depicts a flat rooftop terrace spanning rows 8 to 55 (complete with top-down placed urns, a hatch door, and parapet walls) behind and above the lower brick facade, plus a foreshortened tiled lintel above the archway (rows 52-54).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6585
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "assembly hall with dome and arched portal",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a large accessible flat rooftop terrace (rows 6-54) viewed from above with props (pots, roof hatch) resting on it, and the dome displays downward-curving latitude lines and an elliptical drum base typical of a 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 25185
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "domed building with rooftop terrace and arched gate",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building clearly shows its top horizontal roof terrace spanning rows 8 to 55 complete with rooftop urns and a hatch, with the front south facade below from row 56 to 95. The dome and its drum also correctly show 3/4 downward projection.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6537
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "synagogue/mosque structure with dome, gatehouse portal, and rooftop terrace",
+    "kind_matches": true,
+    "top_rows": 46,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure clearly shows its expansive horizontal roof terrace (rows 8–54) seen from above at a 3/4 perspective, complete with jars and a hatch resting on the surface. The dome base (rows 26–34) also curves downward in proper foreshortened perspective above the lower vertical facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7733
+  }
+ ],
+ "decidedAt": "2026-10-14T08:06:19.388Z",
+ "cells": {
+  "16": [
+   "08ce50705a567daa",
+   "0bd8be535238be2c",
+   "136e54fcb4634732",
+   "177aa9a5a60d5823",
+   "1813441d839d0792",
+   "28b1c27b2b5af4aa",
+   "2f2b00bcbd1d2e4f",
+   "3187d91eecf81ab7",
+   "3acf399a090a77ed",
+   "3c3571388b7e0f0f",
+   "3d181d1e5819f80e",
+   "3ec184bba5accc02",
+   "3fce45c8aeec1840",
+   "462feffc393f0f7e",
+   "5059545f3e6ba46f",
+   "610529613553418b",
+   "637beff8b2d526bc",
+   "6fbca3b17ef3c1ff",
+   "72cb2b438efac07d",
+   "7c15cbe22a3241c9",
+   "7c258bda0c60fb4e",
+   "84a611706afae793",
+   "a4f484295ec0bc59",
+   "a643bf9e2042f3c7",
+   "a8cd013a18cc81a2",
+   "b1a074ddff9e28e2",
+   "b7a545eae6035d2a",
+   "be20a0eac89c270f",
+   "c33bffa37b10d319",
+   "c56aade8d2d5f52a",
+   "c7cfcef175b7e20f",
+   "d8284c32376711ef",
+   "da26e73c80bccc85",
+   "e89908cf46a9ea5f",
+   "fd926a993fa2ec60",
+   "ff4fd4509d1dae2c"
+  ],
+  "24": [
+   "13d27cfe0eccfc81",
+   "18d3d34d5219cc77",
+   "23492620bf6e15d1",
+   "34d5fa51b7d4cd52",
+   "3ebb84f04182adef",
+   "49d8d31692c920f9",
+   "52819eaa91e36a57",
+   "5bc55ddf1aa4c66d",
+   "64a1f161e41eb608",
+   "9dda2caff579c415",
+   "a2c865c1733182ec",
+   "aa98ff512529a004",
+   "ae26810529d46158",
+   "ae5912545dcc4fd6",
+   "b24a89576ab2b834",
+   "c6c8ebd9a684a33e"
+  ],
+  "32": [
+   "0ecea4008d606f70",
+   "1c63a3164afce708",
+   "24cd97755c70a5c8",
+   "57b430fd405305bd",
+   "720978f623861d73",
+   "8630c63344e41db5",
+   "915bcacbc0f6527e",
+   "df70ec365bbe46d6",
+   "ffff1d89220249ec"
+  ],
+  "48": [
+   "0b689a1cde675e91",
+   "27aadb35d33b84ab",
+   "be3fa573fc3f1e67",
+   "dfeb20af965b1ded"
+  ]
+ }
+}

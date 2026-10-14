@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "686e87c6dfaf2974d572eafbd358fc87a27c9d9083f4696bacfca96e4a508b29",
+ "width": 48,
+ "height": 64,
+ "kind": "organic",
+ "name": "은행나무 가로수(가을, 큰 수관)",
+ "label": "modern_city/street-green/mc-prop-ginkgo-big-a",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tree canopy is rendered with volumetric rounded clusters; the topmost dome spans rows 0 to 8 with substantial upward-facing highlight and shading suitable for a 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8879
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ginkgo tree foliage canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tree canopy is rendered as overlapping spherical foliage clusters with clear top-down highlights and shading (top cluster spans rows 0-8), standing on a grounded trunk with an elliptical cast shadow beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4840
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "canopy and trunk of the ginkgo tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn in a pure front elevation typical of a 2D side-scroller. The trunk meets the base on a flat horizontal line, the underside of the canopy is viewed horizontally from eye level, and there is no visible top surface foreshortened from a 45-degree top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8755
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ginkgo tree (canopy and trunk)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn in pure 2D front elevation. Foliage clusters are stacked along a vertical plane with a horizontal underside seen from the side, and the trunk descends to a flat horizontal root line rather than displaying a 3/4 downward perspective with a foreshortened top canopy.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13091
+  }
+ ],
+ "decidedAt": "2026-10-14T08:05:10.638Z",
+ "cells": {
+  "16": [
+   "24dfdd2c7482f78e",
+   "69fd81288a42484b",
+   "74836dc8f24c12e5",
+   "76f2a04f914ae6ea",
+   "7c54669e97360794",
+   "7e6f4d056c4758cb",
+   "99ebb27392a79206",
+   "a30ed7eb6e868066",
+   "c8912559725aa095",
+   "d1d02fc7a8bc66e5",
+   "d9bdf42234492077",
+   "ed33733a6a518e56"
+  ],
+  "24": [
+   "0736b618b5d167a1",
+   "0f422179f4479fe6",
+   "12066097466ea4d2",
+   "1c7dc81db52f4a7b",
+   "31340ebb48ce03d1",
+   "31460a0179cd3415",
+   "326e3cd962103f7d",
+   "3ca84d6996bab076",
+   "9fef2e7ac89e2d46",
+   "a792c1e5e2f7b7d6",
+   "e91e2d430a6947bb",
+   "ea86f37b6df9b15c"
+  ],
+  "32": [
+   "0cd3a238e0120718",
+   "309ccf2a4b09c04b",
+   "4884df735800bc3d",
+   "63d840d75a18db5d",
+   "96855be3b825ab39",
+   "a83a99720967332b",
+   "ab648141048c1232",
+   "bb63ad2e12926718",
+   "c5b7987a0f302685",
+   "dc767c5f601daef0",
+   "fc551ca659e55512",
+   "ff37e8fe251bb0b8"
+  ],
+  "48": [
+   "119ab191af07d2ec",
+   "2718378a1a966af6",
+   "5bea71a9b7ce4601",
+   "7f2b83ded330f35b"
+  ]
+ }
+}

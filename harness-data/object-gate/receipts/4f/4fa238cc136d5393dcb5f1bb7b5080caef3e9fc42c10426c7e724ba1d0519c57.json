@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4fa238cc136d5393dcb5f1bb7b5080caef3e9fc42c10426c7e724ba1d0519c57",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "물가 돌 축대(남쪽 뭍)",
+ "label": "sengoku-edo/se-water-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water surface and stone embankment border",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting top-down water surface across rows 0-13 meeting a stone embankment edge at rows 14-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5175
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water to stone embankment transition terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting water surface (rows 0-12) bordering a stone embankment/land edge along the bottom (rows 13-15). As flat terrain, it appropriately renders the top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3546
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water surface with stone embankment edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting a water body (rows 0-13) meeting a stone edge/embankment along the southern boundary (rows 14-15), viewed overhead in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4247
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water and stone embankment edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a horizontal water surface (rows 0-13) meeting a stone edge/embankment along the southern border (rows 14-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3667
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:28.013Z",
+ "cells": {
+  "16": [
+   "8e4719a4dd4460d3"
+  ],
+  "24": [
+   "1d2381e4ae9529c4",
+   "254d9e4bf39ebec1",
+   "54e8e6b747a3f422",
+   "5645be164f7d7907",
+   "66d7fedac3ae2025",
+   "c4438307d10c28e5"
+  ],
+  "32": [
+   "3ffabad01d6361a6",
+   "46b74e01c4815c5c",
+   "4c4d2e35560ea836",
+   "c76ddad1588d2550",
+   "e98bcf1b12752541",
+   "f6e03ca5de84e24d"
+  ],
+  "48": [
+   "293d035845807b0a",
+   "3293c4c5e1d43bd6",
+   "43f4ae4ede779f9f",
+   "a2f5aaca460e5e42",
+   "b9587b7443fe8304",
+   "f13e07051610fa3f"
+  ]
+ }
+}

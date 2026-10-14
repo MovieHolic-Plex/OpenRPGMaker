@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7acc4022af8340e1bdb71945244c3db4baad9bc04034572f63b0e1c56e3f4823",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "그늘진 잔디(나무 밑)",
+ "label": "modern-campus/mc-lawn-shade",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "shaded grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile representing shaded grass; valid 16x16 top-down ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4068
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "shaded grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting shaded grass texture across all 16 rows, appropriate for a top-down ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5526
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "shaded grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile representing shaded grass; seamlessly covers the full 16x16 grid as a top-down surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3250
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "shaded grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile filling the 16x16 frame, representing shaded grass viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5063
+  }
+ ],
+ "decidedAt": "2026-10-14T08:06:14.285Z",
+ "cells": {
+  "16": [
+   "3f90602eff464997"
+  ],
+  "24": [
+   "1158772084e43c6b",
+   "1e424d52459f3873",
+   "4ae4d6060d412b5b",
+   "55728f26ddab1beb",
+   "790337d095df1cab",
+   "d72ba93e2d5924a9"
+  ],
+  "32": [
+   "697fe2472e6d684c",
+   "85df5b376c16ec47",
+   "a2a3cd031a632e57",
+   "ad7a7f7c994ebdc1",
+   "f8c809df249f234d",
+   "f9d551a9555b3e7a"
+  ],
+  "48": [
+   "305dbc4c4fce131f",
+   "595d9ade2d29fec5",
+   "74b6ae6b487ff584",
+   "7c348f2005b75d41",
+   "8b97c1f2f691d5c8",
+   "ad52d8cf938fa417"
+  ]
+ }
+}

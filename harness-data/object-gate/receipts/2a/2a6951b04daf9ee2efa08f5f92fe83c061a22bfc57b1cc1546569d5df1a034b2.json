@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2a6951b04daf9ee2efa08f5f92fe83c061a22bfc57b1cc1546569d5df1a034b2",
+ "width": 48,
+ "height": 48,
+ "kind": "organic",
+ "name": "벚나무(분홍 꽃 둥근 수관)",
+ "label": "sengoku-edo/se-tree-cherry",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "canopy of the cherry blossom tree",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tree canopy is rendered as a rounded, spherical volume with illuminated upper lobes facing the high-angle camera across rows 1-12, presenting adequate depth for a top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8710
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cherry blossom tree crown and trunk",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The foliage canopy is rendered with rounded volumetric spherical lobes showing distinct top surfaces lit from above (rows 1-12), and the trunk base flares naturally onto the ground plane in standard 3/4 top-down JRPG view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5916
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cherry blossom tree (canopy and trunk)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn from a straight eye-level/front elevation rather than a 3/4 top-down perspective. The trunk base ends in a completely flat horizontal line at row 46 instead of showing a foreshortened circular/elliptical footprint on the ground plane, and the canopy is rendered as a front-facing silhouette with visible cluster undersides rather than a top-down foreshortened dome.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8863
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cherry blossom tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rounded cherry blossom canopy is rendered in 3/4 top-down perspective with spherical lobe clusters showing foreshortened upper surfaces (rows 1-10) highlighted and shadowed undersides, mounted on a trunk anchored to a grass patch.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4601
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:28.010Z",
+ "cells": {
+  "16": [
+   "0ae9813c2b55ad18",
+   "54e98be70e6c65d5",
+   "6d11311805f68530",
+   "6d4d2add1fff631c",
+   "6fdc50e130528375",
+   "8b2380730c24d7d8",
+   "a2a4810f92d11123",
+   "c6bc5d4ef1fd3130",
+   "cea113109ee0f26a"
+  ],
+  "24": [
+   "5c882c7713113923",
+   "b4b4e85a0c132d6c",
+   "c15ac16d8e96e57b",
+   "f38b6b1bd4f96ccd"
+  ],
+  "32": [
+   "0e12496c22fa902c",
+   "205d0b98bb2d73b1",
+   "41e49620c187c319",
+   "492ce424a7a7d9fc",
+   "580d20a41ccee308",
+   "58a2c2284c5bd44a",
+   "5ebd85d8c37b392c",
+   "60afa1fccc1bdaf2",
+   "69723224bf802a7c",
+   "6ac9b00f9f0fcdb2",
+   "a498011ee26d28c1",
+   "ae2ae8a2e97efc0b",
+   "b2c7bdadaf9b6fe0",
+   "b529a37328fdf34c",
+   "bb6cd371908cd350",
+   "c8662e047f800699",
+   "cfc89a87a6dbe92c",
+   "d5c06a950faa10e1",
+   "d5d781de764210ff",
+   "d7bf890718137ef1",
+   "dbb9b57cdf39b462",
+   "e0a2a252081e14a8",
+   "e4bbeb43fca25acc",
+   "f4062a88b247b592"
+  ],
+  "48": [
+   "c6408afd6eb3e404"
+  ]
+ }
+}

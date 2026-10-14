@@ -198,17 +198,34 @@ class Board {
       else if (flower >= 0 && f < 0.16 && hash2(x, y, seed + 3) < 0.45) this.lower[k] = flower;
     }
   }
-  /** 큰 빈 잔디(7×7 이 통째로 빈 곳)에 작은 숲 덩이(나무 하나 + 관목 한두 포기)를 둔다 — 「텅 빈 잔디밭」 방지(QA D4). */
+  /** 큰 빈 잔디(7×7 이 통째로 빈 곳)에 작은 숲 덩이(나무 하나 + 관목 한두 포기)를 둔다 — 「텅 빈 잔디밭」 방지(QA D4).
+   *  quality-b: 7×7 덩이는 넓은 수관의 큰 느티나무(mc-tree-zelkova-l, 3×4)를 먼저 쓰고, 남은 5×5 빈 잔디에는 작은 나무를 한 번 더 둔다. */
   groves(rng: () => number, max: number): number {
     let n = 0;
+    const bush = () => pick(rng, ["mc-shrub", "mc-azalea", "mc-shrub"]);
+    const hasBig = !!this.pal.kit("mc-tree-zelkova-l");
     for (let tries = 0; tries < 400 && n < max; tries++) {
-      const x = 1 + Math.floor(rng() * (this.W - 8)), y = 1 + Math.floor(rng() * (this.H - 8));
-      if (!this.free({ x, y, w: 7, h: 7 }, 0)) continue;
+      const big = hasBig && rng() < 0.75;
+      const [fw, fh] = big ? [5, 6] : [7, 7];
+      const x = 1 + Math.floor(rng() * (this.W - fw - 1)), y = 1 + Math.floor(rng() * (this.H - fh - 1));
+      if (!this.free({ x, y, w: fw, h: fh }, 0)) continue;
+      if (big) {
+        if (!this.prop("mc-tree-zelkova-l", x + 1, y + 1, 0)) continue;
+        n++;
+        if (rng() < 0.6) this.prop(bush(), x + (rng() < 0.5 ? 0 : 4), y + 5, 0);
+        continue;
+      }
       const tree = pick(rng, ["mc-tree-zelkova", "mc-tree-ginkgo", "mc-tree-cherry", "mc-tree-pine"]);
       if (!this.prop(tree, x + 2 + Math.floor(rng() * 2), y + 1, 1)) continue;
       n++;
-      const bush = () => pick(rng, ["mc-shrub", "mc-azalea", "mc-shrub"]);
       this.prop(bush(), x + 1, y + 4, 0); if (rng() < 0.6) this.prop(bush(), x + 5, y + 4, 0); if (rng() < 0.4) this.prop(bush(), x + 4, y + 5, 0);
+    }
+    for (let tries = 0; tries < 300 && n < max * 2; tries++) {
+      const x = 1 + Math.floor(rng() * (this.W - 6)), y = 1 + Math.floor(rng() * (this.H - 6));
+      if (!this.free({ x, y, w: 5, h: 5 }, 0)) continue;
+      if (!this.prop(pick(rng, ["mc-tree-zelkova", "mc-tree-zelkova", "mc-tree-pine", "mc-tree-cherry"]), x + 1 + Math.floor(rng() * 2), y + 1, 0)) continue;
+      n++;
+      if (rng() < 0.5) this.prop(bush(), x + (rng() < 0.5 ? 0 : 3), y + 4, 0);
     }
     return n;
   }

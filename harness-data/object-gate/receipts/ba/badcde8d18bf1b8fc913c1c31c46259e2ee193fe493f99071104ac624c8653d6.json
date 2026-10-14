@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "badcde8d18bf1b8fc913c1c31c46259e2ee193fe493f99071104ac624c8653d6",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "풀밭 가장자리(북쪽 흙길)",
+ "label": "sengoku-edo/se-grass-edge-n",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass and dirt ground transition",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile showing the horizontal ground boundary between a northern dirt road and grass field viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4460
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass and dirt path transition tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting a grass field transitioning to a dirt path along the northern edge, viewed completely from the top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3022
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ground transition tile (grass to dirt path)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a grass border meeting a dirt path to the north, correctly viewed as a horizontal ground plane filling the full 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4238
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ground transition tile (grass and dirt path edge)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground autotile edge transitioning from dirt/path at the north to grass; entirely horizontal ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4713
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:28.011Z",
+ "cells": {
+  "16": [
+   "2613c0628e6509ee"
+  ],
+  "24": [
+   "14b1fd08473a56a0",
+   "20651c4ff39d6124",
+   "2979251fa651a201",
+   "9ca756eb7b35379e",
+   "c4c3ce43b32d5205",
+   "f6e78e47df9f6638"
+  ],
+  "32": [
+   "15f6aded6e90f09f",
+   "4cf5a593e5cbd141",
+   "7b4f42467889ccac",
+   "9273eef65eda7748",
+   "a897a2d70623f40c",
+   "dffb09eea213ec82"
+  ],
+  "48": [
+   "6066fc7cd4c6c0bf",
+   "a5fa533c423e12ad",
+   "c82347dc693eda95",
+   "f30205a2e1a319d4",
+   "f379dbe616acdb5f",
+   "f759bd6f39d09877"
+  ]
+ }
+}

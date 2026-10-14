@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ec1d0a624a2553d1b44eade721934f60e05b1d509c8ab6c4f4ae33004f8c9f88",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "작은 소나무(정원 다듬은 솔)",
+ "label": "sengoku-edo/se-tree-pine-small",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "canopy foliage pads and trunk of manicured pine",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pruned foliage clouds are viewed from an oblique top-down angle, showing about 5 rows of light green top surfaces across rows 2-7 before curving into shadowed south-facing undersides.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6038
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 60008,
+   "error": "Error: Request was aborted"
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "foliage canopies and trunk of pruned pine tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pine tree is drawn as a flat eye-level/side elevation (profile silhouette suitable for a side-scroller). The cloud-pruned foliage pads show no foreshortened top surfaces (which should appear as rounded elliptical planes in 3/4 top-down perspective), and the trunk and branches are viewed directly from the side.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6228
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "foliage pads and trunk of manicured pine tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pine tree is drawn as a flat 2D side elevation suitable for a side-scroller. The manicured foliage pads and trunk show no foreshortened top surfaces or elliptical depth from a 3/4 top-down camera angle.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7089
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:28.010Z",
+ "cells": {
+  "16": [
+   "c30c37be25599e70",
+   "d70dccee0db7599c",
+   "f1081c6ecfd93a98",
+   "fadab3cc3835dbe1"
+  ],
+  "24": [
+   "06dfdbd508c37232",
+   "162a34d17939664d",
+   "1794915a975caac1",
+   "1a969dc89290813a",
+   "24f25a089bcd276a",
+   "33e9fbe266c70eba",
+   "36e8488214a14f75",
+   "3c245c4a61ca8a24",
+   "51214c287c11e96f",
+   "61d9a22f76f8bc3f",
+   "67e3f447191edbfc",
+   "68b007b75e73d048",
+   "76ae3b94dadab45e",
+   "7cda5551ec18a0d7",
+   "84cb776e8f7bf1b0",
+   "ac17e986ecb9be54",
+   "b7f3d0b83efaa21e",
+   "c3de3ab77c0aff51",
+   "ca67ffc0521e18e0",
+   "dadec54f272868dd",
+   "e6bfcb5bd23505ad",
+   "e99c50ea78f90318",
+   "eab54b28d5c6645b"
+  ],
+  "32": [
+   "de46899e90e68e20"
+  ],
+  "48": [
+   "2a9f020758ab6177",
+   "5308eac234bb417f",
+   "64d230f0745fe9bd",
+   "85f5ca034311bcc6",
+   "afbce2b796613ae0",
+   "c3a6274df1e3d7ea"
+  ]
+ }
+}

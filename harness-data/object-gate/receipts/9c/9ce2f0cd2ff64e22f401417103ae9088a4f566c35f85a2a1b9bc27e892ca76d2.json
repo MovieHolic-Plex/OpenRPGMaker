@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9ce2f0cd2ff64e22f401417103ae9088a4f566c35f85a2a1b9bc27e892ca76d2",
+ "width": 48,
+ "height": 48,
+ "kind": "terrain",
+ "name": "잔디(토끼풀 꽃) (16px 칸 3×3 반복)",
+ "label": "modern_city/street-green/lawn-clover-701",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "repeating grass terrain with clover flowers",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 3x3 repeating grass ground tile texture with scattered clover flower dots; flat horizontal terrain surface appropriate for top-down map.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5422
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "repeating grass ground tile with clover flowers",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat repeating 16x16 grass terrain texture shown in a 3x3 tiled grid with clover flower dots; represents ground surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3928
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "clover grass ground terrain",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless repeating 3x3 ground terrain tile depicting grass and small clover blossoms seen from top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4723
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "clover grass ground terrain",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 3x3 repeating grass ground terrain tile with clover flowers, viewed flat from above as standard top-down RPG floor surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4564
+  }
+ ],
+ "decidedAt": "2026-10-14T08:05:10.642Z",
+ "cells": {
+  "16": [
+   "50ce9840c79e40cd"
+  ],
+  "24": [
+   "1e7ec41b266e4819",
+   "3fbd34ead62bcdd9",
+   "4c297b005bd44382",
+   "ea359358d17d305a"
+  ],
+  "32": [
+   "1374b6eca7725857",
+   "25890c1b0f6051a5",
+   "7291cafc2dc50c0d",
+   "74919e4fcc218b89",
+   "8847eb552327d110",
+   "954aa0c4aa1a4d1e",
+   "97857e5de90b4881",
+   "a670e96a4600c7bf",
+   "bd0d7b5641d20a2e",
+   "beac8ad344519c0c",
+   "c69506c6df1b3add",
+   "c734b160abe355a6",
+   "e10a6d3d21b725d6",
+   "e89c22f3fffbebbc",
+   "f4761c7f53ff7752"
+  ],
+  "48": [
+   "b40870919080a977"
+  ]
+ }
+}

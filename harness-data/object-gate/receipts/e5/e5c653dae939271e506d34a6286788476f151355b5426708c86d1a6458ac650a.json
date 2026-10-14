@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e5c653dae939271e506d34a6286788476f151355b5426708c86d1a6458ac650a",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "다진 흙길(변주)",
+ "label": "sengoku-edo/se-road-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dirt path ground tile with small pebbles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a dirt path ground surface with small embedded stones across the entire 16x16 canvas.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3825
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dirt ground tile with pebbles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tile showing packed dirt texture with small embedded pebbles across the full 16x16 surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2915
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "packed dirt ground tile with embedded pebbles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile filling the 16x16 canvas with dirt texture and small embedded stones, viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2467
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "packed dirt ground tile with embedded pebbles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile filling the 16x16 canvas with dirt texture and small pebbles seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3368
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:28.012Z",
+ "cells": {
+  "16": [
+   "ac76e432e85d1dcd"
+  ],
+  "24": [
+   "1e74abdcd6ca9e90",
+   "61344600f2fe061d",
+   "72ffc47ba1d17e64",
+   "8fcd13476872745b",
+   "f5361d500aa393db",
+   "f8e156f3ccdeb862"
+  ],
+  "32": [
+   "1f9316f77ebc24a7",
+   "209c4608775b5db6",
+   "2d74f689c45e0519",
+   "859c0ea6e337863d",
+   "a328a563d3c96506",
+   "ba28a971d7181280"
+  ],
+  "48": [
+   "0ac829576d902d27",
+   "109bc1bd8d99f1b9",
+   "344445853d6c3c93",
+   "5e2db299bd448f10",
+   "6d224513a0a94855",
+   "a4f9a3717fd434be"
+  ]
+ }
+}

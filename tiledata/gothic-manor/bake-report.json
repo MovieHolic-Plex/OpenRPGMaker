@@ -3,9 +3,9 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 1604,
+  "tiles_checked": 1605,
   "kits_checked": 137,
-  "groups_checked": 62,
+  "groups_checked": 63,
   "autotiles_checked": 8
  },
  "reassembly": {
@@ -17,7 +17,7 @@
   "cells_off_palette": 0
  },
  "tiles": {
-  "count": 1604,
+  "count": 1605,
   "rows": 34,
   "sheetPx": [
    768,
@@ -25,18 +25,18 @@
   ],
   "strips": 43,
   "kits": 137,
-  "groups": 62,
+  "groups": 63,
   "autotiles": 8
  },
  "adopted": {
-  "pieces": 166,
+  "pieces": 167,
   "autotiles": 5,
   "runs": 3,
-  "outdoor": 85,
+  "outdoor": 86,
   "interior": 89
  },
  "by_module": {
-  "terrain": 10,
+  "terrain": 11,
   "bld_manor": 6,
   "bld_chapel": 1,
   "bld_misc": 11,

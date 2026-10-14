@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9773f767fb6ac4cc8d4a320fe6eab180e2c36718d3d492251d2560e80e583a2c",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "다진 흙길",
+ "label": "desert-east/de-road",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "packed dirt ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a packed dirt path across the full 16x16 surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4844
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dirt path ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting packed dirt ground with subtle variations and scattered pebbles seen from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5571
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "packed dirt ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Entire 16x16 tile depicts flat ground terrain (dirt/soil path) seen from above with small texture variations and pebbles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6499
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "packed dirt road terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain surface viewed from above spanning the full 16x16 tile with no standing structure.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4320
+  }
+ ],
+ "decidedAt": "2026-10-14T08:01:48.457Z",
+ "cells": {
+  "16": [
+   "88970cd97a076dc7"
+  ],
+  "24": [
+   "21398ff1d0cc89f5",
+   "2d114dbb2f628538",
+   "3a8cc4c3d92e0989",
+   "3a9c19d9b3abe28d",
+   "d9ebac5ed8ea3422",
+   "ebd47e1e4ad0d765"
+  ],
+  "32": [
+   "610ce1b98ca68cf3",
+   "79200fbde168deae",
+   "884d5246b9918de7",
+   "8cba40ddebc5116d",
+   "c313d80fef036ada",
+   "e0a17c09934dede9"
+  ],
+  "48": [
+   "1dd91cdb95431e96",
+   "2ea8d3b944450e84",
+   "43d05e883f97f5de",
+   "a310321196caf653",
+   "c5fb8bf08ad9fa76",
+   "e5badd5647c5f2bd"
+  ]
+ }
+}

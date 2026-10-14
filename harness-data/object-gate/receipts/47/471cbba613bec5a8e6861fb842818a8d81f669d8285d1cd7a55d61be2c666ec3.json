@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "471cbba613bec5a8e6861fb842818a8d81f669d8285d1cd7a55d61be2c666ec3",
+ "width": 48,
+ "height": 48,
+ "kind": "terrain",
+ "name": "판석 광장(틈 이끼)",
+ "label": "gothic_manor/gm-flagstone",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flagstone pavement / terrain autotile",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile depicting flagstone paving with moss in cracks seen from top-down ground perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3338
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flagstone pavement with moss in crevices",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The asset is a terrain floor/pavement texture showing flagstones with moss viewed from above in top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3369
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flagstone pavement patch",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile patch depicting stone paving with moss in crevices viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3783
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flagstone pavement with moss in seams",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground patch consisting of stone pavers and mossy cracks viewed from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4905
+  }
+ ],
+ "decidedAt": "2026-10-14T07:55:00.836Z",
+ "cells": {
+  "16": [
+   "0dff2c1a381c2e6e",
+   "1953682447934bbd",
+   "4f3598d30947e029",
+   "7281b3fca5f9fa3e",
+   "96a58ff9fed0478d",
+   "a2d7a9487e2959fe",
+   "af170c09d061eee8",
+   "b09e016fd2330abe",
+   "c2a405d5710e201a"
+  ],
+  "24": [
+   "19f4b25c7e4b5583",
+   "2c28a9bbae37816f",
+   "4ae2e80d8dae777b",
+   "b9ceadd11e49bc5e"
+  ],
+  "32": [
+   "00ae0e4561365fce",
+   "094c2eaf3411d4c0",
+   "1b310b8cfcc2e852",
+   "223dc26d8faef7b3",
+   "23f8840f551b06cb",
+   "39639dc3646eb44d",
+   "540de384554642bc",
+   "682d8951194940cd",
+   "683a44d2b47eacef",
+   "6c0d646d757829bb",
+   "74c42bed96e3a9b7",
+   "81be55f2bf665358",
+   "88f39e56a1fd007a",
+   "9d83338f4bd84e20",
+   "a1750ea17413d86c",
+   "b3713965ae6da698",
+   "b3ee861dd0118f42",
+   "b834227032008c2d",
+   "b88f39080c73afe7",
+   "b8a5f1c5379607bc",
+   "bda6af0481e1392e",
+   "d1b24a5dd66a02fc",
+   "e17557d2cd6bdbe4",
+   "ef22d50cc8d6ce7b"
+  ],
+  "48": [
+   "519caf6323133cc7"
+  ]
+ }
+}
