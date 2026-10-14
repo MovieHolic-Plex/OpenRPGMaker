@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bd81e287bd149ac389f8161befe4fca10fb5d676d3b4cb4d834dd6ae52d9d4e2",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "empty sky background tile",
+ "label": "sky-island/si-sky",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "solid blue sky tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat uniform sky/terrain background filling the entire 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4691
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "empty sky background tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Uniform blue background/terrain tile filling the entire 16x16 grid. It is flat backdrop/terrain, not a standing object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4458
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "empty sky background tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Solid blue background/terrain tile filling the entire 16x16 grid; appropriately classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3828
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "solid blue sky background tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 solid blue background/terrain tile filling the entire grid. Not a standing object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3508
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.972Z",
+ "cells": {
+  "16": [
+   "374ba1170c892cae"
+  ],
+  "24": [
+   "10c62821f3c9454b",
+   "295cc1ad425abe81",
+   "403f39bdbb344f54",
+   "92e750296060d3d0",
+   "b0c27d700184a989",
+   "bc7c1d7d04a1fc56"
+  ],
+  "32": [
+   "17958c99bfa7d3f4",
+   "3292d5b77417ab82",
+   "58d151b292511f9a",
+   "bb51486b48411505",
+   "dbf4e7a4660a8069",
+   "e34d3a993593c566"
+  ],
+  "48": [
+   "02a5fb6ad2ab2a76",
+   "54657d5304087f58",
+   "ab5b8d8bc7618ffa",
+   "b4eb5a9a6a42724b",
+   "bf79c70041e8bf13",
+   "e3c1b1a2a3cdb612"
+  ]
+ }
+}

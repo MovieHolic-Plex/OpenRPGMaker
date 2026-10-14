@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "335cbedd575a17fdd2dbf7e6be9d31e77d93e0a7083411d54a2f89accd0b372b",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "wooden sky dock plank deck seen from above (flat walkway)",
+ "label": "sky-island/si-pier-sw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden plank deck",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat deck walkway viewed from above, showing horizontal wooden planks separated by dark gaps and bounded by wooden beams.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3216
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden plank walkway / deck surface",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal planks viewed from above with gaps, side railing/beam, and nail details across rows 0-11, accurately depicting a flat floor surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3764
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden dock walkway with horizontal planks and side beam",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat deck/walkway viewed from above with horizontal wooden planks (rows 0-11) and border beams, correctly fitting the flat ground/deck kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3554
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden deck walkway",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden plank deck is shown from above as a flat walkway surface across rows 0-10 with nailed horizontal planks and edge beams, correctly foreshortened for the top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4783
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.984Z",
+ "cells": {
+  "16": [
+   "46e69b4f7e3ef306"
+  ],
+  "24": [
+   "49b44cf4bc424679",
+   "550f3741487c6b79",
+   "70f36126bf2873ca",
+   "b349d2236887feb4",
+   "d640dc627d7f5fbd",
+   "e3be7e82fd21060b"
+  ],
+  "32": [
+   "01ea628b517b14b3",
+   "53b481eab8d2c462",
+   "91c89c3b90055655",
+   "a1bbdcffe79cc875",
+   "c85ea195ca031120",
+   "fc43a238a06522e1"
+  ],
+  "48": [
+   "439a56997ec08441",
+   "ae8836d1df5ef57f",
+   "b12db0843a8b8838",
+   "c9fe602aed439de4",
+   "cf70884c7f33776c",
+   "db475aa5e36edc6d"
+  ]
+ }
+}

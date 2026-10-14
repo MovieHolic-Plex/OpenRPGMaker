@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "731928a73fae8d739d6bd6844b2f2820bc64614913633b0a5665075b39167d43",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "windsock pole seen from above-front: flat square cap on top (top surface visible), round stone foot, striped sock",
+ "label": "sky-island/si-windsock",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 1.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "windsock pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cap at rows 0-3 is drawn as a flat vertical rectangle with side-to-side vertical shading rather than a horizontal surface seen from above. There is no visible top surface on the cap, the base plinth (rows 27-29) is a flat horizontal bar with no top face, and the windsock is drawn in pure side-scroller profile.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10282
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "windsock pole with flat square cap and base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The flat square cap at the top of the pole shows its foreshortened top surface across rows 0–3 (4 pixel rows tall), with row 4 providing the front edge/thickness.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8620
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "windsock pole with top cap",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The square cap on top of the pole displays a clear top surface 3 pixel rows tall (rows 1-3) above its 2-row front face and shadow (rows 4-5), and the base also depicts top horizontal surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5625
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "windsock pole and cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cap at rows 0-3 has horizontal left-to-right shading characteristic of a front-facing surface rather than a top surface seen from above, and the base slab (rows 27-29) is drawn as a flat profile with no visible top surface. The entire sprite is rendered in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11840
+  }
+ ],
+ "decidedAt": "2026-10-13T18:50:50.432Z",
+ "cells": {
+  "16": [
+   "3463f389ec66be70",
+   "c579e645c8194c2e"
+  ],
+  "24": [
+   "0e9b8d037405663d",
+   "3e947db8bd7d9a87",
+   "4ad6d14fcdb00987",
+   "720c59056c1f0c04",
+   "816d648858345487",
+   "8551841009d085dd",
+   "a5376c6e8eb5d796",
+   "aa28baaaa8343df1",
+   "b49912bb6d196ab3",
+   "b5f6adb6a0fd0c98",
+   "bcbf350efa8a48ab",
+   "e088418aaa520f57"
+  ],
+  "32": [
+   "c136dbd7516068d0",
+   "f3c9559fe8430529",
+   "faf10def13b84577"
+  ],
+  "48": [
+   "03d3722a2672322d",
+   "06366295e9a61f9f",
+   "243ce50766e7ce9f",
+   "689c9a34296f0138",
+   "d35028af9fc07c36",
+   "e79fc4d2b4193311"
+  ]
+ }
+}

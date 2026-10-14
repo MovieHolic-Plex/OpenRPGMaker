@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c59b8971aed6ccb4915f916bf5c6b7036b63f1be8f04fb045b05ffac6ca5d44e",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "flowing stream channel on grass (terrain)",
+ "label": "sky-island/si-stream-lip-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water channel cut into grassy ground",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting a vertical stream channel running between grass and stone edges, flowing into a small drop/waterfall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3856
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stream channel and grass terrain with south drop-off",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing a top-down ground level with water channel (rows 0-10) dropping down a south-facing cliff/ledge face (rows 11-15), properly foreshortened in standard JRPG 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4660
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water channel and waterfall on grass terrain",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting a flowing stream channel on grass with a waterfall ledge at rows 11-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2815
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stream channel on grass terrain",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile displaying a top-down stream channel cut into grass on rows 0-10, dropping down a cliff face / waterfall step on rows 11-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4939
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.981Z",
+ "cells": {
+  "16": [
+   "99188e870ecadb16"
+  ],
+  "24": [
+   "0ceb13d8f9041863",
+   "12a7e992e5994fb8",
+   "2264d2ff6848004d",
+   "2a1f8943c2a9ff88",
+   "36c111ab963e2f30",
+   "7bc9070df4b06852"
+  ],
+  "32": [
+   "2fa1ff4a5e77b6be",
+   "382c71bffd082acd",
+   "5eee32aa03441b48",
+   "bfde014bc97659c6",
+   "c36d7e78476e779c",
+   "e95a2ee3fef054ce"
+  ],
+  "48": [
+   "226573bf41aebaf9",
+   "507310d7ff9eeb2f",
+   "bc037ea5c8b4e5d9",
+   "e1bced8aff007a9a",
+   "f2e5080f0e6067cd",
+   "fd0d6d0e42e3d2e3"
+  ]
+ }
+}

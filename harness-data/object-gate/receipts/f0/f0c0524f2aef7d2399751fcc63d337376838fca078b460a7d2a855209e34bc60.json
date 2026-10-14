@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f0c0524f2aef7d2399751fcc63d337376838fca078b460a7d2a855209e34bc60",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "plaster wall with wood beam, upper interior wall tile (wall_mounted)",
+ "label": "sky-island/si-wall-plaster",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall face tile with upper wooden trim",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting an interior plaster wall face with a horizontal wooden beam/trim along the top edge, typical of RPG Maker wall autotiles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7553
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "interior plaster wall with horizontal wood beam",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile showing horizontal wooden beam molding and plaster wall surface, standard vertical face in top-down JRPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3224
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "interior plaster wall face with top wooden beam",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a vertical interior wall face with an upper beam and ceiling boundary. As a wall terrain tile, it represents a flat vertical surface facing the camera.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4195
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "interior plaster wall tile with wooden beam header",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain wall-face tile consisting of a top ceiling/beam trim and plaster wall surface, standard for 2D/3/4 RPG interior wall faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3287
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.559Z",
+ "cells": {
+  "16": [
+   "d1596bfff0bb67fa"
+  ],
+  "24": [
+   "05473cb01abcc8b2",
+   "2ad9750fa631926b",
+   "394a07912c3ab8da",
+   "3cbc3e28378bef46",
+   "3e2c84630a592c29",
+   "56fc5aee689b02b1"
+  ],
+  "32": [
+   "1e06ea7651e87cf5",
+   "8f92a5a64961bfe6",
+   "ba80333ffa23d30d",
+   "dc1f114680170db7",
+   "f2357c06e01c3525",
+   "f25450914809f18b"
+  ],
+  "48": [
+   "02b1b578a77a6889",
+   "10f28f959ef3868d",
+   "13d1c5c77f36c6b3",
+   "3765d09e6686b7ff",
+   "b7fba54bd5097c52",
+   "d196e7e730a6bf18"
+  ]
+ }
+}

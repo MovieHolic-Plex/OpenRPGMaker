@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b827530fede0722aefe0b4315ab7f70b136782c8f78ab80c5718c4699e704742",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "rope bridge end with wooden posts (flat walkway)",
+ "label": "sky-island/si-bridge-v-n",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bridge planks and transition terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a rope bridge walkway crossing over an abyss from an upper ground surface; viewed correctly from the standard top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3886
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rope bridge walkway",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a flat walkway transition of a rope bridge extending over a chasm; the wooden planks are viewed from above in standard 3/4 top-down terrain perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4229
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rope bridge walkway and cliff edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a top-down terrain surface of a rope bridge connecting to a cliff bank over a chasm, viewed from above as a walkable path.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5372
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rope bridge walkway and ground transition",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting the start of a rope bridge over an abyss; horizontal wooden planks show foreshortened top surfaces consistent with top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5061
+  }
+ ],
+ "decidedAt": "2026-10-13T18:48:02.662Z",
+ "cells": {
+  "16": [
+   "f4967d5359149b66"
+  ],
+  "24": [
+   "1ddac48c5ada8872",
+   "2b3369b40d86516c",
+   "46c15d3b0536e989",
+   "819ab5e2b71db90b",
+   "b26529740c75e110",
+   "ed18b29a66526808"
+  ],
+  "32": [
+   "1944d22a7a8e1125",
+   "3407a1236aadddf4",
+   "39b346bb9de8b721",
+   "4a8e848006fb1e66",
+   "7884c4c609ac41bb",
+   "eb9daa5ef644d0e2"
+  ],
+  "48": [
+   "18f64f3fb65d50a1",
+   "2eb6ccc084ac81f6",
+   "510fb83f4be2b88b",
+   "543c787210f88809",
+   "a7a48a9698f393dc",
+   "b3594ce0d36c3c62"
+  ]
+ }
+}

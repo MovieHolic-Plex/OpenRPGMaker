@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "811cd890a9b0d74aa5fa3a1a6ea2791249c4d533690774cf9b787564689dc9a2",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "market stall with striped awning and goods on counter",
+ "label": "sky-island/si-stall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "counter and awning of market stall",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter clearly displays a deep top surface (rows 30-35, 6 source pixels tall) on which items are placed, above a vertical front face (rows 36-45), properly rendered in 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5460
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "market stall counter and awning",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter clearly displays a 6-row deep top surface (rows 30-35) holding goods above its vertical south face (rows 36-45), and the awning is properly tilted/foreshortened for 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7209
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "counter and awning of market stall",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter clearly displays its top horizontal surface on rows 30-35 (6 pixel rows deep) with items resting on it, before transitioning to the vertical south face on rows 36-45. The awning also shows its downward-sloping top surface properly foreshortened in the 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5966
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "counter and awning of market stall",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter shows a clear top surface spanning rows 30 to 35 with goods resting on it, above a south-facing front panel (rows 36-45). The awning also displays its forward-sloping top surface from rows 5 to 20.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5853
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.434Z",
+ "cells": {
+  "16": [
+   "3d260afcd478acb8",
+   "3d4db83087adc884",
+   "4046f61107f2bee9",
+   "45c1c898cbbc44cb",
+   "958472b007a9e48d",
+   "a1d1b55dac39de3a",
+   "a24fede2d7d1eaf8",
+   "b3e918eef19b781b",
+   "df5e8defb773c46e"
+  ],
+  "24": [
+   "2a609fa80fc11dbf",
+   "2beced243a6d136e",
+   "ea44bc58e65eab48",
+   "fe46cf1ba009478f"
+  ],
+  "32": [
+   "01e56d06a5c6951f",
+   "26da12aeb04630bd",
+   "28992c21b8f682bc",
+   "296ba3389509a7db",
+   "37c29878b3cc52f9",
+   "4c25bc520bbbdaea",
+   "56228256c7e4100a",
+   "6ec8f5647d36490a",
+   "71025ff5c882d114",
+   "7c4bff946e878f17",
+   "7ed4e13b2f52a128",
+   "7f2b3610050630f5",
+   "8265fa9740b3758a",
+   "83dadf25c4f229bf",
+   "8ed86248cc11a811",
+   "91556e76d136a7f1",
+   "cfebd8d71052992f",
+   "d7fc510050ccbff2",
+   "da2679abf1b940d9",
+   "da75e1c94d63b699",
+   "e33fabb2434e4284",
+   "f154dd5f499af20c",
+   "fcc21e86171c2e66",
+   "fe59fd34c88d569c"
+  ],
+  "48": [
+   "1e7c679ead69062e"
+  ]
+ }
+}

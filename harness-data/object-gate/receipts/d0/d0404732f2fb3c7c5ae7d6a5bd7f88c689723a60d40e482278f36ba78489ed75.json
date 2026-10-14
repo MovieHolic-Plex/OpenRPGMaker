@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d0404732f2fb3c7c5ae7d6a5bd7f88c689723a60d40e482278f36ba78489ed75",
+ "width": 16,
+ "height": 16,
+ "kind": "figure",
+ "name": "globe on a square wooden base whose flat top is clearly visible",
+ "label": "sky-island/si-globe",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "globe and wooden base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden base is drawn in pure front elevation as a cabinet/drawer front with vertical side framing (rows 10-15) and no visible top surface (at most row 10 is a 1px top edge). The globe and brass arc are also rendered as a flat side/front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8103
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "globe and wooden base",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden base clearly shows a 3-row foreshortened top surface (rows 11-13) where the globe stand is mounted, followed by a darker 2-row south front face (rows 14-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7154
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "globe and wooden base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The square wooden base clearly shows a foreshortened top surface across rows 10-13 with an edge highlight on row 13, and its south front face on rows 14-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5911
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden base / plinth of the globe",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The square wooden base clearly shows a foreshortened top surface across rows 10-13 (4 rows tall) with a front-edge highlight on row 13, followed by a shaded south face on rows 14-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13116
+  }
+ ],
+ "decidedAt": "2026-10-13T18:47:30.238Z",
+ "cells": {
+  "16": [
+   "b24076d80582591d"
+  ],
+  "24": [
+   "5bcbc3d1e65a76fd",
+   "76acb34ea4969677",
+   "957e44c157f9e537",
+   "9fb9032f49fd2be2",
+   "fb695e856ab19ec6",
+   "ff8f59fdc93c1dcc"
+  ],
+  "32": [
+   "20d3b6c80b6299a4",
+   "28eb492703dda940",
+   "8fb15a16a3d2f85e",
+   "9ada4abeaf8447cb",
+   "a9fbd3033c77224b",
+   "d68d6ae0c01d8587"
+  ],
+  "48": [
+   "2517fe74fe49e305",
+   "343359ccd919837c",
+   "881a3ca1a056ddf3",
+   "9bc6518c9956840d",
+   "ba9edeacd6987768",
+   "c4941e3752230100"
+  ]
+ }
+}

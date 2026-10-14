@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "313203758e2733147de16e6a534a2015afba238c8ab5ce53f810b1a112870664",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "interior wall top rim seen from above (flat)",
+ "label": "sky-island/si-void-w",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall top rim / terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat overhead map/terrain tile showing top rim of a wall and floor sections, appropriately classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4115
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "interior wall top / terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a top-down view of a wall top or boundary; not a standing object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2502
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "interior wall top rim and floor",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing a vertical wall top rim and floor seen from directly above, filling all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4137
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "interior wall top / terrain edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Tile represents flat terrain / top-down wall border tile extending the full 16 rows vertically, correctly classified as terrain rather than a standing object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4768
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.561Z",
+ "cells": {
+  "16": [
+   "1edd20770c358afd"
+  ],
+  "24": [
+   "3ba5950fc9015eb4",
+   "6f20f8832618e676",
+   "ccaa62ad76be94dc",
+   "e0bab1fcf3ec647a",
+   "edda45a17f22fd40",
+   "ef0515d763a8de1c"
+  ],
+  "32": [
+   "35c0707ddfb1e007",
+   "538d798924a92f15",
+   "60c938cc13ce25a4",
+   "64c4ac561624579e",
+   "7e03e0a58e514670",
+   "9b9c5a14f4e947dc"
+  ],
+  "48": [
+   "0be32306db6abe19",
+   "12273dce6547b765",
+   "14cda6e57697bcf8",
+   "8c357576796b7b9a",
+   "b09a04e26582ad64",
+   "d216c0ed705fbea1"
+  ]
+ }
+}

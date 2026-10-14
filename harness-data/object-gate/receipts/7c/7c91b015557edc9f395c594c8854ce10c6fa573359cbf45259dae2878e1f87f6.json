@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7c91b015557edc9f395c594c8854ce10c6fa573359cbf45259dae2878e1f87f6",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "iron street lamp post seen from above-front: round stone base with visible top, lantern with a pyramid cap seen from above",
+ "label": "sky-island/si-lamppost",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lantern and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern, eaves, and post are drawn in pure front elevation with straight horizontal 1px lines at rows 6 and 12 and no visible top surface on the lantern body or cap. While the base plinth shows a top surface, base plinths do not count for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8436
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lantern and lamp post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern and its cap are drawn in flat front elevation with horizontal lines across rows 2 and 6 and flat rectangular panes; only the base plinth shows foreshortening, but the main body lacks any top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4562
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "street lamp lantern and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern cap and lantern housing are drawn in pure front elevation with a flat trapezoidal cap and flat rectangular window panes; rows 1-2 form only a 2px highlight/rim band rather than a foreshortened top surface. The only foreshortened surface is the base plinth, which cannot substitute for a top surface on the main body/top end.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6130
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lantern head and lamp post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern cap, frame, and post are drawn in pure front elevation with straight horizontal edges and rectangular panes. Only the bottom plinth shows a top surface, which per the instructions cannot be credited for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5824
+  }
+ ],
+ "decidedAt": "2026-10-13T18:46:20.918Z",
+ "cells": {
+  "16": [
+   "551f6a0b2a26afd7",
+   "e815c5a4848a9115"
+  ],
+  "24": [
+   "230dccf257ce7f67",
+   "2a6bba6009c4aa61",
+   "4bf9c9131e8212e6",
+   "533b50215973d1d9",
+   "69f2a4ef894674b5",
+   "882396a3863f77ee",
+   "9173316f641eee9c",
+   "bb1b849de38f7903",
+   "bfb13b504ea7c5db",
+   "c91ee93a461b18ce",
+   "f3357563d7573e70",
+   "fab47f717c495ca9"
+  ],
+  "32": [
+   "2b21141184a92c18",
+   "3261d64513886fd3",
+   "8c60e4352725ad09"
+  ],
+  "48": [
+   "2bd24e0d0b4c3d69",
+   "3be632cc0608e1fb",
+   "aaf015ba6c6594b8",
+   "b52ef89b61a02808",
+   "d7e223eed5353ca3",
+   "e58e95e35d0a89c3"
+  ]
+ }
+}

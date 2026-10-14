@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b47c7b94cb7dea9d775364a64724a15f17f05594d1a315d99b9e70bbb5d27960",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "cobblestone plaza edge on grass (terrain)",
+ "label": "sky-island/si-plaza-n",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ground terrain transition from grass to cobblestone",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting cobblestone pavement bordering a strip of grass at rows 0-1; entire surface is a horizontal ground plane viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3120
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cobblestone plaza edge on grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile showing cobblestone paving across rows 2-15 meeting a grass edge along rows 0-1, viewed appropriately as a horizontal ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2971
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cobblestone ground transition to grass",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting cobblestone pavement bordering grass at rows 0-1 viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4192
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ground transition between grass and cobblestone plaza",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile showing green grass along the top edge (rows 0-1) and cobblestone pavement below (rows 2-15), naturally viewed top-down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2244
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.979Z",
+ "cells": {
+  "16": [
+   "636c9f18dc3d91f0"
+  ],
+  "24": [
+   "90261dea6937d350",
+   "b0ce8ba317b5a0ca",
+   "b934ef62da74361c",
+   "cea12197ba91f01a",
+   "d68a36a90307cde1",
+   "efe962be0fc740f9"
+  ],
+  "32": [
+   "0a79a60be36a5dd2",
+   "0fc1a0a7580e21e8",
+   "83950cb280197e90",
+   "ad21fce985bc0208",
+   "b42a47fc008cb898",
+   "c4a9e5bae36a3603"
+  ],
+  "48": [
+   "1a28203d1f6be1c3",
+   "2a95677384e7c643",
+   "69078e96fdf552d3",
+   "73a9c20fcc8fe1d2",
+   "7baccd92973b7a8c",
+   "faeecb8d6f388790"
+  ]
+ }
+}

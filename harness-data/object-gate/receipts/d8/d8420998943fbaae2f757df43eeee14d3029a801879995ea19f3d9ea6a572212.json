@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d8420998943fbaae2f757df43eeee14d3029a801879995ea19f3d9ea6a572212",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "cloud platform edge tile against sky (terrain)",
+ "label": "sky-island/si-cs-e",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cloud platform edge tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile showing the top surface of a cloud platform bordering open sky to the east.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3245
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cloud platform edge tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile showing the top surface of a cloud platform bordering sky on the right edge. As a ground/terrain tile, it naturally displays top-down surface across the full 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3074
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cloud platform edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting the eastern edge of a cloud ground surface transitioning to sky, appropriately drawn as flat ground viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4020
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cloud platform ground tile edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting the eastern edge of a cloud platform against sky backdrop.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2590
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.976Z",
+ "cells": {
+  "16": [
+   "d63a8cc91152c747"
+  ],
+  "24": [
+   "20d7a35495d8a805",
+   "51849177db84e931",
+   "762a195c90439d5d",
+   "7ad287d2ebc70de4",
+   "f726da83b3aafe8c",
+   "fb14e35311b5ca74"
+  ],
+  "32": [
+   "260291c4a3dab02a",
+   "2ebbc535d1aa745d",
+   "308e6781c89d1385",
+   "7eb9b80e5ae90af8",
+   "af8228ed0c21774f",
+   "fefe7b40adb3ccd9"
+  ],
+  "48": [
+   "0bedeaf209a88bc6",
+   "1ba44fa2b74940f3",
+   "4ab7df35dff1beaf",
+   "847ee5de9915f426",
+   "93e314b32d0fb09c",
+   "d8affb9ebe5d6a37"
+  ]
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "37b388e40fb7d5750b09cf6b920ac0733562c1cd96f503f56cfedb9bcb514d54",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "stone statue of a winged bird standing on a wide square plinth whose flat top is clearly visible",
+ "label": "sky-island/si-statue",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bird statue on plinth",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The plinth top surface is clearly visible from row 18 to row 24 (7 pixel rows), with the vertical front face extending below from row 25 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4345
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bird statue on plinth",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large plinth has a clearly visible flat top surface extending roughly 7 rows (rows 18 to 24) above its shaded vertical south face (rows 25 to 31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4457
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bird statue on plinth",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wide square plinth shows a clear light-toned horizontal top surface spanning rows 17-24 (8 rows tall) before transitioning to the vertical south front face on rows 25-30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3118
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bird statue on wide square plinth",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The plinth shows a wide flat top surface occupying rows 18-24, with the south face visible below on rows 25-30. The bird sits securely atop this horizontal plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3772
+  }
+ ],
+ "decidedAt": "2026-10-13T18:46:20.920Z",
+ "cells": {
+  "16": [
+   "209e722873c7d572",
+   "91977a14867395f3"
+  ],
+  "24": [
+   "126cf56fc994da91",
+   "2b0667f07bf5ccd0",
+   "6684bea8c3b207e7",
+   "7fad4b7200202794",
+   "a2422552ab019b71",
+   "af396d295c836c4a",
+   "b461f4239a2a801b",
+   "b892bca9338ce631",
+   "d05b7333eae86af8",
+   "df0077de97f372ca",
+   "ef8e799ce9579a1f",
+   "f1928510f75dbeec"
+  ],
+  "32": [
+   "1260dfc51622e029",
+   "4610d25fc854280c",
+   "f66f444ae6bf70b0"
+  ],
+  "48": [
+   "7de1c7bd51ce7875",
+   "bdd1aa00fd072273",
+   "cfdb26846ed39cc4",
+   "ee03f32b829d8af7",
+   "f1f727b126540dad",
+   "f4928c03b82d57c3"
+  ]
+ }
+}

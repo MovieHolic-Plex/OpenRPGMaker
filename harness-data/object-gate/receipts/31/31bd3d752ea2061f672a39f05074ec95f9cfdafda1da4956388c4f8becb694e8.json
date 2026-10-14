@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "31bd3d752ea2061f672a39f05074ec95f9cfdafda1da4956388c4f8becb694e8",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass island edge tile against sky (terrain)",
+ "label": "sky-island/si-gs-w",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass island terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain edge tile showing flat grass ground surface viewed from top-down perspective against sky/void.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3035
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass island edge terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile showing top-down grass surface bordering empty sky/water along the western edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2767
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass island edge terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing the western edge of a grassy surface/island against a blue background; seen fully from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2948
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass island terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a 2D top-down ground terrain tile showing grass land meeting sky or water on the west edge; the ground plane spans all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3031
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.973Z",
+ "cells": {
+  "16": [
+   "cfe810151efc00ad"
+  ],
+  "24": [
+   "5a1613974154c3c8",
+   "5e6d989be81f4d2d",
+   "b19477a71b4005e5",
+   "b8ecf2d29c85cd95",
+   "bf92b11d798bd574",
+   "ea0addc9089684cb"
+  ],
+  "32": [
+   "0702e9df32c00b37",
+   "09cda808905f8d25",
+   "7ecc6f63a95bd25d",
+   "8f5b850c06b30d2a",
+   "e4d41f3ff0e55217",
+   "f363d3804be35813"
+  ],
+  "48": [
+   "1aa479753d3347be",
+   "1eb25c95e3a1dadb",
+   "84f51a3aa386b82a",
+   "9af895f6f54f330b",
+   "a9b335bafd4bf79b",
+   "bcb404ca098a073b"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "059cf044d1061ac7d61420119f35fe190adb2db074e252a11646a78a6250a424",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "tilled farm soil edge on grass (terrain)",
+ "label": "sky-island/si-field-w",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tilled soil terrain tile edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing tilled soil ridges bordered by grass on the left; correctly depicted as ground surface in top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3595
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tilled soil ground tile with grass edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a ground terrain tile showing tilled soil furrows bordered by grass on the left, viewed top-down across all 16 pixel rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4359
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tilled soil terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing tilled farm soil ridges bordering grass; flat ground surface fully visible across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3903
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tilled soil terrain with grass edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile showing horizontal tilled farm soil ridges transitioning into grass on the west edge in standard top-down JRPG ground perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3621
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.980Z",
+ "cells": {
+  "16": [
+   "f6ddbdaf8e740c0c"
+  ],
+  "24": [
+   "0c9359c0d153d534",
+   "4a33f927f34d14b1",
+   "64cb2558d55846e9",
+   "8ad087d8435297e3",
+   "e0ce6f8448d82b9c",
+   "f7ca61a0d4c6a65e"
+  ],
+  "32": [
+   "1242847f49e7d68e",
+   "2377831f9d4dcf5b",
+   "2a93d8287dfaa9c2",
+   "9452e27b2975fb61",
+   "b8df99c58a5fb1da",
+   "dc527979edd9b7d9"
+  ],
+  "48": [
+   "11a47a46c242216c",
+   "8eecb5d7e51cddea",
+   "94fdd9a470942ebc",
+   "b34cf4a93a97f8fe",
+   "f6e44b6618f15b5b",
+   "f864956b2216b061"
+  ]
+ }
+}

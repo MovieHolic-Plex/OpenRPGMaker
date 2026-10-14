@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ae4933f1f09975a0f9e255f2b84a13cf7d6c043f99efc50ba929c1f1919aa92f",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "small blue crystal cluster growing from the ground",
+ "label": "sky-island/si-crystal-small",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "crystal cluster",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crystal shards are drawn as flat vertical columns with 2D profile tips and vertical stripe shading, emerging from a completely flat horizontal ground line at row 14. There are no foreshortened top facets or 3/4 angle depth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5087
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "crystal cluster",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crystal shards are drawn in a flat side elevation as purely vertical columns with vertical shading and 2D pointed tips; there is no top-down tilt or visible horizontal/angled top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5412
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "crystal cluster",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crystal shards are drawn in flat front elevation with vertical color columns and 2D triangular tips, showing no foreshortened top facets visible from above.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5243
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "crystal cluster",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crystal cluster is drawn entirely as a 2D side-scroller elevation with flat vertical columns terminating at pointed tips and a straight horizontal ground line at row 14, showing zero top-down foreshortening or depth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5469
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.428Z",
+ "cells": {
+  "16": [
+   "7a040d5d7a1ded39"
+  ],
+  "24": [
+   "23ef294afb669762",
+   "4056a173d149cfd4",
+   "7d0b12651ca11c12",
+   "aa708066bdebd522",
+   "abfd336a8496cec3",
+   "f47e3ab1aa3aa731"
+  ],
+  "32": [
+   "2a40e8fcbbc02d2b",
+   "2d65a8d4add1116c",
+   "38f5ae5a52f69410",
+   "54ff6dc915d7bf4f",
+   "55c356c590b1a252",
+   "fce9d23322ba45bf"
+  ],
+  "48": [
+   "262ee0e2c3af4fb1",
+   "2e6a288468cc597c",
+   "70705c4e6796f48a",
+   "beb9b6d23ffe957c",
+   "cb712932b64d566d",
+   "e67a4a648cc9ac17"
+  ]
+ }
+}

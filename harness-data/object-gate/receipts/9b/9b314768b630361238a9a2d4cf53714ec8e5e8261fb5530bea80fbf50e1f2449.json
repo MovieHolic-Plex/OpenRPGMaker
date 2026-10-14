@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9b314768b630361238a9a2d4cf53714ec8e5e8261fb5530bea80fbf50e1f2449",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "iron street lantern post",
+ "label": "sky-island/si-lamppost",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lantern head and pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern head is drawn strictly flat from row 2 with no top surface, roof, or cap visible from above (top_rows: 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5941
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lantern head and pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern head is drawn as a flat rectangle from rows 2 to 7 with no visible roof or top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5464
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lantern head and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern head (rows 2-7) has a completely flat horizontal top line with no top cap or roof surface visible from above; the entire object is drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5974
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lantern head and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern head is drawn as a flat rectangular box from rows 2 to 7 with no visible roof or top surface showing the 3/4 downward angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6895
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.429Z",
+ "cells": {
+  "16": [
+   "247633cc05b2e9f6",
+   "c35b48aff2fe8bc0"
+  ],
+  "24": [
+   "02e271871638e29f",
+   "0932dbcedc2f95c4",
+   "0f5558fe7ba068dd",
+   "264bba62ab958132",
+   "6b38b0fa3477a7ae",
+   "7212411747614061",
+   "a3595b42ac5b7515",
+   "a487495fdddfe6fa",
+   "b08ab28956d38f44",
+   "b2aec42726225469",
+   "d53a3bf5c68c6d02",
+   "ea6422c9baf20ef2"
+  ],
+  "32": [
+   "0d99f81d39e7bd3b",
+   "10544a1f4da4aceb",
+   "31be12c800948051"
+  ],
+  "48": [
+   "2fea7948a60e9c55",
+   "67956eca3756dd92",
+   "b5cbe0aa752142d6",
+   "bd1e56edfa607714",
+   "be242d39b86d5dec",
+   "beacc4ecf6fa560c"
+  ]
+ }
+}

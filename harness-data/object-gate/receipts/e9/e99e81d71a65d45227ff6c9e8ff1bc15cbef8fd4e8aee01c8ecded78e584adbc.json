@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e99e81d71a65d45227ff6c9e8ff1bc15cbef8fd4e8aee01c8ecded78e584adbc",
+ "width": 32,
+ "height": 32,
+ "kind": "other",
+ "name": "wooden hand cart seen from above-front: open cargo bed with floor boards and crates visible from above, big wheels",
+ "label": "sky-island/si-cart",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden cart cargo bed and undercarriage",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": true,
+    "opening_rows": 12,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The open cargo bed is clearly viewed from above across rows 4 to 17 showing cargo/floor details, while the front wall of the cart and wheels are visible below it (rows 18-29) in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4268
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden cart cargo bed and undercarriage",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": true,
+    "opening_rows": 12,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The open cargo bed viewed from above occupies rows 4 to 17 (approx 14 rows) showing floorboards and contents, sitting atop the front-facing undercarriage and wheels from row 18 down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3577
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden cart cargo bed and undercarriage",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": true,
+    "opening_rows": 13,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top-down view into the open cargo bed spans rows 3-17 (~15 source pixel rows), clearly revealing the interior floorboards and cargo items, resting atop the south-facing undercarriage (rows 18-23) and wheels.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5410
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wagon cargo bed and chassis with wheels",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cargo bed is clearly viewed from above across rows 4-17 (14 pixels tall) showing interior crates and boards, with the front wall/chassis shown below on rows 18-23 and wheels extending down to row 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3737
+  }
+ ],
+ "decidedAt": "2026-10-13T18:46:20.919Z",
+ "cells": {
+  "16": [
+   "140656abaedb49eb",
+   "4d6124551b9d95b2",
+   "627685fbaee17cac",
+   "fad4e1a648dbbb85"
+  ],
+  "24": [
+   "04ddd3717c752c53",
+   "1c6f1da0a5078ff3",
+   "1c77ebe504bb21d6",
+   "2113be337f2f50b8",
+   "2a699c3bf3c4d5ba",
+   "34bcca6bc6464a7c",
+   "538023c5a47c7b4d",
+   "5b1038d3e6162c9c",
+   "65cc8d8b398ce897",
+   "6980afecc2c816b4",
+   "6bb2627416d8d4b4",
+   "70ac6bac8cc2ed1d",
+   "731cbf85624d8126",
+   "8d20cf83dffbfdbc",
+   "96a6006ec7657072",
+   "a26c1d457d116a00",
+   "aa9c462bb7135400",
+   "bafa30a4f798dd93",
+   "c27b466bbf63f466",
+   "db767bf308d30827",
+   "def884d3a7c66285",
+   "e0212acfecc2b71e",
+   "f30dc2fc23e72a24",
+   "fadaae96c8f41b4e"
+  ],
+  "32": [
+   "3fbe2b99dc0e8063"
+  ],
+  "48": [
+   "074d7898d4a2e944",
+   "2816f1f3528f580c",
+   "4599ff79858ed022",
+   "4869d7979da2ddce",
+   "ea6c14bea23e32c3",
+   "f08d4e4202b48999"
+  ]
+ }
+}

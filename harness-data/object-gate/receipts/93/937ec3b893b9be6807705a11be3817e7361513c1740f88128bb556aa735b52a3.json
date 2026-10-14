@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "937ec3b893b9be6807705a11be3817e7361513c1740f88128bb556aa735b52a3",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden rail fence segment (east-west)",
+ "label": "sky-island/si-fence-h",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden rail fence",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal rails and vertical posts are drawn completely in front elevation with no visible horizontal top faces showing depth for either the rails or post tops.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6726
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden rail fence segment",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fence posts and top horizontal rail clearly show their foreshortened top surfaces across rows 2–5 (3–4 px tall, rendered in lighter top-lit tones) above the darker front faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14748
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden rail fence segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence rails and posts are drawn completely flat in pure front elevation; neither the horizontal beams nor the post tops display a visible top surface viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12430
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden rail fence",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence segment is drawn in flat front elevation. The top rail has no visible top surface (the background is visible directly above row 3 in the center), and the horizontal rails and posts show only flat front-facing rectangles with no foreshortened top planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6519
+  }
+ ],
+ "decidedAt": "2026-10-13T18:46:20.917Z",
+ "cells": {
+  "16": [
+   "b63fb39e5083397c"
+  ],
+  "24": [
+   "3d50df173cf6eec4",
+   "3fcd434065273984",
+   "57558006b3ac1939",
+   "6fb306d816d02e96",
+   "ac2241b084ae7be0",
+   "ce38856e1d0eee11"
+  ],
+  "32": [
+   "0872282ec1a513d2",
+   "0d0223a8fffe0548",
+   "5361556bacbf8142",
+   "65941b304585240d",
+   "867c6da6a572d221",
+   "8b74af000c871a16"
+  ],
+  "48": [
+   "0c4cbe3a9ac17df4",
+   "518289fd7003273b",
+   "99f08108ecf8a7bf",
+   "bf68c4747a9389bf",
+   "d0ccf4dd6a06b3ce",
+   "f9f244b77fec84a7"
+  ]
+ }
+}

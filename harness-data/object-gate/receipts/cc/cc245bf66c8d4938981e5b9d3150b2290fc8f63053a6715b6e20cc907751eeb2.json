@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cc245bf66c8d4938981e5b9d3150b2290fc8f63053a6715b6e20cc907751eeb2",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "brass orrery on a square wooden plinth whose flat top is clearly visible",
+ "label": "sky-island/si-orrery",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden plinth and brass orrery figure",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden plinth clearly shows a horizontal top surface (rows 22-26, 5 source pixels deep) into which the central stem is mounted, above a shaded south vertical face (rows 28-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6165
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden plinth and orrery",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The square wooden plinth shows a clear top surface spanning rows 22 to 26 (5 pixel rows tall) above its darker front face on rows 28 to 31, correctly establishing 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5183
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "square wooden plinth supporting brass orrery",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden plinth forms the largest volume and clearly shows a flat horizontal top surface spanning rows 22-26 (5 rows tall) above its darker front face (rows 28-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7998
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden plinth supporting brass orrery",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The square wooden plinth clearly displays a 5-pixel-deep top surface (rows 22-26) above its front face (rows 28-31), consistent with 3/4 RPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3678
+  }
+ ],
+ "decidedAt": "2026-10-13T18:47:30.238Z",
+ "cells": {
+  "16": [
+   "095a30182bef2263",
+   "25887c9e3a2492d4"
+  ],
+  "24": [
+   "10428e68a8d053b8",
+   "3d5e0077db3125c7",
+   "43df150b5cea8f98",
+   "500e3ffdd7b2d9b0",
+   "64c9986c7b3dd8ab",
+   "a6a3b7d3622620e8",
+   "b18074d655f53e5a",
+   "bc0c31c68ac0bcb9",
+   "d76e778df6abac78",
+   "dc88182ed2696b34",
+   "f2da6f4af412e7cd",
+   "f9d53b846389d409"
+  ],
+  "32": [
+   "0461ae924e304428",
+   "615407bbc86fc469",
+   "c5359b5a5cbb9f02"
+  ],
+  "48": [
+   "2633d4f18e08178e",
+   "329bb9ee8b75cf80",
+   "419e05e5545bf07c",
+   "71ae192095461026",
+   "7b1cfc6a1ec509c5",
+   "878fc44027cbe848"
+  ]
+ }
+}

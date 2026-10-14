@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d3c9373a67b5223686b569464ff1b541e31de2d551b8c59c1ada895633822b67",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "tilled farm soil edge on grass (terrain)",
+ "label": "sky-island/si-field-n",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tilled soil ground terrain with grass transition edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tile viewed from above, showing horizontal tilled soil furrows (mounds and troughs shaded across rows 3-15) bordering a grass patch at rows 0-2.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5187
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tilled soil terrain tile with grass border",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing ground plane viewed from above with a grass border transition into horizontal furrows of tilled soil.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3108
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tilled soil terrain tile with grass border",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing a top-down ground surface of tilled farm soil furrows bordering grass along the top edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3029
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tilled soil terrain with grass transition",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting horizontal furrows of tilled soil bordering a grass edge along the top.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2812
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.980Z",
+ "cells": {
+  "16": [
+   "952b88fda1aa9896"
+  ],
+  "24": [
+   "49b8aab3c5e05a8a",
+   "777143f7125b840c",
+   "89b6cefa4a8e4dfa",
+   "ba3d002ec03f7eba",
+   "c8e656582eab8c35",
+   "ca617fd9ed9ec97a"
+  ],
+  "32": [
+   "08265736845c5433",
+   "57599e6cceb5efb4",
+   "7dcd24f97c57ac9d",
+   "a548492f97caad66",
+   "bdb22b3f77ff397b",
+   "d6ef199e2c32e151"
+  ],
+  "48": [
+   "3a0519226fe793bb",
+   "74972e8bad3a35f7",
+   "a10ee01351a42d10",
+   "dec449bccbfff050",
+   "dedc9ab378337dc7",
+   "f347eb6e67a2d990"
+  ]
+ }
+}

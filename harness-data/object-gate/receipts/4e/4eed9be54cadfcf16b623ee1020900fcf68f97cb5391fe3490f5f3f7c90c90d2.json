@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4eed9be54cadfcf16b623ee1020900fcf68f97cb5391fe3490f5f3f7c90c90d2",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "round stone well with small wooden roof",
+ "label": "sky-island/si-well",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone well cylinder",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round stone well shows a foreshortened elliptical rim and opening revealing water and a bucket inside across rows 18-21 (4 rows), with the stone wall extending down to row 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5764
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone well base",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The well opening is rendered as an elliptical bowl showing 5 rows of blue water inside (rows 17-21), with the back and front stone rims clearly defined, and the roof also shows its top sloping surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4590
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone well cylinder",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The well basin clearly displays an open interior with water visible from above across rows 18-21 (4 rows tall) inside a stone rim, and the wooden roof also slopes toward the viewer.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4823
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone well basin",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round well opening is clearly shown foreshortened from above across rows 16-21, displaying the light stone rim and a 4-row deep interior filled with blue water and a wooden bucket/support.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4617
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.428Z",
+ "cells": {
+  "16": [
+   "1385ecf9e3534f46",
+   "7eaf69bbaf4132bc",
+   "cfbf7c16a7bdbd31",
+   "f508d36cbf3cfcef"
+  ],
+  "24": [
+   "1537870a605bbb81",
+   "15c76cf593000fcc",
+   "175a42d15a8cfc66",
+   "278cc58334599302",
+   "2f4d58e8e029e066",
+   "4241a1168fa2aef7",
+   "5fb573a9c629020f",
+   "65c39e2012ff02c4",
+   "6a0b2c8f94557975",
+   "6b1dccbc1c1ac50b",
+   "6c5b81c8cf4da05d",
+   "87a1b54f8146bc1a",
+   "9399b4d81bfde606",
+   "a09d4c276ea1c7e7",
+   "a452dd9234e0f065",
+   "ac085a0d237ba6de",
+   "af7712fe9b99d798",
+   "b1b8983a73b7247d",
+   "b7d70e8b6ad11d3d",
+   "d5121f50e3cc7ce4",
+   "e76728c3a7259f3f",
+   "ed776ee51109661c",
+   "ed98e8d8089d15b5",
+   "fd5379c6754b3314"
+  ],
+  "32": [
+   "b0d2f4a0fd5ff8d3"
+  ],
+  "48": [
+   "096915b5f9cb62c2",
+   "34e268c696670a34",
+   "373e0064d5d62259",
+   "5322799c07713531",
+   "fa9de67dfad0a893",
+   "feb1d130c25c56df"
+  ]
+ }
+}

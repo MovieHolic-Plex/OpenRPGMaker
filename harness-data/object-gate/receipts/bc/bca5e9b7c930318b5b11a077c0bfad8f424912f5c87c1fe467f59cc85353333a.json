@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bca5e9b7c930318b5b11a077c0bfad8f424912f5c87c1fe467f59cc85353333a",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass island edge tile against sky (terrain)",
+ "label": "sky-island/si-gs-inw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass terrain tile with corner edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing grass surface from top-down 3/4 view with a corner cutout/edge in the top-left.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3288
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground/terrain tile seen from above covering the full 16x16 area with an edge in the upper left corner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3961
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass terrain tile with corner edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting grass ground viewed from above with a corner cut showing sky/water.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3907
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass island terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing ground surface viewed from top-down perspective, with grass texture and a corner showing empty sky.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2847
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.974Z",
+ "cells": {
+  "16": [
+   "51cfcdeeb235113e"
+  ],
+  "24": [
+   "3978c522a76dc14c",
+   "4a397b2024637a41",
+   "58fa12c6d0500c3a",
+   "8095455cf1ad12b9",
+   "aef4a86ab1aecd65",
+   "b3ae401dcdc645ec"
+  ],
+  "32": [
+   "3026995ff5c32260",
+   "7c60bde3b4647bb9",
+   "8358a9aa48c34c97",
+   "ae6bfe7a42af6e2e",
+   "b1809fafa2135e42",
+   "d3621f061a0f670a"
+  ],
+  "48": [
+   "3fa5804a63e8212e",
+   "4aa2e34ad0c51666",
+   "59b160fd117ad3eb",
+   "978e9b2fcb65055d",
+   "bb3672d0d0465f04",
+   "f555c35f33543a93"
+  ]
+ }
+}

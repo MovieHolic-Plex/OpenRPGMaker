@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "00e9222fc1384f811326a427b2e78b9858cdbca9089480e701bee3062ef9a966",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden fence end post",
+ "label": "sky-island/si-fence-e",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence post and attached horizontal rails",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top face of the vertical post is clearly rendered spanning rows 0 to 4 (5 pixel rows tall) above the south-facing front post body, and horizontal rails also show top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4961
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical fence post and attached rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden post has a clearly visible 4-row top surface at rows 1-4, foreshortened in standard 3/4 top-down perspective, with the vertical front face extending below from row 5.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4019
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vertical fence post and attached horizontal rails",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden post has a clearly visible top surface spanning rows 0 to 4 (5 rows tall), transitioning to the darker south-facing front surface from row 5 downward. The horizontal rails also clearly depict illuminated top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3572
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden fence post and horizontal rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The vertical fence post shows a foreshortened top surface across rows 1-4 (4 rows tall) clearly distinguished from its vertical south face (rows 5-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6405
+  }
+ ],
+ "decidedAt": "2026-10-13T18:46:20.918Z",
+ "cells": {
+  "16": [
+   "c94f592471f7bb15"
+  ],
+  "24": [
+   "3dd3d941de0a2244",
+   "49eb6bb4dcc788a2",
+   "6b65f40237dc3c7b",
+   "de02cf3d79d0c5c9",
+   "de7192ae313fbfcf",
+   "f5286a2d620566a4"
+  ],
+  "32": [
+   "02cd0aae2fcc5a9b",
+   "0d648cc4cb149be6",
+   "291a4ca136840bc4",
+   "615adbcc95881004",
+   "7f3a9c8215731fe3",
+   "f24869741294c2ae"
+  ],
+  "48": [
+   "0495778f38cbabbe",
+   "1838b4548b637b36",
+   "83bd4139655386b8",
+   "abdff0dd7d0bf444",
+   "bdfd24488fb0dbed",
+   "f8a31efcd53a2017"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9ff1097e3c1ffd4a0e3022a3dc0eda431816a643dbf9bf5056780a1e8fe855d4",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "stone block wall with gold trim, lower interior wall tile with baseboard (wall_mounted)",
+ "label": "sky-island/si-wall-stone-low",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "interior stone wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting the vertical front face of a stone block wall with lower baseboard for an RPG Maker perspective wall segment.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5654
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone block wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a lower interior wall face with a baseboard. As a vertical wall face terrain tile, it correctly covers the vertical surface without requiring a top face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9975
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Interior wall face terrain tile showing stone masonry coursing and a dark baseboard at rows 14-15. As a vertical wall face tile, it correctly represents a flat south-facing wall surface without isometric receding sides.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9246
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone block wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Interior wall face tile (terrain) rather than an individual standing object; appropriately displays vertical stone blocks with baseboard trim for a 3/4 view wall surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6930
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.560Z",
+ "cells": {
+  "16": [
+   "2899cb81f234d951"
+  ],
+  "24": [
+   "11c8f7fb165a4395",
+   "37ca44b3cd80cc87",
+   "58f84f6ec9d704fe",
+   "687d6fe5404d6e38",
+   "980370c715e46622",
+   "b068ca76ab92fda3"
+  ],
+  "32": [
+   "09a1ccb096fff970",
+   "17ae800eb9355925",
+   "19008bfeef208070",
+   "b3d96bd4ef260906",
+   "c7cb581669a5a946",
+   "d1b86f67b098542d"
+  ],
+  "48": [
+   "23bf1d459e78d500",
+   "28b09e74972fdf35",
+   "a933e8caf66e0f21",
+   "b88f71ec3e341c2a",
+   "de877efe6b517680",
+   "fb8c244a74716b83"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "212e5aceeaf0246f9bd2d74419f19299fc190f451b7b10ba77a30f901ae9ca06",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass to cloud floor transition tile (terrain)",
+ "label": "sky-island/si-gc-ine",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass to cloud terrain transition tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile showing top-down grass surface with a cloud floor edge in the top-right corner across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3319
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass ground terrain tile with cloud floor transition corner",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting grass ground with a cloud transition patch in the upper-right corner; entirely top-down ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2598
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ground transition tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing grass with an upper-right corner transition to cloud/floor; valid top-down ground surface occupying the full tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3968
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass and cloud floor transition tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a top-down ground surface (grass transitioning to cloud floor in the top-right corner); entire 16x16 tile is a ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3225
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.978Z",
+ "cells": {
+  "16": [
+   "43b5a845bed72fa8"
+  ],
+  "24": [
+   "16b55bca96fee633",
+   "43916e4036e61312",
+   "6222646b18bae1ae",
+   "75fb04301dbf2b73",
+   "a30f69dce0a0d674",
+   "aeab1e892ac2cc12"
+  ],
+  "32": [
+   "07c7dd61b1e99db0",
+   "2999fd89dc66ada4",
+   "7160325c1434d315",
+   "a2bca0c287620f88",
+   "b0f5268455cb164b",
+   "d4f8767a9f29b194"
+  ],
+  "48": [
+   "03aeba77bc44cbc4",
+   "0d34f99c7a549a59",
+   "830b1ed2a8f7e920",
+   "88e56fdab143a11a",
+   "c0edadd89e0fd5d3",
+   "ef6e41cb143df4f3"
+  ]
+ }
+}

@@ -17,6 +17,7 @@ const KNOWN_FAMILY_LABELS: Readonly<Record<string, string>> = {
   "oprn-modern": "현대 도시(도트)",
   "oprn-jp": "일본 도시(도트)",
   "oprn-wizard": "마법 학교(해리포터풍)",
+  "oprn-sky": "하늘섬(도트)",
   "oprn-steampunk": "스팀펑크 도시(도트)",
   "oprn-campus": "현대 학교·캠퍼스(도트)",
   "oprn-scifi": "SF 정거장·네온 거리",

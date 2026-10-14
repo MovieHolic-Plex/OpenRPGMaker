@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "57beff88bd4a03905962185ccfea8bfc2d66b82b408031d0fd41ff2b531692c9",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "rope bridge end with wooden posts (flat walkway)",
+ "label": "sky-island/si-bridge-h-w",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rope bridge walkway",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is the flat walkway of the rope bridge spanning east-west, showing the tops of the vertical deck planks across rows 4-12 (9 source pixel rows) viewed from above. It is drawn in top-down perspective without isometric receding side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 21756
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rope bridge walkway deck",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is the bridge deck walkway spanning rows 4 to 11 (8 rows tall), viewed from above with vertical planks and visible gaps showing the chasm floor below. The front/thickness edge is visible at row 12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 16269
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rope bridge with wooden post",
+    "kind_matches": false,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The standing wooden post at rows 7-14 has only a 1px highlight line across row 7 rather than a foreshortened top surface seen from above, presenting as a flat front elevation. Additionally, an object with prominent standing vertical posts does not match the 'terrain' kind.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 21539
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bridge walkway",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is the flat bridge walkway spanning rows 5–11 (7 source pixel rows tall of visible plank tops seen from above) between the north and south rails. The wooden posts at the left end are boundary supports.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15674
+  }
+ ],
+ "decidedAt": "2026-10-13T18:48:02.662Z",
+ "cells": {
+  "16": [
+   "b520871e5e5258c8"
+  ],
+  "24": [
+   "01a954c6f77ca116",
+   "0e1b33e85c427646",
+   "b7668ce16d8b1f1c",
+   "ccd53abe9452f8f7",
+   "d44ec42a25dfe052",
+   "df16ed19ec7898d4"
+  ],
+  "32": [
+   "52f09f8ad5f139c0",
+   "6a887ffce8988251",
+   "7da4a38118cdab4b",
+   "807fa3b4fed6079b",
+   "cac7d6c7bb756e79",
+   "e305112f9a816da3"
+  ],
+  "48": [
+   "95ae0c2b77098294",
+   "970af3a919f19795",
+   "b761a5e23e781df5",
+   "d8013902b67cd791",
+   "e1b740e82abc3535",
+   "e7516f57d9292468"
+  ]
+ }
+}

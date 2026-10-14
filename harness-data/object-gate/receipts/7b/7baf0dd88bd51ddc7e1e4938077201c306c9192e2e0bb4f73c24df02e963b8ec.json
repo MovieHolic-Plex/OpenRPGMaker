@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7baf0dd88bd51ddc7e1e4938077201c306c9192e2e0bb4f73c24df02e963b8ec",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "stone wall with tall arched crystal window (wall_mounted)",
+ "label": "sky-island/si-wall-stone-arch",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone wall with arched window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical terrain wall face tile with inset arched crystal window and top moulding trim; valid terrain tile representation in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4230
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone wall face with arched window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall face terrain tile with inset crystal window. As standard wall terrain in 3/4 top-down perspective, it represents the front vertical surface of a wall and correctly matches the terrain category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5206
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone wall face with arched crystal window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile designed for vertical wall segments in RPG Maker style; wall tops/ceilings are represented by adjacent tiles. No receding isometric sides.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6083
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone wall face with arched crystal window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall tile / vertical terrain surface with integrated arched window, correctly represented as a vertical wall face in standard 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5946
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.561Z",
+ "cells": {
+  "16": [
+   "ccf8228aa1bda3ca"
+  ],
+  "24": [
+   "19aa90aa8cc67c1e",
+   "24092151291218fb",
+   "36b28b085fa08556",
+   "3b5708546307af33",
+   "470af2f39cc527a5",
+   "eef9656b107c34f1"
+  ],
+  "32": [
+   "43f79df2f7f0be98",
+   "4f8cca8fe85fa8d2",
+   "aa5cb1ec4481f07d",
+   "d0bb4cc7af308600",
+   "d48a4852f9bbd658",
+   "fdd8f0aa3e02017a"
+  ],
+  "48": [
+   "0ebb946e155a9a0d",
+   "3cbf3fcc03ee6859",
+   "440f5209e0a0af48",
+   "475a9aa56e4ed652",
+   "72842140dfbc5a4e",
+   "87bc8659dede8058"
+  ]
+ }
+}

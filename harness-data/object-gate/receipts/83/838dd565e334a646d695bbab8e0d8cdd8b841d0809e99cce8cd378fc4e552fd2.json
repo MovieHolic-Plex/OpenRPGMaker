@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "838dd565e334a646d695bbab8e0d8cdd8b841d0809e99cce8cd378fc4e552fd2",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "diagonal wooden support struts under a dock (frame)",
+ "label": "sky-island/si-pier-struts-e",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dock support struts over water terrain tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing water beneath a dock edge with diagonal support struts slanting downwards. As terrain/autotile art, standard 3/4 top-down terrain perspective rules apply.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6403
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dock understructure with diagonal support struts over water",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts dock framing and diagonal support struts submerged in/over water as a terrain tile/autotile block; as terrain, standard standing-object top-surface requirements do not apply.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7640
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "diagonal wooden support struts",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The struts are drawn in pure front elevation without any top-down perspective or visible horizontal depth surfaces (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 9335
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dock support struts and understructure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The struts represent the under-dock framework / wall-face terrain beneath the platform edge. As a terrain wall/framework structure, its tops attach directly underneath the platform above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5963
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.985Z",
+ "cells": {
+  "16": [
+   "e5fb5096429eac40"
+  ],
+  "24": [
+   "41fa3352c18b5bed",
+   "63eeaeb90d796fa4",
+   "850b901b09dfd7a0",
+   "a1a9ea230e678e2f",
+   "bec248af07b09611",
+   "dc9b000212fa9238"
+  ],
+  "32": [
+   "1e8121896f002370",
+   "30c75f3a0da00476",
+   "560832926ee163d0",
+   "6ce3fe9910f79efe",
+   "8bae3735b825d331",
+   "ba8cedb89106c79a"
+  ],
+  "48": [
+   "1c9d175c7f57fe02",
+   "433ef88b74f0040f",
+   "48b511bb391262b4",
+   "5faaaa823fa35ee0",
+   "6e5959fec8541e3a",
+   "cdf0c0f447bbf6e3"
+  ]
+ }
+}

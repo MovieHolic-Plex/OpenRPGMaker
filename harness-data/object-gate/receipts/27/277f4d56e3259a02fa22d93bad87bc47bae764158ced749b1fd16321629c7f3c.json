@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "277f4d56e3259a02fa22d93bad87bc47bae764158ced749b1fd16321629c7f3c",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "coiled rope lying on the deck (flat decal)",
+ "label": "sky-island/si-ropecoil",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "coiled rope",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coiled rope is drawn flat on the ground plane as an ellipse (approx 14px wide by 10px tall, rows 4-13) showing the entire top-down spiral pattern.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3575
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "coiled rope on floor",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coiled rope is drawn as an elliptical shape lying flat on the ground plane, spanning rows 4 through 13 (10 rows high) in foreshortened top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4005
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "coiled rope",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coiled rope lies flat on the ground as an elliptical shape (rows 4 to 14, ~11 rows tall) with concentric coil rings and an uncoiled tail extending off to the lower right.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5791
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "coiled rope lying flat",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coiled rope is drawn as a foreshortened ellipse lying flat on the floor plane spanning rows 4 to 14 (11 rows).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2788
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.431Z",
+ "cells": {
+  "16": [
+   "d06bb3155dd1e730"
+  ],
+  "24": [
+   "1327d701d535af39",
+   "2dc33935eb2265da",
+   "35961a999cf391ed",
+   "502c2d3487ef5ce2",
+   "7140c634323aee98",
+   "f2dffe8beb69429a"
+  ],
+  "32": [
+   "179e7dbfc68a1d71",
+   "3e0ea36ef1477bac",
+   "476fe41a5e2ad625",
+   "6d96ff74344db189",
+   "90af2e2d962c3926",
+   "eb5fc86ea573790d"
+  ],
+  "48": [
+   "0446c28240ac7327",
+   "3bc38467965107c7",
+   "43d14bf72bfaab06",
+   "a8b38600f1f979a6",
+   "e39a2cc032c0d5ed",
+   "ff3fc2207a62cb06"
+  ]
+ }
+}

@@ -84,6 +84,7 @@ import { HAND_INTERIOR_TOOLS } from "./handInteriorTools";
 import { JP_CITY_TOOLS } from "./jpCityTools";
 import { CAMPUS_TOOLS } from "./campusTools";
 import { WIZARDING_SPACE_TOOLS } from "./wizardingSpaceTools";
+import { SKY_ISLAND_TOOLS } from "./skyIslandTools";
 import { STEAMPUNK_CITY_TOOLS } from "./steampunkCityTools";
 import { SF_STATION_TOOLS } from "./sfStationTools";
 import { GOTHIC_PLACE_TOOLS } from "./gothicPlaceTools";
@@ -229,6 +230,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(CAMPUS_TOOLS, "tile"),
   // 마법 학교(해리포터풍, wizarding_world) 공간 빌더 — 13공간 레시피로 방·야외 한 장을 한 번에 짓는다(통행 한 덩이 보장).
   ...withDomain(WIZARDING_SPACE_TOOLS, "tile"),
+  // 하늘섬(sky_island) 구성기 — 마을·신전 섬·비공정 부두·섬 사슬·실내 방 한 장(섬·건물·다리·소품, 도달 검사)과 건물 문 ↔ 실내 이음. sky_island 맵에서만 동작한다.
+  ...withDomain(SKY_ISLAND_TOOLS, "tile"),
   // 스팀펑크 도시(steampunk_city) 구성기 — 거리·공장역·운하 부두·실내 여섯 가지를 한 번에 짓고(배치·통행은 구성기), 건물 문 ↔ 실내를 잇는다.
   ...withDomain(STEAMPUNK_CITY_TOOLS, "tile"),
   // SF 정거장·네온 거리(sf_station) 맵 구성기 — 정거장·연구 기지 실내·네온 거리·달 기지를 씨앗으로 한 장째 짠다. oprn-scifi 맵에서만 동작한다.

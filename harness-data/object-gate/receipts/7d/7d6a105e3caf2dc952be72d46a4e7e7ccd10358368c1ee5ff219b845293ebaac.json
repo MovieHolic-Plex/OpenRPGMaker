@@ -1,0 +1,128 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7d6a105e3caf2dc952be72d46a4e7e7ccd10358368c1ee5ff219b845293ebaac",
+ "width": 16,
+ "height": 48,
+ "kind": "wall_mounted",
+ "name": "iron chain hanging from an island with a stone anchor weight",
+ "label": "sky-island/si-chain-hang",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone anchor weight",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone weight at the bottom of the chain is drawn in pure front elevation with a flat horizontal top edge at row 34 and no foreshortened top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12131
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone anchor weight",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone anchor weight suspended from the chain is drawn in pure front elevation with a flat horizontal line across row 34 and no top surface visible where the chain attaches.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 8801
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone anchor weight",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone weight hanging from the chain is drawn in pure front elevation with a flat horizontal rim (rows 34-36) and no visible top surface foreshortened around where the chain connects.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 9884
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone anchor weight",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone weight hanging at the bottom is a 3D volumetric object hanging in space rather than mounted flat on a wall. It is drawn in pure front elevation with a perfectly flat top edge (0 visible top rows) where the chain connects.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 7974
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.432Z",
+ "cells": {
+  "16": [
+   "ade63e34d746a43a",
+   "bf4a330ff90ce5a9"
+  ],
+  "24": [
+   "370993f776039a95",
+   "3fe56240a7815295",
+   "497dd9f74b718e0b",
+   "76eed4907b1d77cc",
+   "9b64a984bf645b3c",
+   "abf6c5cbb9ed5b16"
+  ],
+  "32": [
+   "07b690c539118e7c",
+   "0abeb1a017cecc8c",
+   "2000129e2306f038",
+   "3b744eb05e21836c",
+   "4eafb504175c5249",
+   "64c7717a75f38ed0",
+   "7c8cbb911a41231e",
+   "99b3b3686a10756c",
+   "a26a6c16153827b6",
+   "a852914fcae0b915",
+   "a9eb4253ea44da05",
+   "b71da7475a0c76d7"
+  ],
+  "48": [
+   "64b3061d820ea88f",
+   "a092e65ad3bcb0c6",
+   "b9850863e8a6a1f2"
+  ]
+ }
+}

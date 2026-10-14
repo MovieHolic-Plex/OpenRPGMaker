@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "48008028d05c7a908702bacf9ba4baa5c4d5c598c60d27bf9944dae86e2e1e68",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "ship's steering wheel on a wooden stand with a square base whose flat top is visible",
+ "label": "sky-island/si-helm",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ship's steering wheel on pedestal stand with base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden pedestal base features a clear 5-row top surface (rows 22–26) foreshortened in 3/4 perspective above its front face (rows 27–31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7813
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ship's wheel and binnacle stand",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stand's substantial square base clearly shows a foreshortened top surface across rows 22–26 (5 rows tall) above its darker south face (rows 27–31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5340
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ship's wheel stand and base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stand has a clearly defined horizontal top surface on its square base measuring 5 source pixel rows (rows 22-26) before dropping to a south-facing front wall (rows 27-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6107
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden stand with base and ship wheel",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The square base of the stand clearly displays a 5-pixel-tall foreshortened top surface (rows 22-26) above its front face (rows 27-30), correctly matching 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4111
+  }
+ ],
+ "decidedAt": "2026-10-13T18:47:30.237Z",
+ "cells": {
+  "16": [
+   "4c942ceecaf4cabc",
+   "823c8a4ce5bc668d"
+  ],
+  "24": [
+   "152f3bd3de75ed1b",
+   "26622a55036fd97d",
+   "2a103432a4c4efdd",
+   "2ffc83bae0e46dd9",
+   "3790db98600a16ec",
+   "7478e861d8be21a7",
+   "7b33bc970770040f",
+   "88976312ba115e83",
+   "8ee3528855b601bb",
+   "a5435ae241f70289",
+   "c23fef003aff637b",
+   "f09266bded8cb2d4"
+  ],
+  "32": [
+   "18eee7d917cbbc6d",
+   "2ae586a7b80dca4c",
+   "f17ab29191a3359a"
+  ],
+  "48": [
+   "026a1aeeff2a986c",
+   "2d44f59c6e24575b",
+   "3be2838b69e7f542",
+   "6809f0677d199715",
+   "c1d9215c75ebd453",
+   "f3f65f86b3b3baa4"
+  ]
+ }
+}

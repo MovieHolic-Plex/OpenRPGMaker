@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "36c92ecc506cf2d90cc551227d359ccc95f69393f59607bf4e703e06bcf50a98",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass to cloud floor transition tile (terrain)",
+ "label": "sky-island/si-gc-sw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass ground patch edge",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile showing a curved grass edge with underlying dirt cliff rim over a cloud floor.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3585
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "floating grass island edge transition tile",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting an edge of a grassy floating island/ground against a cloud floor background; shows top-down ground surface and bottom cliff/dirt rim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3760
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass terrain edge with dirt border over cloud floor",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a patch of grass with a dirt edge bordering a cloud floor. The top surface of the grass occupies the majority of the tile (rows 0-11).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4195
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "floating grass island edge",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing the top surface of grass ground with a south-facing dirt ledge transitioning to cloud floor below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3268
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.978Z",
+ "cells": {
+  "16": [
+   "70e3d2e01e0354a9"
+  ],
+  "24": [
+   "092071f9dc7567f5",
+   "0f03fc786bb96d12",
+   "2acfdd49fbffde45",
+   "2e38492c5b73eb81",
+   "cebbbd5ada252bb6",
+   "e57c799c1cf9b4e7"
+  ],
+  "32": [
+   "43d6ad2050201f61",
+   "4d55b767393a8a74",
+   "599e34121fd0f87b",
+   "64ddff9357509049",
+   "90b20b372169fc54",
+   "d5ab7b855473def8"
+  ],
+  "48": [
+   "0041271efbc3cb7b",
+   "0770ba66ec3bef72",
+   "111dc9d88eaa1629",
+   "2fe5b43dca705b92",
+   "61a047c685144de9",
+   "f6b414a4666507ba"
+  ]
+ }
+}
