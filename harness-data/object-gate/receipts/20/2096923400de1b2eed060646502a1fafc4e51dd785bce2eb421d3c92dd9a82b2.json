@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2096923400de1b2eed060646502a1fafc4e51dd785bce2eb421d3c92dd9a82b2",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "회칠 흰 집(작은)",
+ "label": "desert-east/de-house-plaster-3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "whitewashed house with flat rooftop terrace",
+    "kind_matches": true,
+    "top_rows": 29,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building clearly shows its horizontal rooftop terrace with surrounding parapet walls across rows 1-31 (~29 pixel rows of top surface with props) situated above the vertical front wall (rows 32-63) with an arched door.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5689
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "whitewashed house with flat roof terrace and arched door",
+    "kind_matches": true,
+    "top_rows": 27,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper half (rows 1-31) depicts the top horizontal surface of the building as a parapeted rooftop terrace with visible floor surface containing a jar and crate, correctly foreshortened in 3/4 view above the south wall (rows 32-63).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5730
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "whitewashed flat-roof house",
+    "kind_matches": true,
+    "top_rows": 31,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building clearly shows its flat rooftop terrace from rows 1 to 31 with parapet walls and rooftop props, above the south front wall from rows 32 to 63.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5190
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "whitewashed building with rooftop terrace and front door",
+    "kind_matches": true,
+    "top_rows": 30,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building has a flat rooftop terrace visible from above spanning rows 1 to 31 with props placed on it, sitting atop a south-facing front wall (rows 32-63) in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5551
+  }
+ ],
+ "decidedAt": "2026-10-14T08:06:19.386Z",
+ "cells": {
+  "16": [
+   "15eea2b4ba363f69",
+   "51f37d273466f673",
+   "5d7b36c12fc1ce86",
+   "5f94b3b14ab63eab",
+   "744d80caeeb0c344",
+   "7bb5e2826844e0d8",
+   "8014dac51be2d0d3",
+   "8a0e1a1664a50493",
+   "8de29803642d38f7",
+   "99866ed80e2eb4b7",
+   "b37985bf739fe655",
+   "bd2cc71e7eff6b09"
+  ],
+  "24": [
+   "1339a43011eb0e25",
+   "40028b34560d98f1",
+   "594638e836befdab",
+   "651af4c977e1f23a",
+   "810835e41b3777d7",
+   "8d054eaa4dcf7bf3",
+   "9e0a390f0c49ab83",
+   "d3b602e79c3528c0",
+   "d76878181e2a9179",
+   "e50bba60f88fb488",
+   "f441a576299493e5",
+   "f9b49f7e573ecf14"
+  ],
+  "32": [
+   "03d36a94661f8258",
+   "24f62be3ef1b3043",
+   "65a62c8fd0e1ff04",
+   "6800e1029a2c3101",
+   "784b9053eaee230e",
+   "7859842fed4758a8",
+   "788301ad473e5af9",
+   "98f8997449673100",
+   "b6a1191183d16001",
+   "bfdcfac9bcae4b3a",
+   "d058396fda46a5ab",
+   "d0a743dc9a53fbb7"
+  ],
+  "48": [
+   "4209b7590992bcc3",
+   "ebed3363cd081959",
+   "f6d7c15ed88c6e26",
+   "fccdc73c28626e20"
+  ]
+ }
+}

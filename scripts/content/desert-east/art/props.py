@@ -105,76 +105,116 @@ def drum_top(c, cx, cy, rx, ry, mat, t=None, s=0):
 
 
 # ═════════════ 식물 ═════════════
-def frond(c, x0, y0, ang, L, droop, s, light):
-    """야자 잎 하나: 위로 솟았다 바깥으로 휘어 처지는 중맥(포물선) + 중맥 아래로 늘어진 잎살 줄(바깥으로 비스듬히).
-    ang: 수평 방향(라디안, cos 부호 = 좌우), droop: 처짐 세기."""
-    dirx = math.cos(ang); up = max(0.15, -math.sin(ang))
-    prev = None
-    for k in range(L):
-        u = k / max(1, L - 1)
-        x = x0 + dirx * k * 1.05
-        y = y0 - up * k * 0.9 + droop * (k * k) / L
-        X, Y = int(round(x)), int(round(y))
-        # 잎살: 중맥 아래로 2~4화소, 바깥쪽으로 1화소 기울기
-        hang = 1 + int(4.2 * math.sin(min(1.0, u * 1.25) * math.pi * 0.92))
-        for d in range(1, hang + 1):
-            t = 3 + light - (1 if d == hang else 0)
-            if k % 2 == 1: t -= 1
-            c.P(X + int(round(dirx * d * 0.5)), Y + d, 'palm', max(0, min(5, t)))
-        c.P(X, Y, 'palm', max(0, min(5, 4 + light)))
-        if prev and abs(prev[1] - Y) > 1: c.P(X, (Y + prev[1]) // 2, 'palm', max(0, min(5, 4 + light)))
-        prev = (X, Y)
+def frond(c, x0, y0, ang, L, droop, s, light, width=1.0):
+    """야자 잎 하나(2026-10-14 2판): 굽은 중맥을 따라 렌즈 모양 잎(가운데 넓고 끝 뾰족). 3/4 위에서 본 잎이라
+    중맥 위쪽 반(빛 받음)은 밝고 아래쪽 반은 어둡다. 잎살은 빗살(갈매기 무늬) 틈으로 갈리고 가장자리는 톱니로 끊긴다 → 잎 하나에 4~5단.
+    ang: 화면 방향(라디안, 0=동, -90=북), droop: 끝 처짐."""
+    dx, dy = math.cos(ang), math.sin(ang)
+    fy = 0.62 if dy < 0 else 0.85                       # 북쪽(뒤)으로 뻗은 잎은 위에서 보면 짧아진다
+    lit = 0.6 if dx < -0.2 else 0.0 if dx < 0.3 else -0.4
+    pts = []
+    n = int(L * 4)
+    for k in range(n + 1):
+        u = k / n; d = u * L
+        lift = 0.0 if dy > 0.3 else 0.55
+        pts.append((x0 + dx * d, y0 + dy * d * fy + droop * (d * d) / L - lift * d * (1 - u) * 0.9, u))
+    done = {}
+    for k in range(1, len(pts)):
+        (xa, ya, _), (xb, yb, u) = pts[k - 1], pts[k]
+        tx, ty = xb - xa, yb - ya; ln = math.hypot(tx, ty) or 1; tx, ty = tx / ln, ty / ln
+        nx, ny = -ty, tx                                 # 법선
+        if ny < 0: nx, ny = -nx, -ny                    # 법선은 늘 아래(화면 남쪽)를 향하게 → +쪽이 그늘 반
+        w = width * (3.0 if L > 9 else 2.3) * math.sin(math.pi * min(1.0, 0.12 + u * 0.95) ** 0.7)
+        w = max(w, 0.6)
+        steps = int(w * 2) + 1
+        for j in range(-steps, steps + 1):
+            o = j / 2.0
+            if abs(o) > w: continue
+            X = int(round(xb + nx * o)); Y = int(round(yb + ny * o))
+            edge = abs(o) > w - 0.9
+            seg = int(u * L * 1.4)
+            if edge and (seg + (1 if o > 0 else 0)) % 3 == 0: continue     # 톱니 가장자리(잎살 끝)
+            if abs(o) < 0.5: t = 4.6 - u * 1.2                        # 중맥
+            elif o < 0: t = 4.0 - u * 0.8 - (0.6 if edge else 0)      # 빛 받는 반
+            else: t = 2.6 - u * 0.8 - (1.2 if edge else 0)           # 그늘 반
+            if abs(o) >= 0.5 and (seg + int(abs(o) * 1.5)) % 3 == 0: t -= 1.0   # 빗살 틈
+            t += light + lit
+            done[(X, Y)] = max(0, min(5, int(round(t))))
+    for (X, Y), t in done.items(): c.P(X, Y, 'palm', t)
 
 
 def palm(c, bx, by, height, lean, crown_r, s=0, dates=True, light=0):
-    """대추야자: 휜 줄기(마디 띠) + 왕관 잎 9~11장 + 대추 송이."""
-    # 줄기
+    """대추야자(2판): 굵기 5px 줄기(왼빛 4단 + 비늘 마디) + 어두운 수관 속 덩이 + 뒤 잎(어둡게)·앞 잎(밝게) + 대추 송이 + 밑동 풀 그늘."""
+    # 밑동 그늘(풀 위에만 놓이는 소품 — 풀 램프 어두운 단, 오른쪽으로 길게)
+    for j in range(3):
+        for i in range(-4 + j, 7 - j):
+            c.P(bx + i + 1, by - 1 + j, 'grass', 1 if abs(i - 1) < 4 - j else 2)
     top_x, top_y = bx + lean, by - height
     for k in range(height + 1):
         u = k / height
         x = bx + lean * (u ** 1.6); y = by - k
-        wide = 1 if k < 5 else 0
+        wide = 1 if k < 4 else 0
+        ring = k % 3
         for d in range(-2 - wide, 3 + wide):
             X = int(round(x)) + d
-            t = 3 if d < 0 else 2 if d == 0 else 1
-            if d == -2: t = 2
-            if d == 2: t = 0
-            if k % 3 == 0: t = max(0, t - 1)                     # 마디 띠
-            if k % 3 == 1 and d == -1: t = 4
-            c.P(X, y, 'hide', t)
-    # 잎(뒤쪽 먼저 — 짧고 어둡게, 앞쪽 길고 밝게)
+            if d <= -2: t = 3
+            elif d == -1: t = 4
+            elif d == 0: t = 3
+            elif d == 1: t = 2
+            else: t = 1
+            if ring == 0: t = max(0, t - 2) if d >= 0 else max(1, t - 1)   # 마디 띠(비늘 밑 그늘) — 빛 쪽은 얕게
+            elif ring == 1 and d in (-1, 0): t = 5 if d == -1 else 4   # 비늘 윗 모서리 빛
+            if (k // 3 + d) % 2 == 0 and ring == 2 and d == 1: t = 1
+            c.P(X, y, 'hide', max(0, min(5, t)))
     cx, cy = int(round(top_x)), int(round(top_y))
-    back = [(-100, 0.25, -1), (-80, 0.25, -1), (-125, 0.45, -1), (-55, 0.45, -1)]
-    front = [(-160, 1.0, 0), (-20, 1.0, 0), (-145, 0.8, 1), (-35, 0.8, 0), (-178, 1.3, 0), (-2, 1.3, -1), (-110, 0.6, 1), (-70, 0.6, 0), (-130, 0.7, 1), (-50, 0.7, 0), (-168, 1.6, -1), (-12, 1.6, -1)]
-    for i, (a, dr, li) in enumerate(back + front):
-        L = crown_r + (h32(i, 0, s) % 3) - (4 if (a, dr, li) in back else 0)
-        frond(c, cx, cy, math.radians(a), L, dr, s, li + light)
-    # 가운데 순(밝음) + 대추 송이
-    c.ell(cx, cy, 3, 2, lambda x, y, dx, dy, d: ('palm', 4 if dy < 0 else 2))
+    # 수관 속 어두운 덩이(앞 잎 사이로 비치는 그늘)
+    c.ell(cx, cy + 2, crown_r * 0.45, 3.2, lambda x, y, dx, dy, d: ('palm', 1 if dy > -0.2 else 2))
+    # 뒤(북쪽) 잎 → 옆 잎 → 앞(남쪽으로 처지는) 잎 순서로 덮는다
+    back = [(-112, 0.05, -1), (-68, 0.05, -1)]
+    side = [(-172, 0.75, 0), (-8, 0.75, -1), (-145, 0.35, 1), (-35, 0.35, 0)]
+    front = [(140, 0.55, 0), (40, 0.55, -1), (95, 0.3, 0)]
+    allf = back + side + front
+    for i, f in enumerate(allf):
+        a, dr, li = f
+        L = crown_r + (h32(i, 0, s) % 2) - (5 if f in back else 6 if f in front else 2 if dr < 0.5 else 0)
+        frond(c, cx, cy, math.radians(a), L, dr, s, li + light, width=1.0)
+    # 가운데 순(밝음): 위에서 본 잎자루 모임
+    c.ell(cx, cy, 3, 2, lambda x, y, dx, dy, d: ('palm', 5 if dy < -0.3 and dx < 0.2 else 4 if dy < 0.2 else 2))
     if dates:
         for (dx_, dy_) in ((-3, 3), (2, 3)):
-            for k in range(5):
+            for k in range(6):
                 c.P(cx + dx_ + (k % 2), cy + dy_ + k // 2, 'saffron', 3 if k % 2 == 0 else 2)
-            c.P(cx + dx_, cy + dy_, 'saffron', 4)
+            c.P(cx + dx_, cy + dy_, 'saffron', 5); c.P(cx + dx_ + 1, cy + dy_ + 2, 'saffron', 1)
+
+
+def palm_outline(c):
+    """윤곽: 잎은 잎 램프 최암, 줄기는 가죽 최암, 밑동 풀 그늘은 그대로."""
+    m0 = c.m.copy()
+    for y in range(c.h):
+        for x in range(c.w):
+            g = c.get(x, y)
+            if not g or g[0] == 'grass': continue
+            edge = any(not (0 <= x + dx < c.w and 0 <= y + dy < c.h) or m0[y + dy, x + dx] < 0 for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))
+            if edge: c.P(x, y, g[0], 0 if g[0] == 'hide' or g[1] <= 2 else g[1] - 2)
 
 
 @P_('palm-date', '대추야자(큰)', 2, 3, 'organic', ['야자', '오아시스', '나무'], '오아시스 못가·풀밭·광장 모퉁이. 서로 3칸 이상, 줄 세우지 말고 덩이로.')
 def _(c):
-    palm(c, 13, 46, 30, 4, 14, s=3)
-    c.outline(bottom=('hide', 0))
+    palm(c, 13, 45, 29, 4, 15, s=3)
+    palm_outline(c)
 
 
 @P_('palm-young', '어린 야자', 2, 2, 'organic', ['야자', '오아시스'], '큰 야자 곁·못가 빈자리에.')
 def _(c):
-    palm(c, 15, 30, 13, -2, 11, s=7, dates=False, light=0)
-    c.outline(bottom=('hide', 0))
+    palm(c, 15, 29, 12, -1, 12, s=7, dates=False, light=0)
+    palm_outline(c)
 
 
 @P_('palm-pair', '대추야자 두 그루', 3, 3, 'organic', ['야자', '오아시스', '나무'], '오아시스 가운데 덩이의 중심.')
 def _(c):
-    palm(c, 30, 46, 26, 6, 12, s=11, light=-1)
-    palm(c, 18, 47, 33, -5, 14, s=13)
-    c.outline(bottom=('hide', 0))
+    palm(c, 30, 45, 25, 6, 13, s=11, light=-1)
+    palm(c, 18, 45, 32, -5, 15, s=13)
+    palm_outline(c)
 
 
 @P_('acacia', '우산 아카시아', 3, 3, 'organic', ['나무', '사바나', '사막'], '트인 사막·마을 밖 길가에 한 그루씩. 그늘 밑에 천막·낙타를 둔다.')
