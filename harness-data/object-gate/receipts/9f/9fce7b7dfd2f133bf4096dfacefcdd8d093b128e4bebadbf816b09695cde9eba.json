@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9fce7b7dfd2f133bf4096dfacefcdd8d093b128e4bebadbf816b09695cde9eba",
+ "width": 16,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "벽 구리 배관(밸브 손잡이)",
+ "label": "steampunk-city/sp-pipe-wall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall-mounted copper pipe with valve",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted pipe fixture. The valve wheel and mounting brackets show foreshortened 3/4 perspective suitable for a wall-mounted fixture.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6139
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical wall pipe with valve handle and brackets",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted vertical pipe running along the wall. Brackets and valve wheel have 3/4 perspective foreshortening/elliptical curvature, and wall-mounted objects are permitted to lie flat against the wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5664
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "copper pipe with valve and brackets",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted vertical pipe with mounting brackets, valve handle, and valve body; correctly rendered flat against the vertical wall surface as expected for wall-mounted fixtures.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8050
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical wall-mounted copper pipe with valve handle and wall brackets",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a copper pipe running vertically along a wall face with wall brackets and a valve handle. As a wall-mounted fixture conforming to the vertical wall plane, it correctly displays flat against the wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5431
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.530Z",
+ "cells": {
+  "16": [
+   "be385439a5f3788e",
+   "e8b21b244eff30e4"
+  ],
+  "24": [
+   "1f2ea133fd9f72ef",
+   "2d3712a8bd732464",
+   "312553c13d83f1d1",
+   "341d3b318cb18629",
+   "61c802fcca40a1fb",
+   "626f6a19913a1c6e",
+   "78cb0d902e1186e7",
+   "7f5ab9ff97151fb0",
+   "93d6891d40417097",
+   "da5c603738fcf4fd",
+   "dadc50381692c56f",
+   "df494e9d3652c128"
+  ],
+  "32": [
+   "0576aa48fc7fd11c",
+   "3ef7cc17c7d1ebd6",
+   "6b603bc07080892f"
+  ],
+  "48": [
+   "3143a012774bc398",
+   "56aed6900b262344",
+   "a99aafdc470fcc2c",
+   "b5437de1e3c4a731",
+   "f784cb62c066b305",
+   "fbed91b91065f88e"
+  ]
+ }
+}

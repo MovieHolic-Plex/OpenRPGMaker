@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e519f655bbeda969408fd55aa9f7d0f2d473ef462575e63b13f87d46c7c9c7fe",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "증기 구멍(쇠 굴뚝 토막에서 김이 오른다)",
+ "label": "steampunk-city/sp-steam-vent",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "short metal chimney / steam pipe",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the pipe features a clear, foreshortened elliptical rim and opening (rows 16-24) with visible interior depth (approx 6 rows) viewed from above, above the south-facing cylindrical body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4740
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "metal steam vent / chimney stub",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top rim and interior opening are rendered as a broad ellipse (rows 15-24) looking down into the pipe stub, showing 6 rows of dark interior opening above the front vertical cylinder wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3896
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "short iron chimney pipe with steam",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pipe rim forms a clear foreshortened ellipse spanning rows 15 to 23, with a 5-pixel-tall dark interior opening (rows 18-22) visible from above over a south-facing cylindrical pipe body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3795
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron pipe/chimney segment with flange",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the pipe segment features a wide elliptical flanged rim (rows 15–23) with a fully visible interior opening (rows 18–22, 5 rows tall) from which steam rises, sitting atop an 8-row vertical cylinder front body (rows 24–31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6746
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.527Z",
+ "cells": {
+  "16": [
+   "13fadfa3fb313ac6",
+   "acf6e6eff007aebd"
+  ],
+  "24": [
+   "079075372cca2d00",
+   "15061d5494554e66",
+   "2656ef4fbce16291",
+   "3ece2998e1743f21",
+   "3ffa88315c88efc6",
+   "4c6f4f64c225063b",
+   "5aa17eff0f8d7b34",
+   "7cb634fe6872f55d",
+   "7fcae5b46033a073",
+   "a7d9cbd433f094d0",
+   "c2132553dd295ba6",
+   "caa08178885f7a20"
+  ],
+  "32": [
+   "237f98df2f36306a",
+   "3fc90edfe73fb779",
+   "6a5924255c7b1edc"
+  ],
+  "48": [
+   "02d634c9c4dde6a7",
+   "2cc383f77bfa3b77",
+   "5a40e55b2729f055",
+   "69b0945a93a1112c",
+   "8ffbd842ec6699cd",
+   "e5855da53525ba7c"
+  ]
+ }
+}

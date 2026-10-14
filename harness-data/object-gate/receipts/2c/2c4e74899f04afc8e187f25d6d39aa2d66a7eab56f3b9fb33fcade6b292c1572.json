@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2c4e74899f04afc8e187f25d6d39aa2d66a7eab56f3b9fb33fcade6b292c1572",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "철도 신호등(무쇠 기둥 + 등 상자 — 넓은 윗면 갓, 빨강·초록 등)",
+ "label": "steampunk-city/sp-rail-signal",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "signal head box and post",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The signal head box features a clearly foreshortened top surface/hood spanning rows 3-8 (6 rows), leading to the front face with signal lights (rows 9-18). The circular base also shows a distinct top surface ellipse (rows 38-42, 5 rows).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5519
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "railroad signal box and base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top hood/roof of the signal box shows a clear top surface spanning rows 3-8 (6px tall), above the dark front face containing the signal lights. Additionally, the cylindrical base at rows 38-42 shows its curved top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4493
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "signal box and post",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the signal housing is prominently depicted across rows 3-8 (6 rows of top surface/visor) above the front face containing the lights (rows 9-18). The base also shows a clear 3/4-view top surface (rows 38-42).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6645
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "railway signal box and post assembly",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface/visor of the signal box is clearly depicted from above across rows 3-8 (6 rows tall) with a highlighted front rim and shadow cast onto the vertical face below. Additionally, the circular base plinth clearly shows its foreshortened top surface (rows 38-42).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8455
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.519Z",
+ "cells": {
+  "16": [
+   "1fd496053de614d0",
+   "38a22b1f07ed0036",
+   "cfc50ade816e4577"
+  ],
+  "24": [
+   "13fa46ebc539bef6",
+   "3d42cd010e254943",
+   "6f41fc978d359ae0",
+   "9d641fe8fe5f37fe",
+   "9d99a8f333cd9809",
+   "e9ebd48788693ac4"
+  ],
+  "32": [
+   "2990eb88a297aab3",
+   "3414467f29199f8d",
+   "6b3f41423bd424f6",
+   "7fdf2376963a16f4",
+   "90bdd01abbdfaf81",
+   "d077d1cc8a0504d1",
+   "e7ed849bb523ac59",
+   "ea7752fe673dc26f",
+   "ed074407da138e17",
+   "f0320bf9b86ea9a6",
+   "fe4d64a7fd49496e",
+   "fe534015e07bf88e"
+  ],
+  "48": [
+   "08b9cbfbe69959a9",
+   "c3eaa71267832c98",
+   "d2532f517c3285e8"
+  ]
+ }
+}

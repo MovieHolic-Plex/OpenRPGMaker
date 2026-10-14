@@ -159,7 +159,7 @@ def _(c):
 
 
 # ── 벽돌 포석(광장) ── 8×8 바구니 짜임(가로 두 장 / 세로 두 장 엇갈림), 벽돌마다 단이 다르고 윗/왼 빛·밑/오른 그늘, 모래 줄눈
-def brickpave(c, s=4, soot=0.08, chip=0.0):
+def brickpave(c, s=4, soot=0.03, chip=0.0):
     def f(wx, wy, i, j):
         lx, ly = wx % 16, wy % 16
         bx, by = lx // 8, ly // 8; xx, yy = lx % 8, ly % 8
@@ -191,7 +191,7 @@ def _(c): brickpave(c)
 
 
 @R.add('brickpave-b', '벽돌 바구니 포석(그을린·이 빠진 벽돌 변주)', 1, 1, 'terrain', tags=['광장', '포석'], rules='벽돌 포석 사이에 낱칸으로 섞는다(반복 깨기).')
-def _(c): brickpave(c, s=17, soot=0.22)
+def _(c): brickpave(c, s=17, soot=0.09)
 
 
 # ── 철판 바닥 ──
@@ -231,8 +231,9 @@ def cinder_ground(c, s=4, ruts=False, pebbles=CINDER_PEBBLES, coal=CINDER_COAL):
     def f(wx, wy, i, j):
         lx, ly = wx % 16, wy % 16
         a = rnd((lx + 1) // 4, (ly + 2) // 4, s); b2 = rnd(lx // 2, ly // 2, s + 3)
-        t = 3 if a > 0.62 else 2
-        if a < 0.18: t = 1 if b2 < 0.5 else 2
+        t = 3 if a > 0.5 else 2
+        if a > 0.86 and b2 < 0.6: t = 4                                   # 한 단 밝은 얼룩(넓게 어둡지 않게)
+        if a < 0.14: t = 1 if b2 < 0.5 else 2
         q = rnd(lx, ly, s + 17)
         if q < 0.06: t = max(1, t - 1)
         elif q > 0.94: t = min(4, t + 1)

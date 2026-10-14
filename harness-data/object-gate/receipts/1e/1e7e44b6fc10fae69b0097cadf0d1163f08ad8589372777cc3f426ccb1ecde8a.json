@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1e7e44b6fc10fae69b0097cadf0d1163f08ad8589372777cc3f426ccb1ecde8a",
+ "width": 32,
+ "height": 48,
+ "kind": "column",
+ "name": "공장 굴뚝 꼭대기 + 검은 연기(굴뚝 위에 겹쳐 찍는다)",
+ "label": "steampunk-city/sp-stack-smoke",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick factory chimney top with metal cap and billowing smoke",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the chimney features a foreshortened elliptical rim and a distinct dark circular opening (rows 34-37, 4 rows tall) viewed from above in proper 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5715
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "factory chimney top with smoke",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the chimney features a clear foreshortened elliptical opening (rows 34-36) with visible rim and interior depth, correctly drawn in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4141
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "factory chimney top with smoke rising",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chimney rim at rows 32-37 clearly depicts an elliptical opening showing the black interior cavity (rows 34-36, 3 pixels tall), viewed from an elevated 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 23940
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "factory chimney top with smoke",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chimney top rim and opening are clearly rendered in 3/4 perspective, showing a 4-row deep elliptical opening (rows 34-37) looking down into the chimney pipe.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3023
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.527Z",
+ "cells": {
+  "16": [
+   "348911983e01a01b",
+   "4b19fa7a5dc4fbfe",
+   "805b9bc94466b8ed",
+   "97c7e70c7301aea2",
+   "f3222617a1bd6dec"
+  ],
+  "24": [
+   "0634716e88dfd6a6",
+   "071725b67e37eed8",
+   "11596f3398b85cc8",
+   "262f679924620179",
+   "4377635abb98384b",
+   "5f77e96fdc96afcf",
+   "889509d7f192b1b6",
+   "b82c2b728f10b3e1",
+   "cc8a227b2f318006",
+   "d388df46a250def2",
+   "ec0c51e7dc6a1df9"
+  ],
+  "32": [
+   "035d48152adb87c3",
+   "46291fd7e543e120",
+   "85441317d201c157",
+   "ee0cabb5902bb418"
+  ],
+  "48": [
+   "40749b0084ef6a72",
+   "a0666c217e449aca",
+   "fd4f62198e18019f"
+  ]
+ }
+}

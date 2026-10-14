@@ -7,7 +7,7 @@
   "interior": 52
  },
  "tiles": {
-  "count": 845,
+  "count": 851,
   "rows": 18,
   "sheetPx": [
    768,
@@ -22,7 +22,7 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 845,
+  "tiles_checked": 851,
   "kits_checked": 102,
   "groups_checked": 70,
   "autotiles_checked": 0

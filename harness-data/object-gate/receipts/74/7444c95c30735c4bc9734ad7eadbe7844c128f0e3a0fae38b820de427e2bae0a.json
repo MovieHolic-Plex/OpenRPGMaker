@@ -1,0 +1,128 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7444c95c30735c4bc9734ad7eadbe7844c128f0e3a0fae38b820de427e2bae0a",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "둥근 광고탑(빛바랜 포스터 — 글자 없음, 넓은 녹청 돔 뚜껑)",
+ "label": "steampunk-city/sp-poster-column",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical advertising pillar with domed cap and posters",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The advertising column is capped by a rounded dome (rows 5–14) showing a foreshortened top surface with a downward-curving front rim (row 14) and a finial, as well as a multi-row visible base plinth ledge (rows 27–29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14609
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "advertising pillar (Morris column)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylindrical advertising pillar is drawn entirely as a flat front elevation. The circular cylinder has completely straight horizontal lines (e.g. poster bottoms at row 21 and row 26) with no elliptical curvature or top-down perspective, and the dome cap is drawn in straight side profile/front view with no foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7415
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "advertising column (Morris column) with domed roof cap",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The dome cap displays its downward-sloping top surface across rows 5–11, and the bottom rim curves downward in an ellipse (rows 13–15) consistent with looking down from a 3/4 top-down angle. The base plinth also shows a curved top ledge at rows 27–28.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6220
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "advertising column (Morris column)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylindrical body, posters, and base are drawn with perfectly straight horizontal lines (rows 16, 22, 27) instead of the elliptical curves required for a 3/4 top-down view. The dome cap is drawn as a direct front silhouette with no visible top plane, making the entire structure a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7744
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.518Z",
+ "cells": {
+  "16": [
+   "1e4cd1c90eba59eb",
+   "8f39556155b2ed64"
+  ],
+  "24": [
+   "13ecbbcbda9e0c03",
+   "25aa08508bfe9d57",
+   "2c2be548552abf7c",
+   "3717b248506f3e15",
+   "6879499f79f1ac98",
+   "8c4740a86445a949",
+   "96699c0131291d51",
+   "99891a12c2d868ad",
+   "b7048230a59d75a9",
+   "c72f3c5f1294e7e6",
+   "dce346f96547cf7d",
+   "ffee51703fe9ad8b"
+  ],
+  "32": [
+   "4eeca656ef6851b1",
+   "bb0db9191a0204c2",
+   "be818fbef4888a83"
+  ],
+  "48": [
+   "083dcf6bcb5b23bc",
+   "2298b6228aebcfcd",
+   "4ce3b9324b91bb0f",
+   "928ac0c9f69322c8",
+   "9f437193be4b50a7",
+   "b3462b869b8e8c49"
+  ]
+ }
+}

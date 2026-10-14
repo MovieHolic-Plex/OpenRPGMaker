@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "238b6dc9527a6f7ad38b6f3aac8f600d3ab9f0a8f2ede301b100e0fba6d1f7f1",
+ "width": 32,
+ "height": 16,
+ "kind": "container",
+ "name": "나룻배(작은 나무배)",
+ "label": "steampunk-city/sp-rowboat",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "small wooden boat viewed from above and south",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The interior cavity of the boat is clearly visible looking down into it across rows 3-9 (7 rows tall), with the south hull visible below it on rows 11-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4940
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden rowboat hull with interior opening and south side exterior visible",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The interior of the boat is clearly visible from above spanning rows 3-9, with gunwales and cross-beams visible in top-down perspective, while the south exterior hull is visible below at rows 10-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4856
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "small wooden boat",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The interior of the boat is clearly seen from above across rows 3-8 with benches, and the south exterior hull is visible on rows 10-13, fitting 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5580
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "small wooden boat / skiff",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The interior of the boat is clearly visible from above across rows 3–9 with benches, and the south hull exterior is visible below the front rim from rows 11–13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5808
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.529Z",
+ "cells": {
+  "16": [
+   "d0db16aa80945fd2",
+   "eb676a4ff3646bb8"
+  ],
+  "24": [
+   "38e65f50d48eb0bb",
+   "43ace679db4808e1",
+   "4da28530d49dc6d6",
+   "77ee01f8390d0a6c",
+   "7ac5f9eaf04a483d",
+   "9b32c03626b585ec",
+   "ac8ba845cebab978",
+   "ae428f571fd45f2b",
+   "b52415027a22edb1",
+   "c3b727eca8b17284",
+   "d7ddc92378e659d0",
+   "f8da0816315fe398"
+  ],
+  "32": [
+   "41b9ee3e4d0b3c8d",
+   "e4a8f1edc623fcd1"
+  ],
+  "48": [
+   "1c148eb1fec27717",
+   "3353b99fa3eb482b",
+   "64422a223c8e5608",
+   "96f084cfc3c5bfad",
+   "9bc257a5a8e1c639",
+   "ea8ca5578a6cd105"
+  ]
+ }
+}

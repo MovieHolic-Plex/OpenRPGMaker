@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9fa939aba36d7e509d18e4b112ae894286084bb69101efe0ebcd686f49fcb38c",
+ "width": 48,
+ "height": 48,
+ "kind": "round_body",
+ "name": "세운 보일러(리벳 원통 + 화실 문 불빛 + 압력계) (프레임 2)",
+ "label": "steampunk-city/sp-boiler-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical boiler with riveted panels and firebox",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the cylinder is clearly visible as an elliptical surface spanning from row 3 to row 12 (~9-10 rows), featuring a hatch and an emerging pipe in proper 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5045
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical cylindrical boiler",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top circular cap of the cylindrical boiler is clearly visible as an ellipse spanning approximately rows 2 to 12 with a pipe and hatch detail, providing proper 3/4 view perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5272
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "upright cylindrical boiler",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylindrical boiler has a clearly drawn elliptical top surface extending from row 2 to approximately row 14 (about 13 pixel rows), complete with foreshortened top features like a manhole hatch and pipe attachment.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6469
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical cylindrical boiler",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top circular cap of the cylinder is clearly visible as an ellipse spanning rows 3 to 13, featuring a hatch cover and a chimney pipe emerging from it, showing correct 3/4 top-down foreshortening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7300
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.529Z",
+ "cells": {
+  "16": [
+   "17ba0c8d56af8553",
+   "296d9dc4c65399cb",
+   "4f3646e3ab1e938a",
+   "6f101bcb98c60e6a",
+   "709c5591af9ea595",
+   "888350b6188236a1",
+   "b8436ff19896a389",
+   "b9894e21266ab4c4",
+   "bb7989be0c743991"
+  ],
+  "24": [
+   "091a8a233463afe4",
+   "16001969cf547db1",
+   "38c3b72982e0708c",
+   "779d637d345c6662"
+  ],
+  "32": [
+   "00e7992e0f134337",
+   "0d744c72be7e213a",
+   "4f068277e196e651",
+   "556c2a8a3ffbb4df",
+   "69654a7c785c17c0",
+   "6b6a1a6d13a8d1ef",
+   "6f152ccc76091378",
+   "748c9745c96be3ee",
+   "7bc99effd66d61b2",
+   "7e29acb9adbf6efc",
+   "8506e0aea77665f2",
+   "85c0aceb9d39c6cc",
+   "8c28dbcc7fc1c61d",
+   "96021662b34bf770",
+   "a38f23e558e02ac7",
+   "ad110ccb561019a0",
+   "af407437fbe38d3a",
+   "b08c935d375cf502",
+   "b7186b0e18e487e3",
+   "ce9d63cd12c19b17",
+   "d2788b2a852fd68a",
+   "d6839fe3149bdf08",
+   "f295bb6ff66057f7",
+   "fb55adb1116018c2"
+  ],
+  "48": [
+   "4c1e66a231f78b1b"
+  ]
+ }
+}

@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6da692c9442ebfd35288c763e0e0e0739ee723268df4fbe56b9b96ba6fc30e85",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "선술집 둥근 탁자(잔·촛불)",
+ "label": "steampunk-city/sp-tavern-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round tabletop with central pedestal leg",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round tabletop is clearly drawn in 3/4 top-down perspective as an ellipse spanning approximately 13 rows (rows 4–16), upon which the candle and mugs rest, supported by a central pedestal and base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7290
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round wooden tabletop with central pedestal",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round tabletop is properly foreshortened into an ellipse spanning rows 3-17 (15 rows tall), clearly displaying horizontal surface area with mugs and a candle placed on it, supported by a vertical pedestal underneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7774
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round wooden tabletop with central pedestal and base",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round tabletop is rendered as a foreshortened ellipse occupying rows 3-16 (~14 rows of top surface), properly displaying objects on top (mugs and candle) in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6119
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round tabletop on pedestal",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round tabletop is clearly foreshortened in 3/4 top-down perspective, showing roughly 15 pixel rows of visible surface (rows 3 to 17) supporting mugs and a candle, with the table rim and central pedestal visible beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5645
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.533Z",
+ "cells": {
+  "16": [
+   "6388d5a2a698e4d4",
+   "c1a0a0918c9c3d04",
+   "c202b4329ec895d5",
+   "fc36a00c3c27698f"
+  ],
+  "24": [
+   "1542fb2bf7a43c6d",
+   "1c9de082f9578944",
+   "1d23484e12e3dd7a",
+   "22c65982cbdb6baf",
+   "39dd388614a35033",
+   "43121fc5a08836e7",
+   "4da4945540106c64",
+   "601054eabc253f2a",
+   "8537f91884e5746b",
+   "897c28613b0549ab",
+   "8d3d88a826a6d36f",
+   "a1b9e4342c48901a",
+   "a53209fe665aa444",
+   "b6d3b18cac25bff0",
+   "b9719aa80c162988",
+   "bde88649a73b95d5",
+   "bfb1b4ce6d4234a6",
+   "c547b53855f89eb6",
+   "e6b658d3080aa29d",
+   "f0d0c2fbf24565e5",
+   "f413c30984e55a4c",
+   "fd366d5ddc53216c"
+  ],
+  "32": [
+   "5f974d02c24af468"
+  ],
+  "48": [
+   "11e2c2650d574643",
+   "6d6253d8f22af7ee",
+   "713305120303d12e",
+   "81183a77da1b33a9",
+   "8d69fac342f3dcf8",
+   "e57be24302b99602"
+  ]
+ }
+}

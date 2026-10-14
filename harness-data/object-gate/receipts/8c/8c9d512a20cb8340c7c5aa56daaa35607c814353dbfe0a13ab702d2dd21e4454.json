@@ -1,0 +1,133 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8c9d512a20cb8340c7c5aa56daaa35607c814353dbfe0a13ab702d2dd21e4454",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "부두 증기 기중기(돌 받침 + 운전실 + 비스듬한 격자 팔·갈고리)",
+ "label": "steampunk-city/sp-jib-crane",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "crane cabin and roof",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabin roof shows a clear 7-row top surface (rows 26-32) viewed from above, resting over the front brick wall (rows 33-48). The chimney also shows an elliptical top opening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5496
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cabin and stone plinth",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabin roof clearly shows a 6-pixel-tall top surface (rows 26-31) above its vertical brick south face, and the stone base shows a 7-pixel-tall horizontal surface (rows 49-55) above its front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5476
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "crane cabin and stone base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabin roof clearly shows a 6-pixel-tall foreshortened top surface (rows 26-31), and the stone base below has a 7-pixel-tall top surface (rows 49-55). Both surfaces are properly rendered in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4931
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "crane cabin and stone base",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabin features a clearly rendered top roof surface from row 26 to 32 (7 rows), and the stone base similarly shows a distinct top surface from row 49 to 55 (7 rows) before its vertical front face, properly showing standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5422
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.520Z",
+ "cells": {
+  "16": [
+   "0de758cb049acdce",
+   "4ec2d303986f53c7",
+   "4f66eb608f8f4343",
+   "594bfe47b83dae3d",
+   "645be2b9634f8a8a",
+   "98d5c8115aea99c4",
+   "c8efa3d7628a1867",
+   "cd19eeabffb3d261",
+   "de93f1f8bc1b6d9d"
+  ],
+  "24": [
+   "10a7f04175df9d0b",
+   "3f5000b6e6508a4a",
+   "4a3ef5c9cfd02358",
+   "74fa0ab8b546fb6f",
+   "86f399a6d173e356",
+   "86fc6e56a5b43307",
+   "b33a4e33c2494bae",
+   "d31bdedd9794ada6",
+   "e90dd5e763e61b0f",
+   "ed3af7e6c175aa94",
+   "fffc088d427d5c7d"
+  ],
+  "32": [
+   "15975db00a390110",
+   "3fb50f8399169650",
+   "50b386c89a1d9813",
+   "6cc48e9fc194db01",
+   "8665a1552dcc68b1",
+   "a090c198aeac1e61",
+   "adc79e326d11dde0",
+   "c7edfbe877e35785",
+   "cb9260a1360b3780",
+   "d556e227fe6b398f",
+   "e1477183b0b5bdc2",
+   "fc7fa4de867e79a1"
+  ],
+  "48": [
+   "48fd2ac5cadb066b",
+   "55380d7d08990779",
+   "9bd1f1b6c8650231",
+   "b6efaec120d686f0"
+  ]
+ }
+}

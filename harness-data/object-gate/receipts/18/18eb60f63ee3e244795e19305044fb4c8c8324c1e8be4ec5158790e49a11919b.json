@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "18eb60f63ee3e244795e19305044fb4c8c8324c1e8be4ec5158790e49a11919b",
+ "width": 16,
+ "height": 80,
+ "kind": "column",
+ "name": "독립 공장 굴뚝(그을린 벽돌 원통, 돌 받침)",
+ "label": "steampunk-city/sp-chimney",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick chimney cylinder with top flue rim and stone plinth",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the chimney flue is clearly foreshortened in 3/4 perspective with an elliptical rim and dark interior opening (rows 2-4, 3px tall), and the stone base plinth also shows a top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6497
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall brick factory chimney cylinder on stone base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the chimney shows a foreshortened elliptical opening (rows 2-5, approx 4px tall inside) with rim visible from above, and the stone base also shows its top surface (rows 62-67).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5434
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "scorched brick chimney with top opening and stone pedestal base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the chimney features a foreshortened elliptical rim and dark interior opening spanning rows 1 to 5 (interior opening rows 2-4), and the stone base also has a clear foreshortened top surface at rows 62-67.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4638
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "factory chimney column",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the chimney features a foreshortened ellipse opening (rows 2-4) surrounded by a rim (rows 1-5), and the lower stone pedestal also clearly shows its top surface (rows 62-67).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3683
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.519Z",
+ "cells": {
+  "16": [
+   "074ec29941441f70",
+   "4b19fa7a5dc4fbfe",
+   "6e6243812fb76625",
+   "823881574c2cc913"
+  ],
+  "24": [
+   "060dce1336821e97",
+   "19e326593fbcc670",
+   "2187fd3cb9d363b3",
+   "24cc666b2b037b7c",
+   "28c7a193bf338951",
+   "2945a5cee650d9bf",
+   "317652684110038b",
+   "39a6f1ee6cd3d6ed",
+   "5cc3904651a0a5c3",
+   "63e33ea37fa1b4fa",
+   "686e666bc0493e66",
+   "707144956fbb2a10",
+   "74f9a2bdccfe1632",
+   "7d0dbdb950cba122",
+   "9dddbf1e70d7d767",
+   "a34eb523e876f798",
+   "a53c1d97964d5881",
+   "a9398d046d138ca6",
+   "bfc052720296e3fb",
+   "c4b9dc1a7ff39d56",
+   "d98a4529aef99dde",
+   "db12507ab8e9538b",
+   "f1c0d6e8bc9139a0",
+   "fe4b3f7cdcfc0fe1"
+  ],
+  "32": [
+   "0f82baff21abc467",
+   "134ea221cf87bb56",
+   "2f2a6fb72604d6c5",
+   "3f64a2099714fe3e",
+   "40b17cfea10a5980",
+   "53a00078539ace46",
+   "563a3acf9d88b166",
+   "61011553ab773661",
+   "8fa28ba6c12ab816",
+   "93e4d2734c73ffa0",
+   "9441650b88f39339",
+   "9774b826534ab6f2",
+   "985ef08ca187ef00",
+   "a3aef3b4464cbc75",
+   "bab4112781f843bf",
+   "db2aa5b65d88e3ea",
+   "f367a47978243bc3",
+   "fdf5f385c01a995d"
+  ],
+  "48": [
+   "13b2dd6b3e18e9ac",
+   "1c22512786079daa",
+   "29e3b91c75d7929b",
+   "3b7554dc426bb860",
+   "965289c9bf9c5a12",
+   "a3df41193c7b4f87",
+   "c4918e253490576f",
+   "c6610e2d214cc71c",
+   "d3af03ad1d54578a",
+   "e29fe824748ef384",
+   "f4ad65a0a9d17d7d",
+   "f7ee87bd9733fe06"
+  ]
+ }
+}

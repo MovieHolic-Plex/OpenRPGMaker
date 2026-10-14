@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c0434d77bf9699c49a7bfea74d434336a613be5b42e4364d0110d0d46091aef9",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "발전기(구리 코일 드럼 + 무쇠 받침 상자)",
+ "label": "steampunk-city/sp-dynamo",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cast iron base box with copper coil drum",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cast iron base box clearly displays its top surface across rows 16-19 (4 source pixels deep) before transitioning to the south front face at row 20.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6600
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cast iron base box with copper coil drum on top",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cast iron base box clearly shows a horizontal top plane from row 16 to row 19 (4 source pixel rows visible in front of the coil drum, extending to 7 rows on the flanks), with its front face extending from row 20 to row 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5518
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "generator base box with copper coil drum",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cast iron base box is clearly visible across rows 16-19 (4 rows tall) beneath the copper coil drum, and the front face occupies rows 20-30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5696
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cast iron base box with copper coil drum",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cast iron base box clearly displays its horizontal top plane across rows 12-19 (8 source pixel rows tall) supporting the copper coil drum, above its vertical front face (rows 20-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6627
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.530Z",
+ "cells": {
+  "16": [
+   "396a3393e259fd75",
+   "77cb7522c3fbfd8d",
+   "bafd756e8b593328",
+   "de003a5c49990880"
+  ],
+  "24": [
+   "067a2894934b800f",
+   "1191cccf772c635b",
+   "1ae18bc677d20204",
+   "24da5e83625c02fe",
+   "39bcd1c06eb73196",
+   "492512215fbf9fc1",
+   "6328bc0352264823",
+   "7993010a884853c1",
+   "84a8fa4848c878df",
+   "8aff561de01913c5",
+   "9119336ccf5c1521",
+   "9977cb00958556c0",
+   "a0bd774fb0973bbe",
+   "a6db52d43920ecc1",
+   "ba15c19dcdaf2fb1",
+   "bafbdcac5b009575",
+   "d04894143423715c",
+   "db35b085ab5fb4ab",
+   "e6c53448a1682a3f",
+   "ecfaac4b455739b7",
+   "ed47d4219392e568",
+   "f3292a45dda49ab6",
+   "f9bdd27400757a5c",
+   "fad5ab88db69abb5"
+  ],
+  "32": [
+   "e7e4f3af3e29af75"
+  ],
+  "48": [
+   "528fdcaed66310da",
+   "85b2e8bf528669a3",
+   "9b5da0b2b526c3e9",
+   "a04ee8dac05ad696",
+   "d476ffa29c2355c3",
+   "f19aab0ae8458c72"
+  ]
+ }
+}
