@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7775206c2dd87b2ec7944a5a277260d00298178769c23084ac79633bf60853e1",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "화살표 간판 상자(윗면 + 어두운 앞판 위 주황 램프 화살표 도형 + 받침)",
+ "label": "sf-station/sf-street-neon-arrow",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 3행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "arrow sign box",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The box has a clearly defined top surface across rows 2 to 4 (3 pixels tall) with appropriate horizontal shading, positioned directly above the dark front face displaying the orange arrow graphic.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 3행 < 4"
+   ],
+   "ms": 5901
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "arrow sign box",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the sign box is rendered across rows 2-4 (3 pixel rows tall) above the dark front face containing the arrow symbol.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 3행 < 4"
+   ],
+   "ms": 5573
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sign box with arrow display",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 2-4 clearly show the foreshortened top surface of the box (3 rows) above the dark front face displaying the orange arrow (rows 6-13).",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 3행 < 4"
+   ],
+   "ms": 5637
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "arrow signboard box",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the signboard box is clearly rendered from rows 2 to 4 (3 pixel rows) in blue-grey above the dark front face containing the arrow symbol.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 3행 < 4"
+   ],
+   "ms": 4874
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:31.921Z",
+ "cells": {
+  "16": [
+   "b9de11a0f7154763"
+  ],
+  "24": [
+   "1aca175c5f79127c",
+   "330ba132407537a2",
+   "7e34b822db54948d",
+   "8127fdbcb3aac099",
+   "8eb3a6bfc9412b66",
+   "ba6e153c2b7869d5"
+  ],
+  "32": [
+   "3a162499bf4e1a0a",
+   "62d58b70d7628c6c",
+   "70271e0cb88c2fec",
+   "a51fc6ac7c349b60",
+   "b489791d4246d035",
+   "e1eb97ccdc8e08b4"
+  ],
+  "48": [
+   "047746a7cccf91aa",
+   "1edf8d966f375752",
+   "2858368e216cdda7",
+   "a9e8adcaf1debdc5",
+   "b8cbe666ef7e18f1",
+   "fa650577108f5dfd"
+  ]
+ }
+}

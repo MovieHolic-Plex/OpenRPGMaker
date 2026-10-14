@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3f3134b4326528158fcbbe68513d4c2a58aa13a87ff8283617618895f2ecba8c",
+ "width": 48,
+ "height": 32,
+ "kind": "box",
+ "name": "네온 광고판(두꺼운 판 윗면 + 램프 테 + 도형 광고(산·해·띠) + 두 다리 기단)",
+ "label": "sf-station/sf-street-neon-billboard",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "neon billboard panel",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the billboard enclosure is clearly visible across rows 0-4 (5 pixel rows tall) with mounted lamp fixtures, seen from above in proper 3/4 perspective before the south-facing display panel below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5382
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "neon billboard display board and casing",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-4 depict the top surface of the billboard enclosure (5 rows tall) seen from above with lamp mounting fixtures, above the front-facing screen display (rows 6-21).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5724
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "neon billboard with top surface and display screen",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the billboard housing is clearly visible across rows 0-5 (6 pixels tall) with mounted fixtures, showing proper 3/4 top-down foreshortening above the vertical display face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5323
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "neon billboard display panel",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top face of the main billboard slab is clearly depicted from rows 0 to 5 (about 5 pixel rows tall) with light fixtures/fixtures on its horizontal surface before transitioning to the front display face at row 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4336
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:07.397Z",
+ "cells": {
+  "16": [
+   "041f1edcd09aef16",
+   "0fc33e707f3aaf02",
+   "3a0e251cebb62d5a",
+   "875f29324c02a104",
+   "af7b4c0a39bca4f0",
+   "ff41f837071fcafd"
+  ],
+  "24": [
+   "14a980843dc57af9",
+   "2b6bac34a019315c",
+   "3346114820f9dc8c",
+   "3ad7c6fb22bec742",
+   "3b38032c7aa8acbf",
+   "438f58a49f04d613",
+   "8ed2a37ca109060b",
+   "f23dbafb6be37400"
+  ],
+  "32": [
+   "0b04674631303278",
+   "4c8f4392893fc27e",
+   "9501b67ebaaffd9e",
+   "a5cfb7ad85c22146",
+   "c68b963356ca10bb",
+   "f0574a56e344f554"
+  ],
+  "48": [
+   "8bc7b64af8ee2115",
+   "9b835865dde04285"
+  ]
+ }
+}

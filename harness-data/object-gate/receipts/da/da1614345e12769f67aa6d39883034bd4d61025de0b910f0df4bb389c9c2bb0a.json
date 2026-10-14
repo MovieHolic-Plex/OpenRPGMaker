@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "da1614345e12769f67aa6d39883034bd4d61025de0b910f0df4bb389c9c2bb0a",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "경고 표지 상자(깊은 윗면 + 주황 삼각 경고면 + 받침)",
+ "label": "sf-station/sf-sign-chunky",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "warning box/pillar with top surface and front warning display",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main box displays a prominent 7-row top surface (rows 2-8) rendered in lighter blue-grey with a front edge highlight at row 8, sitting above a tall south-facing panel with a hazard triangle (rows 9-25) and base pedestal.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6001
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rectangular warning sign box mounted on a base",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the main box is clearly visible across rows 2-8 (7 rows tall) above the south-facing warning panel (rows 10-25), correctly rendering the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6492
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "metal warning sign box on a base",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the main box is clearly visible across rows 2 to 8 (7 rows tall) above the front face showing the warning sign.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5405
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "warning sign box on a base",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 2 to 8 form a clear 7-row top surface above the front face (rows 9-25) containing the hazard sign.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5336
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:09.621Z",
+ "cells": {
+  "16": [
+   "22d15df43da35104",
+   "be315da594c94780"
+  ],
+  "24": [
+   "2061f083b1bf0073",
+   "32b993d01eeffe29",
+   "330bec9675b6dd58",
+   "3aac04b2fb4f9ee2",
+   "4709631997187e4e",
+   "587679fa2f4b2043",
+   "6520879dbe702b52",
+   "81dedbe72c90a583",
+   "a3f9f7d35c604de1",
+   "ab369c697b54d949",
+   "b645c9686a125e9f",
+   "d80950728bed5208"
+  ],
+  "32": [
+   "1faa95741eafe013",
+   "6aa7a2612df4760e",
+   "b9fe3b3ff9dcfe01"
+  ],
+  "48": [
+   "47a4a491d625d2a0",
+   "783e35ff46f14eae",
+   "8a0df23cc0f7a8e1",
+   "907fb9293a2e30b3",
+   "9a29aafc414c36ab",
+   "da836842c1df6d0a"
+  ]
+ }
+}

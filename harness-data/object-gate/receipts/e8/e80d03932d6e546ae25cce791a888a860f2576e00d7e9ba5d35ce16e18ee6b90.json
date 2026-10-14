@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e80d03932d6e546ae25cce791a888a860f2576e00d7e9ba5d35ce16e18ee6b90",
+ "width": 32,
+ "height": 32,
+ "kind": "round_body",
+ "name": "연료 탱크(세워 둔 둥근 원통 탱크, 주황 띠)",
+ "label": "sf-station/sf-fuel-tank",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "standing cylindrical fuel tank",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the cylinder is drawn as a large visible ellipse spanning rows 6 to 17 (11-12 px tall), with the south cylindrical face extending below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4500
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "standing cylindrical fuel tank",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the cylindrical tank is clearly visible as an ellipse spanning rows 5 to 17, with a cylindrical south wall below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3965
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cylindrical fuel tank",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the cylindrical tank is clearly visible as an ellipse spanning rows 6 to 17 (12 rows tall), with a front curved body extending down to row 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3462
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical fuel tank",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the cylinder is clearly visible as an ellipse spanning rows 6 to 17 (12 rows tall), while the front curved body spans rows 17 to 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4047
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:27.303Z",
+ "cells": {
+  "16": [
+   "0db4db414279d270",
+   "5910d0860905e9f6",
+   "9668569677f408a1",
+   "d2d391003d96e94f"
+  ],
+  "24": [
+   "0316b1681968f664",
+   "0347e265ba0810fb",
+   "12900c0fffb2f1ea",
+   "22873fa5a66d96ba",
+   "26eaa7fdcaf1ce65",
+   "3b37b4155822de4b",
+   "403fc8bad7b3efac",
+   "462a6499f7353a54",
+   "4d414c996d263b05",
+   "50f88ec7dbb9cf21",
+   "56767b3b77d78844",
+   "7b2c6727e4be2eaa",
+   "83a12bdd7b1ebf08",
+   "8513253875273499",
+   "94cf864a8463ddc7",
+   "a92e4a795b3ac78e",
+   "abb6f514ec3424eb",
+   "c636a69fbde0a6f4",
+   "e0d6446e1b8882d9",
+   "e1c3c78c09def4e2",
+   "e6c4d1c13d39ec5b",
+   "f18067426e8c29ac",
+   "f5171e21c3f4a0a1",
+   "f5aded7b32f1c967"
+  ],
+  "32": [
+   "3402d8ec482c3644"
+  ],
+  "48": [
+   "49dfe8b8e8e7fbc3",
+   "c22b64b1be172f2c",
+   "ce9150cb8118496a",
+   "cf3a0ac9b18b2ace",
+   "f2c72f8af224710b",
+   "f5e423836bd61338"
+  ]
+ }
+}

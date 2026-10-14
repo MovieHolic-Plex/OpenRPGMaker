@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f8adfd07db1a6ac9b1ead1cf1e80c2fbeb56bc4b48b24153672cafe86581e5b7",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "벽 부착 화면(초록 데이터 줄)",
+ "label": "sf-station/sf-wall-screen-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall-mounted monitor screen showing green text lines",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted screen displayed flat against the wall with no top depth, which is standard and acceptable for wall_mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3847
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall-mounted screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a flat monitor/screen displaying green terminal text mounted to a wall. Wall-mounted objects are viewed directly on the wall plane and permitted to be flat front views.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5017
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall-mounted monitor screen with green data rows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Flat wall-mounted screen displayed directly on the wall surface, consistent with the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6972
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall-mounted computer display screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted terminal display with bezel and green data lines; mounted flat on a wall as permitted for wall_mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7518
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.955Z",
+ "cells": {
+  "16": [
+   "9cd0ee4c4be4e013"
+  ],
+  "24": [
+   "2d2cbdd395ffa5ae",
+   "4007611f13a144b8",
+   "7298217ec8f8c252",
+   "7ffe2ac96d98e8ac",
+   "85714e287760e7c8",
+   "8575f8f3992f8b2a"
+  ],
+  "32": [
+   "252d12dbd8dac654",
+   "45cad90e703b52c1",
+   "7a6847d8c938ab1c",
+   "8fc3127f487540ce",
+   "c9239fc4c672e2ca",
+   "eb99a391fc3e5285"
+  ],
+  "48": [
+   "05dd3c2c7ab3d10b",
+   "082dcdfbb254f531",
+   "280f94b884ac2e4c",
+   "48de16e0bd3cd15d",
+   "c2f1e9ea4e6f69f3",
+   "c5c20a6bd641daad"
+  ]
+ }
+}

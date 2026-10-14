@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "923e91eb48a1883a89cbcc0d3a75d529368a12dc3263d8003a8b2a273d75a3cd",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "벽면 네온 링 간판(벽에 붙은 둥근 램프)",
+ "label": "sf-station/sf-street-neon-ring-wall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "circular wall-mounted neon ring lamp",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted circular neon sign flush with the wall surface; appropriate flat presentation for wall_mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3952
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "circular wall-mounted neon ring sign",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted circular neon sign/lamp designed to hang flat against a north wall; permitted to be flat per the wall_mounted category rules.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4809
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "circular neon ring wall sign",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted circular sign mounted flat against a vertical wall face, viewed directly from the front as standard for wall-mounted decor in top-down JRPG projection.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4358
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "circular wall-mounted neon ring sign",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted circular sign drawn flat against the wall, which is permitted for the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4653
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:06.341Z",
+ "cells": {
+  "16": [
+   "c2ae7037c85d9fca"
+  ],
+  "24": [
+   "193ee474c8beb9f4",
+   "5f8b0bd9601dc991",
+   "e369783a85975b16",
+   "e7815abfb2f446f2",
+   "e7cda75b45af9240",
+   "ef67bc0003f84d5b"
+  ],
+  "32": [
+   "0fd5acf582a1c0a1",
+   "1d8073369cfeafa3",
+   "540d5e6e2cd55e94",
+   "b6c93c55e4efae41",
+   "bfbf5d4fcfc3d42d",
+   "d900ecdc380eaf15"
+  ],
+  "48": [
+   "540aed2975c23bf8",
+   "7e1106e711a95b3a",
+   "bd5b8a7718751534",
+   "c4f86a15870e7261",
+   "e307e68961b85fc4",
+   "edfebc559993279f"
+  ]
+ }
+}

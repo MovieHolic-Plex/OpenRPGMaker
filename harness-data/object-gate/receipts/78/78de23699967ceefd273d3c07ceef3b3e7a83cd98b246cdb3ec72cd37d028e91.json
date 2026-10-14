@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "78de23699967ceefd273d3c07ceef3b3e7a83cd98b246cdb3ec72cd37d028e91",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "레이돔 탑(받침 + 둥근 레이돔)",
+ "label": "sf-station/sf-radome-tower",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical radome on base",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main cylindrical structure features a clearly rendered top surface spanning rows 16 to 31 (around 15 pixel rows tall) viewed from an oblique downward angle, with the vertical cylindrical face below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4490
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "radome tower cylinder/dome",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper part of the cylindrical radome features a clearly foreshortened elliptical top surface spanning rows 17 to 31 (15 rows tall), correctly depicting the 3/4 top-down angle over the vertical body and base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3765
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "radome tower cylinder and base",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main cylindrical structure shows a wide white elliptical top surface spanning from row 17 to row 31 (approx. 15 pixel rows), correctly presenting the top-down 3/4 view angle above the front body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4808
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "radome tower cylinder and base",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylindrical radome section shows a clearly foreshortened elliptical top surface spanning roughly rows 17 to 30 (14 pixel rows tall), correctly conveying the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5239
+  }
+ ],
+ "decidedAt": "2026-10-13T15:26:12.242Z",
+ "cells": {
+  "16": [
+   "0b261ce60e95047a",
+   "6012a9b5112aa272",
+   "7fd79225b38c4a55",
+   "874cb2c70cdcd715",
+   "91ec02540302a18e",
+   "b707122627bb74dc",
+   "cf598fa58f2f1b1d",
+   "daa647fa73101578",
+   "ee5443a2ec476074",
+   "ffaf82892c95fe6a"
+  ],
+  "24": [
+   "0c1d3a20cbcc8d47",
+   "1162f4018d835c57",
+   "59cff24f76709d18",
+   "924efef63df24827",
+   "990ef9f2ec8d33b0",
+   "b4ca889941403bd2",
+   "b8dfd70d2cfed0c8",
+   "bfece8ec1133b0ff",
+   "c7ae1c0e4d6efa9b",
+   "c8cef116c806b1bc",
+   "dee297e45ad0c45e",
+   "f88b5d5515c8dd0b"
+  ],
+  "32": [
+   "116a8ff2d41d5550",
+   "28ee398ecf681cf8",
+   "52bd3d50cf4cce7b",
+   "532418a569704f32",
+   "570e546b4229e110",
+   "77b180122cfe8aa0",
+   "85e4b71faf80d249",
+   "8dd883d7169d632f",
+   "acf06aad249050de",
+   "c9c0970303d209ff",
+   "dad8d53b6c118a6f",
+   "e894ce0a3b6f37ca"
+  ],
+  "48": [
+   "465cb290707dbb0c",
+   "a7743cc77ef1a9e3",
+   "bc7932df1568e5a9",
+   "eacc1a9e3df6886a"
+  ]
+ }
+}

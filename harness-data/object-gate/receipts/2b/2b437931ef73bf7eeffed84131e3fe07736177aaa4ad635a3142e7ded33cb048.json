@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2b437931ef73bf7eeffed84131e3fe07736177aaa4ad635a3142e7ded33cb048",
+ "width": 32,
+ "height": 48,
+ "kind": "box",
+ "name": "홀로 광고(바닥 투사기 단 윗면 + 떠 있는 반투명 시안 광고 상(도형) + 투사 빛살)",
+ "label": "sf-station/sf-street-holo-ad",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hologram projector base with floating holographic display",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The projector base shows a clearly foreshortened top surface from row 34 to row 39 (6 rows) containing an elliptical cyan emitter lens, above a vertical south front face (rows 40 to 45).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6133
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "projector base with floating hologram",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base unit has a clearly foreshortened top surface from row 34 to row 38 (5 rows tall) featuring an elliptical light projector lens, with a vertical front face from row 39 to 45.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6281
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "projector base unit with floating hologram projection",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base projector block clearly shows its top surface from row 33 to row 38 (6 rows tall) containing the circular projection emitter, with the vertical front face visible below from row 39 to row 45.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5462
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hologram projector base with floating holographic display",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The projector pedestal base has a clear top surface spanning rows 34-39 with a foreshortened circular emitter lens, atop a front face spanning rows 40-45.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5805
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:31.922Z",
+ "cells": {
+  "16": [
+   "5c0d104c10eff6e2",
+   "78e82d71e28432c1",
+   "9fa4e6b42fca9a7d",
+   "a5ed5e804b894e98",
+   "a855c230ec43519c",
+   "daa33b37eec330aa"
+  ],
+  "24": [
+   "00b6ce8e40ee216a",
+   "2a57d663c8ccd6ca",
+   "3bfea6d2daf38e96",
+   "61239f7b222c59b9",
+   "656d88b89682588e",
+   "834c77a34a5abb13",
+   "8edd31034c670857",
+   "b3b461feec032cac",
+   "b6c285145019ba9b",
+   "bd14b4b0010ba0c2",
+   "bdaf3a947b2d04a9",
+   "e09415d99497b5a2"
+  ],
+  "32": [
+   "114869d26e794ac8",
+   "d345de3871406548",
+   "d8456a65eea19287",
+   "f3f73e7a1181e12a"
+  ],
+  "48": [
+   "3bdaabf9cd74b7b5",
+   "af46cfb461f009f4",
+   "de72e6f1df135806"
+  ]
+ }
+}

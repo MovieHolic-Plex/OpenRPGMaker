@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0be48bb9b1defc3a647cfbef0953b94b77e00a32ccd0ca210cd5b086a863e5c0",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "내부 에어록 격벽문(사다리꼴 윗면 틀 + 큰 원형 해치 + 위험 띠)",
+ "label": "sf-station/sf-airlock-inner",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "airlock bulkhead door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire bulkhead door and upper frame are rendered in pure flat front elevation. Neither the top of the lintel, hazard stripe beam, door frame, nor the upper housing show any foreshortened horizontal top surface facing the camera.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5870
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "airlock bulkhead door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire bulkhead door structure (upper panel, hazard stripe bands, and sliding door) is drawn in a flat, 2D front elevation (side-scroller style). There is no visible top surface or roof slope showing depth from the 45-degree top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6388
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "airlock bulkhead door with trapezoidal upper casing and lower door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire bulkhead structure is drawn in pure front elevation: the lower door, hazard strip, and upper trapezoidal casing (featuring a flat front-facing display screen) show no receding top horizontal surface or 3/4 depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6032
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "airlock bulkhead door and frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire bulkhead structure (trapezoidal upper panel with display screen, hazard stripe bands, and sliding door) is drawn completely flat from the front like a 2D side-scroller asset. There is no foreshortened top surface visible for the frame, lintel, or door header.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6208
+  }
+ ],
+ "decidedAt": "2026-10-13T15:34:05.394Z",
+ "cells": {
+  "16": [
+   "2884e88906c4060c",
+   "51e6f5c57375f502",
+   "bbbdae35ce239f6e",
+   "c586d220f2eb0331"
+  ],
+  "24": [
+   "0daee83855c69f7e",
+   "151b9c1a8d3f0cc3",
+   "210b3fc46161c8ab",
+   "241d8bd2f2ccd717",
+   "2510e50303975f8a",
+   "28530b527798c1ee",
+   "2caec6bd3e6138e0",
+   "398915c024753db7",
+   "4b84638c53d38838",
+   "4bc833c2bf1201ed",
+   "514aeb447a564d90",
+   "52b88d446ca8390b",
+   "5a76dc3b8e0ac914",
+   "5fc73ca1b75f573f",
+   "6c3ea498a3c58bf7",
+   "70a3af833ed89778",
+   "8ce6a00832efccba",
+   "905da3c6dd5b2aab",
+   "a86eb21e5ffce858",
+   "ba82e814e32cc6c4",
+   "bf9626f59e75305d",
+   "d15285fc70ea1791",
+   "dce58367ebf9f2c8",
+   "e8e820583d324b43"
+  ],
+  "32": [
+   "f228913fbe9a8a9f"
+  ],
+  "48": [
+   "31757000c5783474",
+   "34e1c05b9fcd7915",
+   "47719c79de78ef5c",
+   "6a3d28e2d0d32466",
+   "9679240e0f5accdf",
+   "d2605cc51250a566"
+  ]
+ }
+}

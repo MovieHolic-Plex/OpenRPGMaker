@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fd3d494d43ef9a00e3dcc5ee70c958f84897b65d18f76406026b4a3113e4166f",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "의료 보관장(윗면 + 유리문 안 약병 칸 + 녹색 십자 램프)",
+ "label": "sf-station/sf-med-cabinet",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "medical cabinet",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet has a clearly rendered top surface spanning rows 1 to 5 before the south front face starts at row 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3955
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "medical cabinet",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-5 clearly render a 5-row deep foreshortened white/grey top surface above the front cabinet face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3337
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "medical cabinet",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-5 clearly render the foreshortened top surface of the cabinet above the dark front frame border at row 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3495
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "medical cabinet",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet has a clearly visible light-colored top surface spanning rows 1 to 5 (5 pixels tall) before the front face begins at row 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3670
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.951Z",
+ "cells": {
+  "16": [
+   "7c7032408fd14188",
+   "da607c7f736f9a03"
+  ],
+  "24": [
+   "0d39718826889cfb",
+   "39da5551c8102917",
+   "513a58aac9876af0",
+   "7b9a7a2d4faa22da",
+   "7eba629399f91bf2",
+   "8ae19a97b5838652",
+   "a2baeb8d1f146dff",
+   "a5f185e7ef9fdbc1",
+   "ba41e70e40fcb857",
+   "c7cd68b06c336f4c",
+   "c98958dad2c78cdb",
+   "ddcdd4809266f8bb"
+  ],
+  "32": [
+   "31a91f09701e3116",
+   "579c747ec58104c9",
+   "dfd9d2b882ae797a"
+  ],
+  "48": [
+   "0ff6b6ba05008c2f",
+   "2b66443273f41cb7",
+   "45de0ccfc9c68b81",
+   "5807f997d6eac863",
+   "a0b9ba71c32a5e6c",
+   "a79535935aa6f6ee"
+  ]
+ }
+}

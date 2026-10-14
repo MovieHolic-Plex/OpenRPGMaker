@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a6361d85d023c6508a7a7513c0fd130eecaf90265f3fe907b4371fe9f5baaf91",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "화살표 간판 상자(윗면 + 어두운 앞판 위 주황 램프 화살표 도형 + 받침)",
+ "label": "sf-station/sf-street-neon-arrow",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "arrow sign box",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The box features a clearly visible top surface spanning rows 0 to 4 (about 5 pixel rows) above the vertical front face with the arrow sign.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6677
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sign box",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sign box has a clearly defined 4-row top surface (rows 1-4) above the front display panel (rows 5-13), fitting the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7231
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "arrow sign box",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the sign box is clearly rendered across rows 1 to 4 (4 rows tall) with highlight and shading, above the front dark face containing the arrow graphic.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5756
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "arrow sign box",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The box features a clearly visible foreshortened top surface spanning rows 1-4 (4 pixel rows tall) above the dark front face displaying the orange arrow graphic.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6189
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:07.397Z",
+ "cells": {
+  "16": [
+   "82ba57e5ba0c94df"
+  ],
+  "24": [
+   "002d4ae9812d04cf",
+   "69f3875c6b7b33f1",
+   "6e3e6dc30fcf1ac7",
+   "77e69e1eaabc0193",
+   "c117e21a991a1fe1",
+   "caf46876cf96a142"
+  ],
+  "32": [
+   "237914a99edaf0f6",
+   "3e968ae45cb8aacc",
+   "6f359b9db1480b01",
+   "9e36d9538e65c900",
+   "a8848b429de2fa17",
+   "e5b7df9903fc0ed2"
+  ],
+  "48": [
+   "28fc6b56ada7e901",
+   "38e4651781db6e63",
+   "630a950f0d3d3253",
+   "72e19dfef3b6adaf",
+   "7315d096743f58fc",
+   "c2976293a5bded8e"
+  ]
+ }
+}

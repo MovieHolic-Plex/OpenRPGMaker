@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5ffa6dafe732d87ccdc83f2d35b987a19f141aacc3e0ea1b24b3ef963b782ffa",
+ "width": 32,
+ "height": 64,
+ "kind": "structure",
+ "name": "안테나 마스트(세 단으로 좁아지는 굵은 탑과 꼭대기 램프)",
+ "label": "sf-station/sf-antenna-mast",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "three-tiered tower mast",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The multi-tiered tower correctly depicts horizontal top surfaces/decks between each tier in 3/4 perspective: tier 2 displays a 5-pixel-tall top deck (rows 31–35) extending south in front of tier 1, and tier 3 displays a 4-pixel-tall top deck (rows 48–51) extending south in front of tier 2 before its vertical south face begins.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 25867
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "three-tiered antenna mast",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each tier of the tower displays a clear horizontal top surface/shoulder in 3/4 perspective (rows 46-51 for the base tier is 6px tall, rows 30-35 for the middle tier is 6px tall, rows 14-20 for the upper tier is 7px tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12958
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "three-tiered tower mast with lamp",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each tier of the tower features a substantial foreshortened top/shoulder surface (e.g. bottom tier rows 46-51, middle tier rows 30-35, top tier rows 14-19) visible from above in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9516
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "three-tiered antenna mast/tower",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire tower is drawn in pure 2D front elevation (side-scroller style). Each tier consists of a rectangular front face with front-facing trapezoidal chamfered shoulders, with straight horizontal dividing lines and no visible top surfaces. The top lamp is also a flat rectangle with no visible top face (only a 1px outline at row 3).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 16052
+  }
+ ],
+ "decidedAt": "2026-10-13T15:31:15.748Z",
+ "cells": {
+  "16": [
+   "1b57f1be43385967",
+   "2ca032cf3e23a286",
+   "3e14612a22ac3670",
+   "a3d7c9a9afdb94ea",
+   "bf10e360f75353f9",
+   "c95b2329a929275c",
+   "d819629d7de2767d",
+   "d96f92dfe6dd0852"
+  ],
+  "24": [
+   "0631ebae1aa956db",
+   "06a0069cae263d37",
+   "06af5cb877d92ff7",
+   "0f1f7f9561a22523",
+   "12ac2495c9a066f3",
+   "1ba2cdbe9da28027",
+   "2502438e105e2b3a",
+   "285a9caf934d43b6",
+   "2b5e204fca495d2a",
+   "30f16a6a9566b7ee",
+   "3396e9ad4f35bda5",
+   "3f9ec9f8dd256821",
+   "3fe8c1ee3aa563d4",
+   "5c26ba1390acd6e5",
+   "6eb3a7892381006b",
+   "71855bab7004ed04",
+   "71fa990f84a9496c",
+   "7c118644f51ac628",
+   "7dd310e335dd9099",
+   "90980230a4795189",
+   "965bf9d1ff5e1a9d",
+   "98326b25d22366a3",
+   "9b1f8fe170e31471",
+   "9bdd90757f4e1bc6",
+   "a126fe0f10c079ba",
+   "aabee7f4cf5e212c",
+   "b628b515ee540793",
+   "b642214c41caee25",
+   "cf066969d8f3c8ea",
+   "f93bea4244cf0dcf",
+   "fb650c4f4f975363",
+   "ffe9b4908db8d990"
+  ],
+  "32": [
+   "4404f7afbaa576e0",
+   "5e7333103045ba04"
+  ],
+  "48": [
+   "17ddf576e5c62e0a",
+   "35980fcab2f9d821",
+   "5139c3a189531adf",
+   "5a3c264dceea66ec",
+   "6ec8d11c3e3ff3f3",
+   "7d2a3460b16420f7",
+   "7dfc4aa882712d95",
+   "9f7dcfc68695e5be",
+   "9f9725191fc14e0c",
+   "be15688f1a70d28c",
+   "c94e178dfcb3c00b",
+   "d72ffeddb15eb79f"
+  ]
+ }
+}

@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1db5acaa1a473226c83a87440f2bdd899c38207552b1b7193e513ba5729193fe",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "concrete landing plate with hazard border, two variants",
+ "label": "sf-station/sf-landing-plate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "concrete ground tiles with hazard striping",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles representing concrete landing ground surfaces viewed from above, with one variant showing hazard border striping along the south edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5316
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "concrete landing floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor/terrain tiles seen directly from above, filling the 16x16 grid with ground texture and hazard stripes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4369
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "concrete landing floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor/terrain tiles representing concrete landing surface, viewed entirely from above with diagonal hazard stripes on the lower edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3047
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "concrete landing floor tiles with hazard stripe border",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles viewed from top-down perspective across all 16 rows, with one variant featuring diagonal hazard striping along the south border.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3620
+  }
+ ],
+ "decidedAt": "2026-10-13T15:26:41.508Z",
+ "cells": {
+  "16": [
+   "341faf1f8b05e0c1",
+   "a2b17b0e138581ab"
+  ],
+  "24": [
+   "0007a6b4bb093df6",
+   "4259a4194d53a707",
+   "5229bffa1afcbc00",
+   "549a07f9e005bc8e",
+   "6749cee3156749f9",
+   "88a6701732941cae",
+   "8d65ad2eaca812aa",
+   "b3a5ea8ec2b2049e",
+   "bad442164b7a9845",
+   "c635ce4b7dacd1a7",
+   "e17175def4b3266c",
+   "e4997ee2068eaf63"
+  ],
+  "32": [
+   "2a610478c6dbfd0b",
+   "319e9de5f5448f4c"
+  ],
+  "48": [
+   "45100e6c1d2e6417",
+   "743f0063c2505ebd",
+   "a67b96134d2b0952",
+   "bdc2852e2300055b",
+   "dcaaf7888198b4d1",
+   "f00d10a39687209d"
+  ]
+ }
+}

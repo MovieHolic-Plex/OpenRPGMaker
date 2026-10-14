@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9b3d7201239629e856d8509408584a23f90f483b8c8a9ad6dece2193abd997bc",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "3D 프린터(상자 몸체 + 윗면 출력 베드 + 유리 덮개)",
+ "label": "sf-station/sf-3d-printer",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "3D printer chassis with upper print chamber and lower control unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire 3D printer is drawn straight-on from the front: both the lower base with controls and the upper print chamber are flat front elevations with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5971
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "3D printer with lower control base and upper glass enclosure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire 3D printer is drawn in a flat front elevation. Both the lower control unit and the upper glass enclosure/chamber face straight forward without any visible foreshortened top surfaces (only a 1px top edge outline at row 1).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 7834
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "3D printer chassis and print chamber",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire 3D printer is drawn in flat front elevation. Both the lower control panel body (rows 16-31) and the upper transparent chamber (rows 0-15) are viewed straight-on horizontally at eye level, showing vertical window panes, a level print bed, and a flat rounded casing outline with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 10096
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "3D printer casing and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire 3D printer is drawn in pure front elevation: the lower control box, the upper chamber with window, and the internal print bed/object all show south-facing flat facades without any foreshortened top surfaces (the top edge has only a 1-2px rounded cap border).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 8777
+  }
+ ],
+ "decidedAt": "2026-10-13T15:28:17.423Z",
+ "cells": {
+  "16": [
+   "2ae2ab0515c24c24",
+   "4c8579b53d7a29d7",
+   "8da6edd4ed5b3919",
+   "ebb8a614e0149a46"
+  ],
+  "24": [
+   "05c61dabb8b5f3ac",
+   "0aa4e16086787fde",
+   "1807f40d471a6560",
+   "1a3e9752a1273d72",
+   "230a1abe42712ab3",
+   "26ef21390f533172",
+   "28009715ab8ba188",
+   "300582ab916ad911",
+   "3db517065cf3e2e4",
+   "48f0bd5ad01fb865",
+   "5c1552e1d067fa6d",
+   "6d75781291079ab8",
+   "8185308a35a43674",
+   "9133f22e08ea132f",
+   "9df132cda5f00be9",
+   "a502db7d5cc6d929",
+   "ac00aaab68add828",
+   "b87a676bae4a0b27",
+   "c52917792b6849b0",
+   "cc2890883df235d3",
+   "e03abb98404a4442",
+   "e9fe09897a2cb648",
+   "eb46c5b57543d3cb",
+   "fe712b506c69d828"
+  ],
+  "32": [
+   "746917417051a02a"
+  ],
+  "48": [
+   "36bbe3d5c6a8b554",
+   "477b561b073afecb",
+   "ba1fbe17027fa9ba",
+   "ba83e9eba3e715d2",
+   "c4ac6d4f8e63316e",
+   "cf3b9ba043b10aa2"
+  ]
+ }
+}

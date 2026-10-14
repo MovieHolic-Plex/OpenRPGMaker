@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f296ab410237901e1eec5ecf4d6fd1dd1c3ef4bbab4ce0921df8fbfcf61021c5",
+ "width": 32,
+ "height": 16,
+ "kind": "structure",
+ "name": "화물 드론(굵은 몸통 윗면 + 회전날개 원 넷 + 화물 상자)",
+ "label": "sf-station/sf-street-cargo-drone",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "central drone fuselage with top-mounted cargo box",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The drone body shows a clearly visible light-toned top surface (rows 1-8, ~8 rows tall) carrying a cargo box and flanked by top-down circular rotor ducts, resting above a darker south-facing front facade (rows 9-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10961
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cargo drone body",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main drone body shows a prominent foreshortened top surface across rows 1-8 holding the cargo container, sitting atop a distinct south front face across rows 9-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7934
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "drone chassis and cargo deck",
+    "kind_matches": false,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The caller kind is 'structure (gate, pavilion, sealed door, building)', which does not match a cargo drone (vehicle/prop). The drone itself clearly displays an 8-row top deck (rows 1-8) carrying an orange cargo box, with a 4-row south front face (rows 11-14) below.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail"
+   ],
+   "ms": 9978
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cargo drone body with top deck and side rotors",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The drone's main body shows a large top deck spanning rows 1-8 (with cargo module and 4 top-view rotor rings on the sides) above a front face on rows 9-14, correctly adhering to the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12535
+  }
+ ],
+ "decidedAt": "2026-10-13T15:30:06.603Z",
+ "cells": {
+  "16": [
+   "3c715db99ce5938e",
+   "97e3169c6da93f65"
+  ],
+  "24": [
+   "01aeca9b7bbbcb8c",
+   "49d3a9242c7149a9",
+   "5830fadbb17782b2",
+   "5c6078e447b19ed6",
+   "635ddb83c6ef7aad",
+   "63862cb0ae271b8e",
+   "8d9b0dc6f2492d7c",
+   "982a0281fcce6527",
+   "ae313ebb42e71a02",
+   "beca361ed4f3a4ac",
+   "c4a8fdcd061213b0",
+   "e4c7b42a25d181b8"
+  ],
+  "32": [
+   "41e529d4eaf14a32",
+   "6ab18def44d92dd2"
+  ],
+  "48": [
+   "8a912bc5db781bc6",
+   "b9c28261ca9c5423",
+   "c580a362bdae6419",
+   "d778a9f0721b56cb",
+   "e24abd2a13409306",
+   "f021b47d01596249"
+  ]
+ }
+}

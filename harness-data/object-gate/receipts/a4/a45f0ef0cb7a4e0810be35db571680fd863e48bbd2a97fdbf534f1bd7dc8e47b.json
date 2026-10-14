@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a45f0ef0cb7a4e0810be35db571680fd863e48bbd2a97fdbf534f1bd7dc8e47b",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "안테나 접시(판 받침 + 굵은 기둥 + 기울어진 흰 접시 + 수신기)",
+ "label": "sf-station/sf-dish",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "satellite dish antenna structure (dish, mount, and base pedestal)",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base block clearly displays a 3/4 perspective with an 8-row visible top surface (rows 33-40) and a darker vertical south face below it (rows 41-47). The dish itself is angled upward to face the high camera.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7175
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "satellite dish on pedestal base",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pedestal base shows a distinct 7-row top surface (rows 33-39) above its south face (rows 41-46), properly foreshortened in 3/4 perspective with the dish mounted above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9630
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "satellite antenna dish on pedestal base",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base unit clearly displays its top surface from row 33 to row 39 (7 rows tall) above its darker south front face (rows 40-47). The dish itself is angled towards the camera in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5435
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "satellite antenna dish and base unit",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base unit clearly displays a foreshortened top surface (rows 34-39, 6 source pixels tall) above its south face (rows 40-47). The dish itself is angled facing forward/upward in appropriate 3/4 perspective without isometric receding side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5339
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:09.616Z",
+ "cells": {
+  "16": [
+   "26f415b90db61958",
+   "62fafd87aa894f1e",
+   "8d2e7625a8254c11",
+   "9a1e9b359560d339",
+   "d9b51985fd53125f",
+   "eef1be41f7b5b515"
+  ],
+  "24": [
+   "0206b30454d0ecc9",
+   "259cf6c6e40dd5c7",
+   "3a3e5474e8ee271c",
+   "4385a1da32a2c21e",
+   "45664cfe2c9523b7",
+   "81f543653457fc01",
+   "8d0e65134f3958be",
+   "9132bac04ff968b4",
+   "c44c195afd8168ea",
+   "c9c88ad13217ded1",
+   "ce8b4dbc0d198339",
+   "da9b9ee330fcc5fa"
+  ],
+  "32": [
+   "3c83e2fdee2bcf11",
+   "c0c9a2409ec50af4",
+   "cb88de274c081278",
+   "d0375555713b48a2"
+  ],
+  "48": [
+   "2188fc05364d7d78",
+   "659cd9f5f7491889",
+   "f0dc7795ca82c185"
+  ]
+ }
+}
