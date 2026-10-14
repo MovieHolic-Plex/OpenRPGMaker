@@ -630,7 +630,9 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
       shiftIncomingTransfers(draft, mapId, trimmed.dx, trimmed.dy);
     }
     const doorNotes: string[] = [];
-    if (fitsGapDoors) fitDoorsToPlan(draft, mapId, events, shape, doorNotes);
+    // 문 맞춤은 모든 역할표 칩셋에 쓴다(깔개만 v5 전용) — 2026-10-14 modern_city 실조수: 거리와 이은 병동을 작게 다시 지으려 하자
+    // 거리의 들어오는 이동이 벽·밖을 가리켜 커밋이 두 번 거부됐고, 조수는 연결 이벤트를 지우다 멈췄다.
+    fitDoorsToPlan(draft, mapId, events, shape, doorNotes);
     const map: GameMap = {
       ...(existing ?? {}),
       id: mapId, name, width: built.width, height: built.height, tilesetId, tileSize: tileset.tileSize,
