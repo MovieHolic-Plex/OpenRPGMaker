@@ -541,7 +541,6 @@ function widen(cells: readonly PrehistoricCell[], width: number): PrehistoricCel
 // ───────────────────────── 공통 조각 ─────────────────────────
 const LAND = ["dirt", "dirt-b", "grass", "grass-b", "edge:grass", "edge:fern", "edge:mud", "path"];
 const GREEN = ["grass", "grass-b", "fern"];
-const BLD_GROUND = ["dirt", "grass", "edge:grass", "edge:fern", "fern", "edge:mud", "mud", "ash", "edge:ash", "path"];
 
 /** 모닥불 둘레 의자: 불(2×2 화톳불이면 bw=2) 둘레 거리 2 링에 돌 의자·통나무 의자. */
 function seatsAround(b: Board, fx: number, fy: number, bw: number, kinds: readonly string[], n: number, grounds: readonly string[]): void {

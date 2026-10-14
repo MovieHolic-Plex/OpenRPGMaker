@@ -400,16 +400,6 @@ function smooth(b: Board, codes: string, into: string, passes = 2): void {
   }
 }
 
-/** 두 점 사이 L자 길(폭 wd) 을 code 로 — 물·성벽·건물 자리는 건드리지 않는다. */
-function lpath(b: Board, a: Pt, c: Pt, code: string, wd = 2, keep = "~wFfbq"): void {
-  const put = (x: number, y: number) => { for (let k = 0; k < wd; k++) for (let j = 0; j < wd; j++) if (!keep.includes(b.g(x + k, y + j))) b.set(x + k, y + j, code); };
-  const sx = Math.sign(c.x - a.x), sy = Math.sign(c.y - a.y);
-  let x = a.x, y = a.y;
-  put(x, y);
-  while (y !== c.y) { y += sy; put(x, y); }
-  while (x !== c.x) { x += sx; put(x, y); }
-}
-
 interface Plot { id: string; x: number; y: number; w: number; h: number; door: Pt | null; access: Pt | null; name: string; tag: string }
 
 const NAME_KO: Readonly<Record<string, string>> = {
@@ -521,8 +511,6 @@ function sprinkle(b: Board, ids: readonly string[], n: number, ground: string, a
   }
   return k;
 }
-
-const LANDISH = "sgcrvp";
 
 // ─────────────────────────────── 항구 마을
 function composeHarbor(b: Board): { areas: PirateArea[]; spawn: Pt } {
