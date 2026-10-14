@@ -252,6 +252,18 @@
         "복도",
         "횃불"
       ]
+    },
+    {
+      "id": "dungeon-plain",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "던전 하나 만들어줘",
+      "requires": [
+        "방 여러 개",
+        "복도",
+        "횃불"
+      ]
     }
   ],
   "gates": {

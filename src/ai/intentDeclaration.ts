@@ -619,9 +619,9 @@ export function formatIntentNote(
       // 던전 층은 「실내」로 선언돼도 손 도트 실내 도구가 아니다 — 실측(2026-10-14 fe1 재시험): space=interior 노트를 따라
       // build_hand_interior_room·list_hand_interior_parts 를 찾고 참고문서를 6번 읽느라 7분을 읽기만 했다.
       lines.push(
-        "[의도] 던전 층 시공이다(버들항 beodeul_city). author_beodeul_dungeon({rooms:[{kind:'entrance'},{kind:'hall'},{kind:'crypt'},{kind:'cell',from:'hall'},{kind:'boss'}]}) 한 호출로 방·통로·천장·벽·바닥·장식·계단을 깐다 — "
+        "[의도] 던전 층 시공이다(버들항 beodeul_city). author_beodeul_dungeon({rooms:[{kind:'entrance'},{kind:'hall'},{kind:'crypt'},{kind:'cell',from:'hall'},{kind:'boss'},{kind:'vault',from:'boss'}]}) 또는 방 구성을 맡기려면 author_beodeul_dungeon({size:'medium'}) 한 호출로 방·통로·천장·벽·바닥·장식·계단을 깐다 — "
         + "빈 시작 맵이면 mapId 에 그 id 를 준다. 좌표를 계산하지 말고, 참고문서·build_hand_interior_room·stamp_object·paint_tiles 로 벽·소품을 따로 깔지 않는다. "
-        + "적·상자·NPC 는 결과 data.rooms[].spots 좌표에만 둔다. 이미 확인된 의도이므로 야외/실내를 다시 묻지 말고 진행하라.",
+        + "적·상자·NPC 는 결과 data.rooms[].spots 좌표에만, 보스는 data.anchors.boss 방, 잠긴 문은 data.anchors.gate 칸에 둔다. 이미 확인된 의도이므로 야외/실내를 다시 묻지 말고 진행하라.",
       );
     } else if (intent.space === "both") {
       const how = facilityHow

@@ -474,3 +474,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+    # 농장 꼬리 뒤(28,416~)의 던전 천장 테두리 칸은 이 스크립트가 시트를 다시 쓰면 사라진다 — 같은 실행에서 다시 굽는다(멱등).
+    if not any(a.startswith("--gate-export") for a in sys.argv[1:]):
+        subprocess.run([sys.executable, str(HERE.parent / "beodeul-dungeon" / "bake_dungeon_ceiling.py")], check=True)
