@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "beffd01887a81d4da7ab3345c205f91af83e79a54697d8b50a80fb972edd65ad",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "흙벽돌 집(작은)",
+ "label": "desert-east/de-house-adobe-3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mud-brick house with flat roof terrace and arched door",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper half (rows 0-32) clearly depicts the top surface of the building as a flat rooftop terrace with parapet walls and an amphora sitting on it, while the lower half (rows 33-63) shows the south vertical wall and arched entrance.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6913
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "mudbrick house with flat roof terrace",
+    "kind_matches": true,
+    "top_rows": 31,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper portion (rows 1-31) depicts a large flat rooftop terrace with parapet walls seen from above in 3/4 view, above the south-facing front wall (rows 33-63) containing an arched door.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4896
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "mudbrick house with flat roof terrace and front facade",
+    "kind_matches": true,
+    "top_rows": 31,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top half of the building (rows 1-31) depicts a flat rooftop terrace with a parapet and pot viewed from above, while the bottom half (rows 32-63) shows the south-facing wall and arched entrance.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4526
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "mud-brick house with flat roof terrace and arched doorway",
+    "kind_matches": true,
+    "top_rows": 31,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper portion (rows 1-31) depicts a flat rooftop terrace with a parapet and clay pot viewed from above, while the lower portion (rows 33-63) depicts the south-facing front wall with an arched wooden door.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5854
+  }
+ ],
+ "decidedAt": "2026-10-14T08:06:19.384Z",
+ "cells": {
+  "16": [
+   "031d125aaee2494c",
+   "12a329dfb94b60ad",
+   "546ea69b674e7987",
+   "5d35a395032936b3",
+   "5f8e69f97be3e37a",
+   "622d7d4937ebb52b",
+   "64378e9fbe63bfd8",
+   "8b35c6c2f314f262",
+   "93960165d92fef0d",
+   "cba550e9e57b8eee",
+   "eb84f54651400631",
+   "fe7635fb36009944"
+  ],
+  "24": [
+   "13bd19e16778cfbd",
+   "1df83fb1a491dda6",
+   "6c65fa889bc76a45",
+   "78e034068534ae91",
+   "87dcdc1cd078e6bf",
+   "94662430eed4b8fd",
+   "bde212263e8e487f",
+   "d7cf3427f00262df",
+   "dca7186624fdaa3e",
+   "dd7a75cafdb10aa8",
+   "fde690812ccac454",
+   "ff31b89954ac91ce"
+  ],
+  "32": [
+   "323fc960e43cd224",
+   "488e4159399cfe08",
+   "6d1a1a21c2dded19",
+   "6d7a896cb7cbac5a",
+   "7ca63c1274180637",
+   "949d872260cf7117",
+   "a0080c78e29f2e82",
+   "a1f8b66e5956dd40",
+   "a24742d417d06158",
+   "a64b47e826bbccd2",
+   "d2eaf4f83824dbd6",
+   "f53e3492372d353d"
+  ],
+  "48": [
+   "147cd6ca519a714d",
+   "27945112f44be9d9",
+   "652fb10ee0dfd568",
+   "e4cdd3216100dfe2"
+  ]
+ }
+}

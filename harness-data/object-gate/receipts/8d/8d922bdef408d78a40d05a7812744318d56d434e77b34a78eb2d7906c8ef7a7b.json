@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8d922bdef408d78a40d05a7812744318d56d434e77b34a78eb2d7906c8ef7a7b",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "바람 물결 모래",
+ "label": "desert-east/de-sand-ripple",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sand ground tile with wind ripples",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts ground sand terrain with horizontal wind-blown ripple highlights and shadows seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5163
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wind-rippled sand terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile depicting sand ripples, correctly drawn flat from above filling the entire 16x16 space.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5575
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wind-rippled sand terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile depicts a flat top-down ground surface of sand with horizontal wind ripples.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5442
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sand terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile depicting wind-rippled sand seen from above, filling the 16x16 tile space.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7239
+  }
+ ],
+ "decidedAt": "2026-10-14T08:01:48.456Z",
+ "cells": {
+  "16": [
+   "07b9f6742d38359e"
+  ],
+  "24": [
+   "32327872d11662c4",
+   "3ecd8de947b1dbd9",
+   "650430e227c4c3bd",
+   "8f9016b16d434c2a",
+   "aeead90a619c3ed9",
+   "e3247d91593489d3"
+  ],
+  "32": [
+   "54bd2c037d519d11",
+   "5da7df8d6084c4ff",
+   "7c5c792ee13e75ae",
+   "884d27b18389675e",
+   "cf7c45ab391a5882",
+   "e4aaf47decf30ce1"
+  ],
+  "48": [
+   "07c82ce5e211eb3d",
+   "0de7dce8d49ab6ac",
+   "71e2f315f4080b5e",
+   "89282e9f9813a554",
+   "a9aef34a0177d690",
+   "e70de8efadc9a66f"
+  ]
+ }
+}
