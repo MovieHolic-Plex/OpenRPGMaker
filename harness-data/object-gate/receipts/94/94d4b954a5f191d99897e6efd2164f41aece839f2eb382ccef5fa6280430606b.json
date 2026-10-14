@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "94d4b954a5f191d99897e6efd2164f41aece839f2eb382ccef5fa6280430606b",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "yellow and black diagonal hazard stripe floor, two variants",
+ "label": "sf-station/sf-deck-hazard",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hazard stripe floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tiles depicting diagonal yellow and black warning stripes across the full 16-row tile surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4868
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hazard stripe floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tiles featuring yellow and black diagonal hazard stripes viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3787
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hazard stripe floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Two 16x16 flat terrain floor tiles depicting yellow and black hazard stripes, filling the vertical space from row 0 to row 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3977
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hazard stripe floor tiles",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tiles depicting yellow and black diagonal hazard stripes across the entire floor surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3885
+  }
+ ],
+ "decidedAt": "2026-10-13T15:26:41.507Z",
+ "cells": {
+  "16": [
+   "0a4de6f1423f93f9",
+   "ec026ade02c8af53"
+  ],
+  "24": [
+   "22b8d876aeadd923",
+   "47873613cd65e0c4",
+   "567b13880132a8e6",
+   "65cfd84454d33227",
+   "724ea85fa9bc9e5c",
+   "87c6de9b6976cdb9",
+   "8f0837583e90af13",
+   "9e8202420a8d2e60",
+   "a55024280c562c50",
+   "b3c70446653a0c2b",
+   "ec32b4d788e36267",
+   "eef8d85c9c2885ac"
+  ],
+  "32": [
+   "0abbcd806b7b7d20",
+   "600bbbf912481e6c"
+  ],
+  "48": [
+   "3e3b50edce10aafa",
+   "4c489de21d766060",
+   "63e4f297668d98dc",
+   "8e543bf113fc2c57",
+   "b2d20a8a4aedb0b9",
+   "e4976be3244b32f0"
+  ]
+ }
+}

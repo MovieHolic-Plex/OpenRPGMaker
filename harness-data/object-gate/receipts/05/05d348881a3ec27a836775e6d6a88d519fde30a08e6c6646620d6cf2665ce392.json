@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "05d348881a3ec27a836775e6d6a88d519fde30a08e6c6646620d6cf2665ce392",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "위험 차단벽(노랑 윗면 + 노랑·검정 사선 앞면)",
+ "label": "sf-station/sf-barrier",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hazard barrier block",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The yellow top surface spans rows 2 through 9 (8 rows tall), and the south front face features hazard stripes across rows 10 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7146
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hazard barrier block",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top yellow surface is clearly visible across rows 2 to 9 (8 pixel rows), above a front-facing striped vertical face spanning rows 10 to 12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6613
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hazard barrier block",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top yellow surface is clearly foreshortened and visible from above, occupying rows 2 through 9 (8 pixel rows), while the front face displays yellow-and-black diagonal hazard stripes on rows 10-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5669
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hazard barrier block",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object clearly displays a large top yellow surface spanning rows 2 to 9 (8 rows tall), with the front vertical face showing hazard stripes on rows 10-12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6488
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:09.621Z",
+ "cells": {
+  "16": [
+   "2ba378f464e2c116",
+   "ff167f626023f51c"
+  ],
+  "24": [
+   "11f2b256f819cd99",
+   "1b599e473b74742d",
+   "4029e2992f2aea39",
+   "43aff2271bcf538c",
+   "609b59452908cfab",
+   "669cab6e9cc5536d",
+   "69a5eec4e410581c",
+   "7810baf67a7b6bfa",
+   "9671bd018fe3ffa1",
+   "9f68f9c19e1f2811",
+   "eb72ef26f9de3ede",
+   "eece166b09c5686b"
+  ],
+  "32": [
+   "44430aabc049b3fc",
+   "97f038a56950aeb7"
+  ],
+  "48": [
+   "135a7e7750e2384c",
+   "551af7aa023a3369",
+   "58b412fae1a14d0d",
+   "790593abf06a65e3",
+   "8a0b8a3a713998d4",
+   "b83a81a44643f724"
+  ]
+ }
+}

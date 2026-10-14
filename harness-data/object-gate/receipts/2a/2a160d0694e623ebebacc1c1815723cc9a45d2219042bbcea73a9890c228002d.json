@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2a160d0694e623ebebacc1c1815723cc9a45d2219042bbcea73a9890c228002d",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "흄 후드 실험장(윗면 환기구 + 유리 앞창 + 안의 기구)",
+ "label": "sf-station/sf-fume-hood",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fume hood laboratory cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn entirely in a flat front elevation. There is only a 1px black outline at row 1 and no visible top surface showing depth from the 3/4 top-down angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8341
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "laboratory fume hood with sash window and upper exhaust panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fume hood is drawn in a pure front elevation with no visible top surface (rows 0-1 are merely a 1-2px outline/rim). The upper panel, sash window, and lower controls are all viewed head-on without 3/4 perspective foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8338
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fume hood laboratory cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fume hood is drawn in pure front elevation with no visible top surface (row 1 is just a 1px top border line immediately transitioning to the vertical front panel).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4698
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fume hood laboratory cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fume hood is drawn in pure front elevation with only a 1px black outline at row 1 and no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4927
+  }
+ ],
+ "decidedAt": "2026-10-13T15:30:54.891Z",
+ "cells": {
+  "16": [
+   "1d0162948bddca33",
+   "4b9f67c503f35f2e",
+   "fc9e349bec08a9c5",
+   "ff8c8bae69433e4e"
+  ],
+  "24": [
+   "02088b631bb23b5d",
+   "0cbd3dc4ad5f6815",
+   "2fc2e4fed1d49567",
+   "4cac1e4ca4a8594a",
+   "4d919e819f0a59ca",
+   "6a27f5732fa7b065",
+   "793a6e58efe0ee04",
+   "7f49633caaeabb59",
+   "80cd32919b119747",
+   "8145495f67c85430",
+   "873718759cafe7d4",
+   "986f28a1ef688b62",
+   "99a9c64ef5c945b5",
+   "a8f049e2617cffa7",
+   "aa54b73d8202d3c2",
+   "c2cc583d8b131361",
+   "c762a3ffa8d3ceda",
+   "ca90aa409810dbb5",
+   "cbbaa1175fb2e7cf",
+   "ddde998854a71204",
+   "ebafd4449babfe5b",
+   "f6f1e0f10cf34de9",
+   "f6ff0fc0102c375f",
+   "fa23a6cf50dca661"
+  ],
+  "32": [
+   "b23e8b0b79bddfcf"
+  ],
+  "48": [
+   "1954dca0be0da808",
+   "369a3e0d38e790fa",
+   "540317c3f2f5a798",
+   "74699677b6f9dda1",
+   "a2f98dd149310863",
+   "eed711c2335aa0d6"
+  ]
+ }
+}

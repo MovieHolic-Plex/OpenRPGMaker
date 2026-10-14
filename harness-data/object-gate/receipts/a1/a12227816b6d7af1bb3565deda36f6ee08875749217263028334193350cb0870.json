@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a12227816b6d7af1bb3565deda36f6ee08875749217263028334193350cb0870",
+ "width": 96,
+ "height": 48,
+ "kind": "flat",
+ "name": "jp-lot-bay",
+ "label": "jp_city/street_hand/jp-lot-bay",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "parking lot bay with lock plate flap and wheel stop markings",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The parking space lines, sensor decal, and ground flap barrier are drawn flat on the asphalt surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5389
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "parking lot bay floor markings with flap barrier and wheel stop",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The parking space lies flat on the ground with stall lines, a sensor plate, a central flap lock plate, and a correctly foreshortened 3/4 view wheel stop with visible top surface and south face shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8115
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "parking lot bay markings and flap barrier",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat parking lot space with bay line markings, ground sensor, wheel stopper, and a flat coin-parking flap barrier seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7133
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "parking lot bay",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The parking space with line markings, ground flap lock, and wheel stop lies flat on the asphalt surface viewed correctly from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7386
+  }
+ ],
+ "decidedAt": "2026-10-13T17:27:07.782Z",
+ "cells": {
+  "16": [
+   "0332483d308f8dfe",
+   "260e3dae01278180",
+   "4c55d95ba94038f4",
+   "5c8001819cd9bb19",
+   "73b320da160b752e",
+   "7a37a09bbf534d7b",
+   "9c54bd83950a8a10",
+   "b1e8f5ed328eaaef",
+   "d15f237dea5d87bb",
+   "d8341a89ae5ae4a1",
+   "dfa40750748eee1f",
+   "e534d4441d033b8e"
+  ],
+  "24": [
+   "169eec81229ce816",
+   "48c2cdc2f6b5dbc1",
+   "70da4b5ad58bf930",
+   "b4b69680ea4b76f2",
+   "c2ce1326cb31977f",
+   "cd9360255e65b36a",
+   "e2790e1459e501d4",
+   "f79d3dd67ef11894"
+  ],
+  "32": [
+   "02a445d94c066d7c",
+   "02c3cce34454ebaa",
+   "2d4fef9ba86fb324",
+   "32e2116d275708c9",
+   "4fc235dca232bdd7",
+   "5121a6eac7454192",
+   "72c650102c113815",
+   "746061736ed9776d",
+   "831c781c07ff1072",
+   "cfe257d5fb3d6357",
+   "deb388f0bc2bae14",
+   "f550b18c7a67ae2d"
+  ],
+  "48": [
+   "02e154e605e768ed",
+   "08f42aab47074f5c"
+  ]
+ }
+}

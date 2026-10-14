@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "14e3e71b9e124a2b3d5fba628865bf4210e7e839c3342cb6d4ee6cb746913035",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "마른 풀밭 A",
+ "label": "gothic_manor/gm-ground-grass-a",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dry grass ground terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 ground terrain tile representing dry/sparse grass with organic texturing and small debris; fully valid top-down terrain surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5056
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dry grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile depicting dark dry grass with scattered dried foliage, properly viewed from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4020
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dry grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing a textured dry grass surface filling the entire 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3304
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dry grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 ground terrain tile representing dry grass viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3761
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.462Z",
+ "cells": {
+  "16": [
+   "48ba36a2b5f71a0a"
+  ],
+  "24": [
+   "194afd0ac8400603",
+   "4d0ef80b04be443f",
+   "4e0758074244d975",
+   "da3f1f59d15573ba",
+   "e3bf3b90ed88c31e",
+   "e72b5940175e272b"
+  ],
+  "32": [
+   "12b4027ebb98cd42",
+   "380fc7674ced65db",
+   "61e411b30dd0c1a2",
+   "6b7fb78d965b8d6f",
+   "8c6f18b0a0106777",
+   "b3602f60a6c6fb9a"
+  ],
+  "48": [
+   "1a312e12d638576b",
+   "c11c31b047c32ef2",
+   "d6b673ab87a1879a",
+   "dd60a19c70f9f70a",
+   "f96333435d53c791",
+   "ff45b3fd849ed8dd"
+  ]
+ }
+}

@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f678e065a63555e91ecbcde7d51f7ef9319ef6d07f67c902f64bcbe1717cb088",
+ "width": 48,
+ "height": 48,
+ "kind": "terrain",
+ "name": "젖은 자갈 포장(돌 연석)",
+ "label": "gothic_manor/gm-cobble",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wet cobblestone/gravel paving with stone border",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain paving surrounded by grass, seen from standard top-down/3/4 ground perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3858
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cobblestone pavement with stone curb",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting cobblestone pavement surrounded by grass/ground edge, viewed correctly from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3609
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cobblestone pavement patch with stone curb",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat terrain/ground pavement tile with rounded stone curbing laid into grass, viewed from above as top-down ground.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4260
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wet cobblestone pavement with stone curb",
+    "kind_matches": true,
+    "top_rows": 38,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Cobblestone pavement with rounded curb set into grass, fully visible from above as flat ground terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3851
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.464Z",
+ "cells": {
+  "16": [
+   "12e6dde6c8aaf471",
+   "3d30e4f5778b7e66",
+   "3e0688963c235081",
+   "5c38364257f20320",
+   "c98a562f5b8d03ed",
+   "e04216a345b36c2c",
+   "f049f76e722fdee5",
+   "f81677da55cc1a0b",
+   "f945e74d74b19a51"
+  ],
+  "24": [
+   "28de1f5d09d0305e",
+   "c379346649175bbc",
+   "d0856650a624dbf8",
+   "d73217d68783d22e"
+  ],
+  "32": [
+   "01ba46a6d84d6d07",
+   "06b9b84fa791ae87",
+   "0d4ec1e9ed197154",
+   "1f231acf6258775a",
+   "488d6b2348a936fb",
+   "4a9792568bbab481",
+   "5d29d7febce29fee",
+   "7124ea52179afbc5",
+   "73abaf5dccc3cc19",
+   "783fbbdcdd1b42de",
+   "7d06378cc1bbeb1e",
+   "804ccc6a6b9e2158",
+   "80dba9e442c999d2",
+   "84dd852a40532588",
+   "9c5734533db79bae",
+   "a02efc73caed6ffa",
+   "a66950d1afcf52ef",
+   "a7569fdc3e2b45e9",
+   "ba4f11607f2ebfc8",
+   "bb0917f5cad8e813",
+   "bec46ee239caea05",
+   "cb898ac2abea644c",
+   "f553630d4f100b56",
+   "fe02b0f89910121d"
+  ],
+  "48": [
+   "db8382f3638996af"
+  ]
+ }
+}

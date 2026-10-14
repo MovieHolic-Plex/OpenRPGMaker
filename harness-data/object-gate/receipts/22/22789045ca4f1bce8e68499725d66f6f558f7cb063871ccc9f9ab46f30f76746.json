@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "22789045ca4f1bce8e68499725d66f6f558f7cb063871ccc9f9ab46f30f76746",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "높은 등받이 나무 의자",
+ "label": "gothic_manor/gm-chair",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "high-backed wooden chair with red cushion seat and backrest insert",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal seat cushion is clearly visible from above, foreshortened across rows 6 to 12 (7 pixel rows tall), with the high backrest rising behind it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5197
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "high-backed wooden chair with red upholstered seat",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chair shows its horizontal seat cushion clearly viewed from above across rows 6 to 12 (7 rows deep) with a front rim at row 13 below a vertical backrest, correctly matching standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5128
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "chair with high backrest and upholstered seat",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal seat surface is clearly depicted from above, occupying rows 6-12 (approx. 7 rows) with a shaded front edge at row 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4856
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "chair with high backrest and red cushion seat",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The red cushion seat surface is clearly visible from above, spanning rows 6 to 12 (7 pixel rows), showing proper 3/4 perspective foreshortening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4698
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.502Z",
+ "cells": {
+  "16": [
+   "846744957d705c33"
+  ],
+  "24": [
+   "04aaf9736f29936c",
+   "22afacabed8d11f4",
+   "2e5a32f4a4d6740f",
+   "4434404edb903047",
+   "5beb56af53142195",
+   "d9a0c9d3af2c47c7"
+  ],
+  "32": [
+   "0e8eae69aa83be29",
+   "592d8245001507fc",
+   "80727eccab5b43d1",
+   "955a2adc0212e021",
+   "a72810ac29208602",
+   "fb8c5965e22ef753"
+  ],
+  "48": [
+   "17be32497b121e1c",
+   "2d03a3d6cc81db5b",
+   "35c46b0a00c8cdd4",
+   "9349c4932844ff66",
+   "e644d40d6656d115",
+   "f4d90dd071018e96"
+  ]
+ }
+}

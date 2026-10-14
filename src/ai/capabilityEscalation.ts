@@ -50,6 +50,8 @@ const ESCALATION_COMPANIONS: Readonly<Record<string, readonly string[]>> = {
   link_jp_city_interior: ["import_region_reference", "read_region_reference"],
   build_wizarding_space: ["list_wizarding_spaces"],
   list_wizarding_spaces: ["build_wizarding_space"],
+  build_gothic_place: ["list_gothic_places"],
+  list_gothic_places: ["build_gothic_place"],
 };
 
 function hasSearchableWord(text: string): boolean {

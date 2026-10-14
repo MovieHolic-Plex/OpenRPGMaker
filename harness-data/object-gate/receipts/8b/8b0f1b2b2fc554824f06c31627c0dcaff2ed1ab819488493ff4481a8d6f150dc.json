@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8b0f1b2b2fc554824f06c31627c0dcaff2ed1ab819488493ff4481a8d6f150dc",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "돌 십자가 묘비",
+ "label": "gothic_manor/gm-tomb-cross",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone cross",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone cross is drawn in flat front elevation. The top end of the cross (rows 3-5) shows no top surface (only a front face with moss), and the horizontal arms only have a 2px highlight strip (rows 6-7) rather than a distinct foreshortened horizontal surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6846
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone cross gravestone",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the vertical cross arm (rows 3-5) is only 3px tall and shows no cut face or foreshortened top plane. The cross arms show only a 2px top edge highlight (rows 7-8). The main body of the cross is drawn as a flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9179
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone cross",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone cross is drawn in pure front elevation. The top vertical arm terminates in an outline with no top surface visible, and the horizontal arms only have a 1-2px edge highlight across rows 6-7 rather than a true top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6123
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone cross gravestone",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "While the horizontal arms and stepped plinth show top surfaces, the top end of the vertical cross beam (rows 2-5) lacks a visible top surface/cut face, showing only moss texture on a flat front-facing top post.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12707
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.460Z",
+ "cells": {
+  "16": [
+   "12da5a344b6b49cb",
+   "819701d5964d4e8a"
+  ],
+  "24": [
+   "00911e1015810160",
+   "17df66ca8b9372af",
+   "31d642e18c9c6c59",
+   "3722a3f2545b7441",
+   "3cde723a42836d98",
+   "405faaec93efe1d7",
+   "5a49b3f200eb78b0",
+   "639ae0ea9b076f3a",
+   "73088a2f24253d05",
+   "9441dcd6fa975b55",
+   "b62f187d1f51a3b7",
+   "c59dbba4f40969e6"
+  ],
+  "32": [
+   "14b9a51abde5967a",
+   "191b63ce43d2b987",
+   "efd04310351def93"
+  ],
+  "48": [
+   "611a9d0c7c288464",
+   "6132bb4e850048ea",
+   "a9a929e3ecf5ba95",
+   "d56b8e38192197e0",
+   "e74065138383cfdb",
+   "eafe3be4a1831438"
+  ]
+ }
+}

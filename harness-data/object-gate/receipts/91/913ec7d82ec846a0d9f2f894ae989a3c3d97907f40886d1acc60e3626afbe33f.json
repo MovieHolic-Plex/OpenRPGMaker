@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "913ec7d82ec846a0d9f2f894ae989a3c3d97907f40886d1acc60e3626afbe33f",
+ "width": 32,
+ "height": 32,
+ "kind": "round_body",
+ "name": "소형 반응로(원통 코어)",
+ "label": "sf-station/sf-reactor",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical reactor core",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the cylinder is clearly visible as an ellipse spanning approximately 10 pixel rows (rows 4 to 13) with a glowing core, resting above a curved south face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5151
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cylindrical reactor core",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the cylinder is clearly visible as an elliptical surface spanning roughly 10-11 pixel rows (rows 4 to 13/14), featuring a centered glowing cyan core.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8840
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cylindrical reactor core",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap is drawn as a clearly foreshortened ellipse spanning approximately rows 4 through 14 (about 11 pixel rows), resting atop a vertical front cylinder face extending to row 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4772
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical reactor core",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the cylinder is drawn as a wide ellipse spanning rows 3-14 with a glowing circular core in the center, clearly foreshortened above the south-facing cylindrical body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4217
+  }
+ ],
+ "decidedAt": "2026-10-13T15:15:22.114Z",
+ "cells": {
+  "16": [
+   "00bb539f285d5d80",
+   "0ea4bb860d3841df",
+   "183ce9042ddf7665",
+   "4b4058d7babc6f7c"
+  ],
+  "24": [
+   "0b8c21449d9e08bf",
+   "221d5a67ca1a2886",
+   "26f0a6d89e06fa53",
+   "46fd97695691fa1b",
+   "47bf2b5d46e10c5b",
+   "70832f438995985b",
+   "73f44dad3eb11101",
+   "82cb7ce84b8092f4",
+   "882b3ec050eb97ed",
+   "8851b81080969189",
+   "8a0bbf858a3bb11f",
+   "8d818234fd98ac5d",
+   "b09a28c35a124ac5",
+   "b151f638d4c221a8",
+   "bd0d17ffc0f86d04",
+   "c4211fa39d05badd",
+   "ca2ae3e61e38590d",
+   "e4d3fe50f0efb350",
+   "e8fa3fe0a7dab51c",
+   "ee0a84c04f234b38",
+   "f2dcf53bfa5f73d0",
+   "f6e7496eda6e7caf",
+   "f8f0f41ae9f9a02e",
+   "fe26149c0a7a086b"
+  ],
+  "32": [
+   "cebc4b47fcea680a"
+  ],
+  "48": [
+   "2d822d282a365658",
+   "680fa211ecf25bc5",
+   "a08cec7b4d977f28",
+   "b3635f0130155076",
+   "be09274e4f2d23df",
+   "d04fe2b9730cda02"
+  ]
+ }
+}

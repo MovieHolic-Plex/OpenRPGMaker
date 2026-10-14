@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4ab0e68f503265b65cbe95a33872ff3e683cd23fac61e7114bb518815e508811",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "정보 키오스크(윗면 간판 + 화면 앞면 + 받침)",
+ "label": "sf-station/sf-street-kiosk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "information kiosk body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire kiosk is drawn as a flat front elevation. The upper signboard, the upper casing panel (rows 8-15), the screen, and the base ledge all face straight forward with no visible foreshortened top surface showing depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 12052
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "kiosk cabinet / totem",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire kiosk is drawn as a flat front elevation. The topper sign (rows 0-6), upper panel (rows 7-15), screen area (rows 16-26), and base (rows 27-31) are all depicted straight-on as flat vertical rectangles with horizontal stripe shading, showing no receding top surface for either the kiosk body, sign, or base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 13263
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "information kiosk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire kiosk (top sign, upper panel, screen, and base) is drawn in pure front elevation with straight horizontal bands and no visible foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 10361
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "kiosk cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire kiosk (sign header, upper front panel, touchscreen, and base) is drawn in pure front elevation. The main body has only a 1px black outline at row 7 where its horizontal top surface should be seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 16289
+  }
+ ],
+ "decidedAt": "2026-10-13T15:25:32.747Z",
+ "cells": {
+  "16": [
+   "4def441ed35465b2",
+   "80899396b1476ac7",
+   "d2ec1c5a3a318bb5",
+   "de2401e9783f3f7a"
+  ],
+  "24": [
+   "04baef6019ca089b",
+   "08785c732974466a",
+   "0ef0812795277b12",
+   "10b94920a248ea51",
+   "365c81d31bd7b545",
+   "3cdfa02696468442",
+   "3fec6ccf496f8f22",
+   "4eba07386827dbb4",
+   "508397cb81f0b791",
+   "50c65d445cf9f3d2",
+   "5cb6649041d6914c",
+   "616d72794be494d8",
+   "768d06ed23f8f902",
+   "7b7b0d7f9997ac7f",
+   "810ab222cc40e2c8",
+   "8a2a84ad1d3effd6",
+   "913e615fa9961d60",
+   "919d1a1951a73ce2",
+   "98c06d49888b8479",
+   "b4aec2be66938e64",
+   "c48d65deae224db8",
+   "d08e3eb56d1890b8",
+   "ea74d0cc69c4da64",
+   "ef7c89b6d4b80123"
+  ],
+  "32": [
+   "b3641366f6c1507d"
+  ],
+  "48": [
+   "1d12fcc00ad4dde8",
+   "8c968ae7b1f6c965",
+   "c63aba7189859dba",
+   "ea268ebc5f70105d",
+   "f211687fbd27fe51",
+   "f44828b30aab341b"
+  ]
+ }
+}

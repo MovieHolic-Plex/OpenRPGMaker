@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5a8f48f0093f1fcaef74d9a6835dda96be700df212bfe666c6cb338f837293b2",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "소화전(빨강)",
+ "label": "modern-campus/mc-hydrant",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "red fire hydrant",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fire hydrant is drawn strictly in front elevation: the domed cap and side nozzles are rendered as flat 2D silhouettes without any foreshortened horizontal top surfaces or elliptical cross-sections.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8006
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "red fire hydrant column and dome cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fire hydrant and its base are drawn in flat front elevation. The domed cap (rows 1-5) and horizontal side nozzles are rendered purely from the side/front without any foreshortened top surface or top-down elliptical projection.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8277
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "red fire hydrant cylinder and domed top",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fire hydrant and its base are drawn entirely in front elevation with no visible top surface or 3/4 foreshortening on the domed cap, nozzles, or pedestal base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7803
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "red fire hydrant",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fire hydrant and its base plinth are drawn as flat front elevations. The domed cap has a straight horizontal bottom rim, the nozzles are flat horizontal rectangles, and the base block shows no top surface at all.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7335
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.303Z",
+ "cells": {
+  "16": [
+   "909328efcda276c2"
+  ],
+  "24": [
+   "0eed7c0bb019e6ee",
+   "2f1dccae6f5b8669",
+   "440685404a139582",
+   "5e7c822ff8452fd4",
+   "66407689b7fc21ed",
+   "ab5a0243909784c8"
+  ],
+  "32": [
+   "399b611028337f0a",
+   "49c929540c64ab03",
+   "71c09ad2fb7071a1",
+   "893d7e60d518289f",
+   "a18c4de732faceef",
+   "c3ded4f68757d961"
+  ],
+  "48": [
+   "4aba9819d89965a5",
+   "600f954cc90c9863",
+   "68890d9a75f9d79f",
+   "703878be2d8ae3c8",
+   "8a0d85d38cf818cd",
+   "920804f561068459"
+  ]
+ }
+}

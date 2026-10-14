@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "602601f5abfc66f6c721a68f01f58da8701135d9ca305eef2855bd4df8738a54",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "네온 벤치(긴 앉는 면 윗면 + 등받이 슬랩 + 밑 네온)",
+ "label": "sf-station/sf-street-bench-neon",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "neon bench seat and backrest",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bench seat shows a clear top surface spanning rows 6 to 10 (5 source pixels tall), followed by a 3-row front south face (rows 11-13) and pink neon underglow beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4732
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "neon bench with backrest and illuminated underglow",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat of the bench shows a clearly visible horizontal top surface from rows 6 to 11 (6 source pixels tall) above its darker front edge (rows 12-13) and neon underglow.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5042
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "neon bench seat and backrest",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat's top horizontal surface is clearly visible across rows 6–11 (6 source pixels deep), fronted by a 2px south-facing seat edge at rows 12–13 and underglow neon at rows 14–15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4974
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "neon bench seat and backrest",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat of the bench shows a clear top surface spanning rows 6 to 11 (6 source pixels tall) above its darker south-facing edge (rows 12-13) and backrest (rows 1-5), correctly rendered in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4420
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:06.343Z",
+ "cells": {
+  "16": [
+   "324c931d7bd8e649",
+   "9f1ea7895cdfc4b3"
+  ],
+  "24": [
+   "18290eaf78d0a6a8",
+   "31710fa6325a06a2",
+   "42e5a4b82ed4c6cc",
+   "4bf56f69b1e44000",
+   "55bdb847a46e4ac4",
+   "5fc4097f987cf40e",
+   "6ba354ac40dfe99f",
+   "89dc21e31f8e0146",
+   "9f8c3c66bc211fc8",
+   "c15092aa885c4a12",
+   "df1a7871695384bc",
+   "f62906e994accf8b"
+  ],
+  "32": [
+   "57f6b4915498f5fb",
+   "e6137ce2741e71d9"
+  ],
+  "48": [
+   "0f46a730d5b28a92",
+   "2a1dce488823945f",
+   "2e03f8cbf1527f2f",
+   "414d5439dda60d23",
+   "e1588c551bb4efd7",
+   "eac6a9e105f2f660"
+  ]
+ }
+}

@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "413e86ca25865a43b33debf65992b8320c74164010e24930e3c4d3fa3cdcb26f",
+ "width": 64,
+ "height": 48,
+ "kind": "organic",
+ "name": "jp-lot-veg",
+ "label": "jp_city/street_hand/jp-lot-veg",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vegetable garden beds with staked tomato plants and cabbages",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both garden plots clearly show extensive top soil surfaces (approx. 10-11 rows deep) foreshortened in 3/4 view, with vertical front retaining edges (4-5 rows tall) and plants rendered with appropriate perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3944
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vegetable garden beds",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The vegetable garden beds show expansive top soil planes (approx 11 rows tall each) viewed from a 3/4 top-down angle, fronted by vertical front faces (approx 4-5 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4223
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vegetable garden beds with crops",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The garden beds clearly show their horizontal top soil surfaces spanning 10-11 pixel rows deep, with front retaining walls/edges visible below them (rows 19-24 and 41-46), correctly rendered in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3842
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "raised garden beds with vegetables",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both garden plots display extensive horizontal soil beds (~10 rows deep) viewed from above with front-facing retaining edges (~4 rows deep) and plants placed correctly in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3393
+  }
+ ],
+ "decidedAt": "2026-10-13T17:27:07.785Z",
+ "cells": {
+  "16": [
+   "0369bc27ed0fc644",
+   "090ed1cf4a6ac2c1",
+   "3a7c67a06da6c18d",
+   "6263d1ec62b90b7d",
+   "690034ab64d4da28",
+   "7cd1cf16ad33c288",
+   "a795dc4d13f27912",
+   "c960175969f15fd1",
+   "d0f312dcc9134757",
+   "d59a22406a43009a",
+   "e87de0beea42a1c3",
+   "e99a8e7fb15bbf49"
+  ],
+  "24": [
+   "03bc6fc3a41b1a98",
+   "06951b15ed0716a8",
+   "365afe2df64971d6",
+   "3cf9446955950320",
+   "60de759319da0da6",
+   "6c9b31df47df522f",
+   "73c12c0a1384d926",
+   "78c983a5a1595666",
+   "859d33766591eed2",
+   "8ef691902c0f78d6",
+   "b93f3294a0960439",
+   "c031bf0947e883ce",
+   "d95b602b606be8bf",
+   "f1bace8c8a1d787d",
+   "f1eb57a99ac624e9",
+   "f209b03655e12cc2",
+   "f3a54fefb7a03bdd",
+   "f72f9cc0d7305449"
+  ],
+  "32": [
+   "3791bd5bf80a0f36",
+   "5ea639954c825a86",
+   "60126d6b8bf43eaf",
+   "6890d0d4abc35bef",
+   "7439a4275365969b",
+   "8f5c26857a9a6e55",
+   "be4fd5f6b22b8a65",
+   "cc9acf9000a48ef8"
+  ],
+  "48": [
+   "0485b47f7af20796",
+   "24e9a893b1a2479e",
+   "462d73ee2f65bbb0",
+   "5774fda589368588",
+   "912946ea3886ecfb",
+   "a086ef67005d2475"
+  ]
+ }
+}

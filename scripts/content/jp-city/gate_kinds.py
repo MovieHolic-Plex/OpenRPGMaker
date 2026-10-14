@@ -41,6 +41,11 @@ try:
     EXACT.update({k[3:]: v for k, v in _rail_art.kinds().items()})
 except Exception:       # pragma: no cover
     pass
+try:                    # 빈터 쓰임 키트(blocks/lot_art.py)
+    import lot_art as _lot_art
+    EXACT.update({k[3:]: v for k, v in _lot_art.kinds().items()})
+except Exception:       # pragma: no cover
+    pass
 
 
 def kind_of(kit_id: str) -> str:

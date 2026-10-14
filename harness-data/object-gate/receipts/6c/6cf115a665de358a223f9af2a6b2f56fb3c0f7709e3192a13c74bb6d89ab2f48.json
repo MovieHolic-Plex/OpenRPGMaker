@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6cf115a665de358a223f9af2a6b2f56fb3c0f7709e3192a13c74bb6d89ab2f48",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "냄비 선반(구리 냄비·단지)",
+ "label": "gothic_manor/gm-pot-shelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "냄비 선반 (shelving unit)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shelving unit is drawn in a flat front elevation. Neither the top of the unit nor the shelf surfaces where the pots rest show a foreshortened top plane (the shelf boards are only 1-2px edge lines). While the pots on the top tier depict top openings, the main furniture body has 0px of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14388
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "shelf unit (pot rack)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body of the shelf unit has no visible top surface (0px at the top edge), and each shelf board is rendered as a flat 1px line. Furthermore, the jars on the middle and lower shelves are drawn in pure front elevation with only 1-2px caps.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7791
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pot shelf",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shelf unit is drawn in pure front elevation with no visible top surface (0 rows). The horizontal shelf boards are rendered as flat 2px-tall front edges with no foreshortened top surfaces visible from the 3/4 angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9141
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall shelving unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shelving unit is drawn in flat front elevation with no visible top surface at row 0 (wall is visible to the sides, but no top depth). The interior shelves are rendered as thin horizontal 1-2px front-facing slats with no depth planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8055
+  }
+ ],
+ "decidedAt": "2026-10-13T16:52:42.785Z",
+ "cells": {
+  "16": [
+   "2117db26f619ddc3",
+   "239f7ddbacf67733",
+   "4e4f9d59b9cf67f8",
+   "d21569f32fb1ff38"
+  ],
+  "24": [
+   "0370a962bd61645a",
+   "12fa143c3a510de9",
+   "2490331d625c4fc8",
+   "25df92bc832667ee",
+   "2decc80712b56f52",
+   "3647aaf31d4a9d6e",
+   "376dfd5c8ff2f108",
+   "46b6d6ff545cd30a",
+   "475bf9c8e83b2a96",
+   "515b95d1bbb185cd",
+   "59cae51037ec7d7e",
+   "5dc0045d7c324908",
+   "6b37535f5570bf6e",
+   "87dc89d079b3ca3e",
+   "992b5a302901dd41",
+   "9ed92ece0d3451fd",
+   "bb82ec57826c4e5b",
+   "bfce1e226df7f57c",
+   "c02ef800a80055ed",
+   "c6d817f1df3f901b",
+   "d83c20109359b567",
+   "e7912db88793ed5b",
+   "e8e6bfeb6750ad5c",
+   "ee336ce7baaa85be"
+  ],
+  "32": [
+   "8d150813f4f9eb00"
+  ],
+  "48": [
+   "00dd1f506b748039",
+   "19583c7e65e13fe5",
+   "36360fd3d70bd9ee",
+   "4bd4c0c9929ad079",
+   "604f2f5b11abe1b2",
+   "88cfb6d95cd36065"
+  ]
+ }
+}

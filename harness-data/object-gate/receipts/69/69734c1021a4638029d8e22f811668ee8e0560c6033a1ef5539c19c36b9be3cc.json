@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "69734c1021a4638029d8e22f811668ee8e0560c6033a1ef5539c19c36b9be3cc",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "소형 거주 돔(유리 돔 + 원통 기단)",
+ "label": "sf-station/sf-hab-dome-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical habitat dome structure with glass dome top and curved base wall",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The glass dome and upper rim form a large foreshortened ellipse viewed from above across rows 17-32 (~16 source pixels tall), resting on a vertical cylindrical south wall with an entrance (rows 33-46).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8810
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cylindrical habitat base with glass dome roof",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the structure, including the curved glass dome and upper rim, is extensively visible across rows 17-32 (16 pixel rows), showing proper top-down 3/4 foreshortening over the cylindrical front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8808
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "small residential dome structure with cylindrical base and glass dome top",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The glass dome roof and upper rim are viewed from above in an elliptical foreshortened 3/4 perspective spanning rows 17 to 31 (~15 rows), with the vertical cylindrical base and airlock door extending downward to row 46.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10019
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical habitat dome with base",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The glass dome and surrounding collar on top of the cylindrical base form a clear elliptical top view spanning rows 17 to 32 (15 rows tall), resting above a curved vertical front wall (rows 33 to 46).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8805
+  }
+ ],
+ "decidedAt": "2026-10-13T15:26:12.240Z",
+ "cells": {
+  "16": [
+   "2371ecd80647dbb6",
+   "658ce51c23d2bfd2",
+   "6b15a5408fcdf9ec",
+   "79e45c2e95cda672",
+   "8bd8a3b8a1bc6508",
+   "b5e8e709079ea733"
+  ],
+  "24": [
+   "26f28d115b189172",
+   "311783a469f51fe8",
+   "8f0f17450a6a636b",
+   "998c72d2a3c93079"
+  ],
+  "32": [
+   "092a46f0879aca73",
+   "0bbe62b13cbf1100",
+   "0f226039b4dc5a66",
+   "1775f130879a1ca3",
+   "19d5b3a4f4e84770",
+   "28518fa1cce8f19c",
+   "31ae62bb377a3cc1",
+   "494e04306d7dec1f",
+   "8252a40f4a53952d",
+   "8b4e641725b94219",
+   "8c2276c119feb80a",
+   "8e170dde2901a4a7",
+   "a81e3d179bfca911",
+   "b01a55a813b7ccb9",
+   "c96e41a5471b8971",
+   "d07b01022e8e7692",
+   "eae91823b90a8938",
+   "f327c8d7f7bf9ff3"
+  ],
+  "48": [
+   "fbcd3ed03206a745"
+  ]
+ }
+}

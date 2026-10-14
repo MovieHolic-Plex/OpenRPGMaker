@@ -1,0 +1,207 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "de4dce7ec3566e5aba13588b178c8e99f7b0a1bd4b23b22a5947091602638076",
+ "width": 96,
+ "height": 144,
+ "kind": "structure",
+ "name": "고딕 예배당(정면 박공·장미창·종루)",
+ "label": "gothic_manor/gm-bld-chapel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Gothic chapel facade and roof",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire chapel is drawn as a flat 2D architectural front elevation (suitable for a side-scroller rather than a 3/4 top-down JRPG). The front stone gable, rose window, walls, and base are drawn straight-on with no top surfaces visible (0px). The roof and bell tower behind the gable also follow flat front-elevation geometry with a perfectly flat horizontal base at row 142.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 17785
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Gothic chapel building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire chapel (walls, gables, bell tower, spire, window sills, and buttress caps) is drawn as a flat 2D architectural front elevation with no visible top/horizontal surfaces foreshortened for the 3/4 top-down angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14877
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "gothic chapel facade and roof",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire chapel is drawn as a flat 2D architectural front elevation. The front gable wall, rose window, portal, bell tower, and rear roof pitch are all viewed completely straight-on with no foreshortened top surfaces, lintel tops, or depth visible from a 3/4 top-down camera angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14290
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "gothic chapel building",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is rendered as a flat architectural front elevation (side-scroller style) rather than a 3/4 top-down view. Buttress offsets, sills, and lintels are 1-2px flat lines with no receding horizontal planes, and the bell tower, rose window, and facade are seen straight-on at eye level with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 15625
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.455Z",
+ "cells": {
+  "16": [
+   "000b27f3c70be3ef",
+   "02b8edc1a3a60535",
+   "1180a3fed786a9e1",
+   "1890505f7d6a95e6",
+   "22a3d71cad284bbc",
+   "2e5228e88a3523c2",
+   "374a4fc3f2c2cb5e",
+   "3ac3e33b4fe94f56",
+   "3e1e85f7aa7f9149",
+   "447326cd7d8f4182",
+   "48db25aa6ce74062",
+   "49500b9d45bce117",
+   "5f9a30b540e12f9e",
+   "66d4541f93403202",
+   "67f7167c0b838c59",
+   "6d527c24532d19fa",
+   "70098899063aa50f",
+   "751aec9c8647394d",
+   "784bfdcfab1fc7aa",
+   "8983957d5e0ba468",
+   "9c3d0283893f8c26",
+   "9d1a6beb3a8201f6",
+   "a239c3ea343a934a",
+   "a9f2e5291bee0b18",
+   "aadd8ea172a46cf2",
+   "b109d9072e631b7b",
+   "b57b25427c1928e6",
+   "b9823b9d1fbfcd17",
+   "bc495eb83bfefdd2",
+   "c5717056663b2452",
+   "c7f1ce06781c46d3",
+   "d101f5ddb86cc901",
+   "d993e05fec8cfc2e",
+   "dd5d8b2bca48603f",
+   "e84c25331b0aacad",
+   "e867ae5c07714566",
+   "eb84d63a6df3f328",
+   "ef05592acee760b2",
+   "f79b75cd3ad75bae",
+   "f9b3645a7fafa67c"
+  ],
+  "24": [
+   "07e8844cb9867443",
+   "0e36d0fc9cb7547d",
+   "0ea50816d7edb901",
+   "13cf1aecca415760",
+   "1fbc8943c235a0b4",
+   "239f98b1a8846718",
+   "3634c7af8455c185",
+   "4e3f9bf6fb68a6c0",
+   "52307f362ef31aa5",
+   "64674728620bf737",
+   "70edb1c0cf1da0fd",
+   "828af1269de32c1b",
+   "8e004b5273c7ad1e",
+   "94f1961560631344",
+   "b55d01113c7a5b26",
+   "b8b0c556242cfbac",
+   "c1cf3f36a457bc6c",
+   "d17e75538853709f",
+   "d5cfd1791f0af27c",
+   "e14c6401f8e2c216"
+  ],
+  "32": [
+   "10ceee30341e612f",
+   "135ebb7c89dfb44d",
+   "1aee1cdc428849f7",
+   "1c4278d6ecc10ad6",
+   "298c5517d7d6904b",
+   "302c9722df953487",
+   "3092b867d62f6372",
+   "32ffca6100e20811",
+   "606f92aa40f4868c",
+   "6809aa66d241cf99",
+   "6be55b7baf846675",
+   "6e5a22b4b5205f47",
+   "79956e177276a8ea",
+   "8aa784cbc3907e7e",
+   "b441f76545219f82",
+   "b4b7c14ed40f9af9",
+   "b8ae1229172326fe",
+   "b97a949b97f0cf7a",
+   "bffdcac4f9f5ffa1",
+   "ce3d1914d19359a9",
+   "d482009f45524ac2",
+   "d63056772c94c33f",
+   "dc8a4d73f9ab2a0a",
+   "e879d1d739ed518d"
+  ],
+  "48": [
+   "1562c16f35d1f1bb",
+   "48591739f936fbe0",
+   "a42599bc899c3b05",
+   "bf0c7fcc562e0258",
+   "de2be92c4fd9f510",
+   "f2011e676ef6ff87"
+  ]
+ }
+}

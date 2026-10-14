@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8046c55e320f3d7a26685bd71d43cd76b92b33e922f7f051e5f78865cd708a70",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "음수대(스테인리스 대야)",
+ "label": "modern-campus-int/mc-water-fountain",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "drinking fountain basin and body",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The drinking fountain has a prominent top surface spanning rows 9-16 with an elliptical stainless steel basin opening spanning rows 11-14, viewed correctly from above, over a south-facing lower body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5128
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water cooler / drinking fountain with stainless basin",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The drinking fountain has a clear top horizontal deck (rows 9-16) with an elliptical recessed basin opening (rows 11-14) containing a water bubbler nozzle, set above the south vertical cabinet face (rows 17-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4551
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "drinking fountain with stainless steel basin top and lower cabinet",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the drinking fountain spans rows 9-16 (8 rows tall) and clearly shows an elliptical sink basin opening (rows 11-14, 4 rows tall) viewed from above, with a vertical front face from row 17 downwards.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4676
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "drinking fountain with basin on top and vented pedestal base",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the drinking fountain spans rows 9-16 (8 rows) with a clearly visible 5-row recessed basin opening (rows 11-15) containing a bubbler nozzle, set above the south-facing pedestal body (rows 18-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4737
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.309Z",
+ "cells": {
+  "16": [
+   "413c60447ab82da1",
+   "6bf153a5d434a9ef"
+  ],
+  "24": [
+   "13473e586eaf9ae0",
+   "1a0c7e309ea2bbae",
+   "22373fe0d7b51d85",
+   "31539236968b1f8e",
+   "51a7440f5f9c1375",
+   "5bc257505bdc448f",
+   "6e1b643064c6be9f",
+   "b45bc51efd85bca1",
+   "d7e9a4ae38e9226a"
+  ],
+  "32": [
+   "03ba1882ce92c816",
+   "6ab03ce607360b04",
+   "a8d07f652409a110"
+  ],
+  "48": [
+   "3d75f88159f1fa0c",
+   "55f4ee37f8ff447b",
+   "72dc42db539719f7",
+   "7f60b9b9fca22b7e",
+   "849a71fe6884e813",
+   "da2b3c20c953f636"
+  ]
+ }
+}

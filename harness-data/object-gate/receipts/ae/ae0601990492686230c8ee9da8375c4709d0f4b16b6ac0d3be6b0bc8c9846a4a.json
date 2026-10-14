@@ -1,0 +1,134 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ae0601990492686230c8ee9da8375c4709d0f4b16b6ac0d3be6b0bc8c9846a4a",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "점수판(기둥 둘 + 전광판)",
+ "label": "modern-campus/mc-scoreboard",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "scoreboard display box",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main display housing clearly shows a top surface across rows 2–5 (4 pixels tall) with top-down lighting, situated above the darker south-facing screen frame.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7090
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "electronic scoreboard box on poles",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the scoreboard housing is rendered across rows 2–5 (4 pixels tall) with clear light-gray top-down illumination above the dark front bezel and screen (rows 7–26).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6727
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "scoreboard display casing",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main scoreboard casing features a 4-pixel tall (rows 2–5) illuminated top horizontal surface rendered above the darker front face (rows 6–27), correctly showing the 3/4 top-down perspective without receding side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13589
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "scoreboard display box",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main scoreboard body shows a clearly foreshortened, illuminated top surface across rows 2–6 (5 pixel rows tall) rendered in a light metallic gray palette, distinctly separate from the dark south-facing front frame (rows 7–27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13153
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.872Z",
+ "cells": {
+  "16": [
+   "0be104ab37877a0d",
+   "1ce07b3bb6468490",
+   "955dc52567ba4352",
+   "aa4b9f68983243d5",
+   "af74b16752edd718",
+   "b4496fdd646be48c",
+   "f46fde2d25d4fad9",
+   "f476e5e943899c39"
+  ],
+  "24": [
+   "43f40e7c308ffb78",
+   "a6408b3f26fb4a0f",
+   "ccfe7f7663ac954c",
+   "d3e7a2188552aa54"
+  ],
+  "32": [
+   "033f0d50ee358031",
+   "0451e43aec93fde8",
+   "0ce790a06b7ac7b6",
+   "1b4444de86feccfe",
+   "2577598693a2c48b",
+   "2592c38674c52db0",
+   "2cc3f14c406d3680",
+   "2db3f007dcdcdb33",
+   "35a689aa7b79c7d9",
+   "3f06d5b867ebd36b",
+   "549399821b03de42",
+   "55dd3ff6f06701d0",
+   "6a1ba9f95f9696a6",
+   "6dacb8c0e6ee1d57",
+   "6fe950644f0d7972",
+   "7c5cd94611f18576",
+   "82fd58dbb9a8185c",
+   "838cd0fd695957a0",
+   "8d85620726b8dbed",
+   "921d0f1e59083b34",
+   "a42065f71db18885",
+   "a491f4d89f340a15",
+   "b66cdf0768de53c4",
+   "cb5369c0ddf8082e"
+  ],
+  "48": [
+   "36cca2302d1cf7f4"
+  ]
+ }
+}

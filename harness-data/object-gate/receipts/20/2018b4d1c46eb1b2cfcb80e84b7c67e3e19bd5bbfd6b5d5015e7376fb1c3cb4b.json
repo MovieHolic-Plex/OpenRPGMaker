@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2018b4d1c46eb1b2cfcb80e84b7c67e3e19bd5bbfd6b5d5015e7376fb1c3cb4b",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "석관(박공 뚜껑·조각)",
+ "label": "gothic_manor/gm-sarcophagus",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sarcophagus with gabled lid",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top slope of the lid is clearly viewed from above across rows 2–12 (approx. 11 rows tall), overhangs the front lip at rows 13–15, and sits atop the vertical front face at rows 16–27.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4661
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sarcophagus with gabled lid and carved relief panels",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sloping top surface of the lid spans rows 2 to 12 (approx. 11 rows) facing upward/south, clearly visible above the lid's front rim (rows 13-15) and the sarcophagus's vertical south face (rows 16-27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5043
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "gabled sarcophagus with lid and carved front face",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sarcophagus lid is clearly visible from above, spanning rows 2 to 12 (11 rows) with a cross carving before the overhang lip (rows 13-15) and front face (rows 16-27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3992
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sarcophagus with gabled lid",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lid's sloped top surface spans rows 2 to 12 (11 rows) showing the carved cross pattern seen from above, resting on a distinct lid overhang (rows 13-15) and front face (rows 16-27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5379
+  }
+ ],
+ "decidedAt": "2026-10-13T16:24:27.172Z",
+ "cells": {
+  "16": [
+   "3ae0cf6229f91567",
+   "54cdcd0b3956a457",
+   "5c766c25b3190e98",
+   "d11139729d97fb30"
+  ],
+  "24": [
+   "1bb5ddd91698c577",
+   "240703d8622e0143",
+   "29f93e6bbb411027",
+   "30b5da54a86a89de",
+   "390646306f69d41f",
+   "5e5c8449b97b6a7b",
+   "72963d3b6d7fe5fe",
+   "73a57017e5a2cbf4",
+   "7531258c8b9eb848",
+   "7b52ba1e45bb46bd",
+   "7f361b4b75a1134c",
+   "81ded532262d761e",
+   "84f30976d0bdc5ef",
+   "8d06bca729e4f791",
+   "9002930f72467b66",
+   "9ac1fd64df0b1e5b",
+   "a02a361db5eb5fa6",
+   "a6aac40cad152cf6",
+   "ae63c7a4e67d6922",
+   "d05698332bff34fc",
+   "d3d7bb5b0a8eab71",
+   "d862f59b4d7e7fc5",
+   "dfd921355e7b443c",
+   "ec7cb192b882173e"
+  ],
+  "32": [
+   "4df8023a0d8bfd43"
+  ],
+  "48": [
+   "2a9e45353508c264",
+   "309e397a181b3361",
+   "523716e4738287eb",
+   "9683f51222a7ae54",
+   "ac7f1d6dc1941624",
+   "f0464e80c56df947"
+  ]
+ }
+}

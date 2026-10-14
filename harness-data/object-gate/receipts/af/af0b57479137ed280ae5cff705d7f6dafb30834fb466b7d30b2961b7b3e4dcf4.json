@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "af0b57479137ed280ae5cff705d7f6dafb30834fb466b7d30b2961b7b3e4dcf4",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "airlock module v3",
+ "label": "sf-station/sf-air-v3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "airlock module structure with sloped roof and door",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper section (rows 3-15) clearly depicts the top/sloped roof of the structure spanning approximately 13 pixel rows, featuring paneling and an air vent visible from above in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5269
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "airlock module structure with roof panel and south-facing wall with sliding door",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof surface/slope spans rows 3 to 16 (approximately 14 source pixel rows) with panels and a skylight, above a south-facing wall containing an airlock door.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4966
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "airlock building with sliding doors and sloped panelled roof",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure clearly displays a foreshortened top/roof surface spanning rows 2 to 15 (14 rows tall) with panelling and a raised hatch, situated directly above the vertical front wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7245
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "airlock module with sloped roof/top section and vertical front door wall",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure has a clearly foreshortened, paneled top/roof surface measuring 13 pixel rows (rows 3 to 15) sitting atop the vertical front wall (rows 16 to 45).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4486
+  }
+ ],
+ "decidedAt": "2026-10-13T15:19:47.093Z",
+ "cells": {
+  "16": [
+   "03c9b614c8c32177",
+   "1c70de0dc1d72937",
+   "68aebe2164b81330",
+   "71b9ccac1c65b598",
+   "7babbac0777aad05",
+   "bf3fbbcb8bc0d8d9",
+   "cd8758761c9e28f7",
+   "f4af6f5b18835003",
+   "ffc30af47e1a1437"
+  ],
+  "24": [
+   "4916a2c311e0731c",
+   "81bec6c3605a9402",
+   "9cc0da1e2de2e852",
+   "f5bad6b790483b9d"
+  ],
+  "32": [
+   "0e9a5a2847fa47d6",
+   "1614cb2244d48aa6",
+   "1f736f28afcb6bd3",
+   "291fc4c5f17b137c",
+   "32261d17453212a8",
+   "33af74f205592e1d",
+   "350351760e69c755",
+   "3daf981e20216941",
+   "3df3d425a2f0bb7e",
+   "4305d60f1010ad6b",
+   "442843bdf9614614",
+   "6ad45ad0357a06fe",
+   "749687e204aa00e7",
+   "8777f763702c7261",
+   "90d07584e1fff354",
+   "9add8c71629c5138",
+   "9b60fda4c820611d",
+   "a2107fe8f102e014",
+   "adbaefc618e39be5",
+   "b2688d5a26be54ea",
+   "b35e4c56e1c6a7e4",
+   "bc7deb4073838819",
+   "eda4dc22c49e61c5",
+   "ef20d4ff7c270a5c"
+  ],
+  "48": [
+   "f4c5cb4f6b2e20dc"
+  ]
+ }
+}

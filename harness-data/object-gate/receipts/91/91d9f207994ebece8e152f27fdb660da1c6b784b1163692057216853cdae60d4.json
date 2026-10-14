@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "91d9f207994ebece8e152f27fdb660da1c6b784b1163692057216853cdae60d4",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "캠퍼스 안내도(서 있는 지도판)",
+ "label": "modern-campus/mc-campus-map",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "standing campus information map board",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface/roof of the signboard spans rows 3 to 9 (7 rows tall) seen from above, positioned over the south-facing vertical map display (rows 10-26).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8145
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "standing campus map board",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the standing map board is clearly visible from above across rows 3–9 (7 pixel rows tall), rendered in a lighter lit tone, above the darker framed front face containing the map (rows 10–26).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8106
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "standing campus map board with frame and top face",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The board shows a clearly foreshortened top surface spanning rows 3-9 (7 pixels tall) above the vertical front map display (rows 10-26).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8511
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "standing campus map board",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the board structure spans rows 3 to 9 (7 rows tall) above the vertical front display face (rows 10-26).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8246
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.304Z",
+ "cells": {
+  "16": [
+   "20e9d7aa1173b5dd",
+   "92b56157a4211815",
+   "e1791b8e37144136",
+   "e8d4faf3ddc2f6d0"
+  ],
+  "24": [
+   "0c38ef31ddf0e376",
+   "303efbcdb1c8e7c1",
+   "3df189613d6780a4",
+   "460e9383fd58f5ab",
+   "579cd5dd1bf5e8bd",
+   "5dad8ca672378efe",
+   "618b3eca8ddf4d16",
+   "61d9a5178244c551",
+   "67045d5749ce83fd",
+   "6a55f2c01003d944",
+   "89cca963c5d5db83",
+   "9bf1a6b7ae2e4265",
+   "9e08f33e2df369e9",
+   "9f83d79d936b6c07",
+   "a86f700b588d5084",
+   "b235e768b1aff0c3",
+   "bc62d4bc29ce1756",
+   "c0565c62cb39e6f7",
+   "cd44b4d5e5a36788",
+   "d79b9cef26694b50",
+   "dcc3808d41170220",
+   "dd22b4ddff1abc02",
+   "e742b91205d597ef",
+   "fcc820f185c7ab95"
+  ],
+  "32": [
+   "24aa1d7c3993e9d6"
+  ],
+  "48": [
+   "231f7a07bb9ca29f",
+   "528fa7ced4567921",
+   "7236a4a0e36f2991",
+   "b3f602c2fe86f865",
+   "da1cd35c3462e682",
+   "ddf9c8b66605edcc"
+  ]
+ }
+}

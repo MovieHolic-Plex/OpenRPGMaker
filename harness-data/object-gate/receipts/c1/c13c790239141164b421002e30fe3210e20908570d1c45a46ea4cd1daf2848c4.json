@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c13c790239141164b421002e30fe3210e20908570d1c45a46ea4cd1daf2848c4",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "버섯 고리(창백한 버섯)",
+ "label": "gothic_manor/gm-mushrooms",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fairy ring of pale mushrooms",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All five mushrooms in the ring are drawn in pure front elevation/side profile, showing a flat-bottomed cap with a vertical stem protruding straight downward, with no top surface foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4904
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pale mushrooms in a fairy ring",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All five mushrooms are drawn in pure side-view / front elevation (2D platformer style), showing flat-bottomed caps with vertical stems beneath them and no foreshortened top surfaces of the caps visible from a 45-degree overhead angle.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4981
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "mushroom caps and stems arranged in a ring",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each mushroom is drawn in pure side-view elevation with a flat horizontal cap underside and a vertical stalk extending directly downward, showing no foreshortened top cap surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6188
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pale mushroom cluster/ring",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All five mushrooms in the ring are drawn as flat side/front silhouettes (cap profile with vertical stem extending below) with zero top-down foreshortening of the mushroom caps.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3673
+  }
+ ],
+ "decidedAt": "2026-10-13T16:24:27.173Z",
+ "cells": {
+  "16": [
+   "d2d52852642b7db1"
+  ],
+  "24": [
+   "407da8b65aec0c48",
+   "76d1cf69c8a4ab95",
+   "8723727630472c51",
+   "9e1507c664506eba",
+   "e32384dd38d6fc41",
+   "f2f2fe1ef4cfc3f8"
+  ],
+  "32": [
+   "0c8b0c96c4994514",
+   "573856da98725d44",
+   "6230bf1ee436ad54",
+   "acba9d8919b6be2b",
+   "c6615bc11d33b815",
+   "ed995489ffc7db94"
+  ],
+  "48": [
+   "03e79cb536d63dc5",
+   "06b554a0d2f04137",
+   "1f1841313b8cd9c8",
+   "207b02646115b5f9",
+   "a431665b6144c4fc",
+   "ff35812cb571a509"
+  ]
+ }
+}

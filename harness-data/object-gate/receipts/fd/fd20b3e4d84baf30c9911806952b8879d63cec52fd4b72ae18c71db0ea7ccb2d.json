@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fd20b3e4d84baf30c9911806952b8879d63cec52fd4b72ae18c71db0ea7ccb2d",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-lot-hoarding",
+ "label": "jp_city/street_hand/jp-lot-hoarding",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "construction hoarding wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hoarding wall is depicted entirely in flat front elevation with vertical panels, hazard striping, and an upper panel, showing zero rows of top horizontal surface to convey wall thickness or top-down depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6189
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "construction site hoarding wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The construction hoarding is drawn in a pure front elevation with panels, an upper decorative band, and hazard striping, but shows 0px of top surface or panel thickness.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5742
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "construction hoarding wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hoarding wall is drawn entirely in front elevation with stacked vertical panels, stripes, and hazard markings, showing no visible top surface or thickness.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3672
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "construction hoarding wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The temporary construction hoarding wall is drawn entirely in flat front elevation with only a 1px outline at row 0 and 1px highlight at row 1, showing no visible top surface or depth from the 3/4 top-down angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5230
+  }
+ ],
+ "decidedAt": "2026-10-13T17:32:26.915Z",
+ "cells": {
+  "16": [
+   "04bf2e4f0c3dd7ea",
+   "2962d174b72a3d9f",
+   "5d101e37569932bc",
+   "6b980ea91d18d019",
+   "a14196accb15f39a",
+   "f5e437c5ea142c32"
+  ],
+  "24": [
+   "0e73a5b63f8e0f53",
+   "291525bd7542f051",
+   "641e18575993490a",
+   "810b48b2a42041e7",
+   "8ab51bf5781139ae",
+   "91a450670b350280",
+   "d0b6c48f630190bd",
+   "d30e59ced1a6bd7e"
+  ],
+  "32": [
+   "32321cfaeee900c5",
+   "4b127376c376c40c",
+   "795a37ed8f2a1129",
+   "b62e7d4d39189350",
+   "c421646b8807ea94",
+   "ee374c98a1b5802f"
+  ],
+  "48": [
+   "0f7f6e3700a8039e",
+   "5f957254aaeba187"
+  ]
+ }
+}

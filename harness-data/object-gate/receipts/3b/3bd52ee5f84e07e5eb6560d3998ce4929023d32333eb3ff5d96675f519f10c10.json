@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3bd52ee5f84e07e5eb6560d3998ce4929023d32333eb3ff5d96675f519f10c10",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "호버 포드(둥근 차체 윗면 + 유리 캐노피 + 옆 띠·문 이음 + 밑 추진 빛 + 그림자)",
+ "label": "sf-station/sf-pod-car",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hover pod body",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hover pod is drawn as a flat side-profile elevation with only a 1-pixel highlight row along the roof (row 8) instead of a foreshortened top roof surface viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 4957
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hover pod vehicle body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hover pod is drawn as a flat side-view profile (pure elevation) with no visible roof or top surface foreshortened from above (only a 1px highlight line under the outline at row 8).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4958
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hover pod body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hover pod is drawn as a flat side-elevation profile. Row 8 is merely a 1-pixel highlight edge along the roofline, with no visible foreshortened top roof surface (0 px).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4975
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hover pod vehicle body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hover pod is drawn entirely in a flat side elevation view. There is no visible top surface/roof foreshortened from above (row 8 is only a 1px highlight line).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6379
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:31.918Z",
+ "cells": {
+  "16": [
+   "29e5908054724e8b",
+   "61ed4bcdf140d2bf",
+   "8ecbf88c46f7556a",
+   "b261fece8ada5f9b",
+   "bcf07ab55d4babe0",
+   "e9c835cf5cb005f1"
+  ],
+  "24": [
+   "11f848175052d314",
+   "2b41fe1f3749d601",
+   "40acec8bc248678a",
+   "459e61e4a301ac0d",
+   "4882d6285a21af32",
+   "55bf25612f2c1ac5",
+   "65131dbf10e9f25f",
+   "cf39ca4d6b1fd479"
+  ],
+  "32": [
+   "1644f7ff8e1bed01",
+   "351dd4946a86e272",
+   "6d118ab84efa9d20",
+   "87b562232fb7dbd4",
+   "d6dc6bcd9c4fb757",
+   "e74c591e60f34798"
+  ],
+  "48": [
+   "36201eb3e45d9a95",
+   "8fa168935e275a6f"
+  ]
+ }
+}

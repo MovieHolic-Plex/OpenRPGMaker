@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "28d55e95193cfe6d0021f8f0b9468059228873f0560e495f51f2bfa6b300d453",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "벽 환기 격자(네모 틀 + 가로 살)",
+ "label": "sf-station/sf-vent-grill",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall ventilation grille",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Square ventilation grille mounted flat against a vertical wall face; appropriate for wall_mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4940
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "metal ventilation grille with horizontal slats mounted to a wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ventilation grille is mounted flat against a vertical wall as allowed for wall_mounted items. The slats and frame are shown flat from the front.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 17436
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall-mounted ventilation grille",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Square ventilation grille with horizontal slats designed to be mounted flat on a vertical wall. Permitted to be flat per wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4243
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "square wall ventilation grate with frame and horizontal louvers",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted vent grate drawn flat against the wall surface as permitted for wall_mounted fixtures; no 3D top surface required.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5395
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.956Z",
+ "cells": {
+  "16": [
+   "0a42e8ee4ad4af58"
+  ],
+  "24": [
+   "3fa3c7738318db02",
+   "7309dd8aadb56bea",
+   "9a17b3a67ad42cea",
+   "a5dbbda5ced62354",
+   "b944c78340a59090",
+   "c781278b10d5ea68"
+  ],
+  "32": [
+   "0ef2dde08592408c",
+   "4aaa181df3331a98",
+   "5b90a6e137dbf085",
+   "7d2573c86fab93f9",
+   "b6dc3383661aa30b",
+   "e3ece2046569df5c"
+  ],
+  "48": [
+   "0f6e8763230c3951",
+   "53a8d0ce9b771b36",
+   "8be71f9c3d9bcb81",
+   "d195e11d34ac2eaf",
+   "d6f123a6c0fdccd7",
+   "d8fe31c9c09f3839"
+  ]
+ }
+}

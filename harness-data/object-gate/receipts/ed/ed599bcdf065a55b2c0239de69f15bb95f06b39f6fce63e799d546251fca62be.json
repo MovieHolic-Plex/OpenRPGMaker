@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ed599bcdf065a55b2c0239de69f15bb95f06b39f6fce63e799d546251fca62be",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "포도주 시렁(먼지 낀 병)",
+ "label": "gothic_manor/gm-wine-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wine rack",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wine rack is clearly visible across rows 0-4 (approx 4-5 pixels deep) with foreshortened perspective and top plank detailing before the front face cubbies begin.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6204
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wine rack with grid cubbies and bottles",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the wine rack has a clearly visible horizontal top surface measuring 4 pixel rows (rows 0-3), and individual shelves also show a top edge highlight/surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6379
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wine rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wine rack is drawn in pure front elevation. It shows no top surface seen from above, and the interior shelves show no horizontal shelf depth/surfaces where the bottles rest; all horizontal dividers are flat 2px bands viewed straight-on.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 16266
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wine rack with bottles",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wine rack is visible across rows 0-3 (4 source pixels deep) before the front edge/overhang at row 4.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7221
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.504Z",
+ "cells": {
+  "16": [
+   "195d554dedbfbece",
+   "40f9c60c12c85919",
+   "cb9f64c84c8b91d2",
+   "d7bb0dd749c3d94a"
+  ],
+  "24": [
+   "00ef4bf0cb0beab9",
+   "1100a65ec581d82c",
+   "1ba0375311978ab5",
+   "2415c2bfe31f1346",
+   "353f333baf76c23f",
+   "38fed3094988f060",
+   "460a90e6efb404e8",
+   "52b26e8d65a7ee76",
+   "5cdb4b066b4ddd50",
+   "60c71f51a57c0739",
+   "7614ca63b190d5c6",
+   "81ec16cb17b03d6e",
+   "939f0e718a93d8b9",
+   "9560c861d64f19e7",
+   "9fe8e5df0bd1f41a",
+   "d06febdaf870fd83",
+   "d2da174db179cbf4",
+   "d9618f2b15eb4263",
+   "daba29f0bce73ac5",
+   "dc8c710d9be5fd83",
+   "e24dee2743c13788",
+   "eab6431a190149b1",
+   "ead0d0fa32cc4dae",
+   "fc98e85717858efa"
+  ],
+  "32": [
+   "37046279d92beebb"
+  ],
+  "48": [
+   "5064dad60bb9c8eb",
+   "58b25ab96eca21a0",
+   "71891eecebb6d529",
+   "a8b726ec42973803",
+   "d072ff4cf1babecf",
+   "d8ab708f8a4084e8"
+  ]
+ }
+}

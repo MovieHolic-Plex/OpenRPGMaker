@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0a7e7a5c12a6661bfe40bfb6f29c36e31af901f692c3f1fcfc4201a5ba3b0724",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "현금 단말기 부스(윗면 + 차양 턱 + 화면 + 키패드 + 카드 투입구)",
+ "label": "sf-station/sf-street-atm-kiosk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ATM booth kiosk",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 2–6 form a clearly delineated 5-row top surface above the canopy rim (rows 7–8) and the front operating face (rows 9–31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4590
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ATM booth kiosk",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof/awning surface of the ATM kiosk is clearly depicted across rows 2–6 (5 pixel rows tall) above the green trim and south-facing interface panel.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5609
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ATM kiosk booth",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof surface of the booth is clearly rendered across rows 2-6 (5 rows tall), followed by a green visor/canopy edge at rows 7-8 and the south-facing front facade containing the screen, keypad, and slot.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4972
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ATM / cash dispenser booth",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the booth is clearly visible from rows 2 to 6 (5 source pixel rows tall) above the green awning ledge, providing proper 3/4 top-down foreshortening before the south front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5481
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:31.923Z",
+ "cells": {
+  "16": [
+   "a456695712cd3afb",
+   "fcf35edf06f80d48"
+  ],
+  "24": [
+   "3ad6322e0ab45da9",
+   "453a0a82154c70fe",
+   "5853e74789375385",
+   "5dadde0427142ec5",
+   "6b6b9c82c6a234ac",
+   "832513e47e437be3",
+   "a82b8d70234bfd2d",
+   "ae81d3aa5b852b03",
+   "afd999a02a9d1356",
+   "b49f5e49c185b50b",
+   "b88c8854693038ae",
+   "fe82fb0979523287"
+  ],
+  "32": [
+   "28d1575ae81e100b",
+   "a76c55046829265e",
+   "aa91ba42632ae7bd"
+  ],
+  "48": [
+   "042a9942f4f30538",
+   "61f282237d39bae6",
+   "906c230614eec21b",
+   "a175103589965ba4",
+   "f56a8649bd28142e",
+   "f5e1ebb4764bb92c"
+  ]
+ }
+}

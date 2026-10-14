@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b384251d659c68eac993c2b4d6b850cf492733e80cf8bc536ff620eb4fb2512b",
+ "width": 32,
+ "height": 16,
+ "kind": "structure",
+ "name": "화물 드론(굵은 몸통 윗면 + 회전날개 원 넷 + 화물 상자)",
+ "label": "sf-station/sf-street-cargo-drone",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "drone fuselage",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The drone body shows a prominent 7-row top surface (rows 3-9) with circular rotor guards seen from above, while the south front face and cargo box are visible below (rows 11-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 21156
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "drone fuselage and cargo box",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The drone's main fuselage clearly displays a foreshortened top surface across rows 4–7 (4 source pixels tall) featuring paneling and an indicator light, above the vertical white front face (rows 8–10) and cargo crate (rows 11–14). Rotor pods on the sides are also foreshortened from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7817
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "drone fuselage",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cargo drone is incorrectly categorized as a large architectural structure (gate, pavilion, building). Furthermore, the sprite is drawn either in a flat front elevation or pure top-down projection: the rotor rings are unforeshortened 1:1 circles rather than 3/4-view ellipses, and the main body lacks the required combination of foreshortened top surface and south front face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13562
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cargo drone fuselage with cargo container",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The drone is categorized as a large structure (building/gate/pavilion), which it is not. Furthermore, it is drawn in a flat elevation view with unforeshortened circular rotor discs and a flat vertical cargo box, lacking a 3/4 perspective with a clearly defined top surface and south face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14607
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:06.342Z",
+ "cells": {
+  "16": [
+   "184c15ca07d0fc74",
+   "b72a34a2113b00b8"
+  ],
+  "24": [
+   "17f4e1876263c92d",
+   "638b1ba12593085d",
+   "690be11ce80b5350",
+   "9b6d31d6c33eba7b",
+   "ca2f27929498ba41",
+   "d21b2b2b087e9989",
+   "d43a3f0e7dfb9f84",
+   "df759aa55e5b1ba2",
+   "eb27440dbb11bad9",
+   "eea6d08954eb1e23",
+   "efec01388927e261",
+   "f526f5e1482c5af4"
+  ],
+  "32": [
+   "10e761ce0e7c0f38",
+   "8ece39ea94e451bd"
+  ],
+  "48": [
+   "1193986b5be9ea33",
+   "1b4c4b42cb695e1d",
+   "2b23cf674080bf95",
+   "9bb639f4f6bcde17",
+   "a8bfce9cd3ccd929",
+   "d014ea84459bf82c"
+  ]
+ }
+}

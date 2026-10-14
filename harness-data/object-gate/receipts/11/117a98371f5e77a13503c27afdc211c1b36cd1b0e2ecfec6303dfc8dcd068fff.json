@@ -1,0 +1,134 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "117a98371f5e77a13503c27afdc211c1b36cd1b0e2ecfec6303dfc8dcd068fff",
+ "width": 48,
+ "height": 16,
+ "kind": "seat",
+ "name": "예배당 긴 의자",
+ "label": "gothic_manor/gm-pew",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "church pew / long bench",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pew is drawn in flat front elevation. Both end posts/arms are flat vertical strips with no visible top surface or north-south depth, and the backrest and seat/paneling consist entirely of horizontal bands without a visible foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 16318
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "chapel pew / bench",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pew is drawn in flat front elevation with horizontal bands and vertical slats between two posts. There is no horizontal seat surface visible from above as required for the 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13757
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "chapel pew (long bench)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pew clearly shows horizontal depth: the upper backrest/shelf band spans rows 1-3 (3px) and the horizontal seat surface spans rows 7-11 (5px) with visible foreshortening, above the south-facing base shadow.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15712
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "chapel pew (seen from behind/front)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pew is drawn in a pure front elevation view (depicting the vertical backrest/hymnal rack of a north-facing pew). There is no visible horizontal seat surface or top rail surface foreshortened from above (top_rows is 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8598
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.504Z",
+ "cells": {
+  "16": [
+   "077dfc70c38789bd",
+   "5999ce1f71f83126",
+   "bc3835000269515d"
+  ],
+  "24": [
+   "56f63f5242942a1e",
+   "6e19b233ba21dde2",
+   "86415a5e093e57de",
+   "f41720d4b8146fce"
+  ],
+  "32": [
+   "172106830a4edbd2",
+   "1af1821b6ecc6295",
+   "2de22a027b13267e",
+   "3a2a0f6893bee612",
+   "66df217d9adb67e1",
+   "736faa4eaed38fc9",
+   "7a768a2e1c93bf9a",
+   "9dce2be84a9b2d5b",
+   "a20deb0893ac4e78",
+   "b11233dfca6d9c50",
+   "c720d1fd368aab35",
+   "c91a55366a699f12"
+  ],
+  "48": [
+   "afc8ae778241cd22",
+   "e508d7fbb0776d61"
+  ]
+ }
+}

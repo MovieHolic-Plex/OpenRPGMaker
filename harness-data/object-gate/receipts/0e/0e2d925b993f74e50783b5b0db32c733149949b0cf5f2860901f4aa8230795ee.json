@@ -1,0 +1,127 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0e2d925b993f74e50783b5b0db32c733149949b0cf5f2860901f4aa8230795ee",
+ "width": 32,
+ "height": 16,
+ "kind": "seat",
+ "name": "관람 의자(가죽 등받이 없는 긴 의자)",
+ "label": "gothic_manor/gm-museum-bench",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "leather cushion bench seat",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bench is drawn in flat 2D front elevation (side-scroller style): a single vertically shaded rectangular cushion on two front legs, with no foreshortened top seating surface visible (0px top surface beyond the 1px outline).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 16094
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "backless bench cushion",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tufted horizontal seating surface of the bench is viewed from above across rows 3-10 (8 source pixels tall), followed by the darker front edge of the cushion on rows 11-12 (2 pixels tall) with legs extending below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6622
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cushion seat of the backless bench",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tufted leather seat surface is viewed from above across rows 3 to 10 (8 rows tall), with south-facing legs extending below at rows 13-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10249
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "leather cushion bench seat",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bench is drawn in flat front elevation with a vertical rectangular cushion and legs extending straight down; the top surface has only a 1px outline/highlight with 0px of foreshortened seat depth visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12827
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.505Z",
+ "cells": {
+  "16": [
+   "565cc5216d287267",
+   "f4f0668165c689b2"
+  ],
+  "24": [
+   "1d268ae8cf9e6285",
+   "660ca0a58cb7f2db",
+   "6bf30ef13dcd12fc",
+   "864f2cdcc30fd5d9",
+   "9831c8194784eeef",
+   "a284f949b26c9d87",
+   "b6bd3991420eadec",
+   "c6b90308773cefe6",
+   "d1f0fa6010e43674",
+   "d35c310d3e943786",
+   "da9cecd349bba805",
+   "e052c95eba99b9f5"
+  ],
+  "32": [
+   "0371117b9eab4bdb",
+   "ae9ee5e32c2e74a5"
+  ],
+  "48": [
+   "77c7275febad0b02",
+   "88598295d20ad697",
+   "bf0545debce3f215",
+   "c10aeea8513f0b62",
+   "d69682c584c08d27",
+   "fddd0b71fcbcb75d"
+  ]
+ }
+}

@@ -1,0 +1,154 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e9e5760a0c126168f3cf1bad2e7b681a6752b507eb13acfd6a57697efbef25e9",
+ "width": 64,
+ "height": 32,
+ "kind": "terrain",
+ "name": "hull bulkhead wall front face strip under the ceiling autotile: upper and lower face rows, four variants",
+ "label": "sf-station/sf-wall-face-hull",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bulkhead wall face strip",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The asset is terrain representing the vertical front face of an interior sci-fi bulkhead wall. As wall-face terrain designed to sit below ceiling/roof tiles, it appropriately depicts the vertical surface facing the camera.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6078
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bulkhead wall face tiles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall face terrain tiles depicting metallic bulkhead panels with pipes and vents; as standard 2D JRPG wall face terrain, it correctly represents the vertical front surface of the wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5234
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bulkhead wall face strip",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain autotile strip showing the vertical front face of a sci-fi bulkhead wall across multiple tile variants. As a vertical wall terrain element designed to connect beneath ceiling tiles, no foreshortened top surface is expected on the wall face itself.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8263
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bulkhead wall face panels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is terrain (vertical bulkhead wall face autotile strip beneath the ceiling), not a standing object. Vertical wall faces in 3/4 top-down RPGs correctly show only the vertical south-facing surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 27528
+  }
+ ],
+ "decidedAt": "2026-10-13T15:44:10.258Z",
+ "cells": {
+  "16": [
+   "0815231584e3715a",
+   "0be7e618c7eb1c59",
+   "16382e81fe13140d",
+   "6e4e00d179a39213",
+   "6fbf11342ca10db5",
+   "d559345dbc504a9e",
+   "dc6c34610db73e8d",
+   "e166b7cb9dcfabe5"
+  ],
+  "24": [
+   "0416518125d32fea",
+   "153caeffee875c36",
+   "1573bd19a57f6cca",
+   "19016a4f02bcdd3c",
+   "1b71cf4e431929e1",
+   "1ba1999dcbc2eeb1",
+   "1c3e4bee7c4fcff1",
+   "28fb3a33262b9ffc",
+   "2d8e8a5d2da81c9e",
+   "31d0485f5e502e8e",
+   "3270d8b6282c3095",
+   "3e045c83178398a2",
+   "64a0fce266e9279a",
+   "6757574dc8a72e61",
+   "6957ebbc2ec724a9",
+   "6c3663c9a617f5f1",
+   "750ec8a12c564fce",
+   "75e8c1b41321ba95",
+   "75f86046590457c7",
+   "7bf74c291338cfc3",
+   "95b56ac2e13cb0f1",
+   "990226da207afc77",
+   "a4b6916c9e18a4b9",
+   "a57cd0bbf1a9c0d8",
+   "a61828cf40991d2a",
+   "a7c143f14c3e3441",
+   "a870d9d3ceea313a",
+   "aa4edbb2df15bdbf",
+   "b0deb730673abefe",
+   "c1ce0e71258eccb6",
+   "d243d499b8ff7270",
+   "f175f7013acaf62e",
+   "f17f6e39f3943a96",
+   "f55490dfef1c73a8",
+   "fe8adb3d6b124e2b"
+  ],
+  "32": [
+   "3478e92f8a527bdf",
+   "c55e7fa01aa8da76"
+  ],
+  "48": [
+   "063cce3a364430af",
+   "0d624e38688472ae",
+   "370e02576f83d2a0",
+   "5fb118d9262c2880",
+   "7480750295bc7fe1",
+   "92cf0da849772c96",
+   "994b7633dc9868b3",
+   "ba9551816407fcc6",
+   "bf7140f5cbb2a342",
+   "d1ebffc936d37719",
+   "e252711e957af1ca",
+   "e59ef3113fc9ab22"
+  ]
+ }
+}

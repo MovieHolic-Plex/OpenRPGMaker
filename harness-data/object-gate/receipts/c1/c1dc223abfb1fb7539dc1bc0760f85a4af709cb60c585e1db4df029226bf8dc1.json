@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c1dc223abfb1fb7539dc1bc0760f85a4af709cb60c585e1db4df029226bf8dc1",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "이층 침대(윗면 매트리스 + 사다리)",
+ "label": "sf-station/sf-bunk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bunk bed top bunk and frame",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top mattress surface is clearly foreshortened and visible from row 2 to row 12 (11 rows) above the front face of the bed frame (rows 13-27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4092
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bunk bed (upper mattress and frame)",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface showing the upper mattress and bedding occupies rows 1 to 12 (12 rows tall), while the front face of the frame spans rows 13 to 27.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4620
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bunk bed top mattress and frame",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top mattress surface is clearly foreshortened and visible from row 2 to row 12 (11 rows tall), atop a vertical south face from row 13 to row 27.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3977
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bunk bed top bunk and frame",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top mattress surface is clearly foreshortened and visible from row 1 to row 12 (12 pixel rows tall), with the front face and opening of the lower bunk occupying rows 13 to 27.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3515
+  }
+ ],
+ "decidedAt": "2026-10-13T15:15:22.115Z",
+ "cells": {
+  "16": [
+   "52976d3e7e2f01cd",
+   "9d17c67f8f2c2f5e",
+   "bbc4da8b26490a5f",
+   "debe70bf3bba7b79"
+  ],
+  "24": [
+   "11d246437a6343b4",
+   "19bb170146d42075",
+   "284a697dfdcbe231",
+   "2e01a08ee0253d43",
+   "37c7e289d303509a",
+   "3ebd75eb5c6a9213",
+   "44755603b6103e48",
+   "4905b04480dddd9f",
+   "4e2fd5df67274862",
+   "51362979c88762d1",
+   "5e3e0f0233a89455",
+   "653c9a82fe85e42f",
+   "80c7d2d48cd6994d",
+   "8ac2aa81c50751bd",
+   "8fa7ccd5e11cd785",
+   "ab722ef439b329c1",
+   "bd85fb842d83b6dc",
+   "c6b713f54f4541f8",
+   "d35fad2e9f3def5d",
+   "d56cc891a64c2754",
+   "d645dfbdb1627ae3",
+   "e2edd5b7cc5e44c6",
+   "e703e30e65b99048",
+   "f7fc93bd6c3cbf77"
+  ],
+  "32": [
+   "2b447d1e4e4a11e5"
+  ],
+  "48": [
+   "121e3135fb922681",
+   "1bc1ce3cf99a2393",
+   "86c0d197c3fad6f0",
+   "92b68c988b1fc322",
+   "c3d1d5cf4a56601b",
+   "fdfddff83a73062e"
+  ]
+ }
+}

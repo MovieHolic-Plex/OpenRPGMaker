@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "edaae146fc2aced4155e649ff77beeff9f0395bdb5accada186d30fbd34f76ca",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "잔디 경계석(서 변)",
+ "label": "modern-campus/mc-curb-w",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "curb stone bordering grass terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a vertical western curb boundary between pavement and lawn viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3881
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "curb stone / grass terrain border",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a western curb/border transition between paved surface and grass; the entire tile lies on the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3492
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "curb border and grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile showing the western border curb transition between pavement and grass from a top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3654
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "curb and lawn terrain border",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting grass with a vertical stone curb border and adjacent pavement, fully seen from the top-down ground perspective across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3852
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.866Z",
+ "cells": {
+  "16": [
+   "60b1135c0fc70178"
+  ],
+  "24": [
+   "11b8ba03573a789e",
+   "38ed95786bb2a060",
+   "6bc67a3f2551166f",
+   "ac932f16392ae17b",
+   "aeb68b2a68dd30a8",
+   "fd7d81886eac537b"
+  ],
+  "32": [
+   "2dd81e3386cace49",
+   "3c8b5a38f486c3f5",
+   "802907e62e6563fd",
+   "9873b0cd0819933a",
+   "c8b2f5a1e276d63a",
+   "da985c19653030e1"
+  ],
+  "48": [
+   "01a77a1928a30f1d",
+   "4be983a8920d5be6",
+   "7b20e0bb3d2b7fab",
+   "7e30b20b119538c0",
+   "ce8d8b6f11feefe2",
+   "deb686954502d2c0"
+  ]
+ }
+}

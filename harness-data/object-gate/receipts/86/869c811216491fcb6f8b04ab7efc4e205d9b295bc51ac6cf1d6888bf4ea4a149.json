@@ -1,0 +1,153 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "869c811216491fcb6f8b04ab7efc4e205d9b295bc51ac6cf1d6888bf4ea4a149",
+ "width": 64,
+ "height": 32,
+ "kind": "structure",
+ "name": "연결 통로 튜브(가로로 누운 가압 통로, 깊은 윗면과 유리 창 줄)",
+ "label": "sf-station/sf-tube-h",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal connecting tube corridor",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The curved/sloped top surface of the pressurized tube corridor is extensively rendered across rows 1-13 (approx 13 pixel rows) with visible panel lines and structural ribs before transitioning to the south-facing window wall below row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5658
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal connecting tube corridor",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cylindrical roof/surface of the corridor is clearly visible from rows 1 to 13 (approx. 13 pixel rows) with structural ribs, meeting the vertical front wall containing the windows at row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6568
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal connecting passage tube",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the corridor occupies rows 1 to 13 (approx. 13 pixel rows) complete with panel lines and reinforcing ribs, sitting clearly above the south vertical face and window band (rows 14-27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4126
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal pressurized connecting corridor tube",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface/roof of the horizontal tube occupies rows 1 to 13 with visible panel lines and ribs, clearly distinguishing the top surface from the south vertical facade with windows below row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5444
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:27.302Z",
+ "cells": {
+  "16": [
+   "0635080debb2abf9",
+   "2ddeb73f7691ce1b",
+   "383fcbb092ec684f",
+   "4a03e67125681335",
+   "742cb8cf11444c71",
+   "7c1413095b1a1b73",
+   "a9fab065743efb3a",
+   "b75c310ddf6b1ec1"
+  ],
+  "24": [
+   "08ef9e81c0ad66dd",
+   "0c180f9a96d580ef",
+   "0f9f20c921a44ccb",
+   "154d0df281ad7c49",
+   "18363c471af7895c",
+   "20a72f559f3b9b1e",
+   "2363602609d53c29",
+   "2ebb2375a8aac3c3",
+   "31b40d39945754e0",
+   "3aeda7a213edd905",
+   "3d8db14c74766841",
+   "481ebb8c5012a49e",
+   "51b93b0a4a2087c2",
+   "5b08b93e56558e4c",
+   "62b476b286c5f329",
+   "63fb3fa3a4fb8ce1",
+   "6caf06537727111f",
+   "7513ca136cbdc66c",
+   "7c593d8d205f05cf",
+   "7cb4bed9c0fa89fe",
+   "7f57cd4117666d99",
+   "7f7464b3c920db81",
+   "8de24300bb9ae8ac",
+   "8e67e9f75cab1f38",
+   "92dfc455cb2ead2b",
+   "94fb46a47cb6a7ad",
+   "ab41b70bacb96719",
+   "b1d3b49b0cc7262e",
+   "b82a7cefdae176c5",
+   "baf2f37b204a41e5",
+   "c9cb2fb182e951e0",
+   "d6d819efde210779",
+   "de3965851efb3539",
+   "e2e49e1466bd65e9"
+  ],
+  "32": [
+   "0c644e70a2ef0150",
+   "502c5f1a2c913d7a"
+  ],
+  "48": [
+   "0f68fdc342d723d0",
+   "13d57efba731948f",
+   "2a2d5bf75a7ea721",
+   "45795bac0e8b6d88",
+   "512053be857f8123",
+   "529da9ce7c5fcabb",
+   "5cb6f857cb1be86c",
+   "6ddd477ec27d3a22",
+   "6e341b484a877edb",
+   "9ba1eede03d8925a",
+   "c639a6a7930902da",
+   "e6686be36bdc756f"
+  ]
+ }
+}

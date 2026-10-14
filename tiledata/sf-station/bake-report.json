@@ -1,0 +1,37 @@
+{
+ "definition": {
+  "violations": 0,
+  "by_code": {},
+  "examples": {},
+  "tiles_checked": 1169,
+  "kits_checked": 165,
+  "groups_checked": 38,
+  "autotiles_checked": 8
+ },
+ "reassembly": {
+  "kits": 165,
+  "mismatched": 0,
+  "ids": []
+ },
+ "palette": {
+  "cells_off_palette": 0
+ },
+ "tiles": {
+  "count": 1169,
+  "rows": 25,
+  "kits": 165,
+  "groups": 38,
+  "autotiles": 8
+ },
+ "adopted": {
+  "pieces": 172,
+  "by_group": {
+   "outdoor": 44,
+   "street": 44,
+   "interior": 55,
+   "terrain": 29
+  }
+ },
+ "rejected": [],
+ "reassembly_from_files": 0
+}

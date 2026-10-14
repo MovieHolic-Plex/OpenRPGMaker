@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "733c4691d93802c28875c6a74ca28889351c5cb9be3b034bf745b46629c73f95",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grey concrete sidewalk paving with faint neon glints, two variants",
+ "label": "sf-station/sf-sidewalk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "concrete sidewalk paving tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain ground tiles depicting grey concrete sidewalk paving with occasional colored glints across a 2D floor surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4477
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "concrete sidewalk paving tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground/terrain tiles representing grey concrete sidewalk paving with curb highlights and neon glints.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7630
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grey concrete sidewalk paving tiles with neon glints",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tiles depicting grey sidewalk paving slabs with subtle texture and faint colored glints.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5836
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "concrete sidewalk paving tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tiles depicting flat horizontal sidewalk pavement with subtle color specks, seen from above in top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3527
+  }
+ ],
+ "decidedAt": "2026-10-13T15:26:41.509Z",
+ "cells": {
+  "16": [
+   "1b5b6d8ab6a11fb8",
+   "411739587ec1c11c"
+  ],
+  "24": [
+   "2b028bb54193deb5",
+   "34c450dd236b136f",
+   "410249d6582b6426",
+   "416fea82568cbafb",
+   "537014be0c1a6f80",
+   "6d3e47efd5e3a1de",
+   "75354b857c245509",
+   "7b59486571f54f37",
+   "91b093fccdefb2bf",
+   "946bdda88b92e29d",
+   "d9d83c5f8908665b",
+   "f1e37ebab0429f2a"
+  ],
+  "32": [
+   "1dc0f6c04f914756",
+   "4a885b70a49c8c70"
+  ],
+  "48": [
+   "12b8f0bbfd261421",
+   "7acbd3810c9a8c0d",
+   "b56559158f0e77d6",
+   "d19a3764238bf739",
+   "e2aa7905a4b77e70",
+   "f94e38910f70dfdd"
+  ]
+ }
+}

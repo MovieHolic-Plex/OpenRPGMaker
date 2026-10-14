@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4bd9dcce33a8c88449ed8a562f5acaf31c2f1ee2c115b763668e939fcd9bf076",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "실내 자판기(윗면 + 음식 진열창 + 투입구)",
+ "label": "sf-station/sf-vending-int",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "indoor vending machine",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 2-10 depict a 9-pixel-tall top surface foreshortened in 3/4 top-down perspective above the front face containing the display window and controls.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6616
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the vending machine is clearly drawn from rows 2 to 10 (9 source pixel rows tall, rendered in a lighter tone consistent with top-down illumination) above the front face containing the display window and dispenser flap.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8277
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "indoor vending machine",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the vending machine is clearly visible from rows 2 to 10 (about 9 rows tall) above the front display window and slot, matching standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8611
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the vending machine is clearly drawn from rows 2 to 10 (9 rows tall) with lighter top-down illumination, above the south-facing display window and lower casing (rows 11-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12679
+  }
+ ],
+ "decidedAt": "2026-10-13T15:28:17.424Z",
+ "cells": {
+  "16": [
+   "489ad1c53532e06c",
+   "6d82934f52f5b80c"
+  ],
+  "24": [
+   "006ceb84144e9fe3",
+   "06b1aa1f61866aa6",
+   "10b6f2124d907339",
+   "1c8407c1c083c5a6",
+   "317df8a317aa12d8",
+   "363ced5d1a8e0ce8",
+   "5ed55f52590b7336",
+   "8228156698a0adff",
+   "91a9d339fe1f5d2d",
+   "ae6742064e0eac99",
+   "b75d276754c54de7",
+   "d731b60f44e74625"
+  ],
+  "32": [
+   "0c5e94f8eb361b8c",
+   "0e2085caefa66000",
+   "a8f09a03ef6b1752"
+  ],
+  "48": [
+   "2a0ecd941d66ce87",
+   "3bc0d940e1ac89ed",
+   "a96132d2eebe3568",
+   "b33a809d76c2da4e",
+   "e4c98c14bd14e17e",
+   "e70b3581a43f1cda"
+  ]
+ }
+}

@@ -18,6 +18,9 @@ const KNOWN_FAMILY_LABELS: Readonly<Record<string, string>> = {
   "oprn-jp": "일본 도시(도트)",
   "oprn-wizard": "마법 학교(해리포터풍)",
   "oprn-steampunk": "스팀펑크 도시(도트)",
+  "oprn-campus": "현대 학교·캠퍼스(도트)",
+  "oprn-scifi": "SF 정거장·네온 거리",
+  "oprn-gothic": "고딕 저택·묘지(호러)",
   "oprn-monster": "몬스터 수집(포켓몬풍)",
   "oprn-monster-emerald": "몬스터 수집(에메랄드풍)",
 };

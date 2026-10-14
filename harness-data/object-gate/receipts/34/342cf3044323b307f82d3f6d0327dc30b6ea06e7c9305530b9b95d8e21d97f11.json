@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "342cf3044323b307f82d3f6d0327dc30b6ea06e7c9305530b9b95d8e21d97f11",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "호버 포드(사다리꼴 캐노피 윗면 + 측면 패널)",
+ "label": "sf-station/sf-pod-car",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 2행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hover pod body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hover pod is drawn in pure front elevation: the lower bumper/grille with headlights occupies rows 18-27, topped by a front windshield (rows 6-12) and front canopy framing. The horizontal top surface of the roof is completely missing (0 rows), terminating abruptly at a flat 1px top outline at row 3.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11316
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hover pod body (trapezoidal upper canopy and lower bumper hull)",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper canopy/roof surface spans rows 3–17 (15 px) displaying a foreshortened top surface with paneling and windows above the vertical front hull (rows 18–26).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11658
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hover pod cabin and hull",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn in pure front elevation: the lower hull (rows 18-26) shows the front bumper and headlights, rows 6-12 depict an upright front windshield, and the actual roof/top surface above the windshield (rows 3-5) is only 2 source pixel rows tall, lacking the 45-degree top-down foreshortening required for JRPG map objects.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 13783
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hover pod body",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hover pod is drawn in pure front elevation (like an arcade racer front view): a massive 10-row vertical front bumper with headlights/grille (rows 17-26) and a front-facing windshield/canopy (rows 6-12), leaving only a negligible 2-3 pixel rim along the top edge (rows 3-5) where the roof should foreshorten from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 8298
+  }
+ ],
+ "decidedAt": "2026-10-13T15:44:10.255Z",
+ "cells": {
+  "16": [
+   "04752023e3b3d64e",
+   "0959054e70dbd356",
+   "6b4a96489db3691b",
+   "6c27522eb5e51294",
+   "c68fc3dd43bbfd9e",
+   "fecec43ab19d7674"
+  ],
+  "24": [
+   "0258e4fdb9b864d0",
+   "3e08f27c64458efd",
+   "58480d2b795de13c",
+   "98023718b27feae5",
+   "a7092c22bad7f32f",
+   "b617b52126fc4c24",
+   "c4c54422abdb5a2b",
+   "fd2ed6a6458026d7"
+  ],
+  "32": [
+   "3794817dbdca9180",
+   "86adb0ea8326e53d",
+   "ae582fabd7def92d",
+   "be7d8b426f06d5ba",
+   "cbd5d14f6115b3ed",
+   "d3ffb58b379118d5"
+  ],
+  "48": [
+   "6df4ba1dfba5db03",
+   "ad03ff7447644d66"
+  ]
+ }
+}

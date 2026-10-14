@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "234661327455c6e34563207e963a4ac710e6358851f699678a8707f944fe1b43",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "음료 자판기",
+ "label": "modern-campus/mc-vending",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "drink vending machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The vending machine is drawn entirely in a flat front elevation. The upper section (rows 0-10) and the lower red body (rows 11-30) are both drawn facing directly forward with no visible receding or foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6618
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire vending machine is drawn as a flat front elevation from row 0 to row 30. There is no foreshortened horizontal top roof surface visible (0 top rows); the machine ends at the top with only a 1px outline.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6337
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The vending machine is drawn strictly in pure front elevation with only a 1px dark border at row 0 and no visible horizontal top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6542
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "drink vending machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The vending machine is drawn entirely in front elevation with no visible top surface (0 rows) showing the roof/top plane of the cabinet.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5672
+  }
+ ],
+ "decidedAt": "2026-10-13T16:35:07.542Z",
+ "cells": {
+  "16": [
+   "279844f67906a345",
+   "cb5d43072e3a54f1"
+  ],
+  "24": [
+   "636ec0b4ec9d592d",
+   "78ce7a9c2df04ae6",
+   "7a1fbf9b8c20355f",
+   "972d6b79fe6eaaae",
+   "aa228e9f7cde414d",
+   "b23bf64a89f3f340",
+   "c896c08f9a824b02",
+   "cd07dcca2e1c0ee6",
+   "d12f096a2ff8eb42",
+   "f76257cdf3e49974",
+   "fe2e822ac6269f1f",
+   "fee5b6caff2f83bc"
+  ],
+  "32": [
+   "532ed7d6ed281e93",
+   "85a435c716b20b20",
+   "91c9a3832710373e"
+  ],
+  "48": [
+   "22b230d297489bd9",
+   "46d4c338a1730e11",
+   "5c3e31a451accb0a",
+   "5facb1be69b6d399",
+   "727ec9af1e20a337",
+   "7929048e50916f24"
+  ]
+ }
+}

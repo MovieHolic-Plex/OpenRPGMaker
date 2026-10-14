@@ -1,0 +1,123 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "64995b3b8787ae6fc93914bd5fecbe844bb6502b8015cdad9e946f255c019db3",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "위험 차단벽(노랑·검정 줄무늬 낮은 방벽)",
+ "label": "sf-station/sf-barrier",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hazard barrier",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object clearly displays a large top surface spanning rows 1 to 9 in pale yellow, with the south-facing front surface below it displaying diagonal hazard stripes (rows 10-12) and a dark base (rows 13-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6153
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "low hazard barrier block",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The low barrier correctly shows its large yellow horizontal top surface from row 1 to row 9 (9 pixel rows), with its south-facing vertical front face bearing the yellow and black hazard stripes (rows 10–14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11718
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hazard barrier",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body shows a wide foreshortened pale yellow top surface spanning rows 1 to 9, above a south-facing vertical section with yellow-black hazard stripes on rows 10 to 12 and a dark base on rows 13 to 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4609
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hazard barrier",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrier is drawn entirely in front elevation with a rounded top silhouette, yellow main panel, lower hazard stripe band, and a dark rubber base, showing 0 rows of any horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 11324
+  }
+ ],
+ "decidedAt": "2026-10-13T15:31:15.750Z",
+ "cells": {
+  "16": [
+   "9be874ea53d4b2c8",
+   "a6efe0c28fa5425a"
+  ],
+  "24": [
+   "28632eb181116dae",
+   "32c19905dd6044a1",
+   "37555ad3d91fe9d4",
+   "6496a013bc425ead",
+   "680298801de93319",
+   "ac1fa38bdbc4e7d2",
+   "adf9d3d3f4d184dc",
+   "c20a1c4788996ae8",
+   "c3a829516087cdad",
+   "eb52906d86d02646",
+   "f4b6ab033ca4348c",
+   "fc0e9be726e0d20a"
+  ],
+  "32": [
+   "5c921e53cb445162",
+   "d97bead879bc12a0"
+  ],
+  "48": [
+   "3683f5e58c4c4ece",
+   "424ee984876f4aab",
+   "59527b6d64a07429",
+   "6c1f33d0a511f8de",
+   "752ba6aefdca633a",
+   "cb1875c3f352a3d5"
+  ]
+ }
+}

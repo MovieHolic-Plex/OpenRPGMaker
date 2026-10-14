@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "98ed0915a2485c1f7475c14e5692cbb9e0b5af4fd88a32c6a4d1d84f3e5c47e2",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "소형 안테나 접시(받침 상자 + 작은 흰 접시)",
+ "label": "sf-station/sf-dish-small",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "base box with mounted antenna dish",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base box has a distinct top surface occupying rows 19-23 (5 rows tall) rendered in lighter blue-gray, above its vertical front face (rows 24-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5604
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "base box with antenna dish",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base box clearly shows a distinct top surface across rows 19-23 (5 pixel rows tall) rendered in a lighter shade than the darker front face below it (rows 24-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5805
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "base equipment box with mounted antenna dish",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base box clearly shows a lighter horizontal top surface spanning rows 19-23 (5 source pixel rows) before transitioning to the darker south-facing front surface (rows 24-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8692
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "base box and antenna dish",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base box clearly displays a distinct horizontal top surface (rows 20-23, 4 pixel rows tall in lighter tone) separate from its darker south front face (rows 24-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6855
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:09.620Z",
+ "cells": {
+  "16": [
+   "6173c1b0db73306e",
+   "86f61492e807df0d"
+  ],
+  "24": [
+   "013fd84c1c9fb9e9",
+   "1e61efcb0d207c26",
+   "26f132e8cfcb655e",
+   "4f5f070bd42ffd38",
+   "61503f1e914c5b75",
+   "72b8965da499147b",
+   "74e769037a27d916",
+   "7a34f4b4ef91a10a",
+   "984a05d7e20b668b",
+   "c9e380aba8f0d78b",
+   "cd32cb716ca25d05",
+   "fa1c64a7eca0d669"
+  ],
+  "32": [
+   "29816024b5ccde1e",
+   "4db451ed51d4ac6e",
+   "e15bf73efbbc31c1"
+  ],
+  "48": [
+   "15007fb7c5165d15",
+   "2688625e3927286f",
+   "2a9ca27a8c5a9996",
+   "aec0f8d460101f9c",
+   "f055abd4978458e6",
+   "ffe8e990767dfa8b"
+  ]
+ }
+}

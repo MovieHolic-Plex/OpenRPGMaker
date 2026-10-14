@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "25f29eb75f218c82fba688c0a7cdfeb08dfdb56d2cb757e2b45e22ee32042697",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-lot-slide",
+ "label": "jp_city/street_hand/jp-lot-slide",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "signboard or slide tower structure on pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in flat front elevation: the upper sign/box has no foreshortened top surface (only a 1px outline at row 2), the central pillar has strictly horizontal segment dividers with no cylindrical curve or perspective, and the base plinth at rows 41-43 shows no top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5142
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical column with overhead rectangular panel and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in flat front elevation with 0px of top surface visible on the top sign/lintel, column, and bottom plinth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4466
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pillar structure with sign / platform at top",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure, including the upper blue box/sign and the base, is drawn completely flat from the front with horizontal bounding lines (no top surface or depth visible on either the upper beam/box or the base).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3990
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "signboard and supporting column structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top rectangular panel and the column/base are drawn entirely as a flat architectural front elevation with no visible top surfaces (top_rows: 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3780
+  }
+ ],
+ "decidedAt": "2026-10-13T17:32:26.915Z",
+ "cells": {
+  "16": [
+   "0c0f0d78ed340b22",
+   "0e5bc32a60a3080b",
+   "3c831d12ac83d0bb",
+   "6bbba648432a88ab",
+   "8d4041024376db1a",
+   "987e9149de9074a9"
+  ],
+  "24": [
+   "36cfafa3b6733282",
+   "401493e99ac8c9d8",
+   "47fd78a9e5bfa078",
+   "9830fbd92cc10cd9",
+   "a97c7997211ca20a",
+   "b11a8699f88069bf",
+   "ccf84850a6694930",
+   "e5c27b44df3b3b69",
+   "e735a15ab9d7c4ed",
+   "edfc21917e1e5295",
+   "f4c7ac591816bb0f",
+   "fe845ff713117336"
+  ],
+  "32": [
+   "06a8c9e0649b22c4",
+   "541841eb5c319374",
+   "7e3c0f8d918a22f4",
+   "d3ab7834936e64e8"
+  ],
+  "48": [
+   "4e9b16ada879bc7d",
+   "54c755f590ff0eaf",
+   "5b106cb04d70425c"
+  ]
+ }
+}

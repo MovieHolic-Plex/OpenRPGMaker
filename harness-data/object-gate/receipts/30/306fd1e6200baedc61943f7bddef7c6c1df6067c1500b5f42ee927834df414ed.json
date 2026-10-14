@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "306fd1e6200baedc61943f7bddef7c6c1df6067c1500b5f42ee927834df414ed",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "도서 반납 카트(3단)",
+ "label": "modern-campus-int/mc-book-cart",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "3-tier book return cart",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top tray/shelf of the cart is viewed from above across rows 9-16 (8 source pixel rows tall), showing books resting inside the open top tier, while the front face below displays the two lower shelves with upright books.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6786
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "3-tier book return cart",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top tray/surface of the cart is clearly visible from above across rows 8–16 (approx. 9 pixel rows deep), showing books resting inside the upper compartment, while the lower two shelves face south in proper 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7607
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "three-tiered book return cart",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top tray/surface of the cart is drawn foreshortened in 3/4 view across rows 9-16 (8 rows deep), showing books lying flat on the horizontal top surface. The lower two shelves show the front face with upright books.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6485
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "3-tier book return cart",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top tray/surface of the cart is viewed from above across rows 8–16 (approx. 9 rows tall), showing depth and books resting horizontally within it, while the front shelves below display vertical book spines in standard 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12028
+  }
+ ],
+ "decidedAt": "2026-10-13T16:35:07.540Z",
+ "cells": {
+  "16": [
+   "21b28c602f5bcaf2",
+   "b93cd5c49586a17a"
+  ],
+  "24": [
+   "2b43d57158bf2466",
+   "80e05510213e538e",
+   "98f4f516ab19c469",
+   "9a916771e6d38f55",
+   "9f5481f6ae580975",
+   "c44e8180ca25f273",
+   "cf362c0135d0ea55",
+   "e8635f7fbaf48097",
+   "f4747c63c59fc539"
+  ],
+  "32": [
+   "2a6ea64da858e754",
+   "52e0145beec07d12",
+   "9bb458a5add7c194"
+  ],
+  "48": [
+   "2c03961fe72c6919",
+   "8802d0f96b9602a6",
+   "9e2f0c217750e276",
+   "9f40350463bb2940",
+   "a2d67fcf72bbf514",
+   "b39975897f666428"
+  ]
+ }
+}

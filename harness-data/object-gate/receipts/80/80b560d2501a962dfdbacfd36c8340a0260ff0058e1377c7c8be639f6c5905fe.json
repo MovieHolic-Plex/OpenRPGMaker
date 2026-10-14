@@ -1,0 +1,127 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "80b560d2501a962dfdbacfd36c8340a0260ff0058e1377c7c8be639f6c5905fe",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "기타 앰프(검은 스피커 상자)",
+ "label": "modern-campus-int/mc-amp",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "guitar amplifier",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the amplifier is visible on rows 8-11 (4 rows tall) and features a carry handle seen from above, before transitioning down to the south-facing control panel and speaker grille.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6605
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "guitar amplifier",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the amplifier cabinet is clearly drawn across rows 8–11 (approx. 4px tall) featuring a central carrying handle seen from above, atop the south-facing control panel (rows 12–17) and speaker grille (rows 18–30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6779
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "guitar amplifier cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The amplifier is drawn in pure front elevation. Rows 8-11 depict a strap handle arch viewed straight-on from the side/front, with the amp body starting at row 12 showing the control panel and knobs facing directly south, followed by the speaker grille below. There is no visible top horizontal surface for the main cabinet.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 8569
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "guitar amplifier cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main amplifier cabinet (rows 12-30) is drawn in pure front elevation with a control panel and speaker grille facing directly forward. The feature on top (rows 8-11) is a carry handle with a cutout under it, while the top horizontal surface of the cabinet itself has 0 rows of visible depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 19144
+  }
+ ],
+ "decidedAt": "2026-10-13T16:35:07.540Z",
+ "cells": {
+  "16": [
+   "5597139e5072b2cb",
+   "6726b5361a9c7215"
+  ],
+  "24": [
+   "04b9497429e19dfa",
+   "05ae84f13da89446",
+   "08c07fe5c93e815a",
+   "09f5e4c44a4e0798",
+   "0cad2708a1860597",
+   "178db2e2d5991c71",
+   "a670ddd4ad7090a7",
+   "aeae89a91ac7e680",
+   "c755fbc44ee6f7a5"
+  ],
+  "32": [
+   "1a3222e12ec2c908",
+   "1b8b8548ade86c55",
+   "ad28b2d26cd260d6"
+  ],
+  "48": [
+   "26e5e50b5183df5b",
+   "56b06c7f34ea5f54",
+   "57fd68d16201136f",
+   "79332fc8434a65c6",
+   "827e7e3397412a77",
+   "fa24cc3924edd42a"
+  ]
+ }
+}

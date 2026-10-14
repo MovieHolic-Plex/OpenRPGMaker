@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2c3c89b486a88e7c776eaa3d249ce9d8d66198be411600e420fa380f67809a6e",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "핏자국(끌린 자국·방울)",
+ "label": "gothic_manor/gm-ov-blood",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "blood trail with splatters",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat bloodstain decal lying directly on the floor plane across rows 2 to 14 without any upright thickness.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4267
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "blood trail with drag mark and drops",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The blood splatter and dragged streak are rendered directly onto the floor surface, properly functioning as a flat ground decal.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3548
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "blood trail and droplets on floor",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Floor decal consisting of a dragged blood streak and blood droplets lying completely flat on the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9260
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "blood trail and droplets on the floor",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat bloodstain/drag mark decal on the ground, spanning rows 2 to 14, drawn correctly as viewed flat from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9076
+  }
+ ],
+ "decidedAt": "2026-10-13T17:01:50.505Z",
+ "cells": {
+  "16": [
+   "161b3af0f508cab8"
+  ],
+  "24": [
+   "104e611dca026c71",
+   "33c95c391284f02a",
+   "6ba26c1b739bde34",
+   "8480460b63f5fc3d",
+   "8a2801c02c7b435d",
+   "ba23866d6e248a8f"
+  ],
+  "32": [
+   "264875047fe64297",
+   "4200c524f961bd83",
+   "7559c7a111d10e3b",
+   "7b645791b1875048",
+   "92eb3cebdf83f583",
+   "acd83d80f71b0c9b"
+  ],
+  "48": [
+   "09e06e23caf1f410",
+   "0b21cc3d028e7980",
+   "2f9a2d252aa60c52",
+   "3babf1cc55526667",
+   "45c62377c0f40bac",
+   "df5236d249e2a566"
+  ]
+ }
+}

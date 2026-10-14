@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "25f452e4ee7cef9c4459758e0d6a85f87f33e67fd12d06ea1ab1b57c937239b1",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "등나무 쉼터(퍼걸러 + 벤치)",
+ "label": "modern-campus/mc-pergola",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pergola frame and trellis roof",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pergola roof and horizontal beams lack visible top surfaces, rendering the entire structure in flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14230
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pergola frame and canopy",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pergola canopy and frame are drawn as a flat vertical plane with no visible top surface foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13698
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pergola frame and canopy",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pergola roof and trellis are rendered as a flat vertical elevation without visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13145
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pergola canopy and posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pergola canopy and frame are drawn as a flat vertical grid facing front, showing no foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13523
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.873Z",
+ "cells": {
+  "16": [
+   "209e87c5ceca3014",
+   "24608f3ec9817284",
+   "4f2b4cb0d9f7e790",
+   "54c82d65b7a75b28",
+   "a8cdc5e259c1a88e",
+   "ad4baaaabdede035",
+   "b2587078c0b8cdcc",
+   "c7b13be7a6900a36",
+   "efb17edf9e91b5e7"
+  ],
+  "24": [
+   "0ec450a0183960ec",
+   "50d0cbea8d4d88fa",
+   "575281df3077bc8a",
+   "8e58c1bd06de0cc8"
+  ],
+  "32": [
+   "0b1870e0b3f1adb6",
+   "193536076e910fa7",
+   "1b3447b6b2d7f261",
+   "2435c4802e6c728f",
+   "25196cf3d85bbc1d",
+   "30e959290010af21",
+   "395d363a72ee4335",
+   "40abdcf930de74fd",
+   "4c15d52acc4b14b4",
+   "55b2a362e0d2b4a2",
+   "67f2fe2dca539963",
+   "6b261593f24e170a",
+   "741c519f7d31ec81",
+   "8522abe8d0254e06",
+   "9567beb5640a7cf2",
+   "a58a81173cc7ed31",
+   "b2fd0123faa47d7e",
+   "ba36ed053b1fb360",
+   "bf7ac632ee99b5cb",
+   "bfd214ad15b6897c",
+   "c5400e8ec218d6a4",
+   "c751a939d60f4d1e",
+   "cdc357b99d40d71f",
+   "cea556163d581610"
+  ],
+  "48": [
+   "7079ea36a3592e22"
+  ]
+ }
+}

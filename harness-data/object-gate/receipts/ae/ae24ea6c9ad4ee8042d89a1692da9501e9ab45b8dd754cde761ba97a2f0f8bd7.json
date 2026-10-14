@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ae24ea6c9ad4ee8042d89a1692da9501e9ab45b8dd754cde761ba97a2f0f8bd7",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "물웅덩이(덧그림)",
+ "label": "gothic_manor/gm-ov-puddle",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water puddle (flat floor decal)",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The puddle is drawn as a horizontally foreshortened 12x6 pixel ellipse (1:2 aspect ratio) lying flat on the ground plane, consistent with 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7063
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "blue pot or urn on a brown wooden base",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sprite is drawn as a side/front silhouette of a pot or vase with a neck (row 6), bulbous body (rows 7-9), foot (rows 10-11), and a flat brown wooden plinth (row 12). It is not a flat floor puddle, has no visible opening or top surface, and is drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 7501
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water puddle / floor decal",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The puddle is drawn as a foreshortened ellipse lying flat on the floor (12px wide by 6px tall, a standard 2:1 top-down projection ratio for circular flat decals).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6432
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "blue round vessel/orb on a brown base",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn as a circular/bulbous container or orb resting on a brown wooden base at row 12. It is depicted in pure front elevation with no elliptical top opening or foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 9029
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.463Z",
+ "cells": {
+  "16": [
+   "6fe245ed45b5e07d"
+  ],
+  "24": [
+   "17f6ab08288e8d3f",
+   "36e7161f284dd24a",
+   "4777b99fd0dc4baa",
+   "72816b9de7f45f0a",
+   "948a64572182fd6f",
+   "c699bd98df920752"
+  ],
+  "32": [
+   "035ae389189f3af1",
+   "08a5a7a4438303e7",
+   "6830d7123e41b9ee",
+   "7326de76a8a0bd60",
+   "d6e2e1969946e5b8",
+   "daf9a279f52e79ff"
+  ],
+  "48": [
+   "35ff0dcc3e48807a",
+   "64208a9ffe142b2a",
+   "8e3e9c8ad3dc1e12",
+   "bf5f9eb2aaad97af",
+   "d59685eb67aa5dbc",
+   "f9e852c02fed9aaa"
+  ]
+ }
+}

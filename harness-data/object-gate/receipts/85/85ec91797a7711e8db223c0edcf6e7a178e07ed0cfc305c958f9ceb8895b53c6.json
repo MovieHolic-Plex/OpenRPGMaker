@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "85ec91797a7711e8db223c0edcf6e7a178e07ed0cfc305c958f9ceb8895b53c6",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "가로등(버섯 갓 + 둥근 받침)",
+ "label": "modern-campus/mc-lamp-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mushroom-capped street lamp with pole and round base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mushroom cap shows a clear foreshortened elliptical top surface across rows 0-5 (about 5-6 rows tall), and the round pedestal base also displays an elliptical top surface across rows 24-28.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4167
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "mushroom-cap streetlamp with pole and circular base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mushroom cap hood shows a clear top-down view of its dome spanning rows 0-5 (about 6 rows tall), and the round base at the bottom also shows an elliptical top surface spanning rows 24-28.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4302
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "mushroom-capped streetlamp with round base plinth",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mushroom cap fixture clearly displays its top dome surface across rows 0–4 (about 5 rows tall), and the round base plinth at the bottom clearly shows an elliptical top face from rows 24–28 (~5 rows tall) before its front edge drops down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9208
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "street lamp with mushroom cap, pole, and circular base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mushroom cap clearly shows its convex top dome surface across rows 1-5 (approx 5 rows tall), and the circular base also exhibits an elliptical top surface across rows 24-28 (5 rows tall), correctly following 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3507
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:11.493Z",
+ "cells": {
+  "16": [
+   "114e2b575bac8a36",
+   "72ab42b0e9305df7"
+  ],
+  "24": [
+   "124ac2032001f9e6",
+   "21037385458c6ad8",
+   "30ef585abb53c561",
+   "38a20c5a5a97e0b5",
+   "74459cfbf910c815",
+   "761a339190c57622",
+   "79c39ccbc1a360b1",
+   "83fe1c9e146dffab",
+   "a814aa97fd7fc35f",
+   "b0c8e82858e17073",
+   "b28aef7054ae57af",
+   "fa793bf4b2ba37f0"
+  ],
+  "32": [
+   "23d10f3d0a264480",
+   "2ccbbd4f61017a2e",
+   "d644541dba3db27e"
+  ],
+  "48": [
+   "2746f04e744e1e13",
+   "2ab7e3fb37905b6a",
+   "402f1010d3baad71",
+   "a9710fb24b7e370d",
+   "bba7d427b38dd4bf",
+   "bd73e9e0cf3facd4"
+  ]
+ }
+}

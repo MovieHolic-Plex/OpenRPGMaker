@@ -1,0 +1,127 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0dbd95ac36be5a43deb5a4937409aad835323aa3be83908c4a962d1a87e28857",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "교실 노트북 보관 카트",
+ "label": "modern-campus-int/mc-pc-cart",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "classroom laptop storage cart",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 9-13 form the 5-row deep top horizontal surface of the cart (complete with a mounted push handle/groove), sitting directly above the South-facing front glass door showing stored laptops (rows 14-28).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8204
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "classroom laptop storage cart",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 9-13 represent the foreshortened top surface (5 rows tall) of the cart with a recessed handle/slot at the rear (row 9) and a lighting gradient leading to the front edge at row 14, above the vertical south-facing front body with laptop slots.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9368
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "classroom laptop charging cart",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cart is drawn as a flat front elevation with a cut-out handle (rows 9-10) and upper panel (rows 11-14) directly above the windowed compartment (rows 15-26) and base wheels (rows 30-31), showing no horizontal top surface at all.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12918
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "classroom laptop storage cart",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire cart is drawn as a flat front architectural elevation with caster legs at the bottom, a laptop slot bay, and an upper handle cut-out. The vertical side pillars extend continuously from row 8 to row 28 with only a 1px outline across the top (row 7) and zero rows showing a top horizontal surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8339
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.308Z",
+ "cells": {
+  "16": [
+   "2beca6b7422b8f94",
+   "6245bbdb0773d6dc"
+  ],
+  "24": [
+   "00b3cfba70c63a9a",
+   "1281b6658e12f644",
+   "26aa468bd06521ff",
+   "65a0bb4be009656f",
+   "71d92366ed1fcc12",
+   "8cd1c73f32a20a72",
+   "ade8d09e4ac3ac83",
+   "b854694080b9ec6b",
+   "e2b1b98dd9eb1a7d"
+  ],
+  "32": [
+   "40484de1c0888404",
+   "9d8e240f7355ea49",
+   "a5b5311f3cd1fd68"
+  ],
+  "48": [
+   "01988bae206bd705",
+   "456e12ac107a7554",
+   "5c9ba24ae03ef5b2",
+   "d4712ef93395e6ba",
+   "df4081672ce243ff",
+   "f1310c3324cb9ea9"
+  ]
+ }
+}

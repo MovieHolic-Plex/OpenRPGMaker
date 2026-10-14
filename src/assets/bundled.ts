@@ -15,6 +15,9 @@ import modernCitySheet from "./modernCitySheet.json";
 import jpCitySheet from "./jpCitySheet.json";
 import wizardingWorldSheet from "./wizardingWorldSheet.json";
 import steampunkCitySheet from "./steampunkCitySheet.json";
+import modernCampusSheet from "./modernCampusSheet.json";
+import sfStationSheet from "./sfStationSheet.json";
+import gothicManorSheet from "./gothicManorSheet.json";
 import worldmapSelectedSheet from "./worldmapSelectedSheet.json";
 import worldmapAuthoringSheet from "./worldmapAuthoringSheet.json";
 import atlasBiomeInterior from "./atlasBiomeInteriorSheet.json";
@@ -148,6 +151,16 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   // 실내(공방·보일러실·기관실·연구실·여관·선술집)를 48열 16px 칸으로 구운 시트. 칸 번호는 덧붙이기 전용(자리 키 핀).
   // 재생성: scripts/content/steampunk-city/bake_sp.py (object-gate 통과 조각만), 정의는 project/defaults/steampunkCity.ts, openwiki/steampunk-city.md.
   {textureKey:"tex_steampunk_city",path:"assets/steampunk-city/steampunk-city-chipset.png",name:"스팀펑크 도시 (손 도트)"},
+  // 현대 학교·캠퍼스(2026-10) — modern3 팔레트 손 도트 야외(교문·담·교사 15종·운동장·교정 소품·바닥·도로)와 실내(교실·복도·도서관·보건실·급식실·기숙사 가구·바닥·벽면)를 48열 16px 칸으로 구운 시트. 칸 번호는 덧붙이기 전용(자리 키 핀).
+  // 재생성: scripts/content/modern-campus/bake_mc.py (object-gate 통과 조각만), 정의는 project/defaults/modernCampus.ts, openwiki/modern-campus.md.
+  {textureKey:"tex_modern_campus",path:"assets/modern-campus/modern-campus-chipset.png",name:"현대 학교·캠퍼스 (손 도트)"},
+  // SF 정거장·네온 거리(2026-10-14) — 잠긴 팔레트 손 도트(정거장 실내·달 기지 야외·사이버 네온 거리)를 48열 16px 칸으로 구운 시트. 칸 번호는 덧붙이기 전용(자리 키 핀).
+  // 재생성: scripts/content/sf-station/sf_bake.py (object-gate 통과 조각만) → sf_refs.py, 정의는 project/defaults/sfStation.ts, openwiki/sf-station.md.
+  {textureKey:"tex_sf_station",path:"assets/sf-station/sf-station-chipset.png",name:"SF 정거장·네온 거리 (손 도트)"},
+  // 고딕 저택·묘지 · 호러(2026-10) — 잠긴 고딕 팔레트 손 도트(저택·예배당·묘지·미술관 건물, 묘비·고사목·철책, 실내 벽 셋·바닥·가구·전시실)를 48열 16px 칸으로 구운 시트.
+  // 3/4 관문(object-gate) 영수증이 현재 그림 해시에 PASS 인 조각만 굽는다. 칸 번호는 덧붙이기 전용(자리 키 핀).
+  // 재생성: scripts/content/gothic-manor/bake_gm.py, 정의는 project/defaults/gothicManor.ts, openwiki/gothic-manor.md.
+  {textureKey:"tex_gothic_manor",path:"assets/gothic-manor/gothic-manor-chipset.png",name:"고딕 저택·묘지 · 호러 (손 도트)"},
   {textureKey:"tex_worldmap_selected",path:"assets/worldmap-icons/worldmap-selected.png",name:"월드맵 · 사람 선택 아이콘"},
   {textureKey:"tex_worldmap_authoring",path:"assets/worldmap-icons/worldmap-authoring.png",name:"월드맵 · 연결 지형 붓"},
   // 생성 칩셋(oprn-atlas) 공용 실내 — 손 도트 실내 v5 전용 시트(tiledata/hand-interior/v5, 가구·바닥·벽·천장·자동 타일·예제 26맵).
@@ -179,6 +192,9 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === "tex_jp_city") return jpCitySheet.count;
   if (key === "tex_wizarding_world") return wizardingWorldSheet.count;
   if (key === "tex_steampunk_city") return steampunkCitySheet.count;
+  if (key === "tex_modern_campus") return modernCampusSheet.count;
+  if (key === "tex_sf_station") return sfStationSheet.count;
+  if (key === "tex_gothic_manor") return gothicManorSheet.count;
   const monsterKit = monsterKitSheet(key) ?? emeraldMonsterKitSheet(key);
   if (monsterKit) return monsterKit.count;
   if (key === "tex_worldmap_selected") return worldmapSelectedSheet.count;

@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2462187866f7234eafcb866163477686bbab032f1fd16ab92706c6d5ae7ec016",
+ "width": 64,
+ "height": 32,
+ "kind": "structure",
+ "name": "화물 호버 트럭(넓은 화물칸 윗면 + 앞쪽 낮은 캐빈 윗면)",
+ "label": "sf-station/sf-street-pod-truck",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cargo hover truck",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cargo container shows a prominent 12-row top surface (rows 1-12) above its south face (rows 13-25), and the lower forward cabin similarly shows an orange top surface (rows 11-18) above its front face (rows 19-26).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8058
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cargo hover truck (cargo container and front cabin)",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cargo container shows a large foreshortened top surface spanning rows 1-12 above its south face (rows 13-25), and the lower cabin in front similarly shows its top surface (rows 11-18) above its front face (rows 19-25).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6322
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cargo hover truck",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cargo hold shows a large top surface spanning rows 1-12 above its front face (rows 13-24), and the attached forward cabin also shows its top roof surface across rows 11-18.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6278
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cargo hover truck",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The truck faces east, showing its south flank (rows 13-25 for cargo hold, rows 20-25 for cabin) and prominent foreshortened top surfaces: the cargo hold roof spans rows 1-12 (12 rows), and the lower cabin roof spans rows 13-19 (7 rows).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7762
+  }
+ ],
+ "decidedAt": "2026-10-13T15:44:10.259Z",
+ "cells": {
+  "16": [
+   "1be28d5d98fa6c00",
+   "473516fa2c940bf9",
+   "6403d1fe7ce46648",
+   "75e5a13e536f6b33",
+   "aa87b14a82b83339",
+   "ba0d2f15105e8e81",
+   "ccc7383e26a0fcf2",
+   "d34314b5719b21d7"
+  ],
+  "24": [
+   "0af023f69ed6590e",
+   "1d8658337ea76ebf",
+   "22753f6fd32d7fb1",
+   "2ba6202bce14a97c",
+   "2c77fb75ba54dddf",
+   "2dfd47dad8820581",
+   "2fecd3ba12279c9a",
+   "34e9b63bae60994e",
+   "3b0819470148843c",
+   "45d2b552c7d0b19c",
+   "504bcbdc4b6c0108",
+   "539c5a86643a7ff0",
+   "5626528fdf00cb7a",
+   "63525bc5b7cd9afc",
+   "637bcb30e695e792",
+   "66e72c64d0d3239e",
+   "7d787fce2e48054c",
+   "80a2aebcbe64db96",
+   "84bdef4c662b8dab",
+   "8697c789da640cea",
+   "8cb4b130ba2abd65",
+   "8d8c99d0c189b7c4",
+   "92455855e4672f18",
+   "928161853775e9f3",
+   "94bdf8496b5f26e5",
+   "987e4a8069d53099",
+   "9c0b9fe94c80dcae",
+   "a8640dae49fcff90",
+   "b352015024d8a680",
+   "c8458f57b3b5b258",
+   "db069feb775c6ee3",
+   "de8f0aff3f6034a9",
+   "e3bd6f755ba8f3dc",
+   "e9b045b74f154b0a",
+   "f4f39557b01bd084",
+   "fda3ea0aa1d6c72f"
+  ],
+  "32": [
+   "57d832d12687b1a8",
+   "5cbf4d11444eeca2"
+  ],
+  "48": [
+   "0a9cd4b729826a5a",
+   "0ea5ebb613211472",
+   "247fa424eb4b6f64",
+   "2eb6cc47ea3f8a43",
+   "43d91537ae2bdd19",
+   "61c13941e7fe2cd4",
+   "61cb769ce9ab98c2",
+   "a8d41e82f92439b0",
+   "b01de18af998148c",
+   "ca4cf15ca5fa0a20",
+   "cfb733b2de0d361d",
+   "e78dcaa275c608f7"
+  ]
+ }
+}

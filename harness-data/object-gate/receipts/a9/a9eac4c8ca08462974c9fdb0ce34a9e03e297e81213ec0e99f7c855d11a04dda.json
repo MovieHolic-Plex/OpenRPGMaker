@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a9eac4c8ca08462974c9fdb0ce34a9e03e297e81213ec0e99f7c855d11a04dda",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-lot-hoarding",
+ "label": "jp_city/street_hand/jp-lot-hoarding",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "construction site hoarding wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hoarding wall is drawn in pure front elevation with horizontal and vertical panel lines and hazard striping, but shows no visible top cap or thickness (only a 1px border on row 2).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4947
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "construction hoarding wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hoarding wall is rendered as a flat vertical elevation from row 2 to 28 with only a 1px black outline at the top edge (row 2). There is no visible top surface or wall thickness shown from the 3/4 down-angle perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4763
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "construction hoarding / temporary fence",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hoarding is drawn in pure front elevation with completely flat vertical bands (white panels, blue strip, hazard pattern) and only a 1px outline along the top edge (row 2), showing zero top surface depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3797
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "construction lot hoarding / temporary fence",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hoarding is drawn in pure 2D front elevation across rows 2 to 28 with no visible horizontal top edge or cap surface (only a 1px outline at row 2).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4651
+  }
+ ],
+ "decidedAt": "2026-10-13T17:27:07.783Z",
+ "cells": {
+  "16": [
+   "56b5c5ec5b884827",
+   "5d4664c30f10a634",
+   "9de9c035fee4eefe",
+   "bb0dbb1f65e5b5ad",
+   "c4891e179abf8ebc",
+   "d22b3d58b096330d"
+  ],
+  "24": [
+   "1ccffc0f2756ddce",
+   "1ce3fd8917256fe7",
+   "747624fff3e28b16",
+   "8a1a62d1ccc3df52",
+   "997269e1556a852a",
+   "d0b6c48f630190bd",
+   "d30e59ced1a6bd7e",
+   "e0e38b5b8f61b984"
+  ],
+  "32": [
+   "36427bd32cc99377",
+   "4d16999cbee86f7c",
+   "81a8d8b28f368bf8",
+   "b35487da4f7ddbc0",
+   "d5dc2b22d3f03dfb",
+   "d99c0cf03f0ac4db"
+  ],
+  "48": [
+   "2f506bbbe950cdfc",
+   "b8cdb49d70329825"
+  ]
+ }
+}

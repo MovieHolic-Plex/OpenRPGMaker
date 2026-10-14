@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e9670e01728ae749bb2ed3dc8b1ae5034ef0f83cd399feacaaa059ccaa0bad25",
+ "width": 48,
+ "height": 32,
+ "kind": "frame",
+ "name": "교문 미닫이 철문(닫힘, 3칸)",
+ "label": "modern-campus/mc-gate-slide",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sliding iron school gate frame and bars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate is drawn entirely as a flat architectural front elevation (2D side-view style). Both the top and bottom rails are rendered as rounded-corner panels facing the viewer flat-on, with flat vertical bars between them. Neither the horizontal beams nor the frame display any foreshortened top surfaces seen from a 3/4 high-angle perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11344
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sliding iron gate (교문 미닫이 철문)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate is drawn as a flat 2D architectural/platformer front elevation. Both horizontal frame bars have rounded pill-shaped corners facing the screen rather than showing foreshortened top surfaces seen from a 45-degree overhead angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10840
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sliding steel gate (교문 미닫이 철문)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate is drawn in pure front elevation with horizontal top and bottom panels and vertical bars. Neither the upper rail nor the lower base beam shows a foreshortened top surface viewed from a 3/4 high angle; both panels are rendered as flat frontal shapes with rounded corners.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7774
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sliding steel school gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate is drawn strictly in front elevation. Both horizontal beams and the vertical bars show only their flat vertical faces with 2D rounded corners, lacking any foreshortened top surfaces visible from the 3/4 camera angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6444
+  }
+ ],
+ "decidedAt": "2026-10-13T16:35:07.542Z",
+ "cells": {
+  "16": [
+   "1629c377853fb90d",
+   "2da48989b4a90c98",
+   "902be37699613fb0",
+   "964d5595addb872f",
+   "da14717f0292f949",
+   "db611b5e9396a8c8"
+  ],
+  "24": [
+   "227434cc7387bd8f",
+   "5d522756d3b736ce",
+   "a54484acd1a9c53a",
+   "ac4e2c4907cfbde9",
+   "ae9b333df16d67d9",
+   "b82e91b330aa1deb",
+   "d1a375f4ea94511c",
+   "d3069b680cfa7737"
+  ],
+  "32": [
+   "47f0b4dbec902dc5",
+   "5b0f7f5bbc22bc24",
+   "69a26c8d9d1ba6ec",
+   "785914fe4726ddc0",
+   "d08133d6a4501152",
+   "f5f1b0687b731d90"
+  ],
+  "48": [
+   "ac672767b5b71501",
+   "ce5e7f63e25564ad"
+  ]
+ }
+}

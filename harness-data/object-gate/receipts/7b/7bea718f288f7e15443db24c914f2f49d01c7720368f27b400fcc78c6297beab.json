@@ -1,0 +1,148 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7bea718f288f7e15443db24c914f2f49d01c7720368f27b400fcc78c6297beab",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "이동식 게시판 스탠드",
+ "label": "modern-campus-int/mc-bulletin-stand",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mobile bulletin board stand",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal beam clearly displays a 4-pixel-tall top surface (rows 1-4) in light grey with a 1-pixel front face (row 5) in dark grey. The base feet also properly show top surfaces (rows 27-28).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8179
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bulletin board and frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body of the bulletin board is drawn in flat front elevation. The corkboard, surrounding frame, and top bar show no horizontal depth from the 3/4 top-down angle (only a 1px outline at row 0). Only the small base feet show top faces, which cannot be credited for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9086
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bulletin board panel and frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire bulletin board stand is drawn in pure front elevation (2D side-view style). The top metal rail (rows 1-4) uses cylindrical front-face shading (dark-light-dark horizontal bands) rather than a foreshortened top plane, the side posts have no visible top caps, and the base feet at the bottom are drawn as flat front-facing rectangular blocks.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13346
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "mobile bulletin board stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire board and its wheeled base stands are drawn in pure front elevation with no visible top surface showing the thickness/depth of the frame, board, or base feet.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11010
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:11.491Z",
+ "cells": {
+  "16": [
+   "2e907ef4accedb9a",
+   "80980df207d8e871",
+   "9ca4a59b96b33d52",
+   "fe383a2d4fe53ec6"
+  ],
+  "24": [
+   "12d56e8ae2159102",
+   "1bae614b32cb2881",
+   "23b934577b315242",
+   "244f3645daa957aa",
+   "2c7398a6c1906682",
+   "3340e4a8ef8ea42c",
+   "340a13bc4482e16f",
+   "450e148d6d397623",
+   "4809f8f345e4c7fc",
+   "49d48b8d110a2e52",
+   "5d387fd15733c388",
+   "819266e64f37ee31",
+   "839d7d70ec90da90",
+   "844e6be9d2a02d7c",
+   "883fb643433b633c",
+   "b0663322f0b9bd5d",
+   "b86b3646a496c9b8",
+   "c1cae6df47233418",
+   "c8fbebeb684d5016",
+   "ce4fedcafd6ded52",
+   "d176375e31752159",
+   "d586a21adfa3d12e",
+   "eeceb0d9c1bacb42",
+   "fbd8102add93192a"
+  ],
+  "32": [
+   "fe237f880cd08dd0"
+  ],
+  "48": [
+   "113b4940c9608c0d",
+   "41e019f68e9bd3c7",
+   "44a20f9e375b8779",
+   "79666cfe53f2483e",
+   "7d9a7ec2b0a544f5",
+   "d3f0680d42caa85a"
+  ]
+ }
+}

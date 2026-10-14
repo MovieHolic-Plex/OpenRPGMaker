@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5cbe2b9fc383c8a9dd795b49853dff10eca62d57d487dae4a2c1bfd79b81d277",
+ "width": 64,
+ "height": 16,
+ "kind": "terrain",
+ "name": "night city asphalt road, four variants (cracks and wet neon reflections)",
+ "label": "sf-station/sf-asphalt",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "night asphalt road ground tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Four 16x16 terrain tiles representing flat asphalt ground viewed from above with cracks and neon reflections.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3462
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "asphalt road terrain tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Four 16x16 terrain tiles depicting dark wet asphalt with subtle cracks and neon color reflections, viewed from top-down ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4011
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "asphalt road terrain tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tiles displaying dark asphalt texture with cracks and small neon puddle reflections across the 16x16 surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3614
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "asphalt road terrain tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Four 16x16 terrain tiles representing flat dark asphalt road surface with cracks and small neon reflections; terrain viewed top-down across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3224
+  }
+ ],
+ "decidedAt": "2026-10-13T15:26:41.508Z",
+ "cells": {
+  "16": [
+   "22b84b08698b4e46",
+   "4b093131f5612ecc",
+   "919d2a4dbc2acd7a",
+   "9fd467fa3a2e6a67"
+  ],
+  "24": [
+   "0981dec6b8edd0f7",
+   "3125d62d20b28956",
+   "368c38ad1829a946",
+   "47c27b794e016baa",
+   "516cbfbb6a1c64ed",
+   "53307f0c7c86ce91",
+   "5c332125e6b84518",
+   "78dbed131f9ffb22",
+   "79aba2f2ccbfc4f4",
+   "8956117ce482480c",
+   "a007ecaecbd9bd10",
+   "a7ea81407b7b885b",
+   "b3c2ad4dbfc88ded",
+   "ce5eac693c6204b7",
+   "dd5f74492b9960cb",
+   "e25394428c4e1047",
+   "ea439002803f985e",
+   "f589ca61783fcaec"
+  ],
+  "32": [
+   "526239635f132e93",
+   "9607fb46dd3e293a",
+   "9f6c21242708318d",
+   "ba0e74d3b62ed1b2"
+  ],
+  "48": [
+   "042c5c87be9cd4ac",
+   "059672037611ed7f",
+   "13b51ede50ff1867",
+   "3a8bc2809ada15c1",
+   "4cc4302b76ec460c",
+   "6091bea57861e80e",
+   "66c52b6c5ab9f791",
+   "8e0b9ee24b100cf8",
+   "a198e8164bdd296a",
+   "bab93d2043797cab",
+   "cb95bfdb7a417174",
+   "e8caf4398494ca7a"
+  ]
+ }
+}

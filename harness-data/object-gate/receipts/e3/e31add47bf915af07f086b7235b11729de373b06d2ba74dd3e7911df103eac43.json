@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e31add47bf915af07f086b7235b11729de373b06d2ba74dd3e7911df103eac43",
+ "width": 48,
+ "height": 64,
+ "kind": "organic",
+ "name": "큰 고사목(뒤틀린 가지·옹이 구멍)",
+ "label": "gothic_manor/gm-dead-tree",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dead tree trunk and branches",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The dead tree is drawn entirely in 2D side-scroller / front elevation: branches branch flatly in the vertical 2D plane with no foreshortening toward the viewer, the knot hole is a flat vertical rectangle, and the base is a flat 2px horizontal foot line with no elliptical top-down ground footprint.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5026
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "trunk and branches of a dead tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The dead tree is drawn in a pure side-scroller / front elevation view with no top-down perspective. The branches spread entirely in the 2D vertical plane, and the base ends in a flat 2-pixel-tall horizontal bar (rows 61-62) with no circular or elliptical ground footprint visible from above.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6290
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bare tree trunk and branches",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The dead tree and branches are drawn entirely in a flat 2D side/front elevation (platformer style) with no visible top surfaces (top_rows=0) and a flat cut base at rows 60-62.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4789
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dead tree trunk and branches",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree and its branches are drawn entirely in a flat 2D side-view/front-elevation plane with no foreshortened top surfaces or branches extending toward the camera, and the base rests on a flat 2px horizontal line (rows 61-62).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4885
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.461Z",
+ "cells": {
+  "16": [
+   "0e462b6c18bc7c7f",
+   "1d498aaca014233b",
+   "1e0c0601301cb6a3",
+   "3c328a6cd0a28acd",
+   "45bcffa1d0077448",
+   "59b5805f22b2e1ed",
+   "63ce4418260fbe6c",
+   "ba01acd46cda5b57",
+   "bab484fe3bbc02bd",
+   "c86650eb5d4f81ae",
+   "cf04872668f464ca"
+  ],
+  "24": [
+   "0142912941fad2c7",
+   "15fdb884df2be229",
+   "283bfcb343348137",
+   "6296e227ccc30ff8",
+   "6cd640d01feef97c",
+   "7e5c93b4e047b354",
+   "a2091d2eb85833f1",
+   "a8cb2794e8248652",
+   "b8e1f41a848b867f",
+   "c1a8bdc9e65f5306",
+   "c4c586cee8e3a4d4",
+   "ee4c1c829e5eeac9"
+  ],
+  "32": [
+   "0673d1579c269837",
+   "145bda6f1127e4f5",
+   "29ac801955ef3967",
+   "34c83f4b2595a5fd",
+   "753946878289902e",
+   "9e218118968da7b8",
+   "9ed86d1ea3078968",
+   "a0c60418d12d99d4",
+   "a15345f37d7bde4e",
+   "ce1785495a10d399",
+   "e206ba89926ae9da",
+   "edb00f8367c89730"
+  ],
+  "48": [
+   "0ac326b6e4d326ab",
+   "0fc01eb611e6f72e",
+   "64553f470d335091",
+   "aa339621b53aa461"
+  ]
+ }
+}

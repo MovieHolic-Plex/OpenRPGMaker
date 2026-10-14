@@ -1,0 +1,123 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "27bb278c244f18d2bd059cff67a827a66f6a64a04979e314b7f151eb8e28a1d6",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "시안 호버 포드(사다리꼴 캐노피 윗면 + 측면 패널)",
+ "label": "sf-station/sf-street-pod-car-cyan",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hover pod cabin / canopy",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hover pod is drawn in a pure front elevation view: the dark teal lower section (rows 18-26) forms the vertical front bumper with headlights, while the cyan upper section (rows 3-17) depicts the front windshield and cockpit panels facing directly forward. The roof at row 3 is capped with only a 1px outline, showing no visible top surface receding away from the camera.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9943
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hover pod canopy and chassis",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pod features a large foreshortened top canopy surface spanning rows 3 to 17 above the vertical front chassis/bumper (rows 18 to 26).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4417
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hover pod with trapezoidal canopy and front bumper",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large cyan trapezoidal canopy occupies rows 3 to 17 (15 rows) as the foreshortened top/sloped roof surface, above a dark teal front vertical face spanning rows 18 to 26.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3188
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cyan hover pod with sloped canopy and front bumper",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper canopy/hood spans rows 3-17 (15 rows) showing a foreshortened trapezoidal top surface above the dark teal front bumper (rows 18-27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4101
+  }
+ ],
+ "decidedAt": "2026-10-13T15:44:10.258Z",
+ "cells": {
+  "16": [
+   "35911e622c343474",
+   "399ecd25ae768216",
+   "6990dc6118a55902",
+   "78395c7afbe4960b",
+   "7ccc49ae9f57848f",
+   "d17890ee1ddb1133"
+  ],
+  "24": [
+   "194bdab8bd70b147",
+   "5427e9d4adbe4b9d",
+   "75a2e37fde0f542c",
+   "7d8cd3d2c90174c5",
+   "8105f3fd59ef0c1b",
+   "e695e2854bd66244",
+   "e9137c3d89219057",
+   "fa5e2572c137ba72"
+  ],
+  "32": [
+   "01cdf079b04dcf95",
+   "148a2c107dec0a19",
+   "2a48d32536833fd4",
+   "78ce23feaa0d6c69",
+   "9f3dbc4ba2ddb35a",
+   "c4d0c7da39765419"
+  ],
+  "48": [
+   "7aa4ed04fb8fe8e1",
+   "efeffd6c5385fdab"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6a5913f61f5d89fb7919e666245ef7ee06e97227b712ec5a897981ccbc667f33",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "쓰레기통(철망 원통 + 덮개)",
+ "label": "modern-campus/mc-trash-bin",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical trash can with lid",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid forms an elliptical cap spanning rows 1 to 6 with a central slot/handle, showing clear top-down perspective over the green cylindrical body (rows 7 to 13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7338
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "trash can with lid",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid is rendered as an elliptical surface spanning rows 1 to 6 (6 rows tall) resting atop the green cylindrical bin body (rows 7 to 14), correctly depicting the 3/4 top-down angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6150
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "trash can with lid",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid is rendered as a foreshortened ellipse spanning rows 1 to 7 (approx. 6 rows tall) complete with a recessed handle at rows 3-4, showing the top surface clearly in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6293
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "trash can with lid",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylindrical trash can features a clearly visible elliptical top lid spanning rows 1-6 (approximately 6 rows tall) viewed from above, with the green cylindrical south body extending from row 7 to row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5198
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.303Z",
+ "cells": {
+  "16": [
+   "abb6b43dddde1380"
+  ],
+  "24": [
+   "483827d8373cabf3",
+   "4e2322c37a4da69c",
+   "7db80c3b128fe670",
+   "9beb3e4a2ec85145",
+   "9ef62003cd0d49f5",
+   "e50b483ca6ef5a94"
+  ],
+  "32": [
+   "1a78a54b1ca65e1c",
+   "25193fe069da9e83",
+   "27f981a9c8a87706",
+   "712b11c6036e6dc7",
+   "77662e88c171cf3f",
+   "9c779031083ed110"
+  ],
+  "48": [
+   "237c61b67483197e",
+   "579dbb05550d3174",
+   "754dd994cc867d34",
+   "a506667b7d32a8f5",
+   "b2376c2be52eaa49",
+   "ec5a7a1470f36d2b"
+  ]
+ }
+}

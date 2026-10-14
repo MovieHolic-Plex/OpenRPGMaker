@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "214d863991302a467231769c6a9743b70b26ee81b118982ef23f85c349335f12",
+ "width": 32,
+ "height": 16,
+ "kind": "flat",
+ "name": "바닥 네온 유도선(아스팔트 위 칠한 띠)",
+ "label": "sf-station/sf-street-neon-flat-strip",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "painted neon guide line and arrows on asphalt road strip",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat floor decal/road surface marking viewed directly on the ground plane, filling the tile with asphalt, curbs, and neon lane markings.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3786
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "neon guide line markings on asphalt floor",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat floor decal/marking painted onto the ground plane, seen entirely from above as a flat horizontal surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3797
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "neon floor guide line / painted asphalt strip",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The markings lie completely flat on the asphalt floor plane across rows 4-11 with no upright projection or receding side faces, matching a top-down floor decal.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3740
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "neon guide line painted on asphalt floor",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat floor decal/marking on asphalt viewed from above, spanning rows 1-14 with neon pink and cyan guide lines drawn flat on the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4097
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:06.341Z",
+ "cells": {
+  "16": [
+   "67531e97b8902617"
+  ],
+  "24": [
+   "017d9ea96f7c5f41",
+   "337b79eef6d98bf9",
+   "47aab1ef4abb9e19",
+   "5c8c9d6b649bf67e",
+   "aa415072c3ba852a",
+   "bab74ece3c52b2b9",
+   "be7731ab9d1a2bdd",
+   "f4d1af8a0739ea15",
+   "f77999e06b85137b",
+   "fbfd1115e53c4815"
+  ],
+  "32": [
+   "1b2265e434e1fb65",
+   "b1a5db89ddf2843c"
+  ],
+  "48": [
+   "9933d80275edc758",
+   "9b463b03d9d6efe7",
+   "c0601ff899057090",
+   "da6392b0de7c345d",
+   "ef75e1e867e82fdb",
+   "fcff064ff06b8279"
+  ]
+ }
+}

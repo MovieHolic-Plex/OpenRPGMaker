@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ce1d995ca55ca2f744e68e4c580951945561a50df78988335a4661cb0872d3da",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "분석 콘솔(윗면 화면 둘 + 샘플 트레이 + 앞 패널)",
+ "label": "sf-station/sf-analysis-console",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "analysis console desk",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 2–9 clearly represent the console's top control surface containing two screens and an interface panel (8 rows tall), while rows 11–14 form the front south-facing panel with vent slots, providing proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5730
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "analysis console desk",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The console top surface spans rows 1-9 (9 rows tall) displaying two embedded monitor screens and an indicator panel, while rows 11-14 form the south-facing front panel with vent/tray slots.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7432
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "analysis console desk",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-9 form the top surface of the console containing two embedded display screens and an interface panel, meeting a front edge at row 10-11 and a south-facing front panel at rows 12-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5571
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "analysis console desk",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The console has a clear 3/4 perspective with a deep horizontal top surface (rows 1-9) containing two monitor displays and controls, and a vertical front face (rows 11-14) with vents/slots.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4372
+  }
+ ],
+ "decidedAt": "2026-10-13T15:26:40.171Z",
+ "cells": {
+  "16": [
+   "af9969fabab28dde",
+   "c0a6d88084aec6b1"
+  ],
+  "24": [
+   "0ac4cad876bd9fb6",
+   "2185d8d940f2dd28",
+   "3d1a79c4d27dc9db",
+   "73dc05f36dfa2ec3",
+   "85afc85b6be7da41",
+   "8c1735d4da504fce",
+   "9194200b2274dded",
+   "96e40244ec021c98",
+   "d59bd296c967eb74",
+   "db59bfa9133fce33",
+   "e2cc9cd3f4fbb276",
+   "e71f6f2d8dfc0900"
+  ],
+  "32": [
+   "784a81e4b369c67b",
+   "a74ffb099dbb468f"
+  ],
+  "48": [
+   "3d79c2986aa1a556",
+   "582114b2ac8ddfbe",
+   "5d2898fc864e98e2",
+   "8f4f542174dc0a22",
+   "bdcbbc9965a90288",
+   "f44292e3b3948efa"
+  ]
+ }
+}

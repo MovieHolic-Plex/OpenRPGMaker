@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1f8dbf6f13fa9dfe43145ef3cc9ddbcc9cd40cc5f6e69735d0f6a9902db04975",
+ "width": 16,
+ "height": 48,
+ "kind": "box",
+ "name": "네온 간판 탑(굵은 기단 + 간판 상자, 글자 없음)",
+ "label": "sf-station/sf-neon-sign-tower",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "neon sign box and pylon base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn in pure front elevation: the entire sign tower consists of a blank header panel (rows 3–11), a neon display area, and a flat cylindrical/rectangular base pylon (rows 36–47). The top horizontal surface of the sign box is not visible from above (0 rows, only a 1px outline/edge line at rows 2–3).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 9905
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "neon sign tower (sign box on a pillar base)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign box is drawn entirely in pure front elevation as two stacked vertical front panels (a blank upper panel from row 3 to 11 and a neon display panel from row 12 to 33) atop a vertical pillar base. No top horizontal surface is visible from above; the top at row 2 is only a 1px curved outline.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 13606
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "neon sign box on base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign tower is drawn in pure front elevation. The main sign box (rows 2-33) has uninterrupted vertical bezels on columns 2 and 13 running its full height, showing rows 3-11 is merely an upper panel of the south face rather than a top surface seen from above. There is no visible top surface (0px) on either the sign box or the base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 8520
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "neon sign tower",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire neon sign tower is drawn in pure front elevation with only a 1-2px border at the top (row 2-3). Rows 4-11 form the blank header panel of the sign face ('글자 없음') above the neon directory bars (rows 13-27), with no horizontal top surface visible for either the sign box or the base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 16009
+  }
+ ],
+ "decidedAt": "2026-10-13T15:15:22.113Z",
+ "cells": {
+  "16": [
+   "7056771ff9d443ab",
+   "97ebabc1b41933cc",
+   "fe2f99660e0f955b"
+  ],
+  "24": [
+   "1b0586e6fd2504bd",
+   "3663d3ba505106df",
+   "835f81cf9449b6e7",
+   "87820d15d6f1e7ef",
+   "9a256d45c30130f2",
+   "ce981474566bc962"
+  ],
+  "32": [
+   "10b412223c85777b",
+   "2cc1baeac80e9c35",
+   "39d2f24f2a9956b5",
+   "6d1357f9be1e7926",
+   "7dce11ae7b35233d",
+   "804ee556631e38bb",
+   "8675ee8125ae7e6b",
+   "a1920552ff8fccec",
+   "a9a185e4f1c9ca08",
+   "b7c96ea6a3447a93",
+   "da9db5347ecb682d",
+   "ff39c0824228a6d6"
+  ],
+  "48": [
+   "4515df27bd05391f",
+   "d57b76d92579133f",
+   "e709689d8f4f0ae7"
+  ]
+ }
+}

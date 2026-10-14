@@ -1,0 +1,123 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e3ade82a88f5e924a6372eba35db466626d5bd9879fa1032db9941036d243f7f",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "화물 팔레트 적재(받침 판 + 상자 둘 + 묶음 띠)",
+ "label": "sf-station/sf-cargo-pallet",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cargo boxes on a pallet",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both boxes on the pallet feature distinct, foreshortened top surfaces (rows 2-6, ~5px tall, brightly lit) contrasting clearly with their vertical south faces (rows 7-11, darker shading).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7590
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cargo pallet loaded with two strapped boxes",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both boxes clearly feature a 5-6 row foreshortened top surface (rows 1/2 to 6 in lighter tones) and a 5 row south front face (rows 7 to 11 in darker shadow, complete with a buckle clasp on row 8 of the left box).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7705
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cargo boxes strapped to a wooden pallet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pallet and both boxes are drawn in pure front elevation (side-scroller style). The pallet at rows 12-14 shows the front cross-section with forklift tine slots facing straight at the camera with no top deck surface visible. Both boxes lack any foreshortened top surface (0 top rows) and are rendered strictly from the front face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 10378
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "two strapped cargo boxes on a wooden pallet",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both boxes clearly show their top horizontal surfaces (rows 2–6, 5px tall in a lighter tone) foreshortened from above, with the darker front faces occupying rows 7–11 (5px tall). The cargo straps wrap over the top surface and down the front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9580
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.954Z",
+ "cells": {
+  "16": [
+   "7c197a8b723b2d10",
+   "c530fb33b26c7b68"
+  ],
+  "24": [
+   "08af27ff4d086ffa",
+   "256e18c6cf4bbdfb",
+   "2abc771bcc92f0f2",
+   "2d8382efc2d8c2b2",
+   "4fbc7837774a7f9d",
+   "6303eea7d07c5c43",
+   "a7e2daea8ad41640",
+   "a9e4fe8a960ce3c4",
+   "ba72eddfe3ccbf10",
+   "bced1ec061245e4e",
+   "c0cb3ee73d035a7f",
+   "ff7074f4d18c4f08"
+  ],
+  "32": [
+   "338fad529f9fbdec",
+   "464668d39255301a"
+  ],
+  "48": [
+   "06d0a6710fab25cf",
+   "0ac866fb048d780b",
+   "167a7b0c7e257ce5",
+   "875dc103397a690b",
+   "a66e0cc78d3d47a6",
+   "c0b927a228eaeadc"
+  ]
+ }
+}

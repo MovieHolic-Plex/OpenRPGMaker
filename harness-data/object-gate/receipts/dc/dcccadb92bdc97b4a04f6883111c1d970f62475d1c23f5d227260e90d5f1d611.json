@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dcccadb92bdc97b4a04f6883111c1d970f62475d1c23f5d227260e90d5f1d611",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "에어록 문(격벽 틀 + 미닫이 문)",
+ "label": "sf-station/sf-airlock",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bulkhead wall with sliding airlock door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire bulkhead and door frame are rendered as a pure flat front elevation (side-scroller style). There are no foreshortened top surfaces visible on the wall top, the door frame lintel, or any horizontal ledge.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6069
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bulkhead wall with sliding airlock door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn flat from the front as in a side-scroller or architectural elevation. Neither the top of the wall/bulkhead (rows 2-4) nor the door frame lintel shows any foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5499
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bulkhead wall and airlock sliding door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire bulkhead and airlock door are drawn in flat 2D side-scroller / front architectural elevation with zero visible top surfaces on the wall, lintel, or door frame.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6400
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bulkhead wall and sliding airlock door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bulkhead structure and door are drawn in a flat front elevation. The top of the wall (row 2-3) is only a 1px border line without a horizontal top surface, and the door frame lintel is also viewed completely flat from the front.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5268
+  }
+ ],
+ "decidedAt": "2026-10-13T15:13:19.238Z",
+ "cells": {
+  "16": [
+   "05cce9721e91dc89",
+   "062fc18023a017b5",
+   "1155a79b8576a10e",
+   "36fd1649fc2d0c83",
+   "48e910f3abe8de9a",
+   "7e5d4fe651a1e5c5",
+   "b054b770c6efd035",
+   "d252d94990cf05b0",
+   "f3fd47506739cb74"
+  ],
+  "24": [
+   "178577138d9df701",
+   "7bc0dfc94f691da2",
+   "87e6dc2c7381c559",
+   "a64ddebc097aed53"
+  ],
+  "32": [
+   "0ae910bfda9e03d5",
+   "1a703b746af7318e",
+   "42021ec61c9968b6",
+   "44a864f4d233cd88",
+   "46597dbbefc81104",
+   "4b4bf01ecaa22b19",
+   "4d753e3026089954",
+   "60c0fc3e01975d31",
+   "6bcd2544917baa79",
+   "6e04a5c64f00fca3",
+   "705557c974bbe3f5",
+   "71eaf3cf323637a5",
+   "725a9e6a64da36a1",
+   "766e18d10b2e1318",
+   "828ea4d564289e7e",
+   "8fcf39e9aebebfe1",
+   "ae15327d90d26f94",
+   "c50b1df0824e8837",
+   "cbd92780bb2753af",
+   "d00eddb8fbdb6d91",
+   "e54b5abd2f0955aa",
+   "e95a3c0da2bb73d1",
+   "f3e6989e2c7e6815",
+   "f862b0b7a6ceea17"
+  ],
+  "48": [
+   "1b90a48506f5bc22"
+  ]
+ }
+}

@@ -1,0 +1,175 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5316ef26511190cdb7db537d386a8c166d727b1ca28c97e7927d1c11ada57256",
+ "width": 64,
+ "height": 32,
+ "kind": "structure",
+ "name": "화물 호버 트럭(앞 캐빈 + 뒤 화물 상자, 사다리꼴 윗면)",
+ "label": "sf-station/sf-street-pod-truck",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cargo hover truck (cabin and trailer)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire vehicle is drawn in flat side-profile elevation facing right; neither the trailer roof nor the cabin roof shows a foreshortened top surface (only 1px outline/highlight edges).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6221
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cargo hover truck (cargo container and front cabin)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire vehicle is rendered as a flat side elevation (architectural profile) with no foreshortened top surfaces. The main cargo box has only a 1px outline/edge at row 4 without any top roof plane visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6324
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cargo hover truck (trailer box and cab)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire vehicle is rendered as a flat side-view profile (side elevation) with no visible foreshortened top surfaces for either the cargo container or the cab roof.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4332
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cargo hover truck (rear cargo container and front cabin)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire vehicle is drawn in a flat side-scroller elevation facing east with no top surface visible on either the cargo box (rows 2-4 are just border/edge highlight) or the cabin roof.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4861
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:06.342Z",
+ "cells": {
+  "16": [
+   "247c1ec846df3ce3",
+   "3d599c28ca9dbded",
+   "4a55fef4a2dedab5",
+   "58b5b1cbfbe7c909",
+   "a1410f8e89483f29",
+   "ce2f83db86c06b45",
+   "d14cbdf671b8aa30",
+   "ed83adf34ede579d"
+  ],
+  "24": [
+   "0635963a80ab684d",
+   "24db7d5fee74f388",
+   "27c5b47f3606f1d6",
+   "2865c3c7358adab8",
+   "2866b6f237c66dba",
+   "3146e59f1ef11b68",
+   "3611046e720b1484",
+   "3a90b621a4a5d19e",
+   "3d79843e2d65d524",
+   "5393f528931bfe1b",
+   "5fef506d241f2393",
+   "61840229dc1881d0",
+   "621c47930fb1df4e",
+   "63a69bd7b3fafe54",
+   "69618cb44dc82855",
+   "6a27efe6e9b16efc",
+   "6bc631e5df5b6718",
+   "808f48373659885f",
+   "8d71805585887c92",
+   "8dbfe6b52dacd922",
+   "8eb7fc5c416d767c",
+   "959663485ce0720b",
+   "99d64df826620bd1",
+   "a2eebda58d14d9e4",
+   "a651d5fa65638acc",
+   "ae2b7d2eabce6aae",
+   "ae575751d3f5c115",
+   "b9a60a7237a8d169",
+   "bcc8d94e164bb1c1",
+   "d1ab9d6ed4029eff",
+   "e577933a6f2a66b7",
+   "eab047178278a9bc",
+   "ecc43571917f1043",
+   "f12d1abca0114d92",
+   "f6011ca62d56f634",
+   "fc4fb5545516f963"
+  ],
+  "32": [
+   "ace0f964f1f6316a",
+   "fc41c9e26ffeaf0a"
+  ],
+  "48": [
+   "1e36bb92b43e0691",
+   "313e0e2a88ff5c0c",
+   "3ec54e2876077943",
+   "564ff92ffcffff2d",
+   "7d88e12cc3049dac",
+   "9b6e5531b887bcaa",
+   "9d5b7f243a62e36c",
+   "a3467ceae7e7985f",
+   "bd5a870c9de55738",
+   "c31d0b4f56d8abf6",
+   "c3581c5a70837526",
+   "fe948b9097587853"
+  ]
+ }
+}

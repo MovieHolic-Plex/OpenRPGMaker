@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9b042e573b05550ef3ac9bc2c1762afb01e2743b8988a606056c541f2946183d",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "white glazed laboratory floor tiles with grout and gloss, two variants (one with drain)",
+ "label": "sf-station/sf-lab-floor",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "glazed floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles viewed from above with grout lines and surface gloss highlights across the full 16-row height.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4900
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tiles shown entirely as a top surface viewed from above with grout lines and highlights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4234
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "glazed laboratory floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Grid of floor tiles with grout lines, gloss highlights, and minor variants; represents horizontal floor terrain correctly viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3402
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "glazed laboratory floor tiles with grout lines",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles viewed from above with grid grout lines and specular gloss highlights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3512
+  }
+ ],
+ "decidedAt": "2026-10-13T16:10:30.407Z",
+ "cells": {
+  "16": [
+   "304df9174d878ec6",
+   "7eb038678bde9e3b"
+  ],
+  "24": [
+   "05668ac21d1cef24",
+   "12d494887b4174e0",
+   "16952a32c53db98b",
+   "327ebcb9a261e5ce",
+   "601e9dcc9ddc6d6d",
+   "a6d181a04d33805d",
+   "a977a2121177e057",
+   "b672a60860c6581a",
+   "bcf8a9643d3f74aa",
+   "c6d6add269ea215b",
+   "ded0f9aa6c69a182",
+   "fd402107030446de"
+  ],
+  "32": [
+   "7879a34bb125febc",
+   "b6280f50404214a7"
+  ],
+  "48": [
+   "56e3e3902fa92b3b",
+   "62628655e86509e4",
+   "bddced28aca7b911",
+   "bde44f4df7132f0c",
+   "d79fbacae3e49221",
+   "f18e1f7bc007c5c0"
+  ]
+ }
+}

@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4bd6c3a3a36f05cb12beb8241306758e930182d55dc62f959c6e5ebb9806ccbb",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "설립자 흉상(청동 + 돌 받침)",
+ "label": "modern-campus/mc-bust",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bust on stone plinth",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone plinth features a clearly rendered, lighter top surface across rows 16-18 (3 rows tall) above its darker front face (rows 20-29), satisfying the requirement for figure bases/plinths in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9435
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone plinth with bronze bust",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone plinth clearly shows a 3-pixel-tall top surface (rows 16-18) in 3/4 perspective before transitioning to the south-facing front wall (rows 20-30) bearing the plaque.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6688
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "founder bust on stone pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in pure front elevation. The bust shows only a flat front silhouette without foreshortened top surfaces. The pedestal is a flat rectangular front view with a front-facing decorative cornice (rows 16-19 with front-lit highlight/shadow banding), a recessed front panel, and a centered plaque viewed dead-on, showing zero top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9802
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "founder bust on stone plinth",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone plinth shows a clear horizontal top surface measuring 4 pixel rows (rows 16-19) in front of the bust, with the south face extending below it from row 20 down to row 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12242
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.870Z",
+ "cells": {
+  "16": [
+   "50689458aa56ec95",
+   "9e2f372ef24188cc"
+  ],
+  "24": [
+   "2b8e39e84864333d",
+   "41dcf8bed107115b",
+   "5c787d756f348975",
+   "639ba55c5460539b",
+   "7bf5c3e5a52642c6",
+   "8ca3f031ef578a9b",
+   "9e97fe80a631c60d",
+   "a40503606b4575d1",
+   "b61ec73742fb20ee",
+   "b67dc66767fee027",
+   "b7db6af7d2c10c36",
+   "b96b5fdb74c0de90"
+  ],
+  "32": [
+   "42134722207e7182",
+   "57856f87811c37e2",
+   "6a5eeb2fad969807"
+  ],
+  "48": [
+   "15065a09bdbc49be",
+   "2a0020ec5b42519b",
+   "8104bfc99dbbe995",
+   "ccda981923f90c75",
+   "e4da37020b122373",
+   "e73a960049eb5bb9"
+  ]
+ }
+}

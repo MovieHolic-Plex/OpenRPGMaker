@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e39daed6efae66b7fd1672e93ce0698333073a3b2b05d9f3ec874fdc6023ed47",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "함장 의자(높은 등받이 + 주황 쿠션 + 흰 팔걸이)",
+ "label": "sf-station/sf-captain-chair",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "captain chair seat and backrest",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The orange seat cushion is clearly visible from above across rows 7-11 (5 rows tall), with armrests on either side and the front edge/base below at rows 12-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5179
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "captain's chair with high backrest and cushion seat",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The orange seat cushion extends horizontally from row 7 to row 11 (5 rows tall), clearly viewed from above between the backrest and front edge drop. White armrest top pads are also visible from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6193
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "captain's chair with backrest, armrests, and seat cushion",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chair faces south in standard 3/4 view; the horizontal seat cushion surface is visible from above across rows 8-11 (4 rows), with white armrest tops at row 7, a vertical backrest behind it, and the front face of the seat/base below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5597
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "captain's chair with high backrest and orange cushion",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat surface of the orange cushion is clearly visible from above across rows 8–11 (approx 4 rows deep) before dropping down to the south-facing front edge and base in rows 12–15. Armrest tops are also visible on row 7.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5802
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.950Z",
+ "cells": {
+  "16": [
+   "14a0bb9bbc6046f3"
+  ],
+  "24": [
+   "05b8412f6b210fae",
+   "306e7d6ea4286304",
+   "502e22bcc2ca28c9",
+   "75a1664508610ae9",
+   "9ded5ae2b39c6ae4",
+   "e979e191e4528c87"
+  ],
+  "32": [
+   "52f7cf04ecdef1eb",
+   "5323d7e207b234f6",
+   "99e7a7455f07eeb9",
+   "a1841b0227a0db1b",
+   "e273bc4808ee2821",
+   "f20a7f4a50690250"
+  ],
+  "48": [
+   "28fa4e62367ffc5f",
+   "4d8fbe2cac5ec258",
+   "64a2946c9e309c00",
+   "a2bcfdc16c8a0628",
+   "b65a1caa041619aa",
+   "b71288985da181e6"
+  ]
+ }
+}

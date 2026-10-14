@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "03b6316633aede8677154d9cab96364ace7678a9b2434f19cc5ab30566c61b3d",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "젖은 진흙 땅",
+ "label": "gothic_manor/gm-ground-mud",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wet mud terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground tile depicting wet dark soil with small puddle reflections; appropriately categorized as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2936
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wet mud ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting dark wet mud with small puddle highlights, filling the entire 16x16 tile space from the top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6076
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wet mud ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 tile depicts wet muddy ground with small water puddles, functioning as flat terrain viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3676
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wet mud ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting wet muddy ground with small puddles of water across the full 16x16 surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3720
+  }
+ ],
+ "decidedAt": "2026-10-13T17:01:50.504Z",
+ "cells": {
+  "16": [
+   "5796a1d7e34297f0"
+  ],
+  "24": [
+   "1eee839bc002eacc",
+   "c3322b92f0c9ebe3",
+   "ce7e5317164a53ff",
+   "d27be82cc8642599",
+   "efc56b075e1bdc39",
+   "f009ac070b83df40"
+  ],
+  "32": [
+   "5ed2084574471047",
+   "695db2bb31b4542d",
+   "95be979cd1ed7159",
+   "a7e9a2211098d95b",
+   "b7de8912bb7dd828",
+   "d34ee57ee6f71091"
+  ],
+  "48": [
+   "12b173544ee3a49d",
+   "a37def8ee1e8299f",
+   "bc32f11c49bddeaf",
+   "c22f6259de5143d8",
+   "f1d47ec0349f5495",
+   "fe3b7ed76cd2b05b"
+  ]
+ }
+}
