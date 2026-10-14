@@ -23,8 +23,9 @@ export const BEODEUL_CITY_TILES_PER_ROW: number = data.tilesPerRow;
  */
 export const BEODEUL_CITY_BASE_COUNT = 23936;
 /**
- * 농장(beodeul_farm, 2026-10-13): 고른 조각 꼬리(27,648칸) 바로 뒤 768칸. 오토타일 `farmland`(농사 런타임이 경작지를 그릴 때 읽는 id)·
- * `farmland_watered`, 작물 9칸, 울타리 7칸, 키트 `bd-farm-*`. 번들이 소유하며 덧붙이기 전용이다(scripts/content/beodeul-farm/bake_farm.py).
+ * 농장(beodeul_farm, 2026-10-13 첫 판 · 2026-10-14 2판 다시 그림): 고른 조각 꼬리(27,648칸) 바로 뒤 768칸. 오토타일 `farmland`(농사 런타임이 경작지를 그릴 때 읽는 id)·
+ * `farmland_watered`(런타임이 물 준 칸을 그릴 때 읽는 id), 작물 10칸, 울타리 13칸, 헛간 6×6·닭장 3×3, 키트 `bd-farm-*`. 번들이 소유하며 덧붙이기 전용이다
+ * (scripts/content/beodeul-farm/bake_farm.py — 2판의 새 칸은 같은 768칸 안 빈 자리라 총 칸 수는 그대로다).
  */
 export const BEODEUL_FARM_BASE = 27648;
 export const BEODEUL_FARM_KIT_PREFIX = "bd-farm-";

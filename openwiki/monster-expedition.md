@@ -195,3 +195,23 @@ Focused regeneration: `python3 scripts/content/monster-expedition-art.py --speci
 astralhart` changes only its3PNG resources and rebuilds the aggregate catalog/seed
 and reviews, while verifying the other177existing PNGs against their catalog SHA.
 It requires an existing catalog; full generation without the option remains supported.
+
+
+## 빈터 쓰임 채우기 · 타이틀/주민 테마 배선 (2026-10-14)
+
+- `src/project/kitAreaFurnish.ts` 가 몬스터 키트 시트(monster_*) 야외 빈터를 「쓰임」으로 채운다. 편집기 도구
+  `find_empty_ground`·`furnish_outdoor_area`(`src/editor/tools/kitAreaTools.ts`)와 캠페인 생성기(`world.ts` 끝, 마을 9곳)가 같은 코드다.
+  남은 터에서 가장 큰 빈 직사각형부터 구획(최대 5×4)으로 떼어 바닥별 쓰임(`LOT_USES`: 숲 덩이·꽃밭·쉼터·눈놀이 터·덤불숲·
+  야자·선인장 밭·유적 자리·바위·김 구멍·파라솔 쉼터·어구 더미)을 고른다. 숲 벽·맵 가장자리 곁은 덩이, 건물 곁은 마당 쓰임,
+  가까이 같은 쓰임은 피한다. 구획 둘레는 1칸(좁은 띠는 2칸) 여백, 조각은 구획의 지배 바닥 위에만, 문 앞·이벤트 둘레·주민 산책길
+  (`reservedCells`)은 비우고, 닿던 이벤트가 막히면 조각을 되돌린다. 멈춤 = 맨땅(3×3 이웃에 물체 없는 바닥) ≤5% 그리고 빈 바닥 ≤45%.
+- 도구는 `region`(bottom-left 등)만 받아도 그 구역 전체를 채운다. 옛 스타일(grove/garden/plaza/pond)은 첫 덩이로 남았고, 표식을
+  제자리에 못 놓으면 길도 깔지 않는다(예전엔 구석에 표식, 허공에서 끝나는 길이 남았다).
+- 측정: `bun scripts/qa/monster-fill-probe.mts <out> [--themes ...] [--followup] [--render] [--check]` — 테마별로
+  build_monster_game(create) → 야외 맨땅 비율, 「서리꽃 마을 왼쪽 아래 빈 곳 채워」 모사, runGameCheck(자동 플레이).
+  2026-10-14: 마을 맨땅 14%→4.8%(네 테마), 이어 고치기 모사 맨땅 43%→3%(옛 도구 9%, 빈 바닥 55→34 vs 옛 32), 네 테마 막힘 0·엔딩.
+- 타이틀 키아트: `src/project/emeraldMonsterTitleArt.ts` — startTheme → coast(지금 사슴 그림)·default(풀밭)·desert·snow.
+  변형 그림은 그림 작업자가 `VARIANTS` 에 import 한 줄로 넣고, 없으면 사슴 그림으로 돌아간다. 보수는 지금 타이틀 id·시작 맵 바닥으로 테마를 추정.
+- 테마 주민 칩: `src/project/emeraldMonsterCast.ts` `THEME_CASTS` 는 비어 있다(원작 판형 theme-cast-v1 은 저작권 정리로 삭제).
+  사용자가 독자 도트 후보를 Allow 하고 설치한 칩만 항목으로 더한다. 없으면 기본 People1 칩(조용한 대체).
+- 산호 해변 오두막: 템플릿 집에 문 이벤트가 없었다 → 문에서 「바닷가 쉼터」 주인이 회복(recoverAll). 방 맵은 늘리지 않았다.

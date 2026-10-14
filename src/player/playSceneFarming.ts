@@ -5,7 +5,7 @@ import {
   autotileVariantForMask,
   type AutotileMapView,
 } from "@/project/defaults/autotileEngine";
-import { farmlandGroupForTileset } from "@/project/defaults/farmlandGroup";
+import { farmlandGroupForTileset, wateredFarmlandGroupForTileset } from "@/project/defaults/farmlandGroup";
 import { cropGraphicIndexForStage, cropGraphicStages } from "@/project/farmModel";
 import { store } from "@/project/store";
 import type { FarmPlotState } from "@/project/session";
@@ -33,7 +33,8 @@ type FarmOverlayScene = {
 
 const FARM_BASE_DEPTH = 90_000;
 const FARM_CROP_DEPTH = 140_000;
-// 물 준 흙은 전용 타일 아트가 없다(타일 그림판에 젖은 밭 변형 없음) — 실제 흙 타일 위에 옅은 어두운 틴트만 얹는다.
+// 물 준 흙: 타일셋이 `farmland_watered` 그룹(같은 마스크 규칙, 한 단 어두운 흙)을 실으면 그 그림으로 그린다.
+// 그 그룹이 없는 타일셋은 마른 흙 타일 위에 옅은 어두운 틴트만 얹는다.
 const WATERED_TINT_COLOR = 0x2a1a0c;
 const WATERED_TINT_ALPHA = 0.18;
 
@@ -47,11 +48,14 @@ export function renderFarmOverlays(scene: FarmOverlayScene, crops: readonly Crop
   // 타일셋이 경작지 그룹을 정의하지 않으면 undefined → 흙색 사각형 폴백(다른 시트의 번호를 그리지 않는다).
   const group = farmlandGroupForTileset(tileset);
   const soil = group ? createTilledSoilView(cells, group) : undefined;
+  const wateredGroup = group ? wateredFarmlandGroupForTileset(tileset) : undefined;
   const textureKey = group && tileset ? resolveFarmTextureKey(scene, tileset) : undefined;
   for (const cell of cells) {
     const { x, y, plot } = cell;
-    if (plot.tilled) renderTilledSoil(scene, soil, group, textureKey, x, y, plot.dead === true);
-    if (plot.watered) addRect(scene, x, y, WATERED_TINT_COLOR, WATERED_TINT_ALPHA, FARM_BASE_DEPTH + 1);
+    // 물 준 흙 그림은 경작한 칸에만 — 모양(이웃 마스크)은 마른 흙과 같은 합성 뷰에서 잰다.
+    const wetArt = plot.tilled && plot.watered && wateredGroup !== undefined && textureKey !== undefined;
+    if (plot.tilled) renderTilledSoil(scene, soil, wetArt ? wateredGroup : group, textureKey, x, y, plot.dead === true);
+    if (plot.watered && !wetArt) addRect(scene, x, y, WATERED_TINT_COLOR, WATERED_TINT_ALPHA, FARM_BASE_DEPTH + 1);
     if (!plot.cropId) continue;
     const crop = cropById.get(plot.cropId);
     renderCropMarker(scene, x, y, crop, crop ? cropStageForPlot(crop, plot) : plot.stage ?? 0, plot.dead === true);
@@ -106,12 +110,13 @@ function createTilledSoilView(cells: readonly FarmPlotCell[], group: AutotileGro
 }
 
 function tilledSoilTile(soil: TilledSoilView, group: AutotileGroup, x: number, y: number): number | undefined {
-  const members: ReadonlySet<number> = new Set(group.memberTileIds);
+  // 합성 뷰에는 경작한 칸만 -1 이 아닌 값이 들어 있다. 물 준 그룹(다른 번호)으로 그릴 때도 마스크는 같아야 하므로
+  // 멤버 번호가 아니라 「경작됨」 여부로 이웃을 센다.
   const mask = autotileNeighborMask(
     soil.view,
     x - soil.originX,
     y - soil.originY,
-    (tile) => members.has(tile),
+    (tile) => tile >= 0,
     group.neighborhood ?? 4
   );
   return autotileVariantForMask(group, mask);

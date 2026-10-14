@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "50d537dd230b954628ae459cd2064b545c2e0ed872f643f0dddd6d613323fd2b",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece 'post' (thick posts with cap tops, rails)",
+ "label": "beodeul_farm/fence_post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence post",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut surface (cap) of the post is clearly visible from rows 2 to 5 (4 rows tall) showing wood end-grain, above the front-facing vertical shaft from row 6 down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 26418
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden fence post",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface/cap of the post is clearly foreshortened and visible from above across rows 1 to 5 (approx. 5 pixel rows tall) before transitioning to the south-facing vertical shaft.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9396
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden fence post",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut surface of the post is visible from row 1 to row 5 (5 source pixel rows) showing lighter wood with an end-grain pattern, situated above the south-facing shaft (rows 6-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9262
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden fence post",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the post is clearly visible from rows 1 to 4 (4 rows tall) with distinctly lighter top-down illumination and end-grain texturing, above the darker vertical front face (rows 6-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9092
+  }
+ ],
+ "decidedAt": "2026-10-14T05:12:51.330Z",
+ "cells": {
+  "16": [
+   "1c338fb37134bc89"
+  ],
+  "24": [
+   "07a390ac378caaf3",
+   "115ef7b38b4369d3",
+   "16b00b0c31ee670e",
+   "26ad39873c942d80",
+   "3f49eb84b378e243",
+   "a73370be2820bb6a"
+  ],
+  "32": [
+   "16eb7359ef355c79",
+   "2781a4e4940ca411",
+   "3f1fdf45e4588551",
+   "58b11913fa1a49e2",
+   "608916d5a86458cc",
+   "e9341463bcf62730"
+  ],
+  "48": [
+   "8cb8898ffd445281",
+   "a561895d677b93a4",
+   "a81ff28affc2a718",
+   "e89ca9f8c8fb5b3f",
+   "ed9935e459bc691e",
+   "fce43c5f96332874"
+  ]
+ }
+}

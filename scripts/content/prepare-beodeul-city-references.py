@@ -836,7 +836,7 @@ for c in cats:
         (MD / f"{d_['id']}.md").write_text(md.rstrip() + "\n")
 # 고른 장소 조각 용도(beodeul-picks-*)는 scripts/content/beodeul-picks/bake_picks.py 소유 — 다시 만들 때 지우지 않는다.
 _ref = ROOT / "src/assets/beodeulCityReferences.json"
-_picks = [c for c in json.loads(_ref.read_text()) if c["id"].startswith("beodeul-picks-")] if _ref.exists() else []
+_picks = [c for c in json.loads(_ref.read_text()) if c["id"].startswith(("beodeul-picks-", "beodeul-farm"))] if _ref.exists() else []  # 농장 용도는 beodeul-farm/farm_scenes.mts --refs 가 쓴다
 _ref.write_text(json.dumps(cats + _picks, ensure_ascii=False, indent=0) + "\n")
 print(json.dumps(dict(categories=len(cats), documents=sum(len(c["documents"]) for c in cats), images=sum(len(c["images"]) for c in cats),
                       chars=[sum(len(d_["markdown"]) for d_ in c["documents"]) for c in cats], tamper=[(r["code"], len(r["detected"])) for r in results])))

@@ -1,0 +1,109 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c5aeeb34ee016eede16bb9426a6c88cca15730ce4a142a3b7e8de45afad8616f",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "farm crop plants: cabbage young (plants only, the soil is a separate tile underneath)",
+ "label": "beodeul_farm/crop_cabbage_young",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "young cabbage sprout clusters",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each cabbage plant is drawn as a flat 2D front-facing silhouette of a sprout with upright leaf tips, lacking any top-down foreshortening or visible leaf rosette spreading across the ground plane in 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7116
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "four young cabbage sprouts in a 2x2 crop layout",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each cabbage sprout is depicted from a top-down 3/4 angle showing the open cupped leaves and darker rosette center spread across 3-4 rows of pixels with ground contact shadow underneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6487
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 60197,
+   "error": "Error: Request was aborted"
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "young cabbage plant cluster",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each cabbage sprout is drawn in pure front elevation with vertical leaves sticking straight up in silhouette and horizontal shading bands, showing no visible top surface or rosette opening from above.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6731
+  }
+ ],
+ "decidedAt": "2026-10-14T05:12:51.328Z",
+ "cells": {
+  "16": [
+   "946efe75332c2d39"
+  ],
+  "24": [
+   "27f74c4663ce963b",
+   "66941bfe222d072a",
+   "7821313f3a87dfb2",
+   "ad9480611d726eab",
+   "be7ec32620ef49bb",
+   "f91dd6ee954d68dc"
+  ],
+  "32": [
+   "3ea180f2b8c1da65",
+   "440a71d84eeebcdf",
+   "8cfff63e2025b6a0",
+   "a77428692bd8d3cb",
+   "ab02daecf5ffcbab",
+   "bf17d08c8aa1b2f5"
+  ],
+  "48": [
+   "4e9298cfd60f1fdd",
+   "5716c84ceffbc049",
+   "69e97e1c310eb60d",
+   "aba10d5381ac8caf",
+   "b76d6dd73ac8849d",
+   "cd6888b1eccf3455"
+  ]
+ }
+}
