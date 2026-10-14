@@ -120,6 +120,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - 스팀펑크 공업 도시 번들 steampunk_city · 벽돌·철·구리 거리·공장·기차역·운하·비행선 정박장 + 실내 6종 코드 손 도트 163조각(object-gate 영수증, 프로필 미보정), 구성기 `compose_steampunk_city_map`(계획→건물→소품, BFS·여백), 하늘섬은 다른 칩셋: `openwiki/steampunk-city.md`
    - SF 정거장·네온 거리 번들 sf_station · 우주 정거장 실내·연구 기지·달 기지·사이버펑크 거리 손 도트 172조각(object-gate 전량 영수증)과 맵 구성기 `compose_sf_station_map`(station·lab·street·moonbase), SF 낱말 라우팅 `src/ai/sfStationPolicy.ts`, 참고문서 `sf_refs.py`: `openwiki/sf-station.md`
    - 선사 시대 원시 세계 번들 prehistoric · 원시 부족 마을·늪·화산·공룡 화석 계곡 + 동굴·움집 실내 4 코드 손 도트(꼭짓점 Wang 바닥 9쌍, object-gate 영수증·조립 표본, 프로필 미보정), 구성기 `compose_prehistoric_map`(꼭짓점 땅 계획→빈터→집→길→소품, BFS), 그냥 동굴·던전은 던전 칩셋: `openwiki/prehistoric.md`
+   - 북방 설원 번들 snow_north · 눈 덮인 북방 마을·얼어붙은 호수 낚시터·얼음 동굴 입구·겨울 장터 + 오두막·회관·선술집·사우나·얼음 동굴 실내 코드 손 도트 131조각(오토타일 6, object-gate 영수증·조립 그림, 프로필 미보정), 구성기 `compose_snow_north_map`, 버들항 눈 기후(theme:"snow")와의 라우팅 경계는 `src/ai/snowNorthPolicy.ts`: `openwiki/snow-north.md`
    - Editor AI panel & tools: `openwiki/editor-ai-panel.md` + `openwiki/editor-ai-tools.md`
    - Editor misc workflows: `openwiki/editor-workflows-misc.md`
    - 에디터 「공방」 (하네스를 에디터 안에서 사용자 계정 모델로 돌리기 — 왼쪽 막대, 실행기·저장·표면): `openwiki/editor-workshop.md`
