@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "74ce6b69f9896191e940d8813057fd7bf9305b60417287751d3875d6e2d02db7",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "dark hydroponic soil bed with green sprouts, two variants",
+ "label": "sf-station/sf-hydro-soil",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "soil bed terrain with sprouts",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground surface spanning all 16 rows with small green sprout details, correctly representing top-down/3/4 ground tiles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3606
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "soil bed terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tiles depicting dark soil with small green sprouts, viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3282
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "soil bed terrain with green sprouts",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tiles (two 16x16 tiles side-by-side) showing dark soil texture with small green sprouts viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3136
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "soil bed terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing soil surface and sprouts viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4851
+  }
+ ],
+ "decidedAt": "2026-10-13T15:26:41.509Z",
+ "cells": {
+  "16": [
+   "5d5395df1f39be88",
+   "fb6d2f6cd2a0ebd5"
+  ],
+  "24": [
+   "2014286bfd653c6a",
+   "2bf1dccadf47480d",
+   "320e20c8c36023d4",
+   "483e200187bc86fb",
+   "5603f8050a3820ef",
+   "58e7f76c66b1cd3f",
+   "68cc679e70047ecc",
+   "899d52cc26a4aa9f",
+   "ac3f16d91b8cd4a5",
+   "b8001e0ce3519a6f",
+   "ce875e5bfd8172e1",
+   "d735068142cb2837"
+  ],
+  "32": [
+   "aa62c4dd40a6a951",
+   "ce806d0013b9bbdc"
+  ],
+  "48": [
+   "2d488a434bbd06ca",
+   "40986a6318daf0cc",
+   "c57d47a9beb7196a",
+   "d76c742fef2b3fb2",
+   "d8440a77e66907a3",
+   "e0541b3f80f05d20"
+  ]
+ }
+}

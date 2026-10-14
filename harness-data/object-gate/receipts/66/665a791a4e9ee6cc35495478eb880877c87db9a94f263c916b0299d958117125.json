@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "665a791a4e9ee6cc35495478eb880877c87db9a94f263c916b0299d958117125",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "chart table with a map and brass compass",
+ "label": "sky-island/si-chart-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "table top",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop occupies rows 1-9 showing a large horizontal surface with a map and brass compass, with the front apron on rows 10-11 and legs beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4102
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "chart table",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface spans rows 1 to 9 displaying the map and compass, with a front apron at rows 10-11 and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3096
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "chart table",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface clearly extends from row 1 to row 9 (9 rows tall) displaying the map and compass, with the front apron on rows 10-11 and legs beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2640
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "table",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface clearly shows top-down foreshortening across rows 1 to 9 with a map and compass laid on it, followed by a front apron on rows 10-11 and legs beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3302
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.564Z",
+ "cells": {
+  "16": [
+   "0f820a623895335f",
+   "4b74265f504a7a6f"
+  ],
+  "24": [
+   "0c4ef801cecbed87",
+   "148e31805c991e7d",
+   "265d4d01ba556908",
+   "408784be477469a8",
+   "5041ace4b68c6891",
+   "5dc928a6dc54f5fe",
+   "6a7f2f476bf396d5",
+   "6ed09f251c5a666e",
+   "b14dd68ff57dc761",
+   "cf2a6b03860577c8",
+   "def143e435d0a462",
+   "f25debfba304193e"
+  ],
+  "32": [
+   "a1061be26fbd9775",
+   "a154b88fccc04480"
+  ],
+  "48": [
+   "1cdf3d0cbfb92de5",
+   "653988b23827851d",
+   "72218ddb47490c1a",
+   "990c3abcc861c881",
+   "9c51eb58e5e360f1",
+   "b14c27aadec99182"
+  ]
+ }
+}

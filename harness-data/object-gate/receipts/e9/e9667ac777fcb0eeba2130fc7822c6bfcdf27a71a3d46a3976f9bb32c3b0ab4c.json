@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e9667ac777fcb0eeba2130fc7822c6bfcdf27a71a3d46a3976f9bb32c3b0ab4c",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "벽 램프(금속 받침 판 + 길쭉한 발광 등)",
+ "label": "sf-station/sf-wall-lamp",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall lamp fixture",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted lamp fixture mounted flat to the wall surface, appropriately flat for the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4500
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall lamp with metal plate and glowing light",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted fixture attached flat against the wall surface, correctly depicted for a south-facing wall in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5923
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rectangular wall plate with inset luminescent fixture",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted fixture drawn flat against the wall as allowed for the wall_mounted category; no top surface visible (top_rows=0).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4662
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall lamp plate with horizontal glowing light",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted fixture mounted flat against a north wall; correctly depicted flat-facing without perspective distortion.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6852
+  }
+ ],
+ "decidedAt": "2026-10-13T15:30:54.894Z",
+ "cells": {
+  "16": [
+   "3c15437b39640a51"
+  ],
+  "24": [
+   "00cec08e16910a32",
+   "059b64a303dbb39b",
+   "1b01d4a70c0a7292",
+   "274f579b8a16465b",
+   "389514df63002957",
+   "df73936139913307"
+  ],
+  "32": [
+   "1732df641735ec9e",
+   "38444470086aebb2",
+   "56f5a04543a60c89",
+   "c4ef1c6108489f97",
+   "d55664dca660ad4b",
+   "f26993bd16f3f6f5"
+  ],
+  "48": [
+   "063ff747aa6d40a0",
+   "4012e62311d82e5b",
+   "870137298684b1fb",
+   "bf002ddb386f612d",
+   "ce66fb54e2b24c2c",
+   "f2513f3d05882256"
+  ]
+ }
+}

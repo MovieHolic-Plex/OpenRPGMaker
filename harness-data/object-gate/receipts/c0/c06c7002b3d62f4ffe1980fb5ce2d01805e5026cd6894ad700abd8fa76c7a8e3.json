@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c06c7002b3d62f4ffe1980fb5ce2d01805e5026cd6894ad700abd8fa76c7a8e3",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "광장 가스등(돌 받침대 위 큰 등)",
+ "label": "steampunk-city/sp-plaza-lamp",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "gas lamp with domed metal cap on a stone pedestal",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the stone pedestal (rows 31-35, 5 rows of visible top surface) and the domed metal hood of the lamp (rows 1-6) clearly display foreshortened top surfaces appropriate for 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5615
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "gas lamp with dome cap and stone pedestal",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone pedestal shows a clear 5-row top surface (rows 31-35) foreshortened in 3/4 view, and the domed lamp cap also displays its top surface curving down with a finial.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6825
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "gas lamp on stone pedestal",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the stone pedestal is clearly foreshortened and visible across rows 31-35 (5 pixel rows deep), and the lamp base flange resting on it forms an ellipse. The domed cap of the lantern also shows downward foreshortened top coverage (rows 1-6).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6049
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "gas lamp with domed metal cap on a stone pedestal",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The domed lamp cap shows its foreshortened upper curvature (rows 1-5) and the stone pedestal shows a prominent 5-6 pixel tall horizontal top surface (rows 31-36) where the post base sits.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5609
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:21.952Z",
+ "cells": {
+  "16": [
+   "166a4a0acafdd25f",
+   "42fd52cbea5b1e6b",
+   "a0c9a833d9fb6c11"
+  ],
+  "24": [
+   "1f11208babf26eac",
+   "2f7311626246864d",
+   "776cc96044b4cf16",
+   "7a2f307dcac318ff",
+   "b1ad60381518d854",
+   "f1b38eb9392dfded"
+  ],
+  "32": [
+   "064e1febc7353e40",
+   "3b42d6fc78c958dc",
+   "3e24b886bfd252ff",
+   "49735a0220fdcfd5",
+   "9133bfe7e4f3fd1e",
+   "a680f68fa88ede7b",
+   "c978c03b85c4b0ee",
+   "cd25fc19d5f2fc5e",
+   "d7c5877d2e833442",
+   "dec6c139a6581781",
+   "e23b39a3df7238e2",
+   "ee6336ace2f1901d"
+  ],
+  "48": [
+   "459b085e32eb1829",
+   "6ea9103a68a264a7",
+   "b39a7d72b41cf61a"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b2d6162ac687f37cb58d2c814e87c51cbb915d771b1e524bdb8da1b8cbd283c7",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "벽 현창(둥근 금속 테 + 별이 보이는 우주)",
+ "label": "sf-station/sf-porthole-star",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round wall porthole window showing space",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted circular porthole with stars visible inside, mounted flat against a vertical wall face as appropriate for wall_mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4359
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "circular wall porthole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted circular window/porthole shown flat on a north wall facing south, which is standard and correct for wall-mounted decorations in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5360
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round wall porthole window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted circular porthole with metallic frame showing stars outside; correctly mounted flat against a vertical wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3190
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall porthole with metal frame and starry view",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Circular porthole mounted flat to the wall showing deep space with stars inside a metal rim. Perfectly suitable for wall_mounted flat fixture.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4371
+  }
+ ],
+ "decidedAt": "2026-10-13T15:30:54.894Z",
+ "cells": {
+  "16": [
+   "d8b63bd6c35817eb"
+  ],
+  "24": [
+   "022f632a09e9f05d",
+   "0e025a45c390e3ff",
+   "84bf6c106a0a9260",
+   "8ecb25060c2ddc2e",
+   "97e83a63cfd1bdfe",
+   "dfb317b2fbad6461"
+  ],
+  "32": [
+   "09e47f4a0e0348b2",
+   "45838d03e072e283",
+   "5a0843f3465963aa",
+   "8d12d53bfead9fde",
+   "ee76255da48b8e03",
+   "ffbed8f9d258fb85"
+  ],
+  "48": [
+   "1040cc02475e2d18",
+   "6ee218e3682a6d2d",
+   "c99a5298d82d8ba6",
+   "de92964f3c522828",
+   "f27c58350645e2c4",
+   "fcd5e4ac6456849c"
+  ]
+ }
+}

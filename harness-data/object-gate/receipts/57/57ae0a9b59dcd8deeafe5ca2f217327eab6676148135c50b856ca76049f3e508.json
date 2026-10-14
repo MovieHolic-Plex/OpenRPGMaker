@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "57ae0a9b59dcd8deeafe5ca2f217327eab6676148135c50b856ca76049f3e508",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "화장실 칸막이 칸(문 닫힘)",
+ "label": "modern-campus-int/mc-toilet-stall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "toilet stall cubicle",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cubicle is clearly shown as a 4-pixel tall foreshortened horizontal plane (rows 2-5) rendered in a lighter illuminated tone above the south-facing door frame (rows 6-27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13816
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "closed toilet stall cubicle",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the stall/cubicle is drawn at rows 2-5 (4 pixels tall) in a clearly illuminated lighter tone with a cast shadow line at row 6 separating it from the front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7713
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "toilet stall cubicle",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cubicle is clearly shown across rows 2–5 (4 pixels tall) in a lighter illuminated tone, bounded by a top back edge (row 1) and front top edge seam (row 6) above the south-facing front door and frame.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12347
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "toilet stall cubicle",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the stall cubicle is clearly shown across rows 1-5 (approx 4-5px tall) with top-down lighting, above the south front face containing the stall door.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8636
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.309Z",
+ "cells": {
+  "16": [
+   "e3fda990acc37102",
+   "fd4f262c7a470458"
+  ],
+  "24": [
+   "1e6105ce3f674e29",
+   "33e7b6c6d69b7b34",
+   "35b5e77f8b282fcc",
+   "35c977adaf8261c8",
+   "3e03eced61dc0f0b",
+   "46c6b33e563882c9",
+   "9233a984d0753456",
+   "939683b7266dc199",
+   "ba6ea279cce610f3",
+   "d16b15a5ad969ace",
+   "e18696c486599e08",
+   "e2a68a3b91f014fe"
+  ],
+  "32": [
+   "043dc1dc7392cb51",
+   "38c685e105e50727",
+   "a6e8251ad79a5b5e"
+  ],
+  "48": [
+   "2dde772d93e6b498",
+   "3e6086d05949d566",
+   "7b42e724f4b9885a",
+   "97d68ad8da10ce00",
+   "ba7058ece55c858e",
+   "c58c1eb89e0b39d7"
+  ]
+ }
+}

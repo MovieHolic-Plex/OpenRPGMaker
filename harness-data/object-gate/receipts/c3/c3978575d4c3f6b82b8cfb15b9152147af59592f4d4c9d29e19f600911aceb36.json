@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c3978575d4c3f6b82b8cfb15b9152147af59592f4d4c9d29e19f600911aceb36",
+ "width": 48,
+ "height": 32,
+ "kind": "organic",
+ "name": "바위 무더기(크고 작은 돌덩이 여럿)",
+ "label": "sf-station/sf-boulder-cluster",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cluster of boulders",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock cluster shows clear 3/4 top-down foreshortening; the prominent central boulder displays a lit top dome measuring about 9 source pixel rows (rows 5-13) before transitioning into shadow, and the lower/lateral boulders similarly show 6-7 rows of upper horizontal surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4788
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pile of rocks/boulders",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rocks show clear 3/4 top-down foreshortened top surfaces lit from above (e.g. top boulder rows 5-13, lower rock shelves rows 13-20) transitioning into south-facing shaded vertical faces below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4517
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pile of rocks and boulders",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock cluster shows clear top surfaces visible from above on both the upper central boulder (rows 5-13) and the surrounding rock shelves (rows 13-17), before dropping to front-facing planes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4936
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cluster of boulders/rocks",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock cluster shows clear top-down foreshortening. The upper central boulder exhibits a well-defined top lit dome (rows 5-13, ~8 rows), and the lower rock shelves show broad upward-facing facets (rows 13-19) stepping down to the shaded front surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4093
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:27.307Z",
+ "cells": {
+  "16": [
+   "096a9feaae88a4e4",
+   "2a7a35d2e5255b7d",
+   "909524776a099e3f",
+   "ad41b81421499768",
+   "ba9cdfa6c6d93f34",
+   "fd3d37eb325dd828"
+  ],
+  "24": [
+   "0604f77a2cfa9eb3",
+   "2311754a22bbdbb6",
+   "3a0ac5051526f101",
+   "3fdfd2b95804a69e",
+   "a026c2a4b336c3e7",
+   "ac181244ebd0e880",
+   "de4702d1004b2759",
+   "f40892ee382d537a"
+  ],
+  "32": [
+   "0caa19efdf3d20d7",
+   "5428f8896e205141",
+   "aeea821e6a88db68",
+   "b6887725280bbc75",
+   "d7cdbdbcddd004ec",
+   "de5226f9a57e8543"
+  ],
+  "48": [
+   "236a70ff86a0c9e8",
+   "e38c44531aff8c66"
+  ]
+ }
+}

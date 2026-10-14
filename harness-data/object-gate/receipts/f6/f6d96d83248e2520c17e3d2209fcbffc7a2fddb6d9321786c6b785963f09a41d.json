@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f6d96d83248e2520c17e3d2209fcbffc7a2fddb6d9321786c6b785963f09a41d",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "rope plank bridge seen from above (flat walkway)",
+ "label": "sky-island/si-bridge-h",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rope plank bridge walkway spanning horizontally",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bridge is viewed from above spanning east-west across a chasm. The wooden planks display their top faces (rows 5–10) with south thickness edges/shadows at rows 11–12, flanked by suspension ropes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8423
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rope plank bridge walkway",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bridge floor is viewed from above with horizontal planks running north-south spanning rows 5–11, showing the top surface of the walkway and gaps revealing the void below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8753
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rope plank bridge walkway",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bridge walkway is viewed from above spanning east-west across a chasm, with wooden planks and side ropes clearly laid out flat in top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8264
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rope plank bridge walkway",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bridge spans horizontally with planks laid north-to-south, showing the top surface of the planks and ropes from above over a chasm background with south-edge plank shading at row 11-12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5942
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.982Z",
+ "cells": {
+  "16": [
+   "23cd307667658e56"
+  ],
+  "24": [
+   "046eea5691fc72e4",
+   "4fd61fb049d55965",
+   "51a380c8fbcd3d1e",
+   "6b4022e79be85044",
+   "eb864e3131b66f85",
+   "f7b246e67785b82c"
+  ],
+  "32": [
+   "0389d4e36b108f8a",
+   "161bf10fcba1bbf7",
+   "1ec71a00e058a807",
+   "39715cf6e34ed701",
+   "667b1988efe951e9",
+   "81ba9380f84e19a1"
+  ],
+  "48": [
+   "30f6ea80cce3a584",
+   "3c04ba8e9f10f5dc",
+   "461e7b6b6c16c8f1",
+   "731edb265ca9687c",
+   "7aeac4e2d1520fcf",
+   "dba90183792980ca"
+  ]
+ }
+}

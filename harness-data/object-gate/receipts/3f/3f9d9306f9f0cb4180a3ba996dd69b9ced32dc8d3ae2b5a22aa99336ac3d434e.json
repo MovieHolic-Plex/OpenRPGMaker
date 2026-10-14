@@ -1,0 +1,138 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3f9d9306f9f0cb4180a3ba996dd69b9ced32dc8d3ae2b5a22aa99336ac3d434e",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "bronze incense burner on three legs",
+ "label": "sky-island/si-incense",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "아가리 안쪽이 안 보임",
+  "아가리 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bronze ding / censer on three legs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The censer is drawn in pure front elevation: all three legs end on the exact same ground line (rows 12-14), and the dark opening lacks an elliptical foreshortened shape (its bottom edge at row 6 is a perfectly flat horizontal line with no visible front rim or top surface).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 9970
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "incense burner bowl on three legs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The burner is drawn in pure front elevation. The dark interior/opening has no back rim (it borders the background directly at row 4) and no front rim, appearing as a flat dark patch between two side handles rather than an ellipse seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 9928
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bowl of the incense burner",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The censer is drawn entirely in flat front elevation. There is no back rim or front rim showing depth; the dark area has a straight horizontal bottom edge across row 6 instead of an elliptical opening, the three legs are flat vertical bars on a flat horizontal base, and no top horizontal surfaces are visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 13261
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "censer bowl",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The censer features a clearly visible 3-row deep elliptical opening (rows 4-6) showing the dark interior from which smoke emerges, correctly depicting the top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 4041
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.564Z",
+ "cells": {
+  "16": [
+   "b97183f6c5f57d5d"
+  ],
+  "24": [
+   "0edbe86b94c907c9",
+   "5fc1b5393726762c",
+   "abc5e4f9b4391b61",
+   "dae05fb2d6be92fd",
+   "dced5802ec9349f8",
+   "ddcf4c187d732570"
+  ],
+  "32": [
+   "095274232b55a5ad",
+   "237e155ba969024a",
+   "2b4f9110d5825abb",
+   "6989110cdcf2fb20",
+   "78f0bb343b9addda",
+   "ad6df2693d196bcc"
+  ],
+  "48": [
+   "0bd90315c57c69ac",
+   "2ef7c0965836fafd",
+   "90263dc6b1a2b4bf",
+   "eb09930f8c60fb39",
+   "f2cd1143346b9681",
+   "ffd99ad64693e81b"
+  ]
+ }
+}

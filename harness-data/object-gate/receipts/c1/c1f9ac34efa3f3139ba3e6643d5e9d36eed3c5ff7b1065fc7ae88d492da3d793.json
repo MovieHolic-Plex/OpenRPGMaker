@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c1f9ac34efa3f3139ba3e6643d5e9d36eed3c5ff7b1065fc7ae88d492da3d793",
+ "width": 32,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "높은 오크 책장(먼지 쌓인 윗판)",
+ "label": "gothic_manor/gm-bookshelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall oak bookshelf with visible top surface and shelves of books",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bookshelf is clearly depicted from rows 0 to 5 (about 6 pixels deep) in proper 3/4 top-down perspective, with shelf ledges and book tops also foreshortened.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4099
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall oak bookshelf with dusty top surface and books",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bookshelf is clearly visible spanning rows 1 to 5 (5 source pixel rows) with visible plank seams and a placed item, matching the description.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4877
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tall oak bookshelf",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bookshelf is prominently depicted across rows 0–4 (5 pixel rows tall) with plank seams and an object resting on it, above the front cornice.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3834
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall oak bookshelf with dusty top panel",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bookshelf is clearly visible from rows 1 to 5 (about 4-5 pixel rows deep) with wood plank lines and a candle resting on top of it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4873
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.502Z",
+ "cells": {
+  "16": [
+   "18399117b949b750",
+   "206856450743fd12",
+   "22dd6c8d5ea506e1",
+   "473d59cb9f604d4b",
+   "63f5174f299afb8c",
+   "71aa3459135d781e"
+  ],
+  "24": [
+   "07b393c03ad54ae0",
+   "0c537a11c44b1a93",
+   "12de6a39c085573d",
+   "18fa82e4250ad55a",
+   "23843aa52cb70e07",
+   "261aab9ce7650f8f",
+   "58d2426f61c08d62",
+   "62a754a437f3d1eb",
+   "b17f743925eaec85",
+   "c9bf6849eb13a553",
+   "d3bcf843a652fe9f",
+   "ff95615be256343b"
+  ],
+  "32": [
+   "722c311199613233",
+   "8b717ee2e8ef73cb",
+   "eb5c0e267e5f5802",
+   "efa5fd75c4591347"
+  ],
+  "48": [
+   "3c7cf9845cf15903",
+   "4ac28df41ceecbb1",
+   "f5dd0c0facc0f58d"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "12a27c55028fa7d7771bd6240aee1218b597238fbd7780712205ba0ca0cf50a8",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "콘크리트 산책길",
+ "label": "modern-campus/mc-pave-path",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "concrete walkway terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile depicting a textured concrete path; correctly rendered as a top-down ground surface spanning the full 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4197
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "concrete walkway terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile representing a concrete walkway; covers the entire 16x16 tile as a top-down surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5826
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "concrete walkway terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground tile depicting concrete walkway texture filling the entire 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3392
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "concrete walkway terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile depicting a textured concrete path; correctly viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4059
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.863Z",
+ "cells": {
+  "16": [
+   "066936f6bd34a211"
+  ],
+  "24": [
+   "2cb1049a50947515",
+   "4c46bcfb30f54dd5",
+   "76874901db221439",
+   "95c1672636d00080",
+   "a5ee27091087dbe1",
+   "c362106a85c08298"
+  ],
+  "32": [
+   "54135a3d277eaf0f",
+   "58fb4b5cb2159047",
+   "64d8fd9c9b6bcfbd",
+   "729aa3f1d0faf004",
+   "7c645b9f3b85d01e",
+   "a31d16136ef725f1"
+  ],
+  "48": [
+   "0fecef291bb34db7",
+   "1e2f75de106084dd",
+   "45439c9838b51380",
+   "4f085a5567c262cf",
+   "846bff84d78dbbb6",
+   "a62878fe3f6ec1be"
+  ]
+ }
+}

@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ecec2f9e7dfc1cc3c981ee0220088c02ead86df03730340bd70b882b4d2e0904",
+ "width": 48,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "돌 벽난로(불꽃 3프레임)",
+ "label": "gothic_manor/gm-fireplace",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone fireplace",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fireplace is drawn in direct front elevation with no visible top surface for the main structure or the mantelpiece (the mantel shelf at row 13-15 is only a 2px horizontal band/edge highlight). The hearth arch and interior are also drawn completely flat with no foreshortened floor or receding depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6497
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone fireplace",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fireplace is drawn in a pure front architectural elevation with zero visible depth on the mantel, hearth, or upper chimney breast. All surfaces, the arch opening, and the base plinth are viewed straight-on without any foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6048
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone fireplace",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fireplace, including the mantel, log, candle bases, and hearth base, is drawn in pure flat front elevation with 0px of top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5978
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone fireplace",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fireplace is drawn straight-on in flat front elevation. The upper chimney breast/wall, mantel ledge (only 2px thick at rows 13-14), main fireplace arch, and hearth base are all drawn without any visible foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6380
+  }
+ ],
+ "decidedAt": "2026-10-13T16:52:42.785Z",
+ "cells": {
+  "16": [
+   "15372f6b4d4b6442",
+   "24a50985c06934af",
+   "5a32776d85edaac5",
+   "7412d60568205e1a",
+   "8ee84a1ae2fc5584",
+   "a953d4e14600f668",
+   "b67626044a23ca36",
+   "ee138dfbbab39485",
+   "f429d55d41b40c01"
+  ],
+  "24": [
+   "1b3a5f9a7c603247",
+   "62141ef653e7a826",
+   "c1fee3d358edbc3d",
+   "f5acdf36683f8944"
+  ],
+  "32": [
+   "10db0c601b36e119",
+   "1fd855b5e7ba9ff0",
+   "2a6b65de0cf15f77",
+   "2ca3340fed0b27e0",
+   "5b09e845b4cefabe",
+   "5cbac126f77df9b5",
+   "66c0c4cb6b4ad1ec",
+   "6adfb864d2625e44",
+   "7c988505efbe04ba",
+   "81cc09d317be7c5c",
+   "868251309622c35a",
+   "93b009fa174b166d",
+   "9af25584720df89d",
+   "a5f310f6106ed71f",
+   "afca7394fd5a8494",
+   "b724839d8fc72aa6",
+   "c069226806809e37",
+   "c53f6623a4c1f167",
+   "c94538b5ac299c09",
+   "c9fc1cb6a56c4cda",
+   "d59ede1b9e2db65b",
+   "dd25497935817b6b",
+   "e2b7d03d97af8788",
+   "f56b44345a73b0e9"
+  ],
+  "48": [
+   "7a233ede66c37ca7"
+  ]
+ }
+}

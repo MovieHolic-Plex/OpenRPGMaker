@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c82748bc196396ee74b48160447e3cbe36dea278880d49fc1ee232b57edf0e5a",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "bronze incense burner seen from above: wide round mouth with ash visible inside, three legs",
+ "label": "sky-island/si-incense",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round bronze incense burner bowl on legs",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The censer has a wide elliptical opening filled with grey ash spanning rows 3-8 (6 rows tall), viewed from an appropriate 3/4 top-down angle above a curved south-facing bowl and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3817
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round bronze incense burner with interior ash and legs",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The burner features a large elliptical opening (rows 3-8, 6 rows tall) showing grey interior ash and an ember, with the rounded front body visible below it (rows 8-12) resting on three legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3801
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "incense burner bowl on three legs",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round mouth opening is clearly visible from above, spanning rows 3-8 (6 rows of interior ash surface) with the south bowl face visible below it from rows 9-12 and three legs at rows 13-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2873
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round bronze incense burner with legs",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The censer features a large elliptical opening showing grey ash inside from rows 2 through 7 (6 rows tall), with the front rounded belly visible below (rows 8-12) resting on legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3513
+  }
+ ],
+ "decidedAt": "2026-10-13T18:47:30.237Z",
+ "cells": {
+  "16": [
+   "d8e58253f41805cf"
+  ],
+  "24": [
+   "079212148f864be5",
+   "17850a378fb4ea41",
+   "1bce559c3ef22a65",
+   "6bcef1f3e7e4084d",
+   "9190a2d26cd7a2d5",
+   "d3c12a9e3bcc33a2"
+  ],
+  "32": [
+   "02ca6221a5ebb730",
+   "1b19f7d2551b9bf1",
+   "439cfcd2f88db7cf",
+   "49e0111fd4c0ffd2",
+   "951d821ab18a9dbb",
+   "b6dde21728c23e99"
+  ],
+  "48": [
+   "4c9a9c5534cdd87c",
+   "76bac47d90be9a59",
+   "acce86ceeb5334d4",
+   "c47892cb4704a7a1",
+   "db9017fb77a82682",
+   "ddf6eedd75787e4f"
+  ]
+ }
+}

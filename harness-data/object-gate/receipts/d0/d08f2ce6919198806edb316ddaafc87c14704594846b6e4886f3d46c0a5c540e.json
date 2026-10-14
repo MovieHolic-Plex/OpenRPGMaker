@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d08f2ce6919198806edb316ddaafc87c14704594846b6e4886f3d46c0a5c540e",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "cloud platform edge tile against sky (terrain)",
+ "label": "sky-island/si-cs-isw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cloud / sky terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a cloud/sky surface with rounded platform edge in the corner; fills the ground plane correctly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4017
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cloud platform terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a cloud surface with sky/cloud shading; as ground terrain it fills the top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2928
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cloud / sky terrain surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a cloud surface with sky/cloud shading and corner cloud edge; inherently valid terrain viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2959
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cloud platform edge tile / sky terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting cloud/sky surface. Meets 3/4 top-down terrain requirements.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3921
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.977Z",
+ "cells": {
+  "16": [
+   "8ad4bf92747c5907"
+  ],
+  "24": [
+   "01322c372d14a89e",
+   "03e572c684775b8d",
+   "3a26fcfe32b52495",
+   "8fbbe478027bfc88",
+   "b0e129d5cfe57d46",
+   "c4373b60d81e82f1"
+  ],
+  "32": [
+   "2236fc7f0d575f6b",
+   "43a13afadb3c2d39",
+   "5fad5debe7909e73",
+   "b41d4e2357726166",
+   "c0f01f86cee2f8ee",
+   "f2b7f5f376d6354d"
+  ],
+  "48": [
+   "225fd3a8f80426f2",
+   "24f99ed6ab23bd29",
+   "2a47cf0eb05e5713",
+   "6f5d1f2219958804",
+   "f43f85f0524a5d77",
+   "f6380b36d2f2d7b4"
+  ]
+ }
+}

@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9359b1313a32018bfed9331cba8395e34f6efbb656f139706c35538f888d2a49",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "석관(박공 뚜껑·조각)",
+ "label": "gothic_manor/gm-sarcophagus",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 3행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sarcophagus (chest and gabled lid)",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The gabled lid shows its rear/top slope (rows 2-6, ~5-6px) above the horizontal ridge highlight at rows 7-8, followed by the front slope (rows 9-13) and the carved vertical front body (rows 15-28).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9760
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sarcophagus with gabled lid",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sarcophagus and its lid are drawn in a flat front elevation. Vertical straps run straight down the lid from row 3 to row 13 without perspective, the box face and plinth are flat front-facing planes, and there is no visible top surface showing depth from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 9572
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sarcophagus (gabled lid and carved trough)",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The gabled lid of the closed sarcophagus spans rows 2-13 (around 8-12 rows of sloped/top surface seen from above), sitting atop the vertical front carved face (rows 16-27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9802
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone sarcophagus",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sarcophagus is drawn in pure front elevation as if for a side-scrolling game. The lid has a horizontal highlight strip and straight vertical straps with no foreshortened top surface visible from above (0px of top surface).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 14020
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.460Z",
+ "cells": {
+  "16": [
+   "0dc66a8d1c8bbf3f",
+   "46b40627bf08c985",
+   "a530eaa02742dff7",
+   "ccaa728b1ff49890"
+  ],
+  "24": [
+   "096f15f47abf5655",
+   "13ed5a32408228c1",
+   "19cab048b17e755a",
+   "248876a9f5ccee79",
+   "2e68bbfb94f7998e",
+   "60c7b02143709377",
+   "6529e1523930ea09",
+   "6ba19aa140093a3e",
+   "71343dcbd1dbbd78",
+   "741016225106751a",
+   "779460f30df21e91",
+   "824f31bc9629dfe0",
+   "86ecd79c35cc9782",
+   "87fa511ca7679fa3",
+   "aa83af330deed666",
+   "abc6774a96cf2121",
+   "b0fea1dc22dbe0ad",
+   "c6d9ec69caba6dcf",
+   "db2d88f5ec3fdee4",
+   "f3338832552ccdcf",
+   "f4a5918423b0e8e9",
+   "f78b2429e8c92eb3",
+   "f8ffc9184858f8e1",
+   "fb19759cf507fa73"
+  ],
+  "32": [
+   "fbd3abe73ed7ffcf"
+  ],
+  "48": [
+   "04166b94bcfb7355",
+   "319e07f5768c91d9",
+   "3b0df11074a0e312",
+   "3b1704a458e0b184",
+   "70202a9b6683d667",
+   "f705dbe43d1a1771"
+  ]
+ }
+}

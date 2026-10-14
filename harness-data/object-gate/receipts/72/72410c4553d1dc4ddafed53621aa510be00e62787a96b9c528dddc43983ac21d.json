@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "72410c4553d1dc4ddafed53621aa510be00e62787a96b9c528dddc43983ac21d",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "벽 부착 화면(시안 그래프 막대)",
+ "label": "sf-station/sf-wall-screen-a",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall screen with cyan bar graph",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted screen displayed flat against the wall with framed border and cyan bar graph; wall_mounted items are permitted to be flat front facing.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4667
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall-mounted screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted screen displayed flat against a vertical wall, which is standard and valid for the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5639
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall-mounted screen with a cyan bar graph",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a flat wall-mounted monitor/screen displaying cyan graph bars within a square frame. As a wall-mounted flat object, a flat front-facing view is appropriate.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4148
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall-mounted screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted monitor display mounted flat on a north wall; permissible 2D face presentation for flat wall-mounted fixtures.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4379
+  }
+ ],
+ "decidedAt": "2026-10-13T15:30:54.893Z",
+ "cells": {
+  "16": [
+   "e00feb5a9602e3db"
+  ],
+  "24": [
+   "355bf3da133c1a2d",
+   "5776b5457bbdd7b8",
+   "b1fe23b5628d5577",
+   "c9160c20bb94089b",
+   "d223d0f3a624e0d4",
+   "e02a341c43825708"
+  ],
+  "32": [
+   "04678b63a87a896a",
+   "1aa29788ba724fec",
+   "31a7ae16f66cb7a3",
+   "5f5e81e4e4fdc889",
+   "8ddc8018183b32bb",
+   "e6a82c09c98a1170"
+  ],
+  "48": [
+   "0f21ba5431126c7b",
+   "23153931e0404ce6",
+   "48b0f818a547344d",
+   "a3df6044fb05902a",
+   "a5bf48f95ef0bfca",
+   "b36a2d7ea5744f94"
+  ]
+ }
+}

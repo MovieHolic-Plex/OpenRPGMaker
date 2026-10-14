@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c0657b4f945c7c4f1acc6084c3a6ae979de3c161d557cc1a472e87985a05911a",
+ "width": 16,
+ "height": 32,
+ "kind": "organic",
+ "name": "새 무덤 흙더미(나무 십자가)",
+ "label": "gothic_manor/gm-grave-mound",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grave dirt mound",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is the elongated dirt mound (rows 14-30), which shows a foreshortened north-south grave mound viewed from above at 3/4 angle, with the upper crest/slope visible around rows 14-19 where the cross is planted.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7410
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grave dirt mound",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is the mound of dirt, which is viewed from an elevated 3/4 angle. The wooden cross is planted inside the upper surface around row 17, showing several rows (rows 14-17) of the mound's top surface extending behind it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9626
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grave dirt mound with wooden cross",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden cross is drawn in flat front elevation with no visible top surface on the crossbeam or depth to the post. The dirt mound is drawn as an upright vertical oval silhouette rather than a 3/4 foreshortened ground mound.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9915
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grave dirt mound with wooden cross",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden cross is drawn in pure front elevation with no visible top surface on its horizontal beam or post. The dirt mound below is drawn as an upright egg-shaped silhouette rather than a foreshortened mound resting on the ground in 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11270
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.461Z",
+ "cells": {
+  "16": [
+   "6920fc6f280efb29",
+   "ea9d847abbd413bc"
+  ],
+  "24": [
+   "02955b5f4d726052",
+   "27deabda7106f101",
+   "28841ef0c85d2962",
+   "4502af3dc49bfeb5",
+   "486128344d1bef8b",
+   "55241d5787980edf",
+   "a1dbbe7394dd10d7",
+   "a44e022bb0635f11",
+   "b81f4cbb23081ad0",
+   "b86ec30cc2679ebf",
+   "bc7df40b196b4f10",
+   "e22480f1a32bff02"
+  ],
+  "32": [
+   "93196ce707deaa47",
+   "b145bd45e567a40a",
+   "d5df2846f9e240e0"
+  ],
+  "48": [
+   "0fbf0456949e583b",
+   "1eb24766d35bae3b",
+   "7780eec964fcbb7b",
+   "c491e9b87cb2f313",
+   "c8b3cdc3a4787419",
+   "f841a7280fb21c45"
+  ]
+ }
+}

@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "98a082c498f0a17da3d4a0f44ee9c7794d4ffe2b84a47844cefd7abcd76b3d20",
+ "width": 16,
+ "height": 80,
+ "kind": "column",
+ "name": "독립 공장 굴뚝(그을린 벽돌 원통, 돌 받침)",
+ "label": "steampunk-city/sp-chimney",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "factory chimney with stone base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the chimney shows a foreshortened elliptical opening looking inside across rows 2-4, and the stone base below also displays a clear top surface (rows 62-67).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4025
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "factory chimney cylinder on stone base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the chimney features a clearly visible elliptical flue opening (rows 2-5, ~4px tall) viewed from above, and the stone base at the bottom also shows its horizontal top face (rows 62-67).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4552
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tall brick factory chimney cylinder with stone base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the chimney features a clear foreshortened rim and dark elliptical opening visible into the interior spanning rows 1-5 (~4 rows inside opening), and the stone base also shows a distinct top surface (rows 62-67).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4008
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brick factory chimney with open flue and stone plinth",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the chimney clearly shows its elliptical opening (rows 2-5) with a circular rim (rows 0-6) viewed from above, and the stone base also features an upward-facing top surface (rows 62-67).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3202
+  }
+ ],
+ "decidedAt": "2026-10-13T18:42:41.659Z",
+ "cells": {
+  "16": [
+   "081a5e5e7605b8f3",
+   "4d070d936fd06400",
+   "c703c12363bbf1e6",
+   "dc4c2b578e6af33b"
+  ],
+  "24": [
+   "01b96e4f370eae4a",
+   "147f4b44e84d8401",
+   "1c41c7e427a080de",
+   "2ea7a343fe6db19e",
+   "36172069b8d846e2",
+   "37497fc7bb9ef868",
+   "3af960f11350e0ba",
+   "42e17ce358aac8d3",
+   "4bd5ed894ef83a73",
+   "4edf0427bd0aa9de",
+   "63eb09503f485d0f",
+   "6c8cb66ed943b6b6",
+   "707144956fbb2a10",
+   "97574c01995006c1",
+   "9dddbf1e70d7d767",
+   "a276f888d2480ea2",
+   "a34eb523e876f798",
+   "af11e1cce89ea57c",
+   "bed3b3a04340c165",
+   "d7ef442c1cee9fa6",
+   "da58b2a88852bef0",
+   "e76e49009c9aa95b",
+   "e8e6823d2622cc26",
+   "f75d11c6d7c783ea"
+  ],
+  "32": [
+   "0520599dd03c41ce",
+   "14e926e4677ef7d1",
+   "24b09a657a24bfe5",
+   "56cb1650000c03cc",
+   "5af0b08d43cf903c",
+   "5fc2c358933e478a",
+   "70f3fcac899c879b",
+   "7585f3df1731f3c2",
+   "7877672a5d180f49",
+   "7af24d74cea4a800",
+   "a0eeeb628b4a88ba",
+   "b5ec86f1e101233e",
+   "bf189152e79a5c9e",
+   "d021927d7729630a",
+   "d34d00ed6a9d22c9",
+   "dda920d0e6b44aac",
+   "e1f67189a4f48349",
+   "e92996c722a96d15"
+  ],
+  "48": [
+   "222fed92124eb134",
+   "2db1f8af155bb713",
+   "50e13973930de4c8",
+   "533824a91caa7b3c",
+   "6376ac88fe6ad31c",
+   "64e23f4a8a4111eb",
+   "6572e99787e55431",
+   "6a42ddcb77ca1b7b",
+   "ab8bec7e65a32e1e",
+   "b1d1c2a96381ed09",
+   "d6efe87b8ab0b3f6",
+   "df4c6d44a3aa7e26"
+  ]
+ }
+}

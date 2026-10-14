@@ -1,0 +1,147 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a6ca0ea9e792b85965a367fe8249b57bc58da1a7137a8d05e7cc7510e4780683",
+ "width": 64,
+ "height": 32,
+ "kind": "frame",
+ "name": "무쇠 창살 철책(돌 받침) (3칸 줄 + 모퉁이 견본)",
+ "label": "gothic_manor/gm-fence-iron",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron fence with stone pillars and base plinth",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone pillars prominently display cylindrical 3/4 top surfaces spanning approximately 6 source pixel rows (e.g. rows 1-6 and 17-22). The structure appropriately reflects the top-down RPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5556
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron fence with stone base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "While the corner stone pillars have round top caps, the main body of the iron fence and its stone base are drawn in pure front elevation: the horizontal rails and the stone base show no visible top surfaces (0 px).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9522
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron bar fence with stone pillars",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylindrical stone pillars have clearly visible elliptical top surfaces spanning 6 pixel rows (rows 1-6 and 16-22), establishing the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7794
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron fence with stone pillars and base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone pillars clearly display circular/octagonal top surfaces spanning 6 pixel rows (rows 1-6 and 17-22), properly adhering to the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5903
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.505Z",
+ "cells": {
+  "16": [
+   "27b70165d6797531",
+   "27f00df9393f43db",
+   "4d3349bf2f1ff166",
+   "dd89bf22b32aea8b"
+  ],
+  "24": [
+   "1630b82dfbb8bee6",
+   "25f4dae8a5be891c",
+   "26f9b8ea88551770",
+   "4a38d288ad193258",
+   "58c24c151a6829a4",
+   "647554e75013407d",
+   "6c16ab03e77c66f6",
+   "718cdec95f3ed822",
+   "78a7fce25dc45cd1",
+   "80f10326acfc3264",
+   "943752056c99b898",
+   "9bee1e26c8d3ba43",
+   "a2b41fc0949c74f7",
+   "a7cdc83c10f49c43",
+   "a8baee1e149501e6",
+   "a9fe1b598a7b53df",
+   "ad676e3a617ff7f9",
+   "b23542a64d563a54",
+   "bdfb393f9f6c93b8",
+   "c749d180703140a7",
+   "cc368c4ffe75c25c",
+   "dec61e30579ea8bd",
+   "df41e5012583c2fa",
+   "dff1687fe5ddcf4b",
+   "e3931011a4ee1976",
+   "e88e2dcba45d750e",
+   "f3724cbbfa1bdb1b",
+   "ff20c86e2d980135"
+  ],
+  "32": [
+   "dce36b0cbde85228",
+   "f32d79fbbdc03baa"
+  ],
+  "48": [
+   "287f7da81b856685",
+   "32c00cf1e3943ac0",
+   "37703c0f424560f3",
+   "3f7a4d8e6cd852c2",
+   "53956f569e5791bc",
+   "572202e5a700536b",
+   "76c26b8cbe0d1e10",
+   "79733e79eae68f3f",
+   "9e518c3360f8633f",
+   "b7ca09b027b2c4fb",
+   "d4532ccbd45446c2",
+   "e4483d5f1bf9640a"
+  ]
+ }
+}

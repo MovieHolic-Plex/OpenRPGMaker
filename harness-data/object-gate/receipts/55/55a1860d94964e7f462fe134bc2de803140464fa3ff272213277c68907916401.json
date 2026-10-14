@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "55a1860d94964e7f462fe134bc2de803140464fa3ff272213277c68907916401",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "방열 패널(눕혀 놓은 핀 판, 윗면에 세로 핀)",
+ "label": "sf-station/sf-radiator-panel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontally laid heat sink / radiator panel on a mounted base",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is a horizontal panel viewed from above in 3/4 perspective. Its top surface spans rows 1 to 16, displaying receding fins and tapered perspective, while the front edge and mounting base occupy rows 17 to 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7271
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal heat sink panel with fins on top surface",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-17 clearly depict the top horizontal surface of the panel foreshortened in 3/4 view with north-south heatsink fins and trapezoidal perspective tapering, while rows 18-29 show the south front face, trim, and mounting feet.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5536
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "heat sink panel unit",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the panel is prominently foreshortened and visible from row 1 to 16 (16 rows tall) with vertical fins receding north-south, above the layered south-facing front edge (rows 17-25) and feet.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5935
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "laid-flat heat dissipation panel with vertical cooling fins on its top surface and a banded front face supported on feet",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the horizontal panel spans rows 1 through 17 with clear trapezoidal foreshortening (narrower at the back, wider at the front) and longitudinal fin lines, while rows 18-25 form the south front face resting on base feet.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7480
+  }
+ ],
+ "decidedAt": "2026-10-13T15:32:20.332Z",
+ "cells": {
+  "16": [
+   "3b8af34891706872",
+   "a36c65b4dbd6fa43",
+   "d2863c3fd0a7d7de",
+   "e9e557a031073965",
+   "f217eb25dfb67c93",
+   "f7128df1e77fba77"
+  ],
+  "24": [
+   "1e4428b7f9303a5d",
+   "205fda70538687a8",
+   "34164c870446f87a",
+   "791fee9f36697795",
+   "895f2fc95991efe7",
+   "8a9ad72437b43bd2",
+   "adca2738c315b17b",
+   "c27ffb39c3db7236"
+  ],
+  "32": [
+   "120732c8168f2554",
+   "2edfaf6f327bd66e",
+   "34298f4b1ba997b5",
+   "a43cabb7d5d6ff7e",
+   "d502eea2ec6d094b",
+   "ec723a5706b1e070"
+  ],
+  "48": [
+   "0e5e819888e0f6ec",
+   "d7f85b31f826a4d5"
+  ]
+ }
+}

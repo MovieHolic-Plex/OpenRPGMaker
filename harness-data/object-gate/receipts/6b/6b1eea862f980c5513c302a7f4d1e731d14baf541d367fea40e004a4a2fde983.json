@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6b1eea862f980c5513c302a7f4d1e731d14baf541d367fea40e004a4a2fde983",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "쌓은 의자(3개)",
+ "label": "modern-campus-int/mc-chair-stack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stacked chairs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stacked chairs are drawn in pure 2D front elevation: the backrest is a flat vertical rectangle, the metal frame forms a flat 2D grid, the feet rest on a flat baseline, and no horizontal surfaces are shown with 3/4 top-down depth (the seat strips are only 2px high flat horizontal bands).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7961
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stacked chairs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stacked chairs are drawn entirely in a flat front orthographic elevation. The top backrest has only a 1px flat cap line, and the seats/frames have no foreshortened top surfaces visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7357
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stacked chairs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stacked chairs are drawn in pure front elevation with completely flat rectangular frames, 2px horizontal bands representing the edge/thickness of the seats, and legs extending straight down with no visible top surface foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7260
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stacked chairs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chairs are drawn in pure front elevation: the top of the backrest is a 1px line (row 3), and each stacked seat tier consists of only 2px of light color with a 1px shaded bottom edge, representing flat front-facing panels with no foreshortened top surfaces (0 top rows >= 3px).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7155
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.308Z",
+ "cells": {
+  "16": [
+   "30c1b8bb67c342aa",
+   "4e077b9cdc793aa8"
+  ],
+  "24": [
+   "1dab229f0824ddad",
+   "38a694b1d8e511f5",
+   "465a4858354e9a00",
+   "51f549f375a68192",
+   "5b46bb22b71d0bed",
+   "6300242ea9ac010e",
+   "68f2d80719bd3bd3",
+   "71417845e5d60f77",
+   "c73abdd6dacd5065",
+   "caebe2a27c00646d",
+   "dab439bf2e9967bd",
+   "f1e5cca2f6856df4"
+  ],
+  "32": [
+   "56690ac47ee5332f",
+   "818591f554b13dc5",
+   "d134c7e91051b137"
+  ],
+  "48": [
+   "03f18311814a7363",
+   "164dd41ce49e4e08",
+   "6151c86638ae94ca",
+   "84e5134d92f254fe",
+   "930807f1e433ae58",
+   "e0968062159b6221"
+  ]
+ }
+}

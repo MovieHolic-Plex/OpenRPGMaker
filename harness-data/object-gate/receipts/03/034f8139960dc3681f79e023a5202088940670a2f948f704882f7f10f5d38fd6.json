@@ -1,0 +1,143 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "034f8139960dc3681f79e023a5202088940670a2f948f704882f7f10f5d38fd6",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "쌓은 나무 상자",
+ "label": "steampunk-city/sp-crates",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stacked wooden crates",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The corner framing posts of the crates run continuously from row 3 to 11 (and row 16 to 25 on the lower crate), meaning the front elevation begins there. The visible top surface above it is only 2 pixel rows tall (rows 1-2 on the top crate, rows 14-15 on the right crate), which is merely a 2px cap/rim rather than an adequately foreshortened top surface in 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 4"
+   ],
+   "ms": 24497
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stacked wooden crates",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": false,
+    "evidence": "The crates show a visible top surface (rows 0-4, 5px tall on the top box), but they also display an east-facing side face (columns 14-15 on the top box, 23-24 on the bottom box) and perspective/receding top edges, violating the pure south-facing 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "옆면(아이소)"
+   ],
+   "ms": 18706
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stacked wooden crates",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": false,
+    "evidence": "The crates show a foreshortened top surface (rows 1-5, 5px tall on the top crate), but also feature a distinct 2px-wide dark right side face with receding diagonal edges, violating the 3/4 south-facing perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "옆면(아이소)"
+   ],
+   "ms": 25086
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stacked wooden crates",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each crate clearly shows both its foreshortened top surface (rows 1-5 on the top crate, ~4-5 rows tall with front-to-back plank lines and front edge highlight) and its south-facing front face with a diagonal brace (rows 6-11).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15510
+  }
+ ],
+ "decidedAt": "2026-10-13T18:16:30.908Z",
+ "cells": {
+  "16": [
+   "1cb422d15518787c",
+   "6f69b371b9225296",
+   "a5f35442c49e1b7f",
+   "e5686023c6e17986"
+  ],
+  "24": [
+   "18515535436a2ace",
+   "1bb666d4a46c4b8e",
+   "24beb111bc50b5de",
+   "256cb9dfd48163a9",
+   "2cc82a897f807f3f",
+   "2e5c02ca30bd2dd9",
+   "34cf84a03df07c9c",
+   "442038bd52a42590",
+   "4c0929bbc9a56104",
+   "51b7e51af35d1317",
+   "53c7431b9a4cd6ec",
+   "5c58561787f89e24",
+   "5f3960012a29a414",
+   "62199ba33cb5bf3f",
+   "696e0e2ec7428fc2",
+   "71fb0d78050a2277",
+   "72fc0c639979a0e7",
+   "873ea4a845525e66",
+   "8a5da42c05e030b0",
+   "ce8d6d9729664622",
+   "e98a0d39601d1b80",
+   "ed9e4bfde8dada78",
+   "f44059e0759ed094"
+  ],
+  "32": [
+   "ab1331787d60d77d"
+  ],
+  "48": [
+   "0643594c2f8b86c1",
+   "132a17355b964fcb",
+   "2d588c8224850cc5",
+   "513cf04f7c1fd5d3",
+   "bc54e45afef0327d",
+   "d3551f512e8fd6e4"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5c13203caf4efc36a3ae6aebdd30b4ef4498daca7bd872208330e61f75c77266",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "cloud platform edge tile against sky (terrain)",
+ "label": "sky-island/si-cs-ine",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cloud platform terrain tile with sky corner",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Cloud floor terrain tile seen from top-down 3/4 perspective with blue sky visible in the top-right corner; terrain fills the tile surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3961
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cloud platform ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Cloud terrain surface tile viewed from above with open sky exposed in the upper-right corner; functions correctly as top-down map terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2639
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cloud platform terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile depicting a cloud surface with corner border against sky, naturally viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2865
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cloud ground/platform tile with sky patch",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a cloud surface viewed from above with a corner patch of open sky.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2615
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.977Z",
+ "cells": {
+  "16": [
+   "e150e195200b685b"
+  ],
+  "24": [
+   "1988425195a8c4e1",
+   "1cb7d9ad4c96f159",
+   "20d55e87b43340e8",
+   "a2040800fc323788",
+   "bc5c960d61cc2410",
+   "c14c5e3e5bd34a05"
+  ],
+  "32": [
+   "1aa0d20194af9669",
+   "245d5bbc97dacfd2",
+   "5cdbc1547e5a9147",
+   "964a036a12ed74a8",
+   "bde880192fe17d6f",
+   "c53efe0a14593d1e"
+  ],
+  "48": [
+   "74a39196724616ea",
+   "a07ec97c1b7fb053",
+   "bfad7f4e633f3463",
+   "d6a8c63debc00051",
+   "e57389638314a879",
+   "ee81aa72176656fe"
+  ]
+ }
+}

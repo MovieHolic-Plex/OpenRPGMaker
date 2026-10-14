@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "28dd02fdeb3a70832c92e15e11c9ec8ffc7ff0d104f74a3b3f16990210fece63",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "낡은 돌바닥(보일러실)",
+ "label": "steampunk-city/sp-floor-stone",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone floor paving slabs",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting old stone floor slabs viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3867
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image shows a repeating stone floor tile pattern covering the entire 16x16 tile, functioning as top-down terrain/floor.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3028
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone floor tile pattern",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image depicts a flat stone floor terrain surface spanning the full 16x16 tile with no standing volume.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3404
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting old stone pavement/floor viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3223
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.462Z",
+ "cells": {
+  "16": [
+   "b172494ac8ec22aa"
+  ],
+  "24": [
+   "793e63b864f395ef",
+   "8f13c6dbd3615028",
+   "9003b4eca3750b6e",
+   "b23b0231faa0fd5a",
+   "eb10acc6d352922b",
+   "edb118d851d066dd"
+  ],
+  "32": [
+   "03641659f1191063",
+   "3d34d19cdc614f1c",
+   "46e45e9bc4f4e209",
+   "74ada5db16192b22",
+   "acc43ae66ae770d4",
+   "c2f1d8ad1de3adb4"
+  ],
+  "48": [
+   "2abe7e6cd020ab14",
+   "7398ef4e6916afdf",
+   "a4106912ad0e6ac9",
+   "e0dbaa6683dbfe91",
+   "f53c3497e933604a",
+   "f958f492550244e4"
+  ]
+ }
+}

@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "79239425b2e12b01c3057011de533bdc47558f0796b94a334170d24e73eeff17",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "의무실 링 스캐너(넓은 판 윗면 + 고리 몸체 앞면 + 시안 링 + 앞으로 나온 침대 윗면)",
+ "label": "sf-station/sf-med-scanner",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "medical ring scanner / CT scanner unit",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main machine has a clear 9-row top surface across rows 1-9, followed by its front face with an interior bore opening and a protruding patient bed seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5713
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "medical ring scanner unit",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main machine body shows an 8-row deep top surface across rows 2-9 with mounted fixtures. Below it, the ring housing features a visible hollow bore opening (rows 13-18, 6 rows) and a protruding examination bed with a 6-row top surface (rows 19-24).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8820
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "scanner console and gantry body with protruding examination bed",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The scanner housing displays a 9-pixel-deep horizontal top deck (rows 1-9) above its front gantry face (rows 10-25). The central bore is hollowed out with a 5-pixel-tall opening cavity (rows 13-17), and the protruding scan bed clearly shows its horizontal top surface (rows 18-24) viewed foreshortened from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6160
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "infirmary ring scanner / medical scanner",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main machine body shows a foreshortened top plate (rows 1-9, approx 9 pixel rows tall) above the front face (rows 10-25). The scanner aperture shows an interior cavity (rows 13-18), and the protruding examination bed also presents a clear horizontal top surface (cyan cushion, rows 19-24).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5621
+  }
+ ],
+ "decidedAt": "2026-10-13T16:02:53.701Z",
+ "cells": {
+  "16": [
+   "6479ea04cc46433e",
+   "9c11a201fff15979",
+   "df5b6f7b4162c277",
+   "f8671936dff400d0"
+  ],
+  "24": [
+   "03a2f7151e5f8258",
+   "0ab31b301b11013d",
+   "1719bcc6424ccd15",
+   "23be41380ac394f3",
+   "26c446d74d894b26",
+   "2ee12be1e40e336c",
+   "341f13739d8dee91",
+   "4645070a825375dc",
+   "48ccba920cf536a0",
+   "4a0ea7e26e17cb7c",
+   "56db6f8bcf3476c1",
+   "5f6d76c876c53551",
+   "665a4406636c0214",
+   "6c73efc9388e9ba7",
+   "720af431418ea2aa",
+   "75e3b9fdcec0c7d8",
+   "78cf181e87b33e8e",
+   "7b9a62246b791acf",
+   "9a8973b7a96a0662",
+   "9bf2f6ccabb97cd9",
+   "bc0b425b265e4378",
+   "ed7c241c97e80489",
+   "f12a13d8c330d300",
+   "f79e1325f9f73b45"
+  ],
+  "32": [
+   "eefef9ba4a1964d3"
+  ],
+  "48": [
+   "47e5ccec94c263e8",
+   "606dfef42d779e6e",
+   "6b397d309c6b3264",
+   "7c2356a635c168d4",
+   "87620a6a928f2a1a",
+   "933b79ccce60225c"
+  ]
+ }
+}

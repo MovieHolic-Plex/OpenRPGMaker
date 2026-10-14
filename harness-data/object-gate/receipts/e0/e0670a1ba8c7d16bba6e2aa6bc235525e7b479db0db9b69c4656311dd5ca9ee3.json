@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e0670a1ba8c7d16bba6e2aa6bc235525e7b479db0db9b69c4656311dd5ca9ee3",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "네온 웅덩이(바닥 물웅덩이에 비친 마젠타·시안 빛)",
+ "label": "sf-station/sf-street-puddle-neon",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water puddle with neon reflections",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat puddle lying on the floor, rendered as a foreshortened ellipse spanning rows 4 through 12, fitting standard top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3607
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water puddle reflecting neon lights",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The puddle is drawn flat on the ground surface spanning rows 4 to 12 as a foreshortened ellipse with interior reflections.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3024
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "neon reflection puddle on ground",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The puddle is rendered as an elliptical flat floor surface extending from row 4 to row 12 with foreshortening appropriate for a top-down 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3347
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "puddle reflecting neon light",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The puddle is drawn as a foreshortened ellipse lying flat on the floor spanning rows 4 to 12 with interior neon reflection pixels.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4116
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:06.344Z",
+ "cells": {
+  "16": [
+   "a56f1423936b8bf7"
+  ],
+  "24": [
+   "41e6f39bfc21e573",
+   "4fd2d4d6511d68cd",
+   "5e7bc53d89848d83",
+   "837c360bcacd7b54",
+   "b20020294e2f7f5d",
+   "f0bc34d5aa2455b0"
+  ],
+  "32": [
+   "261eac8a5990b940",
+   "3a7fd23955cf06ea",
+   "4a15063238585f51",
+   "5974f272fe128070",
+   "8a55af755b83bb10",
+   "c1facd24752cfd51"
+  ],
+  "48": [
+   "03f5af266aea5906",
+   "411a645e83553cf5",
+   "6961c932a7910817",
+   "a541f9e909158ccc",
+   "c401d0fab69c4362",
+   "e189d9ed6537d3b4"
+  ]
+ }
+}

@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "aeef3ce00820d086af93465de3ab93d03778ef204e4d58ba578f129aaed53b34",
+ "width": 48,
+ "height": 32,
+ "kind": "round_body",
+ "name": "가스 탱크 한 쌍(흰·시안 원통 둘 + 이음 배관)",
+ "label": "sf-station/sf-gas-tank-pair",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pair of cylindrical gas tanks connected by a pipe",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each cylinder shows a distinct top cap surface spanning rows 3-8 (6 source pixels tall) complete with central fittings/valves, viewed from a 3/4 top-down angle, above a vertical cylindrical body with curved seam bands.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7943
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "twin cylindrical gas tanks",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both cylinders feature clearly drawn foreshortened elliptical top caps (rows 3 to 8, approx 6 rows tall) complete with central valves/caps, and curved horizontal surface bands along the south faces confirming 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5390
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pair of cylindrical gas tanks connected by a pipe",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both cylinders feature clearly visible foreshortened elliptical top caps measuring 7 pixel rows (rows 3-9) with center valves, sitting above south-facing vertical cylindrical bodies.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5624
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pair of cylindrical gas tanks connected by a pipe",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both tanks clearly display an expansive top cap (rows 3–9, 7 rows tall) featuring central valves/ports viewed from above at a 3/4 angle, along with curved body bands and cylindrical front shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7789
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:09.619Z",
+ "cells": {
+  "16": [
+   "108818cbfc0b29ee",
+   "27c4771090d15212",
+   "421a1319360e5f70",
+   "56e75b0bf0aa8270",
+   "a7efdf54297fa2f9",
+   "d34a3fdfd16e69d5"
+  ],
+  "24": [
+   "07b5581de0858130",
+   "0c615872f11f914c",
+   "39f4af633b156877",
+   "504e3c98b7ec3726",
+   "771958b432e51c31",
+   "7f483c449d80cc79",
+   "ac3c8888c9b3add9",
+   "c88f4ab0de5186f0"
+  ],
+  "32": [
+   "0ccc7675c943f497",
+   "6ae6f048d171927b",
+   "938466447f9ac0b7",
+   "c37917c33c523107",
+   "e041a40b412f94d5",
+   "f507f49b6dac76b6"
+  ],
+  "48": [
+   "3e671202540703dd",
+   "a1c0966c4febeb1f"
+  ]
+ }
+}

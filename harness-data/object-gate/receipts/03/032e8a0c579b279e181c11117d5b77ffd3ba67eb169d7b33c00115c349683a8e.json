@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "032e8a0c579b279e181c11117d5b77ffd3ba67eb169d7b33c00115c349683a8e",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "트랙 레인 선(세로)",
+ "label": "modern-campus/mc-track-line-v",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ground track lane line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile depicting a running track surface with a vertical white lane marker line viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4304
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "running track terrain tile with vertical lane line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile showing reddish clay track ground with a vertical white lane marker running from top to bottom.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3067
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ground track lane tile with vertical white line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting dirt/clay ground with a vertical running track line painted across it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7998
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical track lane line on ground terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a running track surface with a vertical white line painted across the dirt ground.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4534
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.864Z",
+ "cells": {
+  "16": [
+   "45ab2dd9de729589"
+  ],
+  "24": [
+   "28b78f59efabf7e3",
+   "2a108539a001a87c",
+   "5370fce4b3c29f51",
+   "57644663b4506c6c",
+   "73de57013f7f9cf1",
+   "96247aa8417a82fc"
+  ],
+  "32": [
+   "53f596d5659e3016",
+   "55715131f53f44b3",
+   "632739e83487d737",
+   "67ead1c6fd659e1f",
+   "6f8f7d850e13e4dc",
+   "b8e31fa258cfa85d"
+  ],
+  "48": [
+   "2423d5b5331b0bbd",
+   "3820ebe0d3946d39",
+   "6476e3ccb926d9b3",
+   "6516f856d0f26071",
+   "b9436d96cade5e43",
+   "ee179864d9d8f6e2"
+  ]
+ }
+}

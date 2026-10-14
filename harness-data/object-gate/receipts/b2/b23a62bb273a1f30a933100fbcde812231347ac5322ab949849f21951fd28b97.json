@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b23a62bb273a1f30a933100fbcde812231347ac5322ab949849f21951fd28b97",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "흩어진 뼈와 해골",
+ "label": "gothic_manor/gm-bones",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "skull and scattered bones lying on floor",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The skull's rounded cranium is visible from above across rows 4-8 above the eye sockets at row 9, with scattered bones lying flat on the floor around it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10451
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "skull and scattered bones lying on the floor",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The skull shows its cranial top visible across rows 5-8 above the eye sockets, and the accompanying bones lie scattered flat across the floor in a proper top-down 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3529
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "skull and scattered bones",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cranium visible above the eye sockets spans rows 5-8 (4 rows) showing the top surface in 3/4 perspective, while the bones are laid flat on the floor.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3815
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "skull and scattered bones lying on the floor",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The skull cranium shows about 5 rows of curved top surface (rows 4-8) before the eye sockets at row 9, and the accompanying bones lie flat on the floor plane in appropriate 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5649
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.462Z",
+ "cells": {
+  "16": [
+   "30eb6522bff6c14d"
+  ],
+  "24": [
+   "2aa59ebee489229f",
+   "38ef59c9984857a9",
+   "5ea64918c77cd110",
+   "9b02be881b66d0f4",
+   "b4085c02a5c299f2",
+   "e5d3beda7798c07d"
+  ],
+  "32": [
+   "6855413a8be524c5",
+   "8af67801005c017e",
+   "c04d9da0e08158d3",
+   "d5a479fb9c2582ee",
+   "e73a75be43af7ad0",
+   "f3b66e690c468448"
+  ],
+  "48": [
+   "2708196741c37937",
+   "30674d45613e637c",
+   "3f5da62cff8c22c7",
+   "41d914326c646b5d",
+   "7074e9f692b3097d",
+   "fb3a26346acc4181"
+  ]
+ }
+}

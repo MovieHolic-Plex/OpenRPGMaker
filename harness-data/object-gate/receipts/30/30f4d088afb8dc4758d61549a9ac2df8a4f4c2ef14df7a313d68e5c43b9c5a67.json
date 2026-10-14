@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "30f4d088afb8dc4758d61549a9ac2df8a4f4c2ef14df7a313d68e5c43b9c5a67",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "증기 구멍(쇠 굴뚝 토막에서 김이 오른다) (프레임 2)",
+ "label": "steampunk-city/sp-steam-vent-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron pipe stub / steam vent",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The steam pipe has a clear elliptical opening visible from above spanning rows 18-22 (opening depth ~5px) framed by a foreshortened top rim, with the front cylindrical wall of the pipe extending below to row 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4652
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "short metal steam vent pipe",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The vent stub clearly shows an elliptical opening from above (rows 17-22) surrounded by a bolted rim/flange (rows 15-24), above a vertical cylindrical front face (rows 24-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4303
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "short metal steam vent / chimney pipe",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening of the pipe is clearly foreshortened as an ellipse (rows 17-23) showing the dark interior hole, set atop the south-facing cylindrical pipe body (rows 24-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5200
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "short metal vent pipe / chimney stub",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pipe has a prominent elliptical opening visible from above between rows 17 and 23 with a clear top rim and south face extending to the bottom.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4526
+  }
+ ],
+ "decidedAt": "2026-10-13T18:26:16.315Z",
+ "cells": {
+  "16": [
+   "3ba1038a33fba773",
+   "94cbeaa2675bfbd4"
+  ],
+  "24": [
+   "042bea053c67b4f2",
+   "07672302ef1d5d67",
+   "09ebc6fcf541443d",
+   "38e6e9fa7b40d963",
+   "5d8b3193b77cfa05",
+   "7008cc3f2bef1409",
+   "7ef12ed0344f7b9a",
+   "86600f52ac077f9d",
+   "9f5c5b176fdded50",
+   "ad4967227893c8bd",
+   "c2725919457dafd1",
+   "c7e2a4df4f740d83"
+  ],
+  "32": [
+   "0f914cd76186ded1",
+   "34c87e6308f5b99f",
+   "eeecfd183020a620"
+  ],
+  "48": [
+   "7dd406395a704bff",
+   "c58a808a0b14bda7",
+   "d8e29f3e95e2d1c4",
+   "dc83d6559caa3c96",
+   "defef522b9e77fa4",
+   "e8d9c895cbd8e803"
+  ]
+ }
+}

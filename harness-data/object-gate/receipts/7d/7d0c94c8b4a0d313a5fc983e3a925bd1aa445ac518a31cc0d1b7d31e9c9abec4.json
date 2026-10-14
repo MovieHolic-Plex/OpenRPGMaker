@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7d0c94c8b4a0d313a5fc983e3a925bd1aa445ac518a31cc0d1b7d31e9c9abec4",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "1인 침대(흰 베개 + 매트리스 + 접힌 남색 담요)",
+ "label": "sf-station/sf-bed-single",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "single bed oriented horizontally",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal mattress surface with pillow and blanket occupies rows 1-9 (9 rows of top surface), with the front face of the bed frame clearly visible below it on rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5558
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "single bed with mattress, pillow and blanket",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bed (mattress, pillow, and blanket) occupies rows 1 to 9 (approx 9 rows tall), with the south-facing base/frame shown in rows 10 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6329
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "single bed with white pillow and navy blanket",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed shows a clearly foreshortened top surface (rows 1-9 showing pillow and mattress/blanket) and the south front face of the bed frame (rows 10-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11162
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "single bed with mattress, pillow, and navy blanket",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal mattress surface with pillow and folded blanket is seen foreshortened from above across rows 2–9, above a 4-pixel front base/frame face (rows 11–14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5686
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.951Z",
+ "cells": {
+  "16": [
+   "3cea8ffd4a954d91",
+   "a16ddd3d7f9e4cb1"
+  ],
+  "24": [
+   "05164a4cb9d156fc",
+   "1386f26ce7425239",
+   "140ef953b8863f25",
+   "1c79df8777c776da",
+   "5c3c593a38d22887",
+   "5cad0884d97eb9c1",
+   "74bf21bd91415c7f",
+   "8abee40cebb0ae84",
+   "9cc5d70012103f2e",
+   "a3a73fa1e8cda82f",
+   "a705482cf3e25117",
+   "ee6bb8e3632b7002"
+  ],
+  "32": [
+   "b8e9c1a5a0b286c2",
+   "c02d1f83ce592b7f"
+  ],
+  "48": [
+   "5888216901587427",
+   "5b44945682cebafb",
+   "7d3330e11c527a00",
+   "a4921a35e69cbd8a",
+   "b8c8de44baed341a",
+   "fb6ecbf4d45d02a2"
+  ]
+ }
+}

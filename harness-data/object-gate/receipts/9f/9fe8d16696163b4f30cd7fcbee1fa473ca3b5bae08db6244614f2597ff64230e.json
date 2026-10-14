@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9fe8d16696163b4f30cd7fcbee1fa473ca3b5bae08db6244614f2597ff64230e",
+ "width": 32,
+ "height": 48,
+ "kind": "column",
+ "name": "쌍 가스등(광장용, 등 둘)",
+ "label": "steampunk-city/sp-gas-lamp-double",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "double gas street lamp post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire lamppost is drawn in flat front elevation: the lantern caps, horizontal support arms, ring moldings, and base are rendered with straight horizontal pixel lines with no foreshortened top surfaces visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5451
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "double gas lamp post with two lantern heads and supporting pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire street lamp post and both lanterns are drawn in flat side/front elevation with completely straight horizontal lines along the lantern hoods (rows 8-9), rims, brackets, and base steps, showing 0 rows of foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5071
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "double gas street lamp post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lamppost, dual lanterns, crossbars, and base are drawn entirely as a flat architectural front elevation with straight horizontal lines and no foreshortened top surfaces visible on the base, collars, or lantern caps.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5915
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "double gas streetlamp",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Every horizontal feature (lantern hood rims at row 9, lantern bottom tiers at rows 17-19, pole collar at rows 25-27, and the base plinth at row 40) is drawn with completely straight horizontal lines in pure front elevation, showing zero rows of foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6281
+  }
+ ],
+ "decidedAt": "2026-10-13T18:20:36.037Z",
+ "cells": {
+  "16": [
+   "2d335666ae20f1f9",
+   "3dadd2e219a60665",
+   "61c225d21f0920c3",
+   "647ee0815b577460",
+   "8124ab175a901368",
+   "c93522ac67d5393a"
+  ],
+  "24": [
+   "13fcb5eed978f04d",
+   "4343137d8c78ed44",
+   "4dc05042091d7e05",
+   "5012e4b2f33a38c1",
+   "7876525077fc27be",
+   "81de3ad1bc458c72",
+   "aaa3fc197b5383be",
+   "b0b90fac523a99a4",
+   "cec3da08aa48736c",
+   "dbcec8b3762e9f84"
+  ],
+  "32": [
+   "1fbe934e6f98d006",
+   "7a179f3f50860c06",
+   "c5fea9c2d9e471f2",
+   "fa2f75dad6543631"
+  ],
+  "48": [
+   "6e9d163378c22410",
+   "9df0c9247b742929",
+   "ebd71e83159fd576"
+  ]
+ }
+}

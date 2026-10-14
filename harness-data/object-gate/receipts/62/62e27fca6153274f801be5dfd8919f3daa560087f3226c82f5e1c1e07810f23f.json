@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "62e27fca6153274f801be5dfd8919f3daa560087f3226c82f5e1c1e07810f23f",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "doormat at the room exit (flat decal)",
+ "label": "sky-island/si-exit-mat",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "red striped floor doormat",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The doormat lies flat on the floor plane spanning rows 4 through 13 (10 rows high) in top-down perspective, positioned right before the exit threshold.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5596
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "red striped floor doormat/rug",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The doormat is depicted lying flat on the floor plane viewed from above, spanning rows 4 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4130
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "red striped doormat",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The red mat lies flat on the floor plane across rows 4-12 (9 rows tall) with a slight front edge shading on row 13, correctly depicted as a floor decal in top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4103
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "red striped floor mat/rug",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat doormat lying on the floor, correctly rendered from the top-down perspective occupying rows 4-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3148
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.561Z",
+ "cells": {
+  "16": [
+   "a9767b1cf7e45e92"
+  ],
+  "24": [
+   "1a45345968c4e087",
+   "29b008981d278329",
+   "2d733912277aa389",
+   "538921a41985cbe3",
+   "6bed023f632b3fb1",
+   "bb949a503f2b9007"
+  ],
+  "32": [
+   "35ed1ff7a9dd6429",
+   "50d8fad7a3e96889",
+   "67fa524a6ee8d3a0",
+   "a616594a17a453ed",
+   "ae380a9075647b9a",
+   "e35a482617aec1ed"
+  ],
+  "48": [
+   "3fb0a5033d2a0be9",
+   "6b8f2ccbb9d3fd77",
+   "6d93161314815df7",
+   "6dc70e269b67c351",
+   "8c087c8d718a964d",
+   "c8a500f35a8eba44"
+  ]
+ }
+}

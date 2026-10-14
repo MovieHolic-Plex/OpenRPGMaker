@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3658af4db63486672aeb593f0e4c99f051266a0e6079fc1e7395149470b9afa2",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "네온 쓰레기통(위에서 보이는 둥근 뚜껑 윗면 + 투입 구멍 + 원통 몸통 + 시안 띠)",
+ "label": "sf-station/sf-street-trash-bin",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical neon trash can with top lid opening",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid forms an elliptical surface spanning rows 1 to 8 with a prominent 5-row deep black interior opening hole (rows 3-7) above the cylindrical front body and cyan band.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4337
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "neon trash can with round top lid and opening hole",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top circular lid is viewed from above across rows 1-8 (approx 8 rows tall) with a clearly visible elliptical opening hole (rows 3-6, 4 rows tall) sitting atop the cylindrical front body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4376
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cylindrical neon trash can with top opening",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap/surface is visible as an elliptical dome/rim spanning rows 1-8, with a prominent round opening hole inside spanning rows 3-7 (5 rows tall). The vertical front body extends below from row 8 to 15 with a cyan band.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4703
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "neon trash can with round top lid and central disposal hole",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top circular lid is foreshortened from rows 1 to 8, with a prominent 5-row tall central elliptical disposal hole (rows 3-7). The cylindrical front body extends down with a cyan band.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5446
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:07.399Z",
+ "cells": {
+  "16": [
+   "177e5b31ddef8c62"
+  ],
+  "24": [
+   "3e89e00d64e2a4e6",
+   "533772321c706703",
+   "5ea3277583d023d6",
+   "6c0e294ee3642fb1",
+   "7efd8c27c030b823",
+   "9d7a9c536b8432ab"
+  ],
+  "32": [
+   "19021bff15dfc762",
+   "2ba3e75448fa466e",
+   "6c6becd59ccaac9b",
+   "acde0a476176bd9d",
+   "bdd308a6c2e9df27",
+   "e55256c0c2f6180e"
+  ],
+  "48": [
+   "05d450c27bf1f829",
+   "08bdfc7a17a3bccb",
+   "349af5fb27ecc2df",
+   "87f765e0742ca15c",
+   "c6e05ea5730c0df7",
+   "f742ae6e178b73c0"
+  ]
+ }
+}

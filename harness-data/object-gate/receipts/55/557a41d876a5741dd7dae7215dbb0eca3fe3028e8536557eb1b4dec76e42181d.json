@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "557a41d876a5741dd7dae7215dbb0eca3fe3028e8536557eb1b4dec76e42181d",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "정보 키오스크(넓은 윗면 + 윗면 위 간판판 + 화면 앞면)",
+ "label": "sf-station/sf-street-kiosk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "information kiosk",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface extends from row 5 to row 13 (approx 9 pixel rows) with a mounted sign board on it, transitioning at row 14 into the front vertical face containing the screen.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5994
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "information kiosk",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The kiosk clearly displays a deep horizontal top surface across rows 5–13 (9 rows tall) with a sign mounted on top, and a vertical front face with a screen across rows 14–29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4266
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "kiosk console body",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The kiosk features a clearly delineated top surface spanning rows 5-13 upon which a sign sits, separated by a distinct edge at rows 14-15 from the front vertical screen face spanning rows 16-29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4536
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "information kiosk console",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the kiosk console extends from row 4 to row 13 (10 pixel rows tall) upon which a sign board is mounted, clearly separating the horizontal surface from the vertical front face containing the screen (rows 14-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7045
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:06.339Z",
+ "cells": {
+  "16": [
+   "653d9dd50b969fdb",
+   "abaaf415fb6ac2e0",
+   "d953e3722460541a",
+   "dafb3fb95420d20b"
+  ],
+  "24": [
+   "13257fe90f0c6618",
+   "1ed64f8e6203b6f6",
+   "251576f9a79308a4",
+   "5d8e894ad930b4c2",
+   "64c75fdb73be862b",
+   "78afd3f47ee0c04f",
+   "8605ad79687f3623",
+   "934389deac15c568",
+   "998d6ba0bf20cf35",
+   "a0550a36702679db",
+   "aad2999e425a14a0",
+   "ac8e518e1416731f",
+   "c2049c4551e527ac",
+   "c53f1527b31bc2cb",
+   "ca4a4d757eab36f7",
+   "d5172f07f754ddf9",
+   "dcc5cceec1cec9c4",
+   "e3e28e65d5ffed7e",
+   "e4e7138a3bf1d08a",
+   "eb2bce543be36785",
+   "ef706051b3e5f720",
+   "f2e61f04c9e51527",
+   "f7a4302f3968ea8c",
+   "f8cd208ecf007ef4"
+  ],
+  "32": [
+   "e697ca211b00ccd6"
+  ],
+  "48": [
+   "043003b50fe0093d",
+   "322b48fe0206ff9f",
+   "7f33eaa3d435f5c3",
+   "836c75cda44b14fa",
+   "b210f6ec143bdd26",
+   "f9f0446f2e2c67df"
+  ]
+ }
+}

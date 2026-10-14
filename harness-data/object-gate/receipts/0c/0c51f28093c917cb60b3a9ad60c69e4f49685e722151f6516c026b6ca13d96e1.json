@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0c51f28093c917cb60b3a9ad60c69e4f49685e722151f6516c026b6ca13d96e1",
+ "width": 32,
+ "height": 32,
+ "kind": "figure",
+ "name": "교명석(글자 없는 화강암 비석)",
+ "label": "modern-campus/mc-school-stone",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "granite stele on rectangular plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone stele is drawn from a flat front view with no foreshortened top plane visible. The plinth at the bottom is also rendered as a flat frontal rectangle extending in front of the stone rather than showing a horizontal surface upon which the stele rests.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7062
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "granite monument stone and base plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The granite stone is drawn purely from the front with a 2D silhouette. The plinth at the bottom (rows 21-30) completely hides the base of the stone behind a horizontal front border with 0 rows of visible top surface on either the plinth or the stone itself.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6894
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "granite monument stone on a plinth/base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The base/plinth at rows 21-30 is drawn in flat front elevation with a straight horizontal top border and no foreshortened top surface showing depth. The rock body also lacks a visible top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4518
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "granite monument stone and base plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The monument rock and its rectangular base plinth are both rendered in pure front elevation. The base at rows 21-30 is a flat vertical rectangle with no visible horizontal top surface, and the rock sits directly behind its top outline with no foreshortened top plane visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6633
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.870Z",
+ "cells": {
+  "16": [
+   "09fc711513bfbabd",
+   "28e88b0d9a60425e",
+   "40e824009d29778c",
+   "ccddb5cd214b28ac"
+  ],
+  "24": [
+   "02f9ba0a9b1db6c0",
+   "102d7926a32bf84c",
+   "1319d964f8d6fbdc",
+   "134ae7f1168e2193",
+   "1ad1398fe17d1539",
+   "1cb04f8e96fa1c88",
+   "25e11104aa99f93f",
+   "3f951457d0a98c44",
+   "5a39ff7e7c92e53c",
+   "61dab71885863ea9",
+   "6542624849498b34",
+   "730d5056bda2f80c",
+   "96bddb6644e9ca49",
+   "979e44d2dcfcdb81",
+   "9abc39cc40d3eed6",
+   "9ba3fcbfdf6b59c1",
+   "a64fb433b8edfbfb",
+   "a715723c1a4ea722",
+   "bc720628f77b740c",
+   "ce779702534c3673",
+   "e2f62cdccf00167d",
+   "f6f1f6e1ec054abd",
+   "f7ae6be9a1ea8dd5",
+   "f9d00ac5f2857127"
+  ],
+  "32": [
+   "94194464233b9112"
+  ],
+  "48": [
+   "1eec2a7e24f33efa",
+   "87e11bfff4bafef7",
+   "dfc3c1a8e3f9efcb",
+   "e0634b1548364f24",
+   "ec11af78f8afea01",
+   "fbbcc4a95baf1a17"
+  ]
+ }
+}

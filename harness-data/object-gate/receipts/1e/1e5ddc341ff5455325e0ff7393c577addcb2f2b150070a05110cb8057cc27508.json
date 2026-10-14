@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1e5ddc341ff5455325e0ff7393c577addcb2f2b150070a05110cb8057cc27508",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "식당 냉장고(윗면 + 두 문 + 손잡이)",
+ "label": "sf-station/sf-galley-fridge",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "refrigerator",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the refrigerator is clearly visible from row 2 to row 10 (9 source pixels tall), with the front doors and handles depicted below starting at row 11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5088
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "refrigerator",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the refrigerator is clearly rendered across rows 2 through 10 (9 pixel rows), with the south face containing two doors occupying rows 11 through 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3727
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "refrigerator",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the refrigerator is clearly visible from rows 2 to 9 (8 source pixel rows tall), above the two front doors and dispenser.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4921
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "refrigerator",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the refrigerator is clearly visible as a 9-pixel tall light-colored horizontal surface (rows 2-10) above the front doors.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4678
+  }
+ ],
+ "decidedAt": "2026-10-13T15:28:17.424Z",
+ "cells": {
+  "16": [
+   "c0737f82582e3997",
+   "dfcd1f1d27108f48"
+  ],
+  "24": [
+   "047932e45698baba",
+   "0ceea6cf435a005b",
+   "13a0e44c76e4ca1f",
+   "1a4dd6aff903494b",
+   "1d836ac656e7859b",
+   "2e3c6faf18be6d6f",
+   "399322e9af18a29c",
+   "39a08113b24c4e42",
+   "4f0aebb1d6bd5cd1",
+   "60566a23183f81ca",
+   "8cefa5fb18986d1a",
+   "a0e1806027d700ba"
+  ],
+  "32": [
+   "8cbf321dabf342d5",
+   "bbc400a6ea9a81e3",
+   "c10f45b7cca0e326"
+  ],
+  "48": [
+   "4871c2a5e412746c",
+   "99a60766a637f1a3",
+   "b9eb27e4cdb9404a",
+   "ca88f8bbb987aca6",
+   "e5a29b9e25405b98",
+   "f7e93fd3b9ee75ab"
+  ]
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "64096e630e8ce61869a3acd883a230972407fc79cf1ac944c1035967c7c945b1",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "standing oil lamp seen from above-front: round base with visible top, shade with an oval top opening",
+ "label": "sky-island/si-lamp",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lamp shade and pole assembly",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the lampshade features an oval opening spanning rows 2-4, and the base also clearly shows its top surface on rows 26-27.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6450
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lamp shade and standing pole",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the lamp shade features a clearly visible 4-row oval opening (rows 2-5) with visible interior depth, and the round base also shows a 2-row foreshortened top surface (rows 26-27) above its front edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6740
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lamp shade and stand",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the lamp shade shows an oval opening/top surface spanning rows 2-5 (approx 3 rows), and the round base also clearly shows its top surface foreshortened across rows 26-27.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4652
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lampshade and column base of standing lamp",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the lampshade displays a clear foreshortened oval opening (rows 1-4) with an interior opening visible, and the round base at rows 26-27 shows a visible top surface foreshortened into depth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6082
+  }
+ ],
+ "decidedAt": "2026-10-13T18:47:30.238Z",
+ "cells": {
+  "16": [
+   "85307a5c38f05968",
+   "f00ec062947cf920"
+  ],
+  "24": [
+   "13b643fbb620021b",
+   "211cf05d52280ec7",
+   "2dd90cb76684b60b",
+   "5bafaf983e8dc557",
+   "67ac67aeba08be4d",
+   "85be308870c44ba9",
+   "c910389b8de6491b",
+   "daccdb3815c9e742",
+   "eafa3533a7106e9d",
+   "f4ef6aa251aac386",
+   "fc61bfc233050daf",
+   "fe7fb5c65e7858d1"
+  ],
+  "32": [
+   "272e4de027447295",
+   "97f5d23f3a761039",
+   "c169534b29dca585"
+  ],
+  "48": [
+   "1e0999c4c7f87371",
+   "794d2d29ab475da9",
+   "9a91da0a23eb7bae",
+   "a642ac9ba302c81e",
+   "b102d0ad853d4315",
+   "d16996198bec81e8"
+  ]
+ }
+}

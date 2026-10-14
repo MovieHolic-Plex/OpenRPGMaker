@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fd819db907782b9723c17aeb195e3ab47771dd5a82e7befeaa2e2724170f5172",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "판석 보도(배수 홈 변주)",
+ "label": "steampunk-city/sp-flag-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flagstone pavement with drainage grate",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a flat terrain ground tile depicting stone pavement with a central drainage grate seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3081
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flagstone pavement tile with drainage grate",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile showing flagstones and an embedded drainage grate seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2771
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flagstone pavement tile with drainage grate",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile covering the entire 16x16 area, showing stone pavement with a small drain grate in the center viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2560
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flagstone pavement ground tile with small drainage grate",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile viewed from above with a flush drainage grate inset into the flagstone pavement.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2892
+  }
+ ],
+ "decidedAt": "2026-10-13T18:45:40.070Z",
+ "cells": {
+  "16": [
+   "ab2daa5e5b75ff07"
+  ],
+  "24": [
+   "1b30def86fe10bd4",
+   "3fb8912fdf5ca595",
+   "849ca00ccda8a718",
+   "a506eb237bfcfcb4",
+   "bdb370488a04ea43",
+   "be12186de8fe717a"
+  ],
+  "32": [
+   "105b314c96f96cb5",
+   "164df6df6445f4a8",
+   "6c434c0fe0e8275a",
+   "88d1b458cce0f291",
+   "8f910171b8f872b0",
+   "dd994487175c913e"
+  ],
+  "48": [
+   "330c502c26d28e92",
+   "5bebcc09108f361f",
+   "798fdfcdafab2c3a",
+   "9b620fafdfc25a0c",
+   "ac550b1f85d1f515",
+   "d8895230499668d5"
+  ]
+ }
+}

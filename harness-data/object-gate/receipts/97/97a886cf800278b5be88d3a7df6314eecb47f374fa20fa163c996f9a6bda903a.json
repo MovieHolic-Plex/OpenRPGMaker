@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "97a886cf800278b5be88d3a7df6314eecb47f374fa20fa163c996f9a6bda903a",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "줄무늬 철판 바닥",
+ "label": "steampunk-city/sp-tread",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "steel plate floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 sprite is a flat metal ground/floor tile textured with tread patterns, correctly matching the terrain category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5079
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "metal floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor/ground terrain tile depicting patterned iron plate, spanning the full tile height.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4223
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "metal tread plate floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile displaying horizontal tread plate surface across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4420
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "metal floor tile",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile showing a metal tread plate viewed from above across all rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4186
+  }
+ ],
+ "decidedAt": "2026-10-13T18:27:58.051Z",
+ "cells": {
+  "16": [
+   "215bf9d5d23a271f"
+  ],
+  "24": [
+   "6f8615adf7a8c546",
+   "816c702ec7fae855",
+   "bab954dacc050a1f",
+   "d04c5fc9d1995b66",
+   "d35e3da6b7213107",
+   "d7a28fd8aad0db74"
+  ],
+  "32": [
+   "01d09e6a0db0bb48",
+   "3a3231324a354efe",
+   "b5b8ebf3e27fe7f9",
+   "d0d4394a72c54774",
+   "df81e3e1dfb2c8ec",
+   "ecaa5bcc402d2183"
+  ],
+  "48": [
+   "01ce95a5dde810d0",
+   "30cb2d24320c6808",
+   "30f1541d37628411",
+   "a8a9ebcb0ef6fc49",
+   "bb174470cb806bfc",
+   "fa1a590cca12ab21"
+  ]
+ }
+}

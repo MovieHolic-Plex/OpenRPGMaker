@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "aed62f69a2f1c3246388c8b8a7b8e2c9d45d153d2b8daacac61deb5188040283",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "기숙사 카펫(청회색 얇은 결)",
+ "label": "modern-campus-int/mc-floor-dorm",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "carpet floor tile",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless blue-gray carpet floor texture filling the entire tile, correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4589
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "carpet floor texture",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless floor/terrain texture depicting blue-gray dormitory carpet across the entire tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4565
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "carpet floor tile",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless floor/carpet terrain texture viewed from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3756
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "carpet floor tile",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat blue-gray carpet floor terrain texture filling the entire tile area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4745
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.306Z",
+ "cells": {
+  "16": [
+   "479ac4bd6c0b8cd8",
+   "4af412bdabf996a0",
+   "a0280a0f2ef433bd",
+   "bb85edf9284598f3"
+  ],
+  "24": [
+   "0db92b6b056d00a6",
+   "0e1f4d6d5a4995b4",
+   "2083784a4674c393",
+   "2a770e7bade6ee99",
+   "2e28df1ea53ee7a2",
+   "38dfd70c7d35bebc",
+   "44b4f7614d0dc349",
+   "5cbc17bfe417e1c7",
+   "5d18fc26ea9d4b23",
+   "6992f7702c7a26f4",
+   "70a34ffa26691a30",
+   "748f9132c72fcce9",
+   "8d4d7857d5daaa33",
+   "96388e462c64941e",
+   "9737d3465cf366f3",
+   "a52e489c1ea7a550",
+   "b150f71ca27bfd5f",
+   "b1bf74fdade25461",
+   "b337ebc3ee841564",
+   "b544d34b070676d3",
+   "b7ab81221458543c",
+   "bd309af3e84ae817",
+   "e798e1c90074bdaf",
+   "f6fdc5bc15bc326c"
+  ],
+  "32": [
+   "17c64bfac20e389e"
+  ],
+  "48": [
+   "46e9d479303ad91b",
+   "5aa05f1ee5316421",
+   "7974aec6866f20b7",
+   "92cb6185394b0d2e",
+   "9a9e5bfc62bec993",
+   "beaa74dfacc954cb"
+  ]
+ }
+}

@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bcdbc30784a0e659ae023107dd04c65a5e3bfb551aeee5f27a02e9d165bae65f",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "벚나무(봄 꽃)",
+ "label": "modern-campus/mc-tree-cherry",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cherry blossom tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree canopy is drawn as a flat, 5-petaled flower facing directly forward toward the camera like a 2D side-scroller sprite, rather than an organic 3D volume seen from a 45-degree top-down perspective. Despite the elliptical ground base at the bottom, the main body is in pure front elevation with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7350
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cherry blossom tree canopy",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The foliage is drawn as a flat 5-petaled flower facing directly forward in the screen plane with no 3/4 top-down foreshortening or visible top surface (top_rows: 0).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10458
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cherry blossom tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree canopy is drawn as a flat five-petaled flower facing directly forward in pure front elevation with no 3/4 foreshortening or top-down view of the crown. The trunk is also rendered as a flat vertical rectangle.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7531
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cherry blossom tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The foliage is drawn as a flat, front-facing five-lobed flower silhouette with no top-down foreshortening or visible upper surface of the canopy. The trunk is a straight front-elevation column, and the only 3/4 element is the ground patch at the base.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10176
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.871Z",
+ "cells": {
+  "16": [
+   "064dcbb5f27f06d3",
+   "265f0be52057eb8e",
+   "5b87b211d587cfe7",
+   "9dcd69c151b05aa3",
+   "d7cf061a5cfbb641",
+   "db5012bbce5978ef"
+  ],
+  "24": [
+   "0154b5d1083c5874",
+   "7a5c5dcd0ea0921a",
+   "887a7c73bab7e7fe",
+   "920fee8b9c8af383",
+   "9d2aafc3fd77c80a",
+   "a032edbb1f5a30ed",
+   "b5165207fe13c3ad",
+   "b55ee6bc90442c78",
+   "c0ba47ff52bdfb87",
+   "d47c074e75f60791",
+   "d84deb854152000b",
+   "e926967f64ac78e3"
+  ],
+  "32": [
+   "03d2366d2041594f",
+   "25f0cfc8b212d09b",
+   "6bf81a29e7c7049f",
+   "d47fcde2eccad96d"
+  ],
+  "48": [
+   "27be4b9a5c355b2b",
+   "28b2584913cc9605",
+   "ea9dbc2a3986b8dc"
+  ]
+ }
+}

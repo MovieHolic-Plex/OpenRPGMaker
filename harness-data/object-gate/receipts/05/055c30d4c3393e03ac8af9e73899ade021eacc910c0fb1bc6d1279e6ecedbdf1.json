@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "055c30d4c3393e03ac8af9e73899ade021eacc910c0fb1bc6d1279e6ecedbdf1",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "무쇠 가스등(넓은 받침)",
+ "label": "gothic_manor/gm-gaslamp",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cast iron gas lamp post with lantern head and cylindrical base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the lantern cap (rows 1-5, ~5 rows of foreshortened dome surface) and the wide cylindrical base (rows 33-38, ~6 rows of top surface) clearly display foreshortened top surfaces in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6537
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cast iron gas lamp post with cylindrical base and lantern head",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylindrical base has a clearly foreshortened top surface visible from row 33 to 38 (6 rows tall) wrapping around the pole in proper 3/4 top-down perspective. The lantern cap dome also displays foreshortened top-down curvature.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5201
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cast iron gas lamppost",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lamppost head features an elliptical domed cap with roughly 5 rows of visible top surface (rows 1–5), and the wide base plinth clearly exposes a 6-row foreshortened top surface (rows 33–38) consistent with top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6981
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "gas lamp (cast iron pole with lantern head and wide cylindrical base)",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylindrical base features a prominent elliptical top surface foreshortened from rows 33 to 39 (~6-7 source pixels tall), and the lantern cap dome is similarly foreshortened with top-down shading (rows 1-7).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6922
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.506Z",
+ "cells": {
+  "16": [
+   "60b97951e168eaf7",
+   "ad4202ddfb0cac88",
+   "f2d91b5f9566d28c"
+  ],
+  "24": [
+   "020990df134a5859",
+   "335de14dce3eeebd",
+   "8514ed8340bf23d9",
+   "af517dc4c6b58a9a",
+   "dd4efc992be02cc7",
+   "fb04803fcc64c2b4"
+  ],
+  "32": [
+   "052ce491e75966cf",
+   "0e90354dcc6cba5c",
+   "2abc7c75a4f5d2d5",
+   "3dde77cbe75898da",
+   "6b296f32bfa1b8fb",
+   "793edbde5104b11d",
+   "85e06ef054ba8c0a",
+   "9276c88946bdef68",
+   "b1df07ae3706a3c4",
+   "b57e6c220ce89cd4",
+   "ba148b8ac351da1c",
+   "c48efcc07a9cb2fa"
+  ],
+  "48": [
+   "0ced09a7543f354f",
+   "3440cff173b9e99d",
+   "3466c97722351563"
+  ]
+ }
+}

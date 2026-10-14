@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2dc939d8ee5b595cb83e3793fb662d8bf31934eeee9f5498a6080b005a19f1a7",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "부엌 테라코타 타일 B",
+ "label": "gothic_manor/gm-fl-tile-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "terracotta floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tile featuring a 2x2 grid of terracotta tiles with grout lines, correctly represented as a top-down ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3557
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "terracotta floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "2x2 grid of terracotta kitchen floor tiles with grout lines, functioning as horizontal floor terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4429
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "terracotta floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles viewed from above with bevelled edges and grout lines.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3713
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "terracotta floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tiles covering the 16x16 tile space, viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2985
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.500Z",
+ "cells": {
+  "16": [
+   "d64bf1bd5bfd7920"
+  ],
+  "24": [
+   "0375d1e227e3f610",
+   "04be2a7e29395590",
+   "11cba524e06e4c3a",
+   "1df94b6c688793a5",
+   "c8c0703931e0ea72",
+   "d30401cbf45fbef4"
+  ],
+  "32": [
+   "04bf0b6465706e07",
+   "11c561d4ec8f8b22",
+   "217989ab8d9fd3d9",
+   "31c580191abc759b",
+   "3f06b318255b9357",
+   "618972da3912ac0b"
+  ],
+  "48": [
+   "398d0f1dd56421e2",
+   "3a484bd9829e94bb",
+   "5ff81de162d1afa9",
+   "a04d39dd18315197",
+   "c845a50df0211847",
+   "faa6752d5fbdc567"
+  ]
+ }
+}

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ef292bf8d84e1bbf02ee3a03a154565296467459eb42fc012a5d3f4724a6d01c",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "흉상 돌기둥(대리석 흉상)",
+ "label": "gothic_manor/gm-bust-column",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "marble bust on a stone pillar/pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone pillar/plinth is drawn in pure front elevation with straight vertical borders and horizontal divide lines; no horizontal top surface of the pedestal is visible around or beneath the bust.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5711
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "marble bust on pedestal/pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillar/pedestal and bust are drawn in pure front elevation with straight horizontal divider lines and no foreshortened top surfaces visible on the base or plinth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7915
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "marble bust on a stone pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bust and pillar are drawn in pure front elevation with straight vertical side outlines and horizontal dividing lines. Neither the head, shoulders, nor the pillar plinth show any foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7986
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bust on a stone pillar/pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillar/pedestal has perfectly vertical side outlines from row 13 to 31 with completely flat horizontal section dividers and base. There is no visible top surface of the pedestal/plinth around the bust, presenting a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5616
+  }
+ ],
+ "decidedAt": "2026-10-13T16:33:45.368Z",
+ "cells": {
+  "16": [
+   "7e33289d9cad3b15",
+   "f42111b7af0798be"
+  ],
+  "24": [
+   "01ac545c72977d3b",
+   "0c125c961c5176c3",
+   "140e263b21aa4405",
+   "1782b7ffccce2f9f",
+   "37b50afef36ded08",
+   "7609ebd8ecb26825",
+   "95c5496fd4265729",
+   "95f977f275374ac5",
+   "ab52d78f33add266",
+   "ca019c31df1d5a11",
+   "d8472eb13058866d",
+   "f75e4e0e903288b5"
+  ],
+  "32": [
+   "0cab055b894620c6",
+   "4164eadefcdf03a0",
+   "72840d9a80c97d06"
+  ],
+  "48": [
+   "3601fdde50b75f00",
+   "3f7b5124e63f7d47",
+   "608822eeb736d2f8",
+   "97d914b5c9b5512f",
+   "ecb3f4a46cc3c2ae",
+   "f93c1f1a173c07b6"
+  ]
+ }
+}

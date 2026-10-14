@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5381a306b57a634c7e71615a59cb8568dad4a7f451c1106ca4747ec650980b97",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "수경 재배 선반(윗면 + 잎 + 보라 재배등 + 물 트레이)",
+ "label": "sf-station/sf-hydroponic-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hydroponic shelf unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire hydroponic shelf is drawn as a flat 2D front architectural elevation. The top of the cabinet has no visible top surface (0px, only a 1px black outline at row 1), the shelf tiers and interior compartments are seen straight-on with purely horizontal lines, and the plant pots/trays show no elliptical openings or depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5854
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hydroponic shelf unit",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the hydroponic unit occupies rows 2–15 (14 pixel rows tall), showing plants resting on the top slatted rack, while the front face extends from row 16 to 31 showing the lower tier with purple grow lights and a water tray.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9365
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hydroponic cultivation cabinet with top shelf and lower illuminated compartment",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shelf is clearly depicted from rows 2 to 15 (14 pixel rows deep) with potted plants resting on it, and the front face of the unit extends below from row 16 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7350
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hydroponic grow shelf",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire unit is drawn from a flat front view with no visible top surface (0px) at the top of the shelf frame, showing only a 1px outline across row 1.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9092
+  }
+ ],
+ "decidedAt": "2026-10-13T15:33:34.767Z",
+ "cells": {
+  "16": [
+   "0919d58fb91ea03f",
+   "86facb6742622356",
+   "cec69de8a1389827",
+   "e6d946ee579d0347"
+  ],
+  "24": [
+   "0a732d0303e55823",
+   "15a7844602b5c679",
+   "1e74441ff3ab9b7e",
+   "36119556d434ec84",
+   "39a427e740c652bf",
+   "3ca01a1db21abdb3",
+   "3fd641f3142a2a99",
+   "4d2b683c2883b89f",
+   "5bce89b1199e3cfc",
+   "699508af6de93d2d",
+   "79f5d29a3c0618c1",
+   "7d78d7673db24a5e",
+   "7f6ca2019605673a",
+   "9fde987904f98ee5",
+   "aede85d7c783fba3",
+   "aff6ffd95e0fb2e4",
+   "b749a01d5dd35526",
+   "e0185e1a8aaa6bcd",
+   "e4208ec2ce5bd8e4",
+   "e71e9264a9de515d",
+   "f568e3db59ade268",
+   "fa753a97b98a1a0b",
+   "fd004a3a2cbfccb5",
+   "fe0b0c304541b78a"
+  ],
+  "32": [
+   "1d98d7bab99c735f"
+  ],
+  "48": [
+   "09f9b36c76543947",
+   "9450e5c2d6628bcc",
+   "a86dd67ac55c3c93",
+   "ab09d139a3b68d45",
+   "c0dee6a521728fbc",
+   "c8a103bd5e9ef808"
+  ]
+ }
+}

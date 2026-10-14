@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e72e4ef9892443cc7963c60d52db680edf98b02942716d6dcd002e5e03114ffe",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "부엌 테라코타 타일 B",
+ "label": "gothic_manor/gm-fl-tile-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "terracotta floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "2x2 grid of terracotta floor tiles representing flat kitchen ground terrain across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4794
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "terracotta floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tile composed of a 2x2 grid of terracotta tiles with grout lines, correctly seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2988
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "terracotta floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Four terracotta square tiles arranged in a grid with grout lines, functioning as a standard flat ground/floor terrain texture.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3165
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "terracotta floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tile pattern consisting of a 2x2 grid of terracotta tiles with grout lines, correctly represented as a top-down ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5520
+  }
+ ],
+ "decidedAt": "2026-10-13T17:05:38.311Z",
+ "cells": {
+  "16": [
+   "6a804be04e91a692"
+  ],
+  "24": [
+   "6c7377356320f3e0",
+   "74a63c562885e98f",
+   "9b5fdda6e68574cf",
+   "edc91ddce01dbad9",
+   "f1129e359afb43d7",
+   "fe794eef907743cf"
+  ],
+  "32": [
+   "39b35f2520176ee7",
+   "460a488d375972f6",
+   "855d01c3cf89eb62",
+   "9ffd4e6a0186ebf7",
+   "b2bf5b885aa5512b",
+   "eba94ef9a2f78c29"
+  ],
+  "48": [
+   "07d140879b574ca9",
+   "7a2afd663ee13bd6",
+   "c365eb887360ce7a",
+   "cb92b8a2c89ca926",
+   "e161b1506c03e49e",
+   "efd22aae332da50b"
+  ]
+ }
+}

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fbce76e437e2c19755f8bface84a3b5e8a666f0e971e9219c9b0b1dbe60cb601",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "까마귀가 앉은 부러진 돌기둥",
+ "label": "gothic_manor/gm-crow-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "broken stone pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The broken top of the pillar (rows 11-14) is drawn purely as a flat 2D jagged silhouette without any foreshortened cut face or top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7249
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "broken stone pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The broken top of the pillar is drawn purely in front elevation as a jagged 2D silhouette outline (rows 11-12) with no foreshortened top cut surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6527
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "broken stone pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The broken top of the pillar is drawn as a flat jagged 2D silhouette across rows 11-14 with no visible fractured top surface or foreshortened horizontal plane, representing a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4623
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "broken stone pillar with crow perched on top",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The broken top of the pillar (rows 11-14) is drawn purely as a jagged 2D outline in front elevation with no visible horizontal broken surface or cut face seen from above (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5104
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:15.454Z",
+ "cells": {
+  "16": [
+   "3179cc95194e7018",
+   "9ccaabdd5dbbbd33"
+  ],
+  "24": [
+   "48c9a310196932db",
+   "5114d04a70f049b4",
+   "56a82f8793b2aa34",
+   "5e6b394bae3a6284",
+   "78aa049d43248981",
+   "78f48053610832bc",
+   "953e3def5c859f4f",
+   "b8680752810f3c27",
+   "cfbbd44cdff3303e",
+   "d841b52f2ad5d8f1",
+   "e6d788eb22110d98",
+   "eedc9f27386b9403"
+  ],
+  "32": [
+   "3bf47e191bd0b910",
+   "3f75cb52a94740c8",
+   "6774776fd200598a"
+  ],
+  "48": [
+   "1a66f94f9d0365e4",
+   "1f9dd90cb925de32",
+   "61cba4e0e4ee161f",
+   "8443acb30c603273",
+   "aedac9f8ff73036d",
+   "cb7af906ba3ab505"
+  ]
+ }
+}

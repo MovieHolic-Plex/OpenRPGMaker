@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a8b1f9a384c8553a113a878adb31c14ae87e04271da7726d3711134f486bbcb8",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "분리수거함(뚜껑 셋: 일반·종이·플라스틱)",
+ "label": "modern-campus/mc-recycle-bins",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "recycling bin set (three bins: green, blue, yellow)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each bin features a 5-row top lid surface (rows 2-6) with an inset drop slot, clearly distinguished from the 7-row south front face (rows 7-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6383
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "three-compartment recycling station console",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 2–6 form the brightly illuminated top lid surface (5px deep) containing drop-in slots for each bin, while rows 7–13 represent the darker south-facing front cabinet doors.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11355
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "recycling bins (set of three)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid surfaces are clearly visible from above across rows 2–6 (5 source pixels tall) featuring deposit slots, above the front vertical faces across rows 7–13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6875
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "three recycling bins in a stand",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid surfaces of the three recycling bins occupy rows 2–6 (5 source pixel rows), clearly showing the disposal slots seen from above, resting on the south-facing front body panels in rows 7–13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4481
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.869Z",
+ "cells": {
+  "16": [
+   "02b2b6fb8d0fb1c1",
+   "fc4059b1f970107a"
+  ],
+  "24": [
+   "0281bf1156174638",
+   "211749cc39a5190c",
+   "2c9b15e929816497",
+   "43e50d8052bdddf3",
+   "5e5319d7a52415d0",
+   "747d64e3427b4c41",
+   "7fe65c6db045f2fa",
+   "8c21d85219eadacb",
+   "a6d5de6a2b0aceb1",
+   "b327a1cce09d8152",
+   "b70facc5da13c044",
+   "fd878744b7012d7e"
+  ],
+  "32": [
+   "7f8a648a00bbbd4f",
+   "8e2ec98224f0e796"
+  ],
+  "48": [
+   "106a6faa06b8ee28",
+   "18577651d25e75d3",
+   "284098b27f0c3597",
+   "511f086700c8e412",
+   "624dc13e6b1dc028",
+   "8da9ff8573627b88"
+  ]
+ }
+}

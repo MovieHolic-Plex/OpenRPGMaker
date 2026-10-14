@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "48673d0368d9a27f0782e9949941ae765d0c24dde5495ea0357dbcb32dfc544d",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "flagstone path on grass (terrain)",
+ "label": "sky-island/si-path-1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flagstone path on grass",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain showing flat flagstones with broad top surfaces (3-5 rows each) and south-facing edges/shadows on grass.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3622
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flagstone path on grass terrain",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing stepping flagstones set into grass; the stones display foreshortened top surfaces and south edge shading consistent with top-down 3/4 terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4827
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flagstones embedded in grass",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting stone pavers on grass, showing the top surface of the stones foreshortened from above with south-facing drop shadows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3206
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flagstone path on grass terrain",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing flagstones set into grass, viewed from above with appropriate 3/4 perspective south-edge shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3351
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.979Z",
+ "cells": {
+  "16": [
+   "27238321bd424e70"
+  ],
+  "24": [
+   "006287b4390efafd",
+   "0683ca907652b8c8",
+   "946e138950740547",
+   "cceda9ef4e73f2e1",
+   "f94ef8d66887c0ba",
+   "fb4f6a32842482e4"
+  ],
+  "32": [
+   "6693e5d6158c9fed",
+   "878964976e87a912",
+   "93c6b2a83c9c283a",
+   "b1cf2325a5d34b37",
+   "dfd2783f2ec1bc5d",
+   "e14201c6263a388d"
+  ],
+  "48": [
+   "01f24211abe41a35",
+   "0c9667e0991f93e8",
+   "12b4be7466104a0c",
+   "1df726250e8d148f",
+   "90ba79dd1c251e3f",
+   "b6e9e1245cb79eba"
+  ]
+ }
+}

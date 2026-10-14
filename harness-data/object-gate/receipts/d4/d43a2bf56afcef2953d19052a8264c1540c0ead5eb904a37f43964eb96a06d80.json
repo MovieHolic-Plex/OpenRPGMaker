@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d43a2bf56afcef2953d19052a8264c1540c0ead5eb904a37f43964eb96a06d80",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "흄 후드 실험장(밝은 윗판 윗면 8줄 + 둥근 배기구 + 유리 가림창 속 기구 + 아래 수납)",
+ "label": "sf-station/sf-fume-hood",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fume hood laboratory station",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the fume hood is visible across rows 1-8 (8 source pixel rows) with an elliptical exhaust duct opening viewed from above. Beneath row 9 is the front-facing sash window with equipment, resting on lower storage cabinets.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12081
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fume hood laboratory unit",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-8 form the visible top horizontal surface of the unit, featuring a foreshortened elliptical exhaust duct opening (rows 4-6, 3 rows tall). Below row 9 is the south-facing chamber with glass sash and lower cabinet storage.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8008
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fume hood laboratory cabinet",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the unit spans rows 1 to 9 (9 pixels tall), featuring an elliptical exhaust duct opening viewed from above (rows 4-6) before transitioning to the front glass sash and lower cabinet doors.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6655
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fume hood laboratory cabinet",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1–8 depict the foreshortened top surface of the fume hood, featuring a top-facing exhaust vent with an elliptical opening (rows 4–6). Below row 9 is the south-facing vertical front with the glass sash and lower storage doors.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9797
+  }
+ ],
+ "decidedAt": "2026-10-13T16:09:23.189Z",
+ "cells": {
+  "16": [
+   "45e1341c240aa365",
+   "a43a6c5113cae88e",
+   "af27ee276ccf4ef4",
+   "c19acb4e6e9f917f"
+  ],
+  "24": [
+   "055657bb5a53a343",
+   "0adc6b18cb31c239",
+   "239cbd6f34c97951",
+   "322e4dc8639fe2ea",
+   "43d919bf5e4dfe3d",
+   "4528b0618a4e7b45",
+   "489e65a8ef641088",
+   "4a4a0553eac34b9d",
+   "71dbd8c5432e39da",
+   "78af44173bdc9313",
+   "7c1d852ce09c500a",
+   "7cb80c0661c350b8",
+   "8f91e35dbc0e2c51",
+   "9a93dc53404c5e09",
+   "9aac7c4b10d1b355",
+   "b5d93c4ad53f2cea",
+   "c0c01a0aa6c1b117",
+   "c2cede93e7ad84ad",
+   "caaacb9512c6dc46",
+   "d2c708ac3c329f35",
+   "d402004b06127d36",
+   "e8bcffc930f58137",
+   "ea3483a0597d339c",
+   "fd8874dd825a3fe6"
+  ],
+  "32": [
+   "7447ce813b634e22"
+  ],
+  "48": [
+   "4adcf8ba2545361e",
+   "5560c28b4e050711",
+   "5e616c3a6ce6e937",
+   "b89338a9581a0aca",
+   "cde5c03381d40752",
+   "d468608469234d62"
+  ]
+ }
+}

@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3eba04e6bafdf83e9d0cd7e4f5c40cf992262afc89fb0e160c3a2bd83eda67d7",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "승강기 문(사다리꼴 윗면 문틀 + 두 장 미닫이 + 층 램프)",
+ "label": "sf-station/sf-elevator-door",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "elevator door and frame with floor indicator",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The elevator is drawn entirely as a flat architectural front elevation. The upper white section contains the floor indicator display facing directly forward, functioning as the front lintel/transom rather than a horizontal top surface, and neither the frame lintel nor the door threshold shows any foreshortened top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10485
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "elevator door and frame structure",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The elevator structure features a distinct 6-row trapezoidal top surface/slanted lintel cap (rows 1-6) visible from the 3/4 top-down angle above the vertical door frame (rows 8-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8330
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "elevator frame and doors",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the elevator frame recedes as a trapezoid spanning rows 1 to 7 (with sides tapering inward toward the back edge at row 0/1), showing clear 3/4 view top surface depth above the vertical front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6678
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "elevator entrance frame and sliding doors",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The elevator structure features a distinct, foreshortened top surface across rows 1–6 rendered in a significantly lighter value than the south-facing door frame (rows 9–30), tapering trapezoidally toward the rear edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9837
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.955Z",
+ "cells": {
+  "16": [
+   "1e795e9eae3d5754",
+   "906ec58272c744f7",
+   "d756b9493b0161bd",
+   "eed3f0aae30e9b99"
+  ],
+  "24": [
+   "069f5290357519bc",
+   "1a2064de9b5b4741",
+   "1e5911d9739b2002",
+   "24d7a3992df74204",
+   "29bfbfa26b179285",
+   "2b280864318ff732",
+   "2c51f236c57821a1",
+   "3721a4b1302c127e",
+   "484747ca7365fa8a",
+   "5255985c0d5f736b",
+   "63dc83849f7ff882",
+   "71804978caa16cac",
+   "766309c60464eda0",
+   "80de59a104421301",
+   "83ff5f32057d69a3",
+   "8c7db6252754ab58",
+   "9e5b34c05b283d94",
+   "a16b4cd6d9daa9c3",
+   "b6c2ac8ac011039d",
+   "ceb18f8d1abd29c8",
+   "d368f97e7b39d0be",
+   "d7b33d1b57e9c079",
+   "ea8054b9fee7564a",
+   "f9fa85d40c6383df"
+  ],
+  "32": [
+   "2c1e35625383657f"
+  ],
+  "48": [
+   "260dad292923f312",
+   "321fb0210d13d0ad",
+   "65fbe4ce3a1a12df",
+   "6e443c0faef01f6b",
+   "9e3d1d21aab9ae94",
+   "d6736587ae0f0516"
+  ]
+ }
+}

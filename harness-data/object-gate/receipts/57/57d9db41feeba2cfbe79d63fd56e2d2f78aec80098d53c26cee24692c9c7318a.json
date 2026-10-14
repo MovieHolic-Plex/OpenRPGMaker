@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "57d9db41feeba2cfbe79d63fd56e2d2f78aec80098d53c26cee24692c9c7318a",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "무쇠 가스등(넓은 받침)",
+ "label": "gothic_manor/gm-gaslamp",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "gas lamp post with stone pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire lamppost is drawn in pure front elevation: the lantern cap is a flat triangular silhouette with perfectly horizontal rim lines, the pole collars are flat horizontal bands with no curvature or elliptical top, and the stone pedestal shows only flat vertical front faces with no top plane visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6545
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron lamppost on stone pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire lamppost, rings, lantern housing, and stone pedestal are drawn in pure front elevation with straight horizontal bands and no top surface or elliptical foreshortening visible around the pole or cap.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6723
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cast iron gas lamp on stone pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire lamppost is drawn in flat front elevation: the rings along the pole (rows 14-16, 24-26) and the lantern rim (rows 3-4) are completely horizontal straight bands with no elliptical curvature or visible top surface, and the stone pedestal top (row 34) is a flat horizontal line with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7787
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lamp post with stone pedestal base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire lamppost is drawn in flat front elevation: the rings on the pole and the top of the wide pedestal base are completely straight horizontal lines with 0 rows of visible top surface, and the lamp cap is drawn as a flat triangular silhouette.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5720
+  }
+ ],
+ "decidedAt": "2026-10-13T16:24:27.174Z",
+ "cells": {
+  "16": [
+   "37a42f1f8cd72199",
+   "48e5f85d88d2bf8d",
+   "6e5d3e720cf58602"
+  ],
+  "24": [
+   "341039f51ba288a1",
+   "3de1b388e7ffd760",
+   "702b8e2c9bc34fc4",
+   "7274d86d6b28a7e5",
+   "838fc132e77aeff8",
+   "f388d045817ef7f7"
+  ],
+  "32": [
+   "16386aa241429ebf",
+   "213dfcef03dccafd",
+   "2550a0860d770609",
+   "34e8e4125c823b45",
+   "3f1ae78a1639a993",
+   "61d7fde0353ce4bb",
+   "8545fd43590c1a95",
+   "98141b670eebd1e3",
+   "d21634759f18852b",
+   "d6e0d7ec1955eaa9",
+   "edb4fb56dc9d82a6",
+   "f9f447511a135d34"
+  ],
+  "48": [
+   "3c781842710056f1",
+   "987e8f12e044519c",
+   "b70e99c732a73010"
+  ]
+ }
+}

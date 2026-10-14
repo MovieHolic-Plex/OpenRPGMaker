@@ -1,0 +1,123 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "05b038abba4a10b377e61f03b45f985171b764e697cef843fc208d202cbed79f",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "증기 구멍(쇠 굴뚝 토막에서 김이 오른다) (프레임 4)",
+ "label": "steampunk-city/sp-steam-vent-f3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron chimney stub with steam vent",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chimney stub has a large circular/elliptical opening clearly visible from above (rows 18-25, 8 rows tall), looking down into the dark interior, with the front face of the base visible below (rows 26-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9071
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "metal chimney stub / steam vent",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pipe opening and surrounding flange are drawn in pure front elevation facing directly toward the camera (symmetrical circular rim with an 8x10px circular hole), mounted on a flat vertical baseplate with corner rivets (rows 26-28). There is no foreshortened top surface or cylinder depth visible from a 45-degree angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도"
+   ],
+   "ms": 12736
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "short iron steam vent / pipe base",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The steam pipe opening is drawn as an elliptical dark void from row 18 to 24 (7 rows tall) surrounded by a clear rim seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5311
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron chimney stub / steam vent",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The steam vent features a prominent opening viewed from above (rows 18-25, 8 rows tall) set into a horizontal top surface (rows 17-25), with a distinct 4-row front face below it (rows 26-29) showing corner rivets.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10259
+  }
+ ],
+ "decidedAt": "2026-10-13T18:20:36.039Z",
+ "cells": {
+  "16": [
+   "013ae4722cb64afd",
+   "561274f53b4e7cbd"
+  ],
+  "24": [
+   "55761706a5d04d01",
+   "5b45c0b86c160bfe",
+   "6d88d6b76ce5c063",
+   "764f0187a09c9915",
+   "7a055a4c01f380e6",
+   "7a35f7d93208fcbb",
+   "7cfeb44a9fc03cb4",
+   "c5e288d4f317c151",
+   "cf6336ff68908d85",
+   "dbfe812cc533359e",
+   "eb525dad5193773f",
+   "f00f8583c0cf4cf9"
+  ],
+  "32": [
+   "2541907e0eab12a3",
+   "38accdfab14579fb",
+   "a61096f324755859"
+  ],
+  "48": [
+   "1274eb9e2762ad41",
+   "1ae64e29c449b1f7",
+   "753dd422152fd9b2",
+   "84d00cc7f363fd96",
+   "8b92f7c5f86999a2",
+   "c4014064cca9952e"
+  ]
+ }
+}

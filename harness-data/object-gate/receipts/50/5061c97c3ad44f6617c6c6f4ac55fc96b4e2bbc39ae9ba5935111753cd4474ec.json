@@ -1,0 +1,173 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5061c97c3ad44f6617c6c6f4ac55fc96b4e2bbc39ae9ba5935111753cd4474ec",
+ "width": 64,
+ "height": 32,
+ "kind": "structure",
+ "name": "연결 통로 튜브(가로로 누운 가압 통로, 유리 창 줄)",
+ "label": "sf-station/sf-tube-h",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal pressurized connecting tube corridor",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is rendered as a flat 2D side-scroller elevation with no foreshortened top surface visible. The bulkheads and tube walls/windows are drawn straight-on with only a 1px outline along the top edge.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8462
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal connecting corridor tube with side bulkheads/pillars and window strip",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The structure is drawn as a flat 2D side-scroller/architectural front elevation. Both the side bulkheads/pillars and the central corridor terminate at the top with a flat 1-pixel outline (rows 3-5) with no foreshortened top surface or roof visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13016
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal corridor tube structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The corridor is drawn as a flat 2D front/side elevation (similar to a side-scroller train car or wall section). The bulkheads on the left and right have no visible top surface (only a 1px outline at rows 3-4), and the central section is rendered as vertical wall panels and windows without any visible top roof plane foreshortened toward the camera.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7083
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal connecting tube / pressurized corridor",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The structure is drawn entirely in flat 2D side-scroller / front elevation view. Both the upper paneled section (rows 6-15) and the lower windowed section (rows 18-24) feature vertical mullions and horizontal bands with no foreshortened top surface or 3/4 angle depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7158
+  }
+ ],
+ "decidedAt": "2026-10-13T15:26:12.242Z",
+ "cells": {
+  "16": [
+   "002059d18b425e31",
+   "235d6e0f4a37ef99",
+   "35656707479aece3",
+   "71a15d0fad304027",
+   "b216965a8bca1104",
+   "b2634645cf337c92",
+   "be86a46619805d89",
+   "cf1ad52c6c30946d"
+  ],
+  "24": [
+   "03d9dfdccf1f3b94",
+   "14df839541489af4",
+   "1acc10e6f6c67c28",
+   "2df70c50b51c3156",
+   "34723c2d78c94dbb",
+   "35e4af321ad659c5",
+   "393a54bdaf6260af",
+   "3af6f0ad5a8aae47",
+   "3b73ff9a9c59cc72",
+   "478c9e56bc25cde2",
+   "66d1fc09d5f9c82d",
+   "67c7c253831b68b5",
+   "67e5274b92e8f672",
+   "6c5eb4eeece2acf5",
+   "8426ffbd250a97d3",
+   "8f5fe72fe3b90ebe",
+   "9469635a65a5dcb4",
+   "a1ca91aaf4cfe5ae",
+   "a96df59e7cd15086",
+   "b00af90be36d3b02",
+   "b6cb9c6c9aa96735",
+   "bae8a3c895887a46",
+   "c47b5f7c80557026",
+   "c7161f8618c33448",
+   "d7f93d987bc56de8",
+   "dce14f21bf6fe302",
+   "dd756336397308e4",
+   "e085a33105377a0d",
+   "e1adeafc20fd57a3",
+   "e8c4fc1f0b8ba068",
+   "ea4cedc777d5363e",
+   "ed36e54cecd0d64d",
+   "f0972f4968e8e05b",
+   "fe804b5de8bd70b0"
+  ],
+  "32": [
+   "f265d01bfca39e0d",
+   "f2f5d9ecac35e3bb"
+  ],
+  "48": [
+   "0cc62df07a247914",
+   "2d2a3edaab513120",
+   "69268f0ec3ce6335",
+   "8e1e525c03e2fb56",
+   "a2a4b25b56928b94",
+   "a460ae271b3e9643",
+   "a80cfdfe06511bcc",
+   "b4b026bac31ed1dd",
+   "b563d23cb47f2be1",
+   "be60acaae6f3c1bf",
+   "e0f1db351350f159",
+   "ee2934211f9ca776"
+  ]
+ }
+}

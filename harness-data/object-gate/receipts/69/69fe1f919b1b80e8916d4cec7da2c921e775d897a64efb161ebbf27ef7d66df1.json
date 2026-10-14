@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "69fe1f919b1b80e8916d4cec7da2c921e775d897a64efb161ebbf27ef7d66df1",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "흙더미에 꽂힌 삽",
+ "label": "gothic_manor/gm-shovel-mound",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dirt mound with embedded shovel",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The dirt mound has a clearly foreshortened top surface spanning rows 8-11 with shaded front/lower slope on rows 12-14. The shovel blade is stuck into the top face of the mound.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6679
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dirt mound",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is the mound of dirt (rows 7-14), which has an elliptical foreshortened footprint (13px wide by 8px tall) with a visible upper slope of roughly 4 pixel rows (rows 8-11) before shading into the front slope.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8269
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dirt mound with embedded shovel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The dirt mound and shovel are drawn in pure front elevation: the shovel handle and blade face directly forward with no top foreshortening, and the dirt mound is drawn as a flat 2D silhouette with horizontal banding and no foreshortened top surface or elliptical ground footprint.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7196
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dirt mound with embedded shovel blade",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is a dirt pile (rows 7-14); rows 7-10 represent the lighter top/upper slope of the mound (4 rows tall) viewed from above, transitioning to a shaded front face on rows 11-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6759
+  }
+ ],
+ "decidedAt": "2026-10-13T17:01:50.506Z",
+ "cells": {
+  "16": [
+   "ad892d63319bbe0f"
+  ],
+  "24": [
+   "0f2e70c08ceee79a",
+   "33009da73c659a21",
+   "34c29adce8c43c87",
+   "633dcbcf84a32303",
+   "7e857572a4274d67",
+   "e4ca0ac25d1e8fbf"
+  ],
+  "32": [
+   "2a6c50b18606c417",
+   "5ea0d9789fceddaa",
+   "747b8b3c6a4c182c",
+   "915d9c7cb4d6aacc",
+   "d97cff2e82e786d5",
+   "ffce7bef1c1cea83"
+  ],
+  "48": [
+   "139b2f9c3185cdf2",
+   "5b5a38970dc409d8",
+   "710c732787d56ad5",
+   "79d179deae5c87ec",
+   "d407587aabb411c3",
+   "f0de4604cb715bf5"
+  ]
+ }
+}

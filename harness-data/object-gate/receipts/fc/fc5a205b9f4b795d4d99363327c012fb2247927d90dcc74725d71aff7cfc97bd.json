@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fc5a205b9f4b795d4d99363327c012fb2247927d90dcc74725d71aff7cfc97bd",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "나무 판자 바닥",
+ "label": "steampunk-city/sp-floor-plank",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wood plank floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wood plank floor terrain tile filling the entire 16x16 footprint viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5596
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden plank floor",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wooden plank floor tile representing a horizontal ground surface viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3442
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wood plank floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts horizontal wooden floor planks spanning the entire 16x16 tile, functioning as flat ground/floor terrain viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3976
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden plank floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts horizontal wooden planks seen from above as a floor surface across all 16 pixel rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3841
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:44.592Z",
+ "cells": {
+  "16": [
+   "e8d522c045e7024e"
+  ],
+  "24": [
+   "1abf87c18c21050f",
+   "4f707c415c6314c2",
+   "862f6bdf8634ad6c",
+   "c9dd05697da9dbc0",
+   "dd0c1af22f2350f0",
+   "ea8ba99cc9240882"
+  ],
+  "32": [
+   "6c4b83b836de16fd",
+   "7c797f71d4322379",
+   "d2b3dc17d605bec0",
+   "ef7286597eaab975",
+   "f1597a0dfe6f6331",
+   "fb6ba52830ef84af"
+  ],
+  "48": [
+   "35acbf2bd8827ebc",
+   "428850c683be2ba5",
+   "4639598f10160314",
+   "b50f55cf958b583a",
+   "e3289e58955df915",
+   "f8b9da868db3bfd0"
+  ]
+ }
+}

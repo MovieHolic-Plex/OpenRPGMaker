@@ -295,7 +295,7 @@ function prebuildStartTown(ctx: { project: Project }, start: GameMap, plan: Star
       blank.lowerTiles.fill(blankFillTileFor(kit.id, 0, kit));
       const text = ctx.project.gameDesignBrief?.summary ?? "";
       const streetPlan = planJpCityStreet({ mapId: start.id, width, height, seed: plan.seed, style: streetStyleFromText(text), shops: shopsFromText(text) });
-      const outcome = runJpStreetPlan(streetPlan, (name, args) => tool(trial, name, args) as never);
+      const outcome = runJpStreetPlan(streetPlan, (name, args) => tool(trial, name, args) as never, () => ({ map: trial.project.maps[start.id]!, tileset: trial.project.tilesets[kit.id]! }));
       if (outcome.built < 4) return null;
       labelStreetBuildings(trial.project.maps[start.id]!, outcome.buildings);
     } catch (error) { if (nodeEnv("START_DEBUG")) console.error("[start-street]", error); return null; }

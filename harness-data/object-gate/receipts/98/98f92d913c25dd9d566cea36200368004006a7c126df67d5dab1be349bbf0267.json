@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "98f92d913c25dd9d566cea36200368004006a7c126df67d5dab1be349bbf0267",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "쌓은 나무 상자 둘",
+ "label": "gothic_manor/gm-crates",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "two stacked wooden crates",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the top crate (rows 3-6, 4 rows) and the bottom crate (rows 13-17, 5 rows) clearly display their horizontal top surfaces viewed from above in standard 3/4 top-down perspective, with vertical south faces underneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3458
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stacked wooden crates",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both stacked crates clearly show their top surfaces (~5 pixel rows on the top crate from row 2 to 6, and ~5 pixel rows on the bottom crate from row 13 to 17) along with their front faces in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3476
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stacked wooden crates",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top crate shows a clear 5-row top surface (rows 2-6) above its front face (rows 7-13), and the bottom crate also reveals its top surface (rows 13-17) around the base of the upper crate.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2904
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stacked wooden crates",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both stacked crates clearly show top surfaces with vertical planks (top crate rows 2-6, bottom crate visible top rows 13-17) and south-facing front faces with diagonal braces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3011
+  }
+ ],
+ "decidedAt": "2026-10-13T16:24:27.175Z",
+ "cells": {
+  "16": [
+   "ca24da0c723e3867",
+   "f84d0e28e7e758e8"
+  ],
+  "24": [
+   "359b7fced79680cf",
+   "72918c07bcdc3e42",
+   "954d4884bfb79aa4",
+   "9d737b8da52e5161",
+   "b0f4aebe1b8d32d5",
+   "ccec5d49242a8e15",
+   "d3d4bb2f62fae1dc",
+   "d48330f4fa665a23",
+   "d5149c7d0dd2557e",
+   "dfce91ae04d56e84",
+   "e840244cbc7e2aae",
+   "f5a335dcf4ab324b"
+  ],
+  "32": [
+   "1fbb4df9e8236070",
+   "25d7dbcdc045b67a",
+   "aafc4b08a1885098"
+  ],
+  "48": [
+   "09e31680c8cdcbdc",
+   "27257444d2f80316",
+   "40cf2a88c7cbff66",
+   "8b603d01fe9c37f3",
+   "bbbd10a7defde97b",
+   "c0e7b4509539613b"
+  ]
+ }
+}

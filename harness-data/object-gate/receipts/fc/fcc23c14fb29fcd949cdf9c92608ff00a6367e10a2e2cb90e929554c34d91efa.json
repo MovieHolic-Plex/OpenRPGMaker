@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fcc23c14fb29fcd949cdf9c92608ff00a6367e10a2e2cb90e929554c34d91efa",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "육상 트랙(붉은 우레탄)",
+ "label": "modern-campus/mc-track",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "urethane track ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a red urethane running track surface across the full 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4345
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ground texture",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile filling the 16x16 area representing red urethane track surface",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2862
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flat ground terrain tile representing red urethane athletic track",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile is a flat top-down ground surface texture representing red urethane track material.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12588
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Entire 16x16 tile is a flat top-down ground terrain texture depicting red urethane track surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3229
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.864Z",
+ "cells": {
+  "16": [
+   "bc5f520ded1d53a3"
+  ],
+  "24": [
+   "0fbd4e19cdb678a0",
+   "38c60405b62113dd",
+   "6a86d37ad4417847",
+   "6fd6a53be6ccaf84",
+   "74324952e5dd38c3",
+   "c0a2264e4489c2ad"
+  ],
+  "32": [
+   "2e105a2040752838",
+   "78c9a09ddfce4e36",
+   "9f8820a2d44bbd42",
+   "be988024e3dfffca",
+   "c9dffc16f5d3b842",
+   "eeadf9e0c1d37e86"
+  ],
+  "48": [
+   "37519e4faa43e61c",
+   "61ff1c6f593ffe11",
+   "67555ce89107f3bf",
+   "80a4f365c7619de9",
+   "9123fc28784798a8",
+   "f9bfcc4069289ae3"
+  ]
+ }
+}

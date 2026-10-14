@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bb14269acf3548f713e7fd5a69936d089c1217a79a22636378806c5433cf7190",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "배관 다발(굵은 구리관 셋 + 흰 밸브 + 받침 상자)",
+ "label": "sf-station/sf-pipe-cluster",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cluster of vertical pipes on a support base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The vertical pipes clearly display open elliptical top ends (rows 3-6 on the copper pipe, rows 7-11 on the grey pipe) with interior hollows visible. Additionally, the top horizontal surface of the supporting base box is visible across rows 20-24.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3912
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pipe bundle on a base box",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both pipes show clear elliptical openings into their hollow interiors (copper pipe opening spans rows 3-6, grey pipe opening spans rows 8-11), and the base box shows a clear 5-row top surface (rows 20-24).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6477
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cluster of vertical pipes on a base box",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both pipes display clear elliptical top rims and dark openings seen from above (copper pipe top spanning rows 3-7, grey pipe top spanning rows 7-12). The base box also shows a 5-row top surface (rows 20-24).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3509
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical pipes on a pedestal box",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pipes show clearly foreshortened elliptical openings at rows 3-6 and 7-10, and the supporting base box has a 5-row visible horizontal top surface (rows 20-24).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4553
+  }
+ ],
+ "decidedAt": "2026-10-13T15:30:54.893Z",
+ "cells": {
+  "16": [
+   "59631cff33d5d322",
+   "74e30475b7ffa467"
+  ],
+  "24": [
+   "09e9c39d91f98f34",
+   "22c4aa71d6a6d788",
+   "2a5f267401425885",
+   "2b57963ef0db34c3",
+   "360e76ecb13ed13b",
+   "50cedd1fc62b6990",
+   "5ae548b2705d665e",
+   "975f6c8c7933da80",
+   "9783e4396c426eb8",
+   "9791ed037dc153f6",
+   "9cad2b74224d8817",
+   "ebe294756b59a73a"
+  ],
+  "32": [
+   "17e0f7a5d5d8a8ec",
+   "20b3b1e8f6f4160c",
+   "7df16775e85ea82e"
+  ],
+  "48": [
+   "18adaebb2034296c",
+   "22bccefe5e691eed",
+   "3592b5a948727838",
+   "47ab5eb64db24464",
+   "8ce8996b3e9a760b",
+   "d23ff5c38749212f"
+  ]
+ }
+}

@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "90b3c36e8421f3e9ae0abde4125348b6f4cfeb98e311e134a2523de7124e46c9",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "주거 모듈(조립식 평지붕 건물, 창 줄과 문)",
+ "label": "sf-station/sf-hab-module",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "prefabricated modular building",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface (roof) of the building is prominently foreshortened and visible from row 6 to row 21 (about 16 rows tall) above the south-facing front wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5073
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "prefabricated habitat building",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sloping roof surface spans rows 5 to 21 (about 17 source pixels tall) showing panel lines and a vent, above the front wall containing the windows and door.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4692
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "residential modular building",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building has a large foreshortened roof surface visible across rows 5 to 20 (approx. 16 pixel rows tall) above the vertical south-facing wall containing windows and an entrance.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4639
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "prefabricated residential module / building",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building has a large, clearly visible roof surface seen from above spanning rows 5 to 21 (~16 rows tall) above the south-facing front wall (rows 22 to 45).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3204
+  }
+ ],
+ "decidedAt": "2026-10-13T15:26:12.241Z",
+ "cells": {
+  "16": [
+   "0e5d8b1232248020",
+   "25c64d60e38a4676",
+   "2d53e89023843470",
+   "4b08a9ee5282369d",
+   "5eb19e415af70b5c",
+   "7db1909d3efd4e30",
+   "9642ffe673a9df33",
+   "c684dfb870293390",
+   "da698ebe90f37e6c",
+   "e7a1fc256a0c01f1",
+   "f47f19436caba95a",
+   "f8ce413156be3b31"
+  ],
+  "24": [
+   "10220eb52a020992",
+   "1ee2baa788f69f1a",
+   "27d7194a4c8ddcfa",
+   "2e298ad4c1e57049",
+   "32b687d850549f4c",
+   "3c29de52d504cbd5",
+   "49458b7452e9a573",
+   "51886e6c0fcf8b76",
+   "679ef5c958722575",
+   "74aee71dd0b92ca4",
+   "777933c43d6377a0",
+   "99eb9ecb5743a654",
+   "b09a6e501c1edce3",
+   "c7b54b0daad03f01",
+   "cdb5617c9ced16f2",
+   "d4485e07f4eb4318",
+   "e3af9604362327f1",
+   "fb52fdeb616dd124"
+  ],
+  "32": [
+   "5c481a7a48341383",
+   "6c4aab856462342e",
+   "97e798b89f7eafb4",
+   "9d6e2e9d65fd4965",
+   "c59f906810547262",
+   "e2dcf557117e0cd4",
+   "e32acd18d351d4b8",
+   "f8d3e55624bf1909"
+  ],
+  "48": [
+   "290b43c74f0425d1",
+   "673fb9125699bf3c",
+   "83e4a18c8bf83d62",
+   "9eeda50af1e3ce0d",
+   "ae2001d01b11d340",
+   "c53175aa5c8c226e"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "76afdd9c2c4db3041bb740bd33a51e6d578bbd5f75fdd70b79fc95412f644b96",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "벽 통로(아랫줄, 문턱)",
+ "label": "steampunk-city/sp-wall-door-d",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall doorway / passage threshold tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a doorway cut through a wall with visible floor and threshold.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5425
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "doorway opening and threshold",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall passage / doorway threshold tile representing an opening through a wall; correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5359
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "doorway threshold and passage floor cut into wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing the bottom row and threshold of a wall passage/doorway viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4831
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "doorway threshold and passage floor",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing the lower section of a wall opening/doorway passage, showing the floor surface and threshold between door frame posts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3770
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.464Z",
+ "cells": {
+  "16": [
+   "b9b2a624b3d24201"
+  ],
+  "24": [
+   "091708262ee9ce81",
+   "3c82a15ab3ddc4b0",
+   "751af4e6e3f23886",
+   "b9199dd9e7d74a8c",
+   "d0fe547c8e2ca23a",
+   "e02f8c790ca201c1"
+  ],
+  "32": [
+   "05120cdd9dfd5872",
+   "1a685093810fac3c",
+   "6cf84c18e4ff53e1",
+   "a0a13f1350573f10",
+   "cc45e468a5b6dd6b",
+   "d0778f6d827a5c5c"
+  ],
+  "48": [
+   "18fa38c178b7a4a4",
+   "6c7964c24a13782b",
+   "bbc99261bf021a9e",
+   "c1f349d9fd65de80",
+   "c6d3753253dd0308",
+   "cd2de29eb6263983"
+  ]
+ }
+}

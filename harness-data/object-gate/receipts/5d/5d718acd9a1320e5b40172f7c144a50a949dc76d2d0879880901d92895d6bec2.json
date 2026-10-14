@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5d718acd9a1320e5b40172f7c144a50a949dc76d2d0879880901d92895d6bec2",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "작은 달 바위(회색 돌덩이)",
+ "label": "sf-station/sf-rock-regolith-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grey rock / boulder",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock is split into a clearly lit top surface spanning rows 4-9 (approx 6 rows) and a shaded front-facing south face across rows 10-13, appropriately rendered in top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3757
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grey rock",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock has a clearly depicted lighter top surface from rows 5 to 9 (5 source pixel rows) and a shaded south face from rows 10 to 13, showing appropriate 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2899
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "gray rock / boulder",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock clearly shows a lit, foreshortened top surface spanning rows 4 to 9 (approx. 6 rows) above a shaded south-facing front face across rows 10 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3830
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grey rock/boulder",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock has a clearly depicted lighter top surface spanning rows 5-9 (5 pixel rows) and a shaded front south face spanning rows 10-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4654
+  }
+ ],
+ "decidedAt": "2026-10-13T15:38:14.591Z",
+ "cells": {
+  "16": [
+   "aa05b4f686953bc6"
+  ],
+  "24": [
+   "4bcb7b0321b990ab",
+   "7e1412d750e1414b",
+   "8d139a4e5cd2cd8a",
+   "9919ead1ea9042d5",
+   "b64a0858b5709b01",
+   "e8f26611f1474aec"
+  ],
+  "32": [
+   "0a391f880b3a0b8e",
+   "67b4f33acb8c4fbc",
+   "910840bebda5a81b",
+   "d3b21542c255e6e7",
+   "e631efcd4e579833",
+   "f01447c078b09b6c"
+  ],
+  "48": [
+   "009a518d021e2405",
+   "0e24216143640979",
+   "14580634afe45fde",
+   "2ae1928eabc704d4",
+   "9f8847c4ad999c60",
+   "d39ebf56e198d881"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9a70020da3688c1726dada5b12562e86302c0c315e8ad7038c1e678027881adf",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "hanging cloth banner with star emblem (wall_mounted)",
+ "label": "sky-island/si-banner-wall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cloth banner",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted banner hanging flat against the wall. Wall-mounted objects are viewed directly facing the camera in 3/4 perspective and are permitted to be flat without a top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6552
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hanging banner",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted banner hanging vertically against a wall; appropriately flat for this kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3115
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hanging cloth banner",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted hanging banner mounted flat against a vertical wall surface, which is valid for wall_mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3485
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hanging cloth banner",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted banner hanging vertically flat against the wall, which is permissible for wall-mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3168
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.566Z",
+ "cells": {
+  "16": [
+   "f0dbe570cf8b8449"
+  ],
+  "24": [
+   "26322b156ad2149c",
+   "5d7bcd3d98fd0319",
+   "7feb9608ef98ea29",
+   "9ca644dcf90ec345",
+   "c852203fc9d8a191",
+   "f734bba73d6ba4f8"
+  ],
+  "32": [
+   "1c9f16b785613212",
+   "7db46619d8e03614",
+   "835e4c855e1b5094",
+   "b9e2dd3cbe1b0386",
+   "c788839af6d6578c",
+   "f329e776482f0e1c"
+  ],
+  "48": [
+   "45b000069c85e0b4",
+   "64d840e4a438b6f2",
+   "864682c78b474ffd",
+   "a45732986bb648ae",
+   "b85c35d0b07c6534",
+   "f3e30c9bec1f3442"
+  ]
+ }
+}

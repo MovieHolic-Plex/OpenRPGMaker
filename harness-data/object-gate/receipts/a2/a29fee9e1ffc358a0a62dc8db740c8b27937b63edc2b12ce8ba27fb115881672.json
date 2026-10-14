@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a29fee9e1ffc358a0a62dc8db740c8b27937b63edc2b12ce8ba27fb115881672",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "네온 노점(차양 지붕 + 진열대 상자)",
+ "label": "sf-station/sf-street-market-stall-a",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "neon market stall with awning and display counter",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall counter features a clearly foreshortened top counter surface spanning rows 12-18 (7 rows tall) above the vertical front face (rows 19-30), and the awning also displays a large top surface (rows 1-8).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4869
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "neon market stall with awning and counter display",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The awning roof shows a clear 7-row sloped top surface (rows 2-8) above its valance (rows 9-11), and the counter top below it shows a 7-row horizontal surface (rows 12-18) above the south-facing display front.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6599
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "neon stall counter with awning",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall features both a foreshortened awning roof (rows 2-8, ~7 rows) and a clearly defined horizontal countertop surface (rows 13-18, 6 rows tall with top edge highlight and bottom rim shadow) above the south-facing display front.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8082
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "neon market stall with awning roof and display counter",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The awning roof shows its sloped top surface across rows 1-8 with a downward-hanging valance at rows 9-11. Below the awning, the counter box clearly displays its top horizontal surface across rows 13-18 (6 pixels tall) above its darker front display face (rows 19-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6414
+  }
+ ],
+ "decidedAt": "2026-10-13T15:25:32.747Z",
+ "cells": {
+  "16": [
+   "250d73c50f4a4513",
+   "514fb5ee4418d1ba",
+   "64a47c11ba794a1f",
+   "d6f5fd36a67a53ea"
+  ],
+  "24": [
+   "09b33b9982cf4982",
+   "19f366f3176d3b64",
+   "498c5145746a5b34",
+   "539fe82441cbc95d",
+   "564e6f62276c2233",
+   "63c9eb313756fee0",
+   "67ef45db38d91894",
+   "6caacc58cfadbb46",
+   "725c8a40f3abecde",
+   "8623cab1a62c068b",
+   "99c32e5493f2686d",
+   "9b056ba70eff70b0",
+   "9b0aae5b7daf466c",
+   "a4b3aecb6d79a994",
+   "a7098ad05489230e",
+   "afeb4a50fde71524",
+   "b2e51aa3d14db899",
+   "b6ed39b039097800",
+   "b92fd5dc2cc0674f",
+   "bfd8890a7b1f99c0",
+   "c0f29035d2a7d87a",
+   "e0f2e2272ec54479",
+   "e981826d621afd99",
+   "f58c1959146bc43f"
+  ],
+  "32": [
+   "fb71aaf7e3ca0f5a"
+  ],
+  "48": [
+   "24c655c9b91a57a1",
+   "4d7f6f163e15b564",
+   "66e534ed69fcacae",
+   "6f96bcb2c487b110",
+   "e731f24895c8aefd",
+   "e9b16e67697e793b"
+  ]
+ }
+}

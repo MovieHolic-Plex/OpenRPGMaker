@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0446c902081da771737992775790b3e3b7e391c399140bdbd80c2d856a084c80",
+ "width": 48,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "돌 벽난로(불꽃 3프레임)",
+ "label": "gothic_manor/gm-fireplace",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone fireplace with arched hearth opening and overmantel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fireplace is drawn in a completely flat architectural front elevation. The mantle, pillars, arched hearth, and base show no foreshortened top surfaces (0px top surface for the main body).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10024
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone fireplace",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fireplace is drawn in flat 2D architectural front elevation. The mantel shelf is only a 1-2px divider line, the interior of the firebox shows no floor depth (just a flat 2D gothic arch silhouette with a flat log and flame), and the entire stone structure lacks visible top horizontal surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7733
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone fireplace with arched hearth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fireplace is drawn in flat front elevation. The columns, arch, mantel ledge, and hearth base show no foreshortened top surfaces deeper than 1-2px edge bands, and the hearth cavity has no visible top-down floor depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6054
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone fireplace",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fireplace is drawn in flat front elevation. The mantel shelf is only a 2px horizontal trim band (rows 10-11) rather than a foreshortened top surface, the arched hearth opening shows no receding floor depth, and the decorative side pillars and upper chimney breast are entirely flat 2D architectural elevations.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9592
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.502Z",
+ "cells": {
+  "16": [
+   "1efc4995edbc9aaa",
+   "256014b64e95fe60",
+   "58e382ab7585c9f3",
+   "692cb2e0476f2155",
+   "85501f39c86e5668",
+   "93a3107ef4eda41c",
+   "a2c192a41f38dda7",
+   "a8281d0d754aeaf1",
+   "e86af441e94d3177"
+  ],
+  "24": [
+   "1968f3d492b99872",
+   "2bc06159c4486394",
+   "c43d8af294160fc2",
+   "d2e7e5d47b95d46e"
+  ],
+  "32": [
+   "07aeb5d6e28a404c",
+   "0a37931b7a181953",
+   "14767a7f10af1ac0",
+   "1b5a27686f8cf0c2",
+   "2770a776739b4fea",
+   "299b799e97dc4895",
+   "30231516fb1f0131",
+   "3d4dccb831fb4ae1",
+   "3f48a8c4e1808b25",
+   "4de0193994147f23",
+   "6504596505edde0d",
+   "69116599e7263db3",
+   "6f233b6a9acc1999",
+   "77529a00c78e7461",
+   "79ecc9b2f40489bf",
+   "81b61acff83d8044",
+   "8795127a88726cda",
+   "945b5e222de6da34",
+   "9ccb044e3c3eb216",
+   "a6b46f57121d30d1",
+   "b4c89a2b041fd757",
+   "cb1b1481da906a96",
+   "e56e5cd207f2d1dd",
+   "ef60a4f8888dd560"
+  ],
+  "48": [
+   "7cfbc000832181e0"
+  ]
+ }
+}

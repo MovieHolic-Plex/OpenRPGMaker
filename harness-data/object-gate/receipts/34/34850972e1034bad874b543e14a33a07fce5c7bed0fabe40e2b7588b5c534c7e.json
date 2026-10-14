@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "34850972e1034bad874b543e14a33a07fce5c7bed0fabe40e2b7588b5c534c7e",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "벽 밸브 바퀴",
+ "label": "steampunk-city/sp-valve-wheel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "valve wheel on wall pipe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted valve wheel attached to a vertical pipe on a north wall; correctly drawn flat against the wall plane in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6452
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall-mounted pipe valve wheel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted valve wheel positioned flat against the vertical pipe and wall surface as permitted for wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5706
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "valve wheel mounted on a wall pipe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted valve wheel and pipe mounted flat against a vertical wall; correctly presented flat facing the camera as appropriate for wall-mounted fixtures.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5567
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall valve wheel on vertical pipe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted valve wheel fixture mounted flat against the wall surface, correctly drawn facing the viewer as appropriate for wall-mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5634
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.466Z",
+ "cells": {
+  "16": [
+   "56b45309667aeb49"
+  ],
+  "24": [
+   "06cb7a073ff7fd96",
+   "2e240b92031fb31a",
+   "70a8a5a48d9bbb80",
+   "8f17027046b2b286",
+   "c524c3115015791e",
+   "e8c1d1228d5517f6"
+  ],
+  "32": [
+   "06831796e73a135e",
+   "16615c0d7b722101",
+   "4529bd8a5610a726",
+   "5a0b608f7ad8d993",
+   "8b96bedc36b0fcef",
+   "a8ad283ed68405e4"
+  ],
+  "48": [
+   "22d221f8848d0fe1",
+   "23f3bb906d4c1c46",
+   "37f118919f7c70f9",
+   "510ff63723ecfbe9",
+   "ac86334389037add",
+   "f307d3c6b377cd65"
+  ]
+ }
+}

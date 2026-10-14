@@ -1,0 +1,148 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6095eb8f3a76121d3fe5eb3c61b6dbb72eba62a0063dec969b123d4f99d8ecf5",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "stone fireplace seen from above-front: flat stone top of the chimney breast visible, deep wooden mantel shelf top, burning fire",
+ "label": "sky-island/si-hearth-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone fireplace chimney breast",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (the stone chimney breast) extends to the top edge of the sprite as a flat vertical brick wall with no visible top surface (0px). While the wooden mantel shelf shows a top surface (rows 12-15), the main stone body above it is drawn in flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 18228
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone fireplace and chimney breast",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chimney breast above the mantel shelf (rows 0-11) is drawn in pure front elevation with no visible top surface at all (0 rows). While the wooden mantel shelf shows a 4-row top surface, the main volume of the fireplace structure rises above it as a completely flat front-facing brick wall.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9081
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone fireplace and chimney breast",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main stone body of the fireplace and chimney breast is drawn in flat front elevation with vertical mortar lines extending off the top border (rows 0-11) with no top surface visible. While the mantel shelf has a 4-pixel top surface (rows 12-15), the main body itself lacks any top surface and the hearth opening is a flat black rectangle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6559
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone fireplace with chimney breast and wooden mantel shelf",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden mantel shelf clearly shows a 4-pixel deep horizontal top surface (rows 12-15) viewed from above with objects resting on it, above a 2-pixel front face (rows 16-17).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8483
+  }
+ ],
+ "decidedAt": "2026-10-13T18:47:30.236Z",
+ "cells": {
+  "16": [
+   "001d4ebd5de3ee5d",
+   "07c75d0e6437ba01",
+   "0a219e81c400f044",
+   "42234dc2b5080db5"
+  ],
+  "24": [
+   "0eb3146909be4690",
+   "2ef5ddc6c7a99d8c",
+   "452606f42813d5f5",
+   "49b0c8b4f8543a42",
+   "589a811f6c81becb",
+   "5b0bede74fa4bc87",
+   "68c7a5af2a063bce",
+   "6b13c36a8959d1e8",
+   "6e715bce3defe95f",
+   "729a3bd43dc796e9",
+   "75cf2c47f98c77b8",
+   "771122d7325374bc",
+   "7ee314f859a9064c",
+   "805001670ca8fa41",
+   "91d2d55d33090410",
+   "98d0f435f3eb6267",
+   "9b6787a21782a748",
+   "9cee389efe28964a",
+   "9e533e9ff49d3835",
+   "a716f9f67499456c",
+   "cc5ed81761769365",
+   "d903d4ca1da3ae22",
+   "f59ebdd61b3991e7",
+   "f64fa220330dc892"
+  ],
+  "32": [
+   "c0763414424e9085"
+  ],
+  "48": [
+   "196bcc800079202a",
+   "78529f76fa46cea3",
+   "8a85ef5d9bcc069f",
+   "be17ad95decc8fbd",
+   "ced2cca36cf13e66",
+   "e1f351b2162ffe3e"
+  ]
+ }
+}

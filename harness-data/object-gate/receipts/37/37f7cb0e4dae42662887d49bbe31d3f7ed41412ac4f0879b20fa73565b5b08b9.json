@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "37f7cb0e4dae42662887d49bbe31d3f7ed41412ac4f0879b20fa73565b5b08b9",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "철쭉 덤불(분홍 꽃)",
+ "label": "modern-campus/mc-azalea",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "azalea bush",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush is rendered with foreshortened volume showing an upper/rear foliage tier across rows 2–4 (approx. 3 rows) stepping down to the front flowering mass and ground shadow below, fitting 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7302
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "azalea bush",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bush is drawn in pure front elevation with a flat, straight horizontal baseline at rows 13-14 rather than an elliptical ground footprint. The foliage is rendered as vertical front-facing clumps with no foreshortened top surface visible from the 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9879
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "azalea bush",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bush is rendered in pure front elevation (typical of side-scrolling platformers), consisting of a foreground clump (rows 6-13) with flowers and a darker background clump (rows 2-5) rising behind it over a flat horizontal base line (row 14). Neither clump displays a foreshortened top surface visible from a 3/4 high-angle camera.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8930
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "azalea bush",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush is constructed with an upper/rear foliage clump in rows 2-5 that forms a visible 4-row top volume looking down from a 3/4 angle above the front mounded clumps (rows 6-12).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7094
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.871Z",
+ "cells": {
+  "16": [
+   "4ccd4757afd929ab"
+  ],
+  "24": [
+   "2fa80c26d236be5e",
+   "4a2bc154ca1877c3",
+   "509994a24256dfd3",
+   "8713d1cc7f3ebabe",
+   "ca15bea99d1b5c6d",
+   "dc5c1efe15e811d6"
+  ],
+  "32": [
+   "54bf8212e081b1ef",
+   "84201c86135b17ff",
+   "884431055be758ca",
+   "9717a73a82889d04",
+   "abc5f5e868ae465a",
+   "feeab62c74af24fd"
+  ],
+  "48": [
+   "011a0e5d3da0637f",
+   "0a22ab50c2f234f4",
+   "1ba15865b1794248",
+   "5d7cc6ed5d3e2947",
+   "cc21ccbb9f960b79",
+   "d38902c1288a1824"
+  ]
+ }
+}

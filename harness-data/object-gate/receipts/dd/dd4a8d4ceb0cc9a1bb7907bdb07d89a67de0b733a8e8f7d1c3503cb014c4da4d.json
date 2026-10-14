@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dd4a8d4ceb0cc9a1bb7907bdb07d89a67de0b733a8e8f7d1c3503cb014c4da4d",
+ "width": 48,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "실험대(플라스크·증류기·놋쇠 버너)",
+ "label": "steampunk-city/sp-lab-bench",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lab bench with drawers",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lab bench has a distinct tiled top surface spanning rows 6 to 15 (10 pixel rows tall) supporting various lab apparatus, with the front face and drawers visible from row 16 to 25.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4622
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "laboratory table with drawers",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled tabletop surface spans rows 6-15 (10 rows high) displaying flasks and a burner, with the south drawer face clearly visible below from rows 16-25.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3221
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lab bench",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled tabletop surface is clearly visible from rows 6 to 15 (10 pixel rows tall) supporting flasks and equipment, followed by the south-facing drawer front from rows 16 to 25.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3414
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lab bench",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled tabletop surface spans rows 6 to 15 (10 pixel rows tall) with lab equipment placed on top, followed by the front drawer face from rows 16 to 25.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3006
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.467Z",
+ "cells": {
+  "16": [
+   "63e153ec256f1dce",
+   "822e4fd45bf5427f",
+   "90257cd70fc07b82",
+   "a062c45fdc7dccf8",
+   "bb2dccb96e30355e",
+   "ee94ff5e4fb1b81c"
+  ],
+  "24": [
+   "10ef04a55e4efb5a",
+   "458a53800133896f",
+   "50371faecfb30015",
+   "9f3811864e7be22d",
+   "a1282eb5ace65eab",
+   "d92c90c7c6931389",
+   "e21f096d81a4223a",
+   "f3177302870b92b0"
+  ],
+  "32": [
+   "721b6cd9f07eb28a",
+   "7adae6b940b767d9",
+   "8951d33ed052edef",
+   "931ea262d444f287",
+   "a2f45ae0342b0c9c",
+   "ed8e3ac6042344ef"
+  ],
+  "48": [
+   "1f6c263fa3af48d5",
+   "c6922fb1e896589a"
+  ]
+ }
+}

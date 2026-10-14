@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e4a52c385823fdb3838bf45b191bd0ce4c3e901d137753531621863b8e361a3e",
+ "width": 64,
+ "height": 48,
+ "kind": "flat",
+ "name": "착륙장 바닥(판 이음 + 노랑 위험 고리 + 사각 표적 + 모서리 등)",
+ "label": "sf-station/sf-landing-pad",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "landing pad floor decal",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat landing pad floor marking drawn directly on the ground plane, consistent with top-down 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5491
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "landing pad floor decal with hazard ring and center target",
+    "kind_matches": true,
+    "top_rows": 38,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat floor surface/decal. The circular hazard ring is properly foreshortened into an ellipse viewed from a 3/4 perspective, occupying rows 6 to 43.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6237
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "landing pad floor decal with hazard ring and target markings",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat floor surface/decal viewed from above, featuring foreshortened landing pad markings and seams across the ground tiles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4828
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "landing pad floor decal with hazard ring and target",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat floor marking drawn as a foreshortened ellipse and rectangle resting flat on the ground plane, consistent with top-down 3/4 view perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3235
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:09.621Z",
+ "cells": {
+  "16": [
+   "06be64ae5055a83d",
+   "1f47b4a5396da33f",
+   "28b1165c81e3df51",
+   "38538c295913f079",
+   "4a95a497f085f774",
+   "5b9f6f693dd9c9e8",
+   "870ed9c248a3870c",
+   "9c045cf6b4df717c",
+   "a328c7ee59bc0f08",
+   "cc9fd82e6170d78b",
+   "d6dc4dc249c81163",
+   "d815e38720498fb1"
+  ],
+  "24": [
+   "1945a8532da3cfec",
+   "19b67fc1ff4daaf6",
+   "2f62537a8f22d7ca",
+   "485d501e900461de",
+   "4ecbb3d87fb77174",
+   "5f6d1f7365ec4357",
+   "60fd5976c5ee1fef",
+   "73a3cc5e49db94af",
+   "7aff24cf0a0ee73c",
+   "85e079e29b1563f0",
+   "873573a538412baa",
+   "afe1b566a2154ede",
+   "b148b6ee8bb40a42",
+   "b61d24f64975c254",
+   "e480aa03d57a76d6",
+   "e8ea2e5f142643b5",
+   "f03ee4b761ade2eb",
+   "f168220efd30911c"
+  ],
+  "32": [
+   "0304086ea3419990",
+   "1240ac0258c5978c",
+   "9bd6014147d40b8b",
+   "a7303d82a6a68b2b",
+   "c471c2e3ad72fd57",
+   "cdab6aa68f6cdb8a",
+   "e3646070bb8bf64d",
+   "fc3c116f1e30c1f9"
+  ],
+  "48": [
+   "a8ce06c609df8c62",
+   "b44e1c49aba9e433",
+   "b5e5bd2a1dd13fac",
+   "de07174a7d740d1c",
+   "ea29c4a726a6104c",
+   "f6a8e0702011c0ed"
+  ]
+ }
+}

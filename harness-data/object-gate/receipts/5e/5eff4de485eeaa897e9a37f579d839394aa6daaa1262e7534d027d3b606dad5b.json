@@ -1,0 +1,209 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5eff4de485eeaa897e9a37f579d839394aa6daaa1262e7534d027d3b606dad5b",
+ "width": 64,
+ "height": 64,
+ "kind": "structure",
+ "name": "지하 납골당 입구(내려가는 돌계단·아치)",
+ "label": "gothic_manor/gm-bld-crypt",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone crypt entrance structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top roof/lintel of the crypt structure has no visible top horizontal surface or slope (rows 1-2 are only an outline and 1px edge highlight). The entire upper wall, archway, and side pillars are drawn as a flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5155
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "crypt entrance / stone facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The upper stone lintel and facade of the entrance have no visible top surface (only a 1px edge highlight at row 2), presenting the main building volume as a flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6730
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone crypt entrance facade with archway and stairs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The structure's upper wall and roof cornice are drawn in pure front elevation with only a 1px outline at the top (rows 1-2) and no top surface visible from above. The pillars flanking the stairs are also drawn completely flat.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5475
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone crypt entrance facade with upper lintel/wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The upper stone structure and lintel are drawn in pure front elevation with only a 1-2px outline/highlight along rows 1-3 and no top surface or roof slope visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6802
+  }
+ ],
+ "decidedAt": "2026-10-13T16:24:27.171Z",
+ "cells": {
+  "16": [
+   "228fec455e4d838b",
+   "32bd3b7a1824187d",
+   "42437f16592e6102",
+   "5442a0ab0536bb7c",
+   "6054748b3cf3c046",
+   "6dcedba843f2cb59",
+   "92447cca0bc1b40b",
+   "a6194a1efd3281e1",
+   "abb53c75fb1dfd28",
+   "b6f4eab8e9c89df7",
+   "bef41b0c475b7225",
+   "d8f0ab8ef06e5fcf",
+   "e0c6dce2d585ec10",
+   "f67c3bcbd972fa1b"
+  ],
+  "24": [
+   "072959d4c571b7dc",
+   "080a113deb83c269",
+   "0a6ae31bf470f6f4",
+   "0aefc33a6f1e3237",
+   "0fddc015b82af85a",
+   "1e2206d431fd59d7",
+   "23b268636931fcba",
+   "27b09afabd67f9b0",
+   "36a38fbcd46f2f89",
+   "3ade0e04276e2a93",
+   "43f6bff86c8e1680",
+   "51480b451b9d2e97",
+   "515d84af66bf4f93",
+   "5d026ab766e1ba53",
+   "5dc71a3319dacad2",
+   "5ea704a092c80947",
+   "5eece69eee69b2fa",
+   "5efa7c51dd96cce6",
+   "659dfc3c48689266",
+   "6888d0dbc2b6c489",
+   "693e97883befdcb3",
+   "69ba55e312b4a964",
+   "820cbeaffacb2fe1",
+   "83630e69bd90a018",
+   "84d7f9bc81405ec4",
+   "89427826ecc97042",
+   "8afd877f2856da09",
+   "8c52ab1afcd5dc36",
+   "8d978003ed948134",
+   "9148a3fab1e677ad",
+   "9334f9ef062b9a3f",
+   "9b8dd468a483e6fb",
+   "add60c37aa8a24f8",
+   "afd6f8b9a05a0449",
+   "b79f002491f8ce74",
+   "b83ec008337b8f57",
+   "bc991fd6db2ee214",
+   "c2fd400f5a395def",
+   "c381230a1828bb06",
+   "c4fbf50b1aa5d0bf",
+   "cd6dc8743ee7be7a",
+   "cf2868b729fbc40e",
+   "d02d7f3439f88684",
+   "db58b6df1e603b51",
+   "ddec0a507b40636f",
+   "e884aa22fd8040c9",
+   "eff02d2390d8d1ea",
+   "f360ea6d53475933",
+   "f67c0311c710e367",
+   "f9d70661393d5ef4"
+  ],
+  "32": [
+   "22aec05e78d40678",
+   "2a815c98f1dde951",
+   "35eb216eb23e4d9e",
+   "5170a10a14438fa7"
+  ],
+  "48": [
+   "0213d548498361a7",
+   "1055777f5cca87d6",
+   "12d83a81631f9115",
+   "299705ff8dea061b",
+   "3b45997658719b39",
+   "45470ba71450de8e",
+   "4733fedc159b6757",
+   "544dcfd3fa82ae26",
+   "77519acf2d29ba30",
+   "805ab85eb303a4bc",
+   "81dcfdcc08de6c73",
+   "882621b711657db9",
+   "8defb1c62f76403c",
+   "b192c9c0467b9af7",
+   "bb1a453656ca3c76",
+   "bed191a17582d873",
+   "c29573698064c637",
+   "c377b16158d7dec9",
+   "c3b16803e391a33b",
+   "ea7f115befde1b66",
+   "ec36d2a34f0e1b7f",
+   "ec680ce0126ca4ab",
+   "f31c5218a75a0f53",
+   "fc080fe2f5dc352b"
+  ]
+ }
+}

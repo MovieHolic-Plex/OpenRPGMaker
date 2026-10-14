@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "98cdadae38d40c861e5e9a1a50222bda66f075890c1841cef7b4930b50c613b8",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "테슬라 코일(구리 감은 탑 + 놋쇠 구 + 불꽃)",
+ "label": "steampunk-city/sp-tesla-coil",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "copper-wound coil column with brass terminal top and rectangular base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The column coils are drawn with perfectly straight horizontal lines across rows 16-36, the top brass terminal has no visible top ellipse/surface (flat 1px rim at row 4), and the base is a flat front rectangle with no top face visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5005
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "copper coil column with brass cap and electrical sparks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire pillar, base, and top terminal are drawn in pure front elevation: the base is a flat front rectangle without a visible top plane, the coil windings are completely straight horizontal stripes, and the top brass cap terminates in a 1px flat outline with no top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5534
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "copper-wound coil column with brass terminal top and rectangular base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure front elevation: the base is a flat front-facing rectangle with no top face visible, the coil turns are perfectly horizontal straight lines, and the brass top terminal has a flat 1px top outline with no foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5068
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "copper-wound coil cylinder on a block base with a brass top terminal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The coil cylinder consists of purely flat horizontal pixel stripes with no elliptical curvature. The brass terminal at the top has a completely flat top outline (row 4) with 0 top rows, and the base is drawn in a flat front-facing rectangular elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5107
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.467Z",
+ "cells": {
+  "16": [
+   "b034e8edca1ae36c",
+   "c392c892b58ccf63",
+   "f707863933bcce60"
+  ],
+  "24": [
+   "2c0506b04f14c567",
+   "6581c90343bd55f7",
+   "8b982ded6414c59d",
+   "967a24528a0f2a4b",
+   "ba40e4c297826ad5",
+   "c1cad576119f4558"
+  ],
+  "32": [
+   "0748bc471cfb0981",
+   "093b6ecd839df2fe",
+   "13835de952b1a4d2",
+   "1dfc6cd291f2a5b4",
+   "5fde4da151a46ec7",
+   "78daf1c0c080e2a2",
+   "8a47193460bcfba5",
+   "9842841305583b89",
+   "a8e4ac314e489088",
+   "b23d899da6bcc475",
+   "c91d52d5851dcf99",
+   "e27ffaa9a3a48707"
+  ],
+  "48": [
+   "27a23fd25c893959",
+   "6f14e49b4090c792",
+   "7980565576587c96"
+  ]
+ }
+}

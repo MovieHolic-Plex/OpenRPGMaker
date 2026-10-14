@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9fe60493ebf2a0402492d3459d1e6e430b7ea3bf6f211605c5f03c93ab9f2362",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "bottom tip of a floating island rock underside (terrain)",
+ "label": "sky-island/si-tip-c",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floating island underside terrain",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing the rocky bottom stalactite/underside of a floating island against sky; correctly classified as terrain, so standing top-surface rules do not apply.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3279
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bottom tip and rock underside of floating island terrain",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing the jagged underside and bottom tip of a floating island with hanging vines against sky background.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3456
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rocky underside spires of a floating island",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is terrain representing the underside/bottom edge of a floating island cliff against a sky backdrop. As vertical cliff terrain viewed from 3/4 perspective, no horizontal top surface is expected on an underside tip.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3171
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bottom tip/underside of a floating rock island with hanging roots",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting the downward-pointing underside/cliff of a floating island against sky; top surface is not applicable.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3430
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.975Z",
+ "cells": {
+  "16": [
+   "974d370905b724aa"
+  ],
+  "24": [
+   "0e4b9cac50a646e4",
+   "195e9e8cee1263b2",
+   "2d9223e3833da928",
+   "47f88ecfc27126de",
+   "49e427a4b4a96a22",
+   "f9121ac388f4ad9a"
+  ],
+  "32": [
+   "4a2abf4c32720cd4",
+   "aa2f8e28d555f35e",
+   "af5e0c91535c157f",
+   "c074f8f60737c192",
+   "d0309df4ec810ba1",
+   "df8fe2ce3d5db600"
+  ],
+  "48": [
+   "4adfba70fccf8d81",
+   "4e1d62e72065cb38",
+   "62ab044f6f084d27",
+   "8e28817f8526c83f",
+   "ddd4dbc4ca3b98f7",
+   "ecc5ba6562dc1b13"
+  ]
+ }
+}

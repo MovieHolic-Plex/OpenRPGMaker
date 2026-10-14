@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4d11219e6837f4f0ef88d8a97dcc1adca509946322ae2312b25fec218e877fe9",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "독서실 칸막이 책상(2칸)",
+ "label": "modern-campus-int/mc-carrel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "study cubicle desk with 2 seats",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk tabletop surface is clearly visible from row 16 to row 21 (6 pixel rows tall) with items resting on it, followed by the front south-facing desk panel below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4699
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "study cubicle desk with 2 partitions",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk work surface is visible from row 16 to row 21 (approx 6 rows tall) displaying books and lamp bases in top-down 3/4 perspective, with the front panel extending below to row 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4004
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "study carrel desk with two booths",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk work surface is clearly visible from row 16 to row 21 (6 pixel rows tall) with items resting on it, meeting the 3/4 top-down perspective requirements.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3816
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "study carrel desk surface and front partition",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk work surface is clearly visible from rows 17 to 21 (5 pixel rows deep) with items resting on top of it, meeting the south front panel at row 22.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4265
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.310Z",
+ "cells": {
+  "16": [
+   "33434db7a104b8f3",
+   "3cfc845c06e89143",
+   "8784fe1d49a57c67",
+   "d33db695546535f0"
+  ],
+  "24": [
+   "0a9a63ad440c28f9",
+   "11ae5f900261f501",
+   "1a3145c1353d5358",
+   "300a2cdc2bb0fc40",
+   "335663f2244d8159",
+   "3536850ca66573ed",
+   "378ae52aa234f82b",
+   "5339eb79e957a1f5",
+   "69ee396ca7f1b51f",
+   "77e1c6cdb5afc76d",
+   "a5c5a6e227d2b94d",
+   "bf7de5744c54a049",
+   "c8b26f7b22d3b14f",
+   "d38656433e2fe940",
+   "d6f270a728f90f6b",
+   "e72c6fa0b135883e",
+   "f60c5c2946f67cdb",
+   "fbb8401e8ab6e7cf"
+  ],
+  "32": [
+   "41781631cd5aaf67"
+  ],
+  "48": [
+   "1735680626afe793",
+   "49693d9d6d617a72",
+   "b12558cb0c12062e",
+   "bc4610fc3fbdf633",
+   "e2341b98b67d0c64",
+   "f85db299b9eab403"
+  ]
+ }
+}

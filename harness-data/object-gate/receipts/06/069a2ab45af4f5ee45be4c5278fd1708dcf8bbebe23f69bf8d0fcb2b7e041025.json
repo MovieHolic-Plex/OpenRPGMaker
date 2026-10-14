@@ -1,0 +1,129 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "069a2ab45af4f5ee45be4c5278fd1708dcf8bbebe23f69bf8d0fcb2b7e041025",
+ "width": 48,
+ "height": 32,
+ "kind": "box",
+ "name": "네온 광고판(두꺼운 판 윗면 + 램프 테 + 도형 광고(산·해·띠) + 두 다리 기단)",
+ "label": "sf-station/sf-street-neon-billboard",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 3행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "neon billboard display panel",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the main billboard frame is clearly rendered across rows 1-3 (3 pixel rows tall) with distinct top-plane shading above the south-facing display screen.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 3행 < 4"
+   ],
+   "ms": 5401
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "neon billboard panel",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main billboard housing shows a distinct 3-row top surface (rows 1-3) foreshortened from above between the top outline and front frame edge.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 3행 < 4"
+   ],
+   "ms": 5034
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "billboard frame and screen",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main billboard body shows a 3-row top surface (rows 1-3) foreshortened between the back edge (row 0) and the dividing front frame line (row 4) above the front face (rows 5-22).",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 3행 < 4"
+   ],
+   "ms": 9413
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "neon billboard panel",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the main billboard panel spans rows 1 to 3 (3 source pixel rows) with top-down shading before the front face begins at row 4, clearly indicating depth in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 3행 < 4"
+   ],
+   "ms": 5176
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:31.921Z",
+ "cells": {
+  "16": [
+   "04892451d24973aa",
+   "9cbba27fea13df3e",
+   "a0f59dcba3285097",
+   "b4646400e5a1728e",
+   "cf63c694e024230f",
+   "e6fd376392b0e67e"
+  ],
+  "24": [
+   "1cb25e3b30a9a693",
+   "3346114820f9dc8c",
+   "438f58a49f04d613",
+   "8feec1c64e6816ba",
+   "976f00acc3d99607",
+   "ab74d63fbee6541e",
+   "deb1bfd9d5692298",
+   "efd5933e4988a944"
+  ],
+  "32": [
+   "3fcc5b18361681b4",
+   "7110421c7592861f",
+   "77c2f335a7b639c8",
+   "8a90a674b919e6a6",
+   "967b4de7f0c28677",
+   "e68f51a8dc26ef30"
+  ],
+  "48": [
+   "aa9c7939f97789eb",
+   "f76d6c7ce99d8c9c"
+  ]
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bcc8767bdabadc96fdff60627cc1d8c118ac86366de93e9214963b3d9db1741a",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "배기 굴뚝(받침 위의 짧고 굵은 원통)",
+ "label": "sf-station/sf-vent-stack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical exhaust vent on a pedestal base",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening of the cylinder is drawn as a clear ellipse across rows 7-13 with visible interior depth across rows 9-11, and the base displays its horizontal top surface around the stack.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4754
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cylindrical exhaust chimney mounted on a base",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the cylindrical chimney is drawn as a foreshortened ellipse spanning rows 7-13 with an inner dark exhaust opening of about 3 rows (rows 9-11), clearly visible in top-down 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3653
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cylindrical exhaust chimney mounted on a base",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the cylinder clearly displays an elliptical opening/vent surface from row 7 to row 13 (approx 7 rows tall) with a recessed interior aperture at rows 9-11, accurately capturing the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4868
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylinder exhaust chimney on base",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper cylinder has a clearly drawn top surface and exhaust opening rendered as a foreshortened ellipse spanning rows 7-13 (with interior opening rows 9-11), conforming properly to the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3704
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:27.306Z",
+ "cells": {
+  "16": [
+   "927ab1661238760a",
+   "b734f295aab50f7e"
+  ],
+  "24": [
+   "087a9ff848c06552",
+   "229155c8f54bb000",
+   "529b68ea88a7412d",
+   "578dd2d06f5456fb",
+   "57b99ae32fe049a5",
+   "61c1c1aa8269e666",
+   "6c5c46b462f70680",
+   "7575012363519179",
+   "96a1a09b938ab58d",
+   "c132b72b4841557d",
+   "d2d3f15bf7dd52ce",
+   "f83dbb2f7ecbb726"
+  ],
+  "32": [
+   "a341bd022bac1cc7",
+   "cd27ab0904380a2c",
+   "fb7ab511865bc2a0"
+  ],
+  "48": [
+   "2df46681e4b77b14",
+   "2e061a477ed364bc",
+   "67986c0fc35613cb",
+   "9984a4560821b20c",
+   "c0d01f1fbcaaa998",
+   "febf03893e660788"
+  ]
+ }
+}

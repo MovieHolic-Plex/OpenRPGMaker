@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "27e43bcf6a5f53920b1c056a940b60f9d41ab8be7f62c77b787900aa5ae89fd8",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "안테나 접시(받침 윗면 + 타원 접시)",
+ "label": "sf-station/sf-dish",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "satellite dish antenna on pedestal base",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 18,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pedestal base displays a clear 8-row top surface (rows 34-41) and front face (rows 42-47), while the parabolic antenna dish is foreshortened into an ellipse showing its concave interior facing the 3/4 camera.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6173
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "satellite dish on a pedestal base",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 17,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rectangular base shows a clear top surface 8 source pixels tall (rows 34-41) and a front south face (rows 42-47). The dish itself is drawn foreshortened as an ellipse (rows 7-23) displaying its concave interior in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6300
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "satellite dish and base unit",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 17,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base block displays a clearly foreshortened top surface (rows 34-41, 8 rows deep) plus front south face (rows 42-47). The concave antenna dish is angled upward into 3/4 view displaying its interior face (rows 7-23).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5914
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "satellite dish on pedestal base",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 17,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base block clearly shows an 8-row horizontal top surface (rows 34-41) and a south front face (rows 42-47). The dish above is rendered in foreshortened perspective showing its interior concave surface (17 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5249
+  }
+ ],
+ "decidedAt": "2026-10-13T15:15:22.114Z",
+ "cells": {
+  "16": [
+   "26542f0b1a8ccf6c",
+   "3a44cfcbf0eb6484",
+   "4c6e7d0325a9e697",
+   "a26fc2c461c4081f",
+   "a8099ae53a2ee2be",
+   "f4312cac1b5ef999"
+  ],
+  "24": [
+   "23c84b4f8c0dde0f",
+   "2ed084e195ed27aa",
+   "490cdc5747e836cf",
+   "6e692471c895c50f",
+   "6ff380c3adc627de",
+   "8737b35c6d66e552",
+   "89b2647b1cf83fbb",
+   "aa28e8c3e772a59b",
+   "bb7cb3931a749a91",
+   "bc4df02787c877ad",
+   "c2c556186cc18b15",
+   "d7297450d50dd2cd"
+  ],
+  "32": [
+   "0c1a6d7b6574d250",
+   "179959ee177d5376",
+   "bd75b25d34296b63",
+   "dbf9e6f1fbd515b8"
+  ],
+  "48": [
+   "6899ef53fea02f53",
+   "a186627250fef6bc",
+   "e83dff8222938da9"
+  ]
+ }
+}

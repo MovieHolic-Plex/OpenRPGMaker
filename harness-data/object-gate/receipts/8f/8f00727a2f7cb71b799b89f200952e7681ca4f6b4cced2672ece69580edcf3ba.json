@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8f00727a2f7cb71b799b89f200952e7681ca4f6b4cced2672ece69580edcf3ba",
+ "width": 32,
+ "height": 16,
+ "kind": "flat",
+ "name": "바닥 네온 유도선(아스팔트에 박힌 빛 띠 + 화살 점선)",
+ "label": "sf-station/sf-street-neon-flat-strip",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "neon guide strip embedded in floor",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat strip embedded in the floor spanning rows 6 to 9 (4 pixels tall), correctly presented as a flat ground decal viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5470
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "neon guide strip embedded in ground",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat strip embedded in the floor spanning rows 6 to 9, rendered as a surface seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4043
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "neon guide line strip embedded in floor",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor strip/decal spanning across rows 6 to 9, seen from above lying flat on the ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3938
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "neon guide line embedded in floor",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat strip embedded in the floor spanning rows 6 to 9 (4 pixel rows tall), correctly represented as a flat floor decal.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3839
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:31.922Z",
+ "cells": {
+  "16": [
+   "922e9a5e17c0cebe"
+  ],
+  "24": [
+   "03617979f34b4375",
+   "415ee8603338ef47",
+   "55e6c620bc024da2",
+   "67bd973549ec3a78",
+   "9cd675b31d2a2064",
+   "ce467c78d3f9b940",
+   "d18c8c91f16147a7",
+   "e9273ff346f5453b",
+   "f1784d99d8f36086",
+   "ffe68310f75f3f20"
+  ],
+  "32": [
+   "21074eea5d182052",
+   "74b3a45d9baa48ec"
+  ],
+  "48": [
+   "01e2635ebfd40461",
+   "129a2c76f9b2a60b",
+   "74e8bb62ac74a017",
+   "92c6e698eb18eedb",
+   "f70f2d52447aa1d1",
+   "fd77fd23cf3feb3b"
+  ]
+ }
+}

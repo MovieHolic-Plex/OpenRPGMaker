@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "581b4a33ccc83c5939a7cfeaabd75620df64d2ccd0fcf3605e14ce4a69d5a939",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "wooden table seen from above-front",
+ "label": "sky-island/si-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden table",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from rows 1 to 9 (holding items on its top surface), followed by a 2px front edge from rows 10 to 11 and legs descending below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3647
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden table",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from above, spanning rows 1 through 9 with items resting on it. A front edge band occupies rows 10-11 above the legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3308
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden table",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from above, spanning rows 1 to 9 (9 rows tall) with items resting on it, followed by the front apron edge at rows 10-11 and front legs beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3064
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden table",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from above across rows 1-9 (about 9 source pixels tall) with objects resting on it, followed by the front edge of the table (rows 10-11) and front legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2726
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.562Z",
+ "cells": {
+  "16": [
+   "755b8c9df71f946f",
+   "b8cd5ff0826323aa"
+  ],
+  "24": [
+   "1705596c13f85ebd",
+   "1e0f17894c526d06",
+   "233e2a679bc62e60",
+   "2aa62c2c1aae2a87",
+   "314a32b523dde62a",
+   "361bb10e9f39cbdf",
+   "89fe9294496c1eb3",
+   "9e8729a0eeef9fbc",
+   "b799a393543f227e",
+   "dc99fc95ba665246",
+   "e1744bbbb59112b2",
+   "fd8cfad35ab4383a"
+  ],
+  "32": [
+   "3a493ab617f262c9",
+   "a68cc76837a4fd6b"
+  ],
+  "48": [
+   "020e1696f122392e",
+   "1a388f5d82720d57",
+   "309a087c70377a8f",
+   "a64f838a48a59d97",
+   "b76f16cba03f10cb",
+   "e4405d2b16b7a68d"
+  ]
+ }
+}

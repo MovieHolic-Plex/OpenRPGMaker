@@ -1,0 +1,123 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fa063099c5bbb37c54f9cfdac2afa979c2822d732871666776f8a8273b513c27",
+ "width": 32,
+ "height": 16,
+ "kind": "seat",
+ "name": "교정 벤치(나무 판 + 주철 다리, 등받이)",
+ "label": "modern-campus/mc-bench",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "schoolyard bench with wooden planks and iron frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bench is drawn in pure front elevation: vertical iron legs/posts run continuously and straight from row 1 to row 14 with no perspective break or receding horizontal seat plane visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11455
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "schoolyard bench with wooden slats and cast iron frame",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bench seat surface is viewed from above across rows 7–13 (7 pixel rows deep), showing three horizontal wooden slats. The backrest is shown behind it on rows 1–5.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15598
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "schoolyard bench with backrest and slatted wooden seat",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The backrest occupies rows 0-5, and the horizontal seat surface is clearly visible from above across rows 7-13 (7 pixel rows of horizontal wooden slats with screw/grain details) before terminating at the front edge and legs in rows 14-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11723
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden schoolyard bench with backrest and cast-iron frame",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat surface is drawn viewed from above, showing multiple wooden slats spanning rows 7 to 13 (7 source pixel rows of depth) in front of the upright backrest.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13081
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.868Z",
+ "cells": {
+  "16": [
+   "00191fc840a7bb05",
+   "fd5e96d2a0ca82bb"
+  ],
+  "24": [
+   "1d24ae860f9b657b",
+   "2f3a08a8d1e84143",
+   "6e637b7f2242ca06",
+   "78f9a49a31209ae8",
+   "7f86ac1fa2e49ac2",
+   "86bb7bb492ed86cb",
+   "9a509ac2ba75f596",
+   "ae88933d3d7242d8",
+   "bebd902f078fe111",
+   "c1a3ee213d0dd0f9",
+   "e001a7b1bcc5ac3b",
+   "eb8e91153ed156f6"
+  ],
+  "32": [
+   "19a3f3fd59ab774e",
+   "21cc234feb560c1f"
+  ],
+  "48": [
+   "07153886028b6e2c",
+   "1c294cd4deceffa1",
+   "24fd0e715d433910",
+   "9b7edbf85d50654e",
+   "bbd579e59ea46322",
+   "e2d549d4cd6d516e"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dcd2995bc0924914a0606582364afb81ceecceed02151bf577e91916668b76c8",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "네온 화분 상자(윗면 + 잎 덩이)",
+ "label": "sf-station/sf-street-planter-neon",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "planter box with plant cluster",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the planter box is visible across rows 7-10 (approx 3-4 pixel rows deep) beneath the foliage cluster, with the south front face clearly depicted below from rows 11 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6391
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "planter box with foliage mound",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The foliage clump occupies rows 1-7 viewed from above, resting on a visible 4-row top surface/rim of the planter box (rows 7-10), above a 4-row front face (rows 11-14) with a neon strip.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5610
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "neon planter box with foliage",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The planter box shows a clear 4-row deep horizontal top surface (rows 7-10) holding foliage, above a 4-row front face (rows 11-14) with a neon strip.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6194
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "neon planter box with plant clump",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the planter box is clearly foreshortened at rows 7-9 (3 px tall) above its front face (rows 10-14), with the foliage mound visible from above at rows 1-7.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8957
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:06.343Z",
+ "cells": {
+  "16": [
+   "448f7254bdb35fdd"
+  ],
+  "24": [
+   "09c80cf202626159",
+   "24c505298bc4ee68",
+   "3b4d814c0e4195f4",
+   "4a573bcfbe97a718",
+   "9c3abd5548100e7f",
+   "b29d24cecf4e1bd7"
+  ],
+  "32": [
+   "100076ec7ca0973f",
+   "3ffecc1f8a5e7604",
+   "6df5a6820deeac3d",
+   "859d02a8f646c152",
+   "e0697c2b6991717c",
+   "eb3d6e58b1781377"
+  ],
+  "48": [
+   "02c03fdd9e7e5e10",
+   "8349ad2d0e554935",
+   "a80102b2cb19ba31",
+   "d8f2d334d53a6c0c",
+   "dfd47bc35fdc05cc",
+   "e40e7241ff5650f6"
+  ]
+ }
+}

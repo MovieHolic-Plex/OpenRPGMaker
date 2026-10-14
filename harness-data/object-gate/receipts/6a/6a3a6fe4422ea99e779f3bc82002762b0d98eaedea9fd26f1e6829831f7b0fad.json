@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6a3a6fe4422ea99e779f3bc82002762b0d98eaedea9fd26f1e6829831f7b0fad",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "마른 관목",
+ "label": "gothic_manor/gm-bush-dead",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dry bush/shump trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shrub/trunk is depicted from a straight-on side view with branches projecting left and right in profile; no top surface or top-down volumetric foreshortening is present.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5066
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dry shrub / dead bush",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shrub/branches are drawn completely in front elevation like a side-scroller sprite, with no foreshortened top surfaces or depth visible from a 45-degree top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5587
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dry shrub trunk and branches",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shrub and its branches are rendered as a flat side-on silhouette with no visible top surfaces, cut ends, or top-down depth cues.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4647
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dry shrub trunk and branches",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The dry shrub/stump is drawn completely as a flat side-scroller silhouette with branches extending strictly left, right, and up in the vertical plane. It shows no top surface, cut plane, or downward-looking foreshortening (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4448
+  }
+ ],
+ "decidedAt": "2026-10-13T16:24:27.173Z",
+ "cells": {
+  "16": [
+   "89d10d593bccbc3e"
+  ],
+  "24": [
+   "041070f0f6890ea9",
+   "0b02351ca3a7a2de",
+   "894ed83dc41453c0",
+   "b690ff0489d352f9",
+   "ede66e3069c45704",
+   "f3cc061752f653fc"
+  ],
+  "32": [
+   "04fc6bf7d216cb35",
+   "0f914c3f737d2785",
+   "1cdd47e45e54f489",
+   "2afbe07a64146266",
+   "4e3e93616a9a97de",
+   "c60cb52380adb3f7"
+  ],
+  "48": [
+   "2e724050e311b20d",
+   "84f7da52f363870a",
+   "91cfed042505f338",
+   "a3ef323e091c4825",
+   "ae4d5f646771688d",
+   "f02de45e82c34245"
+  ]
+ }
+}

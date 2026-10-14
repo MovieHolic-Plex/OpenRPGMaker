@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b0d2b23a3356051d664edf1954bf05a52979a3c3b95a157e3d9203d2264cfba8",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "땅 위 배관 — 동쪽 끝 마개(서로 이어짐)",
+ "label": "steampunk-city/sp-pipe-w",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal pipe with east end flange and support foot",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pipe, end flange, and support foot are rendered in a pure 2D side-scroller/front elevation style with no top surfaces visible (0 px). The support bracket at rows 12-14 and the flange with bolts are drawn completely flat without any foreshortened horizontal planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11303
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal pipe with east end flange and support leg",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pipe, end flange, and base support are drawn in pure side-scroller / 2D elevation style. The circular end flange is rendered as a flat vertical strip without any foreshortened top surface or perspective curvature, and the pipe itself has zero visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4701
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal pipe and east end flange/cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pipe and vertical end cap are drawn entirely in flat 2D side/front elevation typical of a side-scroller platformer. There is no visible horizontal top surface (0 rows) on either the pipe, the cap, or the support bracket below.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7901
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal pipe segment with east end flange and support leg",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire assembly (pipe body, vertical flange with rivets, and ground support leg) is drawn in a pure 2D side-scroller elevation with no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7295
+  }
+ ],
+ "decidedAt": "2026-10-13T18:40:36.081Z",
+ "cells": {
+  "16": [
+   "2f53d69b9b428427"
+  ],
+  "24": [
+   "168ddfcab391aac5",
+   "1acfdaba13a61031",
+   "228a7627c3965079",
+   "3e11fe3ebdb9e7f1",
+   "71c72937643bce3f",
+   "ebb1d554b055f325"
+  ],
+  "32": [
+   "01801ce0e9c7428f",
+   "03c62e39a5a22498",
+   "04fff5cadb97f97e",
+   "49e15e235875b1ab",
+   "dcf592273345aeea",
+   "f3f9cd1fe47e59de"
+  ],
+  "48": [
+   "1681f4a44def8fe3",
+   "272ceef5cff06e1d",
+   "43b37a4d2e918e76",
+   "75a184404989df1f",
+   "d6e81d24adbdc63a",
+   "fb6d5a2534feaf62"
+  ]
+ }
+}

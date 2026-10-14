@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b8e386cd447f8a444626a62c83762604cee279d5c4738f83c2015bded2923001",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "plaster wall with a window (wall_mounted)",
+ "label": "sky-island/si-wall-plaster-win",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "plaster wall face with a window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a vertical wall terrain tile with a window, properly representing a south-facing wall face in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5258
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "plaster wall face with wooden-framed window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall face terrain tile with a window, properly textured as a flat south-facing wall in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4536
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "plaster wall with window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile representing a vertical south-facing wall face with a window, which correctly shows no top surface as terrain is not a standing object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5894
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "plaster wall face with wooden window frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile depicting a vertical plaster wall with a wooden framed window; appropriately rendered flat as a vertical terrain surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5098
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.560Z",
+ "cells": {
+  "16": [
+   "21ad7e757fcb21e4"
+  ],
+  "24": [
+   "11b0b0a78fe183d3",
+   "2240ce9ca27e477f",
+   "6851cf0984836d34",
+   "6f33be0f55187d25",
+   "c651d7b72dc75568",
+   "cbc0acc8516f868a"
+  ],
+  "32": [
+   "3a156a44dc6429be",
+   "663a7d50820c174a",
+   "7622d71a18155655",
+   "76d922a3eeb0cd83",
+   "d727604e0b110e66",
+   "f3a28f46d1251469"
+  ],
+  "48": [
+   "19a22942fb8b83a3",
+   "2906065b2183122c",
+   "399f9e50ce327475",
+   "5f10cf29f1567356",
+   "a976d10e5d46c95c",
+   "eb06423cbcac0a12"
+  ]
+ }
+}

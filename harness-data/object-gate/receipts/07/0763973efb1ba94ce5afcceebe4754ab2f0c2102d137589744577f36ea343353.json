@@ -1,0 +1,125 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0763973efb1ba94ce5afcceebe4754ab2f0c2102d137589744577f36ea343353",
+ "width": 32,
+ "height": 16,
+ "kind": "structure",
+ "name": "호버 바이크(굵은 차체 윗면 + 시트 + 밑 네온 빛)",
+ "label": "sf-station/sf-street-hover-bike",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hover bike body",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hover bike displays a broad horizontal top surface across rows 1-7 (approx 7 rows tall) featuring the seat and instrument panel, above a south-facing front face across rows 9-13 (5 rows tall) and an underglow neon light at rows 14-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12709
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "호버 바이크 차체",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hover bike shows a clearly foreshortened top surface across rows 1–7 (featuring the seat and panel detail) and a south-facing front chassis across rows 8–13, properly rendering the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14173
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hover bike chassis",
+    "kind_matches": false,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a hover bike (vehicle), which does not plausibly match the kind 'structure' (large structure: gate, pavilion, sealed door, building). In terms of perspective, the 3/4 view is well-formed with an 8-pixel-tall top surface (rows 0-7) displaying the seat and console, above a 6-pixel front face (rows 8-13) and neon glow.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail"
+   ],
+   "ms": 16389
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hover bike chassis",
+    "kind_matches": false,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hover bike body shows both a 7px top deck (rows 1-7 with seat and light) and a 6px dark front face (rows 8-13), but the object is a vehicle/prop, which does not match the assigned kind 'structure' (large structure: gate, pavilion, sealed door, building).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail"
+   ],
+   "ms": 6617
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:06.342Z",
+ "cells": {
+  "16": [
+   "727a43704e441b46",
+   "bfba260a4da07a80"
+  ],
+  "24": [
+   "0b2217b9a8dff994",
+   "33d8a015be409626",
+   "3d72b04f135f7392",
+   "4721ad0f772b1a92",
+   "5b510c0ce0fbc98a",
+   "6bae8721467e84a6",
+   "88040e379d396ec3",
+   "964172810ed3f6c3",
+   "adb34bb5db700431",
+   "cee954f336e6facd",
+   "d1c1358f26c7bf18",
+   "f49e6c4be385b23a"
+  ],
+  "32": [
+   "259c1881e3285743",
+   "6df2d39a7f4752c8"
+  ],
+  "48": [
+   "0c7571f30bd0b408",
+   "5c0c385f1b3f5ab2",
+   "6f8f8e4cb2ffab9a",
+   "7c4db5a05a53646b",
+   "bd454deb6c5ce225",
+   "dbd4cdc0034290f2"
+  ]
+ }
+}

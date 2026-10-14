@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "63ce2a0bd1f9156cfe015d694a65ae47c1bcd93828f4e2480dee44af65c2304b",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "식판·배식 카트(2단, 식판 더미)",
+ "label": "modern-campus-int/mc-tray-cart",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "meal tray cart",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire cart is drawn as a flat 2D front elevation from row 7 to 29, with only a 1px outline at row 7 where the top surface should be. No horizontal top surface is foreshortened or visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9292
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "meal service cart",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cart frame is drawn in flat front elevation with a 1px top outline (row 7) and completely vertical side posts. There is no visible top surface for the cart frame or the stacked trays/shelves inside.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5797
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "meal distribution cart",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire cart is drawn within a flat rectangular outer frame (row 7 to 29) seen directly from the front, with only a 1px outline across the top (row 7) and no foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6244
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "meal tray cart",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire cart and tray stack are drawn straight-on in pure front elevation; the top of the outer frame is only a 1-2px border with no visible horizontal top surface foreshortened in 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7257
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.310Z",
+ "cells": {
+  "16": [
+   "30a15e37ef0859c9",
+   "c7bee9a989bd3509"
+  ],
+  "24": [
+   "20cfc9bca81f3c06",
+   "2cf0ae53c38f1174",
+   "2d0e01d9e6b29ed6",
+   "3fa92966de4fa963",
+   "5cffe3fe547ed7ab",
+   "96beeb63b75feb75",
+   "cc1bbbf34452014c",
+   "e7bdb2f7050b942d",
+   "f4e5654aac6c335c"
+  ],
+  "32": [
+   "52ec28fb4bb2871d",
+   "5a9cf8dbf181edd8",
+   "a039920fc396f4a9"
+  ],
+  "48": [
+   "45d91bd1bf34385a",
+   "5d1f1011e05a0c4a",
+   "c8f446ed45e24a2a",
+   "d5094ef695cd6e60",
+   "e83b7e8de9298412",
+   "ff95759acc8f32b8"
+  ]
+ }
+}

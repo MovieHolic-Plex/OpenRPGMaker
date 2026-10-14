@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "068e7326c9011e8b3a5245d4a1d9b85162e71bebdf260c854730c58f2f5b0725",
+ "width": 32,
+ "height": 16,
+ "kind": "container",
+ "name": "묘지기 손수레(흙·삽)",
+ "label": "gothic_manor/gm-wheelbarrow",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wheelbarrow bed/trough",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The inside of the wheelbarrow bed containing soil is clearly visible from above across rows 3-9, with the front wall of the cart facing south at rows 10-12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4124
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wheelbarrow cart bed and south side",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wheelbarrow bed is drawn in 3/4 view with a clearly visible top opening (rows 3-9, 7 rows tall) showing the interior basin/dirt, bordered by rims, with the front wooden face extending below down to row 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3805
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden wheelbarrow bed",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wheelbarrow bed shows a large top-down opening spanning rows 3-8 filled with dirt, bounded by back and front rims, with a front face below extending to row 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4434
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden wheelbarrow bed",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wheelbarrow bed clearly shows its interior cavity filled with dirt across rows 3-9 (7 rows tall) framed by a visible back rim and south front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5048
+  }
+ ],
+ "decidedAt": "2026-10-13T17:01:50.506Z",
+ "cells": {
+  "16": [
+   "325032233402f180",
+   "ed1c2bcb018efe5f"
+  ],
+  "24": [
+   "272632a97a95386a",
+   "3d45f2bb4da8aba9",
+   "58f0f9a9ac7f78b8",
+   "6a9a050907e086ae",
+   "6cfe63199afb474b",
+   "9251e464da9d3f9a",
+   "bc484bd6fa478a8f",
+   "bf4e0a3efef2b16a",
+   "c726d6b95fcb4486",
+   "cb2b9919900962b1",
+   "dbe96948e2378d03",
+   "efa0d74b2dc652d2"
+  ],
+  "32": [
+   "128a63351af29d90",
+   "ea018e0b19dae96a"
+  ],
+  "48": [
+   "14e4d6af23afacb3",
+   "242fcf2def816e2e",
+   "360ab5f650dd221e",
+   "3980bf3bd2b222b3",
+   "6971385e41383f41",
+   "d34faf213aafd6e8"
+  ]
+ }
+}

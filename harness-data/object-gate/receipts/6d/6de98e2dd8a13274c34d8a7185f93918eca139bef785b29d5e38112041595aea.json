@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6de98e2dd8a13274c34d8a7185f93918eca139bef785b29d5e38112041595aea",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "upright round hay bale seen from above-front: oval top with spiral straw clearly visible",
+ "label": "sky-island/si-haybale",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "upright round hay bale",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the upright bale is fully visible as an ellipse with concentric straw spiral rings across rows 1-9 (9 rows tall), above the south-facing cylindrical front wall (rows 10-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7144
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "standing round hay bale",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the upright bale is rendered as an ellipse from row 1 to row 9 (9 pixel rows tall) with the spiral straw pattern clearly visible, above the front cylindrical face spanning rows 10 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11580
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "upright cylindrical hay bale",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the upright hay bale is clearly foreshortened as an oval showing the spiral straw pattern across rows 1–9, with the front curved face of the cylinder visible below it on rows 10–14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9385
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round hay bale",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top circular face of the upright hay bale is clearly foreshortened into an ellipse spanning rows 1 to 9 with visible spiral straw texture, while the front curved body is visible below it on rows 11 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5623
+  }
+ ],
+ "decidedAt": "2026-10-13T18:46:20.919Z",
+ "cells": {
+  "16": [
+   "447317666d796ca0"
+  ],
+  "24": [
+   "52934696853a4cb4",
+   "7b5d5ce5f5781c66",
+   "7dea823ebec9cbc2",
+   "a314ce231fc927a7",
+   "bce38d4657c41792",
+   "d562777f98f29b57"
+  ],
+  "32": [
+   "2b1ba95aaa1a89da",
+   "468a3310cf47a4c6",
+   "4e89ccf87a211c40",
+   "6a493f9c2b4d0ad4",
+   "cd5e952786c5297d",
+   "dd047e16411fc7f3"
+  ],
+  "48": [
+   "32b2ecacd938fb3b",
+   "61cc0d562a170500",
+   "6707736da8bcef31",
+   "6c6b2f7049653b1a",
+   "ba338603542caa06",
+   "e7fbc8edb9e8c6d0"
+  ]
+ }
+}

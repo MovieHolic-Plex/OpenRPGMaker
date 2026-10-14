@@ -1,0 +1,145 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9cd32c223665693063930b69d645f222ed1b3f400bf9a54483037a31a30bab11",
+ "width": 64,
+ "height": 32,
+ "kind": "organic",
+ "name": "마른 산울타리(가지 비치는 덤불 벽) (3칸 줄 + 모퉁이 견본)",
+ "label": "gothic_manor/gm-hedge",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hedge / bush wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hedge wall is drawn entirely as a flat front elevation without a distinct top surface. Both the sample corner/end block and the 3-tile wall consist only of a single-pixel outline along the top and a vertical foliage/branch texture across the entire height.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5343
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hedge wall segment and corner",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hedge wall is drawn entirely as a vertical front face with foliage at the top and exposed branches at the base, capped by only a 1px outline with no visible horizontal top surface foreshortened in 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6752
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hedge wall (bush wall)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hedge wall is drawn entirely in pure front elevation from ground level (exposed branches/shadowed base at rows 26-30) up to a rounded top outline (row 17) with no visible horizontal top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6018
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hedge wall (bush wall segments)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hedge wall segments are drawn in flat front elevation with a single top outline (rows 1-2 and 17) and no visible horizontal top surface distinguishing the top of the hedge from its south face.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4372
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.464Z",
+ "cells": {
+  "16": [
+   "7b558d48e9071a70",
+   "b2d081d2ee668c55",
+   "c840144a0f4bc04d",
+   "e54c41e91e1c2e33"
+  ],
+  "24": [
+   "0aba89a226eb74fe",
+   "0c82624afc646c57",
+   "254eb335d61f9406",
+   "27adad55450acef6",
+   "35f316b8474b576e",
+   "3cc193e33b1059c9",
+   "3ce2cf215e75b3dc",
+   "4fdc8df3954220e5",
+   "507e40894870442a",
+   "5af974f1673e4dec",
+   "66920814982bee16",
+   "6ffe39dbe23b6612",
+   "731ab2dd9542d7f9",
+   "8636660ea3751f21",
+   "86d12f5e1e816a79",
+   "95bd16cb8ee157ea",
+   "9a79f5f8c3b8bdab",
+   "a8bc9d8f67af77e8",
+   "aef22f8fcf9c1e58",
+   "af34b644b2e1006f",
+   "b094f31317bf3c56",
+   "b3c2f09802f79f88",
+   "c2a3bde11a10b141",
+   "c5c3fdffed05f845",
+   "cee10617871b46ed",
+   "e37e618c8655f430",
+   "ea4ca97203de424b",
+   "ee813677e4881874",
+   "f58699115cdb0df0",
+   "fd74a9f3d0507e67"
+  ],
+  "32": [
+   "4acf94a3a6ed9d22",
+   "f6e59a9c6c77560b"
+  ],
+  "48": [
+   "0987d03009b5e064",
+   "0f8248825bfa0c32",
+   "4548b9a879043815",
+   "4ef2641e2997ca82",
+   "7fa275aa4fb591d6",
+   "a6de9dde48c6f661",
+   "adbb0981b693cd83",
+   "b88c5fd8af85dc74",
+   "bed81c2bd6b56374",
+   "d17e79b30f1373da",
+   "d3ad80125120c0db",
+   "d469112f79093e86"
+  ]
+ }
+}

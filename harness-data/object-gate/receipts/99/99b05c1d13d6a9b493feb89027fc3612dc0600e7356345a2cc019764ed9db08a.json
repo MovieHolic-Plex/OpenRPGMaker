@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "99b05c1d13d6a9b493feb89027fc3612dc0600e7356345a2cc019764ed9db08a",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass island edge tile against sky (terrain)",
+ "label": "sky-island/si-gs-nw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floating grass island edge",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts the top-down surface edge of a grass island against sky background, correctly functioning as a horizontal ground terrain tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5029
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "floating grass island terrain edge",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing the horizontal grass ground of a floating island against a blue sky background.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2816
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "floating grass island top surface",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting the northwest edge of a floating grass island against a blue background; the entire green surface represents the top-down ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2711
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "floating grass island terrain edge",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain surface representing a grass island edge against a sky background, viewed from above as appropriate for ground/terrain tiles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3543
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.974Z",
+ "cells": {
+  "16": [
+   "12ae9fab219d97d9"
+  ],
+  "24": [
+   "1d88e920e968647e",
+   "2aba092f990e8c10",
+   "57b369a286e069b2",
+   "8141ccefb5769623",
+   "afaf46bb28be3a95",
+   "b5fbe301e1289310"
+  ],
+  "32": [
+   "3ace429e4674213b",
+   "43f854441bde96b0",
+   "469fd8ddaa8e1730",
+   "60295c3102b0f96e",
+   "cb30b4d0148a8ed6",
+   "fc3ff253081d6162"
+  ],
+  "48": [
+   "0584e0caf5b86486",
+   "386f807846e2089c",
+   "986f815f0e1c17ae",
+   "c353c57edbfde395",
+   "d19379e8ffbb86cb",
+   "e5f96e40017562d2"
+  ]
+ }
+}

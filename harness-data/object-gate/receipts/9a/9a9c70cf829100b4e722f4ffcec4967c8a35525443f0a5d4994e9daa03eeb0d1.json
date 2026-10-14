@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9a9c70cf829100b4e722f4ffcec4967c8a35525443f0a5d4994e9daa03eeb0d1",
+ "width": 48,
+ "height": 32,
+ "kind": "round_body",
+ "name": "가스 탱크 한 쌍(두 개의 둥근 원통 탱크와 연결 배관)",
+ "label": "sf-station/sf-gas-tank-pair",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "two cylindrical tanks",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both cylindrical tanks feature a well-defined elliptical top surface spanning approximately 10 pixel rows (rows 6 to 15) with vertical south-facing cylinder walls below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4779
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pair of cylindrical tanks",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both cylinders feature large elliptical top caps roughly 9 pixel rows tall (rows 6 to 14/15) seen from above, combined with visible south front cylindrical walls extending down to row 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8417
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pair of cylindrical tanks",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both cylindrical tanks clearly display large elliptical top surfaces spanning rows 6-15 (~10 rows tall) above their vertical south-facing bodies.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3820
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pair of cylindrical gas tanks",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both cylindrical tanks show a clearly foreshortened elliptical top surface spanning approximately 11 pixel rows (rows 6-16) above vertical cylindrical front faces (rows 17-28).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3800
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:27.303Z",
+ "cells": {
+  "16": [
+   "421ec14430217e45",
+   "55cdcabe0997c73c",
+   "964f85090336450f",
+   "a5049969076e7856",
+   "cb23862dea452563",
+   "fab70ae08bfd6855"
+  ],
+  "24": [
+   "1613838f2b861d18",
+   "48a0e24dccac0a40",
+   "78be865d9dcc2254",
+   "791f86bb9ee9e905",
+   "7ea771096b54a808",
+   "871116bfa9e5980a",
+   "a3b39b1c8a3e7bca",
+   "eb149cd6c3b5a4ff"
+  ],
+  "32": [
+   "3732841ed55ab95d",
+   "4ab15095f5efa896",
+   "61eb7ea88f73cc96",
+   "a8003c8ec2d40a68",
+   "ac385684c4d643be",
+   "bc4b25e9590a2642"
+  ],
+  "48": [
+   "62e9f897ccbd5b5a",
+   "9e819078815eb951"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "61210cc3d2084bcb83a05cb852e6d0511c17cc948827c02647fd0dd9698d57f0",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "rows of ripe wheat (organic)",
+ "label": "sky-island/si-crop-wheat",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rows of wheat stalks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wheat stalks are rendered as purely vertical flat columns extending straight from row 15 to row 0 without any foreshortened top surface or 3/4 downward perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4572
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rows of wheat stalks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wheat stalks are drawn in flat front elevation with no visible top surface or 3/4 perspective foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3370
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wheat stalks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wheat stalks are rendered as flat vertical columns from a pure front/side elevation with 0 rows of visible top-down depth or foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4272
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wheat stalks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wheat stalks are rendered as purely flat vertical columns extending from bottom to top with no top surface or 3/4 perspective foreshortening visible.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4456
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.431Z",
+ "cells": {
+  "16": [
+   "30244bc251bc18ad"
+  ],
+  "24": [
+   "58f1158b1e7eaac7",
+   "96f2089c84a7d576",
+   "97f249f6443afd27",
+   "a42dd31422bb2b18",
+   "c765ae1b0b674b57",
+   "c81afaff9e373397"
+  ],
+  "32": [
+   "00da853fe60059bd",
+   "10eb14bff4b14bc2",
+   "4fd57d8df23bdfaa",
+   "5c2f5cf66dc338de",
+   "5fb1d55f7ca2e2a9",
+   "877b6513d55ac1d4"
+  ],
+  "48": [
+   "32ece1f0a4d92467",
+   "3c3b34b6175d4e78",
+   "3f86a86770cfc0c7",
+   "51b41ebec3215b0e",
+   "66f6d28bf3fe93ec",
+   "d772eb041e2ec830"
+  ]
+ }
+}

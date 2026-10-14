@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "04779f68138b6d8b52d1b7638f457452f6446bc54137a92487ab807495c1021c",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-lot-kiosk",
+ "label": "jp_city/street_hand/jp-lot-kiosk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "kiosk / lottery stall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire kiosk, including the upper sign/panel (rows 1-9), striped awning (rows 12-15), shelves, and counter (rows 35-44), is drawn straight-on in flat front elevation with 0px of top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5804
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "kiosk / festival stall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire kiosk is drawn as a flat architectural front elevation. The counter (rows 37-44) shows only a 1-2px horizontal edge at rows 35-36 with no top surface visible from above, the shelves and awning are drawn straight-on, and the upper panel/roof shows no depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14575
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "kiosk / stall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stall is drawn completely flat in pure front elevation between two vertical posts. The counter has only a 1px edge line at row 34 with no foreshortened top surface, the shelves are 1px lines, and the upper section is a vertical framed panel rather than a sloped roof.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9657
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "kiosk / festival booth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire booth is rendered in a flat 2D architectural front elevation between two vertical framing posts. The header panel (rows 1-9), awning (rows 12-15), shelves, and counter (rows 34-45) show zero top surface depth (top_rows = 0), lacking any 3/4 perspective foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10088
+  }
+ ],
+ "decidedAt": "2026-10-13T17:32:26.915Z",
+ "cells": {
+  "16": [
+   "0d702e6f5f0393cb",
+   "242533774803921e",
+   "5448005c84bf19e2",
+   "a19c7d20276137f3",
+   "b6005baa0cf7cda3",
+   "de66af60d13f1c39"
+  ],
+  "24": [
+   "0710a2a43bbdedf7",
+   "120368082ada592b",
+   "164df0b5cb648e12",
+   "60d0516377ce0d78",
+   "6cb1cf86e65dec2a",
+   "7ba863a2df44e8b0",
+   "8cc5a1a3735afd8c",
+   "a3643928dea8b2a5",
+   "a8a0de5d52e38f6c",
+   "ad34d976cca75240",
+   "bc449d5ae9633bc5",
+   "ce8eb6032b65c063"
+  ],
+  "32": [
+   "361b77bf67ab3af4",
+   "7ed4f810f9436072",
+   "bf48f413cf0aa399",
+   "d46aec4037843df8"
+  ],
+  "48": [
+   "0b73146d9a844c40",
+   "0d0634bd62b50f8b",
+   "cca9b962678618bc"
+  ]
+ }
+}

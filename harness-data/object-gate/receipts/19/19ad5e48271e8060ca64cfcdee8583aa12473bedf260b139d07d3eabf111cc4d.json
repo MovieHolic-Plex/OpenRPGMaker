@@ -1,0 +1,188 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "19ad5e48271e8060ca64cfcdee8583aa12473bedf260b139d07d3eabf111cc4d",
+ "width": 48,
+ "height": 80,
+ "kind": "structure",
+ "name": "급수탑(나무 물통 + 무쇠 다리 + 급수관)",
+ "label": "steampunk-city/sp-water-tower",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water tank and support tower",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylindrical wooden water tank, conical roof, metal bands, and support platform are drawn in pure front elevation with completely flat, straight horizontal lines across rows 16, 20, 28, 38, and 41, lacking the curved arcs or foreshortened top surfaces required for 3/4 top-down view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4819
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water tower (wooden tank on iron support frame with conical roof)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire water tower is drawn in pure 2D front elevation. All circular elements (the roof eave at row 16, the metal hoops at rows 19, 27, 36, and the platform beam at rows 41-43) are completely flat, horizontal lines with zero downward elliptical curvature or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7927
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water tower (wooden tank on iron trestle with conical roof)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire water tower is drawn in pure 2D front elevation (side-scroller style): the conical roof base is a dead-straight horizontal line at row 16, the barrel hoops are completely straight horizontal bars with no elliptical curvature, the platform beam is flat, and all four support leg footings align on the exact same horizontal baseline (row 75-78) with no depth separation between front and rear legs.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9978
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water tower (wooden tank with conical roof on iron framework)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire water tower is drawn in pure 2D front elevation: the conical roof eaves (rows 16-17), the metal barrel hoops (rows 19-20, 28-29, 37-38), and the support platform (rows 40-43) are completely straight horizontal lines with no elliptical curvature or visible top surfaces characteristic of a 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8766
+  }
+ ],
+ "decidedAt": "2026-10-13T18:16:30.908Z",
+ "cells": {
+  "16": [
+   "01119874fa47f9cf",
+   "1169181f4b89bd70",
+   "132bbbc0af125fa5",
+   "294480317edd3513",
+   "471c8023c2a7c7cb",
+   "4d093d88c59d22a8",
+   "51a468ff2b04f73e",
+   "5497152d1f8e6bdb",
+   "64848685806d86df",
+   "b5489ae3112ae367",
+   "ca1717e486b12d2f",
+   "db34f015e8f4aa8f",
+   "dfe89c296a557b60",
+   "e50f149ec925e604",
+   "ec44b4a0ba268c1a"
+  ],
+  "24": [
+   "04a07eda4e296f32",
+   "08dd68b1c2b38c1b",
+   "0bd10b4d150c3e4e",
+   "1bd12ddec66901e1",
+   "25802f89ba860a64",
+   "32723bc5b6c972da",
+   "34494bd6c5803061",
+   "3ffef278738c20b0",
+   "697f6e73bbd08f48",
+   "7188b3cd1f89ca07",
+   "7d6a70ac5a800ecd",
+   "980b799dcd5361a7",
+   "aec67da40a6b293b",
+   "cc6a17877323e439",
+   "dfd87fde8c545eb7",
+   "f217e20ade4c18e9"
+  ],
+  "32": [
+   "06a9b9adba34b9f3",
+   "2403cf546abe444f",
+   "25cabbd864aca588",
+   "28f2c71925f40c2c",
+   "2d71e8d04c9f7d25",
+   "31e7ef570769314e",
+   "3554b49e5ca0482f",
+   "3a12639b9e8d503f",
+   "3d0aef73a5422d2a",
+   "4143e72ab302f24a",
+   "4f91dfd41a12299c",
+   "57721dd4e4639e8c",
+   "5dc287465db36f1b",
+   "5dd460021c7d8447",
+   "650c522b0a6cd784",
+   "6a6394b197b8931f",
+   "6fc5a68cf276fe28",
+   "7362b520b3cdfbf2",
+   "741020f4b28cc28b",
+   "8002e0aa2938d875",
+   "83d985638cef5956",
+   "84ece77c6fd754e2",
+   "92c94d8e108db79d",
+   "9ba92d90aaffdc72",
+   "a1d28e8804c9d9e1",
+   "a4938c771944dfe4",
+   "bc2c4ab7f193c9c0",
+   "c0309f4474daeac4",
+   "d4140f12f47c0929",
+   "d4b3efd8583944d5",
+   "d550a7a84da07069",
+   "e1cb734de465af33",
+   "e335dfe919f68b7c",
+   "e715a4d11c8b1d3d",
+   "f3513cbff9678865",
+   "f6b809f550e30160"
+  ],
+  "48": [
+   "2088f9d7ce2a8869",
+   "41fa158a6cbd899e",
+   "8c3b602684dd125e",
+   "ed1226eada22c213"
+  ]
+ }
+}

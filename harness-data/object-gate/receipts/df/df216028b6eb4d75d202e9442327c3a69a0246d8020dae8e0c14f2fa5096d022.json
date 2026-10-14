@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "df216028b6eb4d75d202e9442327c3a69a0246d8020dae8e0c14f2fa5096d022",
+ "width": 48,
+ "height": 32,
+ "kind": "box",
+ "name": "네온 광고판(사다리꼴 윗면 슬랩 + 램프 면 + 기단, 글자 없음)",
+ "label": "sf-station/sf-street-neon-billboard",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "neon billboard with top slab and illuminated display face",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top slab is clearly visible from above, spanning rows 2 to 10 (9 source pixel rows) with trapezoidal perspective tapering, above the vertical neon display face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5736
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "neon billboard with trapezoidal top surface, front display panel, and dark base",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top slab of the billboard is clearly rendered from above across rows 1 to 10 with perspective trapezoidal tapering and panel seams, resting above the front neon display face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5686
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "neon billboard with top slab and front display face",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A large trapezoidal top slab is visible from rows 2 to 10 (9 source pixel rows tall) above the vertical front display face spanning rows 12 to 28.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6571
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "neon billboard structure",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top slab of the sign is clearly visible from above, spanning rows 1 to 10 (around 9-10 rows tall) with trapezoidal perspective above the front display face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5801
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:06.340Z",
+ "cells": {
+  "16": [
+   "0d629b07a1868f52",
+   "3f8825ed38c0b5e7",
+   "43e83c2a136bf122",
+   "5d964d8251c165f4",
+   "6b9ae492f9fc88eb",
+   "9e4c616e4516ec29"
+  ],
+  "24": [
+   "38693b8be61dcacf",
+   "5b74c29014b4c870",
+   "5d81b175f1adb507",
+   "687d7dfd74cb484c",
+   "72645890d214b20b",
+   "7668921f29582525",
+   "df2a6b6831694835",
+   "e5fd3ec6693c0a47"
+  ],
+  "32": [
+   "7e60840a1d91be83",
+   "8586119de545d4fb",
+   "914ede78a49d2a1b",
+   "c7c81dcabe9cea6a",
+   "ec84883d7391595c",
+   "fc7cdd564f4ddeaa"
+  ],
+  "48": [
+   "02688ff2b87ec6d8",
+   "f7245e11727ff9d7"
+  ]
+ }
+}

@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "59e8e72589ff9bd8def1377deab470f072acfa972793a7df260463bd8347db40",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "wooden sea chest with brass bands",
+ "label": "sky-island/si-chest",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden sea chest",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chest is drawn in pure front elevation: rows 3-7 represent the front of the lid and rows 8-14 represent the front of the lower body with a latch. The brass straps run straight vertically from top to bottom with no horizontal top surface or perspective foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 7591
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sea chest",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chest is drawn in pure front elevation: rows 3-7 show the front face of the lid (with a bottom rim highlight at row 7) and rows 8-14 show the lower front body with the lock plate. The vertical brass bands run straight down without any angle or foreshortened plane change, and there is no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6145
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden chest",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid surface is visible across rows 3-7 (5 pixel rows) in a lighter wood tone with an edge highlight, while the front face spans rows 8-14 in a darker shade with the lock.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12562
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden sea chest",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chest is drawn in pure front elevation: rows 3-7 show the front face of the lid, row 8 is the seam, and rows 8-14 show the front of the body with a lock plate. The vertical brass bands run straight down with no horizontal top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6124
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.565Z",
+ "cells": {
+  "16": [
+   "7dbb5c1ccd534480"
+  ],
+  "24": [
+   "26663c517e4f595e",
+   "59cb2a6bb8981412",
+   "ccfb629ac8426877",
+   "dd0c44dc1ce42f3d",
+   "e265305f1ccc3762",
+   "e9eb95e2f2c1e855"
+  ],
+  "32": [
+   "1e6ee8e30acce651",
+   "3b9c3b0115c47c5c",
+   "5bcc4b959d94545c",
+   "ae4556e8f0d090ab",
+   "e5e0bdd770a25340",
+   "ea20b2bd5733e9fa"
+  ],
+  "48": [
+   "0263d4d3b2ac607f",
+   "2965e5c5cdb8be50",
+   "4b5fa3529bf98f8a",
+   "6a7428353a0bdece",
+   "cfedb0298bdd48a5",
+   "eca6fb17e33023a8"
+  ]
+ }
+}

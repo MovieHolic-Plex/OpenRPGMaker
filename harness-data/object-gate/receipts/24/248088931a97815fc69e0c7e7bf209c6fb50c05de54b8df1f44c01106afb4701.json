@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "248088931a97815fc69e0c7e7bf209c6fb50c05de54b8df1f44c01106afb4701",
+ "width": 48,
+ "height": 48,
+ "kind": "container",
+ "name": "분수 물결 프레임 3",
+ "label": "modern-campus/mc-fountain-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fountain basin",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 18,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fountain basin shows a wide elliptical opening containing water and a central pillar spanning rows 17 to 34, with the curved south exterior wall visible below it from row 35 to 42, correctly depicting standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5039
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fountain basin",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": true,
+    "opening_rows": 18,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fountain basin shows a wide elliptical opening filled with water spanning rows 17 through 34 (18 source pixel rows) with a clear south outer wall visible below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4703
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fountain basin",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": true,
+    "opening_rows": 18,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fountain basin shows a wide elliptical opening filled with water spanning from row 17 to row 34, with the curved south rim face extending down to row 42, correctly depicting standard 3/4 RPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4752
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fountain basin",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": true,
+    "opening_rows": 18,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fountain basin is drawn in clear 3/4 top-down perspective, with an elliptical water surface visible across rows 17-35 (approx. 18 rows) inside the stone rim and a south-facing basin wall across rows 35-42.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6025
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.870Z",
+ "cells": {
+  "16": [
+   "1b4a1c8bf5154f9a",
+   "2069c023ca2c97e0",
+   "2f7e203034ac6a8b",
+   "37940f215620bf09",
+   "3a0f697ff2e35644",
+   "5b9f54aeaeedc99f",
+   "860a2aeda35e6080",
+   "9ca5c269dd098d9e",
+   "b92fcf25026849a3"
+  ],
+  "24": [
+   "1c6ea90bae98d30b",
+   "7d84c68d08fa5aec",
+   "e3c4eebf8610331d",
+   "ed8954287e0221fe"
+  ],
+  "32": [
+   "047e424c0dfa60d7",
+   "0e115759bd5f4efa",
+   "11f118ffe3ced9d4",
+   "17525f2b0f4d98e8",
+   "2256ae45a9479596",
+   "343fac2b4c8cb0c8",
+   "34ad4bff7b5e287d",
+   "39e9244932c18ab8",
+   "4aa0ecca4c487754",
+   "4bfaa6921702561b",
+   "5c0d7b24a54343ed",
+   "5c4a4841fc827f5f",
+   "6ee0891756632219",
+   "7672bf48d4e8bdae",
+   "778210e0373b0f88",
+   "a38f3f9c8c3d7079",
+   "b67136e2b8748d02",
+   "c7db917040cd96ff",
+   "e01ef2d27b7c2f10",
+   "e171454e580e363a",
+   "f728b006b33d7566",
+   "fb3ef95eeaeadcbb",
+   "fb53ec5d3f4cca86",
+   "fd8411a93e370269"
+  ],
+  "48": [
+   "899d085593aa1cdb"
+  ]
+ }
+}

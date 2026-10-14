@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6a8910351c0dcc537dee431e220690a67bd37bd2e3d88e4a4eb4f350be9b9fbe",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "cloud platform edge tile against sky (terrain)",
+ "label": "sky-island/si-cs-n",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cloud platform",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Cloud terrain platform edge against sky; the walkable horizontal cloud surface extends across rows 4 to 15 (12 rows).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3971
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cloud platform terrain tile",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Cloud platform ground tile viewed from above with puffy north edge against blue sky background (rows 0-3 sky, rows 3-15 cloud surface).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3243
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cloud platform tile",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Cloud terrain edge tile showing open sky across rows 0-2 and a horizontal cloud platform surface extending from row 3 down to row 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2629
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cloud platform edge terrain tile",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a cloud floor/platform meeting the sky; the horizontal cloud surface extends across rows 4-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3117
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.976Z",
+ "cells": {
+  "16": [
+   "45229164f91459a9"
+  ],
+  "24": [
+   "21c7bd340c1da8c3",
+   "53e6e2d90c9fe923",
+   "92e01d43ac68e0eb",
+   "a6a17f5369fced1d",
+   "cf1b3415d0e82618",
+   "f22b41e4c28c4c8f"
+  ],
+  "32": [
+   "3028351a33d20a64",
+   "312c66dd7b6c4e77",
+   "529d5082b9debcdc",
+   "98a74bc26d7ee550",
+   "b0ab21631484ee87",
+   "ea0b25973fa0bd53"
+  ],
+  "48": [
+   "209c501577585369",
+   "45b0efbdd0292690",
+   "5a0e5498f78bf512",
+   "6a15b2e8749bb982",
+   "afb3f7e82552c284",
+   "c5da2729beeb3ccb"
+  ]
+ }
+}

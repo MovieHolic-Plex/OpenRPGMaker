@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "887b92d1963ed76fba5ecb20c75a28a66db2ae2ab97fa4d58aa3d407393a2445",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "홀로 테이블(낮은 원판 윗면 + 시안 홀로 원뿔)",
+ "label": "sf-station/sf-holo-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hologram table console",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The console top surface extends across rows 17-26 (10 rows deep) containing an elliptical cyan emitter pad, with the front south face clearly shown below from row 27 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3330
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "holographic table base",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main table surface is clearly depicted from rows 17 to 25 (around 9 source pixel rows tall, displaying a cyan holographic emitter disc) above a south-facing front panel from rows 26 to 31, fully satisfying the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9459
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hologram table base",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base tabletop surface is clearly visible from above across rows 17-26 with an elliptical projector disc, while the south front face is shown across rows 27-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4241
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "holo table console",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The console table top surface spans rows 17-25 with an embedded elliptical hologram projector pad, meeting the front south face spanning rows 26-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2939
+  }
+ ],
+ "decidedAt": "2026-10-13T15:26:40.171Z",
+ "cells": {
+  "16": [
+   "24a50d5d9cdffe04",
+   "3ce891c960426f83",
+   "a8444f9730fd34e9",
+   "ca4758b5de8dc957"
+  ],
+  "24": [
+   "00ae43f314159945",
+   "06814632c0122f2f",
+   "2274ce26c3762897",
+   "4f1c45984c722cf9",
+   "505ab8fcb6d91350",
+   "5abd613d98c1e1b0",
+   "5f1232d30704a1bf",
+   "6ff7ca9ecc409289",
+   "8153325942f18fc4",
+   "81bcad567f9e2de9",
+   "8e7a6c66f29535ea",
+   "912fb2336cc27147",
+   "97b28872a2622ee3",
+   "a84520b2a1a0bf38",
+   "b1564b85407f7a04",
+   "dc5917949a5a25c6",
+   "de6474c9cafc8472",
+   "df120624f645d69d",
+   "e1f30f2ea0b50196",
+   "e2766f83a8fbabdd",
+   "ef48cc84e62a613f",
+   "fd12fe407af7bedc"
+  ],
+  "32": [
+   "fc98cc4e114e88a8"
+  ],
+  "48": [
+   "0c873e936f16c3af",
+   "8b3f6f2b96ab9309",
+   "a494779aa8832990",
+   "c80d653987ccb1e8",
+   "c888e90c26cf337d",
+   "e1d690d6841b0c8d"
+  ]
+ }
+}

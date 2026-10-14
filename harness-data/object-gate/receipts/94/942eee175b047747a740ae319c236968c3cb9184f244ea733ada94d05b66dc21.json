@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "942eee175b047747a740ae319c236968c3cb9184f244ea733ada94d05b66dc21",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "테슬라 코일(둥근 받침 + 구리 감은 탑 + 놋쇠 고리 + 구 + 불꽃) (프레임 2)",
+ "label": "steampunk-city/sp-tesla-coil-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "copper-wound coil column and terminal assembly",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The copper-wound column (rows 20-38) is drawn in pure front elevation with straight horizontal bands and no curved perspective. The terminal sphere and rings at the top also show no visible top surface (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9651
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tesla coil column and brass head",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main tower and top terminal are drawn in pure front elevation. The copper coil consists of purely flat horizontal stripes without perspective curvature, the brass ring's central opening faces directly forward instead of being foreshortened from above, and the top terminal lacks a visible top surface (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13913
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "Tesla coil tower (coiled column with toroid and base)",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base shows a 4-pixel deep horizontal top surface (rows 38-41), and the brass toroid ring above the coil displays an elliptical top opening/cavity (rows 13-16) consistent with a 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4528
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "copper-wound column with top ring and sphere",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is drawn entirely in front elevation: the 20-row tall copper coil column has flat horizontal winding bands with no foreshortened curve, and neither the column, the base, nor the top sphere/ring shows a visible horizontal top surface (top_rows is 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 15616
+  }
+ ],
+ "decidedAt": "2026-10-13T18:41:09.126Z",
+ "cells": {
+  "16": [
+   "49767216345b2abc",
+   "9323ef9cdc5c5232",
+   "fc7c8f4823782c81"
+  ],
+  "24": [
+   "016bfbc6c2b38589",
+   "0771b19d7f30705f",
+   "5bde88f02bf49ab2",
+   "6f3b0ecb2b85616d",
+   "bee877dd0bc5fd1e",
+   "ed3ba03a3f6abc11"
+  ],
+  "32": [
+   "6b96f646e69f8b65",
+   "7321be0996308f84",
+   "818bc60a11ff8a19",
+   "a28bcfd8f1a1076e",
+   "b3280d6e0db1e5e6",
+   "c9b2e52e4a05b7c1",
+   "caf9141743d4745a",
+   "d2f242f5feafe10c",
+   "f17a4f4422fb2b5a",
+   "f4cfcebbd14b4f00",
+   "f51b2a0b3906f368",
+   "fcac6231d3a36c29"
+  ],
+  "48": [
+   "7214382dba13da71",
+   "730192b108aa37c6",
+   "eac1b1f1083c6221"
+  ]
+ }
+}

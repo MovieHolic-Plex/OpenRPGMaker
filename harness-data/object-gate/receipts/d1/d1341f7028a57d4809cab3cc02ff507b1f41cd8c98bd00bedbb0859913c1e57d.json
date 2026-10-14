@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d1341f7028a57d4809cab3cc02ff507b1f41cd8c98bd00bedbb0859913c1e57d",
+ "width": 64,
+ "height": 32,
+ "kind": "terrain",
+ "name": "hull wall front face with star viewport windows: upper and lower face rows, four variants",
+ "label": "sf-station/sf-wall-face-viewport",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "spaceship hull wall face with star viewport windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall face terrain tiles depicting spaceship hull bulkheads with viewport windows; as wall-face terrain, horizontal top surfaces belong to separate ceiling/wall-top tiles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5389
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sci-fi hull wall face with viewport windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing the vertical front face of a spaceship hull wall with starry viewport windows, properly formatted as wall face terrain for a top-down JRPG map.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13112
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sci-fi hull wall face with viewport windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The asset consists of vertical wall face terrain tiles featuring star viewport windows and paneling. As terrain wall faces, they correctly depict the vertical south-facing wall plane in 3/4 top-down perspective without isometric side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5842
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hull wall front face with star viewport windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Sci-fi spaceship hull wall face terrain tiles with star viewports. As standard 2D top-down wall front face terrain, it correctly represents the vertical south-facing wall plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5300
+  }
+ ],
+ "decidedAt": "2026-10-13T15:44:10.258Z",
+ "cells": {
+  "16": [
+   "0b947f1c492b6988",
+   "0be7e618c7eb1c59",
+   "3b9cca0d6926dcee",
+   "634d13dcdb161f1e",
+   "93fa0a1b21c0841b",
+   "97c2877157a57d86",
+   "bafa37f2d1512fc4",
+   "e0bff127b5059357"
+  ],
+  "24": [
+   "00ac798c88af9f29",
+   "031152cbf69019a6",
+   "0382e1c1add4008c",
+   "08417141c9198a4a",
+   "111a8384364c9e2b",
+   "2ca8343ed730847a",
+   "427f2771cd95611e",
+   "4d0a37282a891ba9",
+   "4db5f7b07121b42a",
+   "56c9deef18ae559e",
+   "6255d46de67473c1",
+   "6d5d4324bb712a10",
+   "7298964959590d17",
+   "72eca2e617135f64",
+   "7ef3ea2c3df61377",
+   "8210b6961dc8ae1b",
+   "89e29bd89afb516c",
+   "94870e1aca5178e5",
+   "97c3316d49196f3a",
+   "a7a6b38da8964fd7",
+   "ab21f83574235870",
+   "ac43a0376f9da06c",
+   "b015340dcbac13b8",
+   "c51e1e1e51d6af5d",
+   "c699a9eee03f3773",
+   "c7f8aff72ece24b6",
+   "cc7897dc156d23b6",
+   "cd649e11cf2fa10b",
+   "d29df52a9cbd14cf",
+   "d59f74bc058e0868",
+   "dd4bbb96e78a2a9e",
+   "de9177bedaf45548",
+   "e92160541c47ec8b",
+   "e9a3bd9a3390235a",
+   "f2b1048318d8aa00",
+   "f4b8a524775d7082"
+  ],
+  "32": [
+   "01243cc8add58475",
+   "5c9382e545f5adcc"
+  ],
+  "48": [
+   "31f88c63df34bba2",
+   "36fa096cbbcaed97",
+   "476db7ee9e15c2ea",
+   "5ac46eb4468d2917",
+   "607a44a2c8ba92e9",
+   "7233f5508c44f0a5",
+   "7caf0b58a383161e",
+   "9980253795c63e5c",
+   "b035c26b64643632",
+   "b8eebe3e3cce9e9e",
+   "effa52a8cb879976",
+   "f0f5b0bb943f4db2"
+  ]
+ }
+}

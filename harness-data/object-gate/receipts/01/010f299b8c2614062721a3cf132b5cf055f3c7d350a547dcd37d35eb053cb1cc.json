@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "010f299b8c2614062721a3cf132b5cf055f3c7d350a547dcd37d35eb053cb1cc",
+ "width": 48,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "배식대(3칸, 스테인리스 보온통 셋)",
+ "label": "modern-campus-int/mc-serving-counter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stainless steel food service counter with three warming trays",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter top surface spans rows 8 to 17 (10 rows deep) showing three recessed food pans viewed from above, resting on a south-facing cabinet base spanning rows 18 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5494
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cafeteria serving counter with 3 food warmers",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter top surface is visible from row 9 to row 17 (9 rows tall) displaying three food warming trays seen from above, resting on a front cabinet face spanning rows 18 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8616
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cafeteria Bain-marie counter with 3 food pans",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Countertop visible from rows 9 to 17 (approx. 9 rows) with inset food containers viewed from above, and front face spanning rows 18 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4288
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "serving counter with 3 food warmers",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter top is clearly visible from rows 9 to 17 (9 rows tall) featuring three inset warming containers with food, followed by the south front face from rows 18 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3433
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.310Z",
+ "cells": {
+  "16": [
+   "35dca774c2588bf6",
+   "a726b7d204c63dec",
+   "afa3232fc0912af9",
+   "e4bdd0b15e48ddbd",
+   "f1ae4b8f5f96e3b4",
+   "f5f6dd73d4954282"
+  ],
+  "24": [
+   "074fc633ca27d814",
+   "2a065bba5e4b9402",
+   "429b8c188e2da69e",
+   "6e44f38017a09133",
+   "acbc2609e425db47",
+   "c112fc7b3cafcd5a"
+  ],
+  "32": [
+   "1fcdb18418011b63",
+   "5849d7864a5e7ed9",
+   "9afccaa5cf594226",
+   "b0838cc031d3cc6f",
+   "b2acef4dfcd632b9",
+   "e491f702053742c0"
+  ],
+  "48": [
+   "8dca9bd10be4881a",
+   "909bb2f4f02d4ccf"
+  ]
+ }
+}

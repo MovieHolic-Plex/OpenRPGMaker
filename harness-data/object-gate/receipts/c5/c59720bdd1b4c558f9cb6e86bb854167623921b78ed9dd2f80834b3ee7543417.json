@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c59720bdd1b4c558f9cb6e86bb854167623921b78ed9dd2f80834b3ee7543417",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "벽 현창(둥근 금속 테 + 별이 보이는 우주)",
+ "label": "sf-station/sf-porthole-star",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "circular porthole with metal frame and starry space view",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted circular porthole flush with the wall surface, correctly depicted flat as standard for wall decorations in top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5366
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "circular metal porthole window showing outer space",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted circular porthole mounted flat to the wall showing a starry sky inside, permissible as flat under the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4739
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "circular wall porthole with metallic frame and view of space",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted porthole window flush against the wall facing the camera; correctly drawn flat on the wall plane as appropriate for the kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8138
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round wall porthole / window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted circular porthole with metal frame and view of space; correctly drawn flat on the vertical wall surface as permitted for wall_mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5079
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.956Z",
+ "cells": {
+  "16": [
+   "1512b88ad583a10f"
+  ],
+  "24": [
+   "0e8a368c869bf0d0",
+   "57657e0371fd1aa0",
+   "653f725d577b6de4",
+   "a5ddc79fc4ac7e63",
+   "a9009626af355da2",
+   "f0055d1ea9de30fd"
+  ],
+  "32": [
+   "037762eb4c73d002",
+   "059cd2cc8a46e7b1",
+   "3904c118f5d2a169",
+   "46d59e1db279504e",
+   "47d579b22b30976f",
+   "c829bf7208ee5179"
+  ],
+  "48": [
+   "1df30531c1f79716",
+   "25e2b2b37d892838",
+   "3381063ac9cb60d7",
+   "567e14933ea9a83b",
+   "5d4ff605eafe6195",
+   "8a46bf6b72db5065"
+  ]
+ }
+}

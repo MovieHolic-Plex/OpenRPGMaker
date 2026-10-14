@@ -1,0 +1,147 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b4727dc3a3435127a90b89a5a2e9c8e761850a2d13197d6d5ef408603778ed54",
+ "width": 48,
+ "height": 96,
+ "kind": "structure",
+ "name": "돌탑 집(원뿔 지붕)",
+ "label": "sky-island/si-tower-house",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone tower with conical roof",
+    "kind_matches": true,
+    "top_rows": 38,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The conical roof slopes toward the camera across rows 4 to 41, providing an extensive visible top slope for the structure as required for 3/4 view buildings.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7462
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone tower house with conical roof",
+    "kind_matches": true,
+    "top_rows": 36,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features a prominent forward-facing conical roof slope spanning roughly 36 pixel rows (rows 4 to 40) with downward-curving shingle courses consistent with a top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10368
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone tower with conical roof",
+    "kind_matches": true,
+    "top_rows": 36,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large conical roof shows its downward-sloping top surface across roughly 36 pixel rows (rows 4–39) with curved concentric shingle arcs matching the 3/4 top-down perspective over the vertical south stone wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10685
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone tower house with conical roof",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure 2D front elevation (side-scroller style). Both the conical roof base (rows 38-41) and the bottom plinth (rows 92-94) are completely flat horizontal lines with zero downward elliptical curvature or perspective depth, and the roof shingles are drawn in straight horizontal rows rather than curved arcs.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12951
+  }
+ ],
+ "decidedAt": "2026-10-13T18:33:29.665Z",
+ "cells": {
+  "16": [
+   "09f9765ecd17d3ec",
+   "14c4239e0f4f0a7c",
+   "202507ccbea90d38",
+   "237c7af9224301ac",
+   "41794d2dce05a77f",
+   "47ecba1a508c92e4",
+   "a32c587c5ee09e8b",
+   "a69687002b83c517",
+   "a968025dbfb2a198",
+   "b33b8d20a4ca70c4",
+   "b9205ec2933f0c20",
+   "c478444ee0db1349",
+   "d4ece9445a2feada",
+   "dd64e24a96f4901f",
+   "ddb711df059a76dd",
+   "eb5769ca30450804",
+   "ed3e2141163624c8",
+   "f2fa16b88cd91311"
+  ],
+  "24": [
+   "13955f9d5160be0c",
+   "2a9f29df2db151b6",
+   "3b49e8b84793af76",
+   "3e9d8c841ca3e193",
+   "96de95bf6f83ce98",
+   "aa6a8150b80a657d",
+   "c14f906d3e08953d",
+   "e9329446cb18fed5"
+  ],
+  "32": [
+   "07367b35d379df65",
+   "25f0a452e6378e51",
+   "40c648d60b30be8a",
+   "58eb15151dd13499",
+   "5b6d1ba5b36ccb80",
+   "6705ddff91ce944f",
+   "8b7caee7b7095c29",
+   "994367e62c319e37",
+   "9ff3a82529b74ae9",
+   "a03e1d4f2f5b6468",
+   "a64132fad71ae05b",
+   "b3f0cf51e4175dd0",
+   "ccb6ac8ab4695e60",
+   "ceedc60192863d76",
+   "da2b156d67e1c5a9",
+   "ef5c1410da9aede7",
+   "f4e44103edd6e760",
+   "f9d47551ac3161e2"
+  ],
+  "48": [
+   "50660287912706ba",
+   "a2c4625bb2a7ff8e"
+  ]
+ }
+}

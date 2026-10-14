@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fdf2f9e3e87188999de488eada2f02b34b8b455b71a12b35cda16f6ff6d09b77",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "wooden plank cabin wall with brass rivets, upper interior wall tile (wall_mounted)",
+ "label": "sky-island/si-wall-wood",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "interior wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile showing vertical wooden planks and upper trim. As terrain representing a vertical wall surface in standard JRPG mapping, it correctly depicts the front surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5255
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden interior wall tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a 16x16 interior wall terrain tile showing a vertical wooden wall face with brass rivets along the top moulding. As a standard wall terrain tile rather than a standing object, it correctly depicts the vertical wall surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4453
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall face tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Upper interior wall terrain tile showing vertical wood planks and top molding; correctly represented as a flat wall face for JRPG interior mapping.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5017
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden wall face tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Upper interior wall tile representing a vertical wooden plank wall face with trim; appropriately classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4039
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.560Z",
+ "cells": {
+  "16": [
+   "e79a1e8932e7cb21"
+  ],
+  "24": [
+   "045847ce03d2b580",
+   "6b3a4b911345f5cf",
+   "718c8465c61ec79a",
+   "914073502bf638c7",
+   "d571bcf1fa58dccc",
+   "e948af418d6281b9"
+  ],
+  "32": [
+   "0a7dd94a915ba572",
+   "1494156f6796fb2b",
+   "5c38d62c2fa96c28",
+   "780a389b462ec8fc",
+   "c9b488e6a362c1df",
+   "fed91368b8fda70d"
+  ],
+  "48": [
+   "21fda2e2721f5c4b",
+   "2e1aeece60546d5c",
+   "84b0e55a30e9c2b2",
+   "a688d52b281fea08",
+   "bd6ceb1ebac43aa7",
+   "cd12bb2dc807faf9"
+  ]
+ }
+}

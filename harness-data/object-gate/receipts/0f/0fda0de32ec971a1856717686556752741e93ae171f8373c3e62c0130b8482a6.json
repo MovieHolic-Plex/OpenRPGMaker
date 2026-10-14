@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0fda0de32ec971a1856717686556752741e93ae171f8373c3e62c0130b8482a6",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "cloud platform edge tile against sky (terrain)",
+ "label": "sky-island/si-cs-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cloud platform edge tile",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain edge tile showing a horizontal platform surface on rows 0-7 (8 rows) transitioning at row 8 to a south-facing edge/cliff drop on rows 9-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4543
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cloud platform top surface and front edge",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-7 depict the horizontal top surface of the cloud platform with light cloud texture, bounded by a white highlight edge at row 8, with the front cloud face extending below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4313
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cloud platform edge terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a cloud platform/edge surface; as flat/ground terrain it is viewed appropriately from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3614
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cloud platform edge tile",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing a cloud platform surface on rows 0-7, with a highlighted edge at row 8 and vertical drop/shading below on rows 9-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4341
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.976Z",
+ "cells": {
+  "16": [
+   "502be5abb8f6bbcc"
+  ],
+  "24": [
+   "4d7ea82ab218a4b4",
+   "4e9e3545645045ca",
+   "64bf966d425269db",
+   "6f4ad7a310fab849",
+   "89883c40edd4f8a8",
+   "e9231cb116f362ca"
+  ],
+  "32": [
+   "192c4e537e7c22db",
+   "36de6731830fdf8b",
+   "4ad202935879bc2b",
+   "7b3ea33893fa7877",
+   "e13181443acf0b26",
+   "f618ceb646cc106f"
+  ],
+  "48": [
+   "21e42b7c108d6bed",
+   "296d7d2c6d758fcd",
+   "4dc01dd1a99f124c",
+   "61bea7af8700867b",
+   "836aea76a7baf399",
+   "8975b52f7d09ef1d"
+  ]
+ }
+}

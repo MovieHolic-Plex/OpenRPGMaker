@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6aafe32bb476e0a3ec5749ade8d8d89f8903d6cbb8e3b636af8dbae38cf497d0",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "청소 카트(물통·걸레)",
+ "label": "modern-campus-int/mc-clean-cart",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cleaning cart body",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top tray of the cart is clearly visible looking down from rows 8 to 15 (8 rows), displaying items placed inside/on top, while rows 16 to 29 show the front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4271
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cleaning cart with upper tray and lower cabinet/compartment",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main cart body clearly displays its horizontal top tray surface (rows 8-15, approx 8 rows tall) holding cleaning supplies, sitting above the vertical front face (rows 16-29) in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5748
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cleaning cart body",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cart's top tray/deck is visible across rows 9-15 (7 rows tall) showing buckets/supplies resting on it from above, positioned over the front cabinet/face spanning rows 16-29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3368
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cleaning cart body",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top tray/surface of the cart is clearly visible from above across rows 8–15 (8 source pixel rows) holding cleaning supplies, while the front face extends down from row 16 to 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4112
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:11.491Z",
+ "cells": {
+  "16": [
+   "eace419ea7d18ab6",
+   "f062a7e9e4151c24"
+  ],
+  "24": [
+   "125c2ae3a6a8f8a9",
+   "21c54dcb58d7c387",
+   "4c13ab94b5eb43d8",
+   "52f06ba3025e9137",
+   "596345fc40f917a3",
+   "5f2f4bce63f9f474",
+   "61981d0114df9a7a",
+   "77f15e246b1b4af9",
+   "86f294927a575768",
+   "95267ec7839ea8eb",
+   "9916eb06782c1ddb",
+   "b4d860d51bff069a"
+  ],
+  "32": [
+   "7ba04c3233276bd4",
+   "ae5ebc51138afd98",
+   "c4dae87b0d801a14"
+  ],
+  "48": [
+   "27528f50f5d4aabc",
+   "6af18bf6d70f5582",
+   "6eb2aa12d71d9435",
+   "a6773dde28761ec0",
+   "ae95404dd658445e",
+   "ca849871c9917674"
+  ]
+ }
+}

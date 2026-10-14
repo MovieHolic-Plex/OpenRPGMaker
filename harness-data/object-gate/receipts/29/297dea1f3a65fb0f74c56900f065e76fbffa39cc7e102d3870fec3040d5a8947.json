@@ -1,0 +1,154 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "297dea1f3a65fb0f74c56900f065e76fbffa39cc7e102d3870fec3040d5a8947",
+ "width": 64,
+ "height": 32,
+ "kind": "terrain",
+ "name": "white lab wall front face strip under the ceiling autotile: upper and lower face rows, four variants",
+ "label": "sf-station/sf-wall-face-white",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lab wall front face tiles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Sci-fi/lab vertical wall front face autotile strip with panelling, pipe, and vent variants. As wall face terrain, it correctly depicts the south-facing vertical surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4560
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "laboratory wall front face strip",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain autotile strip representing vertical south-facing laboratory wall panels. As wall face terrain rather than a standing object, it correctly depicts the vertical wall surface without a top plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6367
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lab wall front face panels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain wall front face strip intended to tile beneath a ceiling or roof tile. As vertical wall terrain, it correctly depicts the south-facing wall surface without an integrated top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5889
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall front face autotile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Classified as terrain (vertical wall face strip). As a terrain wall surface meant to sit below ceiling tiles, it correctly depicts the south-facing vertical wall plane without an integrated top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4200
+  }
+ ],
+ "decidedAt": "2026-10-13T15:44:10.258Z",
+ "cells": {
+  "16": [
+   "1d729a75b06fd3f8",
+   "4f91dc920033501b",
+   "6c86dfbde9ac94bb",
+   "9dc85c2c114c2d01",
+   "bb3028a8ed22f47d",
+   "c8698de903f9fca4",
+   "d4ccd80467fe2a92",
+   "de9e81b58250aefa"
+  ],
+  "24": [
+   "136f007be65c6517",
+   "1dffdf6f22fed263",
+   "281f71aa098fd8be",
+   "29c22c15665fcf3f",
+   "2d8147e22fa7eb71",
+   "2fddc3b5899bef5d",
+   "3463a5b4cbbc00a4",
+   "3a2174a2f7a9613d",
+   "5ac8666b1411e586",
+   "5bd971230b757701",
+   "5c45672878d3bf41",
+   "614194af18947da8",
+   "6c2b6277761fcc4b",
+   "754dd60dc35cbff1",
+   "770318af6e60f1db",
+   "81c80a4331818caf",
+   "8cfacf35aafa8922",
+   "8ed035444910e011",
+   "8f8eb9d46e6b6e92",
+   "95ba4b880b0d4b55",
+   "a0a721e85b74dc7e",
+   "a3b4210009f0bfec",
+   "a8b044466352c263",
+   "ab5d4319cd34daad",
+   "b83d0dd41f35f4bf",
+   "be8ae743608b889d",
+   "c81542ac752599f6",
+   "cb67f3dd5a471333",
+   "cf7a9050a1aae56a",
+   "d0f7e975764b477f",
+   "d831b493e99a8dc3",
+   "df39ef333891e65c",
+   "e0576bdf1afefee8",
+   "f4b29f6ec4aed62d",
+   "fbb0f0a61c78dd0a"
+  ],
+  "32": [
+   "d1c75422d5f96a6f",
+   "dddc68a028f87dc0"
+  ],
+  "48": [
+   "0c467f8bd1c99072",
+   "1375160328fe741a",
+   "5723473019f9ba37",
+   "609e36061cb407dd",
+   "65691e4b37d68205",
+   "7697b50ace5848d6",
+   "871742f1250c2897",
+   "ac355ca4113b57e9",
+   "d5aa9a3d458553d0",
+   "e45a592a8cb18f5d",
+   "edf898060840e703",
+   "f806effbac3a36f5"
+  ]
+ }
+}

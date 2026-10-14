@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "523a05f2878fd22fbe52033f0b2b3907d72a207b07003f4399c3a83735d01461",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "dark blue starry wall, upper interior wall tile (wall_mounted)",
+ "label": "sky-island/si-wall-star",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "interior wall face with top molding trim",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Upper interior wall terrain tile featuring a dark starry wall surface with top border molding; valid vertical wall terrain in standard 3/4 JRPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4381
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "interior wall face tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing an upper interior wall with a top decorative molding (rows 1-2) and starry dark blue wallpaper. As a standard wall terrain tile, it correctly represents the vertical wall surface in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5179
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "interior wall face with top moulding/cornice",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a terrain wall tile representing the upper section of an interior vertical wall with a gold ceiling trim (rows 1-2) and starry wallpaper. As terrain/wall face, it correctly represents a flat vertical surface in standard 3/4 JRPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6574
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "interior wall face with starry pattern and top molding",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile depicting an interior starry wall with upper molding and shadow; valid terrain tile for 3/4 view JRPG maps.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4248
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.560Z",
+ "cells": {
+  "16": [
+   "75884aca27e1136d"
+  ],
+  "24": [
+   "21a58682b9a0e7a0",
+   "6a7d4d64cfd676f9",
+   "851ba404c613e8e2",
+   "8cf9bd39718d5408",
+   "c9ddadb6281d2b90",
+   "da708c1b389fe321"
+  ],
+  "32": [
+   "421b6076e7af4033",
+   "4b979a66325a5a77",
+   "74f79616646e16cb",
+   "bc41ea97a1df7320",
+   "dd8e1da366ff42b3",
+   "e10f6bb800ce839f"
+  ],
+  "48": [
+   "075f41a6542f6733",
+   "4c44183823c2e01c",
+   "b4cb64b3fd9abbef",
+   "bbf69cd9a0c59432",
+   "bd3e51bf18697c5c",
+   "f133b85682260a97"
+  ]
+ }
+}

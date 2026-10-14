@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3bec29c94a8bf715119bf0d59f8d24ed56f68786acb3c78c9ea1932173963626",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "시안 호버 포드(둥근 차체 윗면 + 유리 캐노피 + 밑 추진 빛)",
+ "label": "sf-station/sf-street-pod-car-cyan",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cyan hover pod / van vehicle",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hover pod is drawn as a flat 2D side elevation (like a side-scrolling platformer sprite) rather than in 3/4 top-down perspective. The roof has no foreshortened top surface visible (only a 1px highlight line directly under the top border at row 8), and windows and body panels immediately descend vertically from it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11496
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hover pod vehicle body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hover pod is drawn as a flat side elevation (side-scroller profile) with no visible roof surface seen from above; row 8 is only a 1px highlight line under the top outline.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6563
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hover pod vehicle body",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hover pod is drawn as a pure side elevation like a 2D side-scroller vehicle. The roof consists of only a 1px highlight line along row 8 under the outline, showing no foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 5193
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hover pod vehicle body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hover pod is drawn entirely in a flat 2D side elevation profile (like a side-scroller sprite). Despite facing east/west, the horizontal roof surface is completely missing—only a 1px highlight line exists at row 8 beneath the top outline at row 7, showing no top surface foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5937
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:31.922Z",
+ "cells": {
+  "16": [
+   "1d506c729f008d4c",
+   "26fb96db99debb37",
+   "271a98708d3d2d9e",
+   "2d71a7d1ee2feb90",
+   "472f8920fb5ccb33",
+   "47e1cbbeffff3d6d"
+  ],
+  "24": [
+   "332fbdf4d61800ec",
+   "4882d6285a21af32",
+   "5259367699f67e70",
+   "7d96125cb71efd51",
+   "b98c1ed35058aa92",
+   "c5fb73cebab624dc",
+   "cf39ca4d6b1fd479",
+   "d9e334335c3c874d"
+  ],
+  "32": [
+   "1e0463c2169c6e30",
+   "2a45747b0e3cda9b",
+   "aa85245e18582eee",
+   "ca5d4324b449e59d",
+   "d3a8992c84d22296",
+   "e19b7371dc14f5cf"
+  ],
+  "48": [
+   "3f8c3b7828409840",
+   "46b18846c12eba5c"
+  ]
+ }
+}

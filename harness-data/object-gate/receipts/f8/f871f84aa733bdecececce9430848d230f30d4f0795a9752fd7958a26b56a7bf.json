@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f871f84aa733bdecececce9430848d230f30d4f0795a9752fd7958a26b56a7bf",
+ "width": 16,
+ "height": 32,
+ "kind": "frame",
+ "name": "무쇠 창살 담(한 칸, 잇는 조각)",
+ "label": "steampunk-city/sp-fence",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron bar fence mounted on a stone-capped brick wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure front elevation: the spear finials, horizontal rails, vertical bars, stone wall cap, and brick base all show only their south-facing front surfaces with no top horizontal depth visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9463
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron bar fence mounted on a brick wall base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cast iron fence is drawn in pure front elevation with flat 1-2px horizontal rails and 2D vertical bars lacking any visible top surfaces. The lower wall structure (stone coping and brick wall) is also depicted purely from the front with no receding top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12050
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron bar fence on brick/stone wall base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure—iron finials, horizontal rails, vertical bars, and the stone/brick wall base—is rendered in pure front elevation with 0px of top surface visible on the rails, bars, or wall ledge.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8722
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cast iron bar fence on a stone/brick wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence rails, vertical iron bars, and the masonry wall below are all drawn entirely in pure front elevation with no visible horizontal top surfaces (only 1-2px line highlights on the horizontal rails).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11164
+  }
+ ],
+ "decidedAt": "2026-10-13T18:26:16.314Z",
+ "cells": {
+  "16": [
+   "58531f262e211aa5",
+   "eb47e7758e137c6e"
+  ],
+  "24": [
+   "0668daac9cffdbc2",
+   "4a2aa9a61e73d7cc",
+   "4d01e2bf4cea2697",
+   "55ab9adb0b598492",
+   "588a95dd3f6aed12",
+   "6b47a4c946ab78b6",
+   "95adc200f516b408",
+   "a6089865eacb6640",
+   "a6fd41d5bdb5675e",
+   "b9ea7e140e99b0ec",
+   "d90e8041b644cac7",
+   "f5433688498eac44"
+  ],
+  "32": [
+   "0cc7221c1966b1b9",
+   "58cdb29298d87094",
+   "f7ce332a628ee0e2"
+  ],
+  "48": [
+   "0666417a58d937ce",
+   "33f60b962171cf5b",
+   "8a8fe5121a6af915",
+   "a7e535a0d2291f6e",
+   "bda8beb0b51726ab",
+   "c8bcbf497f635c73"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "45d35cf865b4a237a06ac0f69ebc30d77aa3059d5b4254713a49ca27c1aea47c",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "체크 대리석 B",
+ "label": "gothic_manor/gm-fl-marble-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "checkered marble floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 ground floor tile depicting a 2x2 checkered marble pattern, appropriately textured as top-down terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3635
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "checkered marble floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image is a 16x16 flat checkered marble floor terrain tile composed of alternating light and dark 8x8 squares.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3051
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "checkered marble floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 floor tile consisting of a 2x2 grid of checkered light and dark marble squares.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3216
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "checkered marble floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "2x2 checkered marble pattern filling the full 16x16 tile as a top-down ground floor texture.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2978
+  }
+ ],
+ "decidedAt": "2026-10-13T17:18:20.809Z",
+ "cells": {
+  "16": [
+   "e2b3566e5110332e"
+  ],
+  "24": [
+   "4aaa5593fe98e6b9",
+   "5232ce8067e482f4",
+   "5ebaea5fe95a2bba",
+   "910b725fb642bf86",
+   "d185dc28723abcb7",
+   "d6742f4c08485574"
+  ],
+  "32": [
+   "11f7738addf823bc",
+   "14d2b62bb5a033f7",
+   "89326d01a3296d93",
+   "922aa7738e687154",
+   "9e3068bd2ea12abf",
+   "f8e728d46ddb2e62"
+  ],
+  "48": [
+   "09b1d00ec72615d4",
+   "11856f5f41aa698c",
+   "6327afbfe5ddd418",
+   "b8719db65e9da8a8",
+   "bdc6e6879e02ad6d",
+   "ce7775835efda702"
+  ]
+ }
+}

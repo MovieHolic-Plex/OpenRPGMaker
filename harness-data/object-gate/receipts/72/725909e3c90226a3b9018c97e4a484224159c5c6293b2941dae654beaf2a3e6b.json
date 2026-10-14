@@ -1,0 +1,127 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "725909e3c90226a3b9018c97e4a484224159c5c6293b2941dae654beaf2a3e6b",
+ "width": 32,
+ "height": 16,
+ "kind": "flat",
+ "name": "드러난 고목 뿌리(덧그림)",
+ "label": "gothic_manor/gm-ov-roots",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "exposed tree root",
+    "kind_matches": false,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a thick 3D organic tree root with a cylindrical volume (top lit surface of ~3 rows and south-facing shaded underside/front of ~3 rows), not a flat ground plate or 2D floor decal. Kind does not match.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 12849
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "exposed tree root",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The exposed tree root overlay is rendered in 3/4 top-down perspective, with approximately 3-4 pixel rows of illuminated top surface (rows 3-6) and a shaded south face (rows 7-9) giving it proper cylindrical volume without isometric side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14312
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "exposed tree root",
+    "kind_matches": false,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a 3D organic tree root with volume—showing a lit cylindrical top surface (rows 4–6) and a shaded south face (rows 7–9)—rather than a flat plate or 2D floor decal. It is misclassified as flat.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 12158
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "exposed tree root",
+    "kind_matches": false,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a three-dimensional organic tree root with rounded cylindrical volume and south-facing shadow, not a flat 2D floor surface (such as a rug, mat, or magic circle). It is misclassified as flat.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 8675
+  }
+ ],
+ "decidedAt": "2026-10-13T17:01:50.504Z",
+ "cells": {
+  "16": [
+   "aabdd07707921148",
+   "e4773fb3bd91501f"
+  ],
+  "24": [
+   "2af5affc8b198082",
+   "2e0ab17569b605bc",
+   "37843d7d8f0c536e",
+   "49be8be53102e408",
+   "6778a6fecf51a943",
+   "7df8a8e6bd7868b2",
+   "812bba7482b4c1fd",
+   "85941349855f2c0e",
+   "86d9f804699e9bd0",
+   "9f998f45cc9c9c86",
+   "ab6829e6eca9ff71",
+   "ef516127d374788c"
+  ],
+  "32": [
+   "9fa1ff43429fbc95",
+   "ad1b14db2be39245"
+  ],
+  "48": [
+   "250027292af7ec96",
+   "339b2f303aae4fcd",
+   "853970c2b3a2e6c5",
+   "9db4f5b398ab58c4",
+   "bda56d39190af6f5",
+   "e0f4705be31d9d0d"
+  ]
+ }
+}

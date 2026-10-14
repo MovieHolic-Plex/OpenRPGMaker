@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "61926bee89d4090dcc711276b9d12e7955aae441ffb170cbe6a31ff226a6f9c9",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "벽 부착 경고 화면(주황 경고 삼각)",
+ "label": "sf-station/sf-wall-screen-c",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall-mounted warning screen monitor",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a flat screen mounted on a wall. As a wall-mounted flat object, it is permitted to be flat facing the camera with 0px top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8045
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall-mounted screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted screen displayed flat against the wall with dark bezel and warning symbol; permitted to be flat under the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3736
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall-mounted screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted monitor displaying a warning sign, viewed flat against a north wall as permitted for wall_mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4495
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall-mounted screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted monitor/screen shown flat against the wall, permissible for wall_mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3448
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.955Z",
+ "cells": {
+  "16": [
+   "b6c9bacebccba1d9"
+  ],
+  "24": [
+   "318bd85033a88981",
+   "4f5e676824cc9d25",
+   "88ee4b1c0f3fef1e",
+   "974f212e4095d6dd",
+   "b941c04916eea3a2",
+   "cfcd9b40d41ac5be"
+  ],
+  "32": [
+   "0275009c64884b28",
+   "12f5b8e03e6066e3",
+   "6b012a1c66901534",
+   "6c86942e21a0af7d",
+   "6d6075e87573b4e3",
+   "834c36468b1e8e96"
+  ],
+  "48": [
+   "3246418d47795771",
+   "3a6502fafc0a89bb",
+   "a332a22a423101be",
+   "c2210b15e3ae4a9f",
+   "e98685f3743d03f9",
+   "f19de7d7f44d3046"
+  ]
+ }
+}

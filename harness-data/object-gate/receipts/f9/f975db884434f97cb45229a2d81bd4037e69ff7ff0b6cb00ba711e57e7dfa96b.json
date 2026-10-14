@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f975db884434f97cb45229a2d81bd4037e69ff7ff0b6cb00ba711e57e7dfa96b",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "동아리방 잡동사니 선반(2칸)",
+ "label": "modern-campus-int/mc-club-shelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall wooden shelving unit / bookcase with items on top",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the shelving unit is clearly visible from rows 1 to 8 (8 source pixel rows deep), displaying items resting on top before the lower recessed shelf compartments begin at row 9.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6051
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bookcase / multi-shelf unit",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the unit is clearly visible from rows 1 to 7 (7 source pixels deep), serving as an open top deck where items (box, basketball/cushion, container) are placed, before the front bevel at row 8.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8379
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tall shelving unit / bookcase with items on three shelves",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bookshelf is drawn in a pure front elevation view. The top edge at row 1 is only a 1px border line with no foreshortened top surface visible. Furthermore, the interior shelves, books, and boxes (e.g. the yellow book at rows 12-18 and green box at rows 22-29) are drawn straight-on without visible horizontal top planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7364
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "two-tier shelf unit / bookcase",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the 2-tier shelving unit is clearly rendered from row 1 to row 8 (8 source pixel rows) with items resting on it, before the front-facing shelf compartments begin at row 9.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14527
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:11.492Z",
+ "cells": {
+  "16": [
+   "3ffc2193b0fa8a72",
+   "8d42d441915410c5",
+   "c2149fdb874319b9",
+   "f18fbf90cc02190e"
+  ],
+  "24": [
+   "08da2b9e5257590b",
+   "09bd2e43d7232d14",
+   "1ba4c72ede12d1c4",
+   "281e174c8a99c392",
+   "35b12a58aee129ba",
+   "3ddc4ec1cd860638",
+   "42c7a40609605fbf",
+   "4c85abb4609a2c56",
+   "5681c3fcbdf1b726",
+   "5947ec25ddc3a129",
+   "6131af65f7fed4de",
+   "640561fd20221eef",
+   "69592913700f349c",
+   "6e7ad31ee7c62360",
+   "89c60ae572194468",
+   "9521ad329af17b39",
+   "98702c68f7e4bfc6",
+   "9e5d639fe43a633d",
+   "a6c72e894afb50c6",
+   "dd2dee017a36f76c",
+   "f37ec980b9be6d35",
+   "f59d4ad35f5e4583",
+   "f977e205db74ca0b",
+   "fce42ab47fe35e61"
+  ],
+  "32": [
+   "e7438dad56794b0f"
+  ],
+  "48": [
+   "08ac786d525090e9",
+   "4ca839848b30e7af",
+   "5038b3a6e3610334",
+   "5ef32de3533bbbe5",
+   "bcbe9cbf41338c3d",
+   "d3d4c02388a4d74b"
+  ]
+ }
+}

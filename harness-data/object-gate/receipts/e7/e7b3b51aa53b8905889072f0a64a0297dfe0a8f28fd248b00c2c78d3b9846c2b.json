@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e7b3b51aa53b8905889072f0a64a0297dfe0a8f28fd248b00c2c78d3b9846c2b",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "round hay bale",
+ "label": "sky-island/si-haybale",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round hay bale",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylinder lacks any visible foreshortened top elliptical cap; it is drawn straight-on from the side/front with no top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5897
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round hay bale",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object has a flat horizontal upper edge at row 4 with no elliptical top cap visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4716
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round hay bale",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylindrical hay bale is drawn straight-on in pure front elevation with vertical texture running to the top rim at row 4, showing no elliptical top cap or top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5126
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round hay bale",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylindrical bale has no visible top elliptical cap from the 3/4 perspective; vertical texture runs straight to the top contour, drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4914
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.431Z",
+ "cells": {
+  "16": [
+   "7c4a9b66d4f84fa6"
+  ],
+  "24": [
+   "1c83deb937f76771",
+   "2cfb0fcdb822e979",
+   "3774084936d921c8",
+   "403f6c23eb156822",
+   "764aee83fd58f820",
+   "af587830c88b72d2"
+  ],
+  "32": [
+   "5410fc9316c41000",
+   "642a0c015838e33d",
+   "7da80ba0953d9ec2",
+   "a70002e88a9f1244",
+   "d4b188c4dea912f8",
+   "e094d24f36c30649"
+  ],
+  "48": [
+   "044336206f228007",
+   "2d0ade388d846a3a",
+   "515aa339d06908a3",
+   "9d46cf1890a3f4d5",
+   "be025554d1582c5b",
+   "ca26890b969d3d18"
+  ]
+ }
+}

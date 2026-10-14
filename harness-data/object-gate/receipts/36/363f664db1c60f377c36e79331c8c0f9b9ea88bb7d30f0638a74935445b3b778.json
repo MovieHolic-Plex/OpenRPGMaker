@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "363f664db1c60f377c36e79331c8c0f9b9ea88bb7d30f0638a74935445b3b778",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "tall pole with hanging blue cloth banner",
+ "label": "sky-island/si-banner",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pole with hanging banner and finial",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, banner, finial, and base are drawn in flat front elevation. The finial at rows 1-2 is a flat 3x2 pixel rectangle without a foreshortened top surface, the horizontal crossbar shows no top, and the base at rows 44-46 is drawn as flat horizontal lines without depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5889
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall pole with hanging banner",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, banner, top finial, and base are drawn in flat front elevation with no visible horizontal top surface or depth foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4522
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tall pole with banner",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, banner crossbar, and top yellow finial are drawn as flat 2D rectangles in pure front elevation with no visible top surface or elliptical cap.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3655
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall banner pole with blue hanging cloth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, gold finial cap, crossbeam, and banner are all drawn completely flat in pure front elevation without any visible top surfaces (the finial at rows 1-2 is a flat 3x2 rectangle, the crossbeam is a 1px flat horizontal bar, and the base lacks a 3/4 view top surface).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3261
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.429Z",
+ "cells": {
+  "16": [
+   "056fe79ccf88ed7d",
+   "bcba0a9807cd718f",
+   "f33a50d7dea1d1c0"
+  ],
+  "24": [
+   "142dcd1cb7eb237b",
+   "84de58e838ecaea8",
+   "879428975af3203b",
+   "8c83d3de9ba5c966",
+   "9b552a5d347eb29f",
+   "d7223154d5f2eae2"
+  ],
+  "32": [
+   "07f193fb789f2994",
+   "391aff6c4b18b475",
+   "4285619259e108b5",
+   "47a4e7dba474cc30",
+   "5711bcdce79fa421",
+   "62d00af345bb3c61",
+   "97a898d2770e6763",
+   "9cc98b30d0a93e68",
+   "9dc378a634333fde",
+   "a8cf0ca20d8f7c12",
+   "c83e9ab5c889db04",
+   "f8ce8827d29d50d6"
+  ],
+  "48": [
+   "0df63685c0b299a8",
+   "c62662d294a15670",
+   "d201a2fe088439c8"
+  ]
+ }
+}

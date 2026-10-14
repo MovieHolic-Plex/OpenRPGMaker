@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "62876a078959257204e8f4f19210f3bf73f7d5330f6a353cb3aabb272f45b31a",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "둥근 광고탑(빛바랜 포스터 — 글자 없음, 녹청 갓)",
+ "label": "steampunk-city/sp-poster-column",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical advertising column with verdigris cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The advertising column is drawn as a flat front elevation: the top of the cap is a 1px flat horizontal line (row 5) with 0 rows of visible top surface, and all dividing lines on the cylinder (poster borders at rows 20 and 26) are completely straight horizontal lines with no 3/4 perspective curvature.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12502
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "advertising column (Litfaßsäule)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylindrical body, posters, and base are drawn with completely flat horizontal lines with no 3/4 perspective curvature or visible horizontal surfaces. The entire structure is a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10095
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "advertising column (Morris column)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The advertising pillar is drawn entirely in front elevation: the verdigris dome cap shows a side silhouette with symmetrical top/bottom curvature rather than a top-down view, all cylindrical poster divisions and bands (rows 14, 20, 27) are flat horizontal lines with no elliptical curvature, and no horizontal top surface is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11811
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical advertising pillar (Morris column) with posters and a verdigris dome cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cap, shaft, and base are drawn in pure front elevation with straight horizontal dividing lines at rows 14, 27, and 30 rather than foreshortened elliptical curves. No top horizontal surface is visible on the cap or pillar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6309
+  }
+ ],
+ "decidedAt": "2026-10-13T18:49:04.018Z",
+ "cells": {
+  "16": [
+   "2363ad0fed77c8b7",
+   "ca79bd7872abc0c6"
+  ],
+  "24": [
+   "094c3071547ca25b",
+   "0be6908aa9dd2fc8",
+   "370d6040d6b9f9a7",
+   "3adc47f898aea9c3",
+   "3cb9c9ac79785de3",
+   "46dcd57e24d660ea",
+   "6cb4ff3e4970d63e",
+   "aba20ca27b9ec9f2",
+   "b49242fdc51d8d81",
+   "b79ba4e364a4e297",
+   "d1c3fa597fa1d89a",
+   "f0d7ba6ed67e3de9"
+  ],
+  "32": [
+   "39ec7a97f2f14386",
+   "6d06f8f11e3ab0bb",
+   "d89b0b9d5d01c479"
+  ],
+  "48": [
+   "01a3fddfbd9ed08b",
+   "52e5537396b418ff",
+   "6165478187c78190",
+   "9c2b32070a525350",
+   "c18d674ad305c383",
+   "c2ce8cf783b5ae3d"
+  ]
+ }
+}

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9e0169b8d2dd80bc6f6b1ed3ef1801535758596ab8f50cd561c094e6bcd408a1",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "tall wooden bookshelf full of books",
+ "label": "sky-island/si-bookshelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall wooden bookshelf",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bookshelf is drawn in pure front elevation. Rows 3-4 represent the front wooden header/cornice above the top shelf, with only a 1px outline at row 2 where the top surface should be. Furthermore, the internal shelves and book tops have zero foreshortening or top depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7601
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall wooden bookshelf",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bookshelf is drawn as a flat front elevation. Rows 2-4 form a flat front header/cornice rather than a top surface seen from above (it sits between vertical side uprights with row 5 being the interior shadow). No top surface of the cabinet, shelves, or books is depicted.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8339
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bookshelf",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bookshelf is drawn in pure front elevation with no visible top surface (top_rows = 0; rows 3-4 represent the front header/frieze flanked by the side uprights). The shelf interiors and shelf boards also show no top-down horizontal depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8203
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall wooden bookshelf",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bookshelf is drawn in pure front elevation: vertical side posts flank horizontal boards and shelves with no top surface visible (rows 3-4 form the front top fascia/header board, not a horizontal top surface seen from above). The shelf surfaces and book tops also show no depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6544
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.563Z",
+ "cells": {
+  "16": [
+   "0f0170ada6bf9d32",
+   "e8b2411b2ff43a79"
+  ],
+  "24": [
+   "0ba58fb5a550b5ae",
+   "1095d37e57698166",
+   "2e4ce4bfd1d1c05f",
+   "52ec95d721f7e8e3",
+   "56b6b9fa1bb98f5b",
+   "6b211c1c9b44f2e8",
+   "754b5106784b7ee9",
+   "7798524742045237",
+   "9e17a4a2a03a6cb8",
+   "a6c77f1653902369",
+   "d1113cf88a80e1a3",
+   "f61ad94bded70435"
+  ],
+  "32": [
+   "148fb5cd4deca74e",
+   "c1e3ec6426dc3370",
+   "c8cbcf6b24d7ba6f"
+  ],
+  "48": [
+   "1bc9d0493d26c4ee",
+   "24b24aa2cd3b15c3",
+   "7494f36961677c9e",
+   "7fd6c84c053461da",
+   "a160c16f08f11f05",
+   "f04fad3c73791511"
+  ]
+ }
+}

@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5458010ba8cac9619515f7db8938440c67dc945f797d383d2143092d1da8a251",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "제도대(설계도 — 선만, 글자 없음)",
+ "label": "steampunk-city/sp-drafting-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "drafting table board and stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The drafting table is drawn entirely as a flat 2D front elevation: the board, lamp, legs, crossbars, and base have no top surface visible (top rim is only a 1px outline at row 3) and no depth in the Y axis.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5553
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "drafting board on stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The drafting table and its stand are drawn in a flat 2D front elevation (like a chalkboard or easel facing the camera straight-on). The top edge of the board is only a 1px outline (row 3) with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8906
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "drafting board on a stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The drafting table is drawn in a pure 2D front elevation (side-scroller style), with an upright board, flat frontal legs, and a bottom crossbar resting on a single horizontal baseline. There is no visible top surface or 3/4 top-down depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4416
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "drafting table",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The drafting table is drawn in a pure 2D front architectural elevation: the legs, crossbar, foot bar, and board frame have no 3/4 depth or visible top horizontal surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4944
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.468Z",
+ "cells": {
+  "16": [
+   "01cc8c1528992853",
+   "206c35e1e2c33d78",
+   "5784d5fbafdc8959",
+   "a2af4000ca2573b4"
+  ],
+  "24": [
+   "0bfde9f2e9a6e784",
+   "1cd9a878e166ff83",
+   "320422bb8659e112",
+   "36eb73f062e5eeac",
+   "398ce872fb2f5e87",
+   "438b48b3af580f19",
+   "523fa92d4909a21a",
+   "5364600e4407d3f1",
+   "54ee6fa4249ea09a",
+   "55baba973edfa0dc",
+   "580f9034cdbebf51",
+   "87540da3bfb3ef3a",
+   "8faa09c3288cf0de",
+   "98d007175ad08b2c",
+   "a6cfc05c38628479",
+   "b247c924b2b2d96e",
+   "bafa35b1155706ca",
+   "bbf3e6032f7ab9f5",
+   "c541a5242bb9ceb7",
+   "c6ed84bfe8896447",
+   "d41e694a30da5027",
+   "dabace56aa831d49",
+   "ea5b4ca20a35c1f7",
+   "fc4c78e685041ac0"
+  ],
+  "32": [
+   "919577b7ecbf5e38"
+  ],
+  "48": [
+   "0c6c302b7f84e350",
+   "9e3b3707a769a0bd",
+   "d4708947dea9be30",
+   "f40628ac1bfcc530",
+   "f89a556dd9868e4b",
+   "fd843db978bcfe8f"
+  ]
+ }
+}

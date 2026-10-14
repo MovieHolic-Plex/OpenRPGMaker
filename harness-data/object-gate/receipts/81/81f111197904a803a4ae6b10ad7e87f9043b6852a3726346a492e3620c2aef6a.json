@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "81f111197904a803a4ae6b10ad7e87f9043b6852a3726346a492e3620c2aef6a",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "식당 탁자(흰 윗면 + 식판 + 굵은 다리)",
+ "label": "sf-station/sf-mess-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dining table with food trays",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "White tabletop surface is clearly visible from rows 1 to 10 (10 pixel rows deep) with trays placed on top, followed by the south front edge on rows 11-12 and legs at the bottom.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4545
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cafeteria table with white tabletop and trays",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from above across rows 1-10, with food trays resting on it. A 2px front edge is shown on rows 11-12 above the table legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3915
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dining table with trays on white tabletop",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop occupies rows 1 through 10, clearly showing a wide horizontal surface with trays resting on top. The south table edge (rows 11-12) and legs (rows 13-15) are properly foreshortened in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3422
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dining table",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The white tabletop is clearly visible in 3/4 top-down perspective across rows 1 to 10 with food trays placed on it, followed by the table's front edge (rows 11-12) and legs (rows 13-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3859
+  }
+ ],
+ "decidedAt": "2026-10-13T15:25:00.448Z",
+ "cells": {
+  "16": [
+   "55eec0c69bd010c4",
+   "5ad10d7dbf263f0e"
+  ],
+  "24": [
+   "0839f3fda11ce8f0",
+   "0c65acda9d279445",
+   "0e11e72613a9d1fd",
+   "307660be19d445be",
+   "3b25e0769040ca28",
+   "53cf7ca153def5a1",
+   "81b15ecf292d3e27",
+   "a48dedbf4a69032d",
+   "dade760d39123e3b",
+   "dbe707cb408eef78",
+   "e658780f2547add9",
+   "ee6881bdc9f0e607"
+  ],
+  "32": [
+   "2c9c98bd4ab58652",
+   "b8c805c76aad8456"
+  ],
+  "48": [
+   "2582c7286a5c16bf",
+   "46e65ceb873da781",
+   "51c69209e29df569",
+   "6ddb1f3d532bdf9f",
+   "6fdeae4d28ba2dbc",
+   "ecdba9e0a642e807"
+  ]
+ }
+}

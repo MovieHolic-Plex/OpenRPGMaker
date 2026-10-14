@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c54b3b5e47e7afb3e7d9e2c156f55827a9fe31948b1d96d14338487553849ef2",
+ "width": 32,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "벽 부착 항로 지도 화면(점 성계 + 항로 선)",
+ "label": "sf-station/sf-wall-map-display",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall-mounted route map screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted monitor display showing a celestial navigation route; correctly rendered flat against the north wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7586
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall-mounted screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted display screen drawn flat against the wall with border framing and starmap route graphic; flat elevation is expected and valid for wall_mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6996
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall-mounted navigation map screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Object is a screen mounted flat on a wall showing a star system map and route. As a wall-mounted flat display facing the camera from the north wall, it correctly shows no foreshortened top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6708
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall-mounted screen showing a star route map",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted map screen correctly displayed flat against a vertical wall surface in accordance with the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6552
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.955Z",
+ "cells": {
+  "16": [
+   "2749efca8d123359",
+   "9aadbe3c203d67e4"
+  ],
+  "24": [
+   "0c09d98b6eb6816e",
+   "0f1a2b21af9ba772",
+   "13a6f3d6f068c8ac",
+   "3c27cd44240d356a",
+   "4d5f4a3f61ca2a72",
+   "50f699aec895f477",
+   "664ec790f1397c5d",
+   "693fbe25c22ad9d3",
+   "8022bfa242ce26eb",
+   "81036c756818b2b3",
+   "ddecb9bed3663fc8",
+   "f04eb972962dd009"
+  ],
+  "32": [
+   "6c071a06e54420ba",
+   "c01c565f7450fd28"
+  ],
+  "48": [
+   "039dc84a51ed066b",
+   "28648a5dc4b3110e",
+   "3485cdb160ba9c40",
+   "642d943da6a96c74",
+   "92b8533803f11280",
+   "c2f06978efaf064f"
+  ]
+ }
+}

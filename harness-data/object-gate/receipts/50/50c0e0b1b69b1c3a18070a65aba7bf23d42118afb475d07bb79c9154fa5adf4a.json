@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "50c0e0b1b69b1c3a18070a65aba7bf23d42118afb475d07bb79c9154fa5adf4a",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "복도 사물함 줄(철제 2×3 칸, 환기구)",
+ "label": "modern-campus-int/mc-hall-locker",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "steel lockers row",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the locker unit is clearly foreshortened and visible across rows 1 to 5 (about 5 rows deep), with a yellow box/object sitting on top of it. Below row 5 is the front face with 2x3 locker doors.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3977
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hallway lockers (2x3 metal lockers)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the locker bank is clearly rendered across rows 1-5 (approx 5 pixel rows deep) with a yellow object resting on it, leading down to the front-facing locker doors.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3827
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "steel locker unit (2x3 lockers)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the locker unit is clearly depicted across rows 1 to 5 (about 5 pixel rows deep) with a yellow object placed on top, showing proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4613
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hallway lockers (2x3 compartment unit)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the lockers is visible across rows 1-5 (approx 5 rows deep) with a yellow object resting on top. The front face with 6 locker doors extends from row 6 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4885
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.309Z",
+ "cells": {
+  "16": [
+   "24b944f86c43370d",
+   "5c03c6e5c7edd841",
+   "79ea6ee8546ff23e",
+   "8be9ec652fb985a6"
+  ],
+  "24": [
+   "1df658b8664c7e68",
+   "21d081c30f6bda2c",
+   "3f4ce2ed632f435f",
+   "5d931f20a6b41320",
+   "6e2c8bab79037b8e",
+   "7349502132d8c6a8",
+   "89117e93d1fefdf2",
+   "905c7baa004e7b32",
+   "909df144d2a8a720",
+   "97923552877a04aa",
+   "a4cdc709604863ff",
+   "aaec20d095c159e3",
+   "acfa7b024f198bb9",
+   "af31c6ed54d3c450",
+   "b342121780b1bad8",
+   "b4dda8c2a77eece0",
+   "bbcc074540f28bc7",
+   "ca3287ea7e17fbe8",
+   "d466a0e89c92a6e8",
+   "d6d7ff3d5915fd68",
+   "df99661438125c83",
+   "e1d7956ab3dd3e77",
+   "ebe1f3cc1f72e821",
+   "fbc9165cfd4e46a2"
+  ],
+  "32": [
+   "b940f0803bf62fd3"
+  ],
+  "48": [
+   "11a013fa3c44cb1d",
+   "5d3695dc81018c13",
+   "62fe56c096d7becc",
+   "868d153665c6f7ef",
+   "9c9666ac9fe21823",
+   "c69ee1b0c7e022fc"
+  ]
+ }
+}
