@@ -5,6 +5,29 @@
 
 <!-- releases -->
 
+## 0.213.0 — 2026-10-14
+
+### 기능
+
+- **interior-plus** — museum/ship/arena room kinds, layout programs, templates, references and assistant routing (`0ac4f12`)
+
+### 수정
+
+- **interior-plus** — guidance — rebuild at most once by shrinking room w/h, never re-type layout coordinates; doorway gaps through a wall face are the normal form (`1c7fa6a`)
+- **interior-plus** — redraw gate failures until every piece and assembled room passes object-gate (`8ee3869`)
+- **interior-plus** — guidance pass — stands sit above the arena floor in layouts, build only the rooms named, stop reference crawling (`f0fdea7`)
+- **interior-plus** — one adversarial QA pass — painting line, cabinet tops, portcullis in wall, seated cask/sacks, readable chain/capstan/pin rail, hull skirting, calmer sand, re-laid rooms (`96fe6c4`)
+
+### 문서
+
+- **interior-plus** — assistant runs on gemini-4-argon medium, before/after guidance (`e1c663e`)
+- **interior-plus** — gate results — all pieces and rooms pass, dropped four, north-facing cannon (`f5e1d96`)
+- **interior-plus** — openwiki section and interior-room-authoring skill for museum/ship/arena (`a41048b`)
+
+### 기타
+
+- **interior-plus** — museum/ship/arena hand-pixel pieces appended to atlas_biome_interior (gate pending) (`5c6b7b6`)
+
 ## 0.212.0 — 2026-10-14
 
 ### 기능
