@@ -4,6 +4,7 @@ import { writeFileSync } from "node:fs";
 import { COMPOSE_MODERN_CITY_STREET_TOOL } from "@/editor/tools/modernCityTools";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { createModernCityTileset } from "@/project/defaults/modernCity";
+import { composedLayoutMapIds } from "@/ai/piAgent/layoutQuality";
 const [out, ...rest] = process.argv.slice(2);
 const sizes: [number, number, number][] = [];
 for (let i = 0; i + 2 < rest.length; i += 3) sizes.push([Number(rest[i]), Number(rest[i + 1]), Number(rest[i + 2])]);
@@ -23,5 +24,8 @@ for (const [W, H, seed] of sizes) {
     console.log(`OK   ${id}: ${r.summary.slice(0, 400)}`);
   } catch (e) { bad++; console.log(`FAIL ${id}: ${(e as Error).message}`); }
 }
+// 거리 맵은 배치 품질 권고(빈 바닥)에서 빠져야 한다 — composed-layout 이름표.
+const skipped = new Set(composedLayoutMapIds(project));
+for (const id of Object.keys(maps)) if (!skipped.has(id)) { bad++; console.log(`FAIL ${id}: composed-layout 이름표 없음 — 배치 품질 권고가 거리를 실내로 덮게 시킨다`); }
 writeFileSync(out!, JSON.stringify({ maps }));
 process.exitCode = bad;

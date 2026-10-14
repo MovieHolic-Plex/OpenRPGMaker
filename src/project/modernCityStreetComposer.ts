@@ -324,7 +324,10 @@ export function composeModernCityStreet(spec: MCStreetSpec, pal: MCPalette): MCS
     if (c) { start = c; break; }
   }
   if (b.buildings.length < 2) throw new Error(`건물을 ${b.buildings.length}채밖에 못 세웠다 — 맵을 키운다`);
-  return { lower: b.lower, upper: b.upper, upper2: b.upper2, buildings: b.buildings, start, props: b.props, roads: { horizontal: hz, vertical: vt }, park: parkBlock ? { x: parkBlock.x0, y: parkBlock.y0, w: parkBlock.x1 - parkBlock.x0 + 1, h: parkBlock.y1 - parkBlock.y0 + 1 } : null, notes: b.notes };
+  // 같은 종류 두 채(편의점·은행 …)는 이름에 번호를 붙인다 — 장소 이름으로 찾을 때 앞 건물만 잡히지 않게(2026-10-14 실조수 경고).
+  const named = new Map<string, number>();
+  const buildings = b.buildings.map((d) => { const k = (named.get(d.name) ?? 0) + 1; named.set(d.name, k); return k > 1 ? { ...d, name: `${d.name} ${k}` } : d; });
+  return { lower: b.lower, upper: b.upper, upper2: b.upper2, buildings, start, props: b.props, roads: { horizontal: hz, vertical: vt }, park: parkBlock ? { x: parkBlock.x0, y: parkBlock.y0, w: parkBlock.x1 - parkBlock.x0 + 1, h: parkBlock.y1 - parkBlock.y0 + 1 } : null, notes: b.notes };
 }
 
 /** 번들 정의(또는 그 사본)에서 사전을 만든다. */

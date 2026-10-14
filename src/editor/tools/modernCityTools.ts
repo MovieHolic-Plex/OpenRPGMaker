@@ -6,6 +6,7 @@ import { isPassable } from "@/project/collision";
 import { setLayerTileAt } from "@/project/mapLayers";
 import { clearTileStack } from "@/project/mapOverlayTiles";
 import { addMapLocation } from "@/project/mapNamedLocations";
+import { COMPOSED_LAYOUT_TAG } from "@/ai/piAgent/layoutQuality";
 import { extractTreeNode, insertTreeNode } from "@/project/mapTree";
 import { composeModernCityStreet, MC_BUILDING_TYPES, MODERN_CITY_STREET_MAX, MODERN_CITY_STREET_MIN, modernCityPaletteFromTileset } from "@/project/modernCityStreetComposer";
 import type { GameEvent, GameMap, MapId, Project } from "@/project/types";
@@ -110,7 +111,9 @@ export const COMPOSE_MODERN_CITY_STREET_TOOL: ToolDefinition = {
       const door = d.doors[0]!;
       addMapLocation(target, { name: `${d.name}`, x: d.rect.x, y: d.rect.y, w: d.rect.w, h: d.rect.h,
         note: `문 (${door.x},${door.y})${d.doors.length > 1 ? ` 외 ${d.doors.length - 1}칸` : ""} · 접근칸 (${d.access[0]!.x},${d.access[0]!.y})${d.program ? ` — 실내는 build_hand_interior_room({tileset:"modern_city", layout:{program:"${d.program}"}}) 로 지어 link_modern_city_interior 로 잇는다` : " — 실내 예제 없음"}`,
-        tags: ["modern-city-building", d.kind, d.kit] });
+        // composed-layout: 도로·보도·교차로는 용도로 비운 칸이다 — 배치 품질 권고(layoutQuality.ts)가 이 맵을 「빈 실내」로 보고
+        // build_hand_interior_room replace:true 를 시켜 거리를 로비로 덮었다(2026-10-14 실조수 gpt-6.1-sol). 이름표가 있으면 그 권고에서 빠진다.
+        tags: ["modern-city-building", COMPOSED_LAYOUT_TAG, d.kind, d.kit] });
     }
     const blocked = (target.events ?? []).filter((e) => !walkable(next, target, e.x, e.y)).map((e) => `${e.name ?? e.id}(${e.x},${e.y})`);
     draft.maps[mapId] = target;
