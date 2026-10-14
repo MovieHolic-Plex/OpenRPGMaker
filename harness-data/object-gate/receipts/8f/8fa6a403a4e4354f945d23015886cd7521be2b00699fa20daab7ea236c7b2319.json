@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8fa6a403a4e4354f945d23015886cd7521be2b00699fa20daab7ea236c7b2319",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "나무 술통(세움, 쇠테)",
+ "label": "snow-north/sn-barrel-in",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrel is drawn in front elevation with vertical staves running directly into the arched top outline. There is no foreshortened elliptical top cap visible (0 rows of top surface).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5995
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "standing wooden barrel with metal hoops",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrel is drawn in pure front elevation: vertical staves run uninterrupted from row 2 all the way down, with no elliptical top cap or lid surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7095
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "standing wooden barrel with metal hoops",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrel is drawn from a flat front view. The vertical wood staves and seams run continuously from row 2 down to the metal hoop at row 9, with no horizontal rim or foreshortened top cap/ellipse visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6428
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "standing wooden barrel with iron hoops",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The standing barrel is drawn in pure front elevation. The vertical staves and vertical highlight run continuously from row 2 down to row 8 without any foreshortened elliptical top cap/lid visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6280
+  }
+ ],
+ "decidedAt": "2026-10-14T01:22:34.203Z",
+ "cells": {
+  "16": [
+   "d2afe0bb9057b142"
+  ],
+  "24": [
+   "373addb195bc93fa",
+   "4626e334819fef87",
+   "487975c747353b5f",
+   "4e28bb553e2d931f",
+   "b921180c04667273",
+   "ce2ebf079e2b06f2"
+  ],
+  "32": [
+   "24030dcb91744fb7",
+   "3e7ab1eac343b492",
+   "776a3f6a4bdb7b28",
+   "9260541861e1e5e1",
+   "d25983e5526f709a",
+   "f19fb33d262894c2"
+  ],
+  "48": [
+   "287e567d87ec4ff7",
+   "64285f120d6dd726",
+   "70185ba6c6ac6ead",
+   "9bb267035eda1535",
+   "ae17f8bd4cc5f414",
+   "ccbded70f59cbb6f"
+  ]
+ }
+}

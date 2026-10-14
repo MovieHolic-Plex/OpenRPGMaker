@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7ccf2f92ea4b57f6c3f101af5024f26d7c39510b2b41809f208df32e14a37767",
+ "width": 32,
+ "height": 48,
+ "kind": "frame",
+ "name": "두레박 장대(샤두프)",
+ "label": "desert-east/de-shaduf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "support frame of the shadoof (two vertical posts and horizontal crossbeam)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main support frame is rendered as a flat architectural front elevation. The horizontal beam caps with a flat 1px outline at row 15 without showing any top face, and the vertical posts terminate in completely flat horizontal edges at row 46 without visible depth or top/base surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8418
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal beam and support pillars of shadoof frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The large horizontal crossbeam (rows 16-24) shows only a flat vertical face with vertical planks and an underside, lacking any visible top surface (0 pixel rows, just a 1px border at row 16). The pillars and frame are rendered in a pure flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5550
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal beam on support posts",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The crossbeam shows a 5-row top surface (rows 17-21) bordered by an edge highlight at row 22 and a shaded 2-row south front face (rows 23-24). The attached bucket also shows an elliptical opening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6539
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal crossbeam and vertical support posts of the shadoof frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main horizontal beam (rows 16-24) is drawn completely flat in pure front elevation with only a 1px outline at row 16 and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5253
+  }
+ ],
+ "decidedAt": "2026-10-14T00:33:14.418Z",
+ "cells": {
+  "16": [
+   "45b3eeb0d3244649",
+   "8c0669fd98515e47",
+   "a6a2c2505b577cf0",
+   "bcf46c10998a9533",
+   "dc118f8687324db6"
+  ],
+  "24": [
+   "0f8b6ed4a97fa5be",
+   "183574b3e7c6ddcc",
+   "2688aebbbf3177f9",
+   "6308787b371dc8f7",
+   "7f7053699e402e9d",
+   "80b5bfdea465e391",
+   "9d346b19ac3542c3",
+   "a83dbe19ee3bab93",
+   "bf33283be7ee4c0d",
+   "c12b53162f49aa94",
+   "e7c7c5fb2ad107d0",
+   "e892d93f4f895a0f"
+  ],
+  "32": [
+   "032581e366dd34cf",
+   "827815a00854454d",
+   "b8883007bf3c3793",
+   "d3b5bb24dcd16a9b"
+  ],
+  "48": [
+   "2c4a9233310f29b1",
+   "997f76cc324437d4",
+   "c86b23152784ba40"
+  ]
+ }
+}

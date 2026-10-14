@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "096e5de4a1c0367cd0b6a9d36430a684689c651eb9011048e2b0bc77ebdc8f1e",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "케이크 접시",
+ "label": "modern_city/interior/mci-g-cake",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cake plate / cake",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cake and plate are drawn in pure front elevation with a flat horizontal top edge across row 6 and no foreshortened top surface or elliptical rim visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5338
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cake / plate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn in a flat front elevation with a straight horizontal top line at row 6 and flat base at row 12. There is no visible foreshortened top surface or circular/elliptical perspective shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7616
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cake plate / cake",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The plate/cake is drawn entirely in front elevation with a flat horizontal upper edge at row 6 and flat base at row 12, showing no foreshortened top surface or elliptical plate surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3556
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cake / plate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn strictly from a front elevation with perfectly horizontal top and bottom edges (rows 6 and 12). There is no visible top surface or elliptical foreshortening showing the cake or plate surface from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4340
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:05.390Z",
+ "cells": {
+  "16": [
+   "5520b6ea37036769"
+  ],
+  "24": [
+   "0cd8ae6861b6f101",
+   "5e21ce60e3511725",
+   "7107ad97d72bd0df",
+   "7122375b3be270a2",
+   "b079c847aa90d12b",
+   "fbc0c51d0eb7dbb4"
+  ],
+  "32": [
+   "1fb23d72ac608e1d",
+   "28e023544799fd33",
+   "81c75b0a41221bb0",
+   "8f000b2db230b916",
+   "a54d5ee829a3cc2f",
+   "a6bfddac969dfc8c"
+  ],
+  "48": [
+   "16cdaa1b0da354cf",
+   "50509f763f6ace2d",
+   "624c2d2b781bf595",
+   "6a40fdad9c3fd49d",
+   "8125f883513f1809",
+   "88f48a6544a4844f"
+  ]
+ }
+}

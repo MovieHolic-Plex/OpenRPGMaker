@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7bafb078314dd10c973d97e15854f1204a7646ffa7f3e8e93a849445de84d852",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "돌 벽난로(넓은 선반 + 화덕 석판 + 장작불) (프레임 2)",
+ "label": "snow-north/sn-hearth-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone fireplace with deep mantel shelf and hearth",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mantel shelf top surface is extensively foreshortened and visible from row 1 to row 10, supporting several placed objects in proper 3/4 perspective, and the bottom hearth slab also shows a top surface from row 26 to 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5817
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone fireplace with mantel shelf and hearth",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mantel shelf top surface is prominently visible from rows 1 to 11 (11 pixel rows) with objects resting on it, leading to a front face and hearth base below in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5866
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone fireplace with mantel shelf and hearth",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper mantel shelf clearly presents a deep top surface (rows 1-11) holding various items, with a front edge at row 12, followed by the fireplace face and a protruding lower hearth slab (rows 26-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5718
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone fireplace with wide mantel shelf and firebox",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large top mantel shelf spans rows 1 to 11 with objects sitting on its top surface, and the hearth slab at the bottom also shows a top surface from rows 26 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5784
+  }
+ ],
+ "decidedAt": "2026-10-14T01:24:54.658Z",
+ "cells": {
+  "16": [
+   "133493b30168df5f",
+   "40336b5d29a49b07",
+   "970fc3fbcf75c620",
+   "a32806a6df922b00"
+  ],
+  "24": [
+   "092a463719719329",
+   "10592436ecc207da",
+   "16cc45bb32b8e1b7",
+   "22ecfab6464299cf",
+   "25869584a911fafa",
+   "2951023e8d2a0358",
+   "30d9dc22756e8f40",
+   "3d2f93e10819fc42",
+   "3eed53ad0b74ce0e",
+   "46517a727740194b",
+   "50ca1eb6a29c06b3",
+   "6b31d3b42f8012af",
+   "6f300692abb50e2f",
+   "8299208bc1c8c91e",
+   "873d5f1711092122",
+   "8dd9839cf65411c4",
+   "8e8b03fa562cf5a7",
+   "95b3334d0591e5b0",
+   "b184c15dba799200",
+   "b9b1869cf9d91917",
+   "bb94584aaa59ae10",
+   "dfe93516abbf092e",
+   "f80d4e479adc45c8",
+   "ff12539eb6898622"
+  ],
+  "32": [
+   "3f693ec6db5bb1a1"
+  ],
+  "48": [
+   "12cc73016b41ade1",
+   "67ff23497d14f38d",
+   "916b74f086ceeb2a",
+   "93563cb21f92f528",
+   "ad39a35088d34326",
+   "e8d0bfe60b5308bd"
+  ]
+ }
+}

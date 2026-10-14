@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "701fd4f9e1f95684ad3141ed9b5d6eb1a03d65d529dd14b0ebbc34c3534fa65a",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "벽 통로(아랫줄, 문턱 — 걸어 지나간다)",
+ "label": "snow-north/sn-wall-door-d",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "doorway threshold and floor passage between wall jambs",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Passage floor spans rows 5-13, viewed from above with perspective-correct planking leading through the door frame, ending in a horizontal threshold on row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4454
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "doorway threshold and floor passage",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Walkable wall opening tile showing floor planks seen from above (rows 5 to 14) framed by vertical doorposts on the sides, perfectly matching top-down 3/4 perspective terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4687
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "doorway threshold and floor passage between wall jambs",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a walkable doorway passage tile (terrain) showing the wooden floor planks and threshold beam in top-down 3/4 perspective between two wall jambs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4038
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall doorway threshold and floor",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts the bottom half of a wall doorway, showing the recessed wooden floor planks (rows 5-14) and the threshold beam viewed from above, flanked by doorway jambs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4415
+  }
+ ],
+ "decidedAt": "2026-10-14T01:26:11.647Z",
+ "cells": {
+  "16": [
+   "0f95ad1939882202"
+  ],
+  "24": [
+   "009023199817f5e1",
+   "030f9a8d6f32dd1c",
+   "7bf9be66d2186541",
+   "c15c0fa7cb8bab71",
+   "c1ee7f12718a8914",
+   "c209f20d894106b1"
+  ],
+  "32": [
+   "2abad055046ff6fd",
+   "5474d4063a8d9646",
+   "ba35835e37d83133",
+   "edcb8b0763098f73",
+   "f1efc686c6c2c77e",
+   "f5435428fdb3c487"
+  ],
+  "48": [
+   "020d2e2d60b52709",
+   "356e2669dc4440f4",
+   "5f266dacc9ef57f6",
+   "8c7a295515862d94",
+   "974ef16c7847bae2",
+   "dba5439ec4e954de"
+  ]
+ }
+}

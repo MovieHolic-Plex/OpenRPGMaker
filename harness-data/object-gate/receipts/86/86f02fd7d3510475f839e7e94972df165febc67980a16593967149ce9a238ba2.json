@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "86f02fd7d3510475f839e7e94972df165febc67980a16593967149ce9a238ba2",
+ "width": 64,
+ "height": 48,
+ "kind": "terrain",
+ "name": "cabin room floor tiles with entry mat",
+ "label": "monster-rooms/rm_fl_cabin",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden plank floor tiles with a red entry mat",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image consists of horizontal wooden floor plank tiles with a rectangular entry mat lying flat on the floor plane, correctly representing 3/4 top-down terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3441
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden floor planks with flat entry mat",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Floor planks and entry mat form a horizontal floor surface viewed correctly from above spanning all 48 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3600
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wood floor planks with entry mat",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down terrain consisting of horizontal wooden floorboards and a flat rectangular red entry mat lying on the floor.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3095
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden floorboards with entry mat",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire image depicts flat horizontal terrain (wooden plank floor tiles) with a flat rectangular entry mat resting on the floor surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3956
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.767Z",
+ "cells": {
+  "16": [
+   "055090f2713af968",
+   "5b71538ed0360396",
+   "aaa735bb7d67f608",
+   "b7161572175874ce"
+  ],
+  "24": [
+   "1f1b6bf74d53a01c",
+   "21641527cc992d5b",
+   "237680858472ce58",
+   "3b62776846fcfd97",
+   "41d999285e69712a",
+   "44c074bc08aa7156",
+   "477b5302d36a05a6",
+   "4a65575faef71eb5",
+   "5870bc7624ed17e3",
+   "6fbd614b188d107f",
+   "9bfa5f1c38efe35a",
+   "b602381b467b4f5b",
+   "bb379e4483ec17f6",
+   "cffea42a31c1c178",
+   "d59c28320f3e1c9a",
+   "e2379b1a3525110d",
+   "ebee085a9d31be2e",
+   "ff9f892933019254"
+  ],
+  "32": [
+   "45264bcae2906e7e",
+   "519a9c84d403c987",
+   "8e0d442365fc6b1b",
+   "90d02c5523618086",
+   "bda8fd52d99e94c8",
+   "f89581c421f5fdab"
+  ],
+  "48": [
+   "06d5ac105d3d614a",
+   "616356da2dc917f4",
+   "7373e39c37eb76d1",
+   "7f046b739e36b911",
+   "d11157062bc5528f",
+   "e6df99d07ae550b0"
+  ]
+ }
+}

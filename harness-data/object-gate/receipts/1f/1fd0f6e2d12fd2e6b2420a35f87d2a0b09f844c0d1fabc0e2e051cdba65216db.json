@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1fd0f6e2d12fd2e6b2420a35f87d2a0b09f844c0d1fabc0e2e051cdba65216db",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "통나무 판자 바닥(따뜻한 갈색)",
+ "label": "snow-north/sn-floor-plank",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden plank floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor texture depicting horizontal wooden planks viewed from above, filling the 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4339
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wood plank floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat wooden plank terrain tile viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3885
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wood plank floor",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless horizontal wooden plank floor terrain tile viewed from above across the full 16x16 surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5140
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden plank floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat wooden plank terrain tile filling the 16x16 area, viewed as top-down horizontal floor surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3326
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.160Z",
+ "cells": {
+  "16": [
+   "b3717ff101197caf"
+  ],
+  "24": [
+   "4e75fcc54e806ced",
+   "938014d4e328b6ef",
+   "9a91761702cfdde4",
+   "bc60482ef40f775e",
+   "bd39e41fafa44766",
+   "dd3302f17032d7f7"
+  ],
+  "32": [
+   "18ed9c39a7fb4093",
+   "339373b05bc64e46",
+   "89539418432d8914",
+   "8b7f34abd778496c",
+   "ea9bee74ad3ce728",
+   "f0e89d4f309de754"
+  ],
+  "48": [
+   "06ab3ce53c41620b",
+   "3b7982a34e1047db",
+   "4ed5b1f37856895a",
+   "649fbc363ee37312",
+   "8e570bd8d3428d2d",
+   "f23fba66f5b150d7"
+  ]
+ }
+}

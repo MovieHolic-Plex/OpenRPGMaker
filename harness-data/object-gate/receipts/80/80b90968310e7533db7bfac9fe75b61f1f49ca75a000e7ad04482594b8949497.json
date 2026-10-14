@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "80b90968310e7533db7bfac9fe75b61f1f49ca75a000e7ad04482594b8949497",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "향신료 바구니",
+ "label": "desert-east/de-basket-spice",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "woven basket filled with spices",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basket has a clear open top viewed from above at rows 3-8 filled with yellowish-orange spices forming an elliptical opening, above the front-facing woven basket body (rows 9-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4076
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "woven basket filled with spices",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basket has a clearly visible top opening filled with yellow-orange spices spanning roughly rows 3-8 (6 rows tall), viewed from an elevated 3/4 angle above the basket's woven front face (rows 9-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3818
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "basket containing spices",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basket features a prominent 6-row opening (rows 3–8) displaying yellow-orange spice powder from above, with the south-facing woven basket body below (rows 9–14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3546
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "basket filled with spices",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basket has an elliptical opening visible from above spanning rows 3 to 8 (6 pixel rows) filled with yellow-orange spices, sitting atop a south-facing woven basket body on rows 9-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5210
+  }
+ ],
+ "decidedAt": "2026-10-14T00:27:26.537Z",
+ "cells": {
+  "16": [
+   "0adb7bf81f4e835c"
+  ],
+  "24": [
+   "629c27848552e49e",
+   "a091094d8b4b1b87",
+   "a74b2ca50c0fde4a",
+   "a9966b3767437add",
+   "edf592df4aca6ac8",
+   "f7c5dacaa75e1593"
+  ],
+  "32": [
+   "1a741f73a0a15895",
+   "5d8fd3e665cc7cbd",
+   "67e8ad369a23d198",
+   "7007496c4ad7c5ef",
+   "c23e49ff50973a63",
+   "e0b0b84cb61a2403"
+  ],
+  "48": [
+   "197f8928a40846df",
+   "554b430ace9e3c25",
+   "828e36a0248f6275",
+   "9a2811fdb9495f6d",
+   "dc1e95c477f42c03",
+   "e48da11df5afc1b7"
+  ]
+ }
+}

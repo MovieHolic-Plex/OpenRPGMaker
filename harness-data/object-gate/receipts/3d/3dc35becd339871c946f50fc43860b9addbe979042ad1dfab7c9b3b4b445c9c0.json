@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3dc35becd339871c946f50fc43860b9addbe979042ad1dfab7c9b3b4b445c9c0",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "돌 우물(도르래)",
+ "label": "desert-east/de-well",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone well with wooden pulley frame",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 9,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The well opening is viewed from above, showing interior depth (black interior shadow on rows 13-16 and blue water on rows 17-21, totaling 9 rows of visible opening) surrounded by a thick stone rim and front brick base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5976
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone well basin",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 9,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The well opening is rendered as an ellipse viewed from above (rows 13 to 21) showing darkness and water inside, framed by the top rim and resting on a stone brick south face (rows 22-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4851
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone well with wooden pulley frame and brick base",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The well opening is shown as a large foreshortened ellipse spanning rows 13 to 20 (approx. 8 rows) revealing dark interior depth and blue water, bordered by the surrounding stone rim and a front brick base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5541
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone well basin",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": true,
+    "opening_rows": 9,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The well basin clearly displays an elliptical opening from row 13 to 21 (about 9 rows deep), revealing the dark interior and blue water inside in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4907
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.223Z",
+ "cells": {
+  "16": [
+   "8bf0e45a8ab92adb",
+   "98e63e492645f788",
+   "ad553dcb12b73a57",
+   "e573c76a064f5549"
+  ],
+  "24": [
+   "055c31b2be579748",
+   "05ca6a1748459eb2",
+   "08cbc0661a0ea5db",
+   "0a43027cb331abf7",
+   "42b2d81dfbea67ea",
+   "4bb4b342ec553fe3",
+   "5ea8a022fbfb85f5",
+   "7bc2ed49dd634b9b",
+   "8218e1569b31c443",
+   "8a715382e398ab65",
+   "afdc332d9b8115e2",
+   "b20dbbd1fa191234",
+   "de1c7e05051fc969",
+   "dfa36722905f0b8a",
+   "ea08e09ab729d882",
+   "eea5c3d4afd21ca2",
+   "f0d805e8354bc8ba",
+   "f15bf3872896dd22",
+   "f1b067f10cda6101",
+   "f2e15b5847ec87f0",
+   "f9574e53f8a4bc86",
+   "fbbcf18ce24f1cd2",
+   "fbd154d78e852288",
+   "ffbb7f64df1bf849"
+  ],
+  "32": [
+   "62652532e589a399"
+  ],
+  "48": [
+   "3fae8245de70bb48",
+   "544ac0ba2f250660",
+   "8e6c47c2c01611fd",
+   "9a041d5cbd833aa9",
+   "a0c33f3a639a873c",
+   "bcf1c26d6b9aaa7d"
+  ]
+ }
+}

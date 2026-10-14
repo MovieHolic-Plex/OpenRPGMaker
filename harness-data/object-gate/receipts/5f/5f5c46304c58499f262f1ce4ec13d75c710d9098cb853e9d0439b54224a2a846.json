@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5f5c46304c58499f262f1ce4ec13d75c710d9098cb853e9d0439b54224a2a846",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "채색 석관",
+ "label": "desert-east/de-sarcophagus",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sarcophagus",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The closed sarcophagus shows a foreshortened top lid spanning rows 2 to 8 (7 source pixels tall) and its south front face from row 9 to row 14 (6 source pixels tall). No receding side faces are shown.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 19700
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "painted sarcophagus",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sarcophagus is split into a 7-pixel-tall top lid surface (rows 2-8) and a 5-pixel-tall south front face (rows 10-14) divided by a horizontal wooden/stone rim at row 9.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8735
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "painted sarcophagus (채색 석관)",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid occupies rows 2–8 (approx. 7 source pixel rows) with top-down foreshortening and vertical band decoration, while rows 9–13 form the south front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12565
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "painted sarcophagus (coffin)",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The decorated top surface of the sarcophagus lid occupies rows 2–8 (approx. 7 source rows), while rows 9–13 show the south-facing front side, adhering properly to 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7641
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.216Z",
+ "cells": {
+  "16": [
+   "5ad37f1836c9a360",
+   "dfbfe17da5177a7b"
+  ],
+  "24": [
+   "00a273933f29efab",
+   "1cc8c2a5fed037d9",
+   "2b26852baa77e7a5",
+   "4078705a57acc6bc",
+   "475c42dbc1a3b35b",
+   "66e54450e5bcb58f",
+   "683b3ed93acd367d",
+   "883e8624819f2a84",
+   "95e01e4ab3244bf6",
+   "a2fda015377f7d59",
+   "c8d003a3ded17708",
+   "f3a92446defd8cfc"
+  ],
+  "32": [
+   "48b71a517dd9d5eb",
+   "751fadc459deda5d"
+  ],
+  "48": [
+   "144f625c99b124b6",
+   "8ac7e64330ba5cd8",
+   "a0b41825e10b4ead",
+   "d6b5ab285bf6e4d5",
+   "e725edbd5c456e6c",
+   "fbad59d729aac0f9"
+  ]
+ }
+}

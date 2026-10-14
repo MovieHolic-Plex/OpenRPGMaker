@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "48d5b59d3db72316eebcf26c50e3513b7ce8d76459c7192883e944f5f47f4c80",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "책 더미",
+ "label": "modern_city/interior/mci-g-books",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stack of books",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top book shows a clear 4-5 pixel row foreshortened top surface (rows 2-6) above its front edge and pages (row 7), stacked on other books below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4086
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stack of books",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface (cover) of the uppermost book is clearly visible spanning rows 2 to 6 (5 source pixel rows tall) above the page edges and lower books.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5161
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stack of books",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top book cover is clearly visible from above, spanning rows 2-6 (5 rows tall), resting atop stacked books with front-facing page edges and spines.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4697
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stack of books",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top book in the stack clearly shows its top cover surface spanning 4 pixel rows (rows 2-5) above the front edge (rows 6-7), consistent with a 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5137
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:59.363Z",
+ "cells": {
+  "16": [
+   "367ae1cac113d35a"
+  ],
+  "24": [
+   "24b4486638fea1a3",
+   "374d4f723d15d142",
+   "473b051ddf20649b",
+   "72b99b1da2a1988a",
+   "7438e6c2c52e54b0",
+   "fa43b5486571dd1e"
+  ],
+  "32": [
+   "0b248e266d465039",
+   "3d96a22ffdc474e7",
+   "b53f9447bb96d696",
+   "b70e572cf7c8b419",
+   "dade474e2043feca",
+   "ee7d081d738542f7"
+  ],
+  "48": [
+   "075bbdbf524c94d1",
+   "3718d7b4b1f1fe1d",
+   "38634858f2760f3a",
+   "473e42c696e515ce",
+   "4f6dbff2b1f366d9",
+   "c7b49980047de888"
+  ]
+ }
+}

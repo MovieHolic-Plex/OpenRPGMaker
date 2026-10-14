@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e3790ac74ab83d5e7ed308ab62ab7067447063b0d40b451b7297d1e9dc3cc246",
+ "width": 32,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "엘리베이터 문",
+ "label": "modern_city/interior/mci-elevator",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "elevator doors and frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Elevator door unit is designed to be set flush into a vertical wall surface, matching the wall_mounted category where flat front-facing perspective is expected.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10772
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "elevator sliding doors and wall frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted elevator door set flush onto a south-facing wall; correctly drawn flat against the wall surface without perspective distortion.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9527
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "elevator doors and frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The elevator door is designed to be flush/mounted on a north wall; as a wall-mounted feature, it is viewed flat from the front with no receding top or side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4194
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "elevator doors and frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted elevator door drawn flat against the wall surface, which is appropriate for the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14791
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:05.386Z",
+ "cells": {
+  "16": [
+   "35f45aadfdd7f212",
+   "aa51b0cc9f0775bc",
+   "ad02fc7f9f81f3a3",
+   "f1598018df15c69c"
+  ],
+  "24": [
+   "1515befe92814f76",
+   "24ae0bc45be5573b",
+   "40b1a9e21fb66979",
+   "538d60d25b7b0fe8",
+   "61a2c86958c12611",
+   "61fae7551b5a8146",
+   "7afae28555784397",
+   "7bcecaf3d652ae00",
+   "7d406bd231449fd2",
+   "7d83dc9031917868",
+   "89540e287d7b5ecb",
+   "8db572f3c45d5e10",
+   "92fcb809baa540b0",
+   "966d3286cd23abf7",
+   "a2fb6f76a5b912b7",
+   "b204a38b684d38c5",
+   "b51391893787a082",
+   "bf38b90c89bb068e",
+   "c31251ab0dcd6d5d",
+   "c88d4acda6cc602b",
+   "cc86e84ab7ec5560",
+   "d791104bebe2a458",
+   "dbc40d4d6231d50d",
+   "f745baafbe5628ab"
+  ],
+  "32": [
+   "c1cbbcb1a566de17"
+  ],
+  "48": [
+   "27238efff8c53967",
+   "388476eb865080eb",
+   "55c877b4355c2d29",
+   "7e559297ffce5574",
+   "a49c7016617aa2ea",
+   "e4564b3da298a37d"
+  ]
+ }
+}

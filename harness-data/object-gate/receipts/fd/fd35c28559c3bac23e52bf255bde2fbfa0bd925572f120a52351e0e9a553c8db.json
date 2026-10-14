@@ -1,0 +1,129 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fd35c28559c3bac23e52bf255bde2fbfa0bd925572f120a52351e0e9a553c8db",
+ "width": 32,
+ "height": 16,
+ "kind": "container",
+ "name": "항아리 무리",
+ "label": "desert-east/de-jars-group",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "아가리 2행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cluster of three ceramic jars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "All three jars display clearly visible interior openings (2 rows tall of dark void) foreshortened from the top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 2행 < 4"
+   ],
+   "ms": 4489
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cluster of three jars",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "All three jars have clear 2-row-tall dark ellipses depicting the opening mouths seen from above, with rounded foreshortened rims.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 2행 < 4"
+   ],
+   "ms": 4708
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "group of jars",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "All three jars have clearly defined dark openings visible from above, measuring 2 pixel rows tall between the back and front rims.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 2행 < 4"
+   ],
+   "ms": 4708
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "group of three jars / pots",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "All three pots show distinct 2-row elliptical dark openings seen from above with visible front and back rims, properly indicating the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 2행 < 4"
+   ],
+   "ms": 5569
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.224Z",
+ "cells": {
+  "16": [
+   "516af6ac131a2e42",
+   "df5693334f25848e"
+  ],
+  "24": [
+   "01d8aa5834c973b1",
+   "3ec752d0e7269549",
+   "52b6bd026cd5d814",
+   "68aac43faccf81c9",
+   "7865b3593771343c",
+   "8cbb1e3460488a9a",
+   "ac59b4f48fc1a82f",
+   "be754c6918851a45",
+   "ca5b2737571d01ba",
+   "d201b1dd2b71c9e7",
+   "e5e93b3eee19aa3a",
+   "f48bbf740d78878c"
+  ],
+  "32": [
+   "27803d1d3bce59e4",
+   "7430a6a389abb826"
+  ],
+  "48": [
+   "13fe1788a6ae52b0",
+   "2b5f31105935242f",
+   "525308c4363bee7b",
+   "cfedf91e4dbe6efb",
+   "e141c1529a6fb1b7",
+   "e2035cf0600c0cd6"
+  ]
+ }
+}

@@ -1,0 +1,58 @@
+{"png": "sn-pine-s.png", "kind": "organic", "name": "어린 가문비(눈 덮임)", "label": "snow-north/sn-pine-s"}
+{"png": "sn-pine-m.png", "kind": "organic", "name": "가문비(눈 덮임, 중간)", "label": "snow-north/sn-pine-m"}
+{"png": "sn-pine-l.png", "kind": "organic", "name": "큰 가문비(눈 덮임)", "label": "snow-north/sn-pine-l"}
+{"png": "sn-pine-pair.png", "kind": "organic", "name": "가문비 두 그루(겹침)", "label": "snow-north/sn-pine-pair"}
+{"png": "sn-birch.png", "kind": "organic", "name": "잎 진 자작(눈 얹힌 잔가지)", "label": "snow-north/sn-birch"}
+{"png": "sn-birch-s.png", "kind": "organic", "name": "어린 자작(가는 줄기 둘)", "label": "snow-north/sn-birch-s"}
+{"png": "sn-bush.png", "kind": "organic", "name": "눈 덮인 덤불", "label": "snow-north/sn-bush"}
+{"png": "sn-boulder-s.png", "kind": "organic", "name": "눈 덮인 바위(작음)", "label": "snow-north/sn-boulder-s"}
+{"png": "sn-boulder-l.png", "kind": "organic", "name": "눈 덮인 큰 바위", "label": "snow-north/sn-boulder-l"}
+{"png": "sn-stump.png", "kind": "organic", "name": "눈 덮인 그루터기", "label": "snow-north/sn-stump"}
+{"png": "sn-drift.png", "kind": "organic", "name": "눈더미(바람에 쌓인 둔덕)", "label": "snow-north/sn-drift"}
+{"png": "sn-cairn.png", "kind": "structure", "name": "돌무더기 이정표(눈 얹힘)", "label": "snow-north/sn-cairn"}
+{"png": "sn-rune-stone.png", "kind": "structure", "name": "새김 돌(추상 띠 무늬, 글자 없음)", "label": "snow-north/sn-rune-stone"}
+{"png": "sn-reeds.png", "kind": "organic", "name": "얼어붙은 갈대(호숫가)", "label": "snow-north/sn-reeds"}
+{"png": "sn-woodpile.png", "kind": "structure", "name": "장작더미(처마 지붕 밑, 단면 나이테)", "label": "snow-north/sn-woodpile"}
+{"png": "sn-logs.png", "kind": "organic", "name": "장작 한 무더기(눈 얹힘)", "label": "snow-north/sn-logs"}
+{"png": "sn-chopping-block.png", "kind": "round_body", "name": "도끼 박힌 장작 받침", "label": "snow-north/sn-chopping-block"}
+{"png": "sn-fish-rack.png", "kind": "frame", "name": "생선 말리는 덕장(대구 줄줄이, 작은 박공 지붕)", "label": "snow-north/sn-fish-rack"}
+{"png": "sn-hide-rack.png", "kind": "frame", "name": "모피 펴 말리는 틀", "label": "snow-north/sn-hide-rack"}
+{"png": "sn-brazier.png", "kind": "container", "name": "쇠 화로(타오름)", "label": "snow-north/sn-brazier"}
+{"png": "sn-brazier-f1.png", "kind": "container", "name": "쇠 화로(타오름) 프레임 2", "label": "snow-north/sn-brazier-f1"}
+{"png": "sn-brazier-f2.png", "kind": "container", "name": "쇠 화로(타오름) 프레임 3", "label": "snow-north/sn-brazier-f2"}
+{"png": "sn-bonfire.png", "kind": "organic", "name": "모닥불(돌 고리 속 타는 장작)", "label": "snow-north/sn-bonfire"}
+{"png": "sn-bonfire-f1.png", "kind": "organic", "name": "모닥불(돌 고리 속 타는 장작) 프레임 2", "label": "snow-north/sn-bonfire-f1"}
+{"png": "sn-bonfire-f2.png", "kind": "organic", "name": "모닥불(돌 고리 속 타는 장작) 프레임 3", "label": "snow-north/sn-bonfire-f2"}
+{"png": "sn-smoke.png", "kind": "part", "name": "굴뚝 연기", "label": "snow-north/sn-smoke"}
+{"png": "sn-smoke-f1.png", "kind": "part", "name": "굴뚝 연기 프레임 2", "label": "snow-north/sn-smoke-f1"}
+{"png": "sn-smoke-f2.png", "kind": "part", "name": "굴뚝 연기 프레임 3", "label": "snow-north/sn-smoke-f2"}
+{"png": "sn-sled.png", "kind": "low_furniture", "name": "짐 썰매(나무 바닥·상자와 자루 짐)", "label": "snow-north/sn-sled"}
+{"png": "sn-sled-wood.png", "kind": "low_furniture", "name": "장작 실은 썰매", "label": "snow-north/sn-sled-wood"}
+{"png": "sn-ski-rack.png", "kind": "container", "name": "스키 통(나무 통에 꽂아 세운 스키 셋)", "label": "snow-north/sn-ski-rack"}
+{"png": "sn-barrel.png", "kind": "round_body", "name": "나무 통(눈 뚜껑)", "label": "snow-north/sn-barrel"}
+{"png": "sn-barrels.png", "kind": "round_body", "name": "통 두 개와 상자", "label": "snow-north/sn-barrels"}
+{"png": "sn-crates.png", "kind": "box", "name": "나무 상자 더미", "label": "snow-north/sn-crates"}
+{"png": "sn-sacks.png", "kind": "other", "name": "곡식 자루(눈 얹힘)", "label": "snow-north/sn-sacks"}
+{"png": "sn-well.png", "kind": "structure", "name": "우물(돌 둘레·눈 지붕·두레박)", "label": "snow-north/sn-well"}
+{"png": "sn-signpost.png", "kind": "column", "name": "갈림길 이정표(글자 없는 화살 판)", "label": "snow-north/sn-signpost"}
+{"png": "sn-lamp-post.png", "kind": "column", "name": "불바구니 기둥(통나무 기둥 위 쇠 불바구니, 위에서 보이는 숯불)", "label": "snow-north/sn-lamp-post"}
+{"png": "sn-banner-aurora.png", "kind": "wall_mounted", "name": "벽걸이 오로라 깃발(청록·보라 물결)", "label": "snow-north/sn-banner-aurora"}
+{"png": "sn-banner-aurora-b.png", "kind": "wall_mounted", "name": "벽걸이 오로라 깃발(보라·청록 물결, 반대 무늬)", "label": "snow-north/sn-banner-aurora-b"}
+{"png": "sn-stall-fish.png", "kind": "structure", "name": "생선 노점(얼음 위 생선, 줄무늬 천막)", "label": "snow-north/sn-stall-fish"}
+{"png": "sn-stall-fur.png", "kind": "structure", "name": "모피 노점(모피 더미, 붉은 천막)", "label": "snow-north/sn-stall-fur"}
+{"png": "sn-stall-wares.png", "kind": "structure", "name": "살림 노점(그릇·쇠붙이·천, 청록 천막)", "label": "snow-north/sn-stall-wares"}
+{"png": "sn-ice-wall.png", "kind": "structure", "name": "얼음 벽돌 담(동서 한 칸)", "label": "snow-north/sn-ice-wall"}
+{"png": "sn-ice-wall-post.png", "kind": "structure", "name": "얼음 담 기둥(끝·모퉁이)", "label": "snow-north/sn-ice-wall-post"}
+{"png": "sn-palisade.png", "kind": "part", "name": "목책(뾰족 통나무 셋, 동서 한 칸)", "label": "snow-north/sn-palisade"}
+{"png": "sn-palisade-v.png", "kind": "part", "name": "목책(남북 줄 — 뾰족 머리를 위에서 본다)", "label": "snow-north/sn-palisade-v"}
+{"png": "sn-fence.png", "kind": "part", "name": "가로대 나무 울타리(동서 한 칸)", "label": "snow-north/sn-fence"}
+{"png": "sn-fence-v.png", "kind": "part", "name": "가로대 나무 울타리(남북 한 칸)", "label": "snow-north/sn-fence-v"}
+{"png": "sn-fishing-spot.png", "kind": "other", "name": "얼음 낚시 자리(구멍·낚싯대·통 의자·물고기)", "label": "snow-north/sn-fishing-spot"}
+{"png": "sn-boat.png", "kind": "other", "name": "뒤집어 둔 나무배(배 밑이 위로, 눈 덮임)", "label": "snow-north/sn-boat"}
+{"png": "sn-tent.png", "kind": "structure", "name": "원뿔 가죽 천막(장대 끝 + 연기 구멍)", "label": "snow-north/sn-tent"}
+{"png": "sn-hay.png", "kind": "organic", "name": "건초 더미(눈 모자)", "label": "snow-north/sn-hay"}
+{"png": "sn-trough.png", "kind": "container", "name": "언 여물통(위에서 들여다본 얼음 물)", "label": "snow-north/sn-trough"}
+{"png": "sn-cauldron.png", "kind": "container", "name": "삼발이 가마솥(위에서 보이는 국물, 김 오름)", "label": "snow-north/sn-cauldron"}
+{"png": "sn-anvil.png", "kind": "other", "name": "모루(그루터기 받침)", "label": "snow-north/sn-anvil"}
+{"png": "sn-millstones.png", "kind": "round_body", "name": "맷돌 두 짝(눕혀 쌓음)", "label": "snow-north/sn-millstones"}
+{"png": "sn-water-barrel.png", "kind": "container", "name": "물통과 국자(사우나 곁, 위에서 보이는 물)", "label": "snow-north/sn-water-barrel"}

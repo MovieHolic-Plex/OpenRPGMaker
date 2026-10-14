@@ -1,0 +1,148 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "21664ee489961ea321655175188d4e78f54f520816b39687c03c62265c6277d9",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "돌 벽난로(넓은 선반 + 화덕 석판 + 장작불)",
+ "label": "snow-north/sn-hearth",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone fireplace with mantle shelf",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fireplace features a wide, brightly lit horizontal mantle shelf on top (rows 1-12, ~11-12px deep) with items resting on it, contrasted against the darker south-facing fireplace front (rows 13-25), plus a foreshortened hearth stone slab at the base (rows 26-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 16192
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone fireplace with hearth and mantel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fireplace structure and mantel are drawn in flat front elevation with vertical stone patterns and no visible horizontal top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5197
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone fireplace with hearth and chimney",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fireplace (chimney breast, mantel shelf, hearth frame, and floor slab) is drawn as a flat 2D architectural front elevation. There is no visible top surface for the mantel shelf, hearth, or fireplace body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6736
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone fireplace with chimney breast and firebox",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fireplace (upper chimney, mantel ledge, firebox, and lower hearth) is drawn as a flat architectural front elevation with no visible horizontal top surface for the main structure.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6973
+  }
+ ],
+ "decidedAt": "2026-10-14T01:22:34.202Z",
+ "cells": {
+  "16": [
+   "674cc10c9205dc0f",
+   "724aba92d48870b5",
+   "910bf09b47dd8172",
+   "d75a5c0c5864970d"
+  ],
+  "24": [
+   "073c179cf90ea696",
+   "08460f9f1995992f",
+   "0bbec5c583934785",
+   "131d6635bbcb38c8",
+   "23f40a0bf25b1c97",
+   "27afa58af7bb9a1d",
+   "2d5e7eccce3883c0",
+   "3b5655cc987a7d63",
+   "5c714126c1f0511c",
+   "69faae9cd6d64944",
+   "86886dbe984e45a1",
+   "88e1d92725205097",
+   "904a98ca3d6937d1",
+   "92bef145c9c53e1f",
+   "99606c082c74a393",
+   "a0a4f5efc5c48a4e",
+   "a437c0d08aca0eff",
+   "c169482dc1360d8b",
+   "c6758c1b4bdb35af",
+   "d0ecc1669d220609",
+   "e86aad7182293923",
+   "ecbe0b45ad713df0",
+   "f6c281b651f3eb92",
+   "f7b27fe07e83ccee"
+  ],
+  "32": [
+   "eaaeedb69d127efa"
+  ],
+  "48": [
+   "787cbd610b823800",
+   "98d0ce349ca3d8c8",
+   "c388908dba77e446",
+   "f64b955b36742751",
+   "f6f27b836b80f1a5",
+   "fecb8453e615ea2e"
+  ]
+ }
+}

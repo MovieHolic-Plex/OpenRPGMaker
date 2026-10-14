@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e07b66ab3360f24bad84291df1686eb934d8ab6844e02d6d9128c19fc9480517",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "standing museum sign on a post",
+ "label": "monster-rooms/mu_sign",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sign board on post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign board is drawn in flat front elevation with only a 1px border on row 1 and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4275
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "signboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The museum sign board is drawn entirely as a flat front elevation from rows 1 to 8, with only a 1px outline at row 1 instead of a visible foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6167
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sign board",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign board is drawn in flat front elevation spanning rows 1-8 with only a 1px border on row 1 and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 2829
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sign board",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign board is drawn straight-on as a flat rectangle with only a 1px border at row 1. It lacks any foreshortened top surface or tilted perspective appropriate for 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4840
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.764Z",
+ "cells": {
+  "16": [
+   "40b848ab98a4cbbf"
+  ],
+  "24": [
+   "1060b4a08004da1a",
+   "399c0d76e4ce1ddb",
+   "545e95aa9791a824",
+   "6b22ed832f345183",
+   "a2624895ab1d5d9b",
+   "bb049809360642fd"
+  ],
+  "32": [
+   "1e3a6f0b6a070e16",
+   "2ef469a45dec3f6f",
+   "512f7b235998de21",
+   "5a154f264344175d",
+   "627081544ff98888",
+   "843ef7a90678e3fd"
+  ],
+  "48": [
+   "4d78dff36d73233b",
+   "523f40853000be01",
+   "65afdade00c2be4e",
+   "71ab88b37d8ede26",
+   "bf23b480a9d07e34",
+   "f148bbb498f39c18"
+  ]
+ }
+}

@@ -5,6 +5,90 @@
 
 <!-- releases -->
 
+## 0.211.0 — 2026-10-14
+
+### 기능
+
+- **monster** — use-based fill for kit outdoor land (towns + furnish_outdoor_area region), beach hut door, theme cast wiring (`965f5af`)
+
+## 0.210.0 — 2026-10-14
+
+### 기능
+
+- **monster** — theme-keyed title key-art hook (default/coast/desert/snow) with stag fallback (`87da523`)
+
+### 수정
+
+- **ci** — drop the unreachable interior check in modern city routing (`fbee487`)
+- **hand-interior** — refit doors, start and incoming transfers when any room-spec chipset interior is rebuilt (`0bbc584`)
+- **modern-city** — composed streets carry the composed-layout tag so the layout-quality repair never rebuilds a street as an interior; number duplicate building names (`6cc1a77`)
+- **snow-north** — assistant guidance — compose first (no reference reading before the first call), cap newMap size at default+8 (`4d2259c`)
+- **modern-city** — meeting-room side chairs, drop dangling desk-pc pair, quiet empty-default layout warning, exit event name (`ad5f2b3`)
+- **snow-north** — one adversarial QA pass — work yards on trampled ground linked to paths, no tundra in villages, per-cell snow variety, irregular ponds and loose reeds, 2x2 ice holes with fishing spots beside them, staggered market stalls, cabin table, forest outside the south wall, falls feeding the stream (`f767f00`)
+
+### 문서
+
+- **modern-city** — real-assistant defects found and fixed, remaining program density gap (`55a6571`)
+- **snow-north** — QA results and real assistant runs (gpt-6.1-sol fallback) (`05967a1`)
+- **openwiki** — regenerate INDEX for snow-north page (`241b3a2`)
+- **snow-north** — AGENTS entry (`34ce36d`)
+
+### 기타
+
+- **modern-city** — concept/start registries (BUILDABLE, seed hint, start size, route style, kit build line) + wiki (`102a517`)
+- **snow-north** — remaining object-gate receipts (interior hearth frames, door wall, dropped barrel-in fails) (`25ebb94`)
+- **snow-north** — references bake, policy, compose/link tools, shared wiring (bundled, defaults, routing chain, startRoutePaint, worldmap snow-north) (`8ff5c39`)
+- **modern-city** — street composer + compose/link tools + modernCityPolicy routed after campus (no jp_city/campus/SF hijack) (`061e260`)
+- **modern-city** — interior reference category mc-interior (dictionary, steps, 9 engine-built examples with full arrays, tamper codes) (`b6905ac`)
+- **modern-city** — example rooms get partitions/pillars (no plain-box), hospital ward+waiting, konbini entrance kind, engine check script (`04cf83f`)
+- **modern-city** — bake 64 gated interior pieces append-only, modern_city hand-interior spec, room templates (`fac5161`)
+- **snow-north** — outdoor art — palette, terrain/autotiles, 19 buildings, 58 props, assembled part receipts (`d5195ee`)
+- **modern-city** — gate redraw passes 2-4 (`c8c6d37`)
+- **modern-city** — interior hand-pixel pieces, gate redraws, example rooms (`6db1498`)
+
+## 0.209.1 — 2026-10-14
+
+### 수정
+
+- **gothic** — gate cell keeps the drive's paving; dead-tree groves in the gallery plaza's upper lawns (`ce145ef`)
+- **gothic** — chapel altar centred at the runner end with flanking candles, cobwebs only in the NW corner, paintings only on bare wall, single dust decals; gemini-4-argon assistant config (`d965186`)
+
+## 0.209.0 — 2026-10-14
+
+### 기능
+
+- **prehistoric** — stone-age chipset + composer + assistant routing (#2519) (`bf7c019`)
+- **pirate-isles** — tropical archipelago / pirate harbor chipset + composer + assistant routing (#2513) (`3ca3b2d`)
+- **sengoku-edo** — 전국·에도 일본 칩셋 — 손 도트 1014칸, 구성 도구, 다다미 실내 (#2512) (`2e2d7af`)
+- **sky-island** — 하늘섬 손 도트 칩셋 sky_island + compose_sky_island_map 조수 길 (#2509) (`956164c`)
+- **steampunk-city** — 스팀펑크 공업 도시 번들 칩셋 + compose_steampunk_city_map (#2508) (`a500d86`)
+- **modern_campus** — redraw the campus chipset by hand, procedural campus composer, interior layout programs (#2500) (`44f3a58`)
+- **sf-station** — SF station / colony / lab / cyber-neon chipset (172 Opus hand-pixel pieces), composer, assistant routing, references (#2499) (`80b2590`)
+- **jp-city** — fill leftover street land by use (coin parking, nooks, playgrounds, gardens, construction, plaza dressing) (#2505) (`324155c`)
+- **desert_east** — redraw 57 gate failures with visible top faces, gated bake (245/247 pieces), references, blank-map ground tile (`3b5f4cb`)
+
+### 수정
+
+- **ci** — type the desert temple floor uses so typecheck passes (`91cfa53`)
+- **ci** — drop unused chipset composer locals that fail typecheck (`972d712`)
+- **desert_east** — tag composed maps and rooms composed-layout so the layout-quality nudge does not make the assistant scatter props (`73a101d`)
+- **desert_east** — assistant guidance — compose output is final, no loose stamping; fuller tomb chamber (`9633345`)
+- repair syntax/duplicate breakage from the five stacked chipset merges (plainTurn routing chain, executionRoute note chain, hand-interior spec map/imports/enum, startRoutePaint map sizes, concept seed json) (#2520) (`0db604a`)
+
+### 문서
+
+- **desert_east** — status — gate counts, QA pass, assistant scores (`1f2eb06`)
+- **desert_east** — openwiki page and final review page builder (`66a8751`)
+
+### 잡무
+
+- **desert_east** — object-gate receipts, first full run (115/172 items pass) (`35f26be`)
+
+### 기타
+
+- **desert_east** — adversarial QA single improvement pass — ground seams, prop footing, camp/bazaar/palace/caravanserai/pyramid layouts, great pyramid, rug runner (`dcf0288`)
+- **desert_east** — art, composer, tools, policy and wiring before the gate run (`e2b44f1`)
+
 ## 0.208.0 — 2026-10-14
 
 ### 기능

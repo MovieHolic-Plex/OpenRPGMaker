@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "afa351249c078fcbb88b1e4cb97a70cd614db3ef23334ff5aaff8a00ad45fbf1",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "analysis machine against the back wall",
+ "label": "monster-rooms/lab_machine",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lab console desk with drawers",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The console counter/work surface is clearly depicted from above across rows 5-18 with equipment and a monitor placed on it, above a front face of drawers (rows 19-27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4352
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lab desk / analysis console with drawers",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large horizontal work surface (desk/counter top) is visible from row 5 to row 18 (14 pixel rows) supporting a monitor, keyboard, and sample dish, above a vertical south-facing drawer section from row 19 to row 27.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10851
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "laboratory analysis console / desk with monitor and drawers",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The console counter surface is viewed from above across rows 5-18 with equipment placed on top, resting above a front drawer facade spanning rows 19-27.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5584
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "analysis desk and drawers unit",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The unit features a large 14-pixel deep horizontal tabletop surface (rows 5-18) displaying equipment, followed by a south-facing drawer cabinet front (rows 19-27) in proper 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5329
+  }
+ ],
+ "decidedAt": "2026-10-14T05:27:39.602Z",
+ "cells": {
+  "16": [
+   "6ebf329e13fba39d",
+   "8f1a9299276cad1c",
+   "a27176f38c3ac9cf",
+   "ea8351c70ce50c0d"
+  ],
+  "24": [
+   "0d9595c17d77c3e5",
+   "0edefdc0c762a0fd",
+   "147ec37606d26e9f",
+   "1fb8f410c6b7b41e",
+   "3892b777a4fc6ae8",
+   "3b78e2093959e48a",
+   "3e0680df0d156316",
+   "4c83c14543c3611b",
+   "5dd56d86d2c0b82f",
+   "600693fa7788267b",
+   "63e47d2154c9552e",
+   "6a6564bdadeedd5d",
+   "720741ba8353a780",
+   "900c0c62b7019595",
+   "93a466fe1b5e0e25",
+   "995a3ef1a78a206e",
+   "a1b5e115d76acd94",
+   "b6388f263f482368",
+   "d40524d89a56b416",
+   "d6c804f3fde7c7eb",
+   "e109032246de139a",
+   "f93e8b01658d1891",
+   "fd719e564ed1d6a5",
+   "fe3de35708556d7f"
+  ],
+  "32": [
+   "cf6e1cfa9f355018"
+  ],
+  "48": [
+   "2395fc48aeae215f",
+   "335db51b7ede5787",
+   "3524f073ae5f0ac4",
+   "3bf4abf8e0119f97",
+   "6f4528536b479560",
+   "d8bacfbbbeb5f1ba"
+  ]
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8c056530a66ff4e31de1bbd859074666dc5156f6893918662f28e6539e8de44e",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "스키 통(나무 통에 꽂아 세운 스키 셋)",
+ "label": "snow-north/sn-ski-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden tub/barrel has a clear elliptical opening showing its dark interior cavity across rows 19 to 23 into which the skis are placed, with a curved front rim at rows 23-24.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6218
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden barrel shows an elliptical open top with a visible interior cavity spanning roughly 5 pixel rows (rows 18-23) between the back and front rim, providing proper 3/4 view depth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4337
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden tub has an elliptical open top visible from rows 18 to 23 (approx 5 pixel rows deep), showing the interior void with skis standing inside it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3960
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden barrel has a clearly visible elliptical opening spanning rows 19 to 23 (approx. 4 rows of interior depth) looking down into the container where the skis are placed.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5392
+  }
+ ],
+ "decidedAt": "2026-10-14T01:20:58.721Z",
+ "cells": {
+  "16": [
+   "26e4fd2a78fb7248",
+   "574504ce71204240"
+  ],
+  "24": [
+   "14e071c2e8448275",
+   "45cce443a5545ce4",
+   "5299287d305f9071",
+   "6e8034fe6582a602",
+   "6fbccd20cb3d3fcf",
+   "9c12ce96b2ede313",
+   "b2d46a88c0d9e813",
+   "c7235d190ddd12ae",
+   "d31ef9439f6bfb31",
+   "def2bfcd702acf06",
+   "ec306224fa8b7450",
+   "f2b5084e5708b61a"
+  ],
+  "32": [
+   "3664c5fad3a5a274",
+   "3a957b49ee71370c",
+   "9c33cfb5d0d10a3e"
+  ],
+  "48": [
+   "1fec268e68b82cbc",
+   "65f9f0b4adf96495",
+   "704b1f1f604c2126",
+   "b823640ea180f8d5",
+   "c8ec1fa3763b749b",
+   "e0fd8511c40d7c61"
+  ]
+ }
+}

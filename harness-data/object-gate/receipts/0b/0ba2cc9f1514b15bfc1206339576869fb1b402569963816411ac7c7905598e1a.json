@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0ba2cc9f1514b15bfc1206339576869fb1b402569963816411ac7c7905598e1a",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "카페 벽돌 벽",
+ "label": "modern_city/interior/mci-wall-brick",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting a vertical brick wall face with baseboard molding; terrain tiles are exempt from standing-object top surface rules.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6275
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile showing a flat vertical brick pattern with a lower baseboard, intended as a vertical surface rather than a standing object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5636
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brick wall face with baseboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile representing a vertical brick wall face and baseboard for top-down map layouts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4090
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brick wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a cafe brick wall face with lower baseboard; as a standard JRPG vertical wall surface tile, it correctly covers the wall face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4383
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:02.401Z",
+ "cells": {
+  "16": [
+   "077c542c557ea125",
+   "7957b1191251c01c",
+   "cae60fd65fd28086",
+   "dfdcbb8ef6f96fea"
+  ],
+  "24": [
+   "04abc9557a78a432",
+   "1097c1a58c65261b",
+   "1461aff8cf28005e",
+   "219af1d7da64e9ec",
+   "28043bf98db365f3",
+   "37f342f2a208cc29",
+   "39e90cfd9dcda407",
+   "3bf58c417a38d301",
+   "3d5e177334e15825",
+   "5eb79480043479b0",
+   "7988681fde0a19ff",
+   "7f4d6b6994228c86",
+   "84e9ab49fc6d09c1",
+   "9139aefd307ed21b",
+   "a314d37fe25131de",
+   "a392676cb77bacd4",
+   "a49c3ee23ffaaba7",
+   "a9a170631800d0cb",
+   "aa7a59a5869e4d32",
+   "b541ebb62fc06895",
+   "cf8ed7425bde13f9",
+   "d32d22457399c14d",
+   "eb80020e4c1a0b11",
+   "fef6088636660d03"
+  ],
+  "32": [
+   "5a17394f68bd4217"
+  ],
+  "48": [
+   "6a28953b5e52eccf",
+   "89e0753104163f78",
+   "92086b44636000e0",
+   "a0fef1121a5a9579",
+   "b161f47bfff3fdb8",
+   "e4a699921ef4329d"
+  ]
+ }
+}

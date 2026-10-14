@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2fd60eefb40a4bbc3c8c4418df8c25d34bb9489711cab74cf4498ec13ee60ba3",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "computer server rack against the wall",
+ "label": "monster-rooms/lab_server",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "computer server rack",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the server cabinet is clearly rendered from rows 2 to 6 (5 source pixel rows tall) before transitioning to the south-facing front containing the server units and LED indicators.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4259
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "computer server rack",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the server cabinet is clearly depicted across rows 2–6 (5 rows tall) with foreshortened lighting and a front edge highlight before the vertical south face begins at row 7.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3662
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "computer server rack",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the rack is clearly rendered from rows 2 to 5 (4 rows tall) in pale grey with a highlighted front edge at row 6, above the vertical front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4162
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "server rack cabinet",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The server rack clearly displays a 5-row tall horizontal top surface (rows 2-6) above the south-facing front containing the equipment shelves and LED lights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4352
+  }
+ ],
+ "decidedAt": "2026-10-14T05:27:39.602Z",
+ "cells": {
+  "16": [
+   "889851960ad90a75",
+   "decdefe3a506e8f5"
+  ],
+  "24": [
+   "05edf085d30ef61d",
+   "18c61b75a45875ed",
+   "1cd6fde49e5f8306",
+   "5364b7d9330e7088",
+   "7023466fc9fadd20",
+   "98ff5d318f0872a3",
+   "9ef7e368b2861d59",
+   "a13fcc095181f143",
+   "ec01533c74743379",
+   "f06414d89d40cff8",
+   "f8522f42e2084edd",
+   "fa9043c78b0c8e0c"
+  ],
+  "32": [
+   "ba5a9443cd309dc9",
+   "df1b1437f66f7eec",
+   "f3e98931c19b88e1"
+  ],
+  "48": [
+   "1888c6687cc25e3e",
+   "1b35792325aaad9a",
+   "3cc07ca5a63a8793",
+   "65590d33a91481a7",
+   "96348bb8a6fdc26b",
+   "a4d8d7f4436e8a2e"
+  ]
+ }
+}

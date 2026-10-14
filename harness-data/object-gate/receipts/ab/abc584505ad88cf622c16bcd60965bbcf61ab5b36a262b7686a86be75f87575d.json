@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "abc584505ad88cf622c16bcd60965bbcf61ab5b36a262b7686a86be75f87575d",
+ "width": 48,
+ "height": 48,
+ "kind": "organic",
+ "name": "대추야자 두 그루",
+ "label": "desert-east/de-palm-pair",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "two palm trees",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Drawn in a flat side-scroller/front elevation view. The palm fronds arch purely left-to-right along a 2D plane with no foreshortened canopy radiating forward/backward for top-down perspective, and the trunks have no visible depth or top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5622
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "canopy and trunks of two date palm trees",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both palm trees are drawn as flat 2D side-scroller/front elevations; the fronds only spread left and right in a single vertical plane with no south-facing or foreshortened fronds radiating forward to indicate a 3/4 top-down viewing angle.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6288
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two palm trees with trunks and frond canopies",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The palm trees and canopies are drawn purely from a side-scrolling front elevation: the trunks and arching fronds form a flat 2D silhouette with no top-down radial spread or overhead depth of the crown.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5130
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "two palm trees with trunks and frond canopies",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The palm trees are drawn as a flat 2D side-scroller elevation; fronds only branch left and right in profile without foreshortened front-facing fronds or a visible crown viewed from above (0 top rows), and the trunk segments are horizontal flat bands.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5730
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.221Z",
+ "cells": {
+  "16": [
+   "0df10b07ae93558e",
+   "11df317baf67b877",
+   "3d92acba32d09855",
+   "7e7db7763c92b40b",
+   "bd33687fcdcec820",
+   "c06baa6992de90d5",
+   "d5fdf30555f98863",
+   "d857e4d4054c9cd4",
+   "db08277995bd4fa7"
+  ],
+  "24": [
+   "261eb3d7c7ef0caf",
+   "bbb665bd55eac2f3",
+   "c63f38b00692951e",
+   "f74de342af105b84"
+  ],
+  "32": [
+   "10730d7b9941315e",
+   "1a2b1095a5a7b0f5",
+   "1d759a45604ac1e9",
+   "28ab2a4d5c714403",
+   "2b76fc3ef20baeb1",
+   "3b4aad7011d0825f",
+   "3ed4d2f8bd6b2301",
+   "3fd45f61c93eba3f",
+   "429e2edef23a138a",
+   "4bd664e73a39e53b",
+   "505098842f19f5ab",
+   "53940ee40b2e4d0d",
+   "654b4fbd630dfc39",
+   "90bd92b57c690d39",
+   "a091ce6287c5894e",
+   "a970c36d7ddbd2e5",
+   "b3bec2ce0e0d47f2",
+   "b664a12193356268",
+   "bb2eb00dd30fdd44",
+   "cf8cc737028a3b71",
+   "d0a478154021e6d7",
+   "df81722e906b3086",
+   "dfde9c0cc77a3bd9",
+   "ffaad2ec6c903770"
+  ],
+  "48": [
+   "b08549f5fdbedc48"
+  ]
+ }
+}

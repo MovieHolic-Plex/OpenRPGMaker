@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6bc13a4822f092065d9927a7482daae9218e5a433baf5c07b8e70520df96ea10",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "나무 술통(세움, 쇠테)",
+ "label": "snow-north/sn-barrel-in",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden barrel standing upright with metal bands",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrel is drawn in pure front elevation with straight horizontal bands and no elliptical top cap visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5839
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrel is drawn in pure front elevation: no elliptical top lid is visible at the top, and the metal hoops run completely flat horizontally across the body without any downward curvature.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4624
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "standing wooden barrel with iron bands",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrel is drawn in pure front elevation with straight horizontal iron bands and a flat outline across the top (row 0), showing no foreshortened elliptical top cap.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4779
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden barrel standing upright with metal hoops",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrel is drawn in straight-on front elevation: the metal hoops on rows 7-8 and 11-12 are perfectly flat horizontal bands rather than ellipses, and there is no visible elliptical top cap/surface showing the top of the barrel.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4700
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.164Z",
+ "cells": {
+  "16": [
+   "ce5ddba642022ffa"
+  ],
+  "24": [
+   "2c2a9878eaf90a21",
+   "3bf96ec5c93d2440",
+   "78f0ec3e6e399e98",
+   "8642865bc05528b2",
+   "b9b5ee9414880086",
+   "ba8b1ae6c3e1b217"
+  ],
+  "32": [
+   "198cf310c4d8393d",
+   "1e2d97a89101be2d",
+   "2fba6425f86bd872",
+   "577cd6d4d082ac52",
+   "64c8ec5d757d7491",
+   "e762b19b069a491d"
+  ],
+  "48": [
+   "297fa02c0d3d5463",
+   "6cc034aa1791e24d",
+   "6efc89a8bbfbb6ec",
+   "a39a2e15fb31f987",
+   "d34fbd7b09b4952e",
+   "e41d4494d580bd6a"
+  ]
+ }
+}

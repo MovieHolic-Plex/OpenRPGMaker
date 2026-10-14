@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "70f250e9b44c271d16907f4645f1005d5a4131a3832adfa999ac224d3623d6a1",
+ "width": 48,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "카운터(베이지 앞판)",
+ "label": "modern_city/interior/mci-t-counter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "counter",
+    "kind_matches": true,
+    "top_rows": 22,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The beige countertop surface spans rows 2 to 23 (22 pixel rows) with the front face and panelling visible below from row 24 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3860
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "counter with beige top surface and darker front panel/edge",
+    "kind_matches": true,
+    "top_rows": 22,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter clearly displays a large top surface spanning rows 2 to 23 (22 pixels deep) viewed from above, with the south front face and lip visible below it in rows 24 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3969
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "counter",
+    "kind_matches": true,
+    "top_rows": 22,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter top is clearly visible from rows 2 to 23 (22 source pixels tall), with the front face and overhang extending from row 24 to 31 in standard 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3222
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "counter",
+    "kind_matches": true,
+    "top_rows": 22,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter is drawn in standard 3/4 top-down perspective with a large visible top surface (rows 2–23, 22 pixels tall) and a south-facing front face with overhang shading and panel seams (rows 24–31, 8 pixels tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11372
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:05.389Z",
+ "cells": {
+  "16": [
+   "044e1e5b275fc22e",
+   "8f8a42e0baa89451",
+   "cb50bbc9e6467f36",
+   "e55c5e0d63540933",
+   "f55df62ffdc50265",
+   "fb56e5b8db2228c5"
+  ],
+  "24": [
+   "0933c9939891b764",
+   "15d6fe65455af851",
+   "33d518c332bb2484",
+   "65d738987e2bae98",
+   "6abb75947f482c84",
+   "6fd6462e4f58573b",
+   "75fbd6a70967b7d0",
+   "fe7bbc95f56ffe30"
+  ],
+  "32": [
+   "1b78ef0f9da4fd71",
+   "6aa3f5de5caac86c",
+   "7b899572eda07d10",
+   "c01da64d3c3e9eaf",
+   "c98ba0deafabb0ec",
+   "cd298bf7dc286f85"
+  ],
+  "48": [
+   "8b467967d882046f",
+   "fe160f42b1ae779c"
+  ]
+ }
+}

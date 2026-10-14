@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "59939cada9edd54e237358e2ab0f5235f115f1ecb98ef6e100b2a69ee2f206b0",
+ "width": 16,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "cabin door in the wall",
+ "label": "monster-rooms/sh_door",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cabin door set into wall frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabin door is drawn flat against the wall face with a round porthole window and lower panel; as a wall-mounted feature mounted flat on a wall, a visible top surface is not required.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 17896
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cabin door set in a wall frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabin door is a wall-mounted/in-wall architectural feature drawn flat against the wall plane, as permitted for wall-mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3959
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cabin door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabin door is a wall-mounted fixture set flat into the wall plane. In 3/4 view JRPG perspective, objects mounted flat on vertical walls correctly display their front face without a horizontal top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5448
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cabin door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The door is drawn as a flat front view with no visible top surface (0 top rows). Because it is a wall-mounted object set flat into the wall, this front view is correct for top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 20304
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.765Z",
+ "cells": {
+  "16": [
+   "28752406c8e27b61",
+   "7211ad523f0b2360"
+  ],
+  "24": [
+   "2324171a593c0551",
+   "3a60adcdae0498e2",
+   "3c774b58b19cb040",
+   "40d1e07de687b9d1",
+   "4a00a72a0ef3056d",
+   "5b01bc4c3a189293",
+   "66270e9f2cdc0cdb",
+   "95ed3f271d43f8a0",
+   "9839190c7c3fe862",
+   "aabb723a73571088",
+   "ca7d8b7a6b9e3ebe",
+   "cce05138c4b5626c"
+  ],
+  "32": [
+   "3dc32322bdcc5695",
+   "92cd0c9a53090df2",
+   "f68652c4e84c7f08"
+  ],
+  "48": [
+   "0995ed716638658b",
+   "1448d84248b0e30b",
+   "687583ca7168d30b",
+   "97bcfdd388e2b036",
+   "a3f9ba33071bc273",
+   "c8d79895ecd317e4"
+  ]
+ }
+}

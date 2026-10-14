@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7e32ebd477508a6e3f71ba99bdcd55786a41137940147432ed88d9213b96db8a",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "부러진 기둥",
+ "label": "desert-east/de-column-broken",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "broken column shaft with base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut surface of the broken column is clearly visible from row 4 to row 9 (about 6 pixel rows deep), properly foreshortened in standard 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5406
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "broken column shaft with broken cut top and base plinth",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The broken top cut face is clearly foreshortened and visible across rows 3-9 (~6-7 pixel rows tall), properly depicting a 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3688
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "broken pillar shaft and base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The broken cut face at the top of the pillar is clearly rendered as a foreshortened ellipse spanning rows 4 through 9 (6 pixel rows tall), correctly showing the top surface from a top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3928
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "broken column shaft with broken cut face on top and base plinth",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the broken pillar is clearly visible from rows 4 to 9 (~6 pixel rows tall) as an elliptical surface with texture and shading before the vertical fluted shaft begins.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4194
+  }
+ ],
+ "decidedAt": "2026-10-14T00:35:53.799Z",
+ "cells": {
+  "16": [
+   "735f12018f8ba9b2",
+   "851b2483999d993c"
+  ],
+  "24": [
+   "1c5deeb6bc16702e",
+   "208d0db378e78212",
+   "215c0b7006a5d8bb",
+   "3a761872f3c9b8d6",
+   "4288b29c584795c1",
+   "7fd354d87b83109d",
+   "8013dec1dd14ae05",
+   "94022eb964819bfc",
+   "c3ea067ceec0cf41",
+   "df94d3ff911c8528",
+   "ee52ffaa26ea37db",
+   "f2bebf5dc257b893"
+  ],
+  "32": [
+   "33180b74d2fdf0c1",
+   "47b4e4d368b9e855",
+   "87d87c918c6a0876"
+  ],
+  "48": [
+   "2b1ce591caf14216",
+   "3f8cb9d0b738052c",
+   "569460db1aef447e",
+   "642391c29500d0f4",
+   "a2e2fb9b7fe9a929",
+   "b08c651ff7d82535"
+  ]
+ }
+}

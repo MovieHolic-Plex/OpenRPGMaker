@@ -9,6 +9,7 @@ import { ToolError } from "./types";
 
 const SETTLEMENT_PROP = new RegExp(
   "(^|/)bd-(house|block|forum|cathedral|castle|manor|estate|harbour|canal|windmill|garden)-"
+  + "|(^|/)bd-farm-(barn|coop)$"
   + "|(^|/)bd-pick-(fishing-port|riverside-mill|vineyard|walled-market|wheat-roman|headland-lighthouse|shipwreck-reef)-"
   + "|^obj:house/",
 );

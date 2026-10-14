@@ -1,7 +1,7 @@
 import type { AiConfig } from "./llmClient";
 
 export const DEFAULT_ULTRABRAIN_PROVIDER = "google-antigravity";
-export const DEFAULT_ULTRABRAIN_MODEL = "gemini-3.8-flash";
+export const DEFAULT_ULTRABRAIN_MODEL = "gemini-4-argon";
 export const DEFAULT_ULTRABRAIN_EFFORT = "high";
 
 /**

@@ -16,6 +16,7 @@ import { expeditionEnemyActions } from "./enemyActions";
 import { repairExpeditionShopPrices } from './shopPrices';
 import { repairExpeditionResidents } from './residents';
 import { repairExpeditionNpcLayout } from "./npcLayout";
+import { fillAreaByUse } from "@/project/kitAreaFurnish";
 
 type Point = { x: number; y: number };
 type Template = { width: number; height: number; lower: number[]; upper: number[]; tilesetId: string; run: string;
@@ -551,6 +552,13 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     const map = make(s.key, s.name, s.template, s.music, "dungeon");
     wild(map, s.habitat, s.level);
     connect(townMaps.get(s.town)!, map, "mx_starter");
+    // 템플릿이 그려 둔 집(산호 해변 오두막)에 문 이벤트가 없어 문 앞에서 아무 일도 없었다(2026-10-06 검수 「해변 오두막 문 없음」).
+    // 방 하나를 더 만들지 않고 문에서 주인이 맞아 쉬게 해 준다 — 야생이 사는 곁길 한가운데의 쉼터.
+    if (sources.get(map.id)!.buildings.length) for (const [k, d] of doorways(map).entries()) {
+      event(map, `hut_door_${k}`, d, [text("「바닷가 쉼터」 문을 두드리자 주인이 문을 열었다."), text("파도 소리 들으며 잠깐 쉬어 가렴. 동료들도 지쳤겠구나.", "쉼터 주인"),
+        { kind: "recoverAll" }, text("동료들의 체력과 기술 횟수가 모두 회복되었다!")]);
+      reserve(map, { x: d.x, y: d.y + 1 });
+    }
     npc(map, "researcher", "서식지 연구원", `${s.name}에는 길에서 만나기 힘든 몬스터가 살아요. 도감에 빈칸이 있다면 천천히 탐색해 보세요.`, s.key === "beach" ? { x: 14, y: 32 } : { x: 2, y: map.height - 4 }, [], 5);
     const at = nearest(map, { x: map.width - 4, y: 5 }, connected(map), true);
     const flag = `${map.id}_treasure`;
@@ -741,5 +749,12 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
   repairExpeditionNpcLayout(project);
   repairExpeditionResidents(project, lookOf);
   repairExpeditionShopPrices(project);
+  // 마을 빈터를 쓰임으로 채운다(kitAreaFurnish — 편집기 furnish_outdoor_area 와 같은 코드). 판(townLayouts)은 건물·길·큰 표식만 깔고
+  // 남은 풀밭·눈밭·모래가 휑했다(2026-10-14 탐침: 마을 맨땅 14%). 문 앞·이벤트 둘레·주민 산책길·시작 위치는 비우고, 닿던 이벤트는 그대로 닿는다.
+  for (const t of towns) {
+    const map = townMaps.get(t.key)!;
+    const keep = map.id === project.startMapId ? [project.startPos.y * map.width + project.startPos.x] : [];
+    fillAreaByUse(project, map, { x: 0, y: 0, w: map.width, h: map.height }, { seed: map.id.length * 31 + map.width, keep, maxLots: 10 });
+  }
   return manifest;
 }

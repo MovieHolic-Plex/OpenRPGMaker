@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5bde153b4d7a7b1f48f5ac19bf8f1d35522e06f6edc5650ab19874632dc099e0",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "음료 냉장고",
+ "label": "modern_city/interior/mci-cooler",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "beverage refrigerator / drink display case",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The refrigerator is drawn strictly in a flat front elevation. The top edge at row 1 is only a 1px boundary line with no visible top surface, and the shelves and signs are seen head-on with zero top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6537
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall beverage refrigerator with header panel and glass display showing shelves of canned drinks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The refrigerator is drawn strictly in front elevation. The top surface of the cabinet is completely absent (0 px rows); row 1 immediately begins the vertical front header box.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7003
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "beverage display refrigerator",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The refrigerator unit is drawn in pure front elevation from row 1 to 31. Rows 1-8 depict a vertical header/signage panel with no top surface visible above it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6598
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "beverage refrigerator / cooler display",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The beverage refrigerator is drawn entirely in pure front elevation with no visible top surface (top_rows: 0). Rows 1-8 depict the front-facing illuminated canopy/sign rather than the top of the unit.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6709
+  }
+ ],
+ "decidedAt": "2026-10-14T01:18:25.206Z",
+ "cells": {
+  "16": [
+   "2ed031cb84c851bd",
+   "453fc9c45dad5d57",
+   "ddfdebaa86a406d1",
+   "ebc1bb07c6893fa5"
+  ],
+  "24": [
+   "07c2c15336dd709d",
+   "09a9e206998fc356",
+   "2370ae108a58e608",
+   "286bd15d8406c70c",
+   "37b5be8274df0ad0",
+   "45ad37e49d84103e",
+   "5c4c8cc27d673884",
+   "877fe872790d3b58",
+   "87f299e77b940df4",
+   "88be6cc06f87e245",
+   "8b8a30c0539f21c0",
+   "94e6c704c694cf37",
+   "97bf03bf481115ba",
+   "af34367ff929d8eb",
+   "b2fb904420056d80",
+   "b831c3d72340b6a8",
+   "bd56d9869ce834a2",
+   "c747c53e3c327b8d",
+   "d07e787a4778e240",
+   "f09a4918b34ebf3b",
+   "f4b92c2f33fcd6d7",
+   "f55306c97cce271a",
+   "fad25cb188acb066",
+   "fffc02cf6bd88719"
+  ],
+  "32": [
+   "56eb4b5344263f8f"
+  ],
+  "48": [
+   "49d99071f959b218",
+   "5239e24aa88de960",
+   "59ad5fd99f1a8461",
+   "a1323298587579ed",
+   "bdc9c882281f26bd",
+   "e11e1269adae3311"
+  ]
+ }
+}

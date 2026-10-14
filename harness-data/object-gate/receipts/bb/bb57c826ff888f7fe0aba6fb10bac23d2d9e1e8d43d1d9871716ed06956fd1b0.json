@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bb57c826ff888f7fe0aba6fb10bac23d2d9e1e8d43d1d9871716ed06956fd1b0",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "대리석 걸상",
+ "label": "desert-east/de-marble-bench",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "marble bench (seat slab on legs)",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top seating surface of the marble bench is foreshortened and visible across rows 5–8 (4 rows tall) with cracks and a mat/runner on the right, followed by a highlighted front edge (row 9), south slab face (rows 10–11), and legs underneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14214
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "marble bench",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bench is clearly visible from rows 5 to 8 (4 source pixel rows tall, holding a book/mat on the right), delineated by a front highlight edge at row 9, followed by the south-facing front apron (rows 10-11) and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5353
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "marble bench",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bench seat is visible from row 5 to 8 (4 rows tall), with a distinct 2px front edge lip (rows 9-10) and legs extending beneath (rows 11-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12808
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "marble bench",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The marble bench seat top is clearly visible from rows 5 to 8 (4 source pixel rows deep) with marble veining and a book/cushion resting on it. Below it, row 9 forms the front top bevel, rows 10-11 show the front thickness of the slab, and rows 12-14 show the supporting legs with transparent space between them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7464
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.217Z",
+ "cells": {
+  "16": [
+   "3d5b80088a4ece08",
+   "e1e45768a526969f"
+  ],
+  "24": [
+   "570a14ff680c56b2",
+   "587684b6ad5b6b29",
+   "5ab43dc3b9b5b330",
+   "7a02d6e39b60537f",
+   "873867df7416b278",
+   "8c3129ca311a661e",
+   "8f8c24a4e17cbd23",
+   "a32f886533e6c3d8",
+   "be293bed75ec12ff",
+   "c25957a1541ef102",
+   "c28057841f9e2bb6",
+   "c2d5a5698cf00ca7"
+  ],
+  "32": [
+   "1ceae216883c69c5",
+   "88d7ff542ce54726"
+  ],
+  "48": [
+   "3b0185c38a5adfbe",
+   "47cd0dcb3eebac32",
+   "78ccc963c89da6cc",
+   "b032f6503622380f",
+   "b43b887dabe296d4",
+   "fee8584395722819"
+  ]
+ }
+}

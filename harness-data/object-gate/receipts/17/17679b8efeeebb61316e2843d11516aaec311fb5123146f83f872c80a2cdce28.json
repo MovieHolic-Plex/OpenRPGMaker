@@ -1,0 +1,151 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "17679b8efeeebb61316e2843d11516aaec311fb5123146f83f872c80a2cdce28",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "사무 칸막이",
+ "label": "modern_city/interior/mci-partition",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "office partition panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The partition is rendered as a flat 2D front elevation with only a 1px border along the top edge (row 6) and no visible horizontal top surface or depth for the panel or its feet.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4137
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "office partition screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The partition is drawn entirely in a flat front elevation. The top border is just a 2px dark outline (rows 6-7) with no visible horizontal top surface showing the thickness/depth of the partition in 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5160
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "office partition screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The partition screen and its feet are drawn entirely in flat 2D front elevation with only a 1-2px dark border at row 6-7 and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4808
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "office partition divider screen with feet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The partition screen and its support feet are drawn completely flat from the front, with only a 1-2px outline along the top edge (rows 6-7) and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4498
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:23.925Z",
+ "cells": {
+  "16": [
+   "1b771ac54ab2dfa9",
+   "6193aaca833cec6d",
+   "c35fe34600af6a23",
+   "d3afe14c51358c71"
+  ],
+  "24": [
+   "0f5cfd35daf02b22",
+   "1922e5c53050de79",
+   "3320250720244e29",
+   "3570d5dda6ac2c50",
+   "42f756d7a11fba01",
+   "43e94ff898ae85a0",
+   "45bca752cc25a9ca",
+   "5b2c020d41e3a30d",
+   "6355f0cbc1a202c1",
+   "748f7fbc09253782",
+   "789851e490d2c592",
+   "7c158c2859b141a0",
+   "83efadff888478b0",
+   "84d22d944415a1d1",
+   "94cd44e5b0e74988",
+   "9964afe495c7e986",
+   "a20d2e61d11c6b27",
+   "ab59d26f1f7b22d2",
+   "b4ef284fb8665d43",
+   "cb4b8349d396024c",
+   "d466d6a19be7c45e",
+   "e5d4c0ed6ea307b0",
+   "e9e2ffa462734567"
+  ],
+  "32": [
+   "f227319e58571c2c"
+  ],
+  "48": [
+   "010dea262dc38e31",
+   "4fc62c36d14a34b5",
+   "74ea93db8ccc93f3",
+   "8ea4b12dcdbce6a7",
+   "c684df7c09d878de",
+   "e1993da59cec1032"
+  ]
+ }
+}

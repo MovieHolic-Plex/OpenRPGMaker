@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "465b072e5afe960d3e21a1262cc83a391e4766acaa374391d94e71337272aae9",
+ "width": 48,
+ "height": 32,
+ "kind": "flat",
+ "name": "메달리온 양탄자",
+ "label": "desert-east/de-rug-medallion",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "medallion rug lying flat on the floor",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire object is a floor rug with fringed edges and a center medallion pattern, fully visible from above as a flat floor surface spanning all 32 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4908
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "medallion rug lying flat on the floor",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 32-row graphic represents a flat rug with a central medallion and decorative borders seen from above, fully consistent with a flat floor decal/rug.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4810
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "medallion rug",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rug lying flat on the floor correctly rendered in top-down perspective across all 32 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5329
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "medallion rug lying flat on the ground",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 32-row sprite represents a flat rug viewed from above with a central diamond medallion and bordered fringe.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5808
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.214Z",
+ "cells": {
+  "16": [
+   "0b64a15177a00fb3",
+   "5ba0a760be2ce762",
+   "64633c62dfcc0fd6",
+   "6718c03e8d953706",
+   "79c353bdacd4a0b7",
+   "e3310d7a68e9d3ba"
+  ],
+  "24": [
+   "020d0200514a330e",
+   "34d8766a77365cde",
+   "52889cc6b590b8ba",
+   "ad272f6adea03299",
+   "bc090b2232fee330",
+   "be682177ecd5597d",
+   "c8f0c713742e0112",
+   "fd385158957c9917"
+  ],
+  "32": [
+   "065ccad6f3fbf470",
+   "218ab3a487fa01be",
+   "2e3d9c0fa861f1d1",
+   "4c4ccc068af728cb",
+   "6daa326abb1b0f5d",
+   "eede973af6cdedf5"
+  ],
+  "48": [
+   "2f1ef86b3c07bd4b",
+   "b51a08a282701624"
+  ]
+ }
+}

@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3a82609c573952c645b70bf13f1ba5658856e18975e7235da30933187f4334b9",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "말뚝 고삐 기둥",
+ "label": "desert-east/de-hitch-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hitching post / rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The upper board/beam and the two vertical posts are drawn entirely in front elevation with no visible top surface (row 1 is merely a 1px border/outline).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3819
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hitching post / tie rail with crossbeam and posts",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the horizontal crossbeam is clearly depicted across rows 2-6 (about 5-6px deep) ending with a front-edge highlight on row 6, above a shaded 2px front face on rows 7-8, with two vertical posts extending downward.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9485
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hitching rail with saddle",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal rail clearly separates into a 5-row top surface (rows 2-6, featuring wood grain, a saddle draped across it, and a bright row 6 front-edge highlight) and a 2-row south front face (rows 7-8) above the two supporting posts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8464
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hitching post / rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal beam/board across rows 1-7 is drawn straight from the front with only a 1-pixel outline on top (row 1) and no visible foreshortened top surface showing depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5238
+  }
+ ],
+ "decidedAt": "2026-10-14T00:33:14.417Z",
+ "cells": {
+  "16": [
+   "83a7cd5aebf289d6"
+  ],
+  "24": [
+   "2957677968e03b36",
+   "339983ac4546ac78",
+   "6295bd317cef584f",
+   "b0b82dda16ef14d3",
+   "c2955ef4928c7078",
+   "eb0ea2787e970733"
+  ],
+  "32": [
+   "37b5ff7aaceff875",
+   "48ad7bb4d624b6e3",
+   "56d55ecf159cb0cc",
+   "5c24a3a812e1a991",
+   "75b6a7ce8d9163e8",
+   "d35dd9f3c54c9399"
+  ],
+  "48": [
+   "1891d6993a8adcee",
+   "4b3c408fbaba58af",
+   "53f6b16e68576153",
+   "5ec689407b72cb2b",
+   "bcda25123693f138",
+   "f6685e66a140bb31"
+  ]
+ }
+}

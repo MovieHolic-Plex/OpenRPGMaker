@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ba2118b1e3cd9d6616673886f2c52e29473c178526993dffc160d5b22e321aba",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "서버 랙 둘",
+ "label": "modern_city/interior/mci-server-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "two tall server racks standing side by side",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The server racks are drawn completely in front elevation with no visible top surface (row 1 is merely a 1px outline above the front panels).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4648
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "server racks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in pure front elevation: the cabinet frame and top-mounted rack units (switch/patch panels with port cutouts) begin immediately at row 1 with no visible horizontal top surface of the cabinet roof.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 25345
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two tall server racks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The server racks are drawn in pure front elevation from row 1 to 30 with no visible top surface at all; only a 1px border outline exists at row 1 above the front panel.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4587
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "two server racks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The server racks are drawn completely in flat front elevation from row 1 to row 30 with no visible top surface foreshortened from above (only a 1px outline cap).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4076
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:23.925Z",
+ "cells": {
+  "16": [
+   "193e5093bad1ce4c",
+   "48e1b913650e76bd",
+   "8681e63cef058a9c",
+   "b3391f4a4861cb66"
+  ],
+  "24": [
+   "0a6bdb567a57f38b",
+   "0bb90227c4b918d0",
+   "2146d05ed3a5aabd",
+   "4a09b7151ff59348",
+   "4e1e8d9d5ae592a4",
+   "6e271e9ab12e8a05",
+   "7bed351b069cf005",
+   "801b29dc3cdcee5d",
+   "8562415508c549ee",
+   "8b3bf77188438027",
+   "8d22ac457215ee0f",
+   "a7b05bdf38a90c35",
+   "a807050f64ef2f2c",
+   "b3d7d11c72b2b597",
+   "b9a9339bf7dc87c1",
+   "c1942b5b0149872c",
+   "c4a5bc3d8e85e4b2",
+   "d19613e42116c4fd",
+   "d638dff778fbf9e5",
+   "db846d79ded0828f",
+   "f41c581200e10ff0",
+   "f59c320bffc31c54",
+   "f92a10f927c2f259",
+   "fcf37d36893ed449"
+  ],
+  "32": [
+   "91046dc2b87e93f5"
+  ],
+  "48": [
+   "6ac521eafd2ae8ed",
+   "7c2549054d6605c7",
+   "940918f99617d12a",
+   "a12083077598b4fb",
+   "ee648fe96f41c12b",
+   "fcc3b222cf2f395a"
+  ]
+ }
+}

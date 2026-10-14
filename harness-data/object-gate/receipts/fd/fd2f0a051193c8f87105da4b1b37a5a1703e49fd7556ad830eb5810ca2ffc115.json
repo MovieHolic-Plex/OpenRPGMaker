@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fd2f0a051193c8f87105da4b1b37a5a1703e49fd7556ad830eb5810ca2ffc115",
+ "width": 16,
+ "height": 48,
+ "kind": "structure",
+ "name": "오로라 깃발(보라·청록 물결, 반대 무늬)",
+ "label": "snow-north/sn-banner-aurora-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical hanging banner on pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The banner, horizontal support bar, and base plinth are drawn in completely flat 2D elevation with 0px of top-down perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3555
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "banner on pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The banner, crossbeam, vertical pole, and base stand are drawn in a flat pure front elevation with no visible top surface foreshortening on the crossbar, pole top, or base plinth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4337
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "banner hanging from wooden pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire flagpole, crossbeam, banner, and base are drawn in flat front elevation with 0 rows of visible top surface on the beam or base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5413
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "banner hanging from wooden pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire flagpole, crossbeam, and hanging banner are drawn in pure front elevation with no visible top surface on the crossbar or base plinth (base is 1px flat bar).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4425
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.508Z",
+ "cells": {
+  "16": [
+   "843a5116faecd97f",
+   "c744223c1d9d3262",
+   "ea1e6baa9317f5ac"
+  ],
+  "24": [
+   "401ea520a5df3633",
+   "65f32ab90e08bb62",
+   "6c8708b1b82874af",
+   "bb1ccd655be708cb",
+   "bf675343bfde8e67",
+   "cdc930c7ddb227ca"
+  ],
+  "32": [
+   "1b5e0f53298a1e09",
+   "34b6e0e5ecb58c17",
+   "3b5a88cfbc92bc04",
+   "4daf6db5e1b916e2",
+   "541126af4a91d2e4",
+   "a236b79bf5a72b8e",
+   "a88097320497489e",
+   "ada8f5c812266bce",
+   "c9f64fdcfbff6977",
+   "eabaf54e470248ce",
+   "f63b5632af520011",
+   "fcf759a7136b2ead"
+  ],
+  "48": [
+   "150b6a3420f922b4",
+   "569afaa891662c27",
+   "f9eb7c8fc0025ed3"
+  ]
+ }
+}

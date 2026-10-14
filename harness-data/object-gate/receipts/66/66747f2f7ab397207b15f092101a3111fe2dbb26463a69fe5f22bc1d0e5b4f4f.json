@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "66747f2f7ab397207b15f092101a3111fe2dbb26463a69fe5f22bc1d0e5b4f4f",
+ "width": 64,
+ "height": 32,
+ "kind": "terrain",
+ "name": "로비 대리석(크림 판)",
+ "label": "modern_city/interior/mci-stone-lobby",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "marble floor tiles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain pattern composed of cream marble floor/wall slabs with subtle marbling streaks.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4199
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "marble floor tiles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat marble floor terrain tiles depicting tiled ground surface with marble veining.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5593
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "marble floor tiles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles representing marble slabs viewed from above; not a standing object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4986
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "marble floor tiles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat cream marble floor slabs laid out as ground terrain, correctly presented as flat floor tiles for top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5235
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:02.398Z",
+ "cells": {
+  "16": [
+   "0901535d5ba07692",
+   "2e9f379727a8edd2",
+   "6550a563f509a4c5",
+   "8981ac88fa0d5500",
+   "9cace2d6f721d853",
+   "added174e26c1010",
+   "b9698b5c7f2a342a",
+   "ed8475b1a44c1717"
+  ],
+  "24": [
+   "10a7ef5baf8c43ee",
+   "142ef08949393a50",
+   "1e2b54ea452a7de7",
+   "2abaf69e2a251b9d",
+   "33d4c8c45ffc4d6e",
+   "447eb4bfbe55c9b5",
+   "44c8ea600d1e4116",
+   "48fa692b3cd1c265",
+   "4a95b2936442996c",
+   "57a4f4e54402193e",
+   "57b2b0b2b6b402ce",
+   "5fd0e3fa70e0182d",
+   "6373086bb6ad9858",
+   "67899dfe5b768a1c",
+   "6a7a1e59b862a103",
+   "8b07f98ab3756e6b",
+   "8e556f565e0738b7",
+   "8ef801674ef27cd8",
+   "a8ed39f76e14af0f",
+   "af54307b50584d74",
+   "b067c7bf6fa28a8b",
+   "b0d40a9d918d9104",
+   "b1c4da65e2ccf970",
+   "b8c182c65bdfaee8",
+   "bff30b5eb9f4a3cd",
+   "c2a26a7e49c1eceb",
+   "cdab12cbf8b45a31",
+   "cf99b66abdf8e8f2",
+   "d335a757bcb6e6c8",
+   "d3dd8db635369627",
+   "dd4baf3ba23280b8",
+   "e2247f14c00efbcf",
+   "e94b57e9cee544ec",
+   "eaf689ff128b8d9d",
+   "fb284195fc273050",
+   "fc2de7246d7c6c17"
+  ],
+  "32": [
+   "1e9c8febdfef9672",
+   "2dcfd380311f238c"
+  ],
+  "48": [
+   "125b0ee5b7fd00ee",
+   "1308774f5b699b6c",
+   "16c5fac655e3b57f",
+   "28b0f6ecc724db95",
+   "2a01848043ff9080",
+   "82a36e6cf28e7107",
+   "97ad9ee1745d393d",
+   "e8605abd465c9735",
+   "ef525cde5e2f6e48",
+   "f1ae1a66ef68fac2",
+   "f38cec8832ac155e",
+   "f58806c91c33d05f"
+  ]
+ }
+}

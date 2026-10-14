@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5e34a3ca4079867a663915f48a72a22bcb41da9b76fa9f0423bffe152aea73e0",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "에스프레소 머신",
+ "label": "modern_city/interior/mci-g-espresso",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "espresso machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The machine is depicted as a flat square front elevation with only a 1px top border at row 1 and no visible top horizontal surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5935
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "espresso machine body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The machine is drawn completely flat from the front with a 1px border outline at row 1 and front-facing displays/nozzles directly below, showing 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6035
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "espresso machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn as a flat square front elevation with only a 1px outline on top (row 1) and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5820
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "espresso machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The espresso machine is rendered as a flat front elevation inside a square outline, showing controls, dispenser area, and drip tray from a direct eye-level perspective with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5998
+  }
+ ],
+ "decidedAt": "2026-10-14T01:18:12.126Z",
+ "cells": {
+  "16": [
+   "f3f101ebf80188ac"
+  ],
+  "24": [
+   "0be67e304b8d0b51",
+   "1a2ee2d8e46d43f5",
+   "6ce0db2c5737b9c1",
+   "8689f6bc50b67442",
+   "c2580120fbf2090f",
+   "ff29c8b80280a932"
+  ],
+  "32": [
+   "0ada4207bdb2b21e",
+   "43947e41da5495ce",
+   "77f223819dde295e",
+   "8d9437fed900ec25",
+   "e7b44bb4b4912cd8",
+   "f26aedf0d26983df"
+  ],
+  "48": [
+   "07d177dbde178cc7",
+   "314c79415a9ebbc3",
+   "52d078d6e849fe2e",
+   "7a0eb3b11fc6a62d",
+   "889ef4db89929413",
+   "e5049c849a6694ec"
+  ]
+ }
+}

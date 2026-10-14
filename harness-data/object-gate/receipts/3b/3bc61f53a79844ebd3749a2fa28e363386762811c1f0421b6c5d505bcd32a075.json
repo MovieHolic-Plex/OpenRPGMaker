@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3bc61f53a79844ebd3749a2fa28e363386762811c1f0421b6c5d505bcd32a075",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "analysis machine against the back wall",
+ "label": "monster-rooms/lab_machine",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall laboratory analysis machine with screen and control panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire machine is depicted as a flat front elevation. There is no visible top surface at the top of the unit (only a 1px outline/edge highlight), and the protruding lower section also lacks a top face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5825
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "analysis machine / server cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The machine is drawn in flat front elevation with no visible top surface foreshortened from above (0 pixel rows of top depth at row 1-2).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5134
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "analysis machine cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire machine is depicted as a flat front elevation. There is no visible horizontal top surface on the main unit (only a 1px border highlight at row 2), and the protruding base ledge has at most a 1px edge line at row 22.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7036
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "analysis machine cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn as a flat front elevation. The top edge has only a 1px outline (row 1) and a 1px highlight line (row 2) with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5484
+  }
+ ],
+ "decidedAt": "2026-10-14T05:17:07.551Z",
+ "cells": {
+  "16": [
+   "05ec14bc933381b1",
+   "b8a74125f4ab9491",
+   "c009e375aefea09c",
+   "df82a54c342236ff"
+  ],
+  "24": [
+   "01c381f85bc6ccae",
+   "06eca807b3d8a534",
+   "266b91e71cf08b5e",
+   "4303609d2e970c07",
+   "49db03bdd0535d61",
+   "58b04397543d95cf",
+   "6a6c636b2c7fd726",
+   "6bbddfbb37d5e60c",
+   "708c836f8a136db6",
+   "7144241f4aeca312",
+   "7cebf7cc8bbabff3",
+   "7d12443f85fd1a0b",
+   "8719e5468e5df150",
+   "a0fb97c197e85c11",
+   "c33432c7f7a6ddc6",
+   "cb9c23e38454bd05",
+   "ccef56913bf35570",
+   "ccf83bfa4ff3bf34",
+   "cf7b5a5b23f61cc8",
+   "d20021e8adfb1022",
+   "d76f991b36f6ff95",
+   "da159385e44f22cb",
+   "ed08892b4db8ead9",
+   "f75f9d7abcae2ada"
+  ],
+  "32": [
+   "f9527f601b48450b"
+  ],
+  "48": [
+   "02bcf1ce7a0f62d2",
+   "419d02a3b37df487",
+   "571dc29cae8f1cf1",
+   "7e51cd13c9328181",
+   "9eeab19134b13e2e",
+   "dcddc9fab0b43f25"
+  ]
+ }
+}

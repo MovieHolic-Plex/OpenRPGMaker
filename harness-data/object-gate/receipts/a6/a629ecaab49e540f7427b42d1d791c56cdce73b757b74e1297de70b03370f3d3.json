@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a629ecaab49e540f7427b42d1d791c56cdce73b757b74e1297de70b03370f3d3",
+ "width": 48,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "low glass display case",
+ "label": "monster-rooms/dp_showcase",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "glass display counter",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 6 to 16 form a deep top surface (glass top looking down at displayed wares inside, ~11 source pixel rows tall), and rows 17 to 25 form the vertical south front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6648
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "glass display case / counter",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top glass surface is clearly visible looking down through rows 6-16 showing the displayed goods inside, while rows 17-25 form the vertical front glass panel and base plinth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 24398
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "glass display case counter",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the display case spans rows 6 to 16 (11 rows) showing items displayed under the top glass panel, while the front south face spans rows 17 to 25.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3802
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "glass display case",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the case is clearly shown looking down through the glass from row 6 to 16 (~11 rows) revealing items inside, with the front glass face occupying rows 17 to 25.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7613
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.762Z",
+ "cells": {
+  "16": [
+   "4712b5a9edc78c71",
+   "532c62cd87b56d8c",
+   "53cdd014d098468b",
+   "792c97953c679b11",
+   "87a66cba5f08e5f2",
+   "b51cf5cac87a92c4"
+  ],
+  "24": [
+   "3958aeaa46275e5b",
+   "41e4da1ec5ab75de",
+   "46bba523d00a5cad",
+   "4aba25283017932c",
+   "77b05f8df4671a93",
+   "8f1dbe236c5bf780",
+   "a2ab28b57c79aa86",
+   "af73100a605e4696"
+  ],
+  "32": [
+   "281cc2af49c49057",
+   "33ff02874c0e381b",
+   "5a6eaf57d1491556",
+   "8f7b7dfae4b0a347",
+   "96db6dc0414fc662",
+   "a8bf1c370e861fc7"
+  ],
+  "48": [
+   "8f520d11d0cd1b2b",
+   "ed708debbd3f92cb"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d2d1b69ba16046692fd5e8f73e6c461c400531fc9d18951dffa21aa346a31287",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "서류 더미",
+ "label": "modern_city/interior/mci-g-papers",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stack of documents",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top sheet of the document stack is visible foreshortened from rows 4 to 8 (5 rows tall) showing text lines and a top binder clip, with the front thickness/edges of the stack visible below it in rows 9-11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6253
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stack of documents",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top sheet of the document stack is clearly visible from above across rows 4 to 8 (5 rows tall), with horizontal text lines drawn on its top surface. The front edge/thickness of the stack is rendered in shadow below across rows 9 to 11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4420
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stack of documents",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stack of papers shows its top sheet/surface from row 4 to 8 (5 pixel rows with clip and text lines) and its shaded south-facing front thickness from row 9 to 11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5605
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stack of documents with binder clip",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top sheet of the document stack is foreshortened across rows 4-8 (5 pixel rows) showing lines of text, while rows 9-11 show the vertical front face/thickness of the stack.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7027
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:05.389Z",
+ "cells": {
+  "16": [
+   "6b758f5fc041c28f"
+  ],
+  "24": [
+   "0662bb61163f4307",
+   "7dc221c6cd092349",
+   "a282dbd530fee45f",
+   "a3eeab2c46e77615",
+   "dfa033a082e6592e",
+   "f99d53ba5cb2c41d"
+  ],
+  "32": [
+   "5e993c7020f5e80a",
+   "77cafbc40f9e46e6",
+   "7fb29bfc386ffb0f",
+   "8efc864d00388c8a",
+   "9b3584890af91fbe",
+   "c8dd9ab69a8f3366"
+  ],
+  "48": [
+   "3a0b0acbdf9fd08d",
+   "44ac69b0fc58af0d",
+   "495d93a32b5fb14c",
+   "56dec293b1eb04d0",
+   "9e11a83edb04baee",
+   "c12893c7fe5a3bbd"
+  ]
+ }
+}

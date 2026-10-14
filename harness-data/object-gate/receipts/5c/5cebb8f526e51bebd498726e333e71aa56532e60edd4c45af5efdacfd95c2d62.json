@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5cebb8f526e51bebd498726e333e71aa56532e60edd4c45af5efdacfd95c2d62",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "가게 사암 포석",
+ "label": "desert-east/de-floor-flag",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sandstone paving stones",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground paving tile filling the full 16x16 footprint viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5507
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sandstone pavement tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image shows a 16x16 sandstone pavement floor tile with mortar seams between rectangular paving stones, appropriately categorized as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6148
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sandstone pavement floor",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting sandstone paving stones viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3772
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sandstone pavement tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting sandstone paving stones viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5399
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.210Z",
+ "cells": {
+  "16": [
+   "142175930b7952e6"
+  ],
+  "24": [
+   "148db2f2c58c5745",
+   "26550770d776bca3",
+   "5479345a4a9e74e3",
+   "86734cd01e91a04f",
+   "d26bcecf758790db",
+   "ea4d9f86c0617791"
+  ],
+  "32": [
+   "0f561ea5871c054d",
+   "17623c8f357a6b15",
+   "26bd44a0a66676ce",
+   "7c6108cde7e013cc",
+   "94a9ddae0740c62b",
+   "e1160a5c27423c43"
+  ],
+  "48": [
+   "541debb13d50d20d",
+   "6f0b21d638e6e99e",
+   "71dd87812b1799d5",
+   "7d4d39d1ec910932",
+   "c12b0faeb3534d50",
+   "c9e0f5ee73146038"
+  ]
+ }
+}

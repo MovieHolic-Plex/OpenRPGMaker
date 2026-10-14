@@ -1,0 +1,151 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d07d7f958250bff27192f457e0d60e431e7bac5190427423392288e020a89b44",
+ "width": 32,
+ "height": 32,
+ "kind": "other",
+ "name": "낙타(안장)",
+ "label": "desert-east/de-camel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "camel with saddle",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The camel and saddle are drawn entirely in a flat 2D side profile/elevation (like a side-scroller sprite) with 0 pixel rows showing the top surface of the back, saddle, or head, and all feet resting on a flat baseline.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5041
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "camel with saddle",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The camel is drawn as a flat side-scroller silhouette/profile with zero top surface visible on the back, saddle, or head.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6485
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "camel with saddle facing west",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The camel and saddle are drawn in pure 2D side-scroller profile with no top surface visible along the back, rump, or saddle seat.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6414
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "camel with saddle",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The camel is drawn in pure 2D side elevation (side-scroller style). The back, hump, and saddle show no top surface seen from above (0 top rows), and the legs and body are aligned in a flat profile view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4653
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.226Z",
+ "cells": {
+  "16": [
+   "5b763c6caf5f1c70",
+   "95e7cbc661959b72",
+   "ec87eb53f89679e6",
+   "f7858903f98912ac"
+  ],
+  "24": [
+   "05fcd45a5ce5162b",
+   "075774e3865b7911",
+   "10e95ea29ca6277a",
+   "29ab53ddd356970f",
+   "2ae937fc1422a761",
+   "2c43f94c4049ed78",
+   "329ddf3e7150b0da",
+   "32ff316789dcaa54",
+   "38270d0f0c50434b",
+   "3d0d84a88c815ebc",
+   "5be595b1df3251f2",
+   "67e129d47ef003b9",
+   "78a351cbc3e932f9",
+   "84ce86f310302fc0",
+   "8d17e36bed5157b0",
+   "a99e25bd2cdfa511",
+   "b51d915dbe6e5491",
+   "bc5026a2cea28e3e",
+   "c24c1a4a3043590d",
+   "c7f52c3a4197f4a0",
+   "d984ce105d0c8858",
+   "df7eb92d671bd002",
+   "f11a1e7b6e8359a2"
+  ],
+  "32": [
+   "8e1af7154af5b9d6"
+  ],
+  "48": [
+   "0b4367befad0f6bf",
+   "21dc06402ad40f14",
+   "baeba5b42879a13a",
+   "df73cbe1fa2a885b",
+   "e4654daa8ed6d19f",
+   "f158a1bb0e0f5a27"
+  ]
+ }
+}

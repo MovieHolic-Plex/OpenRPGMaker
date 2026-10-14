@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9da4ccdf82e07d319af2eaac728432da4a264e69028259c63294dc67d5cd0ffe",
+ "width": 16,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "세로 진열대",
+ "label": "modern_city/interior/mci-gondola-v",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical display stand / shelf",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the display unit consists only of a 1px outline at row 2 with no visible horizontal top surface, rendering the entire piece as a flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3680
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical display rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tall display rack has only a 1px border at row 2 and no top surface visible from above; it is drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3510
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vertical display rack / showcase",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top edge consists only of a 1px dark outline at row 2 with no foreshortened top surface visible. The entire tall display rack is drawn as a flat, straight-on front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4276
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical display stand / retail rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tall retail display rack has only a 1px outline at row 2 with no foreshortened top surface visible, presenting a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3136
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:46.509Z",
+ "cells": {
+  "16": [
+   "373c0a6e062b672c",
+   "a722d70ed577a804",
+   "f4b629315a764536"
+  ],
+  "24": [
+   "23090a0adce3d46e",
+   "263bbe4947f56247",
+   "35756843b7618ffe",
+   "690a93a54f96c385",
+   "69b02ac26de7fed7",
+   "976e7cfc61ce70b5"
+  ],
+  "32": [
+   "00d20293109ed726",
+   "0b0ee0bba9cb2a79",
+   "13065fb9579a3393",
+   "1e10106e0a833e24",
+   "354225bcaf5927bf",
+   "3548ce70f81a3e09",
+   "5a5551d1cfe21c3e",
+   "5a6fda160031e321",
+   "83563e3785e471fe",
+   "8b706ed680787a9d",
+   "f702dcd0081b918e",
+   "f9c21a22dd792003"
+  ],
+  "48": [
+   "5e12a82791408b71",
+   "89438fd3e139210f",
+   "8c5405962f3d64b9"
+  ]
+ }
+}

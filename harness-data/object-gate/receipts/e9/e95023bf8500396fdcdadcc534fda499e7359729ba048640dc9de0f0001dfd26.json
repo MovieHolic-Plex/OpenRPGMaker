@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e95023bf8500396fdcdadcc534fda499e7359729ba048640dc9de0f0001dfd26",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "케이크 접시",
+ "label": "modern_city/interior/mci-g-cake",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cake slices on a plate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The two layered cake slices on the plate are drawn as flat rectangular front elevations showing horizontal layer stripes, with only a 1px outline at the top and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5724
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cake slices on plate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The two cake slices standing on the plate are rendered as flat vertical rectangles (pure front/side elevations showing horizontal layer stripes) with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8088
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cake slices on a plate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cake slices are drawn as flat vertical rectangles with horizontal stripe layers inside dark outlines, showing no visible top surface at all (0 source pixel rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5679
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cake slices on plate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cake slices standing on the plate are drawn as flat rectangular front-facing cross-sections showing horizontal layers, with no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8046
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:59.363Z",
+ "cells": {
+  "16": [
+   "a300e43e266f5c60"
+  ],
+  "24": [
+   "329b34d6f5c78421",
+   "440f497766187fc2",
+   "4e782e3ef047ea1d",
+   "84951bde00922994",
+   "8e3ec5f9af61a3ed",
+   "d7db5b94586d7486"
+  ],
+  "32": [
+   "15c3d44318c27e59",
+   "185e4f6289e6881e",
+   "24afb369a8a41f44",
+   "616271e5f69edd81",
+   "6c80194336c40768",
+   "7a1d9c3a45f0763e"
+  ],
+  "48": [
+   "06b1ad1d849bd88a",
+   "14feed83766f0b38",
+   "7b899fad62b8f686",
+   "ba7d84f1edc3cc88",
+   "e4ad54a84bc163e0",
+   "f6251d5a740b2329"
+  ]
+ }
+}

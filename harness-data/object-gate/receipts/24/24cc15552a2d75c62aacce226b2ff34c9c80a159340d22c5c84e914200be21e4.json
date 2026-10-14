@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "24cc15552a2d75c62aacce226b2ff34c9c80a159340d22c5c84e914200be21e4",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "작은 바위",
+ "label": "desert-east/de-rock-small",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "small rock",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rock is drawn primarily from a front elevation with vertical cracks spanning rows 9-12; the top surface is only 2 rows tall (rows 7-8), which constitutes a 0-2px top line rather than a properly foreshortened 3/4 top plane.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8579
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "small rock",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The small rock is drawn with a vertical front face spanning rows 9-12 and only a 2-pixel-tall highlight strip on top (rows 7-8), appearing as a near-flat side/front elevation rather than showing a distinct foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6997
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "small rock",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rock has near-perfect vertical symmetry (flat 7px outline at row 6, expanding to rows 8-11, contracting back to a flat 7px outline at row 13). The lighter area across rows 7-8 is only 2 rows of surface highlighting on a front-elevation silhouette rather than a foreshortened top plane seen from 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7892
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rock body",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The small rock is drawn almost in front elevation; the lighter area along rows 7-8 is only 2px tall, functioning as a top edge highlight rather than a foreshortened top surface, while the remaining rows (9-13) form a vertical front face.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10983
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.222Z",
+ "cells": {
+  "16": [
+   "3f3cef45f3bd29b2"
+  ],
+  "24": [
+   "225fde0003883762",
+   "261be87e48a80c47",
+   "6296c953d19a2b1e",
+   "8df43afb17d0786d",
+   "dadf4f5d7809944c",
+   "f26bdb01d8d3026c"
+  ],
+  "32": [
+   "3c562fefc6052676",
+   "43ed587bf7f68fb1",
+   "967d0a5a33ced1c7",
+   "ae18158a58af5375",
+   "c289a2afea26d0f9",
+   "c5a377ceced6a3a5"
+  ],
+  "48": [
+   "2b0e8a5dfc76b045",
+   "502b33820a3a4221",
+   "59c07880125839cd",
+   "645408bdf7b60318",
+   "ad59986d639d62ae",
+   "c2d1056f651bbc02"
+  ]
+ }
+}

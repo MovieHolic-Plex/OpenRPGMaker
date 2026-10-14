@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fe4a5889f13ef5710fde258ad24aa88c28fc875c72751ac6928b10787ded31db",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "standing museum sign on a post",
+ "label": "monster-rooms/mu_sign",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "angled sign plaque on a post and base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sign plaque is drawn foreshortened/tilted with a visible reading surface spanning 6 pixel rows (rows 2-7), front edge at rows 8-9, and a post with base visible underneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6466
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "slanted sign plaque on a post",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The museum sign's reading surface is shown angled back and foreshortened from above across rows 2–7 (6 pixel rows tall, trapezoidal perspective widening toward the front).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7168
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "slanted sign board on a post",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sign board is tilted toward the camera and foreshortened with trapezoidal perspective (6px wide at the top edge, 10px wide at the bottom edge), spanning rows 2 to 7 (6 rows) as its visible top/angled reading surface, with a south edge visible at row 8.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6366
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tilted information plaque/sign board on post",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sign plaque is drawn foreshortened (tapering from 10px wide at the bottom to 6px wide at the top across rows 2-7) representing an upward/backward angled display surface visible from above, with a distinct front edge at row 8.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4370
+  }
+ ],
+ "decidedAt": "2026-10-14T05:21:01.696Z",
+ "cells": {
+  "16": [
+   "56396973fb0edfcf"
+  ],
+  "24": [
+   "3eba182b34c258c9",
+   "56f1a912cae00fac",
+   "71844acd52c31824",
+   "8f103a6eb9df0806",
+   "a45e99a82882887e",
+   "c45bf4e595107290"
+  ],
+  "32": [
+   "252b9436974c51b3",
+   "5dc65c3cf1fadc94",
+   "735473d889a2e3f8",
+   "8eff600ada1d4cb1",
+   "962b1607331aadf9",
+   "e64ed6e18a85b1ed"
+  ],
+  "48": [
+   "5da157832144e889",
+   "6482cb1eb425086a",
+   "68f601a554088a7c",
+   "869b94d73847921a",
+   "9b01841710acdca2",
+   "c3e2d7cb2cc47cf1"
+  ]
+ }
+}

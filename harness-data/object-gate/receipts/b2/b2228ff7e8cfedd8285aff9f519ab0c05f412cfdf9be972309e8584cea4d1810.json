@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b2228ff7e8cfedd8285aff9f519ab0c05f412cfdf9be972309e8584cea4d1810",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "수건걸이",
+ "label": "desert-east/de-towel-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "towel rack frame with hanging towels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top crossbar is drawn as a flat 1-pixel-tall line at row 2 with no foreshortened top surface, and the towels hang purely vertically in front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5348
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "towel rack frame with hanging towels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top rail of the rack is only 1 pixel row tall (row 2), and the feet at rows 13-14 are drawn completely flat from the front with no visible top depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5344
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "towel rack frame with draped towel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top bar is drawn as a single 1px line (row 2), and the draped towel and frame legs/feet are depicted entirely in flat front elevation with no visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5189
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "towel rack frame with hanging towel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top crossbar is only 1 pixel tall (row 2) and the towel hangs directly downwards with no foreshortened top surface or horizontal fold visible from above, making the entire frame a flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5414
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.217Z",
+ "cells": {
+  "16": [
+   "98e06d4aecab56cc"
+  ],
+  "24": [
+   "10be883d4e022d6b",
+   "438f1509742c6ad7",
+   "4ca59b97975e1b8f",
+   "4cb62fb42405a3d6",
+   "4cbfd37878fd9e33",
+   "c4ef8502a15dcbaf"
+  ],
+  "32": [
+   "02a805526a738862",
+   "652dd9cc0d90a817",
+   "695d5b669723bb73",
+   "a094edad774d7d00",
+   "ae23649c11839011",
+   "ca66dc77bebacc90"
+  ],
+  "48": [
+   "4f997e0e2d9f042d",
+   "645413668e7f402a",
+   "67f2727caac354a7",
+   "6b94c5120bf414d9",
+   "9cd160c6ee730b0c",
+   "c24c642aae36f0de"
+  ]
+ }
+}

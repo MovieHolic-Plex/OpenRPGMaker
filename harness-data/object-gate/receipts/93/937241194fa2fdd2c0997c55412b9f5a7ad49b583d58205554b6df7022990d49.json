@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "937241194fa2fdd2c0997c55412b9f5a7ad49b583d58205554b6df7022990d49",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "말뚝 고삐 기둥",
+ "label": "desert-east/de-hitch-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal hitching beam and vertical posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hitching rail is drawn entirely as a flat 2D front elevation. The posts have flat ends with no visible circular/elliptical top faces, and the crossbeam has only a 1px front highlight/shade band rather than a foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6764
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hitching post frame with horizontal beam and vertical posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hitching post is drawn entirely as a flat 2D front elevation. The horizontal beam is only shaded vertically (1px highlight, 1px midtone, 1px underside) with no visible top surface, and the vertical posts extend straight down to flat cutoffs without any top-down base or depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6117
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hitching post frame with horizontal rail and two vertical posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal crossbeam and vertical posts are drawn entirely as a 2D front elevation with standard linear 1px highlight and shadow bands, showing no visible top surface or 3/4 perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5369
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hitching post frame (two vertical posts with a horizontal crossbeam)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal crossbeam consists only of a dark top outline (row 4), a 1px front highlight face (row 5), and a dark bottom shadow (row 6) with no foreshortened top surface visible. The post tops are drawn as rounded 2D caps straight on rather than showing horizontal end grains.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7782
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.226Z",
+ "cells": {
+  "16": [
+   "bc6f4413f5f0787e"
+  ],
+  "24": [
+   "07831b615dd7145e",
+   "576ff034cb080888",
+   "c0d49f86f5596ece",
+   "c5ca81d451bac060",
+   "caff4f7a9736f54d",
+   "f9d52ffbc1dce599"
+  ],
+  "32": [
+   "2672772c85fdcb48",
+   "30b58413136f4568",
+   "30f38ecfde5fc874",
+   "af42c348fb75fe7f",
+   "d219ad96415c6dbb",
+   "e77f3af0858b281e"
+  ],
+  "48": [
+   "07cc46cd7276094b",
+   "6a14fd9f7bbe623b",
+   "b3a001c7934698fd",
+   "bed7b53cedd40fb5",
+   "df7d7dd2d0e5f704",
+   "ecad052f7827f628"
+  ]
+ }
+}

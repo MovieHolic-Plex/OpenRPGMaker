@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "54b14bcaa6a4b816bf00ced87ecacb13a87f9a282be643c6a4773d4a253203ab",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "작은 피라미드",
+ "label": "desert-east/de-pyramid-small",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "옆면(아이소)"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pyramid",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": false,
+    "evidence": "The pyramid is drawn in an isometric corner perspective with receding side faces (a lit face on the left, south-facing center, and a heavily shadowed receding side face on the right) rather than aligned to the standard orthogonal 3/4 top-down view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "옆면(아이소)",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14538
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pyramid structure",
+    "kind_matches": true,
+    "top_rows": 41,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": false,
+    "evidence": "The pyramid is drawn with visible receding side faces flanking a central face, including an isometric shaded east flank on the right, violating the south-facing 3/4 orthographic projection where side faces should not recede isometrically.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "옆면(아이소)"
+   ],
+   "ms": 13454
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stepped pyramid structure",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": false,
+    "evidence": "The pyramid is drawn in an isometric/axonometric 3D projection showing three faces, including a distinct dark receding isometric side face on the right, violating the south-facing 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "옆면(아이소)"
+   ],
+   "ms": 9455
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stepped pyramid",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pyramid is drawn as a flat front elevation (isosceles triangle outline with horizontal stone course bands and side-lit shading). There is no top-down 45-degree angle: no visible step treads (flat horizontal surfaces) and no foreshortened top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 16863
+  }
+ ],
+ "decidedAt": "2026-10-14T00:24:39.343Z",
+ "cells": {
+  "16": [
+   "30dba9d2c4dce76a",
+   "508042a2230a88b9",
+   "5c8b897a83115a35",
+   "6eba190d33bec268",
+   "758291294da3a61f",
+   "8ec06cb3d1f40dde",
+   "9707ed64e9fb0d6f",
+   "997198cd81999343",
+   "9d550dd65694304f",
+   "d5e8996dfc1e1fbb"
+  ],
+  "24": [
+   "19e2162bbae16f5e",
+   "23652c471b22a96f",
+   "309457c9a9fa5295",
+   "3cb6ebbe02358f75",
+   "4f04c1ae3cb9b4db",
+   "565a977d7bb79b04",
+   "72d6ae701e13c4dc",
+   "92d01bca7fb5b6c8",
+   "9ace1c9fdc60ffb5",
+   "9e9472eb84b557f2",
+   "a7f162cbf5b974d6",
+   "b3fd9d16b0d31b52",
+   "c93b0fa3549650fb",
+   "cb3452d40cc1151f",
+   "df8424d2a18ee3f6",
+   "ecffa39d38d40ecf",
+   "f38089b00d15a5dc"
+  ],
+  "32": [
+   "2400b34e4c5d984a",
+   "3340bc50a82139f1",
+   "38ed61473c368188",
+   "7c7919fa81162241",
+   "890b715093bf5f44",
+   "92059d061ce234ce",
+   "935abd8b3d9266f4",
+   "cdcf6cf965d09b26"
+  ],
+  "48": [
+   "0cee38494f604351",
+   "2d29e314a52a11a3",
+   "3dab6f23bf66c793",
+   "88dbde15181c49d6",
+   "900bc42743890d86",
+   "b467e7f1a2c18600"
+  ]
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8f826f047d12ae930772a842de2f81ee1640fab5d26a6a4f73b83c5a486fdebe",
+ "width": 16,
+ "height": 32,
+ "kind": "terrain",
+ "name": "무덤 석회암 벽(돋을새김·채색 띠)",
+ "label": "desert-east/de-wall-tomb",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tomb limestone wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Decorated limestone tomb wall face terrain tile with relief and painted bands. As a terrain wall surface, it represents the south-facing vertical plane rather than a standing object, correctly matching the terrain category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7029
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "decorative limestone wall face with painted relief bands",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting a tomb wall face with colored and carved friezes. As a wall surface tile, no horizontal top surface is required.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5847
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "limestone tomb wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Decorated vertical wall face tile showing painted and relief bands; correctly categorized as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5048
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tomb wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Limestone tomb wall face tile with painted decorative bands and carved reliefs. As a terrain wall surface, it validly represents a vertical wall face in the tilemap.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7389
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.211Z",
+ "cells": {
+  "16": [
+   "1f4f668036b4ab83",
+   "f2e175cfaa2830ae"
+  ],
+  "24": [
+   "20f1d469f053deec",
+   "44aeed76d37a0f40",
+   "4da97a5a56db6416",
+   "53fe9a20619bd12c",
+   "6efeab1112e59838",
+   "7783d077ec27e8d8",
+   "869e573870c9d6bb",
+   "9edbff8fc4e367ec",
+   "a3e18603e880b77d",
+   "c3b5a407c08e8760",
+   "ce780b140c89579f",
+   "dde7820a038e03bf"
+  ],
+  "32": [
+   "4016209d76514e22",
+   "ec01dc42a368889b",
+   "ff53a0ab2113b4f0"
+  ],
+  "48": [
+   "04ad93961b629930",
+   "13c726b3d55490fc",
+   "2688c34513261fe5",
+   "66b39e3264e8e382",
+   "dab02d403601df28",
+   "e9922b59ee007738"
+  ]
+ }
+}

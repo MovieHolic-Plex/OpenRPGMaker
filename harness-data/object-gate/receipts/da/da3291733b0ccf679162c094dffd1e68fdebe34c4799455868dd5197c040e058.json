@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "da3291733b0ccf679162c094dffd1e68fdebe34c4799455868dd5197c040e058",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "거실 탁자",
+ "label": "modern_city/interior/mci-coffee-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "table",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from rows 3 to 8 (approx. 6 pixel rows deep) with items resting on top, followed by a south-facing front apron and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5316
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "table top and apron with legs",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from rows 3 to 8 (6 pixel rows) showing items resting on it, followed by the south-facing apron (rows 9-11) and legs (rows 13-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5472
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "table with tabletop and front apron/legs",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from rows 3 to 8 (6 rows) with objects resting on it, above a front face and legs extending down to row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6287
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "living room coffee table",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is visible from row 3 to row 8 (6 rows) with objects resting on it, meeting the south front apron at row 9, with legs extending below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4533
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:12.628Z",
+ "cells": {
+  "16": [
+   "04dac1e5c7d1984f",
+   "b18ff3d4001a3d73"
+  ],
+  "24": [
+   "038d0fcb0b20d02d",
+   "1c3acb0355880b2c",
+   "20995fe3c2fc21a9",
+   "2e86784129982a9b",
+   "7ac947ab8f95f7c7",
+   "a73515a6c1007a5f",
+   "ab67a6acfab53101",
+   "b1226dca7d845e94",
+   "ce3bd2e91fb72d00",
+   "df62f6029579e077",
+   "ed9310ccb3bc606a",
+   "edceb36234b1c827"
+  ],
+  "32": [
+   "63f2089ff2a28c8b",
+   "97216a2a3b642607"
+  ],
+  "48": [
+   "3c13106ca7693bd2",
+   "4b48ed8882797b25",
+   "501b1193b33058a6",
+   "b62e423b3b5af433",
+   "cc3e6b5621e39a76",
+   "db88bf6725b22a5c"
+  ]
+ }
+}

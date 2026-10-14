@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a65ccdd1c4d83ab26b5fe9d28c5618d5838474bdf38c8489b009e16d943fbd8e",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "생선 노점(얼음 위 생선, 줄무늬 천막)",
+ "label": "snow-north/sn-stall-fish",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fish stall counter with awning",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall counter shows a clear horizontal top surface (rows 16–21, 6 source pixels deep) containing an ice trough viewed from above, resting on a south-facing front counter base (rows 22–30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11508
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "market stall (awning and counter)",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall counter clearly displays a 6-pixel deep top surface (rows 16-21) housing an ice bed, and the forward-sloping awning canopy (rows 3-10) is viewed from the standard 3/4 perspective above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8803
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "market stall counter and striped awning",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter table shows a 6-row deep top surface (rows 16-21) containing the ice trough and display, correctly rendered from a 3/4 top-down perspective above the south front face (rows 22-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5949
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "market stall counter and striped awning",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall counter clearly shows a 6-row deep top horizontal surface (rows 16-21) displaying an ice tray and stand item, viewed from above at a 3/4 angle, above a 9-row front face (rows 22-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7343
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.508Z",
+ "cells": {
+  "16": [
+   "141b5b76302968e4",
+   "344bc9e15bac3d4f",
+   "4477f717f53633a3",
+   "4a96b4edd7efb2c1",
+   "5bacff9a6ce4806a",
+   "f574b3b582a16883"
+  ],
+  "24": [
+   "3ecf189a17eb6702",
+   "735cb257e16fed27",
+   "a03ae7203bd2d4e9",
+   "a11c3b79e67b4a60",
+   "a35b26019f7c97c4",
+   "b1b0d7d218917f8a",
+   "f5bd6a62b3a4f965",
+   "ff1fe2ad0da16a4e"
+  ],
+  "32": [
+   "11bd9f89af07d0d6",
+   "326c3b84a30bd5d0",
+   "4de6817ffc90f9bf",
+   "cf39f4e50b510e61",
+   "ec20118150df3113",
+   "ec7d17679d62d5e2"
+  ],
+  "48": [
+   "24b3f2efbed8171f",
+   "578c206f362f4c00"
+  ]
+ }
+}

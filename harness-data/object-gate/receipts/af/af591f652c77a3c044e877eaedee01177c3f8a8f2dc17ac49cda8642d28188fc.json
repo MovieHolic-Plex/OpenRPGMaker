@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "af591f652c77a3c044e877eaedee01177c3f8a8f2dc17ac49cda8642d28188fc",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "farm crop plants: wheat mature (plants only, the soil is a separate tile underneath)",
+ "label": "beodeul_farm/crop_wheat_mature",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wheat crop plants",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wheat plants are drawn in a flat side/front elevation with vertical stalks and upright heads across two flat tiers, showing no foreshortened top surfaces or 3/4 downward perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14838
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "crop stalks and wheat heads",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wheat plants are drawn in side-scroller/front-elevation view as flat vertical stalks topped with heads in horizontal bands, with no top surface or depth perspective visible.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9403
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wheat stalks and ears",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wheat plants are drawn in pure front elevation as vertical stripes and ears across two flat tiers with no visible foreshortened top surface (top_rows: 0), resembling a side-scrolling platformer texture rather than a 3/4 top-down view.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9743
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "crop stalks and wheat heads",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wheat crop is drawn as flat vertical bands of stalks and ears in pure front elevation without any top-down depth or foreshortening (0 visible top rows).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4645
+  }
+ ],
+ "decidedAt": "2026-10-14T05:12:51.328Z",
+ "cells": {
+  "16": [
+   "9d9ec6d00bb54822"
+  ],
+  "24": [
+   "2d2173ff1a0f5e06",
+   "510d303a45717212",
+   "5df456c2d97e5ca6",
+   "6a1aeb91bddfc0eb",
+   "a33093ad978774fe",
+   "c644bc57651e665c"
+  ],
+  "32": [
+   "31f12dac2a6efd66",
+   "36224ecea5f551be",
+   "515bde52d882c64e",
+   "9a1453a8c420cf9f",
+   "a32e41b709f737e6",
+   "a72e2c377c6e8118"
+  ],
+  "48": [
+   "1390a27c9b62afb8",
+   "30d3a514d646bcc6",
+   "5bd37c92f9a0b134",
+   "b4a965880ac9fcf8",
+   "bc116cdf1f93d7e1",
+   "cf5c2d240b0cb378"
+  ]
+ }
+}

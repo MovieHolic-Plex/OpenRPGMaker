@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4aaa7df03772ab663c7c2f061673a1bc658e05e6c77f19757e28373fe15bb198",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "가로대 나무 울타리(동서 한 칸)",
+ "label": "snow-north/sn-fence",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal wooden fence rails and posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence rails are drawn in pure front elevation with only a 1px white snow/edge cap on row 4 and row 9, with no foreshortened top surfaces visible for the horizontal beams or post tops.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5001
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal wooden fence rails and posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal fence rails are rendered as flat side-scroller bars in pure front elevation. The only top indicator is a 1-pixel white line (rows 4 and 9) representing a cap/snow line, with no visible top surface depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4624
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden fence with horizontal rails and vertical posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence rails and posts are drawn entirely in front elevation with horizontal stripes of shading; the top of each rail and post is merely a 1px highlight/snow line with no foreshortened top surface showing depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4364
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal wooden fence with two rails and two posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence rails and posts are drawn in a completely flat front elevation. Each horizontal beam only has a 1px white line along the top (rows 4 and 9) with vertical gradient shading below, rather than any visible horizontal top surface showing depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4357
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.508Z",
+ "cells": {
+  "16": [
+   "61cf2fedc569dde7"
+  ],
+  "24": [
+   "34fa83bf9a5b35da",
+   "7a90c8b2d4e52ebd",
+   "7ba9b6909284cbb4",
+   "8044ff7eeb324e22",
+   "83026456221765f5",
+   "cc78b855f752224a"
+  ],
+  "32": [
+   "16014c48c662e227",
+   "2a04ec97cfdc6fa1",
+   "310893233e530ba7",
+   "7703c9e1b4066f0d",
+   "9d24500e5cc06bf9",
+   "bd536d585aa2f510"
+  ],
+  "48": [
+   "03eb5ca8167e0935",
+   "0f15abf7e5700e77",
+   "2c113e7e0ac483f8",
+   "38df15e2acf9fe8d",
+   "52008c58cee81a9f",
+   "cfa5c3babd445c05"
+  ]
+ }
+}

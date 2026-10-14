@@ -1,0 +1,26 @@
+{
+ "gate": {
+  "assembled-pass": 1,
+  "prov": 87,
+  "covered-by-assembled": 4,
+  "blocked": 0,
+  "profile": "uncalibrated → pass 영수증을 임시통과(provisional)로 센다"
+ },
+ "count_before": 10743,
+ "count_after": 10743,
+ "added_cells": 0,
+ "owned_cells": 564,
+ "kits": 64,
+ "groups": 35,
+ "objects": 64,
+ "floors": 9,
+ "walls": 8,
+ "tables": 3,
+ "goods": 7,
+ "sheet": [
+  768,
+  3584
+ ],
+ "room_kinds": 14,
+ "room_examples": 14
+}

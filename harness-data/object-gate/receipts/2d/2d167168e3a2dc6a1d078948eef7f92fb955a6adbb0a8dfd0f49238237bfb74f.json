@@ -1,0 +1,138 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2d167168e3a2dc6a1d078948eef7f92fb955a6adbb0a8dfd0f49238237bfb74f",
+ "width": 48,
+ "height": 32,
+ "kind": "box",
+ "name": "대상 짐수레",
+ "label": "desert-east/de-cart-camel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "covered wagon body and canopy",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wagon is drawn as a flat 2D side elevation: the wheels are perfect front/side circles, and neither the roof of the canopy nor the wagon bed shows any foreshortened top surface (only a 1px outline border at row 6).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4990
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "covered wagon / caravan cart",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wagon is drawn in a pure 2D side-scroller elevation profile with circular flat wheels and no foreshortened top surface visible on the roof or wagon bed (top_rows = 0; only a 1px contour line at row 6).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4816
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "covered wagon / caravan cart",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wagon is drawn in pure flat side elevation (side-scroller style), with circular side-facing wheels and completely flat horizontal boundaries; neither the cart bed nor the canopy top has any visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 3504
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "covered wagon / cart",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wagon is drawn in pure side-scroller profile (side elevation) with circular wheels and a flat 1px outline along the top of the canopy (row 6), showing 0 rows of foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4845
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.226Z",
+ "cells": {
+  "16": [
+   "22b5a0c43248c786",
+   "275dd2ecfe0b8845",
+   "29c3a51610786159",
+   "2b3b1668e890cfc7",
+   "86d77f9123e8b5dc",
+   "a9289599b1778dc0"
+  ],
+  "24": [
+   "03abaac923860cb9",
+   "0e89267fb78f8c33",
+   "3bd66c39986eb516",
+   "4caf9f6472f567d5",
+   "777f53e7eab31fdd",
+   "8e4b35bd8210df73",
+   "a6fde8d9df0d5982"
+  ],
+  "32": [
+   "07a209c0d5945b21",
+   "3285331554c0101b",
+   "3bc8e3e1c25a147b",
+   "9715b5d935f3c7b7",
+   "a0a888d0724c9552",
+   "b29e09d13edae186"
+  ],
+  "48": [
+   "28bedfb631876cf2",
+   "76cba02b4fa8d5b8"
+  ]
+ }
+}

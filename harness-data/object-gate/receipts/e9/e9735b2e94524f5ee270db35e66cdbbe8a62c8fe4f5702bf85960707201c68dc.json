@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e9735b2e94524f5ee270db35e66cdbbe8a62c8fe4f5702bf85960707201c68dc",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "모닥불(돌 고리 속 타는 장작)",
+ "label": "snow-north/sn-bonfire",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone ring with campfire",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone ring is arranged as a foreshortened ellipse seen from a 3/4 overhead perspective spanning rows 14 to 29. The individual stones along the front clearly display highlighted top surfaces (rows 24-25) above their vertical south faces (rows 26-28), creating proper 3D depth for the fire pit.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5292
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone ring campfire",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone ring is drawn as an elliptical ring on the ground in 3/4 top-down view, with the back stones behind the fire and the front stones showing distinct top surfaces (rows 24-25) and front south faces (rows 26-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4805
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone ring and campfire",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 10,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone ring is arranged in a clear foreshortened ellipse seen from a 3/4 overhead angle, with front stones overlapping the burning logs and ash pit, and back stones visible behind the flames.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6752
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone ring with campfire",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": true,
+    "opening_rows": 10,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone ring is drawn as a clearly foreshortened ellipse in 3/4 top-down perspective (rows 14-29). The interior fire pit is visible inside the ring across ~10 rows, and the foreground stones show distinct top surfaces (rows 24-25) above their front faces (rows 26-28).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4476
+  }
+ ],
+ "decidedAt": "2026-10-14T01:15:54.501Z",
+ "cells": {
+  "16": [
+   "1104bc9d93bf08b0",
+   "639aca92176cb521",
+   "ee012f49704b2674",
+   "f18d963f6cf2f642"
+  ],
+  "24": [
+   "17ad8d5ff16c9c11",
+   "43864893aaafa104",
+   "453612c136a2f4b7",
+   "54accea8bba5418c",
+   "68818c4cde30f464",
+   "8912c9163688303c",
+   "9c40e5087d4fcc0e",
+   "9ddcb18caafd51c3",
+   "a8d7fdad0a96eb98",
+   "ac3ed11bebfa4a2e",
+   "af68a95c4f23b6a7",
+   "b01b4fb708dd6eaf",
+   "b90b6a5f66af0cb0",
+   "d273cf3b64f0cf35",
+   "e25574ed81997940",
+   "e7b0106649f01495",
+   "ea60c3049bd10710",
+   "f16e2c2140723eee",
+   "f1ee05ef0570fb75",
+   "f35e932fcb794659",
+   "fd68664b56d74377",
+   "ff585e193ea026c5"
+  ],
+  "32": [
+   "c78db23d94fb891f"
+  ],
+  "48": [
+   "349c23ecdbb90610",
+   "57a009f547e7c8cd",
+   "83b6cffe897eff65",
+   "9484c7bf239ef206",
+   "cc9fe121dc184884",
+   "ed6657fd27b8e9bd"
+  ]
+ }
+}

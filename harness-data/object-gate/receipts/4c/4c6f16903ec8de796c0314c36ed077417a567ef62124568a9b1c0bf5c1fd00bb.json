@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4c6f16903ec8de796c0314c36ed077417a567ef62124568a9b1c0bf5c1fd00bb",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "얼음 동굴 천장(검푸른 바위·얼음 덩어리)",
+ "label": "snow-north/sn-ceiling-ice",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ice cave ceiling terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Dark navy and grey textured surface tile representing an ice cave ceiling or rock terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3654
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ice cave ceiling / dark rock terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image is a full 16x16 dark blue/rock ceiling texture pattern; as a terrain tile, it represents an overhead cavern ceiling surface with no 3D standing object body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3987
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ice cave ceiling / rock tile pattern",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless dark blue rocky terrain texture covering the full 16x16 tile, valid terrain surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2852
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ice cave ceiling terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain texture tile covering the full 16x16 grid representing dark ice cave ceiling surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3397
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.161Z",
+ "cells": {
+  "16": [
+   "4d242e53f951f91b"
+  ],
+  "24": [
+   "1c947f5397d5fb59",
+   "2e0c171d878a5732",
+   "78bbe9227c72d0eb",
+   "8ccb8761ac9d9679",
+   "b90e53b4a8e2de24",
+   "ec47ac1fe295c4e3"
+  ],
+  "32": [
+   "324165fa3506a08c",
+   "34859722f0c7a8f1",
+   "440ec0503afca4c4",
+   "93b05ddc2050e521",
+   "e10ed60adaab0b39",
+   "fe89660ada83b2b7"
+  ],
+  "48": [
+   "2f56c047833f79e3",
+   "34257ce517beafb2",
+   "3da7d66ee34b32e2",
+   "3ed7f565341a92f9",
+   "9537e527d0b5c619",
+   "a3437d86a1198107"
+  ]
+ }
+}

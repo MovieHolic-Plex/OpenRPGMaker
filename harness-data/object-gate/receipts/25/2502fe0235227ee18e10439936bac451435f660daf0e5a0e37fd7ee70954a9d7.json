@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2502fe0235227ee18e10439936bac451435f660daf0e5a0e37fd7ee70954a9d7",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "mooring bollard",
+ "label": "monster-rooms/sh_bollard",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mooring bollard posts and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bollard posts and caps are drawn entirely in straight front elevation: the tops of both posts are flat horizontal lines with no foreshortened elliptical top surfaces, and the base plate is also shown straight from the front with no visible top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7676
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "twin-post mooring bollard (bitt bollard)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both posts of the bollard and the base plate are drawn strictly from a front elevation with completely flat horizontal top edges (rows 1-2) and bottom edge (rows 13-14). Neither bollard post cap shows an elliptical top surface seen from above, nor does the base show horizontal depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7509
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "mooring bollard (double-bitt bollard with two posts and base)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bollard is drawn in pure front elevation: the mushroom caps, vertical shafts, and base plate are all viewed straight-on with no foreshortened top surfaces visible on either post head or the base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9012
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "mooring bollard (double bitts on base)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bollard posts and base plate are drawn in pure front elevation as flat rectangular blocks. Neither the posts nor the base show elliptical or foreshortened top surfaces visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10634
+  }
+ ],
+ "decidedAt": "2026-10-14T05:21:01.709Z",
+ "cells": {
+  "16": [
+   "0159ab446f2dc740"
+  ],
+  "24": [
+   "56450e2ad4ac115b",
+   "8d5f867a356d4311",
+   "aac6779e6b812fe2",
+   "c0a93fdfebf9865f",
+   "d4f88bbe4ff07d3e",
+   "ebb0daa9c9e5e160"
+  ],
+  "32": [
+   "060ec6ee22860de4",
+   "1cbc8b9f2aada80a",
+   "2278467282f570a0",
+   "59ea05d02e1934b3",
+   "8dcb45c42c0c3f51",
+   "cca124a06faf883e"
+  ],
+  "48": [
+   "54c61647598983b9",
+   "7a0e75d3a4061961",
+   "97d563f953db0eb1",
+   "bb98f9594c87e175",
+   "f4861e8b42d59ae1",
+   "f969c4ab2ddfd575"
+  ]
+ }
+}

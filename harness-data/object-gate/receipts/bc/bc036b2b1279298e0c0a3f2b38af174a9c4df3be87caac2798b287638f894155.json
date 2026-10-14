@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bc036b2b1279298e0c0a3f2b38af174a9c4df3be87caac2798b287638f894155",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "aquarium tank set in the back wall",
+ "label": "monster-rooms/mu_tank",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "aquarium cabinet unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet/wall unit is drawn in pure front elevation without any visible top surface (0 pixel rows of depth at the top) or foreshortened horizontal planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6526
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall-mounted aquarium cabinet unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire unit is rendered in a flat 2D front elevation with only a 1px outer frame at the top (rows 1-2) and no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6775
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "aquarium wall unit / cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire unit (upper shelf cubby, aquarium display, and lower cabinet) is drawn in pure front elevation with only a 1px top outline on row 1 and no visible horizontal top surfaces or interior depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5243
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall aquarium / tall cabinet unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in flat front elevation with a 1px top outline and no visible horizontal top surface on the outer unit, shelves, or tank.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4541
+  }
+ ],
+ "decidedAt": "2026-10-14T05:21:01.696Z",
+ "cells": {
+  "16": [
+   "1a7463d3c54cf942",
+   "9bb5b116ee2336a3",
+   "a6c3c36fb91d03ad",
+   "e5d12dc49e075a38"
+  ],
+  "24": [
+   "10475882d94c05ce",
+   "134e4717e462adfb",
+   "13d9745ae04ac94c",
+   "19509e47c8e5f69c",
+   "223e98124b3f467e",
+   "259b30c84b24e187",
+   "411d0be3e62cf74b",
+   "58aea8438f2fef79",
+   "5b21e038829ef791",
+   "731200f9f9d79c52",
+   "7b57dc5132c62e8c",
+   "819aa28b355cf891",
+   "93c37541241f5a6f",
+   "98746c2c6aca321a",
+   "9ab912772731945e",
+   "9e61e3a25b0d89ea",
+   "9f2a951199f282fd",
+   "b4667260ca732a45",
+   "b785cfbed73a7714",
+   "ba41d24ce1c495fd",
+   "ba8d771fc842d6f4",
+   "db1671d458b89e4c",
+   "e10db62793077304",
+   "fa52eb17626a5059"
+  ],
+  "32": [
+   "2fbff7cf5c53a107"
+  ],
+  "48": [
+   "136529db82f6ee05",
+   "3193ce95263349b1",
+   "a253a015dc15005a",
+   "b03c0b04b289398e",
+   "cdbc819bbd4b83fd",
+   "de4edc5a3acf61f1"
+  ]
+ }
+}

@@ -1,0 +1,127 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7e9a27591113680356bab1b533bdbd522789d8a93a31e00f35291555573debb8",
+ "width": 48,
+ "height": 32,
+ "kind": "seat",
+ "name": "대기 의자(셋)",
+ "label": "modern_city/interior/mci-wait-bench",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "waiting chairs (set of three)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chairs are drawn in pure front elevation: the backrests and seat cushions are drawn as flat rectangular panels stacked vertically with no foreshortened horizontal seat surface or front edge thickness visible in 3/4 perspective, and the support beam and legs are entirely flat 2D front projections.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10666
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "waiting bench seats",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seats clearly show their horizontal top cushion surfaces from rows 16 to 20 (5 pixel rows deep) extending forward from the vertical backrests (rows 7-14), with row 21 shaded darker as the front edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11671
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "trio of waiting chairs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chairs are drawn in a flat 2D front elevation (side-scroller style). Both the backrest (rows 7-14) and the lower cushion (rows 15-22) are rendered as flat vertical rectangles with matching vertical shading, showing no horizontal seat surface viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8444
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "three-seat waiting bench",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat surfaces of the chairs are visible from above across rows 16 to 20 (5 pixel rows tall), with row 21 serving as the foreshortened front edge and the backrest standing upright behind them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11167
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:12.631Z",
+ "cells": {
+  "16": [
+   "0c456b5b912425fe",
+   "b5305087d82247ce",
+   "bc09564f3705643c",
+   "bcf1ab2b253b8a98"
+  ],
+  "24": [
+   "03472afa2f74fad3",
+   "34e1bf38931aaaea",
+   "3a04015a39ebbbec",
+   "62078f6aeee14b8e",
+   "6b99be991534f25d",
+   "710d03b9e898bca6",
+   "b3bd95674a4a159f",
+   "fd0a5db66e541cdc"
+  ],
+  "32": [
+   "25ff88fec2f96916",
+   "5d4bf2b80e2c177a",
+   "61781432849af6a6",
+   "751620fe6f78cc06",
+   "91144333326c6a6a",
+   "a46e80db8e233659"
+  ],
+  "48": [
+   "7ed48d3591e144a6",
+   "ead044e9f3e5a859"
+  ]
+ }
+}

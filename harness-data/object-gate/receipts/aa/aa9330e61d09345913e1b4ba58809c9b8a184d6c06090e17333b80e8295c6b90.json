@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "aa9330e61d09345913e1b4ba58809c9b8a184d6c06090e17333b80e8295c6b90",
+ "width": 32,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "cork bulletin board",
+ "label": "monster-rooms/sc_bulletin",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cork bulletin board with pinned notes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted bulletin board hanging flush on a vertical wall; correctly drawn flat facing south as permitted for wall-mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7743
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cork bulletin board",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted bulletin board with pinned notes, appropriately drawn flat on the wall surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4399
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rectangular cork board with wooden frame and pinned notes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted cork board viewed directly on the south-facing wall; properly rendered flat with frame border and pinned notes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4035
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cork bulletin board with pinned notes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Flat wall-mounted cork bulletin board seen directly from the front; permitted for wall_mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9258
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.765Z",
+ "cells": {
+  "16": [
+   "75ffa32bc161338b",
+   "78714e3aa75a9503",
+   "9d0b534fed426092",
+   "bc538000296b402c"
+  ],
+  "24": [
+   "01761bb54bddd19b",
+   "16dc97e2cff5da52",
+   "2186ee14f163ec63",
+   "2cfc696396517580",
+   "49f377e315c6186d",
+   "5f772d51cb0f5e54",
+   "6a4267bd42497ce6",
+   "7b93e598e901ecde",
+   "8009fdeffc1c5b2c",
+   "8d5237100a859f82",
+   "9127f0655b95a46e",
+   "9c9aa229c0d5d5ae",
+   "ba4a6bdb8498dbd2",
+   "cbd4291618e33b09",
+   "d677ce5cd344da97",
+   "e04bc3a722ca5cbb",
+   "f229e6dd50e09277",
+   "f2e64a7b47230da9"
+  ],
+  "32": [
+   "a2d0b91817492906"
+  ],
+  "48": [
+   "245697ee9f8b0f1b",
+   "771f641d7c19c374",
+   "a1b57eade8d767ef",
+   "de6084995abb9d59",
+   "eb02e7f6c21027d8",
+   "f04b19558a6509a8"
+  ]
+ }
+}

@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4eb2c1c031e9038be8bb703d0629722be76cb0d7bd4b1d497104e801ed3d91fa",
+ "width": 48,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "부엌 조리대",
+ "label": "modern_city/interior/mci-kitchen",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "kitchen counter / base cabinet with sink and stovetop",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The countertop surface is clearly visible from above across rows 13 to 19 (7 source pixel rows tall), showing the sink basin, cutting board, and stovetop elements foreshortened in standard 3/4 top-down view, followed by front-facing cabinet doors from row 20 down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4203
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "kitchen counter with sink, cutting board, and stovetop",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The countertop surface is clearly visible from rows 13 to 19 (7 source pixels tall) showing top-down details including the sink basin, cutting board, and stovetop, above the vertical cabinet drawers on rows 20 to 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4258
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "kitchen counter",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The countertop surface is clearly visible from rows 13 to 19 (7 source pixels tall), housing a top-down view of a sink, cutting board, and stovetop, above the vertical front cabinet face spanning rows 20 to 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5867
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "kitchen counter with sink and stovetop",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The kitchen countertop surface spans roughly rows 13 to 19 (7 rows) displaying a sink basin, cutting board, and stovetop in top-down projection above the front cabinet doors (rows 21 to 29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5437
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:12.629Z",
+ "cells": {
+  "16": [
+   "64bc98ed27fb7882",
+   "8580e496010e828e",
+   "9a70e42f415f954a",
+   "dc2429b6f7787df4",
+   "e2a7c01759227074",
+   "e6a990ca9e12df56"
+  ],
+  "24": [
+   "214ca5ea3e05a20b",
+   "53a7ade23d83fe81",
+   "6171258a32c6b510",
+   "7a8d00b0fbe5ebee",
+   "a4443656973387aa",
+   "b69ec741a511f8b7",
+   "b84b97a837477803",
+   "e105c121d2855da2"
+  ],
+  "32": [
+   "1f7783197a42a6c7",
+   "305bb3ef6e233985",
+   "360a95a12db2686b",
+   "55ac84d8be8bf499",
+   "bafb71fe35020eba",
+   "cb27ff01c3bc64e3"
+  ],
+  "48": [
+   "565107e5c8cdf8a8",
+   "ed7a87970d5733f6"
+  ]
+ }
+}

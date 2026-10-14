@@ -45,15 +45,15 @@ function storedProviderId(): string | undefined {
 }
 
 describe("제공자는 Antigravity·Codex 둘뿐이다", () => {
-  it("옛 저장값은 Antigravity 로 읽고, 새 설정은 ChatGPT 를 권한다", () => {
+  it("옛 저장값은 Antigravity 로 읽고, 새 설정도 Google(Gemini 4 Argon medium)을 권한다", () => {
     expect(DEFAULT_OH_MY_PI_PROVIDER).toBe(ANTIGRAVITY_PROVIDER_ID);
-    expect(defaultAiConfig().providerId).toBe(CODEX_PROVIDER_ID);
+    expect(defaultAiConfig().providerId).toBe(ANTIGRAVITY_PROVIDER_ID);
   });
 
   it("셋째 제공자는 존재하지 않는다", () => {
     expect(OH_MY_PI_PROVIDERS.map((provider) => provider.id)).toEqual([
-      CODEX_PROVIDER_ID,
       ANTIGRAVITY_PROVIDER_ID,
+      CODEX_PROVIDER_ID,
     ]);
   });
 

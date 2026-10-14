@@ -12,7 +12,7 @@ import { configForUltrabrain } from "./ultrabrainConfig";
  * 실행기가 작문을 실행 모델로 대신 돌린다(scripts/lib/piAgentRuntime.ts) — 연결을 강제하지 않는다.
  */
 const WRITER_FOR_PROVIDER: Readonly<Record<string, RoleModel>> = {
-  [CODEX_PROVIDER_ID]: { provider: ANTIGRAVITY_PROVIDER_ID, model: "gemini-3.8-flash", thinkingLevel: "medium" },
+  [CODEX_PROVIDER_ID]: { provider: ANTIGRAVITY_PROVIDER_ID, model: "gemini-4-argon", thinkingLevel: "medium" },
 };
 /**
  * 계정별 시공(build) 기본값 — ChatGPT 계정도 타일·맵·게임 전체 짓기는 Gemini 에 둔다(사용자 결정 2026-10-08,
@@ -20,7 +20,7 @@ const WRITER_FOR_PROVIDER: Readonly<Record<string, RoleModel>> = {
  * Google 연결이 없으면 작문과 같이 실행 모델로 대신한다(isOptionalWriterProvider 와 같은 관례).
  */
 const BUILD_FOR_PROVIDER: Readonly<Record<string, RoleModel>> = {
-  [CODEX_PROVIDER_ID]: { provider: ANTIGRAVITY_PROVIDER_ID, model: "gemini-3.8-flash", thinkingLevel: "medium" },
+  [CODEX_PROVIDER_ID]: { provider: ANTIGRAVITY_PROVIDER_ID, model: "gemini-4-argon", thinkingLevel: "medium" },
 };
 
 /** 계정을 바꿀 때 역할별 사고 강도는 「균형」 프리셋을 따른다. 같은 계정 안에서는 기존 값을 둔다. */

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ea798ec3d4ffb30d43ac1e8885122430557ad7b310acc5a55ca3cc8e17316444",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "카페 의자(서향)",
+ "label": "modern_city/interior/mci-cafe-chair-w",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cafe chair facing west",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn as a flat 2D side elevation silhouette. Despite having offset rear legs, the horizontal seat surface has no visible top plane seen from above (only a 1px outline at row 14), and the backrest top is also just a 1px outline at row 5.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7347
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cafe chair facing west",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn as a flat side elevation profile. The seat cushion shows only its vertical side face (rows 16-20) capped by a 1px outline at row 15, with no top surface of the seat visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10039
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "west-facing cafe chair",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn in pure 2D side elevation profile: the horizontal seat surface is not visible from above at all (only a 1px outline along row 14), with the cushion drawn as a vertical side face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11057
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cafe chair facing west",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn as a flat 2D side elevation (L-profile). The horizontal seat has only a 1px outline along row 14 with no visible seat surface seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7972
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:12.630Z",
+ "cells": {
+  "16": [
+   "34768be30e1bf04c",
+   "daa450e7c9a4f397"
+  ],
+  "24": [
+   "00761d981d10e43f",
+   "222a49cb089b87dc",
+   "39191c2a7b48a3cc",
+   "3eee61cb73da8c4e",
+   "4ad9f4bdfdc723c0",
+   "96fac69f829bf84a",
+   "9a18d571ccaf37b6",
+   "b3c8c5c3d96de40f",
+   "d572ce3e64fcb942",
+   "ef37cbcd68634351",
+   "f801e3ae7bf8e66a",
+   "f8d270c5dc677903"
+  ],
+  "32": [
+   "112423f546a97843",
+   "42eb49efda58f28e",
+   "e1713b4cbb185df8"
+  ],
+  "48": [
+   "484dd65165c02a1a",
+   "89e349643bc32c4a",
+   "c5f04b9b59626dda",
+   "d05e34c26fe9d602",
+   "e4321f0dbf18de15",
+   "f9378586cc084f35"
+  ]
+ }
+}

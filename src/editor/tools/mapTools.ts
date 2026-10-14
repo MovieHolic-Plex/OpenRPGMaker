@@ -2240,7 +2240,11 @@ const configureRoguelikeRoom: ToolDefinition = {
 
 const createFarmPlot: ToolDefinition = {
   name: "create_farm_plot",
-  description: "맵의 경작 가능 영역(farmableArea)을 선언한다. 타일/울타리/흙 연출은 변경하지 않는다. 밭·농장 요청의 정본 툴.",
+  description: "맵의 경작 가능 영역(farmableArea, 플레이어가 괭이로 갈 수 있는 칸)을 선언한다. 밭·농장 요청의 정본 툴. 타일·울타리·흙 그림은 바꾸지 않는다 — " +
+    "버들항(beodeul_city) 맵은 플레이 중 간 칸을 번들 경작지 오토타일 `farmland`(물 준 칸 `farmland_watered`)로 그리므로 영역은 풀·흙 위에 두면 된다. " +
+    "밭은 쓰임 단위로 나눠 선언한다: 밭 하나 = 4×3~8×5 직사각형 하나(필요하면 여러 번 호출). 들판 한 띠·맵 절반을 한 영역으로 덮지 않는다. " +
+    "영역 한 칸 바깥을 울타리로 빈틈 없이 두르고(버들항: 키트 bd-farm-fenced-plot 또는 울타리 조각 모서리 cNW·cNE·cSW·cSE + 가로·세로 + 문 한 칸) 문 아래에서 폭 2칸 흙길로 집·헛간(bd-farm-barn)에 잇는다. " +
+    "플레이로 갈지 않는 장식 밭(작물이 이미 자란 그림)은 이 도구가 아니라 stamp_object(kit:beodeul_city/bd-farm-plot-*). 칸 사전·조립 순서는 참고문서 용도 beodeul-farm.",
   mode: "write",
   domains: ["database", "map"],
   parameters: {

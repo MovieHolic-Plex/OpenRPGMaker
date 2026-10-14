@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e608c16e3a243ee29002c7963d66e53be529dc2c1fbe5db99285f6e0002ad57e",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "등잔 기둥",
+ "label": "desert-east/de-lantern-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lantern post with hanging lamp and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top crossbeam (rows 7-8) is drawn as a flat 2px horizontal bar with no foreshortened top surface visible from above. The entire lantern post is drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8107
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lantern post / pole with hanging lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top crossbeam of the pole (rows 6-8) is drawn in pure front elevation with only a 1px dark outline at row 6, showing no foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6186
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden lantern post with horizontal top beam and hanging lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top crossbeam at rows 6-8 is rendered completely flat in front elevation; row 6 is merely a 1px dark edge line, showing no foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7236
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lantern pole with top horizontal beam",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top crossbeam (rows 6-8) is drawn as a flat horizontal rectangle with no visible top surface foreshortened toward the viewer; it is a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5515
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.225Z",
+ "cells": {
+  "16": [
+   "53b4d4d2b27973b2",
+   "9ed276be2e07658b"
+  ],
+  "24": [
+   "172c7448cfe2fa4a",
+   "2ef68668ccb1cf55",
+   "5382ed06e95a781c",
+   "66e76b5cfd636f30",
+   "82e255054deae9c4",
+   "8b6257af77c15419",
+   "8ba40012d10f8a7a",
+   "985efd60fd998dd0",
+   "9f92a4ec451e8db3",
+   "a8ca27f08ff03bfc",
+   "b175166824db95f1",
+   "cdde02856d9018d2"
+  ],
+  "32": [
+   "9d2941e1a6b67503",
+   "dce3cb8d65333dee",
+   "ebb129187580c537"
+  ],
+  "48": [
+   "24040037c015853b",
+   "2665a45e3eb04531",
+   "42f60ca0cc1dd6ee",
+   "72858368d10d7674",
+   "99fe75606f79bfd4",
+   "c88962e30046cc8a"
+  ]
+ }
+}

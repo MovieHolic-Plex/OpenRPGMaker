@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bb2d30acf892387d4a72573100c83ec0b068c2fa100717f38aa3f35d7f9a31b8",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "곡식 자루(눈 얹힘)",
+ "label": "snow-north/sn-sacks",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grain sack with snow cap",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow resting on the top of the sack forms a visible 4-row foreshortened surface (rows 1-4) above the south-facing body of the sack.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6776
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grain sack pile with snow cap",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the sack is covered by a 3-row foreshortened snow cap (rows 2-4) demonstrating top-down viewing angle over the upright sack body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6905
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grain sack with snow cap",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow resting on the top of the sack forms an elliptical foreshortened cap spanning rows 1-4 (4 rows tall), clearly presenting the top surface in 3/4 top-down perspective above the sack body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6351
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "standing grain sack with snow on top",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the sack has an elliptical snow cap visible from above across rows 2–4 (3 rows tall), providing proper 3/4 top-down foreshortening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7329
+  }
+ ],
+ "decidedAt": "2026-10-14T01:15:54.502Z",
+ "cells": {
+  "16": [
+   "1d37149091f4b521"
+  ],
+  "24": [
+   "200326187829462f",
+   "4da7cb59af9933e2",
+   "5c1b3441a0673f3f",
+   "6e7f44b1b79ed6a5",
+   "c54972d1f9ae1163",
+   "d078a3d6709faeb5"
+  ],
+  "32": [
+   "03afa7a4ad6225ba",
+   "3522c5dfc94e81c0",
+   "478e4605131523c4",
+   "7155d5398334fccf",
+   "93d19603f2c49723",
+   "c4634671f0cc9615"
+  ],
+  "48": [
+   "041722a140da377a",
+   "05a57f55a5c5e28c",
+   "4a658c31b9ce37e1",
+   "9baa3aeabe32c376",
+   "c8247ab48a44ff05",
+   "ec2397e836c9bbd4"
+  ]
+ }
+}

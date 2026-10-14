@@ -1,0 +1,153 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0ead2de4f807fc91366779e215b4afb6f5d2e18c5669cce47aa1632044b5244b",
+ "width": 64,
+ "height": 32,
+ "kind": "terrain",
+ "name": "cabin room back wall face (two rows)",
+ "label": "monster-rooms/rm_wall_cabin",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wood-paneled back wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a two-row interior wooden back wall face (with vertical posts, horizontal dividing beam, and baseboard). As vertical wall face terrain, it correctly represents the south-facing wall surface without isometric distortion.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11843
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden cabin wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a terrain wall face tile designed to form the south-facing vertical surface of an interior room wall. As terrain, it appropriately shows the vertical wall surface with framing beams, panel insets, and depth shadows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6347
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "timber-framed cabin back wall face tiles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile showing two vertical 16px rows of wooden panels and framing posts. As a terrain wall surface, it represents the vertical south-facing wall plane rather than a freestanding 3D object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6937
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cabin room back wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a terrain tile representing a south-facing wooden wall surface (two vertical 16px tile rows with timber framing and horizontal rail). As a vertical wall terrain tile rather than a standing object, it correctly depicts the vertical wall face intended to connect with wall-top/ceiling tiles above and floor tiles below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6579
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.766Z",
+ "cells": {
+  "16": [
+   "2188d11a8c464b01",
+   "84849e0ac04ca676",
+   "ae5ca71587b79ced",
+   "e46b6b443bb7c2a0",
+   "ee18d6d279664eb1",
+   "f711810e0ae78004"
+  ],
+  "24": [
+   "0c1994bd6b74463f",
+   "135c59d0b56eeb80",
+   "143ff9ebb1d39b30",
+   "19a4fc7358e2ceda",
+   "1c5d7c7aa1fd925c",
+   "1e8437d033b6fba5",
+   "208f6dceb4410be5",
+   "3a731bc938a22a29",
+   "46f1bcdc0232dde1",
+   "4b9d220ced4edd5f",
+   "5a6168045b7775da",
+   "6761f2ff4b867c8c",
+   "728bf68ea87f073e",
+   "7c9b07779eca524a",
+   "7f27cee3076ea4b6",
+   "7f6ac44bf479b46e",
+   "814d979c1881b00e",
+   "91ca959dc94bb564",
+   "95119ce157a7cf89",
+   "a05b85ae9c9f9fc8",
+   "a3861de7d595dba1",
+   "a6b156a19b7e3c18",
+   "a857b061a06bdfaf",
+   "a8abd3fc51cf2f8a",
+   "b4bfd12160409e5f",
+   "b5e64662df0d2746",
+   "c6154b55d5601610",
+   "cec82b0ee2b35773",
+   "dedba9c0d9fe55c0",
+   "df2ef54ed06c8f8c",
+   "e0ab23579625267b",
+   "e4052afcd063f5d7",
+   "e5ef693fafd8e9f1",
+   "e83e75ae5e080625",
+   "f186db6257e1ef31",
+   "fa76cc44419bb9e9"
+  ],
+  "32": [
+   "c1b899fb4618238d",
+   "cbb56ddaf951896c"
+  ],
+  "48": [
+   "08ef59d28353e426",
+   "0fd5845a899be4af",
+   "10a098abfa12910e",
+   "2d0f4d4c68d08074",
+   "511b48db8822252e",
+   "78f93d80f02f15ff",
+   "ab5167d4ceff2e6b",
+   "ad7af8b7c7a15ea0",
+   "ca11299eb4851b2b",
+   "caf2af3ebedcc4f4",
+   "d4c9aae5efe0103d",
+   "e5165a09a863a027"
+  ]
+ }
+}

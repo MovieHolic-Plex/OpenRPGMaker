@@ -1,0 +1,53 @@
+{
+ "gate": {
+  "provisional_profile_uncalibrated": 245,
+  "blocked": [
+   [
+    "de-obelisk",
+    "불합격 판정자 과반 fail · 정면 입면도 · 윗면 0행 < 3"
+   ],
+   [
+    "de-fence-wood",
+    "불합격 판정자 과반 fail · 정면 입면도 · 윗면 0행 < 3"
+   ]
+  ],
+  "pieces": 245,
+  "wang": {
+   "road": "prov",
+   "grass": "prov",
+   "water": "prov",
+   "dune": "prov",
+   "flag": "prov"
+  }
+ },
+ "tiles": {
+  "count": 928,
+  "rows": 20,
+  "kits": 127,
+  "groups": 46,
+  "pieces": 245,
+  "single_tiles": 70,
+  "wang_sets": {
+   "road": 16,
+   "grass": 16,
+   "water": 16,
+   "dune": 16,
+   "flag": 16
+  }
+ },
+ "definition": {
+  "violations": 0,
+  "by_code": {},
+  "examples": {},
+  "tiles_checked": 928,
+  "kits_checked": 127,
+  "groups_checked": 46,
+  "autotiles_checked": 0
+ },
+ "reassembly": {
+  "kits": 127,
+  "checked": 127,
+  "mismatched": 0,
+  "ids": []
+ }
+}

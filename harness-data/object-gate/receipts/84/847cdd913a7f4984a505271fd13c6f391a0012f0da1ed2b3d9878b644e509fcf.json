@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "847cdd913a7f4984a505271fd13c6f391a0012f0da1ed2b3d9878b644e509fcf",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "무덤 천장(어두운 돌) · 천장 — 남서 바깥 모서리(테 북·동)",
+ "label": "desert-east/de-ceil-tomb-sw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tomb ceiling tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain autotile depicting a dark stone ceiling corner with north and east borders; flat overhead ceiling surface, not a standing object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3785
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dark stone ceiling tile with north and east borders",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain/ceiling tile with top and right border edges, representing an overhead flat surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 21250
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tomb ceiling tile corner",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat overhead ceiling/roof terrain tile with border trim along the north and east edges, correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3825
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ceiling terrain tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a dark stone ceiling corner/border (north and east edges bordered in tan). Proper map terrain autotile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4487
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.213Z",
+ "cells": {
+  "16": [
+   "203691f9531ae8df"
+  ],
+  "24": [
+   "06762cc6b98b9304",
+   "0a15570142442045",
+   "4ee1f5cda0ac7d26",
+   "5adb3ee561684905",
+   "818cfb1d568239ab",
+   "b27e7765f82ea465"
+  ],
+  "32": [
+   "4e8ff6720e1ef427",
+   "79fd8bb7c0698527",
+   "953b6855022b1c23",
+   "b4026620db7f8f40",
+   "c0613c48f2ea2eab",
+   "ff7b68342f30a790"
+  ],
+  "48": [
+   "512733c15dd7381a",
+   "6e2eed25aaaa311c",
+   "9bf41cb16eb7940f",
+   "ef19e2681597cbcf",
+   "f35205a975a704a3",
+   "f3b5ff86f764bcfe"
+  ]
+ }
+}

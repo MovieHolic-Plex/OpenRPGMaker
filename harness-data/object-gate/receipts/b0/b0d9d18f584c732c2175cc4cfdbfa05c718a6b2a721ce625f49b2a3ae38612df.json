@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b0d9d18f584c732c2175cc4cfdbfa05c718a6b2a721ce625f49b2a3ae38612df",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "얼음 벽돌 담(동서 한 칸)",
+ "label": "snow-north/sn-ice-wall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ice brick wall segment",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-4 depict the top surface of the wall segment (5 source pixels tall), bounded at row 5 by a bright edge highlight, above the south-facing brick wall facade at rows 6-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5153
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ice brick wall",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the ice wall is clearly depicted across rows 0–4 (5 pixel rows tall) with reflective ice highlights and a distinct front-edge highlight on row 5, transitioning to the front vertical face with brick mortar details on rows 6–13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8533
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ice brick wall segment",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wall occupies rows 0-4/5 (approx. 5 source pixels tall), followed by a highlighted front edge at row 5 and the south brick face across rows 6-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5282
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ice brick wall",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wall is clearly visible spanning rows 0 to 4 (about 5 pixel rows) before transitioning via a row 5 edge highlight to the vertical south face with ice brick patterns on rows 6-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4957
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.508Z",
+ "cells": {
+  "16": [
+   "d782734f246addc6"
+  ],
+  "24": [
+   "0ca87656874a0fd4",
+   "4d55d0dc120b5d1f",
+   "933817fd083af0d2",
+   "ae3b9fe0ecbbaba1",
+   "d4080a08be11d00d",
+   "e8bdd394dee1e905"
+  ],
+  "32": [
+   "20adb4ed564ea135",
+   "41d8f1455f4cc25f",
+   "9083719e143ac371",
+   "b05ee008eafa99ea",
+   "d536025e2ae9b866",
+   "e046f906a69fddf4"
+  ],
+  "48": [
+   "175122a75692999c",
+   "3a9454f2dd6dd88c",
+   "74e90c2884d56bde",
+   "aa1b4421c04ef7e6",
+   "bbcbde5c42e8fcfc",
+   "c2891c5d2b378cdf"
+  ]
+ }
+}

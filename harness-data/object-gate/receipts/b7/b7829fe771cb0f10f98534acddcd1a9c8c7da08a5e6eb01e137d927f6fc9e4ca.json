@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b7829fe771cb0f10f98534acddcd1a9c8c7da08a5e6eb01e137d927f6fc9e4ca",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "궁전 대리석 바닥(변주)",
+ "label": "desert-east/de-floor-marble-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "palace marble floor tile with decorative border",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile viewed from above with tiled marble pattern and gold/blue corner border.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4665
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "palace marble floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor tile with decorative border seen from directly above, properly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4610
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "palace marble floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile showing marble checkered pattern with decorative border, viewed from above as appropriate for floor terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4647
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "palace marble floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile representing a palace marble floor with decorative border; entirely flat ground viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3674
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.210Z",
+ "cells": {
+  "16": [
+   "a1e1cfddd571620e"
+  ],
+  "24": [
+   "03191f348d70d1cf",
+   "47a4b2dec5b8e347",
+   "63bfec0c789e0500",
+   "7a5ca60ecdbd0cd3",
+   "7aa9889ed2d43b14",
+   "93590cd3aa6104c2"
+  ],
+  "32": [
+   "1159b7a96895db9d",
+   "243fdbdbd1dffb53",
+   "5cde8966ca6a1074",
+   "a58b23c61457794d",
+   "d064a47b6f1f8f23",
+   "d633065a767d89c7"
+  ],
+  "48": [
+   "068950d7141a9598",
+   "33b2f57021329547",
+   "62a16d5e896e6931",
+   "6481274e0e6bc042",
+   "d186e46b6426786d",
+   "ff48565922e00dc5"
+  ]
+ }
+}

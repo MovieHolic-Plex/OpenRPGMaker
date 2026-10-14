@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0d30c180c1229dfba47ff74d2af28f5588061eae26b9f14906d8f1f4d1ebfb95",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "양탄자 길(세로)",
+ "label": "desert-east/de-rug-runner",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical carpet runner / rug",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat vertical carpet runner lying directly on the floor, spanning rows 0-15 completely visible as a flat surface from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4721
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "carpet runner segment",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat carpet runner lying entirely on the ground plane, rendered from a top-down perspective across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4084
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vertical carpet runner",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor runner carpet segment viewed entirely from above spanning rows 0 to 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2970
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical carpet runner",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a floor carpet runner segment drawn flat on the ground plane, filling the full 16 rows seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3820
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.214Z",
+ "cells": {
+  "16": [
+   "3275bb1311ef96fe"
+  ],
+  "24": [
+   "269bde853dcee7c3",
+   "2dce7fb7971c56fd",
+   "3289dfa7476ef6f0",
+   "42bd4cab1e5ecd6d",
+   "ce23d5790d3c2291",
+   "e2b81b82aa04d96f"
+  ],
+  "32": [
+   "424bdb8221c4b99c",
+   "7551f038f1983c0b",
+   "8d64d04d85d1f016",
+   "a9969f992d9af4eb",
+   "db019d83dd6543d3",
+   "de73ef7309df712d"
+  ],
+  "48": [
+   "1aa6a52b61aaa12e",
+   "1e49dc496fc5934b",
+   "5992dbe09a35bb47",
+   "71cb00e9c37c1761",
+   "789c44588261eddc",
+   "92ffa8557e2ebace"
+  ]
+ }
+}

@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d430380ae3c4a08b7d2bfbc8c2bfeffc8d88ec7b44dfaf41f9621c8df9b3d99e",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "office chair with wheels",
+ "label": "monster-rooms/lab_chair",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "office chair seat and backrest",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is depicted from a straight front elevation showing only the backrest, headrest, armrests, and wheeled base; there is no foreshortened horizontal seat surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12472
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "office chair backrest and seat",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn in pure front elevation showing headrest, backrest, and armrests facing forward, with no horizontal seat cushion surface visible from above (only a 1px white rim line at row 10 above the base).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5945
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "office chair seat and backrest",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is rendered in a pure front elevation showing headrest, backrest, armrests, and star wheel base straight-on; the horizontal seat cushion is collapsed into a single 1-pixel white line at row 10 with no top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6203
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "office chair",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn in pure front elevation showing the headrest, backrest, armrests, and wheeled base directly from the front, with no horizontal seat cushion surface visible from above (the seat edge is at most a 1px white line at row 10).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7047
+  }
+ ],
+ "decidedAt": "2026-10-14T05:21:01.695Z",
+ "cells": {
+  "16": [
+   "b78d312d4e607b16"
+  ],
+  "24": [
+   "464070fd91b3cd43",
+   "6e98a311f9d28dab",
+   "75b9e7fc81e61dd3",
+   "7f8c429d178e14fe",
+   "b236ee42d080157c",
+   "d2c6b0ad797c7912"
+  ],
+  "32": [
+   "1482ed97177a2207",
+   "3c80b0a17bde2a9a",
+   "9914f8d9249f1be7",
+   "aa61b942b9c3fca5",
+   "c310f1199529240f",
+   "d0a6c602e13f54ff"
+  ],
+  "48": [
+   "00b651e088bbda98",
+   "0167c16482fd3a56",
+   "44b627959db7fdb7",
+   "4b9a903aa94798f3",
+   "5df0983ec946de21",
+   "b1dad97ed73be67d"
+  ]
+ }
+}

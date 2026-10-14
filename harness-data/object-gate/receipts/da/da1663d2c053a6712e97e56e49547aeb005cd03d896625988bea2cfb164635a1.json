@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "da1663d2c053a6712e97e56e49547aeb005cd03d896625988bea2cfb164635a1",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "복합기",
+ "label": "modern_city/interior/mci-copier",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "multifunction printer / office copier cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire unit is drawn directly from the front with drawers, paper slots, and control panel all facing forward; there is no top surface foreshortened from above (only a 1px outline at row 2).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 3629
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "office multi-function printer / copier with paper drawers",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The copier is drawn in pure front elevation with drawers and display facing directly forward; there is no top surface visible (only a 1px dark border at row 2 and 1px highlight at row 3).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 3798
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "office multifunction printer / copier with paper trays and lower drawers",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The copier is drawn straight-on in pure front elevation with no visible top surface foreshortened from above (only a 1px top outline on row 2).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 3362
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "multi-function printer / copier",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire printer/copier is drawn in pure front elevation without any visible top surface. Row 3 is only a 1px highlight/border line above the front face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 3886
+  }
+ ],
+ "decidedAt": "2026-10-14T01:18:07.275Z",
+ "cells": {
+  "16": [
+   "99ef79f8952d81e8",
+   "bc984d2d7330e9af"
+  ],
+  "24": [
+   "2d16cdda05f8f4e3",
+   "4e02ad4fe1825e64",
+   "69b861abc082b29c",
+   "73bd3cb9863cde9f",
+   "7490fe10a7ecbff0",
+   "a5c94b0875888dc2",
+   "ba67109020f79e21",
+   "c7435a40f00270c6",
+   "e3bcd96804d9e9f2",
+   "e67875e21476d022",
+   "e6ca716826e657cc",
+   "f8df8014520a9568"
+  ],
+  "32": [
+   "135a3d64481c091b",
+   "4f520736b6e94809",
+   "b47955b668f0412d"
+  ],
+  "48": [
+   "299b6824e3024fdc",
+   "2de544525d37e3cc",
+   "658e9beff8483d50",
+   "6ff7406c0e7fabc0",
+   "ab9da935946cc764",
+   "ef73752f20af8573"
+  ]
+ }
+}

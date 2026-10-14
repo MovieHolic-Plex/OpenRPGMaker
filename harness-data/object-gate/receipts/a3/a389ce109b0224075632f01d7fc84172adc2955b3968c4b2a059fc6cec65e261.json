@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a389ce109b0224075632f01d7fc84172adc2955b3968c4b2a059fc6cec65e261",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "서버 랙 둘",
+ "label": "modern_city/interior/mci-server-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "two tall server racks standing side by side",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof surface of each server rack is visible across rows 2–5 (4 pixel rows tall), distinctly lighter in tone with top fan exhaust vents, separated from the darker south-facing front face below by a clear front edge at row 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 16915
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "server racks",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof/exhaust panel of each server rack is shown from above across rows 1-5 (5 rows tall), clearly lighter in value than the south-facing front face below (rows 6-30) and featuring top ventilation fan grilles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13351
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two tall server racks side by side",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The server racks are drawn entirely in flat front elevation from rows 1 to 29, showing front cooling vents (rows 2-5) and server unit slots with LED indicators below, with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4506
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "two server racks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The server racks are drawn in pure front elevation with no visible top surface. The upper section (rows 1-5) represents the front upper vent/fan fascia with square vent holes, and the front face continues down to row 30 with no 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5892
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:11.884Z",
+ "cells": {
+  "16": [
+   "41beca265bd1f7fc",
+   "49e38481830b4fcc",
+   "5ca34083ceb5532d",
+   "6670225750a93d1f"
+  ],
+  "24": [
+   "015f02bd7c57b94f",
+   "0776e76dd1bb98f7",
+   "1694a5d6cfc0b1e6",
+   "29cf1bb22793baa1",
+   "2f2126a868a8a7b7",
+   "2f2c4ce537d8e0f5",
+   "318625f3e9b6660f",
+   "522c102707bc5206",
+   "56878251cf7ef086",
+   "5a6e6912cd73116c",
+   "690df2c16797861e",
+   "79b41448d827d1a4",
+   "8bd34fb665b8ad57",
+   "8f24911468ba646c",
+   "9d87f52c9caabf33",
+   "af5f4ebfca50f414",
+   "b6ba609778f537e5",
+   "b76166ab84bf6b08",
+   "cc9068c6695b635b",
+   "d402cc3882cbc661",
+   "d81ccaa187b4ebda",
+   "def7beda4808bd46",
+   "eb7aa33714ccc137",
+   "ffc47b27ff8e75b6"
+  ],
+  "32": [
+   "3413264eb1bc6c64"
+  ],
+  "48": [
+   "3c7484ffeb8a62fb",
+   "6bd3e9bc4d9e0cbe",
+   "771f157cd7b3348f",
+   "bada8245a48947e1",
+   "bae0efe59449d224",
+   "c794a7b5e6d20184"
+  ]
+ }
+}

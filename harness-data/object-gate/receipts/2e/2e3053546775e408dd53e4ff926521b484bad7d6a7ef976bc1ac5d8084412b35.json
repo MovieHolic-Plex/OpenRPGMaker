@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2e3053546775e408dd53e4ff926521b484bad7d6a7ef976bc1ac5d8084412b35",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "삼발이 가마솥(위에서 보이는 국물, 김 오름)",
+ "label": "snow-north/sn-cauldron",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tripod cauldron with boiling broth and steam",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cauldron rim and liquid interior (broth) are clearly rendered as a large elliptical opening spanning rows 15-21 (approx 6 rows of liquid interior), with the dark south wall of the pot visible below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6214
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cast-iron tripod cauldron with broth/soup inside and steam rising",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The opening of the cauldron is clearly viewed from above (rows 16-21) showing the broth inside as an ellipse, with the front rounded belly and tripod legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7450
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tripod cauldron with soup and rising steam",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cauldron rim opening is drawn as an elliptical top surface spanning rows 16 to 21 showing the boiling soup inside, above the dark cauldron front face (rows 22-26) and fire.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3446
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tripod cauldron with broth and steam",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening of the cauldron is clearly rendered as a 6-pixel-tall ellipse (rows 16-21) filled with broth, viewed from above, with the south exterior of the pot visible below it (rows 22-26).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5481
+  }
+ ],
+ "decidedAt": "2026-10-14T01:15:54.503Z",
+ "cells": {
+  "16": [
+   "026c998e2990c62c",
+   "fbad879f91f7a47e"
+  ],
+  "24": [
+   "0ddf2f7ba187ad51",
+   "1b018703be3b5ec1",
+   "31a95abb866072ed",
+   "5cf5b4219d60ce7b",
+   "75e56f84273660a5",
+   "7c96ea8828a5656d",
+   "8ceff351c4a28d0b",
+   "90ef0cf4ceb2bd7c",
+   "b98eea97bd12ab73",
+   "dfc54a254b635d48",
+   "eba87f11972eafe3",
+   "ef71ce3fb35b338b"
+  ],
+  "32": [
+   "836619eabcc00568",
+   "d3f1646343d8e0a8",
+   "f4058f096d3417fb"
+  ],
+  "48": [
+   "244735b44b9dc481",
+   "b5623c058bd37ebd",
+   "cb37977c9782209e",
+   "e0c1a678c6c559aa",
+   "f17948d2d923bc89",
+   "f6287648ea136839"
+  ]
+ }
+}

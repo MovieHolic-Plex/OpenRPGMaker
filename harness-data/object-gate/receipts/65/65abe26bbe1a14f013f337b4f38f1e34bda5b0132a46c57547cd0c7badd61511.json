@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "65abe26bbe1a14f013f337b4f38f1e34bda5b0132a46c57547cd0c7badd61511",
+ "width": 16,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "벽걸이 오로라 깃발(청록·보라 물결)",
+ "label": "snow-north/sn-banner-aurora",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hanging banner",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted banner hanging vertically from a rod; flat presentation against the wall is valid for wall_mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5885
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall banner",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted fabric banner hanging flat against the wall from a hanging rod with end caps, correctly categorized under wall_mounted.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5596
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall-hanging banner",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted banner hanging flat against a north wall; correctly depicted flat on the vertical surface as allowed for wall-mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5452
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hanging banner",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted banner hanging flat against the wall, consistent with the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5783
+  }
+ ],
+ "decidedAt": "2026-10-14T01:23:05.959Z",
+ "cells": {
+  "16": [
+   "e0ffe317bfcfb665",
+   "e6c1d762bdefa46c"
+  ],
+  "24": [
+   "0781acb18905db19",
+   "25aeb6a64cb7b272",
+   "2cb30ac9d5bda228",
+   "42bafc8fc1b5e79d",
+   "78f0981ce28dc96b",
+   "7bc0a0f27a5e278a",
+   "af11253841f2c129",
+   "dd1477c9ceefe08b",
+   "e6a13f5bae264686",
+   "f09b1e95af68a4b2",
+   "f7def4d0151f8bb2",
+   "fd4f710bd496969b"
+  ],
+  "32": [
+   "0594597fea6e63c5",
+   "83765c57c69c8b8a",
+   "f7a379ef6bd7ef56"
+  ],
+  "48": [
+   "3391f81418d92677",
+   "6f229c7e44f69419",
+   "77a6a98a352375fe",
+   "8b12ca5943bed302",
+   "f7792c3b22aff439",
+   "fabe2b7de3f693a3"
+  ]
+ }
+}

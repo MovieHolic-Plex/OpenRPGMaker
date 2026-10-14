@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2d71df733730d29569165dcf304e3944c146a65252a564a81fae73f0a11565e4",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "다진 눈길(썰매 자국, 동서)",
+ "label": "snow-north/sn-pack-sled",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "packed snow path with sled tracks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing horizontal sled tracks in snow viewed top-down across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3883
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "snow ground with east-west sled tracks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting packed snow with horizontal sled rut tracks running east-west across the entire surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4224
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "packed snow path with horizontal sled tracks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing snow texture and two horizontal track ruts running east-west across the entire 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2690
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "snow ground with sled tracks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal ground terrain showing east-west sled tracks in snow; entirely flat terrain plane covering the 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3330
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:23.951Z",
+ "cells": {
+  "16": [
+   "4976b18dfebd91c9"
+  ],
+  "24": [
+   "0852803167aa1e51",
+   "2b4fd886fa158e65",
+   "60dbde8fbd4344d3",
+   "6c0b9e5029348e57",
+   "7ad816bc50bd563b",
+   "9e2e9ad8fd47751e"
+  ],
+  "32": [
+   "4ed9e96403592bf9",
+   "51316d3877b187a7",
+   "a52a4e680e9de496",
+   "d98bdca0e59e79e8",
+   "edb92c227568312e",
+   "f9b009444b816b6d"
+  ],
+  "48": [
+   "23f2a8ded1b76225",
+   "48c8624745ca362f",
+   "6a5e43871be7ddf2",
+   "6b0bee2afaec0d47",
+   "7120a246c93ce118",
+   "e2262169583c1868"
+  ]
+ }
+}

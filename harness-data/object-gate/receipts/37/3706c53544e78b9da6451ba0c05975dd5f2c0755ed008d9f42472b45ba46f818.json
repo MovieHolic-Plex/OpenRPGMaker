@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3706c53544e78b9da6451ba0c05975dd5f2c0755ed008d9f42472b45ba46f818",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "진열 냉장 케이스",
+ "label": "modern_city/interior/mci-pastry-case",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "display refrigerated case counter",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The display case and counter base are drawn in straight-on front elevation: row 2-3 is merely a 1-2px top frame line with no foreshortened top surface visible, and the lower wooden cabinet panels are facing completely flat toward the viewer.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 15144
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "display refrigerated case counter",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire display case and wooden cabinet base are drawn in flat front elevation with no visible top surface (0 rows); the top is just an outline and frame border.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5737
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "display refrigerator case / counter",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire counter and glass display case are drawn in pure front elevation; there is no visible top surface foreshortened at the top of the case (only a 1px outline/border at rows 2-3) or on the counter ledge.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6004
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "display refrigerated case counter",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire refrigerated display case and wooden counter base are drawn in flat front elevation with no visible top glass surface or counter top depth (only a 1px border at the top edge).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9058
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:02.705Z",
+ "cells": {
+  "16": [
+   "55264c75b46dccb5",
+   "76777968748a3300",
+   "e0e8d22fe627b255",
+   "feae51bfd24926ab"
+  ],
+  "24": [
+   "0024b04f7c276df6",
+   "0626880508b34116",
+   "07e4fafea4ea5d3c",
+   "09dd3a917247d941",
+   "0ddf5a251d6f6471",
+   "105e6d38c68f4e89",
+   "14e8f52f7a0f9b48",
+   "197269da1ac42a8f",
+   "21f63d001bed9735",
+   "28da4b9f8303fd4b",
+   "48d38d38033a59fa",
+   "53f48f2ab5534c4d",
+   "6fe4c20bc83922ad",
+   "8e341b51ac4ee444",
+   "9449d5a0812a2034",
+   "9d7301e15333ccf6",
+   "a07c197b6f8e87d8",
+   "a5b13b841a048721",
+   "b1c4f292841237a6",
+   "be6469ce7b0d7550",
+   "c3dbe7dc27315dfa",
+   "c72200887da41f5b",
+   "ddb8ac74149dbb2a",
+   "f54df57d47a14bd9"
+  ],
+  "32": [
+   "5b496d3b0d165082"
+  ],
+  "48": [
+   "23a16aeba9d72f62",
+   "511cdab8687c522c",
+   "5701847210625115",
+   "58c2c3094047190d",
+   "9130da3676f81256",
+   "b09961bdb0088bcf"
+  ]
+ }
+}

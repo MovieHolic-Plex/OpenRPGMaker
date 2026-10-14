@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3948565179e1f13b9cf0b9d20be648e4f505c619587be1c5e5beb83f11d2806f",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "놋 화로대",
+ "label": "desert-east/de-brazier-stand",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brazier bowl on stand",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brazier bowl clearly shows an elliptical opening viewed from above (rows 7-12/13, ~6 rows tall) containing fire and coals, with a foreshortened front underbelly/face below it (rows 13/14-16).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7416
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bowl of the brass brazier",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brazier bowl clearly shows an elliptical opening (rows 7-12, ~5-6 rows deep) viewed from above, filled with glowing coals and flames, above the rounded south face of the bowl (rows 13-17).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7530
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brazier bowl on a tall brass stand",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brazier bowl clearly shows an elliptical opening from above (rows 6-12) containing glowing fire and coals, with the front curved exterior wall visible below it from row 13 to row 17.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7860
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brazier bowl on a tall stand",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brazier bowl is viewed from above at a 3/4 angle, showing an elliptical opening from row 7 to row 12 (5-6 rows deep) filled with coals and fire, with the front wall of the bowl foreshortened below it from row 12 to 16.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10401
+  }
+ ],
+ "decidedAt": "2026-10-14T00:23:19.735Z",
+ "cells": {
+  "16": [
+   "2616e7c131b15e24",
+   "f4f58b2e044b81c4"
+  ],
+  "24": [
+   "0a917d360903bcb2",
+   "1d2bd4ac2e70469b",
+   "23fe069bdb99d98f",
+   "589b4c8a66ed0fbe",
+   "657c9fe1a6953dc2",
+   "7461df0f60280cf7",
+   "883a54a9d6286889",
+   "cfc647adb2850026",
+   "db38e9ddc01fe0be",
+   "dba36cba02d04384",
+   "e18b3df78e8d7a5a",
+   "e413ecb905ca651f"
+  ],
+  "32": [
+   "4f5a0ec62dc4554b",
+   "97447a9d5f1e03cc",
+   "b0c7b6d62f200fd1"
+  ],
+  "48": [
+   "09e78861a3c8b072",
+   "42c5f5e80b43097f",
+   "78d9bfdf20b85c5c",
+   "851632ccdc2406bc",
+   "a8159c037c5bd4a0",
+   "a9f7af157c760b1f"
+  ]
+ }
+}

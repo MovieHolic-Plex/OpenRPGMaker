@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "519ded7804f1012289eaf66839614e86ae848b0b52da7fc324ee21e5fa44d070",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "노점(양탄자·청록 차양)",
+ "label": "desert-east/de-stall-carpet",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "market stall with awning and counter",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sloping awning canopy spans rows 1-11 (11 source pixel rows) visible from above, and the counter top displays another 5-6 rows of horizontal surface (carpet and tabletop, rows 19-24) above the front wooden facade (rows 25-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5972
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "market stall with striped awning and display counter",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The striped awning roof shows its forward/downward sloped top surface across rows 1-10 (10 rows), and the horizontal countertop display surface is visible across rows 19-24 above the south-facing wooden base (rows 25-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6972
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "market stall with striped awning, display counter, and hanging rugs",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The striped fabric awning shows a 10-row downward slope seen from above (rows 1-10). Below, the counter top surface extends several rows deep (rows 19-24) displaying a rug with fringe before dropping into the vertical wooden front panel (rows 25-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7676
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "market stall with striped awning, display of carpets, and counter",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall clearly renders top/foreshortened surfaces: the sloped awning spans rows 1-11, and the horizontal counter top surface spans rows 19-24 (showing a red rug with fringes draped on it) before dropping to the vertical wooden front panel on rows 25-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5034
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.223Z",
+ "cells": {
+  "16": [
+   "0fab353b7b7eca90",
+   "613d10dc97af8775",
+   "778a057d854262c1",
+   "bed6039560abdf47"
+  ],
+  "24": [
+   "08cb2678bc0ff86e",
+   "0c3ac9f4e5ca4abe",
+   "1988c8998b6500e6",
+   "223c5a8eac6ad492",
+   "3db66bd3c3c7a141",
+   "4f5ccfed372a037a",
+   "598d901ef6b20ec8",
+   "6c3853e833780324",
+   "7bae24f0f8a464bb",
+   "7e27714f1431bb71",
+   "80e6888afd02b69a",
+   "834e3a52d543d495",
+   "8389355b7fa4948f",
+   "8607b212579efe57",
+   "907682d005eab0e2",
+   "96e350a5113af614",
+   "9fe33da1144c7664",
+   "a55076d11de7516b",
+   "a8a3a302f462c80e",
+   "ad362219f9b4133c",
+   "b440dc9b46c0634a",
+   "cdecd0f2466bd509",
+   "d29b91147b0942e5",
+   "f0d9090daedcc921"
+  ],
+  "32": [
+   "796331426259a56c"
+  ],
+  "48": [
+   "1dd60ae8324a4e37",
+   "3bfb79ad91076bbc",
+   "699f3da893451ca1",
+   "6b70acd900c20650",
+   "969a6b21cbfb6634",
+   "fcebc29e21ccd521"
+  ]
+ }
+}

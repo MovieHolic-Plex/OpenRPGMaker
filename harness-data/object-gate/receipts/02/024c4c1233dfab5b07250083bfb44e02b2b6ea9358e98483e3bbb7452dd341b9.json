@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "024c4c1233dfab5b07250083bfb44e02b2b6ea9358e98483e3bbb7452dd341b9",
+ "width": 64,
+ "height": 48,
+ "kind": "terrain",
+ "name": "museum room floor tiles with entry mat",
+ "label": "monster-rooms/rm_fl_museum",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floor tiles with entry mat",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image consists of flat floor tiles and an entry mat lying flat on the floor plane, correctly matching the terrain category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4636
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "museum floor tiles with entry mat",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The asset consists of flat museum floor tiles and a floor mat, matching the terrain kind. Entirely viewed from above as horizontal ground surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4121
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "floor tiles with entry mat",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The asset is a terrain floor tile set showing green floor tiles with an inlaid/placed red mat, properly depicted as flat ground viewed from above in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4197
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "floor tiles with entry mat",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor tiles and entry mat lying flat on the floor plane as standard 3/4 view ground terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4421
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.767Z",
+ "cells": {
+  "16": [
+   "71abb1e814d4f2ca",
+   "8e629b790af3f62d",
+   "b0e4141e5a4325df",
+   "b73b00a08c9128e0"
+  ],
+  "24": [
+   "18dac857da300bc5",
+   "233422704ee7b34b",
+   "2c462501e785264c",
+   "54b2b0a329d1d02e",
+   "594ba40b30e97d62",
+   "6edab52ea25cbc1a",
+   "737a8ec249c0a2e3",
+   "7412a3038f383723",
+   "7bdc6fef5547054b",
+   "a0dd28c8e7a0861f",
+   "acda8d4929b309f9",
+   "b52bf7455d5c2a51",
+   "b63ad980b6b8ebf1",
+   "bd23645a458aa5d5",
+   "c4f9796ff2a5c801",
+   "e0f85526b1db8069",
+   "e10b291a7afe3062",
+   "e60f2ccf72ecb24c"
+  ],
+  "32": [
+   "0cade004e956f0a4",
+   "13157d6ca3f2ac50",
+   "19a769628b23a28b",
+   "2c85465822fd2ffd",
+   "d11b1e1f41ed6cfd",
+   "e26b5f7e2ebbf507"
+  ],
+  "48": [
+   "17b399a89c9d50fd",
+   "51296adbbdd78ce4",
+   "5a05ae0449a81274",
+   "c2724b694e7a2459",
+   "d2b4ce92728d5b50",
+   "d9eef43063bdd592"
+  ]
+ }
+}

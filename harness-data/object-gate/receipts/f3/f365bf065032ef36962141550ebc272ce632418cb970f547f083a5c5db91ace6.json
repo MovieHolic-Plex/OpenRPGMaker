@@ -1,0 +1,128 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f365bf065032ef36962141550ebc272ce632418cb970f547f083a5c5db91ace6",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "카페 의자(동향)",
+ "label": "modern_city/interior/mci-cafe-chair-e",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "seat cushion",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The east-facing chair displays its horizontal seat cushion from above across rows 13 to 21 (9 pixel rows), complete with top bevel highlights and a shaded south-facing front edge on rows 22-23.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 22463
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cafe chair facing east",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn as a flat side elevation. The horizontal seat surface has no top visible from above (row 12 is just a 1px outline with empty space directly above it), and the top of the backrest has only a 1-2px cap line.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14458
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cafe chair (east-facing)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn as a flat architectural side elevation (L-shaped profile) with no horizontal seat surface visible from above; the top of the seat is only a 1px outline.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 30759
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "seat cushion and backrest",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The east-facing chair correctly displays the seat surface foreshortened from above across rows 13-21 (9 rows tall), with a distinct 2-row south drop/thickness on rows 22-23. The backrest also shows a 2-row top surface at rows 5-6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11367
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:24.134Z",
+ "cells": {
+  "16": [
+   "91a9d86dc8a63417",
+   "e5652cae935db652"
+  ],
+  "24": [
+   "08caf7f38d2b744d",
+   "248c48c7c3caf356",
+   "35251c25203e0b3d",
+   "5657db24f3c12692",
+   "6a0be6dbb27f4ec9",
+   "6bca91b7287c2051",
+   "6e355b3b8800e893",
+   "758315787b9b9b0f",
+   "81f20c45deac1951",
+   "8e7f3a0cbfb64cba",
+   "bdc4a949884d086f",
+   "bee8cf2375cfa98e"
+  ],
+  "32": [
+   "768f90d8746eebef",
+   "ed88711477455071",
+   "f67f04788933b7fb"
+  ],
+  "48": [
+   "5430c60296afed31",
+   "65cf15dcb6845f1f",
+   "69cbc2160e6276f0",
+   "710c191746df9510",
+   "75fe0e2a5cfb7e62",
+   "e26c31be3cd8a367"
+  ]
+ }
+}

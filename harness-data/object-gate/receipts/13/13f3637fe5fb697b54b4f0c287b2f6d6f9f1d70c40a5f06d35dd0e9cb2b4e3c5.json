@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "13f3637fe5fb697b54b4f0c287b2f6d6f9f1d70c40a5f06d35dd0e9cb2b4e3c5",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "차가운 판석 바닥",
+ "label": "snow-north/sn-floor-stone",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone slab floor",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts flagstone/stone paving ground tiles seen from above across all 16 pixel rows with dark mortar lines separating the pavers.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3618
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flagstone floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Cold stone floor pavers rendered as a flat terrain surface spanning the full 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4163
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flagstone floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile depicts flat stone pavers/flagstones with mortar seams viewed from above as floor terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3605
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone floor slabs",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid stone floor terrain tile seen from above with mortar joints delineating flagstone blocks across the full 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3547
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.160Z",
+ "cells": {
+  "16": [
+   "6e30fb91fb84e6a2"
+  ],
+  "24": [
+   "011f18ed293c88f7",
+   "16ccdef9e1d58f85",
+   "3c71ce9519cca575",
+   "54b1bf7c849bd9da",
+   "b6b74382aa7aa0d6",
+   "b9977a1f24fda39f"
+  ],
+  "32": [
+   "18ef3b75404b0c59",
+   "233e2366b741653d",
+   "540ac13efde10676",
+   "d4684473078c19ef",
+   "e0aaac7dac094370",
+   "fa6e5d686305afa1"
+  ],
+  "48": [
+   "13b6019be133aac1",
+   "318d332de615a227",
+   "340e3e1435b6c3fb",
+   "acc6e6160a5c3b06",
+   "ec4c5e67d6613ca7",
+   "ecebe259cbc473d8"
+  ]
+ }
+}

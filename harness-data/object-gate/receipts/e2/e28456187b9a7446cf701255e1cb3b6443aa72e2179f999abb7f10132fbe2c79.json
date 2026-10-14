@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e28456187b9a7446cf701255e1cb3b6443aa72e2179f999abb7f10132fbe2c79",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "등 기둥(쇠 등, 호박색 빛, 눈 얹힌 박공 갓)",
+ "label": "snow-north/sn-lamp-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lantern post (cap, lantern cage, wooden pole, stone/metal base)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire lantern post is drawn in pure front elevation with perfectly horizontal bands and bars. The collar under the lantern (rows 12-14) and the base (rows 25-30) are drawn dead-on as flat horizontal rectangles with no visible top surface foreshortened toward the viewer.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5806
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lamp post with lantern and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire lamp post is drawn as a flat 2D front elevation (side-scroller view). The lantern shelf (rows 12-14), lantern glass, roof eaves (rows 5-7), and the stepped base (rows 25-30) are all rendered with straight horizontal bands with zero foreshortened top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7309
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lantern post and cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire street lamp is drawn in pure front elevation with straight horizontal bands. The stepped plinth at the base (rows 25-31), the collar under the lantern (rows 12-14), and the lantern frame (rows 8-11) show no foreshortened top surfaces at all, and the cap is rendered flatly from the front.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9980
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lantern head and pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern and post are drawn in pure front elevation with straight horizontal bands for the eaves (rows 6-7) and lantern bracket (rows 12-14). No top surface or downward perspective is visible on the main lantern structure, and base plinths do not qualify.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11601
+  }
+ ],
+ "decidedAt": "2026-10-14T01:20:58.721Z",
+ "cells": {
+  "16": [
+   "63f855b304d17216",
+   "f578ac6f370eb905"
+  ],
+  "24": [
+   "146c551ef851622c",
+   "2e4e957abd93a51c",
+   "48e083dab33b3b83",
+   "51a3ea92464a30ef",
+   "54e62e3a596200fd",
+   "6d22c2bc5ce02ba4",
+   "841477bfb0f2fd20",
+   "a3c0eea82fc60401",
+   "cab85e0f3b71c11c",
+   "cf0751cdd5ed61ac",
+   "f45b6983f12eb31a",
+   "fecbb91388640eef"
+  ],
+  "32": [
+   "1cd63b3d9da5cb95",
+   "2db3e3afdc9d8996",
+   "51fb9009ee01cf16"
+  ],
+  "48": [
+   "4f105dc1504fc278",
+   "7de3adad5ba13aa1",
+   "8fd19ae6ea1b20b0",
+   "b6e0b640d94fbced",
+   "cf82afcd488d4bb5",
+   "d3fb3f0ac9bef3e0"
+  ]
+ }
+}

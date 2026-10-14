@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cfe52b0cafd984f1e91d54555ef847229c59aee40a2181e8617e2384347052af",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "손수레(항아리)",
+ "label": "desert-east/de-handcart",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cart bed",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cart body is drawn as a flat side elevation (rows 5-10) with no visible interior floor or top surface of the bed, and the wheel is seen in pure side profile.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 12649
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cart bed",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The handcart bed is drawn in pure side elevation (rows 5 to 9) with no top surface or interior visible, despite the small jars having visible openings.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5192
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cart bed of the handcart",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cart body is drawn as a pure side elevation from rows 5 to 10 with a vertical side face and no visible top surface or cart bed interior.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4894
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cart bed and wheel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The handcart is drawn in pure 2D side elevation profile (flat cart wall rows 6-9, wheel underneath rows 9-14) with no visible top surface or interior bed for the cart body. Only the small jars resting on it show openings.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5312
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.226Z",
+ "cells": {
+  "16": [
+   "49e97226ee9207a5",
+   "52ee8625e3a79b04"
+  ],
+  "24": [
+   "0c605411c214f4cf",
+   "13db0bb91c84aea8",
+   "2b3e53f8b6bffdb6",
+   "301d7c600023f183",
+   "31dd99cfc3973b06",
+   "3bbcef35791647f1",
+   "5cb9db60f3964765",
+   "b5d59a2b75e58475",
+   "c42ae1dbe0246429",
+   "c70875a9a14fa852",
+   "dd50bc88e2796c3a",
+   "df464951f05265fe"
+  ],
+  "32": [
+   "2676b1b8239dab90",
+   "3f88775abf9c9d38"
+  ],
+  "48": [
+   "1d98b2b873461ac2",
+   "6539070b93dff1b7",
+   "aa9148ebb3e0c149",
+   "e93207d0488b527b",
+   "f0a52b5397e086f1",
+   "f287408df0eb5f92"
+  ]
+ }
+}

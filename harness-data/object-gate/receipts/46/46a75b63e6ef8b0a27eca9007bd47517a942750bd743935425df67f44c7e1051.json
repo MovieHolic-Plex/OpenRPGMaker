@@ -1,0 +1,148 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "46a75b63e6ef8b0a27eca9007bd47517a942750bd743935425df67f44c7e1051",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "갈대 차양(그늘막)",
+ "label": "desert-east/de-parasol-reed",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "reed awning canopy on two posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The canopy structure is drawn in pure flat front elevation like a 2D signboard or vertical screen, with a 1-2px top frame line and no visible top surface or depth for the canopy roof.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6544
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "canopy awning on posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shade awning is drawn as a completely flat rectangular board/screen facing frontally with only a 1-2px top rim (rows 2-3) and two vertical posts, showing no depth or foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4763
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "reed canopy",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sunshade canopy correctly displays its top surface across rows 2–12 (approx. 10 source pixels tall) foreshortened from the 3/4 overhead perspective, with the south valance/fringe hanging down below it (rows 13–15) above the ground posts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12700
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "reed awning / shade screen canopy on two posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The canopy/screen is drawn entirely flat like a vertical signboard or hanging banner facing the camera. The top border at row 2 is only a 1-2px frame outline with no visible top surface or 3D slope projecting forward.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4800
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.226Z",
+ "cells": {
+  "16": [
+   "757952520919df66",
+   "9c378102464c801a",
+   "cf91cb5d872ddb2f",
+   "e9641a3d50ec6c9b"
+  ],
+  "24": [
+   "07219f8df62887f3",
+   "15b88f23cbc9feed",
+   "22597e019df76717",
+   "2c0edea017878fdc",
+   "2ea65fb5660e2d86",
+   "3fde56d140a07aef",
+   "4776fb6d8cf28eec",
+   "524bb59db161c225",
+   "574280596566f4e5",
+   "636ab9d1a19b0556",
+   "7575a6d24d0adbbf",
+   "7b39199f538653b4",
+   "8114e20fdc808628",
+   "88bc2e15ca4e23f4",
+   "92278dc2e6681b51",
+   "9aa59d1978ffd1f2",
+   "9d197c43779845b0",
+   "9fcb9977b6535ca9",
+   "b6ea44c44559e671",
+   "bc58a556fa809f55",
+   "cc773443b6423d88",
+   "d8e2ce8f46a7046e",
+   "ea6895d804fa4f92",
+   "eec20e0b82463978"
+  ],
+  "32": [
+   "93b171711c9afff8"
+  ],
+  "48": [
+   "1f7c40f2baa057dc",
+   "277dbe9e961fa726",
+   "2b7ea267f046efdf",
+   "850522be8e489348",
+   "b9b466e990a4a117",
+   "f0442393fe8795de"
+  ]
+ }
+}

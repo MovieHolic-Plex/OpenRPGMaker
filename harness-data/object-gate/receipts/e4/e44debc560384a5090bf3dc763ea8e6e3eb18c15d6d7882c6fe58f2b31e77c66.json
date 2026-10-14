@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e44debc560384a5090bf3dc763ea8e6e3eb18c15d6d7882c6fe58f2b31e77c66",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "놋 화로대",
+ "label": "desert-east/de-brazier-stand",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "아가리 안쪽이 안 보임",
+  "아가리 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brazier bowl on stand",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brazier bowl's rim curves down from row 10 at the sides to row 12 at the front, revealing 2 rows of interior charcoal bed and flame base (rows 10-11) seen from above.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 2행 < 4"
+   ],
+   "ms": 8192
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brazier bowl on stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brazier bowl and tall stand are drawn entirely in front elevation with no visible elliptical opening or depth into the bowl. The fire sits atop a flat horizontal rim, and the stand rings and feet are drawn straight-on.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 6054
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brazier bowl and stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brazier bowl, central pillar, and tripod legs are drawn in pure front elevation (side-view / platformer style). The bowl has no visible elliptical opening from above (only a 1px flat front rim at row 11), and the base feet rest flat on row 30 without foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 6050
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brazier bowl on stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brazier bowl (rows 10-15) and its tall stand are drawn in pure front elevation; there is no elliptical opening showing the inside of the bowl or foreshortened top surface, with the flames sitting directly on a flat front-facing rim.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 6818
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.215Z",
+ "cells": {
+  "16": [
+   "0e7516e23b7b7c1f",
+   "4368783f52b1646c"
+  ],
+  "24": [
+   "068903dfee617065",
+   "0e5489c5818fcc63",
+   "99a62031194e03bc",
+   "ad7e20a06a2a0b92",
+   "baf548d795d8d91a",
+   "bce43ec72f2710da",
+   "c5734b8d260306e8",
+   "c88cae4d8ccb8669",
+   "dd09489bd497be9d",
+   "eb4cfd976dc0e3e5",
+   "ebce8c87064f8a33",
+   "fc65321f8bff33cc"
+  ],
+  "32": [
+   "33eeb0f11083a815",
+   "a3a7101cd3fc48ac",
+   "d84062121d4ccaf1"
+  ],
+  "48": [
+   "3d3e6430f63875cd",
+   "59609d3b01547c79",
+   "87ecb574437df7bd",
+   "9287e10c2716af26",
+   "a20f460fdf1632dc",
+   "b7eba843e80b2790"
+  ]
+ }
+}

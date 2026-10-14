@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "adfa7e8ade5e2e1f8a84b789cc45ed90d71282622f92ed62063ac9e5c4daab27",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "low glass vitrine with a fossil",
+ "label": "monster-rooms/mu_vitrine",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vitrine display case with cabinet base",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the vitrine is viewed clearly from above (rows 3 to 14, displaying the fossil under glass), sitting atop the front cabinet base (rows 15 to 26).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4162
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vitrine display case with base cabinet",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 2-14 clearly depict the glass top surface looking down into the display case where a fossil is displayed beneath the glass with diagonal specular highlights. Rows 15-26 form the vertical south face showing the cabinet drawers.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5348
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vitrine display case with fossil inside",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top glass surface looking down into the fossil display spans rows 3 to 14 (approx. 12 rows), showing the interior fossil and glass reflections in 3/4 view above a front-facing cabinet base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6252
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vitrine display case",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top glass surface displaying the fossil occupies rows 3 to 14 (12 source pixels deep), while the front face (glass front and blue cabinet base) occupies rows 15 to 26.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5057
+  }
+ ],
+ "decidedAt": "2026-10-14T05:17:07.552Z",
+ "cells": {
+  "16": [
+   "0a93ac0edd66b3b8",
+   "354b7f2181459430",
+   "9ea34675e65bc3aa",
+   "d44451a51605445d"
+  ],
+  "24": [
+   "04458fabc5a3e479",
+   "05f9ed092a91e52d",
+   "06ba9a120c783c48",
+   "0b07acf4e815c83d",
+   "170e4425233c5039",
+   "2b8cc54011ba8f88",
+   "41caf0107997839a",
+   "527433540bac13b1",
+   "53f3c0be944344d7",
+   "54e6b8ca00bf88d7",
+   "59dfe659b22b6c5b",
+   "651d7ce7bef2b561",
+   "910f23d2d09741a6",
+   "9691058f5b6c91ac",
+   "a89a189fcfe9d957",
+   "b1c20ef010bfa1ca",
+   "b9e2cd8c9f4d29c5",
+   "ca2f5e944c5b5d9a",
+   "d0c83f70ac486696",
+   "df2f0055ec586834",
+   "e4333c225362e3b1",
+   "f8c764c7ebe44d97",
+   "fe6f70271efdaa12",
+   "ff82cec959e2ccd0"
+  ],
+  "32": [
+   "aace06f94a3fe938"
+  ],
+  "48": [
+   "3c5c26b4670677b5",
+   "758d2436336b68fd",
+   "a02b0869bc4d06eb",
+   "bcabb5c5dc5c3ae1",
+   "d37d00caf7cd2ed6",
+   "de4b08ddf025d682"
+  ]
+ }
+}

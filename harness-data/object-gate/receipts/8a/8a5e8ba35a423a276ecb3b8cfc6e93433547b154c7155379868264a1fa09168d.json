@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8a5e8ba35a423a276ecb3b8cfc6e93433547b154c7155379868264a1fa09168d",
+ "width": 16,
+ "height": 32,
+ "kind": "organic",
+ "name": "어린 가문비(눈 덮임)",
+ "label": "snow-north/sn-pine-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "snow-covered young spruce tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The spruce tree is drawn in a flat side-scroller front elevation with straight horizontal tier bottoms (rows 20 and 29) and a vertical profile, showing no 3/4 top-down foreshortening or rounded perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5856
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "snow-covered young spruce tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The spruce tree is drawn in a pure front/side elevation silhouette with horizontal tier bottoms (rows 20 and 29) and a vertical conical profile lacking any downward viewing angle or visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5406
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "snow-covered young spruce tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn as a flat 2D side-scroller elevation with stacked tiers whose bottom edges run completely horizontally across rows 10, 20, and 29 without any downward curvature or top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7625
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "snow-covered young spruce tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The spruce is drawn as a flat 2D side-view silhouette typical of a side-scrolling platformer. Both the foliage tier overhangs and the ground base cut straight horizontally across without any elliptical curvature or visible top surfaces showing depth from the top-down 45-degree camera angle.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14764
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.502Z",
+ "cells": {
+  "16": [
+   "04e4ae53d3436134",
+   "c0606db4d1db5a86"
+  ],
+  "24": [
+   "02e54e4ec8b9fb8c",
+   "0683ad3d05212cdf",
+   "285528a7cbf8a772",
+   "300fcd1e2c320910",
+   "4d1ee4037ebc2d8a",
+   "5332a1c3d9ad284f",
+   "6a3d59ea4fb29976",
+   "7707d9b070795966",
+   "b43f42daa5323a06",
+   "ba293dfe0efbaaa7",
+   "ba76c5e4b55787f7",
+   "f429d21602c9c734"
+  ],
+  "32": [
+   "1e65250f93c27bfa",
+   "23f10867a1825007",
+   "c6de730c37900796"
+  ],
+  "48": [
+   "6673cce4cafe7fdb",
+   "7fd99e9b9acb8876",
+   "a5829ea2a586d207",
+   "dd616662faae2194",
+   "f10e74a8b7852739",
+   "f2453ab178a371bf"
+  ]
+ }
+}

@@ -1,0 +1,162 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ec2c672a183cdb5c96a005d21668068d7da37bd8bf8f106b3e9e1367b3c656c1",
+ "width": 96,
+ "height": 96,
+ "kind": "structure",
+ "name": "둥근 지붕 회당(큰 돔·아치 문루)",
+ "label": "desert-east/de-domed-hall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "domed gatehouse/hall with flat roof terrace",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a large horizontal roof terrace visible from above across rows 6 to 54 (complete with jars, a hatch, and parapet walls foreshortened in 3/4 perspective), above the lower front wall and portal.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8808
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "domed gatehouse/building with roof terrace and facade",
+    "kind_matches": true,
+    "top_rows": 50,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a classic JRPG building projection with a 50-pixel-deep horizontal roof terrace (rows 6-56) complete with parapet, pots, and trapdoor, set above the south-facing brick facade (rows 56-95).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8137
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "large domed building with flat roof terrace and arched entrance portal",
+    "kind_matches": true,
+    "top_rows": 50,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a large horizontal roof terrace/deck spanning rows 6 to 56 complete with jars and a trapdoor resting on the surface, overlooking the front vertical brick facade from row 56 down to the ground. The 3/4 top-down angle is properly rendered.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6156
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "domed hall building with rooftop terrace and arched portal",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features a prominent horizontal rooftop terrace spanning rows 6 to 54 seen from above with parapets, scattered jars, and a hatch, above the vertical south-facing facade walls and portal.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6024
+  }
+ ],
+ "decidedAt": "2026-10-14T00:24:39.341Z",
+ "cells": {
+  "16": [
+   "032f94e37f198f4f",
+   "08ce50705a567daa",
+   "0bbb59a24d36df07",
+   "154c986d5b62618f",
+   "1813441d839d0792",
+   "215734f5239dfd42",
+   "28b1c27b2b5af4aa",
+   "2b2824e7e063e073",
+   "2ce0a4238aaa575b",
+   "2d9f5032b2d6255d",
+   "3187d91eecf81ab7",
+   "32aa90ea5c2389aa",
+   "3acf399a090a77ed",
+   "3c3571388b7e0f0f",
+   "3fce45c8aeec1840",
+   "4e091177a9277703",
+   "5059545f3e6ba46f",
+   "6fbca3b17ef3c1ff",
+   "72cb2b438efac07d",
+   "7dc1edb86f8c6173",
+   "8cbd993958e50162",
+   "8d187f9188315977",
+   "a11a9ab017abc33a",
+   "a4f484295ec0bc59",
+   "a8cd013a18cc81a2",
+   "ac4717a4e5570fc0",
+   "b7383b06616b83ee",
+   "b7a545eae6035d2a",
+   "be20a0eac89c270f",
+   "c19a6184f106204a",
+   "c33bffa37b10d319",
+   "c6b6ba4a2493138a",
+   "cb362c74e725f909",
+   "d4cdb96f6d5fb57e",
+   "d9cb6a0241227bee",
+   "e89908cf46a9ea5f"
+  ],
+  "24": [
+   "13035e9364b6bc7a",
+   "34d5fa51b7d4cd52",
+   "3821ddf88aec9245",
+   "4512cbec0d2d9a71",
+   "486e139587a85be3",
+   "5de0693b78615bac",
+   "6a05e60c06a80eb1",
+   "6d662b5aa84a4796",
+   "6f354e13eacaf8b6",
+   "72f7c6589e8217ed",
+   "9dda2caff579c415",
+   "a4fe1e26ae90a914",
+   "aa98ff512529a004",
+   "ae26810529d46158",
+   "b37b6cc672735ab3",
+   "c6c8ebd9a684a33e"
+  ],
+  "32": [
+   "0bc625c48bab8777",
+   "0ecea4008d606f70",
+   "5514dab5f2f9c0bb",
+   "57b430fd405305bd",
+   "6ef2af92d0bac5e1",
+   "adbd6eb9f6bb1ba1",
+   "c5a1d33851472d46",
+   "df70ec365bbe46d6",
+   "f996e75ff354bb3b"
+  ],
+  "48": [
+   "35980240c44cde54",
+   "36cd4a6b6f834f06",
+   "611177adca1a9bc5",
+   "edc44c94cf2c0ec4"
+  ]
+ }
+}

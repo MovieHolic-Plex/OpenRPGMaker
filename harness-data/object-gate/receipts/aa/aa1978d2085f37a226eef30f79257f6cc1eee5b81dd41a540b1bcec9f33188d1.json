@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "aa1978d2085f37a226eef30f79257f6cc1eee5b81dd41a540b1bcec9f33188d1",
+ "width": 48,
+ "height": 32,
+ "kind": "flat",
+ "name": "거실 깔개",
+ "label": "modern_city/interior/mci-rug",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "living room rug / mat",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire object is a floor rug lying flat on the ground, completely visible from above across rows 2-29 with appropriate perspective borders.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5006
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rug",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a floor rug lying flat on the ground, entirely viewed from above across rows 2 to 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6882
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rectangular floor rug with blue border and checkered pattern",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire object is a floor rug seen from above in top-down perspective, spanning rows 2 to 29 across its full surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9710
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rectangular rug",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a living room rug lying flat on the floor, viewed top-down across rows 2-29 with a blue border and patterned interior.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4814
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:12.629Z",
+ "cells": {
+  "16": [
+   "151102f44dd08183",
+   "38001bc66f86d4ef",
+   "5af4e56f2b5da405",
+   "7d2e19bfc7d4a401",
+   "a5fe7343815234a8",
+   "b52ca0ee8a41e6ad"
+  ],
+  "24": [
+   "2519a868c3c5bf8e",
+   "2995459e7aaa8cfc",
+   "39b2f5507b22b121",
+   "54eadf62bf6d9f58",
+   "66d564256e5083a4",
+   "882bc9aadd345a03",
+   "a2748174d8893ecf",
+   "dcb17ed61c292ea4"
+  ],
+  "32": [
+   "2d973dd530240218",
+   "35218191cadc3342",
+   "4c37f22e2e346669",
+   "a30949c1eab5ce44",
+   "a672cd0b14f9efc0",
+   "ad11241b73c36618"
+  ],
+  "48": [
+   "0f448a3985d98d65",
+   "0f67ce485cec47be"
+  ]
+ }
+}

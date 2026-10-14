@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9a8c8159bdb99e3662da0bc804a97bb68b49e6fc2ef3cc2b7f83322aad79cb60",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "개찰구",
+ "label": "modern_city/interior/mci-ticket-gate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ticket gate pillars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ticket gate consoles are drawn entirely in flat front elevation with a 1px top outline (row 3) directly above the vertical front screen and panel, showing no horizontal top surface at all.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4042
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ticket barrier / turnstile console",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The turnstile consoles are drawn entirely as flat 2D front elevations without any north-south depth or visible top surface (top edge is only a 1px outline at row 4). In 3/4 top-down perspective, the elongated top surface of each barrier pedestal should be visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7188
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ticket gate stanchions",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ticket gate is drawn in pure front elevation as seen straight-on by an approaching commuter, with no visible horizontal top surface on either stanchion (only a 1px top outline border).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10210
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ticket gate pillars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ticket gates are drawn as completely flat front-elevation rectangles with a screen and flap, showing zero depth or foreshortened horizontal top surface for the gate corridor/housings.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11541
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:02.706Z",
+ "cells": {
+  "16": [
+   "6df8a5fdc86ddea9",
+   "7cba639bc40397fe",
+   "7e78db7e9c5972ee",
+   "98c1dc94744b857a"
+  ],
+  "24": [
+   "08fda690406134b5",
+   "0f6bd26486635126",
+   "1e9c4bc7f7d1e24b",
+   "2b2a159bd5d2d788",
+   "2be2f60fc3c78ef7",
+   "3d871752b72d88ec",
+   "5001750deea9f78b",
+   "53215be4127e4b0c",
+   "63fe8f96cb17f687",
+   "70da13ce2220e598",
+   "7acaff1fb23281f5",
+   "8681f29c17bf75f8",
+   "8bfe6a3edb0ab15e",
+   "984e2db319d801d5",
+   "a06b7ba4f2c7ad90",
+   "a3aa3e091a464319",
+   "b6bcad189385ef2f",
+   "bdf15dbaa8a1f613",
+   "be10de25520f5aab",
+   "d991adfa1954f3a6",
+   "e138bd2e3abd2dff",
+   "f51ea6b3924bc705",
+   "fadfab6a02adc0c0",
+   "fede03c1bc168aae"
+  ],
+  "32": [
+   "ffcc273bcfb9b250"
+  ],
+  "48": [
+   "49684af39c14cc02",
+   "73da0563ba54f425",
+   "a18f7650e5d630cc",
+   "a621ddbdaad55939",
+   "ce01e220ffc8ca66",
+   "d385221e055fe123"
+  ]
+ }
+}

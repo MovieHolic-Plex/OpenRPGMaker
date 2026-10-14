@@ -1,0 +1,125 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2c8dafb71c883e9d33a07b293156ee07e6e20cfe9bde2e6a4e207013aaddce5e",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "어린 야자",
+ "label": "desert-east/de-palm-young",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "young palm tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The young palm tree is drawn in pure 2D front elevation (side-scroller style). The fronds form a flat vertical arch with no top-down foreshortening or leaves extending forward/backward, and the trunk has straight horizontal segments with no top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4927
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "young palm tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The young palm tree is drawn in a pure 2D front elevation. The fronds form a flat vertical arch strictly in the XY plane with no foreshortening or leaves extending toward the viewer, and the trunk consists of flat horizontal segments with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5858
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "young palm tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The young palm is drawn in pure 2D side/front elevation: the trunk is a flat vertical cylinder and the fronds form a simple flat arch across the screen with no foreshortened top surface or front/back depth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5174
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "young palm tree crown and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The palm fronds form a flat 2D arch drawn straight from the front, with no fronds radiating towards or away from the camera in 3/4 perspective, and the trunk segments have flat horizontal boundaries.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4352
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.221Z",
+ "cells": {
+  "16": [
+   "29cd413b00605c6b",
+   "47b3ebeb7073012b",
+   "627d18cfc85919ba",
+   "e25b2aaf55fe132a"
+  ],
+  "24": [
+   "02a6f373767ebc24",
+   "2fa7138b70b31135",
+   "31cf5298918f71bc",
+   "3ae91c27198c907a",
+   "41562d24b5a77405",
+   "5c623ee651a7965a",
+   "6f7602b3ddaf824f",
+   "85588004277cf3dc",
+   "89a73fc1b6be92e4",
+   "97efcc3be9ce37f8",
+   "9a1500c945174663",
+   "9e0a6ef3134fa4c5",
+   "9f6b8e5e8089be12",
+   "b185815c030186da",
+   "cab77f7939b1cd2d",
+   "f63f9a0c45a75949",
+   "f8543d7cc10ae2e3"
+  ],
+  "32": [
+   "a19ee4b5a1dfefd8"
+  ],
+  "48": [
+   "002d562b8027019a",
+   "1ea86126a3ba2e9c",
+   "23126361e5d24fd9",
+   "4742db1721766a86",
+   "61c2cd81cf3265f8",
+   "d8e120cffd1df458"
+  ]
+ }
+}

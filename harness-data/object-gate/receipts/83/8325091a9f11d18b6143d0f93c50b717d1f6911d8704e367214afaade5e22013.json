@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8325091a9f11d18b6143d0f93c50b717d1f6911d8704e367214afaade5e22013",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "office chair with wheels",
+ "label": "monster-rooms/lab_chair",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "green spherical flask or slime object",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sprite depicts a round potion bottle/flask or slime with a specular highlight and a small neck/stem, bearing no resemblance to an office chair with wheels, and lacks any visible horizontal seat surface or wheels.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6167
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "green potion flask / round bottle",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sprite depicts a round green glass flask with a specular highlight rather than an office chair; regardless of interpretation, it is drawn in flat front elevation with no visible horizontal seat or top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7084
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "green spherical flask or bulbous container",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sprite depicts a round green potion bottle or spherical object with a specular highlight, not an office chair with wheels. It has no visible seat surface or wheels, and is drawn in pure front view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5080
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "office chair",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object appears drawn in pure front elevation (or resembles a flask); there is no horizontal seat surface foreshortened and visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9817
+  }
+ ],
+ "decidedAt": "2026-10-14T05:34:57.188Z",
+ "cells": {
+  "16": [
+   "969ce53170d8aeda"
+  ],
+  "24": [
+   "1613d87820b7920a",
+   "2c4f6292427d1a26",
+   "2c88acc32afe88d9",
+   "6af56727dc8aeede",
+   "9ac44e684ea7b3a2",
+   "eb8cd98b90e22af3"
+  ],
+  "32": [
+   "574ccea82ba001ef",
+   "676de0dee198b0ca",
+   "ac20835d005fb7d3",
+   "d0b4ec06f0417c87",
+   "e05b2ccb2dcb0a1a",
+   "fedf6b29b615de36"
+  ],
+  "48": [
+   "05489a5c3015f904",
+   "5064f4cef56bd662",
+   "74e872ea3182308e",
+   "b6f77c0de4c5a8c4",
+   "c71162a7a1f0e4aa",
+   "cb75438b68ca8a1a"
+  ]
+ }
+}

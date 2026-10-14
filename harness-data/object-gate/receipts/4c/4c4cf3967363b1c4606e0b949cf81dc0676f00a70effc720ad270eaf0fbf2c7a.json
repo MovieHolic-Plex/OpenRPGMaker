@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4c4cf3967363b1c4606e0b949cf81dc0676f00a70effc720ad270eaf0fbf2c7a",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "카페 짙은 마루(바구니짜임)",
+ "label": "modern_city/interior/mci-wood-dark",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden parquet floor",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image is a seamless herringbone wooden floor terrain texture seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4180
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "parquet wooden floor tile",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image shows a repeating herringbone/parquet dark wood floor texture; as a terrain/floor surface viewed from above, it correctly represents flat ground across the entire tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2936
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "herringbone parquet wooden floor pattern",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tile depicting dark herringbone/basketweave wood flooring, covering the entire tile surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3084
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "herringbone parquet wooden floor terrain",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor surface displaying a herringbone/basketweave parquet pattern, fully visible from above as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3343
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:02.400Z",
+ "cells": {
+  "16": [
+   "2fe78dab6719e296",
+   "58d0dba59086cf81",
+   "a79a5fb74af18b35",
+   "eacc7866ef6d8c07"
+  ],
+  "24": [
+   "0d9763f838ec8efa",
+   "0f18866c63a309c5",
+   "1514b68ee22ebb96",
+   "152690037d3ec23f",
+   "17ed9795522d7d70",
+   "180c4c67e9b5432f",
+   "1b2119fa03212271",
+   "2575ed7f3dcb205c",
+   "347624b2daf8d4de",
+   "3db3043f6861d4df",
+   "41e03666f79260ae",
+   "5089542fbe86f325",
+   "59559fe019cfed8e",
+   "5ee17344f3ed37c1",
+   "7a5becaf35457ce2",
+   "7a6bf3ba9ae87405",
+   "adcfed918cddb144",
+   "c74860b90d73513d",
+   "c8ff54330d466553",
+   "cb471e4a0e9f319b",
+   "d1aeabc8d865e11c",
+   "d1b18c8dcb785437",
+   "e9657e6a82d24c94",
+   "f3b599b2faaef819"
+  ],
+  "32": [
+   "ee71da7ebb2a6bae"
+  ],
+  "48": [
+   "047ff2ce2dcdb9df",
+   "4df5f578d1166824",
+   "545d1e509f3d1420",
+   "57360ac420e11e84",
+   "8d1d09be5a2f2881",
+   "993ddb366f8c5c7a"
+  ]
+ }
+}

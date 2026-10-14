@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a16b9da946968b1ffce68d5ab57546f6156f3f6b84da441c8f8f31d0760d5e49",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "놋 저울 계산대",
+ "label": "desert-east/de-shop-counter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "counter with brass scale",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter's top surface is clearly visible across rows 7 to 10 (4 rows tall) supporting the brass scale base and pans, above the front face/shelving on rows 11 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4648
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "counter with brass scale",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter surface is visible across rows 7-10 (4 pixel rows) supporting the scale, above a visible south front face on rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4702
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "counter with brass scale",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter's top surface occupies rows 7-10 (4 rows tall) beneath the scale, with its south front face shown across rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4326
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden counter with brass scale",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter top is clearly visible across rows 7-10 (4 rows tall) beneath the brass balance scale, with the front face of the counter extending from row 11 down to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4085
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.215Z",
+ "cells": {
+  "16": [
+   "28825ed2116f5796",
+   "e1137932212fb74a"
+  ],
+  "24": [
+   "05965c0d90f495f3",
+   "0b61d973800e096c",
+   "13373ad4cd68774f",
+   "156b3e7f89b0caf2",
+   "396b46dfbfec63ad",
+   "39e28aef949e5cd1",
+   "3b8dc85f2986004e",
+   "9831c3a6436b3d9a",
+   "9893a1a666ef82c9",
+   "b20e917820a73cb6",
+   "ca8f259ed83af8d3",
+   "ddfae818a67d4abf"
+  ],
+  "32": [
+   "cba4739126061d9d",
+   "dd1c8a78e9523a87"
+  ],
+  "48": [
+   "2126452a08d488ef",
+   "30c2263110ec3183",
+   "416abb777bd96767",
+   "6edda12da970e0f6",
+   "9e890ee6f363d044",
+   "d6ed9d2b8c362f20"
+  ]
+ }
+}

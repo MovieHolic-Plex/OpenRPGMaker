@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d9b0a8c49ef839dd82953f4f80c3122337b18178ba67330a90c804b35e0293c5",
+ "width": 32,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "추상화 액자",
+ "label": "modern_city/interior/mci-art-frame",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "framed abstract painting",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted picture frame correctly drawn flat against a north wall as permitted for wall_mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3402
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "picture frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted picture frame displayed flat against a north wall as appropriate for the 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5003
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "framed painting",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Framed abstract picture mounted flat against a wall; flat front elevation is appropriate for wall-mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3548
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "framed picture",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted picture frame drawn flat against the wall as allowed for wall_mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4136
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:02.402Z",
+ "cells": {
+  "16": [
+   "78063246a961bad3",
+   "c9fc4ac2298b3f0b",
+   "e78915e72639fb05",
+   "eedfbd59164c15d7"
+  ],
+  "24": [
+   "180029e90b0afe49",
+   "59f671ec798f975a",
+   "6c5ee8cf16f9d34d",
+   "6f515e0694e3ee2c",
+   "7487e554124ae2ad",
+   "7a1290cac3d1d519",
+   "889718d624daf651",
+   "a02c72d5e763b38e",
+   "a080e4849653b248",
+   "b0c9c9c19f177ccb",
+   "b146eafd7187bf29",
+   "b6629af398215bfe",
+   "be7bf8f8872597cc",
+   "c1ceb32d61387603",
+   "cd590f1f14c0e35b",
+   "cfeed4af19228915",
+   "d20b3c22ba628324",
+   "eb9d541950f3b901"
+  ],
+  "32": [
+   "cb0f232244477081"
+  ],
+  "48": [
+   "0c13312ce0a39f64",
+   "1415f0e965a6566e",
+   "3af4e570ca944ba8",
+   "91e1be2f8e46ddd5",
+   "dfb84a768311c57d",
+   "fdf3bd04336d72dd"
+  ]
+ }
+}

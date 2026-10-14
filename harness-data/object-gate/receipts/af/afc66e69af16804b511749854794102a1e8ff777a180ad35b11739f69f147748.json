@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "afc66e69af16804b511749854794102a1e8ff777a180ad35b11739f69f147748",
+ "width": 32,
+ "height": 16,
+ "kind": "seat",
+ "name": "금속 벤치",
+ "label": "modern_city/interior/mci-bench-metal",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "perforated metal bench seat",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal seat surface is clearly rendered from above across rows 7-11 (5 pixel rows deep with perforated pattern), followed by a 2-pixel-tall front face/lip in rows 12-13 and short legs at the bottom.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7677
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bench seat",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The perforated metal seat surface is clearly viewed from above across rows 7 to 11 (5 rows tall), with a shaded front vertical face at rows 12-13 and legs underneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9316
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "metal bench",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The perforated seat surface is viewed from above across rows 7–11 (5 rows tall), with a 2-row front edge (rows 12–13) and legs below, correctly representing 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6009
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "metal bench seat",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The backless bench correctly presents its perforated top seat surface spanning rows 7 to 11 (5 pixel rows), with a shaded south-facing front edge along rows 12-13 and support legs underneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10614
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:05.387Z",
+ "cells": {
+  "16": [
+   "7c5e6810a8300882",
+   "dd5d42acaa629a9b"
+  ],
+  "24": [
+   "1a52137efea917fb",
+   "23b77884840a2fde",
+   "3203e43e016392f5",
+   "54b257abab20511d",
+   "62723a1c31fb43ae",
+   "7db109c39e3f0c26",
+   "a6e4562a80bc05d6",
+   "bbb67e3c421e1325",
+   "c30fc048b45971af",
+   "ca84a4ef999b579b",
+   "cc30d4065f407b6c",
+   "f3a05a328c55481f"
+  ],
+  "32": [
+   "0ff4f44b0b086d91",
+   "a34109f65cc1dd65"
+  ],
+  "48": [
+   "12ffb21f7a9c3f0a",
+   "ac33aba06fae64aa",
+   "bacff57922a3b1bb",
+   "bebc3af9b30bf815",
+   "ce6b01ff206e295d",
+   "dd5e21406fba4d44"
+  ]
+ }
+}

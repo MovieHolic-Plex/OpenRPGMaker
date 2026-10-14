@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "67373aa1d55e4bd611af75d3e4d57607a1d42f9445d63d6a9e3c6487c7c1d18a",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "office chair with wheels",
+ "label": "monster-rooms/lab_chair",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "office chair",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn in pure front elevation: headrest at rows 2-4, backrest/seat front at rows 5-10, gas lift cylinder at row 11, and wheeled base at rows 12-14. No horizontal seat surface visible from above is depicted.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8402
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "office chair",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is depicted as a flat front elevation showing only the vertical headrest and backrest atop a central stem and wheeled base; there is no horizontal seat cushion surface visible foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6853
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "office chair",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn in flat front elevation with a headrest, backrest, support stem, and wheeled base stacked vertically. No foreshortened horizontal seat surface visible from above is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 7887
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "chair seat and backrest",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn as a flat front elevation with no visible horizontal seat surface foreshortened from above; it depicts the backrest/cushion face-on on a central post and caster base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7260
+  }
+ ],
+ "decidedAt": "2026-10-14T05:17:07.551Z",
+ "cells": {
+  "16": [
+   "6be12fce2cf2a1cc"
+  ],
+  "24": [
+   "055d25ff167f3bd6",
+   "89554768a8324589",
+   "8ff4670935ae1bd8",
+   "c240afaaeafd1f36",
+   "d7309ed90a80e5a1",
+   "ee41c4060edcf2db"
+  ],
+  "32": [
+   "5ac958531121b291",
+   "67c8599398ff26cb",
+   "83ba1cec468275c9",
+   "b1cfc0661cd2b6b6",
+   "b903725e22b2b17d",
+   "d07aae5c645d5314"
+  ],
+  "48": [
+   "042575e5316ef203",
+   "5d399d4c67fdc522",
+   "658f5d73f8b0ceb0",
+   "a5c724046b184e0f",
+   "b2a6452c48950d46",
+   "f99b8fdabc07247a"
+  ]
+ }
+}

@@ -1,0 +1,20 @@
+{"png": "de-sand.png", "kind": "terrain", "name": "잔잔한 모래", "label": "desert-east/de-sand"}
+{"png": "de-sand-b.png", "kind": "terrain", "name": "잔잔한 모래(변주)", "label": "desert-east/de-sand-b"}
+{"png": "de-sand-c.png", "kind": "terrain", "name": "잔잔한 모래(변주 2)", "label": "desert-east/de-sand-c"}
+{"png": "de-sand-d.png", "kind": "terrain", "name": "잔잔한 모래(변주 3)", "label": "desert-east/de-sand-d"}
+{"png": "de-sand-ripple.png", "kind": "terrain", "name": "바람 물결 모래", "label": "desert-east/de-sand-ripple"}
+{"png": "de-sand-pebble.png", "kind": "terrain", "name": "자갈 섞인 모래", "label": "desert-east/de-sand-pebble"}
+{"png": "de-road.png", "kind": "terrain", "name": "다진 흙길", "label": "desert-east/de-road"}
+{"png": "de-road-b.png", "kind": "terrain", "name": "다진 흙길(변주)", "label": "desert-east/de-road-b"}
+{"png": "de-flag.png", "kind": "terrain", "name": "사암 포석", "label": "desert-east/de-flag"}
+{"png": "de-flag-b.png", "kind": "terrain", "name": "사암 포석(변주)", "label": "desert-east/de-flag-b"}
+{"png": "de-grass.png", "kind": "terrain", "name": "오아시스 풀밭", "label": "desert-east/de-grass"}
+{"png": "de-grass-b.png", "kind": "terrain", "name": "오아시스 풀밭(변주)", "label": "desert-east/de-grass-b"}
+{"png": "de-grass-c.png", "kind": "terrain", "name": "오아시스 풀밭(변주 2)", "label": "desert-east/de-grass-c"}
+{"png": "de-gravel.png", "kind": "terrain", "name": "돌 깔린 사막(자갈밭)", "label": "desert-east/de-gravel"}
+{"png": "de-mud.png", "kind": "terrain", "name": "마른 개울 바닥(갈라진 진흙)", "label": "desert-east/de-mud"}
+{"png": "de-wang-road.png", "kind": "terrain", "name": "모서리 왕 타일 한 벌(road, 4×4)", "label": "desert-east/de-wang-road"}
+{"png": "de-wang-grass.png", "kind": "terrain", "name": "모서리 왕 타일 한 벌(grass, 4×4)", "label": "desert-east/de-wang-grass"}
+{"png": "de-wang-water.png", "kind": "terrain", "name": "모서리 왕 타일 한 벌(water, 4×4)", "label": "desert-east/de-wang-water"}
+{"png": "de-wang-dune.png", "kind": "terrain", "name": "모서리 왕 타일 한 벌(dune, 4×4)", "label": "desert-east/de-wang-dune"}
+{"png": "de-wang-flag.png", "kind": "terrain", "name": "모서리 왕 타일 한 벌(flag, 4×4)", "label": "desert-east/de-wang-flag"}

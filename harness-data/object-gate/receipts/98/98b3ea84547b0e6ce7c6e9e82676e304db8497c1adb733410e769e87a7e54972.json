@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "98b3ea84547b0e6ce7c6e9e82676e304db8497c1adb733410e769e87a7e54972",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "office chair with wheels",
+ "label": "monster-rooms/lab_chair",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "green upholstered office chair",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair back/cushion is drawn entirely from a flat front view with tufts visible directly facing the camera; no foreshortened horizontal seat surface is visible extending forward.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4636
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "chair backrest/cushion",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn in pure front elevation; there is no horizontal seat cushion surface visible extending forward or seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4656
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "office chair backrest and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn in flat front elevation as a tufted backrest on a central post. There is no visible horizontal seat surface extending forward in 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5616
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "chair backrest and seat",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn in flat front elevation with no visible horizontal seat cushion surface extending forward. The central pole connects directly beneath the vertical front face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6423
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.763Z",
+ "cells": {
+  "16": [
+   "f813c878f7f9f652"
+  ],
+  "24": [
+   "109f50ce6d2d0b1e",
+   "13f670e45428d3be",
+   "3f6d81c3fc615068",
+   "7fa6595341632a3e",
+   "974c0a05ba783ee0",
+   "d2c19af3255c5df2"
+  ],
+  "32": [
+   "730bd43d791442d6",
+   "9ce2e6f9a0483f9d",
+   "b2bac35a5c22b5c0",
+   "cc5df987f107bd8a",
+   "fd3a6a76979b5ed2",
+   "ff02748ad23aaf4e"
+  ],
+  "48": [
+   "2ccb873ef97e6421",
+   "32524e981cae854b",
+   "455804178031041a",
+   "702ab1722180165c",
+   "8d54c353f59a6ee4",
+   "fc15f890684e20ce"
+  ]
+ }
+}

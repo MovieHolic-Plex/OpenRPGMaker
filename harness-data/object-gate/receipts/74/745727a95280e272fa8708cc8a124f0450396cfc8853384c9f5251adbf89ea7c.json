@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "745727a95280e272fa8708cc8a124f0450396cfc8853384c9f5251adbf89ea7c",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "mooring bollard",
+ "label": "monster-rooms/sh_bollard",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mooring bollard",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the bollard cap forms a clear foreshortened surface across rows 2-6 (approx. 4-5 pixel rows) looking down onto the flared head above the vertical shaft.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5838
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "mooring bollard",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bollard cap is drawn as a clearly foreshortened ellipse spanning rows 2 to 6 (5 source pixel rows tall), with the south front of the cylinder extending beneath it from row 7 to row 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13355
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cylindrical bollard with rounded top cap",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap shows a 4-row foreshortened elliptical top surface (rows 3–6) seen from above, resting on the vertical column stem (rows 7–13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6705
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "mooring bollard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylindrical bollard is drawn in pure front elevation with vertical side silhouettes, a flat horizontal cap underside at row 7, and no elliptical top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6603
+  }
+ ],
+ "decidedAt": "2026-10-14T05:37:02.308Z",
+ "cells": {
+  "16": [
+   "849870703117e86f"
+  ],
+  "24": [
+   "15fd737cc49f8a00",
+   "25be88986b998209",
+   "333c545adbbdb342",
+   "36b87223ea363e8a",
+   "5b080f485e942354",
+   "d5c19b312eb4f378"
+  ],
+  "32": [
+   "634d7120d51cb586",
+   "6e37b16bf065ae13",
+   "a9863f586cffd729",
+   "becd1725bdd090f0",
+   "c6b0aa00c29cde68",
+   "f3af7253d83c4f1b"
+  ],
+  "48": [
+   "3e11c044e4fcf6f8",
+   "634c749916271c38",
+   "6ae0ece0e122a0e9",
+   "a4faba9b64990d0c",
+   "a908a23dd9ad7231",
+   "e32e810078ddfa20"
+  ]
+ }
+}

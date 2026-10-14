@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2df0cbc12f79d22f8ff0c833e48f642cbbe92a113abf51ff085e45d84007b376",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "살림 노점(그릇·쇠붙이·천, 청록 천막)",
+ "label": "snow-north/sn-stall-wares",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "market stall counter and canopy",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall counter has a clearly visible top surface (rows 17-21, 5 source pixels deep) supporting bowls/items, above a vertical front face (rows 23-31). The canopy roof also shows an upper surface area above its scalloped front valence.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9514
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "market stall counter and awning",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall counter top is clearly visible across rows 17-22 (about 6 rows tall) displaying various bowls, transitioning to a vertical front face on rows 23-30. The awning above also shows downward-sloping top surfaces in proper 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3039
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "market stall with awning and counter",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter table clearly displays a top surface of about 5-6 pixel rows (rows 17-22) upon which wares are displayed, and the awning above shows a top slope (rows 0-3) above the hanging front fringe.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5199
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "market stall with canopy and counter display",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall counter has a clearly visible horizontal top surface measuring about 6 pixel rows (rows 17-22) upon which wares are displayed, supported by a front counter face (rows 23-31) and topped by an angled canopy with roof slope and hanging valance.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4038
+  }
+ ],
+ "decidedAt": "2026-10-14T01:15:54.503Z",
+ "cells": {
+  "16": [
+   "2fcba8ff55f594eb",
+   "46366b09699e9ea0",
+   "5a20d6786ecb3c95",
+   "a9dd5f067f55b303",
+   "c0cdc2b976c56991",
+   "f52991a416df0a22"
+  ],
+  "24": [
+   "191d8134ec1f10d5",
+   "28e5e93e8407adb2",
+   "2969d9efb980146b",
+   "392ccbcf08845329",
+   "888ee91be4dfe183",
+   "a03ae7203bd2d4e9",
+   "a8589a3566c078b3",
+   "ff1fe2ad0da16a4e"
+  ],
+  "32": [
+   "0b793ef9f392dd4e",
+   "34038de9e76c7d0c",
+   "946b51874a6c2d9e",
+   "e1595df0063d9226",
+   "e6bfd055ea16facb",
+   "ed8e8f923c89c7d6"
+  ],
+  "48": [
+   "3ac40726ce1f41c8",
+   "5917d06bc6b25e73"
+  ]
+ }
+}

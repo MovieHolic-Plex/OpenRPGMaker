@@ -48,6 +48,8 @@ const OPEN_DEFAULT: [string, string][] = [["genkan", "hall"], ["genkan", "ldk"],
 const DOOR_OF: Record<string, { h?: string; v?: string }> = {
   toilet: { h: "door-open-toilet", v: "door-side-western" }, washitsu: { h: "fusuma-open", v: "door-side-sliding" },
   bath: { v: "door-side-sliding" }, dressing: { v: "door-side-sliding" }, unitbath: { h: "door-open-toilet", v: "door-side-western" },
+  // modern_city(도쿄풍 현대 도시) 실내 — 병동·대기 복도는 병원 미닫이, 뒷방·창고는 철문, 회의실은 유리문(그 사양에만 있는 mci- id).
+  ward: { h: "mci-door-hospital" }, waiting_room: { h: "mci-door-hospital" }, backroom: { h: "mci-door-steel" }, meeting: { h: "mci-door-glass" },
 };
 
 function rng(seed: number) {

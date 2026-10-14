@@ -1,0 +1,146 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3909d16c3382bbf3cb5b57afe3af2ea69dad7b5ea1f0638301f51ee78d2bd6af",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "사무 칸막이",
+ "label": "modern_city/interior/mci-partition",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "office partition",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The partition is rendered as a flat front elevation. The top horizontal beam has only a 1-2px highlight/rim line (rows 10-11) instead of a foreshortened top surface showing the wall's depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13972
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "office partition screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The partition is drawn as a flat 2D front elevation. Rows 10-11 form a 2px top frame/rail line rather than a foreshortened top surface showing partition thickness.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7829
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "office cubicle partition",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The partition is drawn as a flat architectural front elevation. The top rail is only a 2-pixel tall border (rows 10-11) with no foreshortened top surface showing the depth or thickness of the partition.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9631
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "office partition divider",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cubicle partition is drawn in a pure front elevation. The top rail is only a 2px line (rows 10-11) acting as a front border/rim with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8103
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:11.884Z",
+ "cells": {
+  "16": [
+   "2a7b1e505e4bcf62",
+   "542a3a224101936b",
+   "8547928b961092df",
+   "f7b475cfee652ef5"
+  ],
+  "24": [
+   "040f8ee2b660c804",
+   "0b7256dab2aecfe4",
+   "0d16ef43c9387a3f",
+   "0d73dc1fbc05cf5f",
+   "5aaf8e489605913e",
+   "5f157567367e777b",
+   "62d1ef17142b84a5",
+   "6d2b9fcbf5834342",
+   "782dabd2c82e3f86",
+   "879142757691e1e1",
+   "8dd932566dfbf080",
+   "b91b118771a99c7f",
+   "b9a59374dbf0e69f",
+   "befed4f4865c1b2a",
+   "f12da113784c0c99",
+   "f13cd953e556e812",
+   "f69ecd7193bcf942",
+   "f9a3dd541126570f"
+  ],
+  "32": [
+   "b2beddfca3b05d19"
+  ],
+  "48": [
+   "28c26bfe9f850b08",
+   "3666b60778e5c9c3",
+   "5b26e3f4534194e5",
+   "9c3b92b64d5a265d",
+   "aaea6365aa9c16ff",
+   "c59a29475647b2d1"
+  ]
+ }
+}
