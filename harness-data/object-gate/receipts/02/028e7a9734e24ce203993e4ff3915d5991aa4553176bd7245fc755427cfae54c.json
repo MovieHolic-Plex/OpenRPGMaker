@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "028e7a9734e24ce203993e4ff3915d5991aa4553176bd7245fc755427cfae54c",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "벽 통로(아랫줄, 문턱 — 걸어 지나간다)",
+ "label": "snow-north/sn-wall-door-d",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "doorway threshold passage tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Passage and threshold terrain tile showing the floor opening between doorframe posts; classified as terrain, so standing 3/4-view requirements do not apply.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4823
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall passageway threshold and floor tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Classified as terrain; depicts a top-down doorway passage with side jambs and floorboards viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4852
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "doorway threshold and floor passage between wooden wall frames",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a terrain/floor doorway passage tile showing the floor planks seen from above (rows 5-13) and the threshold line (row 14) framed by vertical posts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3892
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "doorway passage and floor threshold",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting an open doorway passage with floorboards and threshold viewed in top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5095
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.162Z",
+ "cells": {
+  "16": [
+   "93b9c7740401582d"
+  ],
+  "24": [
+   "183e4d0bbb5140dd",
+   "1f70b083428fbc14",
+   "24e57989c6c4235c",
+   "2dc8e6a8222cd89b",
+   "c3b7f3071bcaebd9",
+   "cbf37edac0fc5f48"
+  ],
+  "32": [
+   "07ce4feee3da895e",
+   "3f0503b8ca12f2a4",
+   "6a149ac8694acbd6",
+   "72e27f2cb64fb279",
+   "ea9d61f0980edcb8",
+   "f0dff9db56e38d71"
+  ],
+  "48": [
+   "1c0d47b66a8e1508",
+   "5d875dff545719fe",
+   "aae8f76022967d21",
+   "d5d4cddd728243e0",
+   "d7c147d230499045",
+   "f2687d81c6fd2533"
+  ]
+ }
+}

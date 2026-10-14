@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3998a8f8d2a879fa9624d4cde30538154e87c3ac705bb9b213fbe2fca0621d32",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "진창(녹은 눈과 흙)",
+ "label": "snow-north/sn-slush",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "slush and mud ground tile with small puddles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting melted snow and muddy ground patches viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4035
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "terrain tile of mud and slush/water puddles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ground terrain tile showing muddy ground with patches of slush and water puddles across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3160
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "slush and puddle terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting mud/soil with puddles of melted snow and water viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2857
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "slush and muddy ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting muddy ground with slush/water patches viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2586
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:23.951Z",
+ "cells": {
+  "16": [
+   "9809d7e9c1a5d5fa"
+  ],
+  "24": [
+   "048fa3f6fb840c30",
+   "a05bb89010f9fc3c",
+   "b2655d36ea88604c",
+   "bba8991d101e28a4",
+   "d36b7aab80a36a85",
+   "e4c2c89802740577"
+  ],
+  "32": [
+   "04a8c66855030d93",
+   "105d86a163bdc9f2",
+   "128f1044fb90fd63",
+   "1defa27f6a70ec6d",
+   "331aa97a8cf2c302",
+   "c99afce719045f4d"
+  ],
+  "48": [
+   "3e8936db81e97888",
+   "4d79fba6a7ccf5ef",
+   "5edf3072bba68a08",
+   "c09d8cd673bb45ab",
+   "c4769e441c6569ab",
+   "f5ceaccfc6936b28"
+  ]
+ }
+}

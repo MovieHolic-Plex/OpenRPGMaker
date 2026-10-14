@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0ce6836e6774731569376ed28c425d429ac63c7390f26e1b87a0460d55546771",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "통나무 벽면(윗줄)",
+ "label": "snow-north/sn-wall-log-u",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "log wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a vertical log wall face (terrain), representing horizontal stacked logs. As a terrain wall-face tile, it correctly covers the south-facing vertical plane of a wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6519
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "log wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a south-facing vertical log wall surface. As standard terrain wall face art, it tiles seamlessly and correctly depicts the vertical plane in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7141
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "log wall face tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal stacked log wall texture intended as a wall face terrain tile. As standard 2D terrain walling, it correctly fills the vertical surface area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6662
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "log wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal stacked log wall face tile filling the tile horizontally. As a terrain wall face, it correctly represents a vertical architectural surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5074
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.161Z",
+ "cells": {
+  "16": [
+   "80160afc0d5b1ab4"
+  ],
+  "24": [
+   "0656022f8cad9598",
+   "192ca6d399b7055a",
+   "346d2991820fea89",
+   "b124391cb2b311df",
+   "d3fb6296c23e9563",
+   "e37c450bd67df52c"
+  ],
+  "32": [
+   "5a343470df6ee84b",
+   "653130ac15d265a1",
+   "675b91af7907ad37",
+   "9a987b8f17b334c0",
+   "adf7c3093a65bb67",
+   "e6f73fb804d7bb20"
+  ],
+  "48": [
+   "3b46e410ef381fc1",
+   "9734f17e8da486c4",
+   "9eff5a7588882732",
+   "c04492e5181d36f1",
+   "cb6b8998267e5ef2",
+   "da70bcc388a56a62"
+  ]
+ }
+}

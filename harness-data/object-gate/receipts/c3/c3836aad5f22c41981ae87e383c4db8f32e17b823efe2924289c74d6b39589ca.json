@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c3836aad5f22c41981ae87e383c4db8f32e17b823efe2924289c74d6b39589ca",
+ "width": 16,
+ "height": 32,
+ "kind": "debris",
+ "name": "굴뚝 연기",
+ "label": "snow-north/sn-smoke",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "chimney smoke plume",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is chimney smoke rising vertically ('굴뚝 연기'), which does not match the kind 'debris lying on the floor'.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 3832
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "chimney smoke plume",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is chimney smoke rising vertically, not debris lying on the floor (kind mismatch). Furthermore, it is drawn in a pure front/side 2D elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 4712
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "chimney smoke plume",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is chimney smoke (굴뚝 연기) rising vertically, completely mismatched with the 'debris' kind. It is drawn as a flat vertical column of puffs in side/front view with no top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 4099
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rising column of chimney smoke puffs",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is chimney smoke (굴뚝 연기) rising vertically into the air, completely mismatched with the 'debris' kind (which specifies floor debris like rubble or shards). Furthermore, it is drawn in flat 2D side elevation without foreshortening or top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 3661
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.505Z",
+ "cells": {
+  "16": [
+   "d4fe647e5afb0e8d",
+   "d7437e93c98d60da"
+  ],
+  "24": [
+   "075d4b6584284ad2",
+   "295cace3e089e8e3",
+   "31e0072a9395f973",
+   "3973cbd53f81422d",
+   "4729d09eb267d38d",
+   "6c7a22a7eff62245",
+   "8af2d5dd99217c2a",
+   "95e20f2b006f6789",
+   "99e1b1e1452a8d51",
+   "b80b1109002275b8",
+   "cb11cf2d783b9a08",
+   "eb92d714603a6ea0"
+  ],
+  "32": [
+   "75d37869dff42376",
+   "c0790959b334341b",
+   "c81acfcc5b858704"
+  ],
+  "48": [
+   "47ea840235dbf13b",
+   "5e85db91a935c437",
+   "639d2edadf493c06",
+   "877ead035aa60304",
+   "d65a343cf6597397",
+   "de96e03dff628db9"
+  ]
+ }
+}

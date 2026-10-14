@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "321e8064a7b4dd63bf23841a6c403d5afe9116c1a533a0722ddecc7557eec23c",
+ "width": 16,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "벽걸이 오로라 깃발(보라·청록 물결, 반대 무늬)",
+ "label": "snow-north/sn-banner-aurora-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall banner",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a decorative tapestry/banner hanging flat against a wall from a horizontal rod, permitted to be flat under the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3966
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall-hanging banner",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "A flat decorative banner hanging from a rod on a wall; correctly categorized as wall_mounted, which is permitted to be flat vertical.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4091
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall banner hanging from a horizontal rod",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-hanging decorative banner mounted flat against the wall plane; appropriate for wall_mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5088
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall banner hanging from a horizontal rod",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a flat wall-hanging banner mounted on a wall rod, correctly classified as wall_mounted which permits a flat front presentation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3823
+  }
+ ],
+ "decidedAt": "2026-10-14T01:23:05.960Z",
+ "cells": {
+  "16": [
+   "10d91abb4aa6f404",
+   "c4f4414997441773"
+  ],
+  "24": [
+   "03b6ca1841e2fc40",
+   "04a11b21d2d40c14",
+   "0a8218583374cd36",
+   "35b747cfde5ff9ee",
+   "3eaa71a4463dac42",
+   "8ffd1a72dba7f437",
+   "937ab42d35c32435",
+   "a353d1acfab497c1",
+   "b59ccf1e9993cfb6",
+   "b63e399be0dea3e5",
+   "df2e5bf87dcd2492",
+   "fe70a96b1b9750d4"
+  ],
+  "32": [
+   "1a5e93e4501e609d",
+   "bbe45a933476b4d5",
+   "df318835596f8d91"
+  ],
+  "48": [
+   "1ac959a2a41f4d24",
+   "58b318566dea1fd3",
+   "69c807eb06f85317",
+   "7b55dc6156be11bd",
+   "b35a44aeddf19605",
+   "fcfd99238bacd4a2"
+  ]
+ }
+}

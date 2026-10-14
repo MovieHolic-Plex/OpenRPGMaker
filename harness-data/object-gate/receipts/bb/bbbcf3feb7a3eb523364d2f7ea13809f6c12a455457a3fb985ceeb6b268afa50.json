@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bbbcf3feb7a3eb523364d2f7ea13809f6c12a455457a3fb985ceeb6b268afa50",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "불바구니 기둥(통나무 기둥 위 쇠 불바구니, 위에서 보이는 숯불)",
+ "label": "snow-north/sn-lamp-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brazier pillar (log post with iron fire basket and stone base)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top brazier clearly displays the glowing charcoal bed as an elliptical interior seen from above across rows 3-7 (approx 5 source pixel rows deep), and the base plinth at rows 27-30 is also rendered with a visible 3/4 top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 16656
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron brazier with burning coals atop a wooden post",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top brazier clearly shows the glowing fire/coal bed inside the rim from above (rows 2-7, ~5-6 rows deep), correctly foreshortened in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6113
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brazier bowl on wooden column with base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brazier at the top shows a wide elliptical opening (rows 3-7, 5px deep) revealing glowing charcoal viewed from above, and the base at rows 27-31 is also rendered with proper top-down foreshortening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9390
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "standing brazier column (wooden pillar with fire basket on top)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden post and fire basket are rendered from a pure front elevation with 0px of top surface or opening ellipse visible for the main body. Although the base plinth has an elliptical ring, the main volume (post and brazier) shows no 3/4 perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11341
+  }
+ ],
+ "decidedAt": "2026-10-14T01:21:53.765Z",
+ "cells": {
+  "16": [
+   "2453c073f51f70bc",
+   "c8f8f08a7e32fffc"
+  ],
+  "24": [
+   "07c38cccffb7b09f",
+   "083ae8e1ae1b1934",
+   "3501d682da09ec98",
+   "3560364a051ebc25",
+   "439b778ecdd86f8d",
+   "503d494e75d32965",
+   "54c0c5dcba289a84",
+   "692b43ebc24c9bde",
+   "69b28876377edc42",
+   "9b77a0130779c237",
+   "c3d953c2cc12052d",
+   "d418553e38384bba"
+  ],
+  "32": [
+   "1298e4be6278c7f8",
+   "2ad1b26cdd4a9cb4",
+   "9e045e1119b21c9f"
+  ],
+  "48": [
+   "30ebd0e1ac4e0291",
+   "3b71476b323f211d",
+   "42ccedac266fd31d",
+   "6b06591f0927cc3b",
+   "8a0b7784b903fbdc",
+   "d408c57d9df49147"
+  ]
+ }
+}

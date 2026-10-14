@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f3f2434472bc119d605e7cac3cd459dfabd8dfaf18b212beaccd0fe245e5159e",
+ "width": 32,
+ "height": 48,
+ "kind": "low_furniture",
+ "name": "통나무 침대(모피 이불, 머리판 북쪽)",
+ "label": "snow-north/sn-bed-fur",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "log bed with fur blanket and north headboard",
+    "kind_matches": true,
+    "top_rows": 29,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed surface (pillows, sheet, and fur blanket) is fully visible from above across rows 11-39 (approx 29 rows), with properly rendered headboard and footboard in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3872
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "log bed with headboard and fur blanket",
+    "kind_matches": true,
+    "top_rows": 29,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed shows its top horizontal surface (pillows, sheet, and fur blanket) clearly spanning rows 11 to 39, along with a top-down view of the headboard and footboard.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3037
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "log bed with mattress and fur blanket",
+    "kind_matches": true,
+    "top_rows": 29,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed is drawn in proper 3/4 top-down view, showing the extensive horizontal top surface of the mattress, pillows, and fur blanket spanning rows 11 to 39, along with the headboard and footboard.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4377
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "log bed with north headboard and fur blanket",
+    "kind_matches": true,
+    "top_rows": 29,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed's horizontal mattress surface (pillows and fur blanket) is viewed from above across rows 11 to 39 (~29 rows tall), with vertical south-facing surfaces on the headboard and footboard correctly foreshortened in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3310
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.163Z",
+ "cells": {
+  "16": [
+   "26f7fe33a50e1f8b",
+   "2f1153c33e98d1e4",
+   "7dd76c321a8c431f",
+   "8926e2a9b1d8a16b",
+   "c64a8769d9848cda",
+   "f0ab9d6bf5220857"
+  ],
+  "24": [
+   "105f6539cb2d5005",
+   "16d3d4d9bc3dcdd8",
+   "2aa5794151fff2cc",
+   "3c66a571de127c46",
+   "7c146f6733980ea8",
+   "96865f708581ad7c",
+   "b239364e0a25e6dc",
+   "b3bc27c2e3bd7ba9",
+   "be9e83b7c88f87e1",
+   "dd0246cb37ba88e5",
+   "f4b2caf8b7d662ae",
+   "f54b782eb3473b8b"
+  ],
+  "32": [
+   "579ff3fb28e996c7",
+   "6cc4c91cde9bdd64",
+   "90baed7c5eec21ac",
+   "ba7e96ee1fb1d73e"
+  ],
+  "48": [
+   "01b20f27e3e8a89c",
+   "6e6ff0afd2d4c6da",
+   "7780183b9b2824e7"
+  ]
+ }
+}

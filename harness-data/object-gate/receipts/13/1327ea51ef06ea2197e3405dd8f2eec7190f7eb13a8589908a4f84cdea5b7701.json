@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1327ea51ef06ea2197e3405dd8f2eec7190f7eb13a8589908a4f84cdea5b7701",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "술통 받침대(받침 판 위 세운 통 둘 + 꼭지)",
+ "label": "snow-north/sn-keg-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "barrel rack with two barrels on shelf",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upright barrels show clear elliptical top lid surfaces spanning rows 6 to 11 (6 rows tall), and the supporting horizontal shelf shows a visible top surface spanning rows 21 to 24 (4 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5896
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "two barrels on a wooden rack shelf",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The barrels show clearly foreshortened circular top lids (rows 6-12, ~6 rows tall) with bung plugs, and the rack shelf below also displays a visible top surface (rows 21-24, ~4 rows tall) in proper 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5051
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "keg stand with two barrels on a horizontal shelf",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal shelf shows a clear top surface spanning rows 21-24 (4 rows deep), the barrel lids show foreshortened circular/oval top faces spanning rows 6-12 (6 rows deep), and the upright posts have visible top end grain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6221
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "barrel rack with two barrels",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The shelf board shows a clear horizontal top surface of 3-4 pixel rows (rows 21-24) before its front face (rows 25-27), and both upright barrels show foreshortened circular top lids (rows 6-12, ~6 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6787
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.164Z",
+ "cells": {
+  "16": [
+   "0476a565725f6529",
+   "1b31ae2829a08817",
+   "a3a83d820c402c8f",
+   "fae09c8e275adcc2"
+  ],
+  "24": [
+   "019abc083ca6a7cc",
+   "09c09ff35db945d0",
+   "0e10b74cc1ea3b09",
+   "0fa4ca5b1a6d37d6",
+   "124dd951f5ecafa7",
+   "2a4f70859dbd960d",
+   "4e22df4d22c145f4",
+   "526dc0039857b7a2",
+   "531505b0bc7b3361",
+   "6ea98bd8acf960da",
+   "7327840d7bb7bc56",
+   "9651f0bdf1d47369",
+   "9b4d4fd830b7864d",
+   "a81a47b1a8d5a237",
+   "b44be80af9366447",
+   "b784f52047e82225",
+   "cb2cba9724679f7b",
+   "d5e1bd63ad1881a7",
+   "d75073d232a54383",
+   "e00d1ad0f0e133f0",
+   "e93eeda411795551",
+   "ece53bbbe3212269",
+   "f788a1ed302f7cf3",
+   "ffa168193818d6eb"
+  ],
+  "32": [
+   "c16308dbb488cb8b"
+  ],
+  "48": [
+   "183e43a7f434c7d8",
+   "c813d39707e91c08",
+   "cff9a28f7097436e",
+   "d198eeb8c79814b6",
+   "d51b2748198398a2",
+   "dd262f46f4280dcb"
+  ]
+ }
+}

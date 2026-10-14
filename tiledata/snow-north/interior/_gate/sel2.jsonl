@@ -1,0 +1,8 @@
+{"png": "sn-floor-plank.png", "kind": "terrain", "name": "통나무 판자 바닥(따뜻한 갈색)", "label": "snow-north/sn-floor-plank"}
+{"png": "sn-hearth.png", "kind": "tall_furniture", "name": "돌 벽난로(넓은 선반 + 화덕 석판 + 장작불)", "label": "snow-north/sn-hearth"}
+{"png": "sn-hearth-f1.png", "kind": "tall_furniture", "name": "돌 벽난로(넓은 선반 + 화덕 석판 + 장작불) (프레임 2)", "label": "snow-north/sn-hearth-f1"}
+{"png": "sn-hearth-f2.png", "kind": "tall_furniture", "name": "돌 벽난로(넓은 선반 + 화덕 석판 + 장작불) (프레임 3)", "label": "snow-north/sn-hearth-f2"}
+{"png": "sn-barrel-in.png", "kind": "round_body", "name": "나무 술통(세움, 쇠테)", "label": "snow-north/sn-barrel-in"}
+{"png": "sn-sauna-stove.png", "kind": "container", "name": "사우나 돌 난로(둥근 무쇠 통 + 위가 트인 돌 바구니 + 숯불 문)", "label": "snow-north/sn-sauna-stove"}
+{"png": "sn-sauna-stove-f1.png", "kind": "container", "name": "사우나 돌 난로(둥근 무쇠 통 + 위가 트인 돌 바구니 + 숯불 문) (프레임 2)", "label": "snow-north/sn-sauna-stove-f1"}
+{"png": "sn-sauna-stove-f2.png", "kind": "container", "name": "사우나 돌 난로(둥근 무쇠 통 + 위가 트인 돌 바구니 + 숯불 문) (프레임 3)", "label": "snow-north/sn-sauna-stove-f2"}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a723e9e99b14918c8266a2cf493e6e6c00a6970ec8bb183659046dd21449b501",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "벽 등(쇠 까치발 + 호박색 등)",
+ "label": "snow-north/sn-lantern",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "amber lantern hanging from an iron wall bracket",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The protruding bracket and hanging lantern are drawn entirely in flat side elevation (side profile). The lantern's cap has no visible top surface (rows 6-7 are merely a 2px front band), showing no 3/4 top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9279
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lantern with iron wall bracket",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted lantern hanging from an iron bracket projecting from a side wall; as an object in the wall_mounted category, flat elevation view is permitted.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9851
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lantern and wall bracket",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted lamp hanging from an iron bracket mounted on the wall; wall-mounted objects are viewed flat against the wall plane and permitted to be flat front elevations.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5087
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lantern and wall bracket",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted iron bracket with an amber lantern. As specified for the wall_mounted kind, wall-affixed fixtures facing the camera are permitted to be drawn flat in front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12882
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.164Z",
+ "cells": {
+  "16": [
+   "ae068241e59edc34"
+  ],
+  "24": [
+   "2f6f634fa061e55f",
+   "362aaac1c508eac5",
+   "b18aaa4c519591b5",
+   "c71d424dbb234bad",
+   "c8e7aa51c871a8f8",
+   "ece1bccf9eb4aa8d"
+  ],
+  "32": [
+   "494025b72f1223d4",
+   "95fbf94c7c5cabf5",
+   "b0c0894594da1a9c",
+   "b2943bc19e191aa3",
+   "c40f6c3ce0ca4400",
+   "c5f2da5096576af2"
+  ],
+  "48": [
+   "2880bf7c1c7827a1",
+   "2b32c19a23259fe2",
+   "617b08b45b1beb28",
+   "76eff65983334db4",
+   "a029d063318186f1",
+   "f02089a05be08194"
+  ]
+ }
+}

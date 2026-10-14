@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b16cbef066f5b3d6d62f7e26a7880078528ca25026eede0066fba5515139c072",
+ "width": 32,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "말리는 약초 다발(벽 막대)",
+ "label": "snow-north/sn-drying-herbs",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hanging herb bundles on a wall-mounted wooden bar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted herb drying rack hanging flat against the vertical wall surface; appropriately drawn for a wall-mounted decoration without perspective distortion.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6262
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "herb bundles hanging from a horizontal wall rod",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The herb rack is drawn flat from the front mounted against the vertical wall plane. Because the object kind is wall_mounted (flat on wall), this 2D front view is valid.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11482
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "drying herb bundles hanging from a wall-mounted rod",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The herb rack is mounted flat against the wall surface with hanging bundles correctly depicted on the vertical wall plane, consistent with the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6218
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall rod with drying herb bundles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted herb drying rack hanging flat against a north wall. As a flat wall-mounted object viewed facing south, it correctly shows its front surface without requiring a top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5720
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.164Z",
+ "cells": {
+  "16": [
+   "290af372e8c6f8f4",
+   "6798f77d196a3216"
+  ],
+  "24": [
+   "0dddac4caded6955",
+   "33a5ce4299b80026",
+   "44eaafe059778f54",
+   "64f1c9c0e50fe99d",
+   "91ff7665ff9cffe9",
+   "a088efdbc3e3a533",
+   "bc2624f1bacf77f5",
+   "c57d47fd4e6b7468",
+   "c68f17fc83aa5770",
+   "cf279e416a30cf8b",
+   "d874caeb536c8882",
+   "e2acabdbf0cb4952"
+  ],
+  "32": [
+   "6ecb04ab749149e2",
+   "d09fee8979630dff"
+  ],
+  "48": [
+   "2a8f7f2ee758b08b",
+   "3db20422146d03a7",
+   "cc5f12e16a5888b9",
+   "daaef6fcd7c8d62b",
+   "e017a8edf9ae0813",
+   "eaaf52eedbc39ce7"
+  ]
+ }
+}

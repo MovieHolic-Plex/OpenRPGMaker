@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f588be56044828b870870d0ff68bdc6e9eb1535e3b96ebc04a6dabc0cea7caac",
+ "width": 32,
+ "height": 32,
+ "kind": "other",
+ "name": "사우나 돌 난로(무쇠 통 위 돌 무더기 + 숯불 문)",
+ "label": "snow-north/sn-sauna-stove",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sauna stone stove body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stove is drawn as a pure front elevation. The top edge at row 4 is a 1-pixel horizontal border with no visible top surface or depth, presenting the stones and fire door from a flat straight-on view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5476
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sauna stone stove",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire stove is drawn in a flat architectural front elevation with only a 1px border line along row 4 and no visible top surface or top opening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3348
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sauna stone stove",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire stove is drawn as a flat 2D front elevation from rows 4 to 29. There is no visible top surface at row 4, only a single 1px outline border beneath the chimney.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3898
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sauna stone stove with rock compartment and fire door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire stove is drawn as a flat rectangular front view from row 4 to row 29 with only a 1px border line at the top, showing zero visible top surface or perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3314
+  }
+ ],
+ "decidedAt": "2026-10-14T01:17:43.844Z",
+ "cells": {
+  "16": [
+   "24056ba38c338b1f",
+   "75b13fd3bbf13583",
+   "a2a6e990d5d88863",
+   "c65ff9d52d1620d7"
+  ],
+  "24": [
+   "0190b82cd2ce20f7",
+   "0c5ac4297a15896a",
+   "0f15359312a2d17c",
+   "1a1f507dcd0e0d00",
+   "2a5af0839df0f8d2",
+   "3b58189886c56745",
+   "3c8f9486c2341434",
+   "40497490a3dfcfe3",
+   "46db42e396c9dd0b",
+   "4f041d1274e6bd75",
+   "600875db648ce3f6",
+   "7b95be3231b01251",
+   "7e7dc2e876392266",
+   "80b85229ad2d0c8a",
+   "8c4eb9a292a866f2",
+   "93e24267e3c79270",
+   "bab364246b024fe0",
+   "c6bdcac4d79d9183",
+   "cc63d1eb3c3713e7",
+   "ce70254abfeef80f",
+   "cf2b10c960b5022d",
+   "d2e1b5c60ae9de6d",
+   "d98fa1e79efd97ca",
+   "eaae8f663f14a32c"
+  ],
+  "32": [
+   "ebda95ffeceb08d0"
+  ],
+  "48": [
+   "167c048af3fb99dd",
+   "2837fae74d13316d",
+   "3ad81f7c748b7d13",
+   "5fb1f5f4f1eef984",
+   "e707cef0cda10c68",
+   "fc38dac31dfc6ded"
+  ]
+ }
+}

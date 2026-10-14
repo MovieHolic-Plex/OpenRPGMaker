@@ -1,0 +1,49 @@
+{"png": "sn-floor-plank.png", "kind": "terrain", "name": "통나무 판자 바닥(따뜻한 갈색)", "label": "snow-north/sn-floor-plank"}
+{"png": "sn-floor-stone.png", "kind": "terrain", "name": "차가운 판석 바닥", "label": "snow-north/sn-floor-stone"}
+{"png": "sn-floor-ice.png", "kind": "terrain", "name": "얼음 동굴 바닥(잔잔, 잔금 몇 줄)", "label": "snow-north/sn-floor-ice"}
+{"png": "sn-floor-sauna.png", "kind": "terrain", "name": "사우나 마루(옅은 나무 발판, 틈)", "label": "snow-north/sn-floor-sauna"}
+{"png": "sn-ceiling.png", "kind": "terrain", "name": "천장(어두운 통나무 벽 윗면 덩어리 + 들보 머리)", "label": "snow-north/sn-ceiling"}
+{"png": "sn-ceiling-ice.png", "kind": "terrain", "name": "얼음 동굴 천장(검푸른 바위·얼음 덩어리)", "label": "snow-north/sn-ceiling-ice"}
+{"png": "sn-wall-log-u.png", "kind": "terrain", "name": "통나무 벽면(윗줄)", "label": "snow-north/sn-wall-log-u"}
+{"png": "sn-wall-log-d.png", "kind": "terrain", "name": "통나무 벽면(아랫줄, 걸레받이 통나무)", "label": "snow-north/sn-wall-log-d"}
+{"png": "sn-wall-plank-u.png", "kind": "terrain", "name": "역청 세로 널 벽면(윗줄, 띠장)", "label": "snow-north/sn-wall-plank-u"}
+{"png": "sn-wall-plank-d.png", "kind": "terrain", "name": "역청 세로 널 벽면(아랫줄, 돌 굽)", "label": "snow-north/sn-wall-plank-d"}
+{"png": "sn-wall-ice-u.png", "kind": "terrain", "name": "얼음 동굴 벽면(윗줄, 얼음 벽돌·바위)", "label": "snow-north/sn-wall-ice-u"}
+{"png": "sn-wall-ice-d.png", "kind": "terrain", "name": "얼음 동굴 벽면(아랫줄, 밑동 고드름)", "label": "snow-north/sn-wall-ice-d"}
+{"png": "sn-wall-window-u.png", "kind": "terrain", "name": "통나무 벽 작은 창(윗줄, 밤 하늘)", "label": "snow-north/sn-wall-window-u"}
+{"png": "sn-wall-window-d.png", "kind": "terrain", "name": "통나무 벽 작은 창(아랫줄, 눈 쌓인 창턱)", "label": "snow-north/sn-wall-window-d"}
+{"png": "sn-wall-door-u.png", "kind": "terrain", "name": "벽 통로(윗줄, 통나무 인방 + 어두운 틈)", "label": "snow-north/sn-wall-door-u"}
+{"png": "sn-wall-door-d.png", "kind": "terrain", "name": "벽 통로(아랫줄, 문턱 — 걸어 지나간다)", "label": "snow-north/sn-wall-door-d"}
+{"png": "sn-hearth.png", "kind": "tall_furniture", "name": "돌 벽난로(넓은 선반 + 화덕 석판 + 장작불)", "label": "snow-north/sn-hearth"}
+{"png": "sn-hearth-f1.png", "kind": "tall_furniture", "name": "돌 벽난로(넓은 선반 + 화덕 석판 + 장작불) (프레임 2)", "label": "snow-north/sn-hearth-f1"}
+{"png": "sn-hearth-f2.png", "kind": "tall_furniture", "name": "돌 벽난로(넓은 선반 + 화덕 석판 + 장작불) (프레임 3)", "label": "snow-north/sn-hearth-f2"}
+{"png": "sn-bed-fur.png", "kind": "low_furniture", "name": "통나무 침대(모피 이불, 머리판 북쪽)", "label": "snow-north/sn-bed-fur"}
+{"png": "sn-bunk-bed.png", "kind": "tall_furniture", "name": "이층 침대(통나무 기둥, 위아래 모피)", "label": "snow-north/sn-bunk-bed"}
+{"png": "sn-chest.png", "kind": "box", "name": "쇠띠 두른 나무 궤짝", "label": "snow-north/sn-chest"}
+{"png": "sn-long-table.png", "kind": "low_furniture", "name": "긴 잔칫상(가대 다리, 나무 그릇·빵·뿔잔)", "label": "snow-north/sn-long-table"}
+{"png": "sn-bench.png", "kind": "seat", "name": "긴 의자(통나무 판 + 모피 깔개)", "label": "snow-north/sn-bench"}
+{"png": "sn-stool.png", "kind": "seat", "name": "그루터기 걸상(나이테 윗면)", "label": "snow-north/sn-stool"}
+{"png": "sn-barrel-in.png", "kind": "round_body", "name": "나무 술통(세움, 쇠테)", "label": "snow-north/sn-barrel-in"}
+{"png": "sn-keg-rack.png", "kind": "frame", "name": "술통 받침대(받침 판 위 세운 통 둘 + 꼭지)", "label": "snow-north/sn-keg-rack"}
+{"png": "sn-bar-counter.png", "kind": "low_furniture", "name": "선술집 바(통나무 상판 + 잔·뿔잔·꼭지)", "label": "snow-north/sn-bar-counter"}
+{"png": "sn-shelf.png", "kind": "wall_mounted", "name": "벽 선반(질그릇 단지·자루)", "label": "snow-north/sn-shelf"}
+{"png": "sn-weapon-rack.png", "kind": "wall_mounted", "name": "벽 무기 걸이(둥근 방패 + 엇건 도끼 둘)", "label": "snow-north/sn-weapon-rack"}
+{"png": "sn-antler-mount.png", "kind": "wall_mounted", "name": "벽 사슴뿔 걸이(나무 판, 머리 없음)", "label": "snow-north/sn-antler-mount"}
+{"png": "sn-drying-herbs.png", "kind": "wall_mounted", "name": "말리는 약초 다발(벽 막대)", "label": "snow-north/sn-drying-herbs"}
+{"png": "sn-lantern.png", "kind": "wall_mounted", "name": "벽 등(쇠 까치발 + 호박색 등)", "label": "snow-north/sn-lantern"}
+{"png": "sn-rug-fur.png", "kind": "flat", "name": "모피 깔개(머리 없는 가죽)", "label": "snow-north/sn-rug-fur"}
+{"png": "sn-cauldron-in.png", "kind": "container", "name": "걸린 무쇠 솥(사슬 + 작은 불)", "label": "snow-north/sn-cauldron-in"}
+{"png": "sn-cauldron-in-f1.png", "kind": "container", "name": "걸린 무쇠 솥(사슬 + 작은 불) (프레임 2)", "label": "snow-north/sn-cauldron-in-f1"}
+{"png": "sn-cauldron-in-f2.png", "kind": "container", "name": "걸린 무쇠 솥(사슬 + 작은 불) (프레임 3)", "label": "snow-north/sn-cauldron-in-f2"}
+{"png": "sn-sauna-stove.png", "kind": "container", "name": "사우나 돌 난로(둥근 무쇠 통 + 위가 트인 돌 바구니 + 숯불 문)", "label": "snow-north/sn-sauna-stove"}
+{"png": "sn-sauna-stove-f1.png", "kind": "container", "name": "사우나 돌 난로(둥근 무쇠 통 + 위가 트인 돌 바구니 + 숯불 문) (프레임 2)", "label": "snow-north/sn-sauna-stove-f1"}
+{"png": "sn-sauna-stove-f2.png", "kind": "container", "name": "사우나 돌 난로(둥근 무쇠 통 + 위가 트인 돌 바구니 + 숯불 문) (프레임 3)", "label": "snow-north/sn-sauna-stove-f2"}
+{"png": "sn-sauna-bench.png", "kind": "seat", "name": "사우나 두 단 의자(옅은 나무 발판)", "label": "snow-north/sn-sauna-bench"}
+{"png": "sn-water-bucket.png", "kind": "container", "name": "물동이와 국자", "label": "snow-north/sn-water-bucket"}
+{"png": "sn-ice-crystal.png", "kind": "organic", "name": "얼음 결정 무리", "label": "snow-north/sn-ice-crystal"}
+{"png": "sn-ice-pillar.png", "kind": "column", "name": "얼음 기둥(위가 잘린 단면이 보인다)", "label": "snow-north/sn-ice-pillar"}
+{"png": "sn-frozen-chest.png", "kind": "box", "name": "얼음에 갇힌 궤짝", "label": "snow-north/sn-frozen-chest"}
+{"png": "sn-stalagmite-ice.png", "kind": "organic", "name": "얼음 석순", "label": "snow-north/sn-stalagmite-ice"}
+{"png": "sn-firepit.png", "kind": "container", "name": "회관 가운데 화덕(돌 둘레 + 장작불)", "label": "snow-north/sn-firepit"}
+{"png": "sn-firepit-f1.png", "kind": "container", "name": "회관 가운데 화덕(돌 둘레 + 장작불) (프레임 2)", "label": "snow-north/sn-firepit-f1"}
+{"png": "sn-firepit-f2.png", "kind": "container", "name": "회관 가운데 화덕(돌 둘레 + 장작불) (프레임 3)", "label": "snow-north/sn-firepit-f2"}

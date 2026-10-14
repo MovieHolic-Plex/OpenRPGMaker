@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e504ab8c760e76c3507bf85a88547db7efdada1922e8a2803e5ee47a7dfff304",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "통나무 판자 바닥(따뜻한 갈색)",
+ "label": "snow-north/sn-floor-plank",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "log plank floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless horizontal wood plank floor pattern filling the full 16x16 tile as a top-down terrain surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4492
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wood plank floor",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile depicts horizontal wooden planks forming a floor surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4017
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wood plank floor",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile depicting horizontal wooden planks seen from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4259
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wood plank floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a seamless horizontal wood plank floor surface filling the entire 16x16 space as a top-down ground texture.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4262
+  }
+ ],
+ "decidedAt": "2026-10-14T01:22:34.202Z",
+ "cells": {
+  "16": [
+   "69887dc608d5b5da"
+  ],
+  "24": [
+   "1652f24833ac7022",
+   "2d013a0233b73928",
+   "59c12e5004f9d300",
+   "818e1fa490bb88db",
+   "e80584236c360235",
+   "fa0bd1d4eb231a1b"
+  ],
+  "32": [
+   "3a9896b437f07601",
+   "5ad43e197df796cc",
+   "77d382c83ab34565",
+   "886c76537612bc39",
+   "ede8945c968dff76",
+   "f852752dab80502c"
+  ],
+  "48": [
+   "1fc8d408e10d0c60",
+   "5b6268f0eee356c1",
+   "68352cf832042225",
+   "89fa8265d18c512a",
+   "be5a2f57fa14c555",
+   "e61733f8e4c465a8"
+  ]
+ }
+}

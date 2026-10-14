@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2b8393195c427cb028ec8a5183df2f98b5258c1573795b21eea04797a6a73892",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "다진 눈길",
+ "label": "snow-north/sn-pack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "packed snow path terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tile depicting a packed snow path with subtle surface texture and small indentations; naturally viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4046
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "packed snow path ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a flat snow-covered ground surface covering the entire 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3924
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "packed snow path terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile depicting a packed snow path with subtle impressions/texture, viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13855
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "packed snow ground terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a 16x16 flat ground surface representing packed snow with small tracks/depressions, properly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3210
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:23.950Z",
+ "cells": {
+  "16": [
+   "c2a9584d3e32de3f"
+  ],
+  "24": [
+   "2774912fa5c100d1",
+   "347dda36d4bbe8e3",
+   "36daa8424ae6cc23",
+   "71231c7b307ecf0e",
+   "7a635de3b4a1ee51",
+   "fba45ae22f4e5ee1"
+  ],
+  "32": [
+   "0874ad36a32ca76d",
+   "0b311182e8d9d594",
+   "231b769a3ea708bb",
+   "23fea137f4f215f2",
+   "dee933a7ea111df4",
+   "febe9a4290e12bb9"
+  ],
+  "48": [
+   "31bed5e07644cd74",
+   "4d407dac8714313a",
+   "53fbb889f236c2d9",
+   "66a1004ded34c667",
+   "8281ba832b3e1510",
+   "98e279c93be88d40"
+  ]
+ }
+}

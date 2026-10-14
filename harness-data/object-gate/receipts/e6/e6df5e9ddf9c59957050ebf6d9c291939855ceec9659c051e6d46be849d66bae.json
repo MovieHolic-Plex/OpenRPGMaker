@@ -1,0 +1,145 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e6df5e9ddf9c59957050ebf6d9c291939855ceec9659c051e6d46be849d66bae",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "쇠 화로(타오름)",
+ "label": "snow-north/sn-brazier",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "아가리 안쪽이 안 보임",
+  "아가리 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brazier bowl and fire basin",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brazier bowl at rows 17-19 is drawn as a flat horizontal bar viewed straight from the front. Neither the rim nor the opening of the bowl is drawn as an ellipse from above, and no interior or top surface is visible beneath or around the fire (the base plate at the bottom shows perspective, but the main container does not).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 7936
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brazier bowl and stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brazier bowl at rows 17-19 is drawn as a flat horizontal strip (2-3px tall) with no elliptical opening or visible depth. The flames sit directly on a flat front-facing rim with no opening visible around them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 6010
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brazier bowl and tripod stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brazier bowl at rows 17-19 is drawn as a flat horizontal band with no visible interior opening or top surface. While the base plinth shows an ellipse, the main body (the brazier dish) lacks any visible opening or top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 7070
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brazier bowl and stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brazier bowl at rows 17-19 is rendered only as a narrow 2-3px flat band with flames placed directly on top, showing no visible opening interior or recessed bowl depth seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 6755
+  }
+ ],
+ "decidedAt": "2026-10-14T01:15:54.501Z",
+ "cells": {
+  "16": [
+   "39fecee36a3758bd",
+   "4bcd4767c5a6d83e"
+  ],
+  "24": [
+   "0df6b02a3cdfeaaf",
+   "2c94073b0e711775",
+   "396b81b647df78d9",
+   "40d3b788efd060ff",
+   "595a07717e903e8c",
+   "67c6f96e24f08924",
+   "8f68f4365c3b8b82",
+   "8fd5b1d03696b290",
+   "a8eb7107df2f90d3",
+   "aa8282e8fe75c2a5",
+   "bcd9f4f2bcdfac06",
+   "f31d0e0f88a8e141"
+  ],
+  "32": [
+   "33aa00a25967f54e",
+   "354c94e5381ccb14",
+   "ebdb4c826bfa5f15"
+  ],
+  "48": [
+   "262223cc691d7169",
+   "9cf4e0348144331a",
+   "b11324702cb9cdc7",
+   "cf1d649f67d11818",
+   "f56547542ff2de68",
+   "f86d3420ee59d9a4"
+  ]
+ }
+}

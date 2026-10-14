@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1069c69e272d36a5f75c53f8ad11c953c5ef4764386f06f813694df91ebfaf3d",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "눈 덮인 큰 바위",
+ "label": "snow-north/sn-boulder-l",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "snow-covered large boulder",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The boulder features a clearly foreshortened, snow-covered top surface spanning rows 8 to 18, atop a south-facing shaded rock face extending down to row 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3902
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "snow-covered boulder",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The boulder has an expansive snow-covered top surface extending from row 8 down to approximately row 18, with the south-facing rock base visible beneath from row 18 to row 29, correctly depicting a 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4268
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "snow-covered large boulder",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow cap covering the top surface of the boulder occupies rows 9 to 19 (about 11 rows tall), showing a clear foreshortened top surface above the southern rock base visible from rows 20 to 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3660
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "snow-covered boulder",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow cap covers the top surface of the boulder spanning rows 8 to 18 (with shading extending to row 21), while the south vertical face of the dark rock beneath is shown from rows 22 to 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3901
+  }
+ ],
+ "decidedAt": "2026-10-14T01:15:54.500Z",
+ "cells": {
+  "16": [
+   "0c0e0bc4348a3a0b",
+   "5af0702bb4343a3a",
+   "a55e6fc6aefde652",
+   "f8245f9e1190b2c9"
+  ],
+  "24": [
+   "0088a30765505796",
+   "05eb4c14c3af3123",
+   "06de6eaf8d0013d3",
+   "1211e5ef4f2605f2",
+   "1e29a5bb3df4613a",
+   "1e8bb8d25328afef",
+   "34ef62ef7f6f568c",
+   "52e5e1a034df4abd",
+   "611a184d1d7023e3",
+   "7a33fc95f376f0f1",
+   "8e93f04b9b2aa349",
+   "8fdc81cac771eb59",
+   "9bf207173959d81b",
+   "bb11f945882866b5",
+   "bf91f5b58be40dd1",
+   "cde2a03728cfca10",
+   "fc1a0104ba791d76",
+   "ff947e9b4560d116"
+  ],
+  "32": [
+   "555e380265b7495b"
+  ],
+  "48": [
+   "038720d5d3f61da9",
+   "1e482989816473ab",
+   "24793bdc59f2d9d1",
+   "71f5ee076a8e861a",
+   "8cbe8bd574676b9d",
+   "b2eac0e6e2b97d05"
+  ]
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0d68ec26350db6f55c11b4be40dc87fc93b3c0e81055a0b1dbb84efdc57783bc",
+ "width": 16,
+ "height": 32,
+ "kind": "organic",
+ "name": "얼음 결정 무리",
+ "label": "snow-north/sn-ice-crystal",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ice crystal cluster",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crystal spires are drawn in pure front elevation with straight vertical facet columns and 2D triangular tips with no top-down foreshortening or visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7252
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ice crystal cluster",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crystal cluster is drawn straight-on as a flat 2D side/front elevation with purely vertical facets, flat bases, and no top-down tilt or foreshortened top facets visible from a 45-degree overhead camera.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5127
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "central ice crystal spire",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crystal cluster is drawn entirely as a flat 2D front elevation with no downward tilt or foreshortened top facets visible, resembling a side-scroller sprite.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4578
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ice crystal cluster",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crystals are drawn entirely in front elevation with vertical columns and flat 2D pointed tips; there are no foreshortened top facets or downward-angled surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5488
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.166Z",
+ "cells": {
+  "16": [
+   "0e6bd58267be6006",
+   "78801865a9f163cc"
+  ],
+  "24": [
+   "2b6ecb5d3fae7311",
+   "3707e0a5547a0279",
+   "5aa535b9a20b163a",
+   "6456542fa5b04200",
+   "6523e04e4a284bdc",
+   "6d62de019ebfc612",
+   "70694ac41747881f",
+   "95326602014c0c70",
+   "a17eb2df371779f3",
+   "e3a17bc06e7194cc",
+   "ed795826da2dc770",
+   "eead2c9a95ba7fe1"
+  ],
+  "32": [
+   "1abb967be3c2d4d6",
+   "1b0923667ad65da3",
+   "38a9d44850328c6a"
+  ],
+  "48": [
+   "031311f964153cce",
+   "0d471fcf8ba96b60",
+   "4087902d05b9c46c",
+   "66a0f2a9b34d03aa",
+   "b5b92f92b675c952",
+   "faa65a0a5bb6f5c0"
+  ]
+ }
+}

@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7c213bf04c55125137e749c1a32fb6f64c3b69e559ba37cf03adae995221df10",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "쇠띠 두른 나무 궤짝",
+ "label": "snow-north/sn-chest",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden chest with iron bands",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chest is drawn as a flat square from the front elevation. The seam between the lid and base is at row 9 with the lock attached, and the vertical iron bands run completely straight without any plane change or foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5548
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden chest with iron bands and lock",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chest is drawn straight-on in pure front elevation: rows 2-8 represent the front face of the lid and rows 9-14 represent the front face of the chest body, with a latch centered on the seam. There is no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6629
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden chest",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chest is rendered in 3/4 view: rows 2-8 form a 7-pixel tall illuminated top surface of the lid with horizontal planks and iron bands, while rows 9-13 form the shaded front face containing the lock clasp.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13587
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron-banded wooden chest",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chest is drawn in a flat front elevation within a strict rectangular silhouette. The upper section (rows 3–8) depicts the front of the lid with horizontal planking and the lower section (rows 9–14) depicts the front body with a lock clasp at the seam, showing no foreshortened top surface from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 8824
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.163Z",
+ "cells": {
+  "16": [
+   "0f67fa6be5fbf261"
+  ],
+  "24": [
+   "29edd789146a5a13",
+   "364dc553058edc07",
+   "456b135b2c6272dc",
+   "c8189e614bfdc8a4",
+   "d2f2541ff1d72256",
+   "d7992f596c3e95b9"
+  ],
+  "32": [
+   "2832e2887f016b9f",
+   "75b1518713dcc998",
+   "8fa493da60609cb6",
+   "9385225577150636",
+   "95678bfccdb7ae1b",
+   "ec871fa21cd08a9b"
+  ],
+  "48": [
+   "0ba20e03c22e85d3",
+   "27b9eee2e92f0113",
+   "5dd223e570016711",
+   "60e7161f5681cb81",
+   "6c5cd40d6a808add",
+   "a20372a0bc226cdc"
+  ]
+ }
+}

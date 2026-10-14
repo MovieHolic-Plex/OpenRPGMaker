@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "df171bb9513e4426397050ba8a08e26fe76f01f7089f2f28403e58a0b103be8e",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "천장(어두운 통나무 벽 윗면 덩어리 + 들보 머리)",
+ "label": "snow-north/sn-ceiling",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dark log wall / ceiling beam tiles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Classified as terrain (wall face/ceiling beam autotile). Flat vertical surface representation is standard for wall terrain tiles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6333
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "log wall/ceiling beam terrain tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image represents a ceiling/wall terrain tile composed of horizontal dark wooden logs with an exposed beam end, matching the terrain category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5627
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dark log wall and ceiling beam terrain tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing dark horizontal logs and a beam end for a ceiling/wall section. As valid terrain mapping tiles rather than a standing object, standard terrain projection applies.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6379
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dark log wall/ceiling beam tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal log wall and ceiling beam end drawn as a terrain/wall tile filling the 16x16 block.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4070
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.161Z",
+ "cells": {
+  "16": [
+   "f3e9cab2179e0ebc"
+  ],
+  "24": [
+   "55f5b1edff268f78",
+   "742436c1c5e5112c",
+   "950ad2642244417f",
+   "cca36de8423cb02f",
+   "dbaa5b158a3c4a1f",
+   "fbf3cf66b57c8b10"
+  ],
+  "32": [
+   "0870c9d54b918e55",
+   "2d7f1a310f75b1a8",
+   "3c6eadbebafad5fc",
+   "bfee7375a10da3e3",
+   "e4da42251d1d9aeb",
+   "f437ea2172450277"
+  ],
+  "48": [
+   "2e404fa66341afcf",
+   "3f9cbab569b80341",
+   "41299edb4275272c",
+   "c0c4be0e4150a716",
+   "c1525713722cf36c",
+   "fd03f724c39f3b40"
+  ]
+ }
+}

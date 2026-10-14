@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ec09232c303d43be890bc9e5a624d59b1c8138ec75561b826abd51002ec7705d",
+ "width": 32,
+ "height": 32,
+ "kind": "flat",
+ "name": "모피 깔개(머리 없는 가죽)",
+ "label": "snow-north/sn-rug-fur",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fur rug / headless animal pelt lying flat on the floor",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat fur pelt rug drawn from an overhead 3/4 perspective, displaying its full surface foreshortened across roughly 17 rows with paws and tail spread out flat on the ground.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4156
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pelt rug body",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The headless fur pelt rug lies completely flat on the floor, depicted as a foreshortened elliptical mat with outstretched limbs and tail.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3635
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fur rug / headless pelt",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire pelt is laid flat on the floor, displayed as a foreshortened elliptical shape across rows 7 to 24 with paws and tail extending outwards.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4904
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "animal pelt rug",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a headless animal fur rug lying flat on the floor, rendered as a foreshortened ellipse with paws and tail visible from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3736
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.165Z",
+ "cells": {
+  "16": [
+   "2f9d34bcb4a5ed38",
+   "3261432b2489117a",
+   "3ac53cee5217831f",
+   "bb4d30524f61ba80"
+  ],
+  "24": [
+   "1ec60872cd4f0449",
+   "1f45f9e62f741499",
+   "3b252ea2a6c4e114",
+   "3ecfa8c6dbcb53f1",
+   "472f70d4e2341fbc",
+   "4c46d23b429bdc75",
+   "519856a394c1ad5d",
+   "5278281f80adc4ed",
+   "5ff1db58547bcc95",
+   "604b1a12b117d3c5",
+   "7d4d0ef2b387649b",
+   "8bdbf15844104353",
+   "8e2221f1af50a9b1",
+   "9c443384f4a9d2be",
+   "9cb513afb3ddb15b",
+   "9ea464621c258718",
+   "a8834ae4abedb0ac",
+   "b28f8a139c50a6b7",
+   "c7126b753b6b50ad",
+   "c8eac6d1475fd7db",
+   "d4aefbc2d65065b8",
+   "ef12a52f584df4f2",
+   "f0ef977ddd500406",
+   "f8cd474691c77812"
+  ],
+  "32": [
+   "fed0aed4766c00dc"
+  ],
+  "48": [
+   "49880580d42ab969",
+   "7e086739aa76a356",
+   "88b903def4eea357",
+   "b7a13b3dc1973628",
+   "be4c89aaf3ac8177",
+   "efc7e81c9d8dbee9"
+  ]
+ }
+}

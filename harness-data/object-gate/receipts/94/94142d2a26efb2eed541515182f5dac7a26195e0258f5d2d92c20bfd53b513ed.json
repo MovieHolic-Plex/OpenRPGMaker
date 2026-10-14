@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "94142d2a26efb2eed541515182f5dac7a26195e0258f5d2d92c20bfd53b513ed",
+ "width": 32,
+ "height": 16,
+ "kind": "container",
+ "name": "언 여물통(위에서 들여다본 얼음 물)",
+ "label": "snow-north/sn-trough",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden trough filled with frozen water",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The inside cavity of the trough is clearly visible looking down into it across rows 5-8 (4 rows of icy water), with a front rim and front vertical face below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3775
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden trough filled with frozen water",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top interior of the trough is clearly visible looking down from above across rows 4-8 showing frozen water/ice, bounded by a back rim (rows 2-3) and a front rim (row 9), followed by the front vertical face (rows 10-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4822
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden trough with frozen water",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The interior of the trough is clearly visible from above across rows 4-8 (5 rows of ice surface and inner rim shadow) above a 4-row front face (rows 10-13), properly rendering the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4690
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "frozen wooden trough",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden trough clearly shows its open interior from above across rows 5-8 (ice with crack details), bounded by back and front rims (rows 2-3 and 9), with a 4-row vertical front face (rows 10-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3903
+  }
+ ],
+ "decidedAt": "2026-10-14T01:15:54.503Z",
+ "cells": {
+  "16": [
+   "40d65633f9ab562f",
+   "7fca9c0f26f7b8e8"
+  ],
+  "24": [
+   "06261872cb20b51b",
+   "0a13cf558db0a4b4",
+   "0adcd37be1f3f55c",
+   "334733c1db3ca96c",
+   "79de4ff6b44edcc6",
+   "942b1f8c705b5600",
+   "96f4e6373179a0a9",
+   "995b391730a2e3b4",
+   "c5ccda939c21a18c",
+   "cac260291a08d47d",
+   "edcfcefc319a6fd8",
+   "fdbbbc4e4529d46d"
+  ],
+  "32": [
+   "18d35fa93bb24347",
+   "b17d22ec90261d09"
+  ],
+  "48": [
+   "12cec271626c2def",
+   "4842213ca2be8913",
+   "4b145385527d8b6a",
+   "8bbdd60867b37867",
+   "99a4b7a5e0507a81",
+   "d8fa874a1ab7866f"
+  ]
+ }
+}

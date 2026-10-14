@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2dff5c4d93e780c48a800f1a7ede6a7eb57686ac939777e18d39f719a88fa32c",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "짐 썰매(나무 바닥·상자와 자루 짐)",
+ "label": "snow-north/sn-sled",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden sled platform with cargo",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden deck of the sled is viewed from above across rows 4-10 (7 rows deep), with its south edge and runners visible at rows 11-14. The cargo on top also reflects the 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6131
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden sled platform with cargo",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden sled base shows an ample horizontal surface (rows 4-10, approx. 7px tall) upon which cargo rests, followed by a south edge highlight at row 11 and runner supports at rows 12-14, matching proper 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6516
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden cargo sled deck with cargo",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden deck of the sled is viewed from above with approximately 7 rows of visible top surface (rows 4-10) before its front edge and runners (rows 11-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6307
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden cargo sled platform with crate and sack",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The flat wooden sled bed shows a clear foreshortened top surface spanning rows 4 to 10 (7 rows tall) with the south edge and runners visible below in rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6466
+  }
+ ],
+ "decidedAt": "2026-10-14T01:20:58.721Z",
+ "cells": {
+  "16": [
+   "2b18aa0dec47047a",
+   "a53cc7dcc8c8b5e8"
+  ],
+  "24": [
+   "0d27d5949a3f8560",
+   "4ec486cef6cb0648",
+   "5de828aae893e4e1",
+   "81c76384cecd4ffb",
+   "a4bd7096a9a60558",
+   "b9e0eaa22921ef64",
+   "deadc29a5a51851d",
+   "df6deb77f151f034",
+   "e16ac9b3a390c3ca",
+   "e4530857d724a5a5",
+   "efe128c5303f8532",
+   "f8a91a0082e4685a"
+  ],
+  "32": [
+   "17c9231188784296",
+   "23f26ffd0550b334"
+  ],
+  "48": [
+   "168aee3d1d0bd7fb",
+   "7ebce27530c2acc4",
+   "ab1c6d88999c2a46",
+   "db6447c0aeacd535",
+   "e68dd0f3341e02f4",
+   "f87effe1b3e8167b"
+  ]
+ }
+}

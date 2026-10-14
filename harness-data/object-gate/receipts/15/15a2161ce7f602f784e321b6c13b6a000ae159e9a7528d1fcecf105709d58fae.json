@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "15a2161ce7f602f784e321b6c13b6a000ae159e9a7528d1fcecf105709d58fae",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "사우나 마루(옅은 나무 발판, 틈)",
+ "label": "snow-north/sn-floor-sauna",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden slatted floor / duckboard terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid top-down floor terrain tile depicting wooden sauna slats with dark shadow gaps.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7526
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sauna slatted wooden floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless horizontal slatted wooden deck/floor terrain tile viewed from above with gaps between planks.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3840
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden slatted floor surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a top-down view of a slatted sauna wooden deck/floor with horizontal planks and gaps, fully functioning as flat terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3219
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sauna slatted wooden floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Repeating terrain tile showing horizontal wooden planks with gaps, fully viewed as flat floor terrain spanning 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3646
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.160Z",
+ "cells": {
+  "16": [
+   "d5ff84250cdbce38"
+  ],
+  "24": [
+   "3340cddb861eca8b",
+   "5fd10ef1776164b0",
+   "905792e918933ca6",
+   "9149e86007bd5746",
+   "f08d577cafe2071a",
+   "f3831ff0c1217e8b"
+  ],
+  "32": [
+   "02787afc2431827f",
+   "4850f70bff9fc934",
+   "5a59597905e8a223",
+   "c58b1a730c8531a0",
+   "cc9ad99742ab2c9d",
+   "d6e6c3e8518ab487"
+  ],
+  "48": [
+   "08ea58173e077793",
+   "407d021e69075347",
+   "762f342be5e32f33",
+   "80ec9cdcdae02e77",
+   "95368512f92879e2",
+   "e18d237e36dc2f9c"
+  ]
+ }
+}

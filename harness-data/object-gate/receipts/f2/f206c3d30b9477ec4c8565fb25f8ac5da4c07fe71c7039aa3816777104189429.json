@@ -1,0 +1,201 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f206c3d30b9477ec4c8565fb25f8ac5da4c07fe71c7039aa3816777104189429",
+ "width": 96,
+ "height": 80,
+ "kind": "structure",
+ "name": "얼음 동굴 입구(눈 덮인 바위 언덕, 고드름 아가리)",
+ "label": "snow-north/sn-ice-cave",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ice cave entrance archway with icicle mouth and rocky hill",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 38,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cave entrance archway and its icicle-lined lintel are rendered in pure front elevation with 0px of visible top depth or slope. The entire cliff facade and portal are drawn flat facing the camera without the 3/4 overhead perspective required for structures.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9251
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "snow-covered rocky hill with cave entrance",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is a large cliff/hill with a cave entrance. The top snow-covered plateau surface is clearly visible from row 2 to row 26 (24 source pixel rows tall) above the vertical rocky cliff face (rows 27–74), matching standard top-down 3/4 perspective for terrain structures.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14032
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ice cave entrance and rocky hill",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in a flat 2D side-scroller front elevation. The entrance archway and icicle lintel show only their front faces with no visible top surface, and the rocky wall and snow cap lack top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 23400
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ice cave entrance arch and rocky hill",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ice archway forming the cave mouth is drawn in pure front elevation; its lintel and rim have only a 1px outline at row 34 with no top surface visible whatsoever. The cave interior is also a flat black silhouette without ground or depth projection.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11512
+  }
+ ],
+ "decidedAt": "2026-10-14T01:02:41.801Z",
+ "cells": {
+  "16": [
+   "0012757212bf749f",
+   "014785b5835290d5",
+   "0ebb870f3b105ce3",
+   "19d52ffca971e114",
+   "19fb98630fab422d",
+   "30a75b328d3dca1a",
+   "349a78e984a5780e",
+   "495196b96d994c3f",
+   "50e67a9ab87af888",
+   "5bf010958931273b",
+   "61389a84e3fee6fa",
+   "6335960fe0ff2ae6",
+   "64884e4e07b65733",
+   "6a75b1b7655bff11",
+   "6f13bdb8e5ed6dfc",
+   "8f24fc51d08a1d98",
+   "9225ed9cc48b1173",
+   "931c7fb48327669f",
+   "955febcbae119baa",
+   "97ff73b9c6f0a783",
+   "a72ed6b3ea96fde9",
+   "aa1f4d5b70edc247",
+   "b2929a2428fdd250",
+   "ba04760aa655d57d",
+   "ba77cd474d243b9f",
+   "caf726ae80085f37",
+   "ced43df0f3a84fd3",
+   "d0a2acae8e8be08c",
+   "f0fbc5d5f69e6465",
+   "ff6ff906b5f20b14"
+  ],
+  "24": [
+   "017e67a81fea9280",
+   "040e4820f454f83c",
+   "0b32fe53527c83b7",
+   "10e5a5b4110a38ad",
+   "1921082722cdb218",
+   "32517656e4faeb51",
+   "494a2272e174a87f",
+   "56691eff02f2a9d6",
+   "700e26060006d399",
+   "76886245eafdba5e",
+   "78dd929d4d59d1c8",
+   "7a02b431340083fa",
+   "7ad4cf77e97a6808",
+   "84e8c16a818dd68d",
+   "853664c975c0faeb",
+   "8e2b1236b0174e56",
+   "980432c4d257ffd8",
+   "a4158ba8a3162d8e",
+   "a43c340c24ca140d",
+   "ace7066e03e4bdbd",
+   "b1a8032e9544f14c",
+   "b7b4df387c4ca438",
+   "ba4678fcb2c44dd4",
+   "bc6c2ae69be546b9",
+   "bddbdcc2a7d3b3f1",
+   "c2a5244dfbcb8fc5",
+   "dc0b96a6f1cea763",
+   "e6a9275c45a871f5",
+   "ec637d1461aafbc5",
+   "ec87b1c72b655218",
+   "f3c1ee7c92624819",
+   "faf2327075332113"
+  ],
+  "32": [
+   "07fba4523679ec24",
+   "110a8cc70249c24f",
+   "1e2cc84c6c926363",
+   "220da01c84b386ca",
+   "430be0a644c9eb8d",
+   "4f534e82a9f16610",
+   "687db0688f4f02a5",
+   "69667cbe1f62d4f3",
+   "917ad144f8b0b49c",
+   "9b03c0de77854dd9",
+   "a4cd35a78509b25c",
+   "b6441a3ce37f2ea4",
+   "b7d3860b2a676414",
+   "df63ef08620bd187",
+   "e382d5a755d7962e",
+   "f18262862fda4ef1",
+   "fb2751a7fdd87368",
+   "fdee0e21242835ea"
+  ],
+  "48": [
+   "0228db20cdcd3922",
+   "11210aec09985635",
+   "1328b72e1cef3d5e",
+   "2eb8ac161803a610",
+   "3216db601cd28688",
+   "4f2fe3f513a7162f",
+   "55b501f1b2427405",
+   "988f291c0e655655"
+  ]
+ }
+}

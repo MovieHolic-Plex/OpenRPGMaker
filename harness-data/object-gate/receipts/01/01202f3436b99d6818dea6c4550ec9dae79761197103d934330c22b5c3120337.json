@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "01202f3436b99d6818dea6c4550ec9dae79761197103d934330c22b5c3120337",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "얼음에 갇힌 궤짝",
+ "label": "snow-north/sn-frozen-chest",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ice block enclosing a chest",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The ice block features a distinct top face from rows 1 to 6 (with the chest lid visible inside spanning rows 2 to 5) and a front south face from rows 8 to 14 separated by a bright horizontal edge line on row 7.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7186
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ice block encasing a chest",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the outer ice block and the inner chest feature foreshortened top surfaces (ice top rows 2-6, chest lid rows 3-5) and corresponding south front faces (rows 8-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6533
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ice block enclosing a chest",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The ice block and the enclosed chest lid show a distinct 5-pixel-tall top surface (rows 2-6) separated by a highlighted front edge (row 7) from the 7-pixel-tall front face (rows 8-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7004
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ice block encasing a chest",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The ice block and the chest encased within it both clearly show their horizontal top surface (rows 2-7, ~6px tall) and their south front face (rows 8-14, ~7px tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6153
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.166Z",
+ "cells": {
+  "16": [
+   "6ff8e891cc73ce88"
+  ],
+  "24": [
+   "1efe43bee8ec9138",
+   "51dd8333e0ac7d8e",
+   "7310b24a62aa79d0",
+   "c7b191d18f16574e",
+   "d5110b5ef7d9ff10",
+   "ef55972dfe3dbff7"
+  ],
+  "32": [
+   "1e7d85507be00a1b",
+   "54248ecba783772c",
+   "565e9504729cf7e1",
+   "5aa974f4ac782011",
+   "e6b48db6a1f1596e",
+   "eb6973bb112d85e9"
+  ],
+  "48": [
+   "258a9bebfd276f9b",
+   "3f6631e5c02d7851",
+   "687f45887f0365e4",
+   "726f575c78ec8107",
+   "88c45aacb12d3e06",
+   "be84f3591563685d"
+  ]
+ }
+}

@@ -1,0 +1,138 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "da58a8da02d4adea9f7c7ef71ea38aaea7550455f53b2e9aec4a3d6f8313e2a2",
+ "width": 16,
+ "height": 32,
+ "kind": "frame",
+ "name": "스키 받침(나무 통에 꽂아 세운 스키 셋)",
+ "label": "snow-north/sn-ski-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ski rack frame with uprights and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire rack is drawn in pure front elevation: the crossbeams and lower structure consist of flat horizontal stripes with no foreshortened top surfaces (only a 2px snow cap on the upper rail), and no top-down depth visible on the beams or base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13780
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden trough ski rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base is a wooden trough/tub holding the skis. The interior cavity of the trough is visible from above across rows 22-24 (3 rows tall), showing the skis planted inside the opening.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 0행 < 3"
+   ],
+   "ms": 10052
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ski rack / stand with wooden base and upright skis",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn in pure front elevation. Both the upper horizontal beam and the lower frame/box are completely flat vertical rectangles without any foreshortened top surfaces. The lower rectangular opening is also drawn as a flat 2D frame rather than a top-down opening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5581
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ski rack with wooden base and crossbeams",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire rack and bottom box are drawn in pure front elevation with straight horizontal bands and an open front cutaway rather than top surfaces viewed from a 45-degree angle. The crossbeam has only a 1px snow line with no visible top depth, and the base box shows its front face and front cutaway rather than an opening viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5101
+  }
+ ],
+ "decidedAt": "2026-10-14T01:19:07.397Z",
+ "cells": {
+  "16": [
+   "12120cd9d81e15ca",
+   "33aee4bb204f31e5"
+  ],
+  "24": [
+   "0dd54b576cb6f581",
+   "48556f6f582aa744",
+   "703084b83c6551e4",
+   "71c057b9f3f5c6c4",
+   "8e070aa1af51d81e",
+   "90d53e226c26c301",
+   "9102aa5f3f9b0903",
+   "ac63d4c40ff195c5",
+   "b78601edb95256e3",
+   "c285480982834239",
+   "f76de4ddc42f0aab",
+   "fd96d707b43812d0"
+  ],
+  "32": [
+   "e1ca4be8375515f4",
+   "ee4f0ee7b66e1537",
+   "ff4d7627af66ceed"
+  ],
+  "48": [
+   "006c8d3a0c80b368",
+   "034d513dc100746a",
+   "0f9a6c8c73e887c8",
+   "514db78f5ffecc42",
+   "6feaa26d1817215e",
+   "8418922cab62088c"
+  ]
+ }
+}

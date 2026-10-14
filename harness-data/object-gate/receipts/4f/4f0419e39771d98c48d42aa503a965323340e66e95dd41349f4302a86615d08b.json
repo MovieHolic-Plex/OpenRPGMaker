@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4f0419e39771d98c48d42aa503a965323340e66e95dd41349f4302a86615d08b",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "갈림길 이정표(글자 없는 화살 판)",
+ "label": "snow-north/sn-signpost",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden signpost with directional boards",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole ends in a pointed peak with snow rather than showing a foreshortened top cut face or surface. The attached sign boards are drawn completely flat from the front with only a 1px layer of snow on top, lacking any visible horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11279
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden signpost with directional boards",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole and horizontal signboards are drawn in pure front elevation. The pole terminates in a pointed cap without a visible top surface/cut face, and the boards only have a 1px white strip of snow along their top edges rather than a foreshortened top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6516
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden signpost with directional boards",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole and horizontal signboards are drawn in flat front elevation. The post has a pointed/capped tip with no cut top face or horizontal top surface visible, and the signboards are flat 2D rectangles with snow dusted on top rather than a 3/4 top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8398
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden signpost with directional boards",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signpost and directional boards are drawn in flat front elevation. The post has a pointed top without a top cut face, and each signboard has only a 1px white cap/snow line along its upper edge rather than a visible horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6392
+  }
+ ],
+ "decidedAt": "2026-10-14T01:15:54.502Z",
+ "cells": {
+  "16": [
+   "18852c40b08679bf",
+   "4aad8748513380be"
+  ],
+  "24": [
+   "3d19b40417face51",
+   "4e2e2c99e74f0444",
+   "4eb00f74fde011c7",
+   "558588f539d0c676",
+   "7f545f4bb769d84b",
+   "82cd6d4b75e82894",
+   "9fd027547c8d981a",
+   "b08dedd7a28f31de",
+   "cda66e4cb23de7c3",
+   "ed8e78383ef7eaff",
+   "f064dfe40847145a",
+   "f7585ddefca3946a"
+  ],
+  "32": [
+   "323e505108f2f7a7",
+   "87134fdd2ddd1c37",
+   "c9ea2d4a988de9db"
+  ],
+  "48": [
+   "0d7cb3bc30319708",
+   "10c6423db900ba28",
+   "64113535e4b73cca",
+   "979b65236401d072",
+   "9fd1a4891f19c8f2",
+   "ac69c4d0c28f2b55"
+  ]
+ }
+}

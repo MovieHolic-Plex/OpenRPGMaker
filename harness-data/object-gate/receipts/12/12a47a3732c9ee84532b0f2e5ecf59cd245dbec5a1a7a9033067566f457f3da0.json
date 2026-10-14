@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "12a47a3732c9ee84532b0f2e5ecf59cd245dbec5a1a7a9033067566f457f3da0",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "통나무 벽면(아랫줄, 걸레받이 통나무)",
+ "label": "snow-north/sn-wall-log-d",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "log wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a terrain tile depicting the bottom section of a horizontal log wall. In 3/4 top-down perspective, vertical wall faces occupy the full tile and appropriately show their front surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5241
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "log wall face tile (bottom row)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing the lower section of a log wall face with skirting/baseboard details. As a vertical wall surface texture rather than a standalone standing object, it correctly fills the tile as a wall face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4710
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "log wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a wall-face terrain texture depicting stacked logs, seamlessly tiling horizontally. As valid vertical wall terrain rather than a freestanding object, standard top-down wall perspective rules apply.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6570
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "log wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile representing the vertical surface of a log wall (bottom section). As a wall face terrain tile, it correctly shows the front-facing vertical plane in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4202
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.161Z",
+ "cells": {
+  "16": [
+   "8ccce192b5162b0d"
+  ],
+  "24": [
+   "102be82274248c91",
+   "18b684de27163985",
+   "56dd4c42fcbebb6c",
+   "6cb060f7e8060f04",
+   "ac46b91666d78d61",
+   "f6e3310403ab0260"
+  ],
+  "32": [
+   "0ed06ff8f336043a",
+   "653be02d22b24388",
+   "a51a52885ffb6a9b",
+   "a7bfcf84eee2f34d",
+   "ae830eda8f341536",
+   "de3cfe0ac3498b88"
+  ],
+  "48": [
+   "0299f711f6119a56",
+   "0f7bd5202ed34510",
+   "316484ecd0dd7364",
+   "a687f3fc523ccb33",
+   "a9d952e1dc895fb5",
+   "c96997a6c9290b96"
+  ]
+ }
+}

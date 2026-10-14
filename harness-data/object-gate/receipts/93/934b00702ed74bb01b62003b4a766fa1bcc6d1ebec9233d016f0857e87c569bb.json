@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "934b00702ed74bb01b62003b4a766fa1bcc6d1ebec9233d016f0857e87c569bb",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "눈밭(물결 짙은 변주)",
+ "label": "snow-north/sn-snow-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "snow field terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground tile depicting a snow field with gentle drift highlights and shadows; properly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3391
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "snow terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile depicting a snow field with subtle texture and shading across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6303
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "snow terrain ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat snow ground terrain tile with subtle shading variations covering the full 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6087
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "snow terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat snow ground terrain tile covering the full 16x16 grid viewed from above with subtle snow drift shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3906
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:23.950Z",
+ "cells": {
+  "16": [
+   "7f1b6df145e4f790"
+  ],
+  "24": [
+   "53ce0ea7982b13dd",
+   "614602930cc2a2be",
+   "647e16326f6484c9",
+   "7ded0a98f2e6ab45",
+   "ac1bd99d0c3a4b04",
+   "bcc481f845f2bce3"
+  ],
+  "32": [
+   "3965d00287b29b44",
+   "4e105d3e45c842ee",
+   "7fbd111452b95933",
+   "849a3d55cfdf086e",
+   "9e538c99dce925aa",
+   "e37726b3e719b7ea"
+  ],
+  "48": [
+   "081ae416f9e1cf0b",
+   "23f91345d577774c",
+   "82266e2fd80452d6",
+   "9e2ba241416eb2e8",
+   "a9e68544533a292d",
+   "f30f9ef01bc90963"
+  ]
+ }
+}

@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4b0247e803dd7f33bec449fd8df6a15e87618a7b2642f48bc4761e9c8acac7d0",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "나무 상자 더미",
+ "label": "snow-north/sn-crates",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stacked wooden crates",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each crate in the stack clearly depicts a foreshortened top surface (the top crate has a 5-row tall top surface from row 3 to row 7 with snow and horizontal wood texturing) above its vertical front face with diagonal bracing.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5425
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stacked wooden crates",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The crates show clearly rendered horizontal top surfaces foreshortened in standard 3/4 perspective (the top crate has a visible top surface spanning rows 3-7, approx 5px tall, complete with snow patches) above their south-facing front faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5726
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stacked wooden crates",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top crate clearly shows a horizontal top surface (rows 3-8, approx 6 rows tall) with snow resting on it, situated above the front recessed face (rows 9-18). The lower crates similarly display visible top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6372
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stacked wooden crates",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surfaces of the crates are clearly visible (e.g. top crate has about 5 pixel rows showing the top face with snow and horizontal planking from rows 3 to 7 before the front face begins at row 8).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5339
+  }
+ ],
+ "decidedAt": "2026-10-14T01:15:54.502Z",
+ "cells": {
+  "16": [
+   "51a2022a1a5689b2",
+   "980dd10c75c8bdad",
+   "b9a2bea31652bd1c",
+   "fdc240b4404643e9"
+  ],
+  "24": [
+   "1207536a33d6edf5",
+   "15bdcf11b5e57adb",
+   "1a1f321b4284b761",
+   "1d7ef86b22aebde3",
+   "25ece5ea32929dfb",
+   "36546f946fe054bf",
+   "3692d400871f7159",
+   "58d8d19176bec060",
+   "650352a4dd093164",
+   "6b3bb7d9b3e976a8",
+   "6dc8124da59933a6",
+   "7a4f7f4b24a4490b",
+   "9703666712c4b0c9",
+   "a75e80f09eb575e7",
+   "b492ba10f5d7b74b",
+   "beb982fa89c59a21",
+   "cde1f20c9f3a2a8c",
+   "d97ea6af6c101cc7",
+   "e334d928c3c412b2",
+   "e79d54a06a2f6794",
+   "ecaa12c479b78aa9",
+   "ef8265d3a3ebf19d",
+   "f335999209bcff9b"
+  ],
+  "32": [
+   "a965a9dde2b52b7a"
+  ],
+  "48": [
+   "033782e5829dfc0d",
+   "101357f3abb60ff7",
+   "266af777f54555ad",
+   "8147bf6cab545874",
+   "862783512fa35133",
+   "cfa87fe2a4d50673"
+  ]
+ }
+}
