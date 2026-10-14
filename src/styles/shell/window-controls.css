@@ -42,7 +42,7 @@
   color: inherit;
   cursor: default;
   -webkit-app-region: no-drag;
-  transition: background var(--transition-fast, 120ms ease);
+  transition: none; /* OS 캡션 단추처럼 호버가 즉시 바뀐다 */
 }
 
 .studio-window-controls .swc-glyph { width: 12px; height: 12px; pointer-events: none; }
