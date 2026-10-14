@@ -686,6 +686,6 @@ const ASH_ROUTE_C: readonly string[] = [...ASH_ROUTE_B.slice(0, 4), ...ASH_ROUTE
 
 /** 화산 캠페인의 길 판 — 같은 문법에서 굽이(A·B·C)·좌우·재 풀 덩이(A)·소품 자리를 길마다 다르게 한다. index 1~5 = 2·3·5·6·7번길. */
 export function volcanoRouteSketch(index: number): TownSketch {
-  const [rows, flip]: [readonly string[], boolean] = ([[ASH_ROUTE_B, false], [ASH_ROUTE_C, false], [ASH_ROUTE_B, true], [ASH_ROUTE_C, true], [START_ROUTES.volcano!.sketch.rows, true]] as const)[(index - 1) % 5]!;
+  const [rows, flip]: readonly [readonly string[], boolean] = ([[ASH_ROUTE_B, false], [ASH_ROUTE_C, false], [ASH_ROUTE_B, true], [ASH_ROUTE_C, true], [START_ROUTES.volcano!.sketch.rows, true]] as const)[(index - 1) % 5]!;
   return variantSketch(rows, [], {}, flip ? 1 : 0, { stamps: 6, props: 14, big: 9 }, index);
 }

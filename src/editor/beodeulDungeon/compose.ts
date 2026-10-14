@@ -70,7 +70,6 @@ const DEFAULT_SIZE: Record<DungeonRoomKind, [number, number]> = {
 };
 const MARGIN = 2;
 
-const FLOOR_BY_STYLE: Record<DungeonStyle, string> = { catacomb: "bd-pick-aqueduct-sewer-floor-cata", castle: "bd-pick-castle-catacombs-floor-castle" };
 const K = {
   ceiling: "bd-pick-aqueduct-sewer-ceiling",
   stairsUp: "bd-pick-aqueduct-sewer-stairs-up-face", stairsDown: "bd-pick-temple-ruins-stairs-down",
@@ -88,10 +87,6 @@ const K = {
   anvilTable: "bd-pick-castle-catacombs-anvil-table", lantern: "bd-pick-aqueduct-sewer-lantern-post",
   floorBone: "bd-pick-aqueduct-sewer-floor-bone", floorCell: "bd-pick-castle-catacombs-floor-cell",
 } as const;
-const FACE_KITS: Record<DungeonStyle, { h3: string; h2: string }> = {
-  catacomb: { h3: "bd-pick-aqueduct-sewer-face-cata-3h", h2: "bd-pick-aqueduct-sewer-face-cata-2h" },
-  castle: { h3: "bd-pick-castle-catacombs-face-castle-3h", h2: "bd-pick-castle-catacombs-face-castle-2h" },
-};
 /** 천장 오토타일(bake_dungeon_ceiling.py). 없는 옛 사본이면 테두리 없는 허공 한 칸으로 물러선다. */
 export const DUNGEON_CEILING_GROUPS = ["beodeul_dungeon_ceiling", "beodeul_dungeon_ceiling_b"] as const;
 
@@ -713,7 +708,7 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
         counts["stairs-up"] = 1;
       } else warnings.push("입구 방 북쪽 벽에 올라가는 계단을 놓을 평평한 벽이 없다.");
     }
-    if (type !== "catacomb" && type !== "castle" && dressTyped(ctx, type, r, i, rs, s, slots, centerFirst)) return;
+    if (type !== "catacomb" && type !== "castle" && dressTyped(ctx, type, r, rs, s, slots, centerFirst)) return;
     switch (r.kind) {
       case "entrance": {
         const rest = slots.filter((q) => !s || Math.abs(q.x - s.x) > 1);
