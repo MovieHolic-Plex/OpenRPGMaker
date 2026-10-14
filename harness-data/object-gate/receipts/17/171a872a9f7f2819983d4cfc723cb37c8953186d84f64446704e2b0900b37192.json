@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "171a872a9f7f2819983d4cfc723cb37c8953186d84f64446704e2b0900b37192",
+ "width": 16,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "도서실 북 트럭",
+ "label": "jp_city/interior_school2/sx-book-cart",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "book cart / book truck",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire book cart is drawn in flat front elevation. Both the upper and lower tiers show flat vertical front views with books and shelf fronts, and the top has only a 1px outline at row 4 with no visible foreshortened top surface (0 rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6255
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "library book cart / book truck",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The book cart is drawn in pure front elevation: both the upper and lower book shelves are rendered completely straight-on with vertical spines and flat horizontal borders, showing only a 1px border at row 5 without any foreshortened top horizontal surface or shelf depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5901
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "library book cart / truck",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire book cart is drawn in pure front elevation: row 4 is a 1px outline with no visible top surface (0px depth), and both upper and lower shelves display books facing directly forward without any 3/4 top-down foreshortening or visible shelf depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9054
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "book cart / book truck",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire cart is rendered in pure front elevation. Both the upper and lower book shelves face straight south toward the viewer, and the top of the cart has only a 1px outline/edge at row 4-5 without any visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5658
+  }
+ ],
+ "decidedAt": "2026-10-14T06:16:49.341Z",
+ "cells": {
+  "16": [
+   "4f71c3e82f6b0681",
+   "ddc8a34d4745cbbf"
+  ],
+  "24": [
+   "22c653788fd1b059",
+   "447acf8a91830382",
+   "57c15392449512c0",
+   "8565e69b125fde0c",
+   "899b67f6cbc6a98e",
+   "9f198b42ab93d31e",
+   "bbeaadaccc18d988",
+   "ca5ae7120b89c925",
+   "cc9f835f248f6d5d",
+   "cfd16353012b9ab1",
+   "edc6c8a90a7264eb",
+   "f9034f339583a701"
+  ],
+  "32": [
+   "4f2499e10059b243",
+   "569faadde1f0787e",
+   "7297b0a3a0b1651b"
+  ],
+  "48": [
+   "0bf6c91dec258b35",
+   "28e98b44d386f8f0",
+   "50ba31ddc6b84eec",
+   "7d96ceaa660f3f0b",
+   "b8423bc4226fc629",
+   "dcf431f6f43cb2c9"
+  ]
+ }
+}

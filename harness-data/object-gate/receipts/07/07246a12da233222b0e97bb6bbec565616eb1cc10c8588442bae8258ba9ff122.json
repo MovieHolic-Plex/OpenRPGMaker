@@ -7,62 +7,83 @@
  "name": "복도 나무 긴 의자",
  "label": "jp_city/interior_school2/sx-hall-bench",
  "profileHash": "ca6aaa9c55194dc5",
- "verdict": "fail",
- "reasons": [
-  "판정자 답을 읽지 못함",
-  "종류 불일치",
-  "판정자 과반 fail",
-  "정면 입면도",
-  "옆면(아이소)",
-  "윗면 -1행 < 3"
- ],
+ "verdict": "pass",
+ "reasons": [],
  "runs": [
   {
    "judge": "gemini",
    "run": 1,
-   "answer": null,
-   "pass": false,
-   "reasons": [
-    "판정자 호출 실패"
-   ],
-   "ms": 391,
-   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h9m55s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google"
+   "answer": {
+    "main_body": "wooden bench seat",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal seat surface is clearly foreshortened and visible from above across rows 10-18 (~9 rows), upon which a book rests flat, followed by a south-facing front apron from rows 19-22 and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5307
   },
   {
    "judge": "gemini",
    "run": 2,
-   "answer": null,
-   "pass": false,
-   "reasons": [
-    "판정자 호출 실패"
-   ],
-   "ms": 344,
-   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h9m55s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google"
+   "answer": {
+    "main_body": "wooden bench seat surface and legs",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal seat of the bench is viewed from above across rows 10-18 (approx 9 rows tall) with a book resting on it, followed by the south-facing front edge on rows 20-22 and legs extending down to row 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3941
   },
   {
    "judge": "gemini",
    "run": 3,
-   "answer": null,
-   "pass": false,
-   "reasons": [
-    "판정자 호출 실패"
-   ],
-   "ms": 379,
-   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h9m55s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google"
+   "answer": {
+    "main_body": "wooden bench",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal seat surface is clearly seen from above across rows 9-18 (10 rows deep) with a book resting on it, followed by the front edge of the seat slab at rows 19-22 and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5772
   },
   {
    "judge": "gemini",
    "run": 4,
-   "answer": null,
-   "pass": false,
-   "reasons": [
-    "판정자 호출 실패"
-   ],
-   "ms": 336,
-   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h9m55s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google"
+   "answer": {
+    "main_body": "wooden bench seat",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal seat surface of the bench spans rows 9-18 (10 rows tall, with a book resting on top), followed by a 4-row front apron on rows 19-22 and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4598
   }
  ],
- "decidedAt": "2026-10-14T01:57:02.969Z",
+ "decidedAt": "2026-10-14T06:02:44.917Z",
  "cells": {
   "16": [
    "097f4051c9e5daf0",

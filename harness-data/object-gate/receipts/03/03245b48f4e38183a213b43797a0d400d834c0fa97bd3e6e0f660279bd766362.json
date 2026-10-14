@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "03245b48f4e38183a213b43797a0d400d834c0fa97bd3e6e0f660279bd766362",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "자동 정산기(自動精算機)",
+ "label": "jp_city/interior_hospital/hs-pay-machine",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "automated payment machine cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The machine consists of an upper sign/hood section (rows 2-10) and a lower body (rows 11-30). Both sections are drawn in pure front elevation with only a 1px border at the top (row 2) and no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6697
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "automated payment machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The machine and its top header box are rendered completely flat in front elevation with no visible top horizontal surface (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4760
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "automated payment machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The automated payment machine is drawn in pure front elevation with only a 1px top outline border and no visible horizontal top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4022
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "automatic payment machine (kiosk)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire machine, including the upper marquee and main screen/slot body, is drawn straight-on in pure front elevation with only a 1px outline at row 1 where the top surface should be.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4697
+  }
+ ],
+ "decidedAt": "2026-10-14T06:16:49.339Z",
+ "cells": {
+  "16": [
+   "97794b85af2a2cd8",
+   "a738ff349e839534"
+  ],
+  "24": [
+   "231c79a57b0dd2da",
+   "2aab4eccc33b674a",
+   "31484b34542797fe",
+   "3e5e505b781eb0ef",
+   "40d4e53f9046ae6f",
+   "71ee0f4854b9d2f5",
+   "94c27ef743825b4a",
+   "a485ea284fc2d399",
+   "ad64072c9b56567e",
+   "bacc5baf46f26c59",
+   "c5964d63c89010a9",
+   "f4642d63318b0d84"
+  ],
+  "32": [
+   "8a363ac105bc03a0",
+   "ce84c5c9a2133db1",
+   "f3aab7d0aac58a0b"
+  ],
+  "48": [
+   "22a0a0f005117e09",
+   "234366161bf7c3da",
+   "a8cae3ca7bc8d174",
+   "c323d50278a3f4cf",
+   "db63752cb96e9b7b",
+   "eb509accb7da4afa"
+  ]
+ }
+}

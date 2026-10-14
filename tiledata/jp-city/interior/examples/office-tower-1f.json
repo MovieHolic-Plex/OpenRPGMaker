@@ -49,7 +49,7 @@
    "y": 3
   },
   {
-   "id": "ox-floor-guide",
+   "id": "of-plant-big",
    "x": 9,
    "y": 3
   },
@@ -69,7 +69,7 @@
    "y": 7
   },
   {
-   "id": "ox-visitor-kiosk",
+   "id": "hs-sanitizer-stand",
    "x": 5,
    "y": 6
   },
@@ -94,12 +94,12 @@
    "y": 9
   },
   {
-   "id": "ox-umbrella-bagger",
-   "x": 6,
+   "id": "sx-umbrella-rack",
+   "x": 5,
    "y": 9
   },
   {
-   "id": "ox-umbrella-bagger",
+   "id": "ox-trash-column",
    "x": 9,
    "y": 9
   },

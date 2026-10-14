@@ -1,12 +1,12 @@
 # 일본 도시 — 일본 실내 예제: IT 회사 사옥 자유석 층 (`jp-city-office-free`, 24×19)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **15940칸**, 16px 칸, 시트 1536×2672px, 한 줄 **96칸** — 번호 n 의 칸은 열 n%96, 행 n÷96(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **15882칸**, 16px 칸, 시트 1536×2656px, 한 줄 **96칸** — 번호 n 의 칸은 열 n%96, 행 n÷96(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
-입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-office-free`. 도구 결과: 손 도트 실내 'IT 회사 사옥 자유석 층' 24×19 (jp-city-office-free, jp_city) — 출입구에서 닿는 칸 198, 닿지 못한 빈 바닥 0, 경고 1 — 평면이 참고 예제 「일본 도시 · 병원·학교 별관·IT 사옥 실내 예제 · IT 회사 사옥 자유석 층」와 100% 같다 — 사용자가 그 예제를 달라고 한 게 아니면 요청(방 수·쓰임·크기)에 맞게 새로 짠다(rooms 로 방 사각형을 다시 놓는다). 예제는 문법을 배우는 자료다
+입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-office-free`. 도구 결과: 바깥(jp-city-office-tower-1f)으로 나가는 문 jp-city-office-free-link-0(21,15) 이 있는데 평면 가장자리에 출입구 틈이 없다 — plan 맨 아래 줄의 '#' 하나를 '.' 로 비워 문을 낸다(그 칸이 출구가 된다)
 
 ## 입력
 ```json
-{"tileset": "jp_city", "mapId": "jp-city-office-free", "name": "IT 회사 사옥 자유석 층", "plan": ["########################", "#......................#", "#......................#", "#......................#", "#......................#", "#......................#", "#......................#", "#......................#", "#......................#", "#......................#", "#......................#", "######.###.#######..####", "#.......#....#.........#", "#.......#....#.........#", "#.......#....#.........#", "#.......#....#.........#", "#.......#....#.........#", "#.......#....#.........#", "########################"], "floor": "of-carpet-tile", "wall": "of-wall", "zones": [{"x0": 1, "y0": 11, "x1": 7, "y1": 17, "floor": "of-carpet-tile", "wall": "of-glass-wall"}, {"x0": 9, "y0": 11, "x1": 12, "y1": 17, "floor": "of-pantry-tile", "wall": "of-wall"}, {"x0": 14, "y0": 11, "x1": 22, "y1": 17, "floor": "of-lobby-stone", "wall": "of-lobby-wall"}], "objects": [{"id": "of-window-blind", "x": 5, "y": 1}, {"id": "of-window-blind", "x": 9, "y": 1}, {"id": "of-window-blind", "x": 13, "y": 1}, {"id": "ox-whiteboard-wall", "x": 18, "y": 1}, {"id": "ox-phone-booth", "x": 1, "y": 3}, {"id": "ox-phone-booth", "x": 2, "y": 3}, {"id": "ox-phone-booth", "x": 3, "y": 3}, {"id": "ox-shredder", "x": 6, "y": 3}, {"id": "of-copier", "x": 7, "y": 3}, {"id": "of-cabinet", "x": 10, "y": 3}, {"id": "of-cabinet", "x": 11, "y": 3}, {"id": "ox-planter-box", "x": 14, "y": 3}, {"id": "of-server-rack", "x": 17, "y": 3}, {"id": "ox-display-stand", "x": 20, "y": 3}, {"id": "ox-bar-stool", "x": 18, "y": 6}, {"id": "ox-standing-table", "x": 19, "y": 6}, {"id": "ox-bar-stool", "x": 21, "y": 6}, {"id": "ox-bar-stool", "x": 19, "y": 7}, {"id": "ox-bar-stool", "x": 20, "y": 7}, {"id": "of-desk-chair-s", "x": 4, "y": 6}, {"id": "of-desk-chair-s", "x": 5, "y": 6}, {"id": "of-desk-chair-s", "x": 6, "y": 6}, {"id": "ox-bench-desk", "x": 4, "y": 7}, {"id": "of-desk-chair-n", "x": 4, "y": 8}, {"id": "of-desk-chair-n", "x": 5, "y": 8}, {"id": "of-desk-chair-n", "x": 6, "y": 8}, {"id": "of-desk-chair-s", "x": 9, "y": 6}, {"id": "of-desk-chair-s", "x": 10, "y": 6}, {"id": "of-desk-chair-s", "x": 11, "y": 6}, {"id": "ox-bench-desk", "x": 9, "y": 7}, {"id": "of-desk-chair-n", "x": 9, "y": 8}, {"id": "of-desk-chair-n", "x": 10, "y": 8}, {"id": "of-desk-chair-n", "x": 11, "y": 8}, {"id": "of-desk-chair-s", "x": 14, "y": 6}, {"id": "of-desk-chair-s", "x": 15, "y": 6}, {"id": "of-desk-chair-s", "x": 16, "y": 6}, {"id": "ox-bench-desk", "x": 14, "y": 7}, {"id": "of-desk-chair-n", "x": 14, "y": 8}, {"id": "of-desk-chair-n", "x": 15, "y": 8}, {"id": "of-desk-chair-n", "x": 16, "y": 8}, {"id": "ox-desk-wagon", "x": 17, "y": 7}, {"id": "ox-lounge-sofa", "x": 1, "y": 9}, {"id": "ox-planter-box", "x": 1, "y": 6}, {"id": "of-plant-big", "x": 22, "y": 10}, {"id": "ox-trash-column", "x": 22, "y": 8}, {"id": "ox-projector-screen", "x": 2, "y": 12}, {"id": "of-whiteboard", "x": 6, "y": 16}, {"id": "of-desk-n", "x": 2, "y": 15}, {"id": "of-desk-chair-n", "x": 2, "y": 16}, {"id": "of-desk-n", "x": 3, "y": 15}, {"id": "of-desk-chair-n", "x": 3, "y": 16}, {"id": "of-desk-n", "x": 4, "y": 15}, {"id": "of-desk-chair-n", "x": 4, "y": 16}, {"id": "of-glass-door", "x": 6, "y": 11}, {"id": "ox-water-boiler", "x": 12, "y": 12}, {"id": "of-fridge-small", "x": 9, "y": 14}, {"id": "ox-coffee-counter", "x": 11, "y": 14}, {"id": "ox-standing-table", "x": 11, "y": 16}, {"id": "ox-trash-column", "x": 12, "y": 17}, {"id": "door-open-western", "x": 10, "y": 11}, {"id": "of-elevator", "x": 15, "y": 14}, {"id": "of-stairwell-down", "x": 21, "y": 14}, {"id": "ox-floor-guide", "x": 18, "y": 17}, {"id": "ox-visitor-kiosk", "x": 14, "y": 17}], "tables": [], "goods": [], "start": [{"x": 17, "y": 15}], "links": [{"x": 21, "y": 15, "toMapId": "jp-city-office-tower-1f", "toX": 2, "toY": 4, "direction": "down"}, {"x": 22, "y": 15, "toMapId": "jp-city-office-tower-1f", "toX": 2, "toY": 4, "direction": "down"}, {"x": 15, "y": 14, "toMapId": "jp-city-office-tower-1f", "toX": 3, "toY": 4, "direction": "down"}, {"x": 16, "y": 14, "toMapId": "jp-city-office-tower-1f", "toX": 4, "toY": 4, "direction": "down"}], "replace": true}
+{"tileset": "jp_city", "mapId": "jp-city-office-free", "name": "IT 회사 사옥 자유석 층", "plan": ["########################", "#......................#", "#......................#", "#......................#", "#......................#", "#......................#", "#......................#", "#......................#", "#......................#", "#......................#", "#......................#", "######.###.#######..####", "#.......#....#.........#", "#.......#....#.........#", "#.......#....#.........#", "#.......#....#.........#", "#.......#....#.........#", "#.......#....#.........#", "########################"], "floor": "of-carpet-tile", "wall": "of-wall", "zones": [{"x0": 1, "y0": 11, "x1": 7, "y1": 17, "floor": "of-carpet-tile", "wall": "of-glass-wall"}, {"x0": 9, "y0": 11, "x1": 12, "y1": 17, "floor": "of-pantry-tile", "wall": "of-wall"}, {"x0": 14, "y0": 11, "x1": 22, "y1": 17, "floor": "of-lobby-stone", "wall": "of-lobby-wall"}], "objects": [{"id": "of-window-blind", "x": 5, "y": 1}, {"id": "of-window-blind", "x": 9, "y": 1}, {"id": "of-window-blind", "x": 13, "y": 1}, {"id": "ox-whiteboard-wall", "x": 18, "y": 1}, {"id": "of-cabinet", "x": 1, "y": 3}, {"id": "of-cabinet", "x": 2, "y": 3}, {"id": "of-plant-big", "x": 3, "y": 3}, {"id": "ox-shredder", "x": 6, "y": 3}, {"id": "of-copier", "x": 7, "y": 3}, {"id": "of-cabinet", "x": 10, "y": 3}, {"id": "of-cabinet", "x": 11, "y": 3}, {"id": "ox-planter-box", "x": 14, "y": 3}, {"id": "of-server-rack", "x": 17, "y": 3}, {"id": "of-plant-big", "x": 20, "y": 3}, {"id": "ox-bar-stool", "x": 18, "y": 6}, {"id": "ox-standing-table", "x": 19, "y": 6}, {"id": "ox-bar-stool", "x": 21, "y": 6}, {"id": "ox-bar-stool", "x": 19, "y": 7}, {"id": "ox-bar-stool", "x": 20, "y": 7}, {"id": "of-desk-chair-s", "x": 4, "y": 6}, {"id": "of-desk-chair-s", "x": 5, "y": 6}, {"id": "of-desk-chair-s", "x": 6, "y": 6}, {"id": "ox-bench-desk", "x": 4, "y": 7}, {"id": "of-desk-chair-n", "x": 4, "y": 8}, {"id": "of-desk-chair-n", "x": 5, "y": 8}, {"id": "of-desk-chair-n", "x": 6, "y": 8}, {"id": "of-desk-chair-s", "x": 9, "y": 6}, {"id": "of-desk-chair-s", "x": 10, "y": 6}, {"id": "of-desk-chair-s", "x": 11, "y": 6}, {"id": "ox-bench-desk", "x": 9, "y": 7}, {"id": "of-desk-chair-n", "x": 9, "y": 8}, {"id": "of-desk-chair-n", "x": 10, "y": 8}, {"id": "of-desk-chair-n", "x": 11, "y": 8}, {"id": "of-desk-chair-s", "x": 14, "y": 6}, {"id": "of-desk-chair-s", "x": 15, "y": 6}, {"id": "of-desk-chair-s", "x": 16, "y": 6}, {"id": "ox-bench-desk", "x": 14, "y": 7}, {"id": "of-desk-chair-n", "x": 14, "y": 8}, {"id": "of-desk-chair-n", "x": 15, "y": 8}, {"id": "of-desk-chair-n", "x": 16, "y": 8}, {"id": "ox-desk-wagon", "x": 17, "y": 7}, {"id": "ox-lounge-sofa", "x": 1, "y": 9}, {"id": "ox-planter-box", "x": 1, "y": 6}, {"id": "of-plant-big", "x": 22, "y": 10}, {"id": "ox-trash-column", "x": 22, "y": 8}, {"id": "ox-projector-screen", "x": 2, "y": 12}, {"id": "of-whiteboard", "x": 6, "y": 16}, {"id": "of-desk-n", "x": 2, "y": 15}, {"id": "of-desk-chair-n", "x": 2, "y": 16}, {"id": "of-desk-n", "x": 3, "y": 15}, {"id": "of-desk-chair-n", "x": 3, "y": 16}, {"id": "of-desk-n", "x": 4, "y": 15}, {"id": "of-desk-chair-n", "x": 4, "y": 16}, {"id": "of-glass-door", "x": 6, "y": 11}, {"id": "ox-water-boiler", "x": 12, "y": 12}, {"id": "of-fridge-small", "x": 9, "y": 14}, {"id": "ox-coffee-counter", "x": 11, "y": 14}, {"id": "ox-standing-table", "x": 11, "y": 16}, {"id": "ox-trash-column", "x": 12, "y": 17}, {"id": "door-open-western", "x": 10, "y": 11}, {"id": "of-elevator", "x": 15, "y": 14}, {"id": "of-stairwell-down", "x": 21, "y": 14}, {"id": "houseplant", "x": 18, "y": 17}, {"id": "hs-sanitizer-stand", "x": 14, "y": 17}], "tables": [], "goods": [], "start": [{"x": 17, "y": 15}], "links": [{"x": 21, "y": 15, "toMapId": "jp-city-office-tower-1f", "toX": 2, "toY": 4, "direction": "down"}, {"x": 22, "y": 15, "toMapId": "jp-city-office-tower-1f", "toX": 2, "toY": 4, "direction": "down"}, {"x": 15, "y": 14, "toMapId": "jp-city-office-tower-1f", "toX": 3, "toY": 4, "direction": "down"}, {"x": 16, "y": 14, "toMapId": "jp-city-office-tower-1f", "toX": 4, "toY": 4, "direction": "down"}], "replace": true}
 ```
 
 ## 방 구획(사람이 붙인 이름 — `list_hand_interior_parts` 방 표의 근거)
@@ -18,19 +18,14 @@ tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스
 | elevatorhall | (14,11)-(23,18) |
 
 ## 이동
-| 이벤트 | 칸 | 이동 |
-|---|---|---|
-| jp-city-office-free-link-0 | (21,15) | jp-city-office-tower-1f (2,4) |
-| jp-city-office-free-link-1 | (22,15) | jp-city-office-tower-1f (2,4) |
-| jp-city-office-free-link-2 | (15,14) | jp-city-office-tower-1f (3,4) |
-| jp-city-office-free-link-3 | (16,14) | jp-city-office-tower-1f (4,4) |
+(이동 이벤트 없음 — 현관 밖은 거리 맵에 붙일 때 단다)
 
 ## 통행(엔진 `isPassable`, `X` 막힘 · `.` 걸음)
 ```
 XXXXXXXXXXXXXXXXXXXXXXXX
 XXXXXXXXXXXXXXXXXXXXXXXX
 XXXXXXXXXXXXXXXXXXXXXXXX
-XXXX..XX..XX..XX.X..XX.X
+XXXX..XX..XX..XX.X..X..X
 X......................X
 X......................X
 XXX.XXX..XXX..XXX.XXXX.X
@@ -98,31 +93,31 @@ y=18: . . . . . . . . . . . . . . . . . . . . . . . .
 ### 3층
 ```
 y=00: . . . . . . . . . . . . . . . . . . . . . . . .
-y=01: . 15883 15883 15883 . 11132 11133 . . 11132 11133 11110 . 11132 11133 . . 11121 15915 15916 15917 15891 . .
-y=02: . 15884 15884 15884 . 11134 11135 11113 . 11134 11135 11111 . 11134 11135 15909 . 11122 15918 15919 15920 15893 . .
-y=03: . 15885 15885 15885 . . 15913 11114 . . 11112 11112 . . 15910 15911 . 11123 . . 15894 15895 . .
+y=01: . 11110 11110 11082 . 11132 11133 . . 11132 11133 11110 . 11132 11133 . . 11121 15864 15865 15866 . . .
+y=02: . 11111 11111 11083 . 11134 11135 11113 . 11134 11135 11111 . 11134 11135 15858 . 11122 15867 15868 15869 . . .
+y=03: . 11112 11112 11084 . . 15862 11114 . . 11112 11112 . . 15859 15860 . 11123 . . 11084 . . .
 y=04: . . . . . . . . . . . . . . . . . . . . . . . .
-y=05: . 15908 15909 . 11096 11096 11096 . . 11096 11096 11096 . . 11096 11096 11096 . . 15896 15897 . . .
-y=06: . 15910 15911 . 11097 11097 11097 . . 11097 11097 11097 . . 11097 11097 11097 . 15900 15898 15899 15900 . .
-y=07: . . . . 15901 15902 15903 . . 15901 15902 15903 . . 15901 15902 15903 15914 . 15900 15900 . 15931 .
-y=08: . 15904 15905 . 11099 11099 11099 . . 11099 11099 11099 . . 11099 11099 11099 . . . . . 15932 .
-y=09: . 15906 15907 . . . . . . . . . . . . . . . . . . . 11083 .
+y=05: . 15857 15858 . 11096 11096 11096 . . 11096 11096 11096 . . 11096 11096 11096 . . 15845 15846 . . .
+y=06: . 15859 15860 . 11097 11097 11097 . . 11097 11097 11097 . . 11097 11097 11097 . 15849 15847 15848 15849 . .
+y=07: . . . . 15850 15851 15852 . . 15850 15851 15852 . . 15850 15851 15852 15863 . 15849 15849 . 15880 .
+y=08: . 15853 15854 . 11099 11099 11099 . . 11099 11099 11099 . . 11099 11099 11099 . . . . . 15881 .
+y=09: . 15855 15856 . . . . . . . . . . . . . . . . . . . 11083 .
 y=10: . . . . . . . . . . . . . . . . . . . . . . 11084 .
 y=11: . . . . . . 11127 . . . 9007 . . . . . . . . . . . . .
-y=12: . . 15886 15887 . . 11128 . . . 9008 . 15925 . . 11066 11067 . . . . . . .
-y=13: . . 15888 15889 . . . . . 11140 . 15921 15926 . . 11068 11069 . . . . 11149 11150 .
-y=14: . . 11375 11375 11375 . 11115 11116 . 11141 . 15923 15924 . . . . . . . . 11151 11152 .
-y=15: . . 11376 11376 11376 . 11117 11118 . . . 15896 15897 . . . . . 15935 . . . . .
-y=16: . . 11099 11099 11099 . 11119 11120 . . . 15898 15899 . 15938 . . . 15936 . . . . .
-y=17: . . . . . . . . . . . . 15932 . 15939 . . . 15937 . . . . .
+y=12: . . 15841 15842 . . 11128 . . . 9008 . 15874 . . 11066 11067 . . . . . . .
+y=13: . . 15843 15844 . . . . . 11140 . 15870 15875 . . 11068 11069 . . . . 11149 11150 .
+y=14: . . 11375 11375 11375 . 11115 11116 . 11141 . 15872 15873 . . . . . . . . 11151 11152 .
+y=15: . . 11376 11376 11376 . 11117 11118 . . . 15845 15846 . . . . . . . . . . .
+y=16: . . 11099 11099 11099 . 11119 11120 . . . 15847 15848 . 15744 . . . 8904 . . . . .
+y=17: . . . . . . . . . . . . 15881 . 15745 . . . 8905 . . . . .
 y=18: . . . . . . . . . . . . . . . . . . . . . . . .
 ```
 
 ### 4층
 ```
 y=00: . . . . . . . . . . . . . . . . . . . . . . . .
-y=01: . . . . . . . . . . 11110 . . . . . . . . . 15890 . . .
-y=02: . . . . . . 15912 . . . 11111 . . . 15908 . . . . . 15892 . . .
+y=01: . . . . . . . . . . 11110 . . . . . . . . . 11082 . . .
+y=02: . . . . . . 15861 . . . 11111 . . . 15857 . . . . . 11083 . . .
 y=03: . . . . . . . . . . . . . . . . . . . . . . . .
 y=04: . . . . . . . . . . . . . . . . . . . . . . . .
 y=05: . . . . . . . . . . . . . . . . . . . . . . . .
@@ -133,10 +128,10 @@ y=09: . . . . . . . . . . . . . . . . . . . . . . . .
 y=10: . . . . . . . . . . . . . . . . . . . . . . . .
 y=11: . . . . . . . . . . . . . . . . . . . . . . . .
 y=12: . . . . . . . . . . . . . . . . . . . . . . . .
-y=13: . . . . . . . . . . . . 15922 . . . . . . . . . . .
+y=13: . . . . . . . . . . . . 15871 . . . . . . . . . . .
 y=14: . . . . . . . . . . . . . . . . . . . . . . . .
 y=15: . . 11098 11098 11098 . . . . . . . . . . . . . . . . . . .
-y=16: . . . . . . . . . . . . 15931 . . . . . . . . . . .
+y=16: . . . . . . . . . . . . 15880 . . . . . . . . . . .
 y=17: . . . . . . . . . . . . . . . . . . . . . . . .
 y=18: . . . . . . . . . . . . . . . . . . . . . . . .
 ```

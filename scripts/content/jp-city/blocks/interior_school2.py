@@ -11,7 +11,7 @@
 import os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, '..', 'interior'))
-from inst import Inst, main, furn, drawer, glass, paper, books, rnd, h32, ell_fill, NT, MI   # noqa: E402
+from inst import Inst, main, furn, drawer, glass, paper, books, rnd, h32, ell_fill, NT, MI, box34   # noqa: E402
 
 BLOCK = 'interior_school2'
 I = Inst(BLOCK, '학교 보강')
@@ -54,6 +54,11 @@ def box(c, x, y, w, h, top, tm, tt, fm=None, ft=None, ol=True):
     if ol:
         c.HL(x, y, w, 'sumi', 1); c.HL(x, y + h - 1, w, 'sumi', 0); c.VL(x, y, h, 'sumi', 1); c.VL(x + w - 1, y, h, 'sumi', 1)
     return y + top
+
+
+def boxv(c, *a, **k):
+    """box 와 같은 자리·반환(y+top) — 관문 통과형 box34(내민 상판·앞 모서리 반사·판 밑 그늘)로 그린다."""
+    return box34(c, *a, **k) - 1
 
 
 # ═══════════════ 복도·昇降口 ═══════════════
@@ -99,9 +104,10 @@ def _(c):
     c.R(4, 19, 7, 3, 'shiro', 3); c.HL(4, 19, 7, 'shiro', 4); c.HL(4, 21, 7, 'shiro', 2)   # 라벨 띠(글자 없음)
     # 어깨 윗면(타원 7행): 둥근 판, 왼위 밝게 · 테 어둡게
     def top(x, y, dx, dy, d):
-        if d > 0.78: return ('aka', 1 if dx > 0.1 or dy > 0.3 else 2)
-        if dx + dy < -0.35: return ('aka', 4)
-        return ('aka', 3)
+        if d > 0.8: return ('aka', 1 if dy > 0.2 else 2)
+        if d > 0.6: return ('aka', 2 if dy > 0 else 3)
+        if dx + dy < -0.2: return ('pinku', 3)
+        return ('aka', 4)
     c.ell(7.5, 11.5, 5, 3.6, top)
     c.P(5, 10, 'pinku', 4)                                      # 어깨 반사
     # 밸브(위에서 본 쇠 목) + 검은 손잡이(왼으로 누운 레버 윗면)
@@ -255,7 +261,7 @@ def _(c):
     # 캔버스 32×32. 통 셋(폭 10): 뚜껑 윗면 8행(y5~12, 구멍이 위에서 보인다) + 뚜껑 앞 테 2행 + 회백 몸통 앞면.
     for k, (col, hole) in enumerate((('sora', 'round'), ('midori', 'round'), ('kii', 'slot'))):
         x = 1 + k * 10; w = 10
-        y1 = box(c, x, 5, w, 25, 8, col, 3, col, 2)
+        y1 = boxv(c, x, 5, w, 25, 8, col, 4, col, 2, lid=False, ov=0)
         # 뚜껑 윗면 둥근 앞 모서리(가운데가 조금 솟은 판): 가운데 줄 밝게
         c.HL(x + 2, 7, w - 4, col, 4)
         if hole == 'round':
@@ -380,7 +386,7 @@ def _(c):
        desc='교무실 교원 우편 칸 2칸 — 나무 윗면 아래 작은 칸 6열×6단 격자, 칸마다 흰 서류 뭉치·색 봉투·빈 칸이 섞였다. 이름표 자리는 빈 흰 띠(글자 없음).')
 def _(c):
     # 캔버스 32×48. 윗면 8행(y4~11, 위에 서류 상자·펜 통·쌓인 봉투) + 앞면 칸 격자
-    y0 = box(c, 1, 4, 30, 43, 8, 'yuka', 3, 'yuka', 2)
+    y0 = boxv(c, 1, 4, 30, 43, 8, 'yuka', 4, 'yuka', 2, edge=('kinari', 4), lid=False)
     for i in range(3, 29):
         for j in range(2, 7):
             if rnd(i // 5, j, 92) < 0.14: c.P(1 + i, 4 + j, 'yuka', 2)
@@ -417,7 +423,7 @@ def _(c):
        desc='학교 윤전 인쇄기(リソグラフ류) — 회백 몸통 윗면에 왼쪽 종이 공급 받침(흰 종이 묶음)과 오른쪽 어두운 조작판(작은 초록·주황 불), 앞면 드럼 문 이음과 받침장, 오른쪽 옆 바닥에 인쇄된 종이 더미.')
 def _(c):
     # 캔버스 32×32. 몸통 x0~25: 윗면 9행(y6~14 — 종이 공급 판·조작판이 윗면 위에 놓인다) + 앞면(드럼 문) + 받침장
-    y0 = box(c, 0, 6, 26, 18, 9, 'conc', 5, 'conc', 3)
+    y0 = boxv(c, 0, 6, 26, 18, 9, 'conc', 5, 'conc', 2, lid=False)
     # 공급 판 위 흰 종이 묶음(윗면 위에 얹힘: 종이 윗면 + 1행 두께)
     c.R(2, 7, 11, 5, 'shiro', 4); c.HL(3, 8, 9, 'shiro', 3); c.HL(2, 12, 11, 'shiro', 2)
     c.HL(2, 13, 11, 'conc', 3); c.VL(1, 7, 6, 'tekko', 3); c.VL(13, 7, 6, 'tekko', 3)    # 종이 가이드
@@ -435,7 +441,7 @@ def _(c):
     c.P(10, 26, 'tekko', 5); c.P(14, 26, 'tekko', 5); c.HL(1, 29, 24, 'conc', 1)
     c.VL(0, 23, 8, 'sumi', 1); c.VL(25, 23, 8, 'sumi', 1); c.HL(0, 30, 26, 'sumi', 0)
     # 옆 종이 더미(윗면 5행)
-    y2 = box(c, 26, 17, 6, 14, 5, 'shiro', 4, 'shiro', 3)
+    y2 = boxv(c, 26, 17, 6, 14, 5, 'shiro', 4, 'shiro', 2, lid=False, ov=0)
     for yy in range(y2 + 1, 30, 2): c.HL(27, yy, 4, 'shiro', 2)
     c.HL(0, 31, 32, 'sumi', 0)
 
@@ -559,7 +565,7 @@ def _(c):
 def _(c):
     # 캔버스 16×32. 윗단 = 위에서 보이는 나무 홈 상자(윗면 9행 y5~13: 책 윗머리가 줄지어 보인다) + 앞면 아랫단 + 바퀴
     x, w = 0, 16
-    y1 = box(c, x, 5, w, 22, 9, 'yuka', 3, 'yuka', 2)
+    y1 = boxv(c, x + 1, 5, w - 2, 22, 9, 'yuka', 4, 'yuka', 2, edge=('kinari', 4), lid=False)
     c.R(2, 7, 12, 5, 'ita', 1)                                 # 홈 속(어둡게)
     cols = ('aka', 'kon', 'midori', 'kii', 'sora', 'daidai', 'murasaki', 'kon')
     for i in range(6):                                         # 책 윗머리: 표지 색 1px + 종이 단면 1px, 기울어 엇갈림
@@ -583,7 +589,7 @@ def _(c):
        desc='도서실 신문 걸이대 — 나무 틀 윗면(위에서 보이는 널) 아래 신문 막대 셋에 접힌 신문이 겹쳐 걸렸다(회색 줄뿐, 글자 없음). 양쪽 기둥과 발.')
 def _(c):
     # 윗면(나무 판 7행 y0~6, 위에 접어 둔 신문 한 부) + 앞 띠 3행
-    box(c, 0, 0, 16, 10, 7, 'yuka', 3, 'yuka', 2)
+    boxv(c, 1, 0, 14, 10, 7, 'yuka', 4, 'yuka', 2, edge=('kinari', 4), lid=False)
     c.R(3, 1, 8, 4, 'shiro', 4); c.HL(3, 4, 8, 'shiro', 2); c.HL(4, 2, 2, 'conc', 3)
     c.VL(7, 2, 2, 'conc', 5); c.VL(9, 2, 2, 'conc', 5); c.HL(3, 5, 8, 'yuka', 2)
     c.P(12, 3, 'yuka', 2); c.P(13, 2, 'yuka', 2)
@@ -656,7 +662,7 @@ def _(c):
         t = 5 if d < 0.25 else 4 if (dx + dy) < 0 else 3
         if d > 0.8: t = 2 if dx > 0 else 3
         return ('tekko', t)
-    c.ell(8, 12, 7.2, 4, cap)
+    c.ell(8, 12, 7.2, 5, cap)
     c.R(7, 10, 2, 2, 'tekko', 6); c.P(8, 11, 'tekko', 4)
     c.P(4, 13, 'soil', 2); c.P(11, 12, 'soil', 1); c.P(10, 14, 'soil', 2)
     for y in range(8, 17):
@@ -682,7 +688,7 @@ def _(c):
         c.line(cx - 4, 10, cx + 4, 10, 'tekko', 3); c.line(cx, 7, cx, 13, 'tekko', 3)
         c.P(cx - 4, 8, 'conc', 6)
     # 앞면 y16~27
-    c.HL(x, 16, w, 'conc', 5)
+    c.HL(x + 1, 15, w - 2, 'shiro', 4); c.HL(x, 16, w, 'conc', 1)                       # 앞 모서리 반사 + 판 밑 그늘
     c.R(x, 17, w, 10, 'conc', 3); c.VL(x + 1, 17, 10, 'conc', 4); c.VL(x + w - 2, 17, 10, 'conc', 2)
     for yy in range(18, 26, 2): c.HL(x + 12, yy, w - 15, 'conc', 1)
     c.R(x + 2, 18, 8, 7, 'conc', 4); c.HL(x + 2, 24, 8, 'conc', 2); c.VL(x + 9, 18, 7, 'conc', 2)
@@ -695,6 +701,10 @@ def _(c):
     c.HL(28, 21, 2, 'kinari', 2); c.HL(28, 25, 2, 'kinari', 2)
     c.R(28, 28, 4, 2, 'kinari', 3); c.HL(28, 28, 4, 'kinari', 4); c.HL(28, 30, 4, 'sumi', 0)
     c.P(28, 19, 'sumi', 1); c.P(29, 19, 'sumi', 1)
+
+
+# 3/4 관문 불합격 조각은 굽지 않는다(interior/gate_hold.py)
+I.hold()
 
 
 def build(): return R.build()

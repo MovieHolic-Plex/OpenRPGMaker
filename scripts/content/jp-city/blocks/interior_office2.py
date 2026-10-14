@@ -11,7 +11,7 @@
 import os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, '..', 'interior'))
-from inst import Inst, main, furn, drawer, glass, paper, books, rnd, h32   # noqa: E402,F401
+from inst import Inst, main, furn, drawer, glass, paper, books, rnd, h32, slab34   # noqa: E402,F401
 
 BLOCK = 'interior_office2'
 I = Inst(BLOCK, '사무실 보강')
@@ -53,11 +53,9 @@ def laptop(c, x, y, w=8):
 def _(c):
     # 캔버스 16×48 (up 24 → U=2)
     # 지붕판 윗면 8행(위에서 내려다본 흰 판) — 위에 환기 그릴 판이 얹혀 있다
-    plate(c, 1, 1, 14, 9, 'conc', 5)
-    c.R(2, 2, 12, 6, 'shiro', 3); c.VL(2, 2, 6, 'shiro', 4); c.HL(2, 2, 12, 'shiro', 2)
+    slab34(c, 0, 1, 16, 9, 'shiro', 3)                                         # 내민 흰 지붕판(위에서)
     c.R(10, 4, 3, 2, 'conc', 3); c.HL(10, 6, 3, 'shiro', 2)                    # 작은 환기 구멍(판 뒤 오른쪽, 누워 있다)
-    c.HL(1, 9, 14, 'shiro', 4)                                                 # 앞 모서리 반사
-    c.R(1, 10, 14, 2, 'conc', 2); c.HL(1, 11, 14, 'conc', 1)                   # 지붕 앞 두께
+    c.R(1, 11, 14, 1, 'conc', 2)                                               # 지붕 밑 그늘
     # 몸통 옆 기둥(흰 판, 왼 밝게 오른 그늘)
     c.R(1, 12, 2, 29, 'shiro', 3); c.VL(1, 12, 29, 'shiro', 4)
     c.R(13, 12, 2, 29, 'shiro', 2); c.VL(14, 12, 29, 'shiro', 1)
@@ -113,7 +111,7 @@ def _(c):
 def _(c):
     # 캔버스 32×48 (up 20 → U=2)
     # 화면 머리: 윗면 판 5행(쇠 상자 윗면, 위에 화상 회의 카메라) + 화면 앞면
-    plate(c, 1, 1, 30, 6, 'tekko', 3)
+    slab34(c, 0, 0, 32, 7, 'tekko', 4)
     c.R(12, 2, 8, 3, 'yoru', 2); c.HL(12, 2, 8, 'yoru', 4); c.P(15, 3, 'neonC', 2); c.P(16, 3, 'yoru', 0)
     c.R(1, 7, 30, 16, 'yoru', 1)
     c.R(3, 8, 26, 13, 'garasu', 1)
@@ -125,7 +123,7 @@ def _(c):
     c.HL(3, 8, 26, 'garasu', 2)
     c.VL(1, 7, 16, 'yoru', 3)
     c.P(15, 22, 'neonC', 1)
-    box(c, 0, 0, 32, 24)
+    c.VL(0, 7, 17, 'sumi', 1); c.VL(31, 7, 17, 'sumi', 1); c.HL(0, 23, 32, 'sumi', 1)
     # 두 기둥
     for x0 in (11, 19):
         c.VL(x0, 24, 15, 'tekko', 5); c.VL(x0 + 1, 24, 15, 'tekko', 2)
@@ -273,20 +271,19 @@ def _(c):
        desc='사무용 문서 파쇄기 — 검은 윗면에 종이 투입구 틈과 초록 등, 회색 통 몸통 앞에 작은 창으로 잘린 종이 조각이 보인다.')
 def _(c):
     # 캔버스 16×32 (up 8 → U=1). 윗면 판 7행(투입구 틈에 종이가 꽂힘) + 회색 통 앞면
-    plate(c, 2, 7, 12, 7, 'conc', 5)
+    slab34(c, 1, 6, 14, 8, 'conc', 5)
     c.HL(4, 10, 8, 'yoru', 0); c.HL(4, 11, 8, 'yoru', 2)                       # 투입구 틈
     c.R(5, 8, 5, 2, 'shiro', 4); c.HL(5, 9, 5, 'shiro', 3); c.P(9, 8, 'shiro', 3)   # 꽂힌 종이
     c.P(11, 12, 'midori', 4); c.P(4, 12, 'conc', 3)
     # 앞면
-    y1 = 14
-    c.R(2, y1, 12, 16, 'conc', 3); c.HL(2, y1, 12, 'conc', 2)
+    y1 = 15
+    c.R(2, y1, 12, 15, 'conc', 3); c.HL(2, y1, 12, 'conc', 2)
     c.VL(2, y1, 16, 'conc', 4); c.VL(13, y1, 16, 'conc', 1)
     c.R(5, y1 + 3, 6, 5, 'garasu', 1)
     for x in range(5, 11): c.VL(x, y1 + 5 + (x % 2), 3 - (x % 2), 'shiro', 3 if x % 2 else 4)
     c.HL(5, y1 + 3, 6, 'garasu', 3)
     c.HL(4, y1 + 11, 8, 'conc', 1); c.P(10, y1 + 12, 'conc', 5)
-    box(c, 1, 6, 14, 25)
-    c.HL(1, 31, 14, 'sumi', 0)
+    c.VL(1, 15, 16, 'sumi', 1); c.VL(14, 15, 16, 'sumi', 1); c.HL(1, 31, 14, 'sumi', 0)
 
 
 @I.obj('ox-desk-wagon', '책상 밑 사이드 왜건', 'box', w=1, h=1, surface=True, use=('open',),
@@ -453,12 +450,11 @@ def _(c):
        desc='입구의 우산 비닐 받침 — 은색 기둥 몸통 윗면에 우산을 꽂는 둥근 투입구 둘이 보이고, 앞으로 투명 비닐 봉투 묶음이 늘어져 흔들린다. 아래 넓은 받침.')
 def _(c):
     # 캔버스 16×32 (up 12 → U=1). 밝은 윗면 판 8행(우산 꽂는 구멍 둘) + 어두운 앞 몸통에 늘어진 봉투
-    plate(c, 2, 3, 12, 8, 'tekko', 5)
+    slab34(c, 0, 2, 16, 9, 'tekko', 5)
     for ox in (4, 9):
         c.R(ox, 5, 3, 3, 'yoru', 0); c.HL(ox, 7, 3, 'yoru', 2); c.HL(ox, 4, 3, 'tekko', 3); c.P(ox + 2, 6, 'yoru', 1)
     c.VL(10, 2, 3, 'kon', 3); c.P(10, 1, 'kon', 4)                              # 꽂힌 우산 손잡이
-    box(c, 1, 2, 14, 10)
-    c.R(2, 11, 12, 14, 'tekko', 2); c.VL(2, 11, 14, 'tekko', 4); c.VL(13, 11, 14, 'tekko', 1); c.HL(2, 11, 12, 'tekko', 1)
+    c.R(2, 12, 12, 13, 'tekko', 2); c.VL(2, 11, 14, 'tekko', 4); c.VL(13, 11, 14, 'tekko', 1); c.HL(2, 11, 12, 'tekko', 1)
     for (bx, ln) in ((3, 11), (7, 9), (10, 12)):
         for j in range(ln):
             w = 3 if j < ln - 3 else (2 if j < ln - 1 else 1)
@@ -476,23 +472,14 @@ def _(c):
        desc='로비에 세운 층 안내 받침 — 기울어진 판 윗면에 층 평면 지도(색 칸·흰 통로, 글자 없음)가 보이고, 은색 기둥과 둥근 받침이 판을 받친다.')
 def _(c):
     # 캔버스 16×48 (up 20 → U=2). 비스듬히 누운 안내판 = 위에서 보이는 사다리꼴 판(뒤 좁고 앞 넓다) + 앞 두께
-    rows = [(y, 3 if y < 9 else (2 if y < 13 else 1)) for y in range(5, 17)]
-    for (y, ins) in rows:
-        c.HL(ins, y, 16 - 2 * ins, 'yoru', 3)
-        c.P(ins - 1, y, 'sumi', 1); c.P(16 - ins, y, 'sumi', 1)
-    c.HL(3, 4, 10, 'sumi', 1); c.HL(3, 5, 10, 'yoru', 2)
-    def inside(y):
-        ins = 3 if y < 9 else (2 if y < 13 else 1)
-        return ins + 1, 16 - ins - 1
-    for y in range(6, 16):
-        a, b = inside(y)
-        c.HL(a, y, b - a, 'shiro', 4)
-    rooms = ((5, 6, 3, 3, 'sora'), (9, 6, 2, 3, 'kii'), (3, 11, 3, 4, 'midori'), (9, 10, 4, 5, 'pinku'), (7, 12, 1, 3, 'lino'))
+    # 위에서 본 판(윗면 12행, 검은 테 안 흰 평면도) + 앞 두께 3행
+    slab34(c, 0, 4, 16, 13, 'yoru', 3, edge=('yoru', 5), under=('yoru', 1))
+    c.R(2, 6, 12, 9, 'shiro', 4); c.HL(2, 6, 12, 'shiro', 3)
+    rooms = ((3, 7, 3, 3, 'sora'), (7, 7, 2, 3, 'kii'), (10, 7, 3, 3, 'midori'), (3, 11, 4, 3, 'pinku'), (9, 11, 4, 3, 'lino'))
     for (x, y, w, h, m) in rooms:
         c.R(x, y, w, h, m, 3); c.HL(x, y, w, m, 4)
-    c.P(10, 8, 'aka', 3)
-    c.HL(1, 16, 14, 'yoru', 5)                                                 # 앞 모서리 반사
-    c.R(1, 17, 14, 3, 'yoru', 1); c.VL(0, 16, 4, 'sumi', 1); c.VL(15, 16, 4, 'sumi', 1); c.HL(1, 20, 14, 'sumi', 1)
+    c.P(8, 12, 'aka', 3)
+    c.R(1, 18, 14, 2, 'yoru', 2); c.VL(0, 17, 4, 'sumi', 1); c.VL(15, 17, 4, 'sumi', 1); c.HL(1, 20, 14, 'sumi', 1)
     # 기둥
     c.R(7, 21, 2, 19, 'tekko', 4); c.VL(7, 21, 19, 'tekko', 6); c.VL(8, 21, 19, 'tekko', 2)
     # 둥근 받침(윗면 타원)
@@ -506,23 +493,20 @@ def _(c):
        desc='무인 방문자 접수용 태블릿 받침 — 가는 흰 기둥 위 기울어진 태블릿 윗면이 보이고 화면은 하늘빛(단추 칸 둘), 둥근 흰 받침.')
 def _(c):
     # 캔버스 16×32 (up 16 → U=1). 비스듬히 누운 태블릿 = 위에서 보이는 사다리꼴 판 + 앞 두께
-    for y in range(2, 11):
-        ins = 3 if y < 5 else (2 if y < 8 else 1)
-        c.HL(ins, y, 16 - 2 * ins, 'yoru', 2)
-        c.P(ins - 1, y, 'sumi', 1); c.P(16 - ins, y, 'sumi', 1)
-        if 3 <= y <= 9:
-            a = ins + 1; b = 16 - ins - 1
-            c.HL(a, y, b - a, 'sora', 3)
-    c.HL(3, 1, 10, 'sumi', 1); c.HL(3, 2, 10, 'yoru', 1)
-    c.HL(4, 3, 8, 'sora', 4); c.P(4, 4, 'shiro', 4)
-    c.R(4, 6, 3, 2, 'shiro', 4); c.R(9, 6, 3, 2, 'midori', 4)
-    c.HL(1, 10, 14, 'yoru', 4)                                                 # 앞 모서리
-    c.HL(1, 11, 14, 'yoru', 1); c.VL(0, 10, 2, 'sumi', 1); c.VL(15, 10, 2, 'sumi', 1); c.HL(1, 12, 14, 'sumi', 1)
+    # 위에서 본 태블릿 판(윗면 9행: 검은 테 + 하늘빛 화면) + 앞 두께
+    slab34(c, 0, 1, 16, 10, 'yoru', 2, edge=('yoru', 5), under=('yoru', 1))
+    c.R(2, 3, 12, 6, 'sora', 3); c.HL(2, 3, 12, 'sora', 4); c.P(3, 4, 'shiro', 4)
+    c.R(3, 6, 4, 2, 'shiro', 4); c.R(9, 6, 4, 2, 'midori', 4)
+    c.VL(0, 11, 2, 'sumi', 1); c.VL(15, 11, 2, 'sumi', 1); c.HL(1, 12, 14, 'sumi', 1)
     # 기둥 + 받침
     c.R(7, 13, 2, 11, 'shiro', 3); c.VL(7, 13, 11, 'shiro', 4); c.VL(8, 13, 11, 'shiro', 2)
     c.ell(8, 26.5, 6.2, 3.2, lambda x, y, dx, dy, d: ('sumi', 1))
     c.ell(8, 26.3, 5.4, 2.6, lambda x, y, dx, dy, d: ('shiro', 2) if dy > 0.4 else (('shiro', 4) if dx < 0 else ('shiro', 3)))
     c.R(7, 23, 2, 2, 'shiro', 3); c.HL(4, 29, 8, 'sumi', 0)
+
+
+# 3/4 관문 불합격 조각은 굽지 않는다(interior/gate_hold.py)
+I.hold()
 
 
 def build(): return R.build()

@@ -9,60 +9,97 @@
  "profileHash": "ca6aaa9c55194dc5",
  "verdict": "fail",
  "reasons": [
-  "판정자 답을 읽지 못함",
-  "종류 불일치",
   "판정자 과반 fail",
   "정면 입면도",
-  "옆면(아이소)",
-  "윗면 -1행 < 3"
+  "윗면 0행 < 3"
  ],
  "runs": [
   {
    "judge": "gemini",
    "run": 1,
-   "answer": null,
+   "answer": {
+    "main_body": "three-seat connected waiting room bench",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chairs, connecting beam, and legs are drawn in pure flat front/rear elevation. The top rim is only a 1px outline (row 5) with no visible top surface of the backrest or seats, and the lower support beam and T-feet are drawn entirely flat without 3/4 top-down foreshortening.",
+    "verdict": "fail"
+   },
    "pass": false,
    "reasons": [
-    "판정자 호출 실패"
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
    ],
-   "ms": 804,
-   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h10m0s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google"
+   "ms": 7422
   },
   {
    "judge": "gemini",
    "run": 2,
-   "answer": null,
+   "answer": {
+    "main_body": "waiting room tandem seating (3 seats)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chairs and frame are drawn in pure flat rear elevation: the backrests have no top surface foreshortening (only a 1px outline/highlight line at row 5), and the metal support beam (rows 24-25) and T-legs (rows 26-29) are drawn completely flat without 3/4 perspective depth.",
+    "verdict": "fail"
+   },
    "pass": false,
    "reasons": [
-    "판정자 호출 실패"
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
    ],
-   "ms": 563,
-   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h10m0s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google"
+   "ms": 8754
   },
   {
    "judge": "gemini",
    "run": 3,
-   "answer": null,
+   "answer": {
+    "main_body": "waiting room tandem seating (3 seats)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chairs are drawn in flat elevation with no visible top surface foreshortened from above (the top edge at row 5 is just a 1px outline). Neither the top rim/thickness of the backrests nor any horizontal depth is depicted.",
+    "verdict": "fail"
+   },
    "pass": false,
    "reasons": [
-    "판정자 호출 실패"
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
    ],
-   "ms": 584,
-   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h10m0s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google"
+   "ms": 11993
   },
   {
    "judge": "gemini",
    "run": 4,
-   "answer": null,
-   "pass": false,
-   "reasons": [
-    "판정자 호출 실패"
-   ],
-   "ms": 897,
-   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h10m0s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google"
+   "answer": {
+    "main_body": "connected waiting room chairs (3 seats)",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal seat surfaces are clearly viewed from above across rows 5–14 (approx. 10 source pixel rows deep), with the south-facing front/back surfaces visible below (rows 19–23) on a supporting beam frame.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8121
   }
  ],
- "decidedAt": "2026-10-14T01:57:02.967Z",
+ "decidedAt": "2026-10-14T06:02:44.915Z",
  "cells": {
   "16": [
    "1ca39789c9131db9",

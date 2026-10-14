@@ -9097,19 +9097,15 @@
      1
     ],
     [
-     "sx-letter-shelf",
-     1
+     "of-cabinet",
+     3
     ],
     [
      "sc-tea-shelf",
      1
     ],
     [
-     "of-cabinet",
-     1
-    ],
-    [
-     "sx-riso-printer",
+     "of-copier",
      1
     ],
     [
@@ -9125,7 +9121,7 @@
      1
     ],
     [
-     "sx-recycle-bins",
+     "ox-trash-column",
      1
     ],
     [
@@ -9187,7 +9183,7 @@
      2
     ],
     [
-     "sx-recycle-bins",
+     "ox-trash-column",
      1
     ],
     [
@@ -9238,12 +9234,12 @@
      2
     ],
     [
-     "ox-floor-guide",
-     1
+     "of-plant-big",
+     2
     ],
     [
      "ox-trash-column",
-     1
+     2
     ],
     [
      "ox-security-desk",
@@ -9254,7 +9250,7 @@
      1
     ],
     [
-     "ox-visitor-kiosk",
+     "hs-sanitizer-stand",
      1
     ],
     [
@@ -9262,16 +9258,12 @@
      1
     ],
     [
-     "of-plant-big",
-     1
-    ],
-    [
      "of-lobby-sofa-n",
      2
     ],
     [
-     "ox-umbrella-bagger",
-     2
+     "sx-umbrella-rack",
+     1
     ],
     [
      "cv-autodoor",
@@ -9293,7 +9285,11 @@
      1
     ],
     [
-     "ox-phone-booth",
+     "of-cabinet",
+     4
+    ],
+    [
+     "of-plant-big",
      3
     ],
     [
@@ -9305,19 +9301,11 @@
      1
     ],
     [
-     "of-cabinet",
-     2
-    ],
-    [
      "ox-planter-box",
      2
     ],
     [
      "of-server-rack",
-     1
-    ],
-    [
-     "ox-display-stand",
      1
     ],
     [
@@ -9346,10 +9334,6 @@
     ],
     [
      "ox-lounge-sofa",
-     1
-    ],
-    [
-     "of-plant-big",
      1
     ],
     [
@@ -9430,11 +9414,11 @@
      1
     ],
     [
-     "ox-floor-guide",
+     "houseplant",
      1
     ],
     [
-     "ox-visitor-kiosk",
+     "hs-sanitizer-stand",
      1
     ]
    ]
@@ -9536,7 +9520,7 @@
      1
     ],
     [
-     "hs-folding-screen",
+     "hs-wheelchair",
      1
     ],
     [
@@ -9563,7 +9547,7 @@
      2
     ],
     [
-     "hs-med-fridge",
+     "of-fridge-small",
      1
     ],
     [
@@ -9645,12 +9629,12 @@
      2
     ],
     [
-     "hs-pay-machine",
-     1
+     "hs-wheelchair",
+     3
     ],
     [
-     "hs-reception-kiosk",
-     1
+     "houseplant",
+     2
     ],
     [
      "pb-magazine-rack",
@@ -9659,10 +9643,6 @@
     [
      "hs-bench-row-n",
      6
-    ],
-    [
-     "hs-wheelchair",
-     2
     ],
     [
      "pb-water-dispenser",
@@ -9682,10 +9662,6 @@
     ],
     [
      "cv-autodoor",
-     1
-    ],
-    [
-     "ox-umbrella-bagger",
      1
     ],
     [
@@ -9751,15 +9727,11 @@
      1
     ],
     [
-     "sx-letter-shelf",
-     1
-    ],
-    [
      "hs-drug-drawers",
-     1
+     2
     ],
     [
-     "hs-med-fridge",
+     "of-fridge-small",
      1
     ],
     [

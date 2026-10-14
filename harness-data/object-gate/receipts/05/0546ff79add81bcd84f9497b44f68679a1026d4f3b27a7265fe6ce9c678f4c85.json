@@ -9,60 +9,101 @@
  "profileHash": "ca6aaa9c55194dc5",
  "verdict": "fail",
  "reasons": [
-  "판정자 답을 읽지 못함",
-  "종류 불일치",
   "판정자 과반 fail",
   "정면 입면도",
-  "옆면(아이소)",
-  "윗면 -1행 < 3"
+  "윗면 0행 < 3"
  ],
  "runs": [
   {
    "judge": "gemini",
    "run": 1,
-   "answer": null,
+   "answer": {
+    "main_body": "pharmacy dispensing window and counter",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire counter and dispensing window unit is drawn as a flat, straight-on front elevation with no visible top surface or 3/4 perspective foreshortening anywhere on the structure.",
+    "verdict": "fail"
+   },
    "pass": false,
    "reasons": [
-    "판정자 호출 실패"
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
    ],
-   "ms": 1022,
-   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h9m56s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google"
+   "ms": 5019
   },
   {
    "judge": "gemini",
    "run": 2,
-   "answer": null,
+   "answer": {
+    "main_body": "medication dispensing counter / service window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire service window and counter are rendered as a completely flat architectural front elevation with no visible horizontal top surface on the counter, sill, or ledge (0 top rows).",
+    "verdict": "fail"
+   },
    "pass": false,
    "reasons": [
-    "판정자 호출 실패"
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
    ],
-   "ms": 968,
-   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h9m56s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google"
+   "ms": 3662
   },
   {
    "judge": "gemini",
    "run": 3,
-   "answer": null,
+   "answer": {
+    "main_body": "dispensing window and counter",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire counter, window, and wall assembly is rendered in pure flat front elevation with 0 visible top rows for the counter surface or window ledge.",
+    "verdict": "fail"
+   },
    "pass": false,
    "reasons": [
-    "판정자 호출 실패"
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
    ],
-   "ms": 754,
-   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h9m56s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google"
+   "ms": 4620
   },
   {
    "judge": "gemini",
    "run": 4,
-   "answer": null,
+   "answer": {
+    "main_body": "dispensing window counter",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The dispensing counter and window are drawn in pure front elevation; there is no foreshortened top surface for the counter ledge or desk top (0 top rows visible).",
+    "verdict": "fail"
+   },
    "pass": false,
    "reasons": [
-    "판정자 호출 실패"
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
    ],
-   "ms": 441,
-   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h9m56s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google"
+   "ms": 4307
   }
  ],
- "decidedAt": "2026-10-14T01:57:02.968Z",
+ "decidedAt": "2026-10-14T06:02:44.917Z",
  "cells": {
   "16": [
    "455b8a13de38158e",

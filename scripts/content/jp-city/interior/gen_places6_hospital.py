@@ -32,20 +32,20 @@ o('hs-door-sliding', 10, 9)
 o('hs-bed-headwall', 14, 1); o('wall-clock', 17, 1)
 o('hs-patient-locker', 13, 3); o('hs-stretcher', 14, 3); o('hs-iv-stand', 16, 3); o('sc-sink', 17, 3); o('pb-med-cabinet', 18, 3)
 o('hs-instrument-cart', 18, 5); o('hs-exam-stool', 15, 6)
-o('hs-folding-screen', 13, 6); o('hs-med-cart', 18, 7); o('hs-sharps-bin', 13, 8)
+o('hs-wheelchair', 13, 6); o('hs-med-cart', 18, 7); o('hs-sharps-bin', 13, 8)
 o('hs-door-sliding', 16, 9)
 # 원내 약국 (x20-24) — 칸막이 2칸 틈(x21-22)에 투약 창구, 직원 문 x24
-o('hs-drug-drawers', 20, 3); o('hs-drug-drawers', 22, 3); o('hs-med-fridge', 24, 3)
+o('hs-drug-drawers', 20, 3); o('hs-drug-drawers', 22, 3); o('of-fridge-small', 24, 3)
 o('hs-dispense-table', 21, 5); o('ox-bar-stool', 21, 6); o('ox-bar-stool', 22, 6)
 o('hs-pickup-window', 21, 11); o('hs-door-sliding', 24, 9)
 # 계단·엘리베이터 홀 (x26-28, 대기실로 2칸 트임)
 o('of-stairs-up', 26, 3); o('of-elevator', 27, 3); o('of-plant-big', 28, 5); o('sx-extinguisher', 26, 8)
 # 대기실 북쪽 벽(칸막이 남쪽 면) 걸이
 o('wall-clock', 7, 10); o('hs-call-display', 11, 10); o('hs-tv-wall', 13, 10); o('sx-hydrant-box', 17, 10); o('hs-call-display', 18, 10); o('hs-aed', 20, 10)
-# 종합 접수(서쪽) — 카운터 뒤 직원 자리 2줄(동쪽 끝 x7 로 드나든다), 정산기·재진 접수기
+# 종합 접수(서쪽) — 카운터 뒤 직원 자리 2줄(동쪽 끝 x7 로 드나든다), 휠체어·화분
 o('of-cabinet', 1, 12); o('pb-office-chair-s', 3, 13); o('pb-office-chair-s', 5, 13)
 o('hs-front-counter', 1, 14); o('hs-front-counter', 4, 14)
-o('hs-pay-machine', 8, 12); o('hs-reception-kiosk', 9, 12)
+o('hs-wheelchair', 8, 12); o('houseplant', 9, 12)
 o('pb-magazine-rack', 25, 12)
 # 대기 의자(북향 — 호출 화면을 본다): 가운데 통로 x14-15
 for x in (11, 16, 19): o('hs-bench-row-n', x, 14)
@@ -54,7 +54,7 @@ o('hs-bench-row-n', 9, 17); o('hs-bench-row-n', 18, 17); o('hs-bench-row-n', 22,
 o('hs-wheelchair', 1, 17); o('hs-wheelchair', 2, 17); o('pb-water-dispenser', 5, 17); o('of-plant-big', 7, 17)
 o('hs-kids-mat', 24, 14); o('hs-toy-shelf', 26, 16); o('of-plant-big', 28, 17); o('of-plant-big', 28, 13)
 # 출입구 둘레
-o('cv-autodoor', 14, H - 1); o('ox-umbrella-bagger', 13, 17); o('hs-sanitizer-stand', 16, 17)
+o('cv-autodoor', 14, H - 1); o('houseplant', 13, 17); o('hs-sanitizer-stand', 16, 17)
 ex1 = dict(name='일본 종합병원 1층(외래)', plan=S(g), floor='hs-floor-sheet', wall='hs-wall', ceiling='default',
            zones=[dict(x0=0, y0=0, x1=6, y1=9, floor='hs-floor-ward', wall='hs-wall-room'), dict(x0=6, y0=0, x1=12, y1=9, floor='hs-floor-ward', wall='hs-wall-room'),
                   dict(x0=12, y0=0, x1=19, y1=9, floor='hs-floor-ward', wall='hs-wall-room'), dict(x0=19, y0=0, x1=25, y1=9, floor='hs-floor-sheet', wall='hs-wall-room')],
@@ -92,7 +92,7 @@ o('hs-door-sliding', 4, 8); o('hs-door-sliding', 13, 8); o('hs-door-sliding', 4,
 o('pb-curtain', 3, 15) if False else None
 # 간호사 대기소(x19-28): 뒤 벽 서류·약품·냉장·개수대·복사기, 가운데 작업대, 앞 카운터가 복도를 본다
 o('wall-clock', 19, 1); o('hs-call-display', 21, 1)
-o('sx-letter-shelf', 19, 3); o('hs-drug-drawers', 21, 3); o('hs-med-fridge', 23, 3); o('sc-sink', 24, 3); o('of-copier', 26, 3); o('of-cabinet', 28, 3)
+o('hs-drug-drawers', 19, 3); o('hs-drug-drawers', 21, 3); o('of-fridge-small', 23, 3); o('sc-sink', 24, 3); o('of-copier', 26, 3); o('of-cabinet', 28, 3)
 o('hs-chart-cart', 19, 5); o('hs-dispense-table', 22, 5); o('hs-chart-cart', 26, 5); o('hs-med-cart', 27, 5); o('hs-exam-stool', 23, 6); o('hs-wheelchair', 26, 7); o('of-plant-big', 28, 8)
 o('pb-office-chair-s', 21, 8); o('pb-office-chair-s', 24, 8)
 o('hs-nurse-counter', 20, 9); o('hs-nurse-counter', 23, 9); o('of-plant-big', 19, 9)
@@ -124,8 +124,8 @@ places = [dict(file='hospital-1f', maps=['hospital-1f', 'hospital-2f'], placeId=
                           'hosp-corridor': ['병동 복도', ['病棟廊下', '병동 복도', '복도']],
                           'hosp-ward': ['병실', ['病室', '병실', '입원실', '2床室', 'ward']],
                           'hosp-nurse': ['간호사 대기소', ['ナースステーション', '간호사실', '간호사 대기소', 'nurse station']]},
-               rules=['1층(외래): 남쪽 유리 자동문(2칸, 우산 비닐 받침·손 소독) → 대기실: 서쪽 종합 접수(카운터 둘 + 안쪽 직원 줄 + 재진 접수기·자동 정산기), 가운데 북향 연결 의자 두 줄(가운데 2칸 통로) — 북쪽 벽 호출 화면·TV 를 본다, 동쪽 키즈 코너·냉온수기·잡지대.',
-                      '대기실 북쪽 칸막이 너머: 진찰실 둘(의사 책상·의자·환자 회전 의자·진찰대+커튼·판독 라이트 박스·개수대·초음파) · 처치실(이송 침대·링거·칸막이·기구 카트·폐기물 통) · 원내 약국(약품 서랍장·약 냉장고·조제대, 남쪽 2칸 투약 창구 + 동쪽 직원 문) · 계단·엘리베이터 홀(대기실로 트임).',
+               rules=['1층(외래): 남쪽 유리 자동문(2칸, 화분·손 소독) → 대기실: 서쪽 종합 접수(카운터 둘 + 안쪽 직원 줄 + 휠체어·화분), 가운데 북향 연결 의자 두 줄(가운데 2칸 통로) — 북쪽 벽 호출 화면·TV 를 본다, 동쪽 키즈 코너·냉온수기·잡지대.',
+                      '대기실 북쪽 칸막이 너머: 진찰실 둘(의사 책상·의자·환자 회전 의자·진찰대+커튼·판독 라이트 박스·개수대·초음파) · 처치실(이송 침대·링거·휠체어·기구 카트·폐기물 통) · 원내 약국(약품 서랍장·작은 약 냉장고·조제대, 남쪽 2칸 투약 창구 + 동쪽 직원 문) · 계단·엘리베이터 홀(대기실로 트임).',
                       '2층(병동, 거리 문과 잇지 않는다): 동서 복도(3줄) 북쪽에 2床 병실 둘 · 간호사 대기소(카운터가 칸막이 틈에서 복도를 본다), 남쪽에 2床 병실 둘 · 계단·엘리베이터 홀. 병실은 침대 머리를 북쪽 벽에 붙이고(머리맡 단자·협탁) 침대 사이 칸막이 커튼, 발치 오버 테이블·링거.',
                       '층 이동: 1층 계단 발칸 ↔ 2층 계단통 아랫줄, 1층 엘리베이터 ↔ 2층 엘리베이터 앞. 평면·가구는 tiledata/jp-city/interior/examples/hospital-1f.json · hospital-2f.json. 거리 건물 문과 잇기: link_jp_city_interior({door, place:"jp-city-hospital-1f-30x19"}).'])]
 json.dump(places, open(os.path.join(EX, 'places6-hospital.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)

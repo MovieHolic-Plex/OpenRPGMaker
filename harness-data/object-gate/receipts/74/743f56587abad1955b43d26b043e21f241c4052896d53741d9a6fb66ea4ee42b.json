@@ -9,60 +9,101 @@
  "profileHash": "ca6aaa9c55194dc5",
  "verdict": "fail",
  "reasons": [
-  "판정자 답을 읽지 못함",
-  "종류 불일치",
   "판정자 과반 fail",
   "정면 입면도",
-  "옆면(아이소)",
-  "윗면 -1행 < 4"
+  "윗면 0행 < 4"
  ],
  "runs": [
   {
    "judge": "gemini",
    "run": 1,
-   "answer": null,
+   "answer": {
+    "main_body": "paper shredder cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in pure front elevation with a flat outline, front-facing head unit with slot and LED, front viewing window, and bin handle. There is no visible top surface (0px).",
+    "verdict": "fail"
+   },
    "pass": false,
    "reasons": [
-    "판정자 호출 실패"
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
    ],
-   "ms": 344,
-   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h9m50s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google"
+   "ms": 9826
   },
   {
    "judge": "gemini",
    "run": 2,
-   "answer": null,
+   "answer": {
+    "main_body": "paper shredder cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire shredder is drawn as a flat front elevation with head unit, paper slot, LED, viewing window, and bin handle all rendered on a vertical front-facing plane. No horizontal top surface of the main body is visible (0 px).",
+    "verdict": "fail"
+   },
    "pass": false,
    "reasons": [
-    "판정자 호출 실패"
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
    ],
-   "ms": 475,
-   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h9m50s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google"
+   "ms": 12547
   },
   {
    "judge": "gemini",
    "run": 3,
-   "answer": null,
+   "answer": {
+    "main_body": "document shredder",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shredder is drawn in pure front elevation as a completely flat vertical rectangle with only a 1px outline at row 6. No top horizontal surface is rendered in 3/4 perspective.",
+    "verdict": "fail"
+   },
    "pass": false,
    "reasons": [
-    "판정자 호출 실패"
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
    ],
-   "ms": 3899,
-   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h9m47s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google"
+   "ms": 28372
   },
   {
    "judge": "gemini",
    "run": 4,
-   "answer": null,
+   "answer": {
+    "main_body": "paper shredder",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shredder is drawn as a flat 2D front elevation inside a vertical rectangular outline with only a single 1px outline row at row 6 and no visible top surface.",
+    "verdict": "fail"
+   },
    "pass": false,
    "reasons": [
-    "판정자 호출 실패"
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
    ],
-   "ms": 429,
-   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h9m50s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google"
+   "ms": 5022
   }
  ],
- "decidedAt": "2026-10-14T01:57:02.971Z",
+ "decidedAt": "2026-10-14T06:02:44.920Z",
  "cells": {
   "16": [
    "41fd0ad1683b2521",

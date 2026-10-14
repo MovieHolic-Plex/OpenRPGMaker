@@ -7,58 +7,85 @@
  "name": "벽 전기 온수기(給湯器)",
  "label": "jp_city/interior_office2/ox-water-boiler",
  "profileHash": "ca6aaa9c55194dc5",
- "verdict": "fail",
- "reasons": [
-  "판정자 답을 읽지 못함",
-  "종류 불일치"
- ],
+ "verdict": "pass",
+ "reasons": [],
  "runs": [
   {
    "judge": "gemini",
    "run": 1,
-   "answer": null,
-   "pass": false,
-   "reasons": [
-    "판정자 호출 실패"
-   ],
-   "ms": 1558,
-   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h9m48s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google"
+   "answer": {
+    "main_body": "water heater",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The water heater is drawn in pure 2D front elevation with an enclosing 1px black outline and no visible top surface, despite being a bulky wall appliance that protrudes into the room.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9574
   },
   {
    "judge": "gemini",
    "run": 2,
-   "answer": null,
-   "pass": false,
-   "reasons": [
-    "판정자 호출 실패"
-   ],
-   "ms": 337,
-   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h9m49s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google"
+   "answer": {
+    "main_body": "wall-mounted electric water heater",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The water heater is drawn as a completely flat front elevation with a 1px outline across the top (row 1) and no foreshortened top surface visible, despite being a volumetric box that protrudes from the wall.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15085
   },
   {
    "judge": "gemini",
    "run": 3,
-   "answer": null,
+   "answer": {
+    "main_body": "wall-mounted electric water heater",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The water heater is a protruding rectangular box appliance but is drawn as a completely flat 2D front elevation with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
    "pass": false,
    "reasons": [
-    "판정자 호출 실패"
+    "종류 불일치"
    ],
-   "ms": 1564,
-   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h9m47s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google"
+   "ms": 7899
   },
   {
    "judge": "gemini",
    "run": 4,
-   "answer": null,
-   "pass": false,
-   "reasons": [
-    "판정자 호출 실패"
-   ],
-   "ms": 356,
-   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h9m49s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google"
+   "answer": {
+    "main_body": "water heater body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The water heater is drawn in pure front elevation with no visible top surface to convey its depth sticking out from the wall. The vertical side highlights and shadows run continuously down the entire height.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8051
   }
  ],
- "decidedAt": "2026-10-14T01:57:02.972Z",
+ "decidedAt": "2026-10-14T06:02:44.920Z",
  "cells": {
   "16": [
    "42e56cdeed4561f7",

@@ -207,7 +207,9 @@ function eventTransfers(event: GameEvent): TransferCommand[] {
 function fitDoorsToPlan(draft: Project, mapId: string, events: GameEvent[], shape: HandInteriorShape, notes: string[]): void {
   const occupied = new Set(events.map((e) => `${e.x},${e.y}`));
   for (const event of events) {
-    const outbound = eventTransfers(event).filter((t) => t.mapId !== mapId);
+    // 층 사이 이동(계단·엘리베이터 — 도착 맵도 실내 climate.indoor)은 문이 아니다: 저자가 계단 위에 둔 자리 그대로 둔다.
+    // 2026-10-14 jp_city 실측: 문 맞춤을 모든 역할표 칩셋에 넓히자 집 1층 계단(11,9)이 현관 틈(9,14)으로 옮겨지고, 2층은 «바깥으로 나가는 문인데 틈이 없다»로 거부됐다.
+    const outbound = eventTransfers(event).filter((t) => t.mapId !== mapId && draft.maps[t.mapId]?.climate?.mode !== "indoor");
     if (!outbound.length) continue;
     if (shape.openings.some((o) => o.x === event.x && o.y === event.y)) continue;
     const target = nearestOpening(shape, event);

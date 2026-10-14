@@ -1,6 +1,4 @@
-{"png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/interior_office2/_gate/ox-phone-booth.png", "kind": "tall_furniture", "name": "1인 텔레워크 부스", "label": "jp_city/interior_office2/ox-phone-booth"}
 {"png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/interior_office2/_gate/ox-projector-screen.png", "kind": "wall_mounted", "name": "천장 영사 스크린(내려옴)", "label": "jp_city/interior_office2/ox-projector-screen"}
-{"png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/interior_office2/_gate/ox-display-stand.png", "kind": "tall_furniture", "name": "회의용 대형 화면 스탠드", "label": "jp_city/interior_office2/ox-display-stand"}
 {"png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/interior_office2/_gate/ox-standing-table.png", "kind": "low_furniture", "name": "스탠딩 높은 탁자", "label": "jp_city/interior_office2/ox-standing-table"}
 {"png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/interior_office2/_gate/ox-bar-stool.png", "kind": "seat", "name": "높은 둥근 의자(스툴)", "label": "jp_city/interior_office2/ox-bar-stool"}
 {"png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/interior_office2/_gate/ox-bench-desk.png", "kind": "low_furniture", "name": "자유석 긴 벤치 책상(3인)", "label": "jp_city/interior_office2/ox-bench-desk"}
@@ -13,6 +11,3 @@
 {"png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/interior_office2/_gate/ox-water-boiler.png", "kind": "wall_mounted", "name": "벽 전기 온수기(給湯器)", "label": "jp_city/interior_office2/ox-water-boiler"}
 {"png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/interior_office2/_gate/ox-security-desk.png", "kind": "low_furniture", "name": "경비 데스크", "label": "jp_city/interior_office2/ox-security-desk"}
 {"png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/interior_office2/_gate/ox-trash-column.png", "kind": "round_body", "name": "로비 원통 쓰레기통", "label": "jp_city/interior_office2/ox-trash-column"}
-{"png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/interior_office2/_gate/ox-umbrella-bagger.png", "kind": "column", "name": "우산 비닐 씌우는 받침(傘袋スタンド)", "label": "jp_city/interior_office2/ox-umbrella-bagger"}
-{"png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/interior_office2/_gate/ox-floor-guide.png", "kind": "column", "name": "층 안내 받침 판", "label": "jp_city/interior_office2/ox-floor-guide"}
-{"png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/interior_office2/_gate/ox-visitor-kiosk.png", "kind": "column", "name": "방문자 접수 태블릿 받침", "label": "jp_city/interior_office2/ox-visitor-kiosk"}

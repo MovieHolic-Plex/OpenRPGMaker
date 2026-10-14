@@ -11,7 +11,7 @@ pb-magazine-rack·pb-scale-height·pb-curtain), 사무(of-elevator·of-plant-big
 import os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, '..', 'interior'))
-from inst import Inst, main, furn, drawer, glass, paper, books, rnd, h32, NT, MI   # noqa: E402
+from inst import Inst, main, furn, drawer, glass, paper, books, rnd, h32, NT, MI, box34   # noqa: E402
 
 BLOCK = 'interior_hospital'
 I = Inst(BLOCK, '병원')
@@ -140,8 +140,7 @@ def _(c):
 def _(c):
     # 캔버스 16×32 (up 12 → U=1). 윗면 판 10행(8..17): 뒤 왼쪽에 작은 TV, 뒤 오른쪽 꽃병, 앞 컵 — 판이 대부분 보인다
     # 윗면 9행(10..18)은 밝은 크림 판(앞면보다 두 단 밝다) — 뒤 가장자리에 작은 TV 만, 앞 6행은 빈 판 위 컵 하나
-    y1 = box(c, 1, 10, 14, 22, 9, 'kinari', 4, 'kinari', 2)
-    c.HL(2, 17, 12, 'kinari', 4)                                                          # 앞 모서리 반사
+    y1 = box34(c, 1, 10, 14, 22, 8, 'kinari', 4, 'kinari', 2, lid=False) - 1
     # 작은 TV(윗면 뒤쪽에 선다): 윗 두께 2행 + 화면 + 발 — 판 뒤 3행만 가린다
     c.R(3, 5, 6, 2, 'yoru', 4); c.HL(3, 5, 6, 'yoru', 5)
     c.R(3, 7, 6, 4, 'yoru', 1); c.R(4, 8, 4, 2, 'garasu', 1); c.P(4, 8, 'garasu', 3)
@@ -169,9 +168,10 @@ def _(c):
     c.ell(8, 4, 6.0, 2.7, ring)
     for (hx, hy) in ((2, 4), (14, 4), (8, 1), (8, 7)): c.P(hx, hy, 'tekko', 6)
     # 기둥 꼭대기 마개(위)
-    c.R(7, 3, 3, 3, 'tekko', 5); c.HL(7, 3, 3, 'tekko', 6); c.P(9, 5, 'tekko', 3)
+    c.R(6, 2, 5, 3, 'tekko', 6); c.HL(7, 2, 3, 'shiro', 4); c.HL(6, 4, 5, 'tekko', 3); c.P(6, 2, 'tekko', 5); c.P(10, 2, 'tekko', 5)   # 기둥 꼭대기 둥근 마개(윗면)
+    c.HL(7, 1, 3, 'sumi', 1); c.HL(6, 5, 5, 'tekko', 2)
     # 수액 팩 둘(갈고리에 걸려 늘어짐, 위 가장자리 접힌 띠가 보인다)
-    c.R(1, 7, 5, 9, 'garasu', 5); c.HL(1, 7, 5, 'garasu', 6); c.HL(1, 8, 5, 'shiro', 4); c.VL(1, 9, 6, 'garasu', 6)
+    c.R(1, 7, 5, 9, 'garasu', 5); c.HL(2, 7, 3, 'shiro', 4); c.HL(1, 8, 5, 'garasu', 6); c.P(1, 7, 'garasu', 4); c.P(5, 7, 'garasu', 4); c.VL(1, 9, 6, 'garasu', 6)
     c.VL(5, 9, 6, 'garasu', 3); c.R(2, 11, 3, 4, 'kii', 4); c.HL(2, 11, 3, 'kii', 3); c.HL(1, 16, 5, 'garasu', 3)
     c.VL(0, 7, 10, 'sumi', 1); c.VL(6, 8, 9, 'sumi', 1); c.P(2, 6, 'tekko', 4)
     c.R(11, 7, 4, 6, 'garasu', 5); c.HL(11, 7, 4, 'garasu', 6); c.HL(11, 8, 4, 'shiro', 4); c.VL(14, 9, 4, 'garasu', 3)
@@ -320,10 +320,11 @@ def _(c):
         x = k * 16
         c.HL(x + 2, 5, 12, 'sumi', 1)
         # 좌판 윗면 10행(6..15) — 앞(북) 모서리가 위
-        c.HL(x + 2, 6, 12, 'ki', 6)                                                       # 북쪽 앞 모서리 반사
-        c.R(x + 2, 7, 12, 6, 'ki', 5); c.R(x + 2, 13, 12, 2, 'ki', 4); c.HL(x + 2, 15, 12, 'ki', 2)
+        # 좌판을 위에서 본다: 먼(북) 가장자리 두께는 어둡게(앞으로 떨어지는 면), 판은 우리 쪽으로 갈수록 밝고, 등받이 앞에 깊은 홈 그늘
+        c.HL(x + 2, 6, 12, 'ki', 2)
+        c.R(x + 2, 7, 12, 3, 'ki', 4); c.R(x + 2, 10, 12, 4, 'ki', 5); c.HL(x + 2, 14, 12, 'ki', 6); c.HL(x + 2, 15, 12, 'yoru', 1)
         c.VL(x + 2, 7, 8, 'ki', 6); c.VL(x + 13, 7, 8, 'ki', 3)
-        c.HL(x + 5, 10, 6, 'ki', 4)
+        c.HL(x + 4, 11, 8, 'ki', 6); c.HL(x + 4, 12, 8, 'ki', 4)
         # 등받이(남쪽): 윗면 3행(16..18) + 등판 뒷면 4행(19..22)
         c.HL(x + 2, 16, 12, 'ki', 4); c.R(x + 2, 17, 12, 2, 'ki', 5); c.HL(x + 3, 17, 9, 'ki', 6)
         c.R(x + 2, 19, 12, 4, 'ki', 2); c.HL(x + 2, 19, 12, 'ki', 1); c.VL(x + 2, 19, 4, 'ki', 3); c.VL(x + 13, 19, 4, 'ki', 1)
@@ -370,8 +371,7 @@ def _(c):
     c.R(5, 25, 6, 14, 'shiro', 2); c.VL(5, 25, 14, 'shiro', 3); c.VL(10, 25, 14, 'shiro', 1)
     c.VL(4, 25, 14, 'sumi', 1); c.VL(11, 25, 14, 'sumi', 1)
     # 머리 상자
-    y1 = box(c, 1, 5, 14, 21, 12, 'shiro', 4, 'shiro', 1)
-    c.HL(2, 15, 12, 'shiro', 4)                                                             # 앞 모서리 반사
+    y1 = box34(c, 1, 5, 14, 21, 11, 'conc', 5, 'shiro', 2, lid=False) - 1
     # 윗면 판 가운데 누운 화면(뒤가 좁은 사다리꼴) — 둘레 흰 판이 2칸 이상 보인다
     c.poly([(5.5, 8), (10.5, 8), (11.5, 13), (4.5, 13)], lambda x, y: ('tekko', 2))
     c.poly([(6.5, 9), (9.5, 9), (10.5, 12), (5.5, 12)], lambda x, y: ('sora', 4 if y > 9 else 3))
@@ -385,20 +385,17 @@ def _(c):
        tags=TAGS + ('대기실', '会計', '自動精算機'), place='회계 창구 옆 북쪽 벽 앞에 2~3대 나란히',
        desc='흰 몸통의 자동 정산기 — 윗면, 비스듬한 하늘빛 화면, 그 아래 지폐(초록)·동전(노랑) 투입구와 영수증 구멍, 아래 거스름돈 받는 홈.')
 def _(c):
-    # 캔버스 16×32 (U=1). 윗면 11행 = 흰 판 안에 위를 보고 누운 화면(뒤가 좁은 사다리꼴) + 앞쪽 버튼 줄, 앞면에 투입구·거스름 홈
-    # 윗면 11행 = 흰 판(앞면보다 밝다). 판 가운데에 위를 보고 누운 작은 화면(뒤가 좁은 사다리꼴), 사방으로 흰 판 테가 2칸 이상 보인다
-    y1 = box(c, 1, 1, 14, 30, 11, 'shiro', 4, 'shiro', 1)
-    c.HL(2, 10, 12, 'shiro', 4)                                                            # 앞 모서리 반사
-    c.poly([(5.5, 4), (10.5, 4), (11.5, 8), (4.5, 8)], lambda x, y: ('tekko', 2))
-    c.poly([(6.5, 5), (9.5, 5), (10.5, 7), (5.5, 7)], lambda x, y: ('sora', 4 if y > 5 else 3))
-    c.P(7, 5, 'shiro', 4); c.HL(5, 9, 7, 'shiro', 2)                                       # 반사 · 화면 앞 그늘(판 위)
-    c.P(12, 7, 'midori', 3); c.P(3, 7, 'aka', 3)                                           # 판 귀퉁이 표시등
-    # 앞면: 지폐(초록)·동전(노랑) 투입구, 영수증 구멍, 거스름 홈
-    c.R(3, y1 + 2, 5, 2, 'midori', 2); c.HL(3, y1 + 2, 5, 'midori', 3); c.HL(4, y1 + 3, 3, 'sumi', 0)
-    c.R(9, y1 + 2, 4, 2, 'kii', 2); c.HL(9, y1 + 2, 4, 'kii', 3); c.P(10, y1 + 3, 'sumi', 0)
-    c.R(4, y1 + 6, 8, 1, 'sumi', 0); c.HL(4, y1 + 7, 8, 'shiro', 4)
-    c.R(4, y1 + 10, 8, 5, 'yoru', 1); c.HL(4, y1 + 10, 8, 'yoru', 0); c.HL(5, y1 + 14, 6, 'tekko', 4); c.P(9, y1 + 12, 'kii', 3)
-    c.P(12, y1 + 11, 'aka', 3)
+    # 캔버스 16×32 (U=1). 윗판 9행(연회색 뚜껑 판 — 위에서 본 판, 앞 모서리 반사 + 앞면 위 그늘), 앞면 위쪽에 비스듬한 화면,
+    # 그 아래 지폐(초록)·동전(노랑) 투입구, 영수증 구멍, 맨 아래 거스름 홈. 앞면은 판보다 두 단 어둡다.
+    y1 = box34(c, 1, 2, 14, 29, 9, 'conc', 5, 'shiro', 2)
+    c.R(10, 5, 2, 2, 'midori', 3); c.P(10, 5, 'midori', 4); c.HL(10, 7, 2, 'conc', 3)       # 판 위 상태등(그늘)
+    # 앞면 화면(테 + 하늘빛 + 반사)
+    c.R(3, y1, 10, 6, 'yoru', 1); c.R(4, y1 + 1, 8, 4, 'sora', 3); c.HL(4, y1 + 1, 8, 'sora', 4); c.P(5, y1 + 2, 'shiro', 4)
+    c.R(9, y1 + 3, 2, 1, 'midori', 3)
+    c.R(3, y1 + 7, 5, 2, 'midori', 2); c.HL(3, y1 + 7, 5, 'midori', 3); c.HL(4, y1 + 8, 3, 'sumi', 0)
+    c.R(9, y1 + 7, 4, 2, 'kii', 2); c.HL(9, y1 + 7, 4, 'kii', 3); c.P(10, y1 + 8, 'sumi', 0)
+    c.R(4, y1 + 10, 8, 1, 'sumi', 0); c.HL(4, y1 + 11, 8, 'shiro', 3)
+    c.R(4, y1 + 13, 8, 4, 'yoru', 1); c.HL(4, y1 + 13, 8, 'yoru', 0); c.HL(5, y1 + 16, 6, 'tekko', 4); c.P(12, y1 + 14, 'aka', 3)
 
 
 @I.obj('hs-call-display', '진료 호출 화면', 'wall_mounted', w=2, kind='hang', hrows=2, use=('read',),
@@ -645,9 +642,8 @@ def _(c):
        desc='바퀴 달린 받침 기둥 위 생체 정보 모니터 — 흰 몸통 윗면, 검은 화면에 초록 파형 선과 노랑·하늘 색 덩이(숫자 없음), 가는 기둥, 다섯 갈래 받침.')
 def _(c):
     # 캔버스 16×48 (U=2). 모니터 상자 윗면 7행(손잡이), 앞면 화면, 기둥 중간 바구니(위에서 본 철망 타원), 아래 별 받침
-    y1 = box(c, 1, 2, 14, 19, 7, 'shiro', 4, 'shiro', 1)
-    c.HL(5, 4, 6, 'conc', 5); c.HL(5, 5, 6, 'conc', 2)                                      # 위 손잡이(누운 막대 + 그늘)
-    c.HL(2, 7, 12, 'shiro', 4)                                                              # 앞 모서리 반사
+    y1 = box34(c, 1, 2, 14, 19, 7, 'conc', 5, 'shiro', 2, lid=False) - 1
+    c.HL(5, 4, 6, 'tekko', 5); c.HL(5, 5, 6, 'conc', 3)                                     # 위 손잡이(누운 막대 + 그늘)
     c.P(12, 6, 'aka', 4); c.P(11, 6, 'shiro', 2)
     c.R(2, y1 + 1, 12, 9, 'yoru', 0)
     wave = (3, 3, 3, 2, 0, 4, 3, 3, 3, 3)
@@ -704,36 +700,22 @@ def _(c):
        tags=TAGS + ('진찰실', '처치실', '衝立'), place='진찰대 곁·처치실 침대 사이',
        desc='은색 쇠 틀에 흰 천을 댄 3폭 접이 칸막이 — 가운데 폭이 뒤로 접혀 지그재그로 선다. 틀 윗봉 윗면이 보이고, 폭마다 앞뒤로 뻗은 발과 작은 바퀴.')
 def _(c):
-    # 캔버스 32×32 (U=1). 세 폭이 바닥에서 지그재그(앞뒤 깊이)로 꺾여 선다. 폭마다 위 틀 윗면 3행 밝은 띠가 보이고, 바닥에 꺾인 발자국 그늘
-    pts = ((1, 29), (11, 24), (21, 29), (30, 24))
-    H = 15
-    # 바닥 발자국 그늘(지그재그)
-    for k in range(3):
-        (x0, y0), (x1, y1) = pts[k], pts[k + 1]
-        for x in range(x0, x1 + 1):
-            yb = round(y0 + (y1 - y0) * (x - x0) / (x1 - x0))
-            c.P(x, yb + 1, 'sumi', 0)
-    for k in range(3):
-        (x0, y0), (x1, y1) = pts[k], pts[k + 1]
-        lit = k != 1
-        for x in range(x0, x1 + 1):
-            yb = round(y0 + (y1 - y0) * (x - x0) / (x1 - x0))
-            yt = yb - H
-            for y in range(yt + 1, yb):
-                t = (3 if lit else 2) if (x - x0) % 3 else (2 if lit else 1)
-                if y < yt + 3: t = 4 if lit else 3
-                c.P(x, y, 'shiro', t)
-            c.P(x, yb, 'tekko', 3 if lit else 2)                                                 # 밑봉
-            # 위 틀 윗면(3행 밝은 띠) + 밑 그늘 + 뒤 윤곽
-            c.P(x, yt - 4, 'sumi', 1)
-            c.P(x, yt - 3, 'tekko', 5 if lit else 4); c.P(x, yt - 2, 'tekko', 6 if lit else 5); c.P(x, yt - 1, 'tekko', 6 if lit else 4)
-            c.P(x, yt, 'tekko', 2 if lit else 1)
-    for (x, y) in pts:
-        c.VL(x, y - H - 3, H + 4, 'tekko', 5 if x < 30 else 3); c.P(x, y - H - 4, 'sumi', 1)
-        c.R(x - 1, y - H - 3, 3, 3, 'tekko', 6); c.P(x + 1, y - H - 1, 'tekko', 4)                # 경첩 마디(윗면)
-        c.line(x - 1, y - 2, x + 1, y + 2, 'tekko', 4)
-        c.P(x - 1, y - 2, 'yoru', 1); c.P(x + 1, y + 2, 'yoru', 1); c.P(x + 1, y + 3, 'sumi', 0)
-    c.VL(0, 10, 20, 'sumi', 1); c.VL(31, 5, 20, 'sumi', 1)
+    # 캔버스 32×32 (U=1). 일자로 선 세 폭. 위 틀은 위에서 본 쇠봉 윗면 4행(밝은 띠 + 앞 반사 + 밑 그늘),
+    # 천은 앞면, 바닥엔 폭마다 앞뒤로 뻗은 발(위에서 본 짧은 막대)과 바퀴.
+    c.HL(1, 6, 30, 'sumi', 1)
+    c.R(0, 7, 32, 4, 'tekko', 5); c.HL(1, 7, 30, 'tekko', 4); c.HL(1, 9, 30, 'tekko', 6); c.HL(1, 10, 30, 'shiro', 4)
+    c.VL(0, 7, 4, 'sumi', 1); c.VL(31, 7, 4, 'sumi', 1)
+    for x0 in (1, 11, 21):
+        c.R(x0, 11, 10, 14, 'shiro', 3); c.HL(x0, 11, 10, 'shiro', 1)
+        for x in range(x0, x0 + 10, 3): c.VL(x, 12, 13, 'shiro', 2)
+        c.VL(x0 + 1, 12, 13, 'shiro', 4)
+    for x in (0, 10, 20, 30):
+        c.VL(x, 7, 19, 'tekko', 4); c.R(x - (0 if x == 0 else 1), 6, 2 if x in (0, 30) else 3, 2, 'tekko', 6)   # 기둥 + 위 마디(윗면)
+    c.HL(1, 25, 30, 'tekko', 3); c.HL(1, 26, 30, 'sumi', 0)
+    for x in (1, 11, 20, 29):
+        c.R(x, 25, 2, 5, 'tekko', 4); c.VL(x, 25, 5, 'tekko', 5); c.HL(x, 30, 2, 'sumi', 0)          # 앞뒤로 뻗은 발(위에서)
+        c.P(x, 29, 'yoru', 1)
+    c.VL(0, 11, 15, 'sumi', 1); c.VL(31, 11, 15, 'sumi', 1)
 
 
 @I.obj('hs-sharps-bin', '의료 폐기물 통(노랑)', 'box', w=1, h=1, up=0, use=('open',),
@@ -779,8 +761,9 @@ def _(c):
     def off(x):
         return (0, 1, 2, 2, 1, 0)[x % 6]                                                       # 2 = 가까운(남쪽) 주름
     # 레일(위에서 본 띠) + 고리
-    c.HL(0, 0, 32, 'sumi', 1)
-    c.HL(0, 1, 32, 'tekko', 5); c.HL(0, 2, 32, 'tekko', 6); c.HL(0, 3, 32, 'tekko', 5); c.HL(0, 4, 32, 'tekko', 2)
+    c.HL(1, 0, 30, 'sumi', 1); c.VL(0, 1, 4, 'sumi', 1); c.VL(31, 1, 4, 'sumi', 1)
+    c.R(1, 1, 30, 4, 'tekko', 5); c.HL(1, 1, 30, 'tekko', 4); c.HL(2, 2, 28, 'tekko', 6); c.HL(1, 3, 30, 'tekko', 5); c.HL(1, 4, 30, 'shiro', 4)
+    c.HL(0, 5, 32, 'tekko', 1)
     for x in range(2, 32, 6): c.P(x, 5, 'tekko', 4); c.P(x + 1, 5, 'tekko', 3)
     for x in range(32):
         o = off(x)
@@ -859,9 +842,8 @@ def _(c):
 def _(c):
     # 캔버스 16×32 (U=1). 윗면 10행 트레이(약 컵·병) + 앞면 색 서랍 격자 + 바퀴
     # 윗면 10행 = 밝은 흰 판(둘레에 낮은 난간 테) 위에 약 컵 셋·약병 — 판 바탕이 넓게 보인다
-    y1 = box(c, 1, 2, 14, 26, 10, 'shiro', 4, 'shiro', 1)
-    c.HL(2, 3, 12, 'tekko', 4); c.VL(2, 3, 8, 'tekko', 5); c.VL(13, 3, 8, 'tekko', 3)       # 난간 테(뒤·좌·우)
-    c.HL(2, 10, 12, 'shiro', 4)                                                             # 앞 모서리 반사
+    y1 = box34(c, 1, 2, 14, 26, 10, 'conc', 5, 'shiro', 2, lid=False) - 1
+    c.HL(2, 3, 12, 'tekko', 4); c.VL(2, 4, 6, 'tekko', 5); c.VL(13, 4, 6, 'tekko', 3)       # 난간 테(뒤·좌·우)
     for x, m in ((4, 'aka'), (7, 'kii')):
         c.R(x, 6, 2, 2, 'shiro', 3); c.P(x, 6, m, 3); c.P(x + 1, 7, m, 4); c.HL(x, 8, 2, 'shiro', 2)   # 약 컵(위에서) + 그늘
     c.R(10, 5, 2, 3, 'ita', 4); c.P(10, 5, 'ita', 6); c.HL(10, 8, 2, 'shiro', 2)            # 약병 + 그늘
@@ -955,8 +937,7 @@ def _(c):
        desc='유리문 약품 냉장고 — 흰 윗면, 유리문 속 선반마다 작은 약병 줄과 사선 반사, 아래 환기 그릴, 손잡이.')
 def _(c):
     # 캔버스 16×48 (U=2). 흰 윗면 10행(위에 약 상자·온도 기록판) + 유리문 앞면
-    y1 = box(c, 1, 1, 14, 46, 10, 'shiro', 4, 'shiro', 1)
-    c.HL(2, 9, 12, 'shiro', 4)                                                              # 앞 모서리 반사
+    y1 = box34(c, 1, 1, 14, 46, 10, 'conc', 5, 'shiro', 2, lid=False) - 1
     c.R(3, 3, 5, 3, 'sora', 3); c.HL(3, 3, 5, 'sora', 4); c.HL(3, 6, 5, 'shiro', 2)         # 보냉 상자(뒤 왼쪽) + 판 위 그늘
     c.R(10, 5, 3, 2, 'conc', 4); c.HL(10, 7, 3, 'shiro', 2)                                 # 기록판(누워 있다)
     c.R(3, y1 + 1, 10, 28, 'garasu', 2); c.HL(3, y1 + 1, 10, 'garasu', 1)
@@ -981,20 +962,24 @@ def _(c):
 def _(c):
     # 캔버스 32×32 (U=1). 카운터 윗면 11행(통 트레이·종이) 뒤에 선 낮은 투명 칸막이 — 칸막이 위 틀도 윗면 3행이 보인다
     # 칸막이 위 틀(두꺼운 흰 틀 윗면)
-    c.HL(1, 0, 30, 'sumi', 1)
-    c.HL(1, 1, 30, 'shiro', 3); c.R(1, 2, 30, 2, 'shiro', 4); c.HL(1, 4, 30, 'shiro', 1)
-    acrylic(c, 2, 5, 28, 7)
-    c.VL(1, 5, 6, 'shiro', 3); c.VL(30, 5, 6, 'shiro', 1)
-    c.R(9, 9, 14, 2, 'yoru', 1); c.HL(9, 9, 14, 'shiro', 2)                                    # 건넴 틈
-    c.VL(0, 1, 10, 'sumi', 1); c.VL(31, 1, 10, 'sumi', 1)
-    y1 = box(c, 0, 11, 32, 21, 11, 'shiro', 4, 'lino', 3)
-    c.HL(2, 12, 28, 'shiro', 2)                                                                 # 칸막이 밑 그늘
+    y1 = box34(c, 0, 9, 32, 23, 13, 'conc', 5, 'lino', 3, lid=False, ov=0) - 1
+    # 상판 뒤쪽에 선 투명 칸막이(좌우 4칸씩 상판이 드러난다) — 위 틀 윗면 3행
+    c.HL(6, 0, 20, 'sumi', 1)
+    c.HL(6, 1, 20, 'shiro', 3); c.R(6, 2, 20, 2, 'shiro', 4); c.HL(6, 4, 20, 'shiro', 1)
+    acrylic(c, 7, 5, 18, 6)
+    c.VL(6, 5, 6, 'shiro', 3); c.VL(25, 5, 6, 'shiro', 1); c.VL(5, 1, 10, 'sumi', 1); c.VL(26, 1, 10, 'sumi', 1)
+    c.R(11, 9, 10, 2, 'yoru', 1); c.HL(11, 9, 10, 'shiro', 2)                                  # 건넴 틈
+    c.HL(5, 11, 22, 'conc', 3)                                                                  # 칸막이 밑 그늘(상판 위)
     c.R(10, 14, 12, 5, 'sora', 3); c.HL(10, 14, 12, 'sora', 2); c.HL(11, 15, 10, 'sora', 1); c.HL(10, 18, 12, 'sora', 4)   # 통 트레이
     paper(c, 13, 15, 5, 3)
     c.R(3, 15, 5, 3, 'kii', 4); c.HL(3, 17, 5, 'kii', 2); c.P(4, 15, 'kii', 3)                 # 번호 종이
     c.R(25, 14, 3, 3, 'shiro', 4); c.P(26, 15, 'midori', 3); c.HL(25, 17, 3, 'shiro', 2)       # 소독제 작은 병
     lino_front(c, 1, y1, 30, 31 - y1)
     c.HL(0, 31, 32, 'sumi', 0)
+
+
+# 3/4 관문 불합격 조각은 굽지 않는다(interior/gate_hold.py)
+I.hold()
 
 
 def build(): return R.build()

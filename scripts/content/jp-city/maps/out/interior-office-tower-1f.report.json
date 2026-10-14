@@ -10,13 +10,13 @@
   7,
   9
  ],
- "summary": "손 도트 실내 'IT 회사 사옥 1층 로비' 16×11 (jp-city-office-tower-1f, jp_city) — 출입구에서 닿는 칸 77, 닿지 못한 빈 바닥 0, 경고 0",
+ "summary": "손 도트 실내 'IT 회사 사옥 1층 로비' 16×11 (jp-city-office-tower-1f, jp_city) — 출입구에서 닿는 칸 76, 닿지 못한 빈 바닥 0, 경고 0",
  "tool": {
   "mapId": "jp-city-office-tower-1f",
   "tilesetId": "jp_city",
   "width": 16,
   "height": 11,
-  "reachable": 77,
+  "reachable": 76,
   "floorCells": 92,
   "unreachedFloor": [],
   "entrance": [
@@ -69,6 +69,6 @@
    "reached": true
   }
  ],
- "reach": 77,
+ "reach": 76,
  "ok": true
 }

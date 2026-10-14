@@ -65,10 +65,10 @@
   },
   {
    "id": "jp-interior",
-   "name": "일본 도시 · 일본 집 실내 (가구 794종 · 바닥 70 · 벽면 56)",
-   "documents": 17,
+   "name": "일본 도시 · 일본 집 실내 (가구 777종 · 바닥 70 · 벽면 56)",
+   "documents": 16,
    "images": 28,
-   "chars": 503702
+   "chars": 493185
   },
   {
    "id": "jp-interior-shop",
@@ -82,28 +82,28 @@
    "name": "일본 도시 · 일본 학교·역·사무실 실내 (7곳, 맵 14장)",
    "documents": 15,
    "images": 14,
-   "chars": 115099
+   "chars": 113175
   },
   {
    "id": "jp-interior-dungeon",
    "name": "일본 도시 · 현대 던전 (8곳, 맵 17장)",
    "documents": 18,
    "images": 17,
-   "chars": 186390
+   "chars": 184535
   },
   {
    "id": "jp-interior-leisure",
    "name": "일본 도시 · 오락·숙박·상업 실내 (9곳, 맵 12장)",
    "documents": 13,
    "images": 12,
-   "chars": 104244
+   "chars": 103421
   },
   {
    "id": "jp-interior-hospital",
    "name": "일본 도시 · 일본 병원·학교 별관·IT 사옥 실내 (3곳, 맵 5장)",
    "documents": 6,
    "images": 5,
-   "chars": 62990
+   "chars": 62252
   },
   {
    "id": "jp-errors",
@@ -115,15 +115,15 @@
  ],
  "totals": {
   "categories": 16,
-  "documents": 152,
+  "documents": 151,
   "images": 274,
-  "chars": 1818260,
+  "chars": 1802403,
   "maxDocChars": 52857,
   "maxImagePx": 820
  },
- "tilesEmitted": 15132,
- "kitsEmitted": 1422,
- "kitArrayItemsRoundtrip": 1422,
+ "tilesEmitted": 15074,
+ "kitsEmitted": 1405,
+ "kitArrayItemsRoundtrip": 1405,
  "unknownTokens": [
   "jp-interior-dungeon-index:jp-city-abandoned-hospital-1f",
   "jp-interior-dungeon-index:jp-city-abandoned-hospital-1f-24x16",
@@ -276,7 +276,7 @@
   "jp-transit-rules:jp-truck-kei"
  ],
  "sha256": {
-  "json": "69d5d575543a59f5b46058ff1544b361244ffffd42c6adcf5e9c242ecf61f677",
-  "images": "bf48ac86c571356b8e5e6cf06a11757508317c85a9b8f4b6edd6fe33e5b0698e"
+  "json": "5e54e0e8b8a582b8af4092722ac31d40f20ceb80fa236da73de9857cb108842a",
+  "images": "059c29e0276301d22ccc598d8a8e4cd90e79c57342fe943bea56d4b96e40b094"
  }
 }

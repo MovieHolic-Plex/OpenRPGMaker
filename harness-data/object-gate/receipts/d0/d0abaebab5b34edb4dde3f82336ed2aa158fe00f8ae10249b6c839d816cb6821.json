@@ -9,60 +9,101 @@
  "profileHash": "ca6aaa9c55194dc5",
  "verdict": "fail",
  "reasons": [
-  "판정자 답을 읽지 못함",
-  "종류 불일치",
   "판정자 과반 fail",
   "정면 입면도",
-  "옆면(아이소)",
-  "윗면 -1행 < 3"
+  "윗면 0행 < 3"
  ],
  "runs": [
   {
    "judge": "gemini",
    "run": 1,
-   "answer": null,
+   "answer": {
+    "main_body": "office printer / copy machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The printer is drawn in pure front elevation: the top is just a 1px outline at row 6, with the control panel, scanner/feeder, paper trays, and lower cabinet doors all facing directly toward the camera with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
    "pass": false,
    "reasons": [
-    "판정자 호출 실패"
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
    ],
-   "ms": 597,
-   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h9m54s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google"
+   "ms": 4792
   },
   {
    "judge": "gemini",
    "run": 2,
-   "answer": null,
+   "answer": {
+    "main_body": "office printer / copy machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The copier is drawn in pure front elevation: the top section with screen, buttons, and scanner lid faces directly toward the viewer with 0 rows of visible top surface receding into the background.",
+    "verdict": "fail"
+   },
    "pass": false,
    "reasons": [
-    "판정자 호출 실패"
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
    ],
-   "ms": 430,
-   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h9m54s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google"
+   "ms": 4138
   },
   {
    "judge": "gemini",
    "run": 3,
-   "answer": null,
+   "answer": {
+    "main_body": "office printer / copier",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The copier/printer is drawn strictly from a front architectural elevation: the control panel, trays, and bottom cabinet doors face directly forward with zero top surface visible (only a 1px top outline at row 6).",
+    "verdict": "fail"
+   },
    "pass": false,
    "reasons": [
-    "판정자 호출 실패"
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
    ],
-   "ms": 1672,
-   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h9m53s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google"
+   "ms": 4667
   },
   {
    "judge": "gemini",
    "run": 4,
-   "answer": null,
+   "answer": {
+    "main_body": "office printer / photocopier",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire copier machine (control panel, display screen, trays, and lower cabinet doors) is drawn in pure front elevation with 0px of top surface visible beneath the top outline at row 6.",
+    "verdict": "fail"
+   },
    "pass": false,
    "reasons": [
-    "판정자 호출 실패"
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
    ],
-   "ms": 628,
-   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h9m54s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google"
+   "ms": 4371
   }
  ],
- "decidedAt": "2026-10-14T01:57:02.969Z",
+ "decidedAt": "2026-10-14T06:02:44.917Z",
  "cells": {
   "16": [
    "4263f577a7aa78dc",

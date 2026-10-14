@@ -9,60 +9,101 @@
  "profileHash": "ca6aaa9c55194dc5",
  "verdict": "fail",
  "reasons": [
-  "판정자 답을 읽지 못함",
-  "종류 불일치",
   "판정자 과반 fail",
   "정면 입면도",
-  "옆면(아이소)",
-  "윗면 -1행 < 3"
+  "윗면 0행 < 3"
  ],
  "runs": [
   {
    "judge": "gemini",
    "run": 1,
-   "answer": null,
+   "answer": {
+    "main_body": "mail sorting shelf / pigeonhole cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet has only a 1px dark outline at row 4 with no visible top surface. The pigeonhole compartments and shelves are also rendered as flat horizontal lines and rectangles in pure architectural front elevation.",
+    "verdict": "fail"
+   },
    "pass": false,
    "reasons": [
-    "판정자 호출 실패"
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
    ],
-   "ms": 714,
-   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h9m54s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google"
+   "ms": 7299
   },
   {
    "judge": "gemini",
    "run": 2,
-   "answer": null,
+   "answer": {
+    "main_body": "mail slot shelf / letter cubbies unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire piece of furniture is drawn in flat front elevation with no visible top surface (row 4 is merely a 1px outline). All shelf dividers and mail slots are drawn completely straight-on with no foreshortened horizontal surfaces.",
+    "verdict": "fail"
+   },
    "pass": false,
    "reasons": [
-    "판정자 호출 실패"
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
    ],
-   "ms": 2931,
-   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h9m52s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google"
+   "ms": 5591
   },
   {
    "judge": "gemini",
    "run": 3,
-   "answer": null,
+   "answer": {
+    "main_body": "mail cubby shelf unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire furniture unit is drawn in flat front elevation with a 1px outline at row 4 and zero visible top surface. The cubbies, papers, and top desk/counter space are completely face-on with no 3/4 top-down foreshortening.",
+    "verdict": "fail"
+   },
    "pass": false,
    "reasons": [
-    "판정자 호출 실패"
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
    ],
-   "ms": 3134,
-   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h9m52s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google"
+   "ms": 7201
   },
   {
    "judge": "gemini",
    "run": 4,
-   "answer": null,
+   "answer": {
+    "main_body": "mail slot shelf unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire cabinet is drawn as a flat front elevation. The top edge at row 4 is only a single 1px outline with no visible top surface (0 rows), and all interior shelves and mail cubbies are rendered completely flat from the front.",
+    "verdict": "fail"
+   },
    "pass": false,
    "reasons": [
-    "판정자 호출 실패"
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
    ],
-   "ms": 423,
-   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h9m54s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google"
+   "ms": 7757
   }
  ],
- "decidedAt": "2026-10-14T01:57:02.969Z",
+ "decidedAt": "2026-10-14T06:02:44.917Z",
  "cells": {
   "16": [
    "17ab0dbc33d044f1",

@@ -1,0 +1,128 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3280245af3666ed062f8c4bb2ad039cb038abbb012b951b7208c1ac4b3c28896",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "초음파 진단기 카트",
+ "label": "jp_city/interior_hospital/hs-ultrasound",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ultrasound cart console and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ultrasound cart is drawn in flat front elevation. Both the upper monitor, middle console, and lower wheeled cart show flat vertical front faces with only 1px outline borders and no foreshortened horizontal top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9400
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ultrasound cart console and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The console and cart base are drawn entirely in flat front elevation with a 1px border at row 9/10 and no visible horizontal top surface showing desk depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7395
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ultrasound diagnostic cart console",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The console surface (rows 11-19) is clearly viewed from above in 3/4 perspective, showing the controls, trackball, and buttons across 9 pixel rows of horizontal depth above a shaded front lip (rows 20-21) and lower cart body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12292
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ultrasound cart console and body",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The ultrasound cart shows a top-down view of its horizontal control panel (rows 11-19, 9 rows tall) with buttons and trackball, sitting above the front face of the lower cart cabinet (rows 23-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10543
+  }
+ ],
+ "decidedAt": "2026-10-14T06:02:44.915Z",
+ "cells": {
+  "16": [
+   "3c4bacc55c2bd22f",
+   "523b3774807b3acb"
+  ],
+  "24": [
+   "268c6c5ccc5dffc4",
+   "4c9b8cab9aae2ba4",
+   "7f4f557ec33d335c",
+   "8639845828f85896",
+   "b8fb9cd7dbe37aa9",
+   "bd1d52ffa2bcfa5e",
+   "c366b51d0ea7a76b",
+   "cf4888c1f6f8fd71",
+   "d557ac4b5b5609cf",
+   "dd5c5877d1ee68d9",
+   "eb6037fc193c5c65",
+   "ec8594a9549ff31e"
+  ],
+  "32": [
+   "82e7480538204e00",
+   "bafe728596bad0aa",
+   "bcd88ae38e33812d"
+  ],
+  "48": [
+   "2e5a9a0a361a9c02",
+   "2ecacb063a07db62",
+   "3ba80fa375cb0f86",
+   "58a193c971ba0793",
+   "bf8ce8d9b5155ad9",
+   "ef6f0fa92ca5bce7"
+  ]
+ }
+}

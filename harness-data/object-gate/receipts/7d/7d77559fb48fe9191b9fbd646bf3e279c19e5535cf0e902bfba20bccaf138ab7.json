@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7d77559fb48fe9191b9fbd646bf3e279c19e5535cf0e902bfba20bccaf138ab7",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "투약 카트",
+ "label": "jp_city/interior_hospital/hs-med-cart",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "medication cart with drawers and top tray",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top tray surface of the cart is clearly visible from rows 3 to 10 (8 rows tall) with pills and a bottle resting on it, looking down into the cart top, while the front face shows three drawers from rows 12 to 27.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3791
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "medication cart with drawers and top tray",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top tray surface is clearly visible from above across rows 3-10 (approx. 8 rows) containing pills and a bottle, atop a south-facing drawer cabinet.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3573
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "medical cart",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top tray surface of the cart spans rows 3 to 11 (9 rows tall) displaying medicine pills and a bottle seen from above, atop the front face with drawers (rows 12 to 26).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3355
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "medication cart with drawers",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top tray surface of the cart is clearly visible from above across rows 2-11 (approx. 9-10 rows deep) displaying pills and a bottle, while the front face with drawers extends from row 12 downward.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3099
+  }
+ ],
+ "decidedAt": "2026-10-14T06:16:49.340Z",
+ "cells": {
+  "16": [
+   "47f4d952b8b19601",
+   "9dcaedc85e1c979a"
+  ],
+  "24": [
+   "142d6be9df346af6",
+   "2aa97bc28d1f195b",
+   "2e7d98d4a58b86ae",
+   "323b8e07ac73269e",
+   "336ce022e66f0fbb",
+   "3795379460b35f12",
+   "4442542f850cb0f2",
+   "7d905a918a8b3113",
+   "8cde21b8895fbbf3",
+   "d49fef2597d93c1a",
+   "e5547b9c4c192d63",
+   "fa34a22e544b9174"
+  ],
+  "32": [
+   "31424ed0d6b0f4bb",
+   "6d57c337f287108e",
+   "bf27cbb40723561f"
+  ],
+  "48": [
+   "074b4ca1dce0ff7c",
+   "62db4e61b612bc69",
+   "99c8f32686450ddd",
+   "affcf00362cf3afc",
+   "bf8b857b1d9148e1",
+   "d973458856322094"
+  ]
+ }
+}

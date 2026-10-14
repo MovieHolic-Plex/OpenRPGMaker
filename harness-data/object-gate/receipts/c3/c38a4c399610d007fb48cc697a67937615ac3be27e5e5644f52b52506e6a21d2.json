@@ -7,62 +7,87 @@
  "name": "스탠딩 높은 탁자",
  "label": "jp_city/interior_office2/ox-standing-table",
  "profileHash": "ca6aaa9c55194dc5",
- "verdict": "fail",
- "reasons": [
-  "판정자 답을 읽지 못함",
-  "종류 불일치",
-  "판정자 과반 fail",
-  "정면 입면도",
-  "옆면(아이소)",
-  "윗면 -1행 < 3"
- ],
+ "verdict": "pass",
+ "reasons": [],
  "runs": [
   {
    "judge": "gemini",
    "run": 1,
-   "answer": null,
-   "pass": false,
-   "reasons": [
-    "판정자 호출 실패"
-   ],
-   "ms": 474,
-   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h24m50s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/googl"
+   "answer": {
+    "main_body": "standing desk / high table with items on the surface",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from above across rows 2–11 (~10 source pixel rows), displaying objects resting on it (laptop/terminal, papers/books, mug) with a shaded front bevel and apron at rows 12–13 above the vertical legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12134
   },
   {
    "judge": "gemini",
    "run": 2,
-   "answer": null,
-   "pass": false,
-   "reasons": [
-    "판정자 호출 실패"
-   ],
-   "ms": 1208,
-   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h24m49s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/googl"
+   "answer": {
+    "main_body": "standing desk / tall table with tabletop, lower shelf, and two legs on base feet",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is viewed from above across rows 2–11 (~10 rows tall), displaying items placed upon it (documents, device, mug/control). Below it, the front edge lip (row 12), legs, lower shelf (rows 23–24), and base feet tops (rows 28–29) are correctly rendered in standard top-down 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8636
   },
   {
    "judge": "gemini",
    "run": 3,
-   "answer": null,
+   "answer": {
+    "main_body": "standing desk / drafting table",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire standing table (feet, legs, crossbar, and main panel/tabletop) is drawn in a flat 2D front elevation suitable for a side-scroller rather than a 3/4 top-down perspective. No foreshortened top surface is visible on the horizontal planes.",
+    "verdict": "fail"
+   },
    "pass": false,
    "reasons": [
-    "판정자 호출 실패"
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
    ],
-   "ms": 3236,
-   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h24m47s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/googl"
+   "ms": 12371
   },
   {
    "judge": "gemini",
    "run": 4,
-   "answer": null,
-   "pass": false,
-   "reasons": [
-    "판정자 호출 실패"
-   ],
-   "ms": 1021,
-   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h24m49s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/googl"
+   "answer": {
+    "main_body": "standing desk / tall work table",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from above across rows 2-11 (10 source pixels tall) with various items (papers/notebooks, terminal/device, mug) resting on top of it, terminating in a front rim and skirt at rows 12-13 above the support legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9785
   }
  ],
- "decidedAt": "2026-10-14T01:42:05.786Z",
+ "decidedAt": "2026-10-14T06:02:44.919Z",
  "cells": {
   "16": [
    "187de0e116a897fe",

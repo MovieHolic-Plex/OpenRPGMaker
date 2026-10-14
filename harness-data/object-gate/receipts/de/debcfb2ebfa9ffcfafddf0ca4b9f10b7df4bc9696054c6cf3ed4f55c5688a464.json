@@ -1,0 +1,125 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "debcfb2ebfa9ffcfafddf0ca4b9f10b7df4bc9696054c6cf3ed4f55c5688a464",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "생체 정보 모니터 스탠드",
+ "label": "jp_city/interior_hospital/hs-vitals-monitor",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "monitor housing and stand",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the monitor housing is clearly visible across rows 3-7 (5 pixel rows tall) featuring a recessed top handle and indicator, leading to a front edge highlight at row 8 above the vertical front screen face. The rolling base also shows correct foreshortened legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6567
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "monitor unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The monitor unit (rows 2-21) is drawn in pure front elevation with only a 1px outline at row 2 where the top surface should be. The light-colored section above the screen (rows 3-7) is a front-facing upper control/panel section with front-facing controls and rounded upper corners, showing no foreshortened top depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 25419
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vital signs monitor on a mobile stand",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the monitor casing is clearly foreshortened and visible across rows 3-8 (showing the recessed top handle and indicator), positioned above the front-facing screen (rows 10-20). The accessory basket and caster base are also correctly drawn in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10713
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "monitor unit on wheeled stand",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the monitor casing is foreshortened and clearly visible across rows 3–7 (5 rows deep), featuring a recessed handle slot and an alarm indicator, separated by a distinct edge highlight from the vertical front screen face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 18804
+  }
+ ],
+ "decidedAt": "2026-10-14T06:16:49.339Z",
+ "cells": {
+  "16": [
+   "3b6f0cf9eeef7c9c",
+   "928699703617799b",
+   "cf8c0c815056d300"
+  ],
+  "24": [
+   "27466e4b40c7b09f",
+   "460cec929653e229",
+   "7f5a4fa228fb6226",
+   "bb6ef97a8680511a",
+   "c39f4c802a92edab",
+   "e780da1ff0e2bf7a"
+  ],
+  "32": [
+   "3bb299667d38b5e2",
+   "47a5685e8f57a8d6",
+   "59c6c6f558e6e847",
+   "7fd51709e398bc8f",
+   "9711dd89c36aa069",
+   "bb1592b06233c724",
+   "bdd3e16d024fb6c0",
+   "c69def1e2d5a71c3",
+   "d7719e70b3c2cefe",
+   "d7babb8a268e7bae",
+   "ddc6594242d62101",
+   "ea7e712c1c4b6c46"
+  ],
+  "48": [
+   "0c10048eaae2f8e6",
+   "8ef185655120a070",
+   "959acd21355799dd"
+  ]
+ }
+}

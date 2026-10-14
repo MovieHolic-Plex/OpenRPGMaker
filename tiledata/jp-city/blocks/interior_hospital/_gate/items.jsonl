@@ -10,8 +10,6 @@
 {"png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/interior_hospital/_gate/hs-bench-row-s.png", "kind": "seat", "name": "대기실 연결 의자(3석·남향)", "label": "jp_city/interior_hospital/hs-bench-row-s"}
 {"png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/interior_hospital/_gate/hs-bench-row-n.png", "kind": "seat", "name": "대기실 연결 의자(3석·북향)", "label": "jp_city/interior_hospital/hs-bench-row-n"}
 {"png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/interior_hospital/_gate/hs-front-counter.png", "kind": "low_furniture", "name": "종합 접수대(総合受付)", "label": "jp_city/interior_hospital/hs-front-counter"}
-{"png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/interior_hospital/_gate/hs-reception-kiosk.png", "kind": "column", "name": "재진 접수기(再来受付機)", "label": "jp_city/interior_hospital/hs-reception-kiosk"}
-{"png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/interior_hospital/_gate/hs-pay-machine.png", "kind": "tall_furniture", "name": "자동 정산기(自動精算機)", "label": "jp_city/interior_hospital/hs-pay-machine"}
 {"png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/interior_hospital/_gate/hs-call-display.png", "kind": "wall_mounted", "name": "진료 호출 화면", "label": "jp_city/interior_hospital/hs-call-display"}
 {"png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/interior_hospital/_gate/hs-tv-wall.png", "kind": "wall_mounted", "name": "벽걸이 TV(대기실)", "label": "jp_city/interior_hospital/hs-tv-wall"}
 {"png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/interior_hospital/_gate/hs-kids-mat.png", "kind": "flat", "name": "키즈 코너 퍼즐 매트", "label": "jp_city/interior_hospital/hs-kids-mat"}
@@ -23,10 +21,8 @@
 {"png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/interior_hospital/_gate/hs-vitals-monitor.png", "kind": "column", "name": "생체 정보 모니터 스탠드", "label": "jp_city/interior_hospital/hs-vitals-monitor"}
 {"png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/interior_hospital/_gate/hs-xray-viewer.png", "kind": "wall_mounted", "name": "판독용 라이트 박스", "label": "jp_city/interior_hospital/hs-xray-viewer"}
 {"png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/interior_hospital/_gate/hs-instrument-cart.png", "kind": "low_furniture", "name": "스테인리스 기구 카트(2단)", "label": "jp_city/interior_hospital/hs-instrument-cart"}
-{"png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/interior_hospital/_gate/hs-folding-screen.png", "kind": "frame", "name": "흰 천 3폭 칸막이", "label": "jp_city/interior_hospital/hs-folding-screen"}
 {"png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/interior_hospital/_gate/hs-sharps-bin.png", "kind": "box", "name": "의료 폐기물 통(노랑)", "label": "jp_city/interior_hospital/hs-sharps-bin"}
 {"png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/interior_hospital/_gate/hs-bed-headwall.png", "kind": "wall_mounted", "name": "침대 머리맡 벽 단자 띠", "label": "jp_city/interior_hospital/hs-bed-headwall"}
-{"png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/interior_hospital/_gate/hs-curtain-wide.png", "kind": "other", "name": "병상 칸막이 커튼", "label": "jp_city/interior_hospital/hs-curtain-wide"}
 {"png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/interior_hospital/_gate/hs-patient-locker.png", "kind": "tall_furniture", "name": "환자용 로커", "label": "jp_city/interior_hospital/hs-patient-locker"}
 {"png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/interior_hospital/_gate/hs-nurse-counter.png", "kind": "low_furniture", "name": "간호사 대기소 카운터", "label": "jp_city/interior_hospital/hs-nurse-counter"}
 {"png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/interior_hospital/_gate/hs-chart-cart.png", "kind": "low_furniture", "name": "전자 차트 카트", "label": "jp_city/interior_hospital/hs-chart-cart"}
@@ -34,5 +30,4 @@
 {"png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/interior_hospital/_gate/hs-stretcher.png", "kind": "low_furniture", "name": "이송용 침대(스트레처)", "label": "jp_city/interior_hospital/hs-stretcher"}
 {"png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/interior_hospital/_gate/hs-drug-drawers.png", "kind": "tall_furniture", "name": "약품 서랍장(유리장 겸)", "label": "jp_city/interior_hospital/hs-drug-drawers"}
 {"png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/interior_hospital/_gate/hs-dispense-table.png", "kind": "low_furniture", "name": "조제대", "label": "jp_city/interior_hospital/hs-dispense-table"}
-{"png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/interior_hospital/_gate/hs-med-fridge.png", "kind": "tall_furniture", "name": "약품 냉장고(유리문)", "label": "jp_city/interior_hospital/hs-med-fridge"}
 {"png": "/home/main/z-project/rpg-zzu-jp-interiors/tiledata/jp-city/blocks/interior_hospital/_gate/hs-pickup-window.png", "kind": "low_furniture", "name": "투약 창구", "label": "jp_city/interior_hospital/hs-pickup-window"}

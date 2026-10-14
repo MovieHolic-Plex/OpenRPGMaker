@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "211b8def95084ca63d70f55e7395fe97d4f3b119064a669da7ffcc37e0eec54e",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "재진 접수기(再来受付機)",
+ "label": "jp_city/interior_hospital/hs-reception-kiosk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "kiosk unit and pillar stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire reception kiosk is drawn in pure front elevation with a 1-pixel outline at row 4 and no visible top surface on either the upper unit or the base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6476
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "kiosk terminal on pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire check-in kiosk (screen housing, pole, and base) is drawn in pure front elevation with only a 1px outline at row 5 and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5705
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "kiosk head and pillar stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The check-in kiosk is drawn as a flat 2D front elevation with only a 1px outline at row 4 where the top surface should be; no horizontal top face is shown for the kiosk unit or its base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3598
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "kiosk terminal unit and stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The check-in kiosk is drawn entirely flat from the front with only a 1px outline at row 4; no foreshortened top surface is visible on the upper machine body or base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4379
+  }
+ ],
+ "decidedAt": "2026-10-14T06:02:44.915Z",
+ "cells": {
+  "16": [
+   "70132e4ed9942090",
+   "d11451e60e932a22",
+   "e06a45c1bbcf3b2d"
+  ],
+  "24": [
+   "272225c85cb313ea",
+   "80fa705dafa7c12c",
+   "945140c5fbd7376e",
+   "985d33d2ed08ade3",
+   "cda9e796e68562da",
+   "d7b93bc59dacb449"
+  ],
+  "32": [
+   "3968000ea791ea30",
+   "5c257227c7c702ed",
+   "62c33b252e32c2f9",
+   "75fe19fa5c5b515b",
+   "7efe1afeff8b03e1",
+   "844366d4d6736420",
+   "b3fd3d14235fc0bb",
+   "bdf898d79615317c",
+   "c5c7759a437340de",
+   "d5ff40ca17450a48",
+   "dc2e887a094cbdf9",
+   "ff5bbca3833afe08"
+  ],
+  "48": [
+   "af24099526a7a907",
+   "b5003b7fc38efde6",
+   "d57619274bc7d2e2"
+  ]
+ }
+}

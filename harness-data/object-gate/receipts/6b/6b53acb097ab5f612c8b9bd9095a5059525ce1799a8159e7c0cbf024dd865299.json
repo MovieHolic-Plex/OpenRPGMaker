@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6b53acb097ab5f612c8b9bd9095a5059525ce1799a8159e7c0cbf024dd865299",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "방문자 접수 태블릿 받침",
+ "label": "jp_city/interior_office2/ox-visitor-kiosk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tablet screen on stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tablet screen at rows 1-12 is drawn facing directly forward as a flat front elevation without any top surface visible (only a 1px border outline at row 1).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4059
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tablet screen on stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tablet at the top (rows 1-12) is rendered in a completely flat front elevation with only a 1px outline along the top edge, showing no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3345
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tablet screen and housing",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (the tablet monitor at the top) is drawn in pure front elevation as a flat rectangle with no foreshortened top surface visible (only a 1px border outline at row 1). Although the base plinth shows an elliptical top, the main body does not.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4301
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tablet screen on a stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tablet at the top (rows 1-12) is rendered as a flat, upright rectangle viewed straight-on with only a 1px outline along row 1, showing no foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6838
+  }
+ ],
+ "decidedAt": "2026-10-14T06:16:49.342Z",
+ "cells": {
+  "16": [
+   "1d5972da4475987c",
+   "a933b5ccd6355ed8"
+  ],
+  "24": [
+   "16f279f09130fd30",
+   "27842f45eb8429f6",
+   "2d9160eff1678ecb",
+   "49c0dd349791d9bf",
+   "5e78babaa5ac11e4",
+   "6614c6fa9a5cc1a5",
+   "6c19adada4d7ae56",
+   "9b2cc46b21aa5893",
+   "b02e4280f217847f",
+   "c9e103782a79e002",
+   "cca939672336f87a",
+   "e36cd7579e7e23ae"
+  ],
+  "32": [
+   "558be7a00974119c",
+   "7cf26865b53a58ba",
+   "845104ab94deba84"
+  ],
+  "48": [
+   "0602f0ae32c7ec6c",
+   "4db46476f018ba8a",
+   "7d57ccff33661afb",
+   "7de7b9ee43d7afca",
+   "a0238fbf4d7f3943",
+   "e60cc4afc6a0b82e"
+  ]
+ }
+}

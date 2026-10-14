@@ -202,6 +202,9 @@ CATEGORIES = [
     # (사무실 보강 끝)
 ]
 
+from gate_hold import HOLD   # noqa: E402 — 3/4 관문 불합격으로 번들에서 뺀 조각
+CATEGORIES = [(_c, _k, [_i for _i in _ids if _i not in HOLD]) for _c, _k, _ids in CATEGORIES]
+
 BY_ID = {}
 for _cat, _ko, _ids in CATEGORIES:
     for _id in _ids:

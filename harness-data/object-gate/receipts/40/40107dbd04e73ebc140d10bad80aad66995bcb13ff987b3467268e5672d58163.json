@@ -1,0 +1,127 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "40107dbd04e73ebc140d10bad80aad66995bcb13ff987b3467268e5672d58163",
+ "width": 48,
+ "height": 32,
+ "kind": "seat",
+ "name": "대기실 연결 의자(3석·북향)",
+ "label": "jp_city/interior_hospital/hs-bench-row-n",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "waiting room connected chairs (3 seats)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chairs are drawn in pure flat elevation (side-scroller style). Whether interpreted as a rear view (north-facing) or front view, the backrests and seats show only flat vertical faces with a 1px outline across the top and no foreshortened horizontal top surfaces visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 15533
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "waiting room connected chairs (3 seats, north-facing)",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The north-facing chair shows its seat surfaces from above across rows 5–14 (10 pixel rows deep), extending behind the low foreground backrests (rows 16–22) and support beam.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 41368
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "대기실 연결 의자 (3석)",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The linked seats show clear horizontal surfaces viewed from above (rows 5-13 measuring ~9 source pixels tall, along with horizontal tiered surfaces at rows 15-18) resting on a south-facing frame and legs, correctly conforming to the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14520
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "waiting room bench (3 connected seats)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chairs and frame are drawn entirely in flat 2D elevation with no visible horizontal top surfaces. Neither the seat surface nor the top edge of the backrest or frame shows any top-down depth (0 rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14477
+  }
+ ],
+ "decidedAt": "2026-10-14T06:16:49.339Z",
+ "cells": {
+  "16": [
+   "1ca39789c9131db9",
+   "1e00c78d9483d06f",
+   "4d7b3850bd22d373",
+   "5d81bc5078cc6cfc",
+   "8c6609e556944440",
+   "aa7b02ddc772bcc6"
+  ],
+  "24": [
+   "0110e5ce35063cf3",
+   "50bd18937277cb42",
+   "8852a459a978a3ca",
+   "a974ebda04d496af",
+   "c13cf343f0e6ec3b",
+   "ca2cb08fb2993c82",
+   "dec05a3caf4a056c",
+   "e85c3174bbf70d74"
+  ],
+  "32": [
+   "097ce4610998b24b",
+   "3c887b8df2e59398",
+   "78fd1cb0569300bf",
+   "9daa5feccac6f52d",
+   "9f6e28da0c8869b9",
+   "c00b40ff80bf6d80"
+  ],
+  "48": [
+   "0c386fb6caaf4995",
+   "db3bfcf4902aa425"
+  ]
+ }
+}

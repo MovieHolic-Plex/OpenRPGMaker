@@ -168,7 +168,7 @@ const FACILITY_NOTE: Record<JpFacility, { ko: string; programs: string; rooms: s
     rooms: "classroom·corridor·shoegenkan·staffroom·infirmary·musicroom·library·sciencelab·schooltoilet·rooftop·bandroom·printroom·annexcorridor",
     floor: "교실 sc-classroom-wood, 복도 sc-corridor, 현관 sc-genkan-tile, 벽 sc-wall" },
   office: { ko: "일본 사무 빌딩 실내",
-    programs: "사무층(자유석·책상 섬·회의실·급탕실·엘리베이터 홀) → {program:\"office-floor\"}; 1층 로비·접수·엘리베이터 홀 → {program:\"office-1f\"}; IT 회사·스타트업 자유석 층(1인 부스·스탠딩 회의·라운지) → {program:\"office-free\"}, 그 1층(경비 데스크·방문자 접수) → {program:\"office-tower-1f\"}",
+    programs: "사무층(자유석·책상 섬·회의실·급탕실·엘리베이터 홀) → {program:\"office-floor\"}; 1층 로비·접수·엘리베이터 홀 → {program:\"office-1f\"}; IT 회사·스타트업 자유석 층(긴 책상 섬·스탠딩 회의·라운지) → {program:\"office-free\"}, 그 1층(경비 데스크·방문자 접수) → {program:\"office-tower-1f\"}",
     rooms: "openoffice·freeoffice·meetingroom·pantry·elevatorhall·lobby·towerlobby·stairwell",
     floor: "사무 of-carpet-tile, 로비 of-lobby-stone, 급탕실 of-pantry-tile, 벽 of-wall" },
   hospital: { ko: "일본 병원 실내",

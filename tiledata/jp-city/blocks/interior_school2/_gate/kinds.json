@@ -4,19 +4,12 @@
 "sx-trophy-case": "tall_furniture",
 "sx-art-display": "low_furniture",
 "sx-umbrella-rack": "frame",
-"sx-recycle-bins": "box",
 "sx-pa-speaker": "wall_mounted",
 "sx-class-plate": "wall_mounted",
 "sx-hall-bench": "seat",
 "sx-mop-bucket": "container",
-"sx-letter-shelf": "tall_furniture",
-"sx-riso-printer": "low_furniture",
 "sx-timpani": "round_body",
 "sx-drum-kit": "round_body",
 "sx-xylophone": "frame",
-"sx-book-cart": "low_furniture",
-"sx-newspaper-rack": "tall_furniture",
-"sx-roof-bench": "seat",
-"sx-roof-vent": "round_body",
-"sx-roof-ac-big": "box"
+"sx-roof-bench": "seat"
 }

@@ -140,8 +140,13 @@
    "y": 1
   },
   {
-   "id": "sx-letter-shelf",
+   "id": "of-cabinet",
    "x": 13,
+   "y": 3
+  },
+  {
+   "id": "of-cabinet",
+   "x": 14,
    "y": 3
   },
   {
@@ -155,7 +160,7 @@
    "y": 3
   },
   {
-   "id": "sx-riso-printer",
+   "id": "of-copier",
    "x": 14,
    "y": 6
   },
@@ -175,7 +180,7 @@
    "y": 8
   },
   {
-   "id": "sx-recycle-bins",
+   "id": "ox-trash-column",
    "x": 17,
    "y": 8
   },
@@ -245,7 +250,7 @@
    "y": 14
   },
   {
-   "id": "sx-recycle-bins",
+   "id": "ox-trash-column",
    "x": 5,
    "y": 14
   },

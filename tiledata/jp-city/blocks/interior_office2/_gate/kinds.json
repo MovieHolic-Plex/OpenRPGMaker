@@ -1,7 +1,5 @@
 {
-"ox-phone-booth": "tall_furniture",
 "ox-projector-screen": "wall_mounted",
-"ox-display-stand": "tall_furniture",
 "ox-standing-table": "low_furniture",
 "ox-bar-stool": "seat",
 "ox-bench-desk": "low_furniture",
@@ -13,8 +11,5 @@
 "ox-coffee-counter": "low_furniture",
 "ox-water-boiler": "wall_mounted",
 "ox-security-desk": "low_furniture",
-"ox-trash-column": "round_body",
-"ox-umbrella-bagger": "column",
-"ox-floor-guide": "column",
-"ox-visitor-kiosk": "column"
+"ox-trash-column": "round_body"
 }

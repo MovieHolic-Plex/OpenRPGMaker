@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6fa464f5fc0ad1cd6c458e731ff687dc147c58297516e42f0dd5cb88ba523048",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "병실 협탁(床頭台·작은 TV)",
+ "label": "jp_city/interior_hospital/hs-bedside-cabinet",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hospital bedside cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (bedside cabinet) is rendered in a pure front elevation with no visible top surface foreshortened into depth (0 px); only the flat front face with drawers and cabinet door is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6461
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hospital bedside cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main cabinet body (rows 10-31) has no visible top surface whatsoever; it begins immediately with a 1px border and flat front face, drawn in pure front elevation. Only the small TV perched on top has a top surface, which cannot substitute for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6173
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hospital bedside cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main cabinet body (rows 10-31) has no visible top surface foreshortened from above; it is drawn straight-on in pure front elevation with drawers and front panel facing directly at the camera.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6246
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hospital bedside cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is the large bedside cabinet (rows 10-31), which has no visible top surface foreshortened from above (only a 1px outline at row 10). The entire cabinet is drawn as a flat front elevation; having top shading only on the small TV does not count.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6212
+  }
+ ],
+ "decidedAt": "2026-10-14T06:02:44.914Z",
+ "cells": {
+  "16": [
+   "46ba49b9df9be483",
+   "7dd8078926fcd9ff"
+  ],
+  "24": [
+   "10c661b01563ce47",
+   "120d28f766af2c60",
+   "23356f6b16148d63",
+   "27392dc71b448146",
+   "706f335436fe5258",
+   "7d4746f02192acf0",
+   "7de0ea638ccea44b",
+   "8d231aac1e959fe3",
+   "a4ef1c29228cf278",
+   "a850ab5b31dcf9e1",
+   "d5a8ed92e8c11048",
+   "d5c0e81b828cbb78"
+  ],
+  "32": [
+   "53656ab2b5cb16ea",
+   "895d71707ac1057f",
+   "9e67e4139aa72deb"
+  ],
+  "48": [
+   "003d1b3ba4ee260a",
+   "7caa3377545d2dba",
+   "8ee95a6275996e8d",
+   "a45d30443372bd74",
+   "aa0bc7fb2d4afaf7",
+   "f4bb52a4745ffcd3"
+  ]
+ }
+}

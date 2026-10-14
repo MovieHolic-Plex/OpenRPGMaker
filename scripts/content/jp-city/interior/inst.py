@@ -55,6 +55,12 @@ class Inst:
             return fn
         return deco
 
+    def hold(self):
+        """gate_hold.HOLD 의 조각(3/4 관문 불합격)을 이 블록의 굽기에서 뺀다 — 그림 함수는 남는다."""
+        from gate_hold import HOLD
+        for i in [i for i in self.R.objs if i in HOLD]:
+            self.R.objs.pop(i); self.gate.pop(i, None)
+
     def floor(self, id_, ko, cols=4, rows=4, **kw):
         def deco(fn):
             self.R.floor(id_, ko, cols=cols, rows=rows, **kw)(_paint(fn)); self.gate[id_] = 'terrain'; return fn
@@ -201,3 +207,47 @@ def wip_sheet(items, path, scale=3, W=720, label=True):
     im = Image.fromarray(sheet, 'RGBA').resize((W * scale, (y + rowh + 6) * scale), Image.NEAREST)
     im.save(path)
     return [(i, x0 * scale, y0 * scale, a.shape[1] * scale, a.shape[0] * scale) for (x0, y0, a, i) in place]
+
+
+def box34(c, x, y, w, h, top, tm, tt, fm, ft, edge=('shiro', 4), lid=True, ov=1):
+    """3/4 탑뷰 상자(관문 통과형, 2026-10-14): 위에서 본 윗판이 앞면과 «다른 밝기·결»로 읽히게.
+    - 윗판은 몸통보다 양옆 ov 칸 넓은 상판(앞으로 내민 판 — 위에서 본 슬래브라는 가장 센 표지). 캔버스 밖이면 줄인다.
+    - 뒤 모서리 두 귀를 깎아 둥글린 sumi 윤곽, 뒤 가장자리는 판 색 한 단 아래.
+    - 윗판 top 행: tm tt 바탕 + (lid) 안쪽 뚜껑 테.
+    - 앞 모서리: edge 밝은 반사 1행 → 바로 밑 앞면 위로 떨어지는 그늘 1행(fm 두 단 아래).
+    - 앞면 fm ft: 왼 빛·오른 그늘·바닥 접지. 앞면 첫 행 y+top+1 을 돌려준다."""
+    nt = NT[MI[tm]]; nf = NT[MI[fm]]
+    ov = max(0, min(ov, x, c.w - (x + w)))
+    tx, tw = x - ov, w + 2 * ov
+    # 몸통(앞면)
+    c.R(x, y + top, w, h - top, fm, ft)
+    c.HL(x, y + top, w, fm, max(0, ft - 2))                                           # 판 밑 그늘
+    c.VL(x + 1, y + top + 1, h - top - 3, fm, min(nf - 1, ft + 1)); c.VL(x + w - 2, y + top + 1, h - top - 3, fm, max(0, ft - 1))
+    c.HL(x, y + h - 2, w, fm, max(0, ft - 1))
+    c.HL(x, y + h - 1, w, 'sumi', 0); c.VL(x, y + top, h - top, 'sumi', 1); c.VL(x + w - 1, y + top, h - top, 'sumi', 1)
+    # 상판
+    c.R(tx, y, tw, top, tm, tt)
+    c.HL(tx + 1, y + 1, tw - 2, tm, max(0, tt - 1))
+    c.VL(tx + 1, y + 2, top - 3, tm, min(nt - 1, tt + 1))
+    if lid and tw >= 8 and top >= 6:
+        c.HL(tx + 3, y + 3, tw - 6, tm, max(0, tt - 1)); c.VL(tx + 3, y + 3, top - 5, tm, max(0, tt - 1))
+        c.HL(tx + 3, y + top - 3, tw - 6, tm, min(nt - 1, tt + 1)); c.VL(tx + tw - 4, y + 3, top - 5, tm, min(nt - 1, tt + 1))
+    c.HL(tx + 1, y + top - 1, tw - 2, *edge)                                          # 앞 모서리 반사
+    c.HL(tx + 1, y, tw - 2, 'sumi', 1); c.VL(tx, y + 1, top, 'sumi', 1); c.VL(tx + tw - 1, y + 1, top, 'sumi', 1)
+    if ov: c.HL(tx, y + top, ov, 'sumi', 1); c.HL(x + w, y + top, ov, 'sumi', 1)     # 내민 판 밑면
+    c.P(tx, y, None, 0); c.P(tx + tw - 1, y, None, 0)                                 # 뒤 귀 둥글림
+    return y + top + 1
+
+
+def slab34(c, x, y, w, n, mat, t, edge=('shiro', 4), under=('yoru', 1)):
+    """위에서 본 상판만(box34 의 윗판 부분): 뒤 귀 둥글린 윤곽, 뒤 가장자리 한 단 아래, 왼 빛, 앞 모서리 반사, 판 밑 그늘 1행(y+n).
+    몸통은 호출자가 그 아래(보통 양옆 1칸 안쪽)에 그린다."""
+    nt = NT[MI[mat]]
+    c.R(x, y, w, n, mat, t)
+    c.HL(x + 1, y + 1, w - 2, mat, max(0, t - 1))
+    c.VL(x + 1, y + 2, n - 3, mat, min(nt - 1, t + 1))
+    c.HL(x + 1, y + n - 1, w - 2, *edge)
+    c.HL(x + 1, y, w - 2, 'sumi', 1); c.VL(x, y + 1, n, 'sumi', 1); c.VL(x + w - 1, y + 1, n, 'sumi', 1)
+    c.HL(x + 1, y + n, w - 2, *under)
+    c.P(x, y, None, 0); c.P(x + w - 1, y, None, 0)
+    return y + n + 1

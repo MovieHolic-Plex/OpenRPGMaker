@@ -72,17 +72,17 @@
    "y": 1
   },
   {
-   "id": "ox-phone-booth",
+   "id": "of-cabinet",
    "x": 1,
    "y": 3
   },
   {
-   "id": "ox-phone-booth",
+   "id": "of-cabinet",
    "x": 2,
    "y": 3
   },
   {
-   "id": "ox-phone-booth",
+   "id": "of-plant-big",
    "x": 3,
    "y": 3
   },
@@ -117,7 +117,7 @@
    "y": 3
   },
   {
-   "id": "ox-display-stand",
+   "id": "of-plant-big",
    "x": 20,
    "y": 3
   },
@@ -362,12 +362,12 @@
    "y": 14
   },
   {
-   "id": "ox-floor-guide",
+   "id": "houseplant",
    "x": 18,
    "y": 17
   },
   {
-   "id": "ox-visitor-kiosk",
+   "id": "hs-sanitizer-stand",
    "x": 14,
    "y": 17
   }

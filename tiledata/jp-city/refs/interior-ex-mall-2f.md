@@ -1,8 +1,8 @@
 # 일본 도시 — 일본 실내 예제: 쇼핑몰 2층 — 푸드코트·영화관 입구·에스컬레이터 (`jp-city-mall-2f`, 24×14)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **15940칸**, 16px 칸, 시트 1536×2672px, 한 줄 **96칸** — 번호 n 의 칸은 열 n%96, 행 n÷96(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **15882칸**, 16px 칸, 시트 1536×2656px, 한 줄 **96칸** — 번호 n 의 칸은 열 n%96, 행 n÷96(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
-입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-mall-2f`. 도구 결과: 손 도트 실내 '쇼핑몰 2층 — 푸드코트·영화관 입구·에스컬레이터' 24×14 (jp-city-mall-2f, jp_city) — 출입구에서 닿는 칸 118, 닿지 못한 빈 바닥 0, 경고 0
+입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-mall-2f`. 도구 결과: 바깥(jp-city-mall-1f)으로 나가는 문 jp-city-mall-2f-link-0(20,4) 이 있는데 평면 가장자리에 출입구 틈이 없다 — plan 맨 아래 줄의 '#' 하나를 '.' 로 비워 문을 낸다(그 칸이 출구가 된다)
 
 ## 입력
 ```json
@@ -15,12 +15,7 @@ tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스
 | foodcourt | (0,0)-(23,13) |
 
 ## 이동
-| 이벤트 | 칸 | 이동 |
-|---|---|---|
-| jp-city-mall-2f-link-0 | (20,4) | jp-city-mall-1f (20,9) |
-| jp-city-mall-2f-link-1 | (21,4) | jp-city-mall-1f (21,9) |
-| jp-city-mall-2f-link-2 | (13,3) | jp-city-cinema (1,4) |
-| jp-city-mall-2f-link-3 | (14,3) | jp-city-cinema (2,4) |
+(이동 이벤트 없음 — 현관 밖은 거리 맵에 붙일 때 단다)
 
 ## 통행(엔진 `isPassable`, `X` 막힘 · `.` 걸음)
 ```

@@ -215,7 +215,7 @@
    "y": 6
   },
   {
-   "id": "hs-folding-screen",
+   "id": "hs-wheelchair",
    "x": 13,
    "y": 6
   },
@@ -245,7 +245,7 @@
    "y": 3
   },
   {
-   "id": "hs-med-fridge",
+   "id": "of-fridge-small",
    "x": 24,
    "y": 3
   },
@@ -350,12 +350,12 @@
    "y": 14
   },
   {
-   "id": "hs-pay-machine",
+   "id": "hs-wheelchair",
    "x": 8,
    "y": 12
   },
   {
-   "id": "hs-reception-kiosk",
+   "id": "houseplant",
    "x": 9,
    "y": 12
   },
@@ -440,7 +440,7 @@
    "y": 18
   },
   {
-   "id": "ox-umbrella-bagger",
+   "id": "houseplant",
    "x": 13,
    "y": 17
   },
