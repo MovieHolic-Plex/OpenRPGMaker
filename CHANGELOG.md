@@ -5,6 +5,20 @@
 
 <!-- releases -->
 
+## 0.212.0 — 2026-10-14
+
+### 기능
+
+- **ai** — assistant default = Google Gemini 4 Argon medium (all roles); recommended provider is Google (#2535) (`398e2b3`)
+- **monster-kit** — rooms m17 — 3/4-gate fixes (lab chair, museum tank, ship bollard); object-gate receipts 48/48 PASS (`05974b8`)
+- **beodeul-farm** — 2판 hand-pixel redraw — farmland/watered soil, crops, chunky fences + gate, barn, coop; watered art at runtime (#2534) (`70abc71`)
+- **monster-art** — GBA redraw of rooms-sheet labs/school/museum/dept/ship + rebake gyms (mint turf, lumpy hedge trees) (`d64e70c`)
+- **monster-art** — code-pixel title key art for meadow/desert/snow; GBA lumpy-crown gym hedge trees (`b68c4b3`)
+
+### 수정
+
+- **monster-art** — title QA pass — aurora ribbons, fox ground shadow, scarab legs (`65c8536`)
+
 ## 0.211.0 — 2026-10-14
 
 ### 기능
