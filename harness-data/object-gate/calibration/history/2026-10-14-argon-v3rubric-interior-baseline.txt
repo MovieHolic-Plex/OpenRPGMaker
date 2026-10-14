@@ -1,0 +1,70 @@
+위반  FAIL  tall_furniture interior/cake_display_case__w8-C         e2ed444584bf  판정자 과반 fail · 정면 입면도 · 윗면 0행 < 3
+위반  PASS  round_body     interior/chopping_block__v5              012b90c21dfa  
+위반  PASS  box            interior/altar_E__w21-G                  5b24c8f8c184  
+위반  PASS  seat           interior/pew__v5                         bf804381e68f  
+위반  PASS  seat           interior/pew_E2__w45-A                   de06f37c00dc  
+위반  PASS  seat           interior/pew_E3__w45-A                   99e5f875c971  
+위반  FAIL  tall_furniture interior/pulpit__w32-A                   0acb45cd528b  판정자 과반 fail · 정면 입면도 · 윗면 0행 < 3
+위반  FAIL  low_furniture  interior/votive_stand__v5                80661d0fd369  판정자 과반 fail · 정면 입면도 · 윗면 1행 < 3
+위반  PASS  box            interior/coffin__w73-A                   e42885bcb82a  
+위반  PASS  column         interior/column_dwarf__w51-A             efe4345b4d32  
+위반  FAIL  column         interior/column_marble__w51-A            ee0f01781bf3  윗면 1.5행 < 3
+위반  FAIL  column         interior/column_steel__w51-A             607ee85527d6  윗면 1.5행 < 3
+위반  PASS  column         interior/column_stone__w51-A             3497f50fb146  
+위반  PASS  column         interior/column_wood__w51-A              7bfbe652a3dc  
+위반  FAIL  seat           interior/armchair__w9-B                  01a911a3eb56  윗면 2행 < 3
+위반  PASS  round_body     interior/barrel__w2-A                    29b19d181c31  
+위반  FAIL  seat           interior/chair_E__v5                     d97103df8569  판정자 과반 fail · 정면 입면도 · 윗면 2행 < 3
+위반  PASS  seat           interior/chair_N__v5                     0ae0255caaf5  
+위반  PASS  seat           interior/chair_S__v5                     860646bc3230  
+위반  FAIL  seat           interior/chair_W__v5                     908ab1d92277  판정자 과반 fail · 정면 입면도 · 윗면 2행 < 3
+위반  PASS  low_furniture  interior/cradle__w29-F                   06224d8beac4  
+위반  PASS  seat           interior/sofa__v5                        e470fafbcd0e  
+위반  FAIL  other          interior/firewood_bundle__w9-B           880c5015fce7  판정자 과반 fail · 옆면(아이소)
+위반  PASS  tall_furniture interior/magitek_engine__w46-A           66e42f83960e  
+위반  FAIL  container      interior/mine_cart__w2-C                 8ffad8f962c0  판정자 과반 fail · 정면 입면도 · 아가리 안쪽이 안 보임
+위반  FAIL  round_body     interior/powder_kegs__w9-B               9e05a1a4c59d  판정자 과반 fail · 정면 입면도 · 윗면 0행 < 3
+위반  PASS  column         interior/rune_stone__w45-A               1a5f3fcb70b9  
+위반  PASS  seat           interior/stone_throne__w52-A             b518aa5e3b49  
+위반  PASS  seat           interior/theater_seat__w10-C             e7aa957aabd0  
+위반  FAIL  frame          interior/hammock__w72-A                  7635f98e316c  판정자 과반 fail · 정면 입면도 · 윗면 0행 < 3
+위반  PASS  box            interior/safe__w72-A                     81e74111268f  
+위반  FAIL  frame          interior/spear_rack__w70-A               c030a2303d68  판정자 과반 fail · 정면 입면도 · 윗면 1행 < 3
+위반  PASS  box            interior/hay_bale__w44-A                 fd8e282a2dd4  
+위반  FAIL  frame          interior/saddle_rack__w26-D              36c64542f6e7  판정자 과반 fail · 정면 입면도 · 윗면 0행 < 3
+위반  FAIL  frame          interior/loom__w43-A                     8e8e8e9351ac  판정자 과반 fail · 정면 입면도 · 윗면 2행 < 3
+위반  PASS  structure      interior/spiral_stair__v5                2539f957738e  
+위반  PASS  tall_furniture interior/slot_machine__w46-A             c653564d43e5  
+위반  PASS  seat           interior/choir_stall__w45-A              ac5f32311564  
+위반  PASS  tall_furniture interior/fish_tank__w44-A                2b54f674a8bf  
+위반  PASS  tall_furniture interior/kitchen_range__v5               31039b9b2e15  
+위반  PASS  low_furniture  interior/patient_bed__w74-A              eb91d929a698  
+정상  FAIL  container      interior/holy_water_font__w7-A           2af07e8b8cc2  아가리 3행 < 4
+정상  FAIL  container      interior/slop_bucket__w3-C               eaaa8f17b98d  판정자 과반 fail · 정면 입면도 · 아가리 안쪽이 안 보임
+정상  PASS  container      interior/bathtub__w22-F                  17b252edcc29  
+정상  PASS  low_furniture  interior/nightstand__w8-C                737e9f1f0039  
+정상  PASS  low_furniture  interior/roundtable__v5                  b194b8c74b6a  
+정상  PASS  seat           interior/stool__v5                       44914cf6ece8  
+정상  PASS  low_furniture  interior/straw_bed__w44-A                4186ce619ed2  
+정상  PASS  frame          interior/timber_prop__w53-B              621b45c200a7  
+정상  PASS  low_furniture  interior/conductor_podium__w31-F         090660019722  
+정상  FAIL  other          interior/anvil__w7-B                     3b61923b41e4  판정자 과반 fail · 정면 입면도 · 윗면 0행 < 3
+정상  PASS  container      interior/coal_bin__w10-B                 5f84a5f6802d  
+정상  PASS  container      interior/quench_barrel__w5-C             92feda718108  
+정상  FAIL  container      interior/feed_trough__w4-B               d6779db2e4c5  판정자 과반 fail · 정면 입면도 · 아가리 안쪽이 안 보임
+정상  PASS  container      interior/water_trough__w4-A              20a7a61e78ea  
+정상  PASS  seat           interior/bar_stool__w5-C                 d2bc628590e4  
+정상  FAIL  round_body     interior/cheese_wheels__v5               8784a8d7da32  판정자 과반 fail · 정면 입면도 · 윗면 2행 < 3
+정상  PASS  tall_furniture interior/dresser__w71-A                  c8838fd0f38c  
+정상  PASS  tall_furniture interior/wardrobe__w42-A                 5ddb17aa3a32  
+정상  PASS  tall_furniture interior/stove__w44-A                    de154cecb302  
+정상  FAIL  structure      interior/forge__w44-A                    172edb858500  판정자 과반 fail · 정면 입면도 · 윗면 0행 < 3
+정상  PASS  tall_furniture interior/bookshelf_1w__w41-A             730c20cd166c  
+정상  PASS  frame          interior/keg_rack__w48-A                 08f5ab666b0a  
+정상  FAIL  container      interior/mortar_and_pestle__w1-B         79532ed97e6b  판정자 과반 fail · 정면 입면도 · 아가리 안쪽이 안 보임
+정상  PASS  organic        interior/potted_fern__w7-B               c26049ac1ab2  
+정상  FAIL  debris         interior/treasure_pile__w5-C             c29989f3a3ff  종류 불일치
+
+프로필 26874638d5a61c50: 위반 15/41 잡음, 정상 17/25 통과 → rejected
+놓친 위반: interior/chopping_block__v5, interior/altar_E__w21-G, interior/pew__v5, interior/pew_E2__w45-A, interior/pew_E3__w45-A, interior/coffin__w73-A, interior/column_dwarf__w51-A, interior/column_stone__w51-A, interior/column_wood__w51-A, interior/barrel__w2-A, interior/chair_N__v5, interior/chair_S__v5, interior/cradle__w29-F, interior/sofa__v5, interior/magitek_engine__w46-A, interior/rune_stone__w45-A, interior/stone_throne__w52-A, interior/theater_seat__w10-C, interior/safe__w72-A, interior/hay_bale__w44-A, interior/spiral_stair__v5, interior/slot_machine__w46-A, interior/choir_stall__w45-A, interior/fish_tank__w44-A, interior/kitchen_range__v5, interior/patient_bed__w74-A
+프로필 /home/main/z-project/rpg-zzu-gate-argon-style/harness-data/object-gate/profiles/26874638d5a61c50.json · 상세 /home/main/z-project/rpg-zzu-gate-argon-style/harness-data/object-gate/calibration/run-26874638d5a61c50.json

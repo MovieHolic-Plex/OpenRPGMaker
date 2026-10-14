@@ -1,0 +1,145 @@
+{
+ "building": {
+  "house-h101_0": {
+   "h": 76,
+   "kit": "bd-house-h101_0",
+   "rows": null,
+   "sha256": "0f395b30b96a45774a9b70a4d0063a2835403e73fd4238c00ccc57745b330dfd",
+   "w": 112
+  },
+  "house-h112_0-stone": {
+   "h": 90,
+   "kit": "bd-house-h112_0",
+   "rows": null,
+   "sha256": "020e6c425cdcf1ab5b0cf0086acb1cda85a7f0b231cda73a9502eb212f7d8f36",
+   "w": 64
+  }
+ },
+ "ground": {
+  "grass": {
+   "h": 48,
+   "sha256": "7ed80e4684435bb082b08dc7f05d87e5eeaefb559395665454bc562be5d96fad",
+   "tiles": [
+    737,
+    2502,
+    737,
+    737,
+    12130,
+    737,
+    2502,
+    737,
+    11628,
+    737,
+    737,
+    2502
+   ],
+   "w": 64
+  },
+  "paving": {
+   "h": 48,
+   "sha256": "425efc482f49f30b69c93c5d85b0ae13b5caa7b9c3fc0cbc7b66c157644c9f24",
+   "tiles": [
+    3221,
+    2666,
+    3353,
+    4674,
+    9585,
+    17443,
+    3221,
+    2666,
+    3353,
+    4674,
+    9585,
+    17443
+   ],
+   "w": 64
+  }
+ },
+ "prop": {
+  "prop-stall-cheese": {
+   "h": 44,
+   "kit": "bd-prop-stall_cheese_meat",
+   "rows": null,
+   "sha256": "bdb85e111301e8acf7427cd69a95ea9a4c68d47f86d6281a37057c6d961c057e",
+   "w": 32
+  },
+  "prop-well-roofed": {
+   "h": 31,
+   "kit": "bd-prop-well_roofed",
+   "rows": null,
+   "sha256": "83e8bd5a2b6dc7510fb58cb6d1efe2534e3d2dfdb43df7d6b1fef72242aa9a41",
+   "w": 31
+  }
+ },
+ "roof": {
+  "roof-h104_0": {
+   "h": 44,
+   "kit": "bd-house-h104_0",
+   "rows": [
+    1,
+    3
+   ],
+   "sha256": "ba309b9cbd0dd1b483f6480f7d28e010ccfaf84ebc5797e75eb6ff06d7ae908c",
+   "w": 112
+  }
+ },
+ "tree": {
+  "tree-1a786c": {
+   "h": 64,
+   "kit": "bd-tree-1a786c",
+   "rows": null,
+   "sha256": "ceec5c61d5bd3fa4c4240681a6c2805ec7e80ecb221b62e888f8dfd07f44a4a3",
+   "w": 48
+  },
+  "tree-d43edd": {
+   "h": 80,
+   "kit": "bd-tree-d43edd",
+   "rows": null,
+   "sha256": "69b96c65110d48922cfaef933e66ccda6ca35a146f08a7ccc46e9225bf6f476b",
+   "w": 64
+  }
+ },
+ "wall": {
+  "wall-h104_0-timber": {
+   "h": 32,
+   "kit": "bd-house-h104_0",
+   "rows": [
+    4,
+    5
+   ],
+   "sha256": "0b4782c233135c69df166653f6c4e67df159f8f3f807bc52efca7cc877cd4463",
+   "w": 108
+  },
+  "wall-h106_1-stone": {
+   "h": 32,
+   "kit": "bd-house-h106_1",
+   "rows": [
+    6,
+    7
+   ],
+   "sha256": "57cd7ef9a62b73688c895fd3d7459391e6b2008628bc9f323a2c1f16aed70246",
+   "w": 92
+  }
+ },
+ "water": {
+  "water": {
+   "h": 48,
+   "sha256": "ee267bcc7a127e1fc86d71bea377bb48f3b5bec26a0c9cdeea86d8db20844870",
+   "tiles": [
+    23152,
+    23152,
+    23152,
+    23152,
+    23152,
+    23152,
+    23152,
+    23152,
+    23152,
+    23152,
+    23152,
+    23152
+   ],
+   "w": 64
+  }
+ }
+}
