@@ -294,7 +294,7 @@ const scriptCutsceneStaged: ToolDefinition = {
       // 그러지 않으면 정지 그림이 미끄러져 가기만 한다(실측: 조수가 프레임 id 를 그대로 재사용).
       const frame = /^(cutscene_char_.+_\d+)_walk(?:Up|Down|Left|Right)[012]$/u.exec(resourceId);
       // 도트 프레임은 정수배로만 — 115%·135% 는 도트가 뭉개진다(px4 실측: 직접 찍은 기계를 115~140% 로 써서 흐려짐).
-      const scale = typeof raw.scale === "number" && raw.scale > 0 && raw.scale !== 100
+      const scale = typeof raw.scale === "number" && raw.scale > 0 && raw.scale !== 100 && !resourceId.includes("_pxw_")
         ? (frame ? (Math.max(1, Math.min(3, Math.round(raw.scale / 100))) !== 1 ? Math.max(1, Math.min(3, Math.round(raw.scale / 100))) * 100 : undefined) : Math.max(10, Math.min(300, raw.scale)))
         : undefined;
       const k = (scale ?? 100) / 100;

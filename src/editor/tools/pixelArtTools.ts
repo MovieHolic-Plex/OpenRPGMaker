@@ -143,12 +143,12 @@ async function buildWalker(args: Record<string, unknown>): Promise<Prepared> {
   const palette = parsePalette(args.palette);
   const dirs = asRecord(args.directions, "directions");
   const slugId = slug(typeof args.id === "string" && args.id.trim() ? args.id : nameOf(args, "walker"));
-  const base = `cutscene_char_${slugId}_0`;
+  const base = `cutscene_char_pxw_${slugId}_0`; // pxw = 원본 해상도 도트 유닛 — 컷신 배우로 쓸 때 확대하지 않는다
   const warnings: string[] = [];
   let size: { w: number; h: number } | undefined;
   const frameOf = (raw: unknown, field: string): RgbaImage => {
     const image = rowsToImage(parseRows(raw, field), palette, field);
-    if (image.width < 32 || image.height < 32) throw new PixelArtError(`${field} 가 ${image.width}×${image.height}로 작습니다 — walker 는 32×32 이상의 큰 유닛용입니다(작은 인물은 kind:\"charset\").`);
+    if (image.width < 48 || image.height < 48) throw new PixelArtError(`${field} 가 ${image.width}×${image.height}로 작습니다 — walker 는 화면에서 그대로(확대 없이) 큰 유닛으로 보이는 48×48 이상용입니다(24×32 를 2배로 키운 것과 같아지면 의미가 없다)(작은 인물은 kind:\"charset\").`);
     if (image.width > 160 || image.height > 192) throw new PixelArtError(`${field} 는 160×192 이하여야 합니다(받은 크기 ${image.width}×${image.height}).`);
     if (!size) size = { w: image.width, h: image.height };
     else if (image.width !== size.w || image.height !== size.h) throw new PixelArtError(`${field} 크기 ${image.width}×${image.height} 가 다른 프레임(${size.w}×${size.h})과 다릅니다 — 모든 프레임이 같은 캔버스여야 합니다.`);
@@ -196,7 +196,7 @@ const authorPixelArt: ToolDefinition = {
     "맞는 칩셋·물체·캐릭터·그림이 없을 때 «없다»고 멈추지 말고 도트를 직접 찍어 이 프로젝트에 넣는다. 문자 한 글자 = 화소 한 칸, '.' = 투명, palette 에 {글자:'#rrggbb'}. "
     + "kind:\"object\" — 맵에 놓을 물체(예: 부서진 기계 잔해, 깃발, 간판, 조형물). 16px 칸 단위 칩셋에 구워 id `workshop:<이름>` 로 등록되니 stamp_tileset_object 의 objectId 로 놓는다. "
     + "kind:\"charset\" — 맵 위를 걷는 캐릭터·기계·탈것(작은 인물용 24×32, directions 마다 stand 한 장+선택 stepA/stepB, 안 주면 걷기를 자동 생성). 컷신 배우로 character:{resourceId, characterIndex}. "
-    + "kind:\"walker\" — **대형 유닛(전투기계·괴수·탈것·거인)은 24×32 charset 을 확대하지 말고 이걸로** 원본 해상도(32×32~160×192)로 직접 찍는다: directions:{right:{stand, stepA?, stepB?}, down?, up?}(모든 프레임 같은 캔버스, 발은 맨 아래 줄, 보통 64×80~96×112). 한 대마다 실루엣이 확연히 다르게(다리 수·몸통 비율·무장), 재질 4~6단 명암+눈·불빛 강조색. 도트 질감: 둥근 «깡통 덩어리»(필로우 셰이딩)로 칠하지 말고 한 방향 광원(왼쪽 위)으로 면마다 단단한 3~4단 명암, 패널 이음선·리벳·관절 부품·포신처럼 구조가 실루엣에 드러나게, 다리는 걸음마다 뚜렷하게 앞뒤로 벌어지게(stepA/stepB 를 직접 찍는다). 컷신 배우 {name, resourceId:<결과 resourceId>, scale:100} 하나로 걷기 프레임이 전부 붙는다. "
+    + "kind:\"walker\" — **대형 유닛(전투기계·괴수·탈것·거인)은 24×32 charset 을 확대하지 말고 이걸로** 원본 해상도(48×48~160×192, 보통 64×80~96×112)로 직접 찍는다: directions:{right:{stand, stepA?, stepB?}, down?, up?}(모든 프레임 같은 캔버스, 발은 맨 아래 줄, 보통 64×80~96×112). 한 대마다 실루엣이 확연히 다르게(다리 수·몸통 비율·무장), 재질 4~6단 명암+눈·불빛 강조색. 도트 질감: 둥근 «깡통 덩어리»(필로우 셰이딩)로 칠하지 말고 한 방향 광원(왼쪽 위)으로 면마다 단단한 3~4단 명암, 패널 이음선·리벳·관절 부품·포신처럼 구조가 실루엣에 드러나게, 다리는 걸음마다 뚜렷하게 앞뒤로 벌어지게(stepA/stepB 를 직접 찍는다). 컷신 배우 {name, resourceId:<결과 resourceId>, scale:100} 하나로 걷기 프레임이 전부 붙는다. "
     + "kind:\"picture\" — 컷신용 도트 그림 한 장(투명 배경의 소품·이펙트, 480×270 이하). 실제 시작 맵 위에서 벌어지는 장면이면 그림으로 마을·거리·건물 «배경»을 깔아 맵을 가리지 말고(맵이 안 보이면 인게임 오프닝이 아니다), 맵에 없는 것만 object 로 맵에 굽거나 소품 picture 로 얹는다. "
     + "그리는 법: 3/4 탑뷰(윗면이 면으로 보이고 앞면이 보이는 시점, 옆면 금지), 1px 어두운 외곽선, 재질마다 4~6단 명암(윗면이 가장 밝고 앞면이 어둡다), 발밑은 맨 아래 줄에 붙인다. 그림이 이 맵의 칩셋 색과 어울리도록 먼저 show_tiles·list_tileset_objects 로 기존 조각 색을 본 뒤 팔레트를 고른다. "
     + "도구가 확대 미리보기를 돌려주니 반드시 눈으로 보고 비뚤거나 알아보기 어렵거나 잘리면 같은 id 로 다시 호출해 고친다. 이 그림은 3/4 탑뷰 관문(object-gate) 영수증이 없다 — 이 프로젝트에서만 쓰고 공용·스토어에 올리지 않는다.",
