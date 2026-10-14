@@ -295,7 +295,16 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     const reachA = walkable(a);
     const ca = connected(a).filter(p => reachA.has(coord(p))), cb = connected(b);
     const harborExit = a.id === id("harbor") ? ({ mx_map_river: { x: 15, y: 9 }, mx_map_ship_deck: { x: 16, y: 9 }, mx_map_beach: { x: 8, y: 10 }, mx_map_sea_cave: { x: 23, y: 10 } }[b.id]) : undefined;
-    const atA = harborExit ?? anchor(a, { x: a.width >> 1, y: 2 }, ca);
+    // 작은 캠페인(마지막 마을이 항구 같은 옛 중간 마을)에서는 마지막 마을 북쪽에 문이 둘(관측탑·리그) 붙는다. 리그 문이 첫 문 뒤 골목에
+    // 갇히지 않게, 둘째 문은 그 아래 칸으로 걸어 닿는 자리에만 둔다(관측탑 문도 같다). 기본(8관) 캠페인과 그 밖의 연결은 한 칸도 달라지지 않는다.
+    const wantedA = { x: a.width >> 1, y: 2 };
+    const leagueDoor = shape.gyms < FULL_GYMS && !harborExit && a === townMaps.get(finalKey) && (b === observatory || b === league[0]);
+    const openA = leagueDoor
+      ? ca.filter(p => Math.abs(p.x - wantedA.x) + Math.abs(p.y - wantedA.y) <= 8
+        && a.events.every(e => !e.id.includes("_to_") || Math.max(Math.abs(e.x - p.x), Math.abs(e.y - p.y)) > 1))
+        .filter(p => { const below = { x: p.x, y: p.y + 1 }, open = walkable(a, p); return canMove(project, a, p.x, p.y, below.x, below.y) && open.has(coord(below)) && a.events.every(e => !e.id.includes("_to_") || open.has(coord(e))); })
+      : [];
+    const atA = harborExit ?? anchor(a, wantedA, openA.length ? openA : ca);
     const drawnDoor = doorSpots.get(b.id);
     const atB = drawnDoor ?? anchor(b, exitHints.get(b.id) ?? { x: b.width >> 1, y: b.height - 2 }, cb);
     reserve(a, atA); reserve(b, atB);

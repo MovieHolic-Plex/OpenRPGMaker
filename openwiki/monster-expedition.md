@@ -259,3 +259,5 @@ It requires an existing catalog; full generation without the option remains supp
 (`{gyms,species,maps,links}`)에 적히고 검수·`qa:game check` 가 그 계획과 정의-이벤트 일치(`monsterCampaignConsistency.ts`)를 본다.
 측정(2026-10-14, 모델 없이): 0관 24맵·3관 32맵(눈 테마 41맵)·8관 90맵, 모두 몬스터 키트 시트(monster_overworld·gyms·rooms·dungeon…)만 쓴다.
 이미 지은 캠페인의 체육관을 줄이는 것은 `resizeGyms.ts`(`configure_monster_campaign badgeCount`). 상세는 `editor-ai-tools.md` 같은 날 절.
+검증(2026-10-14, 모델 없이 qa:game check + 자동 플레이): 체육관 0~8관 아홉 규모 모두 막힘 0·엔딩 도달. 2관은 마지막 마을(항구)의 관측탑·리그 문이 좁은 골목 안쪽 막다른 칸에
+착지해 리그 문까지 걸어갈 길이 없었다 — `connect()` 가 작은 캠페인의 마지막 마을 문 자리를 「문 아래 칸이 걸어 닿고 다른 문도 그대로 닿는 칸」으로만 고른다(8관은 해시 동일).
