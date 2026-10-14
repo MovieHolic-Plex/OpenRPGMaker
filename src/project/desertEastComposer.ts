@@ -504,7 +504,7 @@ function ruinedTemple(b: Board, rng: () => number, area: Rect): boolean {
   for (let y = fl.y; y < fl.y + fl.h; y++) for (let x = fl.x; x < fl.x + fl.w; x++) b.use[b.k(x, y)] = "open";
   b.zone("무너진 신전 터", "포석 바닥·기둥 줄·폐허 벽", r);
   const v = Math.floor(rng() * 3);
-  const A: readonly string[] = ["open", "plaza"];
+  const A: readonly Use[] = ["open", "plaza"];
   const backs: readonly (readonly [string, number])[][] = [
     [["de-ruin-wall", 0], ["de-stele", 4], ["de-ruin-wall", 6]],
     [["de-ruin-wall", 1], ["de-column-broken", 5], ["de-stele", 8]],
@@ -694,7 +694,7 @@ function composeBazaar(b: Board, rng: () => number): DesertCell {
 // ───────────────────────── 성벽 둘레(궁전·대상 숙소) ─────────────────────────
 /** 사각 성벽: 바깥 사각 r(칸). 북·남 벽 = wall-h(3줄), 동·서 = wall-v(폭 2), 모서리 = wall-tower(2×4), 남쪽 가운데 = gateKit. 안쪽 사각을 돌려준다. */
 function wallRing(b: Board, r: Rect, gateKit: "de-wall-gate" | "de-caravanserai-gate", rng: () => number): { inner: Rect; gate: DesertCell[] } {
-  const tw = 2, th = 4;
+  const tw = 2;
   // 모서리 탑 아랫줄을 벽 아랫줄과 맞춘다(탑이 한 줄 높다)
   const topY = r.y, botY = r.y + r.h - 3;            // 북·남 벽 윗줄(벽 3줄)
   const xL = r.x, xR = r.x + r.w - tw;
