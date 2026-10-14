@@ -156,7 +156,7 @@ def stone_footing(c, x0, y, w, s=0):
         x += ln
 
 
-def round_hut(c, W, H, door_tile, roof='thatch', wall='daub', s=0, apex_knot=True, wall_h=18, door_h=25, roof_top=3):
+def round_hut(c, W, H, door_tile, roof='thatch', wall='daub', s=0, apex_knot=True, wall_h=18, door_h=25, roof_top=3, ramp=True):
     """둥근 움집(3/4): 넓고 볼록한 원뿔 지붕이 그림의 위 2/3 를 덮고(위에서 보이는 면), 처마 밑으로 짧은 원통 벽.
     출입구는 door_tile 열(16px): 처마를 아치로 깎아 올린 현관 + 통나무 문틀 + 말아 올린 가죽 휘장."""
     w, h = W * 16, H * 16
@@ -170,7 +170,7 @@ def round_hut(c, W, H, door_tile, roof='thatch', wall='daub', s=0, apex_knot=Tru
     fn = (lambda x, y, u, j: daub(x, y, u, j, s=s)) if wall == 'daub' else (lambda x, y, u, j: log_wall(x, y, u, j, s=s))
     cyl_wall(c, wx0, wall_top, wx1 - wx0, base_y - wall_top, fn)
     stone_footing(c, wx0, base_y - 2, wx1 - wx0, s)
-    if roof == 'thatch': thatch_cone(c, cx, roof_top, cx, ey, rx, ry, s=s, power=0.55)
+    if roof == 'thatch': thatch_cone(c, cx, roof_top, cx, ey, rx, ry, s=s, power=0.55, ramp=ramp)
     else: hide_cone(c, cx, roof_top, cx, ey, rx, ry, s=s, power=0.55)
     # 처마 밑 그늘(벽 위 세 줄, 짙게 → 옅게)
     for x in range(c.w):
@@ -212,7 +212,7 @@ def round_hut(c, W, H, door_tile, roof='thatch', wall='daub', s=0, apex_knot=Tru
 
 @R.add('hut-thatch-s', '이엉 둥근 움집(작은)', 3, 4, 'structure', tags=['움집', '집', '마을'], entrance=[1],
        rules='마을 빈터 둘레에 둔다. 문 앞(접근칸) 아래 두 칸은 흙길로 비운다.')
-def _(c): round_hut(c, 3, 4, 1, s=1, wall_h=20, door_h=25)
+def _(c): round_hut(c, 3, 4, 1, s=1, wall_h=20, door_h=25, ramp=False)   # 2판 겹 명암을 넣으면 관문이 정면 입면으로 읽어 1판 그대로
 
 
 @R.add('hut-thatch-l', '이엉 둥근 움집(큰)', 5, 5, 'structure', tags=['움집', '집', '마을'], entrance=[2],
@@ -571,9 +571,10 @@ def thatch_slab(c, x0, x1, y0, y1, hip=10, tier=5, s=0, mat='thatch'):
             right_hip = x > x1 - hip * (1 - k) - 6 * (1 - k)
             yy = (y - y0) + (abs((x - (x0 + x1) / 2) / ((x1 - x0) / 2)) ** 2) * -1.5
             tp = int(yy) % tier
-            t = 3
-            if left_hip: t = 4
-            if right_hip: t = 2
+            # 2판(화풍 정렬): 버들항 기와 문법 — 용마루 쪽 겹이 가장 밝고 처마로 내려갈수록 한 단씩 어둡다
+            t = 4 if k < 0.3 else 3 if k < 0.62 else 2
+            if left_hip: t += 1
+            if right_hip: t -= 1
             col = (x + (int(yy) // tier) * 2) % 3
             if tp == 0: t += 1
             elif tp == tier - 1: t -= 2
@@ -596,9 +597,9 @@ def _(c):
     stone_footing(c, 4, base_y - 2, w - 8, 3)
     thatch_slab(c, 1, w - 2, 5, wall_top + 3, hip=16, s=3)
     for x in range(4, w - 4):
-        for k in range(3):
+        for k, dk in enumerate((3, 2, 1, 1)):              # 처마 밑 그늘 네 단(버들항 민가)
             g = c.get(x, wall_top + 4 + k)
-            if g and g[0] == 'bark': c.P(x, wall_top + 4 + k, 'bark', max(0, g[1] - (3 - k)))
+            if g and g[0] == 'bark': c.P(x, wall_top + 4 + k, 'bark', max(0, g[1] - dk))
     # 용마루 끝 엇갈린 뿔(뼈)
     for (x, d) in ((17, -1), (w - 18, 1)):
         c.line(x, 6, x + 5 * d, 0, 'bone', 5); c.line(x + d, 6, x + 6 * d, 1, 'bone', 3)
@@ -655,7 +656,7 @@ def _(c):
             return ('dirt', max(1, min(6, t)))
         if phi > 1.37: return ('ink', 0)                  # 연기 구멍
         if phi > 1.31: return ('bark', 2)
-        gm, gt = T.p_grass(int(X + 40) % 16, int(Y * 0.5 + Zc) % 16)
+        gm, gt = T.p_grass0(int(X + 40) % 16, int(Y * 0.5 + Zc) % 16)
         if gm == 'bloom': return (gm, gt)
         t = gt + shade(n, 0, 2.6, -2, 2)
         if phi < sod + 0.05: t -= 1

@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7962fa304c058847d469876da0b75700e11c6e2458ea9d89b6cde7203573d463",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "round stone fort bastion tower with crenellated top and cannon",
+ "label": "pirate-isles/pi-fort-bastion",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round stone fort bastion tower with open crenellated platform",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": true,
+    "opening_rows": 13,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The crenellated top of the tower forms an open circular/elliptical bastion floor visible across rows 10-24 with a top-down view of the floor and mounted cannon, perched atop the cylindrical stone tower body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4447
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round stone fort bastion tower",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top platform and parapet deck within the crenellations are clearly visible from above across rows 10 to 25, complete with the cannon mounted on the deck and top surfaces on the merlons.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4451
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone bastion tower",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The crenellated bastion platform is viewed from above in 3/4 perspective spanning rows 9-24 (~16 rows deep), showing the stone floor, cannon mount, and encircling merlons atop the cylindrical stone tower wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4030
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round stone bastion tower with crenellated platform",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": true,
+    "opening_rows": 15,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the bastion is drawn in clear 3/4 perspective as a ring of crenellations enclosing an interior stone floor platform (rows 9 to 24, ~16 rows tall) containing a mounted cannon.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3798
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.582Z",
+ "cells": {
+  "16": [
+   "165210308aab76d6",
+   "2629264f9ddab269",
+   "5373a67c50149e35",
+   "8bc70e440f88be9e",
+   "8bff905b6db69460",
+   "8c65898611580e81",
+   "a0b7bdf5f149be36",
+   "a11d4d6171992d6b",
+   "c00730f3683efa46",
+   "c1139387a0567430",
+   "c40ed5fd98a8a49e",
+   "fa3b4811bd460345"
+  ],
+  "24": [
+   "5b59b85564825e75",
+   "5e1995da5259d73e",
+   "6f2cd24a033e2e44",
+   "82bdfa9dd5a7f7bc",
+   "872c5c9fb47ec632",
+   "8efaffb8eb6f7eae",
+   "8f9d1fd0f9770c8e",
+   "91cd9d7e14889406",
+   "b733cde98723224c",
+   "d41df6825ebd0a15",
+   "efb4944ae07eb5ff",
+   "f93eebf57c64ba1b"
+  ],
+  "32": [
+   "00042544f2b0a1d6",
+   "40a4c70d22fb3d2f",
+   "5d94338a12d63072",
+   "881896449e65d5f1",
+   "b216a1e413f31b25",
+   "b4f139b2d396c9f4",
+   "b5b5be8541ea27ea",
+   "b604b65ca8197fbf",
+   "d9c67ec11a4dff47",
+   "dc92551ff1b34580",
+   "f25ab0b01f6d6cd9",
+   "f83ad66380a82a7e"
+  ],
+  "48": [
+   "200e54c486e98811",
+   "56781bbe7acc60b2",
+   "81f992725c528adf",
+   "c18fcce7f08708ed"
+  ]
+ }
+}

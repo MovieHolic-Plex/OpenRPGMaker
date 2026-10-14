@@ -84,7 +84,7 @@ def build_pieces(report, dev=False):
         nonlocal prov, covered
         if not os.path.exists(it['png']): return 'PNG 없음 — art 내보내기 먼저'
         if dev: return True
-        if it['id'].startswith(('w-', 'wall-', 'paint-', 'ceil')):
+        if it['id'].startswith(('w-', 'lane-', 'wall-', 'paint-', 'ceil')):
             s = TB.covered_status(it['id'], it['png'])
             if s in ('pass', 'prov'): covered += 1
         else:
@@ -116,6 +116,8 @@ def build_pieces(report, dev=False):
             p['rules'] = ((it.get('rules') or '') + ' 집 하나를 키트로 찍는다. 문 칸(entrance)은 막힘이고 그 바로 아래 칸(접근칸)은 길로 비워 둔다. '
                           '집 둘레 1칸·문 앞 2칸은 소품을 두지 않는다.').strip()
         elif it['kind'] == 'terrain' and not p['rules']: p['rules'] = '한 칸 바닥 — 넓게 칠한다.'
+        if iid.startswith('lane-'):
+            p['rules'] = '흙길 테 낱칸(N E S W = 1 이면 그 변이 길로 이어짐). compose_prehistoric_map 이 길 칸의 이웃으로 고른다 — 손으로 칠하지 않는다.'
         if iid.startswith('w-'):
             p['rules'] = '꼭짓점 가장자리 낱칸(NW NE SW SE = 1 이면 그 모서리가 안 재질). compose_prehistoric_map 이 꼭짓점 격자로 고른다 — 손으로 칠하지 않는다.'
         if iid in anim_base:

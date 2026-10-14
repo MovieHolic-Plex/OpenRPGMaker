@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e0b4ea1a568fd403bfa0000c94ccb0ea894d8c30c752df6c1983586f23d0c3f8",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "low wooden tray holding a pyramid of iron cannonballs",
+ "label": "pirate-isles/pi-cannonballs",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden tray with stacked cannonballs",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the tray is visible around the cannonballs from row 5 to row 11 (approx 6 rows deep), with the front face extending from row 12 to 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5993
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden tray holding stacked cannonballs",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden tray shows a clear horizontal surface from row 6 to row 11 (5-6 source pixel rows) and a south front face from row 12 to 15, matching the standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12091
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pyramid of cannonballs on a wooden tray/base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden tray has a visible top surface (rows 5-10, approx 6 rows tall) on which the cannonballs sit, and a distinct south front face (rows 11-15). The spherical cannonballs are properly stacked in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4812
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pyramid of cannonballs on wooden tray/bench",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden tray/bench shows a clear horizontal top surface (rows 5-11, about 6 rows tall) extending behind and around the cannonball pyramid, meeting a vertical front face at rows 12-15 in standard 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10247
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.584Z",
+ "cells": {
+  "16": [
+   "a30461f5c4a96d43"
+  ],
+  "24": [
+   "1081902113da982e",
+   "25212724d7cffa69",
+   "56658ae014ebb9bd",
+   "72b09f6449477c44",
+   "7ee8e92ff5e2fac5",
+   "d54aa50db0c8d07a"
+  ],
+  "32": [
+   "027cd94fc5ace69f",
+   "33307a1d7148e509",
+   "4ec7b6910c7c67dc",
+   "68b95f4772a7ac24",
+   "9953936d47bf4016",
+   "bcbb136925cb1fe2"
+  ],
+  "48": [
+   "135e3da58dda5461",
+   "1c2be4b242be2758",
+   "2f0356650772d25e",
+   "3a082021456e8674",
+   "49ca13cf433a346f",
+   "c81611233dfcade2"
+  ]
+ }
+}

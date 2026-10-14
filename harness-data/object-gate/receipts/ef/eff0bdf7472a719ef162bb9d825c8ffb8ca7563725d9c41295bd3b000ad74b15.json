@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "eff0bdf7472a719ef162bb9d825c8ffb8ca7563725d9c41295bd3b000ad74b15",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "broadleaf tropical tree with layered round canopy and short trunk",
+ "label": "pirate-isles/pi-tree-broad",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn entirely in a flat front elevation suitable for a side-scrolling platformer rather than a 3/4 top-down perspective. The canopy is viewed directly from the side, exposing the underside, and the trunk base ends in flat horizontal branches with vertical support legs viewed straight-on with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8069
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "foliage canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The layered spherical canopy shows a prominent foreshortened upper dome (rows 2–13) illuminated from above, properly conveying the 3/4 downward angle typical of top-down JRPG foliage.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7688
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn from a flat side-scroller elevation rather than top-down 3/4 view: the canopy is a vertical circular cutout, the trunk is drawn straight-on, and the roots at rows 44-47 form flat horizontal feet resting on a side-view baseline with no top-down foreshortening or ground footprint.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6650
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn in a pure 2D side-scroller elevation. The canopy is centered symmetrically above the trunk without top-down foreshortening, and the trunk base terminates in flat horizontal root projections with vertical downward feet along a single horizontal baseline rather than projecting into depth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7506
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.575Z",
+ "cells": {
+  "16": [
+   "05c77539a1367e3f",
+   "1eb480a8f8bbe6be",
+   "7dbeb9aa20ef94b2",
+   "9148ebdd89fafe2a",
+   "ae68e7dfe741e8ef",
+   "d6b2c579c0e13367"
+  ],
+  "24": [
+   "285fc200d02c9b1b",
+   "59633e58c02eab13",
+   "7c25c70d0b645afb",
+   "7f0a42015f0c331b",
+   "8b4c7a87373ed90d",
+   "926f30565e95d579",
+   "9641d0535bcea792",
+   "a13a24bd4beb3624",
+   "a5322dfbda68ed27",
+   "d73d8f9a3395cb95",
+   "e7b6a639fb219048",
+   "ee2cb12a937d441a"
+  ],
+  "32": [
+   "5469ba3643f1984c",
+   "85fed3be39cc5d20",
+   "c5513955f806c538",
+   "d05d876d073c30b2"
+  ],
+  "48": [
+   "a380193dcb03b057",
+   "c6955c014cbfd69b",
+   "ecf331fb2ad3fb29"
+  ]
+ }
+}

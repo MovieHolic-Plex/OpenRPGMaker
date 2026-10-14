@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "10a0217a072067f8e5efd82e8d3f05dd4937b6684a4e2a367106f3ed43a148da",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "배기 굴뚝(받침 상자 위 짧고 굵은 원통 + 어두운 입구)",
+ "label": "sf-station/sf-vent-stack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical chimney on a base box",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chimney top has a clear 3-row dark elliptical opening with visible rim (rows 4-8), and the supporting base box clearly shows its top horizontal plane across rows 21-23.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4583
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "exhaust chimney pipe on a base box",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the cylindrical chimney clearly displays a 3-row elliptical dark interior opening (rows 5-7) enclosed in a foreshortened rim (rows 3-8). Additionally, the supporting base box shows a clear 3-row top surface (rows 21-23).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5514
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "exhaust chimney cylinder on a base box",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top rim and dark exhaust opening of the cylinder are clearly visible in 3/4 perspective across rows 4-8 (opening itself is 3 rows tall), and the base plinth also shows a 3-row top surface at rows 21-23.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3731
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "exhaust chimney cylinder on a rectangular base box",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the cylinder clearly shows an elliptical opening with a dark interior cavity (rows 5-6, 2px tall) and rim (rows 3-7), and the pedestal below also displays a 3-row top surface (rows 21-23).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3903
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.245Z",
+ "cells": {
+  "16": [
+   "ccd143a054d16f38",
+   "f26359769a6109ed"
+  ],
+  "24": [
+   "0844e4b1ce376c88",
+   "32dbc5f833d75eb9",
+   "366a2dcb21ab4da2",
+   "686c91419b62eb90",
+   "6d6425d783400342",
+   "a2652c85aa5bdcb0",
+   "a401ffb72b7db682",
+   "ae53bc7fd6a8684c",
+   "b3cd82271d2b8e6e",
+   "ba946f6afba5dac5",
+   "d82fb369b2732434",
+   "fff0903020291b93"
+  ],
+  "32": [
+   "17b04707ab0c0373",
+   "5aaec62da96c38b3",
+   "7449308ef54d375a"
+  ],
+  "48": [
+   "3c73d402a9a065d4",
+   "6c5a33ca33a10855",
+   "cc8cffb65684c6cb",
+   "eeadafd63cafb766",
+   "efa77d89d2a71604",
+   "f8eb8cf7b9fe5d2f"
+  ]
+ }
+}

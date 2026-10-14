@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6c2e17b8dc4e113875a1b58e7ddd2c16e5c9b0a49e52cfb746bd27b0385a9b2e",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "round green bush",
+ "label": "sky-island/si-bush",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round bush",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bush is drawn as a flat 2D silhouette with vertical sides, an arching top, and a perfectly straight horizontal base line across row 13, showing no top-down foreshortening or overhead surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6494
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bush",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bush is drawn as a flat 2D side-view silhouette with vertical sides, a perfectly flat horizontal base at row 13, and no foreshortened top surface visible from the 3/4 camera angle.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6272
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bush foliage mass",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bush is drawn in pure front elevation with vertical side outlines (rows 6-12) and a completely flat bottom baseline, resembling a 2D side-scroller arch/dome with no visible foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7366
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bush",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bush is drawn as a flat 2D silhouette with a straight horizontal bottom base and vertical sides, resembling a side-scroller/platformer graphic with no visible top surface or overhead perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15036
+  }
+ ],
+ "decidedAt": "2026-10-14T08:17:41.839Z",
+ "cells": {
+  "16": [
+   "bab8542e42e57d0f"
+  ],
+  "24": [
+   "53720e93c4a1eb34",
+   "57fd27792e7bb4a6",
+   "598445fee63ba117",
+   "9752b68963ea27b8",
+   "db071f3cc7b56e54",
+   "f1b19f9c07bc4326"
+  ],
+  "32": [
+   "34a3a49bde0ea557",
+   "5bc7e704fb59e975",
+   "8d83927963f881c2",
+   "9f53ff05aefacbbb",
+   "bfab24ad0dba1f86",
+   "dfc84469139172d8"
+  ],
+  "48": [
+   "1fc7c50230eabb60",
+   "3a5a8821794949fe",
+   "456c9f9e946267c8",
+   "521587fa970d8e7c",
+   "5358a1a79c050fe3",
+   "aa67ced196951737"
+  ]
+ }
+}

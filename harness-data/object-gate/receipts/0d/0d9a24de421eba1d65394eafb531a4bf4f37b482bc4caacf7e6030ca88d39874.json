@@ -1,0 +1,148 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0d9a24de421eba1d65394eafb531a4bf4f37b482bc4caacf7e6030ca88d39874",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "진열장(유리문 — 톱니·약병)",
+ "label": "steampunk-city/sp-curio-cabinet",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "display cabinet",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top slab of the cabinet shows a horizontal top surface across rows 2–4 (3 source pixel rows) with an edge highlight at row 4, leading into the front lip at row 5 before the south-facing cabinet frame begins.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8853
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "display cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn in flat front elevation with no visible horizontal top surface; rows 1-5 depict a front-facing wooden header/cornice with identical color to the vertical pillars, and the shelves and displayed items are also rendered purely from a straight-on front view without depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 16402
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "display cabinet with shelves",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn entirely in flat front elevation. The top section (rows 1-5) represents a front-facing crown molding/fascia rather than a foreshortened top plane, and all contents on the shelves (boxes, bottles, jars) are rendered as flat 2D silhouettes with zero top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7788
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "display cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn in pure front elevation. The top section (rows 1-5) is a flat front-facing crown molding/header rather than a foreshortened top surface, the interior shelves show only their 2px front edges with no top surface depth, and all displayed items are drawn as flat 2D silhouettes without top views.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7733
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.532Z",
+ "cells": {
+  "16": [
+   "431e210fbf433ba7",
+   "7bf18f7ab6b27844",
+   "82de4fec3d8c91b5",
+   "e94372dfa835a528"
+  ],
+  "24": [
+   "000ce1dd08c89652",
+   "0ca0dfa7a727048f",
+   "0f86de0b8c7a2d3e",
+   "1094f687b49d7af1",
+   "1c5c491b33cb9136",
+   "3da693d29d4090c1",
+   "53568fcede06a942",
+   "577da7033ef1b9fd",
+   "78ab1c73f0df8c01",
+   "7c6b036e0bff3c2e",
+   "85a37f650e78adec",
+   "b9ac52ef67f5ff55",
+   "bad8ae7c1707076b",
+   "bbcb58f61c9122b0",
+   "bd2c691c4c337a7e",
+   "ce630adff21ccada",
+   "cebe56d97c5e12ed",
+   "d05ec890d8a762bd",
+   "db83a4614e099e5d",
+   "de3164597db8b1cc",
+   "e6ba093d7f0723b9",
+   "ecaa4c9fac02d313",
+   "f288dab5e400e7ec",
+   "f5d52407921bff03"
+  ],
+  "32": [
+   "803dad1c9cc2582f"
+  ],
+  "48": [
+   "3c4153da80e30b33",
+   "62dc9ae464090028",
+   "689a62986fd2a067",
+   "ba7b0d0d57dfc1af",
+   "d85d1c597865a621",
+   "ea01a87b9e9c4581"
+  ]
+ }
+}

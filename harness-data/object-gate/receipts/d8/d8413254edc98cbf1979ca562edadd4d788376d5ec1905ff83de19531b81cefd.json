@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d8413254edc98cbf1979ca562edadd4d788376d5ec1905ff83de19531b81cefd",
+ "width": 48,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "실험대(플라스크·증류기·놋쇠 버너)",
+ "label": "steampunk-city/sp-lab-bench",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lab bench / desk with drawers",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lab bench clearly exhibits a large tiled top surface from row 6 to row 15 (10 pixels deep) supporting various apparatus, above a south-facing drawer cabinet front (rows 16-25) and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4974
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "experiment bench with drawers and tiled countertop",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled tabletop surface is prominently visible from rows 6 to 15 (10 source pixel rows) before transitioning to the front drawer face at row 16.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4203
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lab bench",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lab bench has a clearly visible 10-row tiled top surface (rows 6-15) where the lab equipment sits, followed by the south-facing drawer front (rows 16-25) and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5059
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "laboratory table",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lab table clearly shows a large tiled top surface (rows 6-15, ~10px tall) upon which laboratory equipment is placed, atop a vertical wooden front drawer section (rows 16-25) and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4015
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.531Z",
+ "cells": {
+  "16": [
+   "4455bc436a5ffc8d",
+   "63e153ec256f1dce",
+   "822e4fd45bf5427f",
+   "b1a4cd292f135f71",
+   "bb2dccb96e30355e",
+   "ee94ff5e4fb1b81c"
+  ],
+  "24": [
+   "458a53800133896f",
+   "6802c2a51a6541ec",
+   "9efe6cac9fbf2591",
+   "d0b1d611a0607886",
+   "d92c90c7c6931389",
+   "e21f096d81a4223a",
+   "f3177302870b92b0",
+   "f85880c2031d212e"
+  ],
+  "32": [
+   "425495f29ddc8fac",
+   "5c8a00ff40db2ca6",
+   "9245518138a8cc73",
+   "940a74d60e109b2d",
+   "b9e4e8bcc29f6eb1",
+   "bc5bcd780cafcf10"
+  ],
+  "48": [
+   "4d6fe3dc23d2cdda",
+   "eb81325b819377ea"
+  ]
+ }
+}

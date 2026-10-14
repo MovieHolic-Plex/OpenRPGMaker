@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fb77f09282cda2e4089d579a2a0e7e87a8c49538e2041320f01ca0d56413c6df",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "carved wooden tiki totem pole with painted faces on a square stone base, flat carved head top",
+ "label": "pirate-isles/pi-totem",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden totem pole",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The flat top of the totem pole shows an elliptical horizontal surface spanning rows 1-5 (~5 px tall) with painted decorations, and the stone base beneath it also shows a 4px tall top surface (rows 24-27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3434
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden tiki totem pole",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the totem pole has a clearly rendered top disc/surface spanning rows 1-5 (approx 5 rows tall), and the square stone base also clearly shows its top surface on rows 25-28.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3437
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "carved wooden totem pole",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the wooden totem pole shows an elliptical flat top surface spanning rows 1-5 (5 source pixel rows), and the square stone base plinth also has a clearly visible top surface from rows 24-27.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5235
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tiki totem pole on stone base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The flat carved top of the totem pole is drawn foreshortened spanning rows 1-5 (5 rows tall), and the stone base plinth clearly displays a foreshortened top surface across rows 25-28 (4 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4322
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.587Z",
+ "cells": {
+  "16": [
+   "b7b52a1ffa83b4ae",
+   "bb5655b24f5c0fe5"
+  ],
+  "24": [
+   "1190b34c6932d8ad",
+   "17dcd33ed354b6d7",
+   "1cda0e03e631c6e9",
+   "2d8c1363303ca0a0",
+   "33ddf7e67ccae500",
+   "455e6923a145efe6",
+   "4ae823d845a08332",
+   "4e7719ca6cd74d90",
+   "534f0543c3f57f0a",
+   "5ddcdb1cd6aed9f9",
+   "99294f047c67cc80",
+   "e5b15d9e31e00ae1"
+  ],
+  "32": [
+   "19078e47e915d44a",
+   "6833af279285e557",
+   "87da849ca143c19f"
+  ],
+  "48": [
+   "246d7e84feee5a71",
+   "9979280953203a3a",
+   "b4c8fd0f6013f4cf",
+   "c19463b43b354313",
+   "c24c3f3b6700f610",
+   "e49d01f5e1f18544"
+  ]
+ }
+}

@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e79dc29cd40d919db5c992384f897622d9a104a66034b51b0087f1cf1f43bece",
+ "width": 96,
+ "height": 48,
+ "kind": "debris",
+ "name": "prehistoric stone-age longneck",
+ "label": "prehistoric/ph-longneck",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fossilized dinosaur skeleton and surrounding earth lying flat on the ground",
+    "kind_matches": true,
+    "top_rows": 23,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The longneck skeleton is rendered lying horizontally on the ground plane (debris/fossil bed), viewed from above with ribs, splayed limbs, and spinal column spread across rows 12–35 (approx. 23 rows deep). It is not a flat standing front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10008
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fossilized/skeletal longneck dinosaur lying on the ground",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The dinosaur skeleton is depicted lying flat on the ground in top-down 3/4 view, with both the northern and southern ribs/limbs splayed out around the central spine, showing clear depth across ~12-24 pixel rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7488
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fossilized sauropod skeleton embedded in earth/rock lying flat on the ground",
+    "kind_matches": true,
+    "top_rows": 23,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The carcass is splayed flat on the floor in a top-down 3/4 perspective: the central spine runs horizontally with ribs and limbs extending both north and south across the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7999
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sauropod dinosaur skeleton / carcass lying flat on the ground",
+    "kind_matches": true,
+    "top_rows": 22,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The carcass/bones are lying flat on the ground surface, viewed from above in top-down 3/4 perspective with ribs and limbs splayed north and south around the central spine.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4121
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.708Z",
+ "cells": {
+  "16": [
+   "0411a24181fb53f1",
+   "0e68112cd44a8c42",
+   "153d6a3dc9b26c31",
+   "15c7529a57d8a287",
+   "201efc8e5c807276",
+   "4b9f5d960c838326",
+   "5887ed01c0d2c9bc",
+   "7ed81b01a7e9fa28",
+   "8231297c36998b3d",
+   "826aeb8fe71d246f",
+   "8fe9d1e824206031",
+   "954ebee28c46ac80",
+   "9cf7a262b6f83fec",
+   "bf2d49f6212357f8",
+   "c41d6adeb4149e79",
+   "cc3f42210e81d3d6"
+  ],
+  "24": [
+   "1b1ab51b0f10b2ca",
+   "2546b9d82e799a9e",
+   "63d7aed2ae828b00",
+   "68b380782fe3a96b",
+   "750fee725b25a83a",
+   "82fabba736963018",
+   "b1db6115f43262ff",
+   "b4895509e64b2911"
+  ],
+  "32": [
+   "0f8aa8989218568d",
+   "135400902289b018",
+   "3b876c3f75ba79fe",
+   "41a718314ae03b7b",
+   "83828411fe4a9fb4",
+   "919efa5f890ce3e3",
+   "938dbdfdc4934785",
+   "963736594a02457e",
+   "b613ced1429e8292",
+   "bf6f11661bf2a74d",
+   "ea5fefc3b07c0d03",
+   "ea6ecf759156edb8"
+  ],
+  "48": [
+   "0a894250628d8c0b",
+   "f81a13d480c50180"
+  ]
+ }
+}

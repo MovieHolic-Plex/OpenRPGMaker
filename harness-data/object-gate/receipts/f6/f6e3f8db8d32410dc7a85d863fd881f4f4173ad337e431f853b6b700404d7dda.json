@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f6e3f8db8d32410dc7a85d863fd881f4f4173ad337e431f853b6b700404d7dda",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "harbor brazier lamp: iron post with a wide open fire bowl on top seen from above, flame inside the bowl, round stone base",
+ "label": "pirate-isles/pi-lantern-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "harbor brazier lamp with fire bowl, post, and stone base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fire bowl at the top clearly shows an elliptical opening (rows 3-7) seen from above with flames inside, and the round stone base at the bottom also displays a clear foreshortened top surface (rows 24-27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4133
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron brazier post with fire bowl and stone base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fire bowl opening is rendered as a foreshortened ellipse spanning rows 3-7 containing flame/fuel, and the round stone base also clearly shows its top surface (rows 24-27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4078
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron brazier post with fire bowl and stone base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fire bowl on top clearly opens into an elliptical view showing fire inside across rows 3-7 (approx 5 rows tall), and the round stone base also shows its top elliptical surface across rows 24-27.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3464
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "harbor brazier lamp post with fire bowl and stone base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fire bowl opening is rendered as an ellipse seen from above spanning rows 3-7 (5 rows), showing fire inside, and the round stone base also shows a clear foreshortened top surface from rows 24-27.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3562
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.584Z",
+ "cells": {
+  "16": [
+   "20025f27904f0341",
+   "96aae3bc686422ac"
+  ],
+  "24": [
+   "138eff4d10bf001b",
+   "1842f50b22089376",
+   "188358ada63cd82d",
+   "259a1c0d9dc92d95",
+   "7ca8fcea600e7432",
+   "8f3d52ce040339d3",
+   "967adf03042cf5d9",
+   "bd3377961c153053",
+   "c29ab21a16f529b9",
+   "c47d0966e2d759b9",
+   "c5d5ed6c43ead8f7",
+   "cd2abedfe1e3435f"
+  ],
+  "32": [
+   "426e0551951c1225",
+   "592f7b67d1a3d100",
+   "cacf7150d1cdb41e"
+  ],
+  "48": [
+   "1519c1be5256ff59",
+   "1a8346c33974c3fe",
+   "314851fed586f3f3",
+   "78e445b73e4477a9",
+   "79ae38e634d846d5",
+   "f91d06931c229f0b"
+  ]
+ }
+}

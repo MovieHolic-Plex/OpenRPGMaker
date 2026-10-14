@@ -62,7 +62,10 @@ def ground(grid, variety=True):
                 if eight:
                     i = TR.BLOB_MASKS.index(TR.canon(m)); cell = cell_of(pid, i % 8, i // 8)
                     if ch == 's' and m == 255 and variety and C.hsh(x, y, 1) % 9 == 0: cell = cell_of('sand', 1 + C.hsh(x, y, 2) % 2, 0)
-                    if ch == 'g' and m == 255 and variety and C.hsh(x, y, 3) % 11 == 0: cell = cell_of('grass', 1, 0)
+                    if ch == 'g' and m == 255 and variety:
+                        r = C.hsh(x, y, 3) % 100
+                        if r < 8: cell = cell_of('grass', 1, 0)
+                        elif r < 26 and C.PIECES['grass']['w'] > 2: cell = cell_of('grass', 2 + C.hsh(x, y, 4) % 4, 0)
                 else:
                     cell = cell_of(pid, (m & 15) % 4, (m & 15) // 4)
             elif ch in PLAIN:

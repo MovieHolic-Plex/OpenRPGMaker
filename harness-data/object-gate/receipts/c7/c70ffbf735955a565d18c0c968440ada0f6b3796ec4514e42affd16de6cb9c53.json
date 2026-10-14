@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c70ffbf735955a565d18c0c968440ada0f6b3796ec4514e42affd16de6cb9c53",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "trade goods stall with cream canvas awning, pots and rolled cloth",
+ "label": "pirate-isles/pi-stall-goods",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "trade goods stall with awning and counter",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cream canvas awning clearly displays a large downward-sloping top surface spanning rows 0 through 10 above its scalloped front edge, and the counter displays horizontal surface depth for the displayed goods.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4644
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "market stall with awning and counter",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cream canvas awning clearly shows its top slope facing the camera across rows 0-8 (9 rows), and the counter top table surface has visible 3/4 depth across rows 15-21 with goods resting on it above the vertical front panel (rows 23-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5302
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "market stall with canvas awning and display counter",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The canvas awning clearly displays its downward-sloping top surface across rows 0-9 before terminating in the front valance at rows 10-13. The counter surface beneath displays a visible horizontal plane where trade goods sit above a vertical wooden front.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3944
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "market stall with canvas awning and display counter",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The canvas awning clearly slopes toward the viewer across rows 0-12, and the counter shelf top surface shows depth (rows 14-22) supporting the pots and rolled cloth above the front vertical paneling (rows 23-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3988
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.581Z",
+ "cells": {
+  "16": [
+   "901c08f544723cfe",
+   "94650a07fd6e37ea",
+   "e37ea7057bf337aa",
+   "ee9ba506317c97b9"
+  ],
+  "24": [
+   "096f89536062c96c",
+   "0b76c2716ec02eb2",
+   "0f184fba0c0705f1",
+   "50d59ec1d381cff2",
+   "534594e62ad79f55",
+   "58caa5871aff58f5",
+   "8434ac431eaef079",
+   "868d5a1245a2c179",
+   "8f7832bacb61b03e",
+   "a0de0658c662d704",
+   "a475216cc6f5b237",
+   "a8e1d2a6ee07b1fa",
+   "aa9f29e11bc57282",
+   "aaa7db6d9fff3e2b",
+   "b5eef9d820906e8f",
+   "bef17a788ac0912f",
+   "c7b2412d7278989a",
+   "ca2b78b582e568be",
+   "cb000061fa5d9bc7",
+   "d8b2395e07fe71f8",
+   "f25cfac61147f981",
+   "f34ad2d7de62a5e5",
+   "fcf6a91f0c410983",
+   "ffd86889b2b9143e"
+  ],
+  "32": [
+   "091b9b08cc59d809"
+  ],
+  "48": [
+   "5247f0b219bfbc7d",
+   "7f35d00097ccac5a",
+   "aec47054f1361a4c",
+   "b17f9c1809f12d52",
+   "ba1aa503420aa315",
+   "db92d51507d3fece"
+  ]
+ }
+}

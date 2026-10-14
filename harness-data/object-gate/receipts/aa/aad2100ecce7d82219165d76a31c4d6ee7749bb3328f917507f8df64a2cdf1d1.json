@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "aad2100ecce7d82219165d76a31c4d6ee7749bb3328f917507f8df64a2cdf1d1",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "shallow turquoise sea water tiles, 2 variants",
+ "label": "pirate-isles/pi-water",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "shallow sea water tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain water surface spanning the full 16x32 area with horizontal ripple details suitable for top-down JRPG view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4247
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water surface tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain water tiles with top-down horizontal ripple highlights spanning the full 16x16 tile areas.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4728
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water terrain surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain water tiles with top-down horizontal ripple highlights and shadows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6782
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "shallow sea water tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain water texture viewed from above spanning the full 16 rows across two 16x16 tiles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3957
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:32.183Z",
+ "cells": {
+  "16": [
+   "232855634015d8a3",
+   "a6d61d3aa0ef3169"
+  ],
+  "24": [
+   "085d42d4913cba9e",
+   "0c6b3fa93f6b45e1",
+   "2bed56f014747576",
+   "5ffd5470796ee7c5",
+   "6472de08e8d32baf",
+   "6e73f111a6bc44db",
+   "b03a1872948b8075",
+   "b2695e80fcd43f07",
+   "bcaed472920b90f3",
+   "da8cbf8c64be6901",
+   "dea6d4312451dacc",
+   "fa08c18d13ab1813"
+  ],
+  "32": [
+   "a28413c7e555137e",
+   "f45a659824439646"
+  ],
+  "48": [
+   "01fb9907ca50d76f",
+   "4604968ab71076ba",
+   "74c29cfbe7f899ff",
+   "7a2bbdc1d14cd847",
+   "a81a4de0dc15dd44",
+   "ac2ffb8841deac9e"
+  ]
+ }
+}

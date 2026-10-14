@@ -428,8 +428,11 @@ for m in WALL:
 
 
 # ═══════════════════════ 지붕 ═══════════════════════
-def slate_px(gx, gy, base, mat='slate'):
-    """슬레이트: 4px 줄, 3~5px 판 엇갈림, 판 윗줄 밝게 · 아래 줄 그늘."""
+SLATE_V1 = [False]      # 옛 슬레이트 무늬로 그릴 조각(새 무늬가 3/4 관문에서 떨어진 것) — 아래 V1_KEEP
+
+
+def slate_px_v1(gx, gy, base, mat='slate'):
+    """옛 슬레이트(2026-10-14 첫 판): 4px 줄, 3~5px 판 엇갈림, 판 윗줄 밝게 · 아래 줄 그늘."""
     row = gy // 4; yy = gy % 4
     xs = gx + (2 if row % 2 else 0); xx = xs % 5
     t = base
@@ -437,6 +440,19 @@ def slate_px(gx, gy, base, mat='slate'):
     elif yy == 0 and xx < 3: t += 1
     if xx == 4 and yy in (1, 2): t -= 1
     if h32(xs // 5, row, 9) % 7 == 0: t -= 1
+    return (mat, t)
+
+
+def slate_px(gx, gy, base, mat='slate'):
+    """슬레이트(화풍 정렬 2026-10-14, 버들항 기와 문법): 4px 줄, 5px 판 엇갈림. 판마다 단 ±1, 윗줄 = 몸+1(왼쪽 끝 화소 +2 빛),
+    판 사이 세로 틈·아래 겹침 그늘 = 몸-2 — 판 하나하나가 읽힌다."""
+    if SLATE_V1[0]: return slate_px_v1(gx, gy, base, mat)
+    row = gy // 4; yy = gy % 4
+    xs = gx + (2 if row % 2 else 0); xx = xs % 5
+    v = h32(xs // 5, row, 9) % 7
+    t = base + (1 if v == 6 else -1 if v == 0 else 0)
+    if yy == 3 or xx == 4: return (mat, max(0, t - 2))
+    if yy == 0: t += 2 if xx == 0 else 1 if xx < 3 else 0
     return (mat, t)
 
 
@@ -1043,6 +1059,18 @@ def sheet(path=None, z=3):
     return contact(items, path or os.path.join(OUT, 'buildings', 'preview.png'), z=z, W=2200)
 
 
+# 화풍 정렬 2026-10-14: 새 슬레이트로 다시 그린 sp-shop-gears 는 object-gate FAIL(정면 입면도) → 옛 무늬 그대로 둔다.
+V1_KEEP = {'shop-gears'}
+for _it in R.items:
+    if _it['id'] in V1_KEEP:
+        def _wrap(c, _f=_it['draw']):
+            SLATE_V1[0] = True
+            try: _f(c)
+            finally: SLATE_V1[0] = False
+        _it['draw'] = _wrap
+
+
 if __name__ == '__main__':
     R.export(); sheet()
     print(len(R.items), 'buildings', len(B), 'blocks')
+

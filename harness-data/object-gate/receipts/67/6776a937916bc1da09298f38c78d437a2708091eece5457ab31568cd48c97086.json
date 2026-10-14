@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6776a937916bc1da09298f38c78d437a2708091eece5457ab31568cd48c97086",
+ "width": 48,
+ "height": 64,
+ "kind": "organic",
+ "name": "prehistoric stone-age swamp tree",
+ "label": "prehistoric/ph-swamp-tree",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "canopy and trunk of swamp tree",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The canopy displays a foreshortened top surface across rows 0-12 with top-down lighting on the foliage clusters, transitioning to a shaded south-facing lower canopy with hanging vines. Mangrove stilt roots spread outward and downward into the foreground.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5986
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "foliage canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The foliage canopy is drawn as a rounded 3D volume with extensive illuminated top surface (rows 0 to 14) foreshortened towards the viewer, and the stilt roots spread outward in top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5070
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tree canopy and trunk with stilt roots",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The foliage canopy is drawn in 3/4 view with a clearly visible, illuminated top surface spanning rows 0-14, and the root system spreads outward at the base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4410
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "foliage canopy and stilt trunk",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tree canopy is rendered with a foreshortened upper hemisphere (rows 0-12) displaying lit leaf clusters viewed from above, with stilt roots spreading forward and downward at the base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6253
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.702Z",
+ "cells": {
+  "16": [
+   "02c5a9f30b6261c9",
+   "3ddbcdaca5d60839",
+   "6c9d71035bbefb8c",
+   "6ee01f9cf526e8ec",
+   "709bc3c1e86f3dd7",
+   "830203309ddc46c4",
+   "8ad0e62e99b7ff9d",
+   "97187c9e34dfa243",
+   "b042f1e0e5d5f71a",
+   "b177fbc679504dd5",
+   "c8d9db5060398782",
+   "fec0460e1777f74e"
+  ],
+  "24": [
+   "0f4e59d1002b6461",
+   "14529cb29a3b4e75",
+   "74b0e268ee28826a",
+   "75b134e614279ae7",
+   "86f2c9d51088c143",
+   "8ffefe62db610666",
+   "97c45d9a4025c887",
+   "a72edecae6c2a906",
+   "c788090cd54babe9",
+   "c959e760566c0a34",
+   "ca989c3c5df0e514",
+   "fee8ccfd31e830d4"
+  ],
+  "32": [
+   "02ae6d1fe447ebdc",
+   "13e2c373512f15e3",
+   "1ca560eeead08970",
+   "2302d9618eb6e5bd",
+   "3153700178d81783",
+   "3ad58c458f3f3eb1",
+   "938dcddd95b33a7e",
+   "9c1d7f33bb77287f",
+   "a444832093206d1e",
+   "acf0897cb1cbc18e",
+   "deb9c88c7c5767c0",
+   "f59c89a7545f45af"
+  ],
+  "48": [
+   "0e06cc6f0d29890f",
+   "7678d29f291633ff",
+   "7c24981f5f4a7e21",
+   "e04625ad6a2c9e64"
+  ]
+ }
+}

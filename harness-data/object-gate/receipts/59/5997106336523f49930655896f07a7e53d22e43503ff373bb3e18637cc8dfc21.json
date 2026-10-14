@@ -1,0 +1,143 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5997106336523f49930655896f07a7e53d22e43503ff373bb3e18637cc8dfc21",
+ "width": 48,
+ "height": 96,
+ "kind": "structure",
+ "name": "돌탑 집(원뿔 지붕)",
+ "label": "sky-island/si-tower-house",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone tower building with conical tiled roof",
+    "kind_matches": true,
+    "top_rows": 38,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large conical tiled roof displays an extensive south-facing top slope spanning roughly 38 pixel rows (rows 4–41), properly foreshortening the structure in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7625
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone tower with conical roof",
+    "kind_matches": true,
+    "top_rows": 38,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The conical tiled roof clearly displays its top slope over roughly 38 pixel rows (rows 4 to 41), proper for 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4419
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone tower with conical roof",
+    "kind_matches": true,
+    "top_rows": 38,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large conical roof prominently displays its south-facing slope with downward-curving tile courses across 38 pixel rows, establishing the standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7634
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone tower house with conical shingled roof",
+    "kind_matches": true,
+    "top_rows": 38,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features a large conical roof showing its front-facing slope over roughly 38 pixel rows (rows 4 to 41), typical for 3/4 top-down perspective buildings.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13692
+  }
+ ],
+ "decidedAt": "2026-10-14T08:41:08.377Z",
+ "cells": {
+  "16": [
+   "07e3ccdd6d8f0777",
+   "183f530869e25192",
+   "202507ccbea90d38",
+   "237c7af9224301ac",
+   "3aa7289e0e89149d",
+   "41794d2dce05a77f",
+   "47ecba1a508c92e4",
+   "8522a8269c48827c",
+   "a3b31ad1ffc9acdc",
+   "a69687002b83c517",
+   "a968025dbfb2a198",
+   "ae2d15fe1cf086fd",
+   "b9205ec2933f0c20",
+   "dd64e24a96f4901f",
+   "ddb711df059a76dd",
+   "de2b282b47e89c0c",
+   "ed3e2141163624c8",
+   "f2fa16b88cd91311"
+  ],
+  "24": [
+   "13955f9d5160be0c",
+   "2546cda3b103f569",
+   "3e9d8c841ca3e193",
+   "7a5a015d85538d63",
+   "96de95bf6f83ce98",
+   "9df82ccf0e1beafd",
+   "be53ad806824210b",
+   "e9329446cb18fed5"
+  ],
+  "32": [
+   "07367b35d379df65",
+   "104fe0395b056200",
+   "2d744caef2504d47",
+   "40c648d60b30be8a",
+   "4bcd1d5a2d22e281",
+   "4dce539241129d9e",
+   "505bea232153ae6d",
+   "5b6d1ba5b36ccb80",
+   "5c29259b77eb31c3",
+   "834beeae4c3e51ed",
+   "a64132fad71ae05b",
+   "b3f0cf51e4175dd0",
+   "b48bc2a809b8929a",
+   "d428c73f35a66ec8",
+   "d4ea48fc9afe2e57",
+   "d96a6cf526a6a0bf",
+   "ef3e97553a04d903",
+   "ef5c1410da9aede7"
+  ],
+  "48": [
+   "2831a7fe0ce52c47",
+   "a2c4625bb2a7ff8e"
+  ]
+ }
+}

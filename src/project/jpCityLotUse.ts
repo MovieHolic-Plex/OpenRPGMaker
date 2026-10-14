@@ -36,6 +36,33 @@ const INFRA_KIT = /^jp-(river|water|bank|bridge|mark|crosswalk|road-lane|foot-sh
 
 interface Rect { x: number; y: number; w: number; h: number }
 
+/**
+ * fill_region 이 받지 않는 선형 위층 오토타일 재료(라벨 → 오토타일 id). 이 재료로 fill_region 을 부르면 「면 채우기 재료가 아닙니다」로 거절된다 —
+ * 구성기 본문의 `fill(…, "생울타리"|"블록담", true)` 가 optional 이라 2026-10-14 까지 조용히 실패해 울타리·담이 한 칸도 그려지지 않았다.
+ */
+export const EDGE_MATERIAL_AUTOTILE: Readonly<Record<string, string>> = { "생울타리": "jp-hedge", "블록담": "jp-wall-block", "철망 울타리": "jp-fence-mesh" };
+
+/** 직사각형 한 덩이를 선형 위층 오토타일로 3층에 찍는다(모양은 사각형 안 이웃으로 정한다). 4방 비트 N1 E2 S4 W8. 못 찍으면 던진다. */
+export function stampEdgeRect(call: Call, view: LotUseView, mapId: string, r: Rect, autotileId: string): void {
+  const { map, tileset } = view;
+  const g = (tileset.autotileGroups ?? []).find((a) => a.id === autotileId);
+  if (!g) throw new Error(`오토타일 ${autotileId} 이 칩셋에 없다`);
+  const vm = g.variantMap as Record<string, number>;
+  const grid: number[][] = [];
+  for (let y = 0; y < r.h; y++) {
+    const row: number[] = [];
+    for (let x = 0; x < r.w; x++) {
+      const m = (y > 0 ? 1 : 0) | (x < r.w - 1 ? 2 : 0) | (y < r.h - 1 ? 4 : 0) | (x > 0 ? 8 : 0);
+      // 이미 위층에 무언가(건물·소품) 선 칸은 건드리지 않는다 — -1 은 «그대로 둠».
+      const i = (r.y + y) * map.width + r.x + x;
+      const taken = (map.upperTiles[i] ?? -1) >= 0 || (map.upperOverlayTiles?.[i] ?? -1) >= 0;
+      row.push(taken ? -1 : Number(vm[String(m)] ?? -1));
+    }
+    grid.push(row);
+  }
+  call("stamp_layer_block", { mapId, x: r.x, y: r.y, layers: { "3": grid }, reshape: false });
+}
+
 export function fillLotUses(opts: {
   readonly mapId: string;
   readonly seed: number;

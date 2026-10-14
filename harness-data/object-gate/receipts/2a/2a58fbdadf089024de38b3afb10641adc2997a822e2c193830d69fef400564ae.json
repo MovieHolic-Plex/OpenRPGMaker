@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2a58fbdadf089024de38b3afb10641adc2997a822e2c193830d69fef400564ae",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "small red crab on the sand seen from above, claws raised",
+ "label": "pirate-isles/pi-crab",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "carapace / crab body",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crab is drawn in pure front elevation as if for a side-scroller: claws raised vertically into the air (rows 4-7), eyes on top of the carapace (row 6), and legs extending straight down to the floor (rows 10-14) rather than spreading across the ground plane in 3/4 top-down view. Additionally, a living creature does not match the debris category.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 9804
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "crab carapace and body",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crab is drawn in a pure front elevation typical of a side-scroller (legs extending downward beneath the body at rows 10-14, flat front-facing carapace with eyes on top, claws held up) rather than a 3/4 top-down view. Additionally, an active crab with claws raised does not match the debris category.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 8392
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "crab body (carapace)",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crab is drawn in a pure front elevation typical of a 2D platformer or front-view battle sprite rather than top-down 3/4 view: the legs hang straight down beneath the body, claws are raised flat to the sides, and the carapace lacks a top dorsal surface distinct from a front face. Furthermore, a live crab does not match the 'debris' category.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 8188
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "crab carapace",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "A live crab raising its claws is a creature rather than debris. Furthermore, it is drawn in pure front elevation facing the viewer (claws held aloft, eyes on top, and legs extending straight downward) with no visible foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 9913
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.588Z",
+ "cells": {
+  "16": [
+   "fb112287f2d86f44"
+  ],
+  "24": [
+   "522ac7020f1b68d4",
+   "7d90f9fb97364694",
+   "b53583c3a13918eb",
+   "ba3e07d94f6ff105",
+   "bd93dbd40cd3a0ce",
+   "dd30f58862d91156"
+  ],
+  "32": [
+   "1f5a30b51760d3ce",
+   "55a54a3679b34370",
+   "62fd99c6c46faf7b",
+   "887947ce81083c65",
+   "8cab827355ec70f2",
+   "d3bdd1129ef79b61"
+  ],
+  "48": [
+   "160ef641b98160b7",
+   "17fe77afb34109c3",
+   "73fdf12a42288991",
+   "8ac18874751db265",
+   "d1fb648f457fdaed",
+   "e16438be66dab370"
+  ]
+ }
+}

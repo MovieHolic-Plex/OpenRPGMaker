@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d77622f32b986622e6356b152f13bc461da32b1aa5364eca29c7198dea34a99f",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "prehistoric stone-age fern giant",
+ "label": "prehistoric/ph-fern-giant",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fern crown and spreading fronds",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The plant is viewed from a 3/4 top-down angle, showing the upper crown and back fronds (rows 12-20) radiating downward into lower front fronds extending towards the viewer.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5172
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fern plant foliage cluster",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fern is viewed from an elevated 3/4 angle, displaying the upward-facing central crown and fronds (rows 12-19) spreading outward and downward toward the south.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4682
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fern crown and foliage",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The central crown and fronds (rows 12-20) are seen from above in 3/4 top-down perspective, fanning out horizontally and downwards towards the viewer.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3788
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fern plant clump",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The central crown and upper fronds show their top surfaces from rows 13 to 19 with clear top-down lighting and spread, cascading down to the lower fronds.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6736
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.701Z",
+ "cells": {
+  "16": [
+   "069d625aee50d28e",
+   "5d2bab653faf645e",
+   "a62c1dcbb00dea25",
+   "c2d3e1d7252bc1cf"
+  ],
+  "24": [
+   "0b4ec99d6cbd9217",
+   "179ad1af10f1b3d3",
+   "189d360f94d22f8d",
+   "2eb623596ba83f1f",
+   "385e947c0eee3803",
+   "4eb383e01910149e",
+   "593966954c6f4859",
+   "5c79e47a58148e71",
+   "79234ed215035f16",
+   "8790319da4e86a20",
+   "953598dc56a784c1",
+   "9db2ec9185fe7cbd",
+   "b6a5f7540c4cac08",
+   "cb4bea1c1cef89a6",
+   "da0598d089be943d",
+   "f062f586c8dd347e",
+   "f0ba4a6d50570f2c",
+   "f3435063eec9e0c8"
+  ],
+  "32": [
+   "c1fd4cf6d444ec05"
+  ],
+  "48": [
+   "492e1df238f42919",
+   "7a46a256afa0322d",
+   "ac74738dfa3b4ade",
+   "aca9eda784b9d7f8",
+   "c73c68b176f845d3",
+   "d891885846e5aa7a"
+  ]
+ }
+}

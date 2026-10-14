@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "96d301e25d53041b4c0db80fd27f99c4a0fb5034929661c9eb4ca64e04ee1445",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "판석 보도(배수 홈 변주)",
+ "label": "steampunk-city/sp-flag-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flagstone pavement ground tile with central drainage grate",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting stone pavement with a small central drain grate, viewed from the standard top-down perspective across the entire surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4357
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flagstone pavement tile with drain grate",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing flat ground flagstone paving with a central drainage insert across the 16x16 surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2825
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flagstone pavement tile with drainage grate",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing stone pavement blocks with an embedded square drainage grate in the center; the entire 16x16 surface represents the horizontal ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4104
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone pavement tile with central drain grate",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a flat ground terrain tile showing flagstone pavement with seams and a small drain grate viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4017
+  }
+ ],
+ "decidedAt": "2026-10-14T08:37:24.710Z",
+ "cells": {
+  "16": [
+   "d477b0214c2994d5"
+  ],
+  "24": [
+   "0158061485fc2d05",
+   "2438242dceee35a9",
+   "384701974d38df1c",
+   "67d715549c31e699",
+   "76cc298e6662e52a",
+   "785704b090150c4b"
+  ],
+  "32": [
+   "1b6419baa328cab8",
+   "4f0feb02e25bb4af",
+   "57ae30ba24aaa151",
+   "62ed8002475e8238",
+   "b0581b4c74a7e5a3",
+   "d1b73155b8daf2e1"
+  ],
+  "48": [
+   "1501072735f34261",
+   "39987f6800db8505",
+   "45e9b344eef51a10",
+   "46a4dfe95762b530",
+   "e16e4332822a434b",
+   "f2fc335d8a91156a"
+  ]
+ }
+}

@@ -5,6 +5,64 @@
 
 <!-- releases -->
 
+## 0.214.0 — 2026-10-14
+
+### 기능
+
+- **start** — redesign launcher home experience (`310370d`)
+- **beodeul-farm** — 3판 화풍 정렬 — 버들항 민가 문법 헛간·닭장, 가는 울타리, 반듯한 흙길 오토타일, 풀 무늬 (#2541) (`17cee01`)
+- **jp-city** — rebake facility interiors with only gate-passing pieces (59 objects, 322 cells append-only); hospital doors use the school sliding door (`f8a7d06`)
+
+### 수정
+
+- **ci** — record the ten new chipsets on the change-tileset form (`f4d3d23`)
+- **ai** — composers claim the game start on a blank start map; campus reports dead doors; example-copy warning no longer drives rebuild loops (#2540) (`4fdf3d6`)
+- **jp-city** — office-free and hospital examples use passing pieces in place of the held ones (`e79fa6f`)
+- **ai** — layout-built hand interiors carry composed-layout room labels; jp facility note says keep a clean program build instead of rebuilding it by hand (`b734e9a`)
+- **jp-city** — hold 17 gate-failing facility pieces out of the bake; keep inter-floor stairs where the author put them when refitting doors (`fbe80f3`)
+
+### 문서
+
+- **jp-city** — facility interiors — gate hold list, door-fit fix, layout room labels, gemini-4-argon assistant scores (`f98f21b`)
+
+### 테스트
+
+- **jp-city** — door-link fixture for hospital/school-annex/IT-office examples (`ec0e40c`)
+
+### 잡무
+
+- **jp-city** — refresh interior reports after merging origin's copy-warning wording (`d498536`)
+- **jp-city** — regenerate interior room templates after merge (`4081d14`)
+
+### 기타
+
+- **jp-city** — rebake after the hospital/phone-booth redraws (`d1e786d`)
+- **jp-city** — clearer top planes on 7 hospital machines and the office phone booth; wiki section for the facility interiors (`42e3e3f`)
+- **jp-city** — hospital/school-annex/IT-office interiors (76 pieces, 5 example maps, programs), routing; gate round 2 pending (`a4dbe81`)
+
+## 0.213.0 — 2026-10-14
+
+### 기능
+
+- **interior-plus** — museum/ship/arena room kinds, layout programs, templates, references and assistant routing (`0ac4f12`)
+
+### 수정
+
+- **interior-plus** — guidance — rebuild at most once by shrinking room w/h, never re-type layout coordinates; doorway gaps through a wall face are the normal form (`1c7fa6a`)
+- **interior-plus** — redraw gate failures until every piece and assembled room passes object-gate (`8ee3869`)
+- **interior-plus** — guidance pass — stands sit above the arena floor in layouts, build only the rooms named, stop reference crawling (`f0fdea7`)
+- **interior-plus** — one adversarial QA pass — painting line, cabinet tops, portcullis in wall, seated cask/sacks, readable chain/capstan/pin rail, hull skirting, calmer sand, re-laid rooms (`96fe6c4`)
+
+### 문서
+
+- **interior-plus** — assistant runs on gemini-4-argon medium, before/after guidance (`e1c663e`)
+- **interior-plus** — gate results — all pieces and rooms pass, dropped four, north-facing cannon (`f5e1d96`)
+- **interior-plus** — openwiki section and interior-room-authoring skill for museum/ship/arena (`a41048b`)
+
+### 기타
+
+- **interior-plus** — museum/ship/arena hand-pixel pieces appended to atlas_biome_interior (gate pending) (`5c6b7b6`)
+
 ## 0.212.0 — 2026-10-14
 
 ### 기능

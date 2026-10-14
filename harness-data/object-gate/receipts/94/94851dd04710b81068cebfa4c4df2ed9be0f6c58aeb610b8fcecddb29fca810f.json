@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "94851dd04710b81068cebfa4c4df2ed9be0f6c58aeb610b8fcecddb29fca810f",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass ground tile",
+ "label": "sky-island/si-grass-b2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass ground surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile filling the 16x16 area, showing top-down grass texture.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6516
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flat grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 pixel-art ground surface texture representing top-down grass terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3824
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ground terrain texture representing grass, filling the entire tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4009
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flat grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a 16x16 flat terrain ground tile depicting green grass texture; the entire tile represents horizontal ground surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3578
+  }
+ ],
+ "decidedAt": "2026-10-14T08:41:08.372Z",
+ "cells": {
+  "16": [
+   "e25ff241d0bc8a71"
+  ],
+  "24": [
+   "0966a1470160e8c5",
+   "10faeb6272c65a96",
+   "54a098b1a19d46eb",
+   "9c9ddf7befb05872",
+   "af493f6578d06e7b",
+   "d85e4a3c9a33ddd5"
+  ],
+  "32": [
+   "193c12162ca205cd",
+   "2317aa7482946002",
+   "258524aa6a536c74",
+   "6383b5f5e0ad3d66",
+   "7fd0cd5f5b53fb6b",
+   "a5be0512efe4714a"
+  ],
+  "48": [
+   "1d0bf1f91daa13df",
+   "870d8f6732293553",
+   "9ac3f176d629d7a5",
+   "b3f69dc836c33208",
+   "c1cd2a9138181440",
+   "f52b2b597579a379"
+  ]
+ }
+}

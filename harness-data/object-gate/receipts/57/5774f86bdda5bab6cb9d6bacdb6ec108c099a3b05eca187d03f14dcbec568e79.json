@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5774f86bdda5bab6cb9d6bacdb6ec108c099a3b05eca187d03f14dcbec568e79",
+ "width": 48,
+ "height": 48,
+ "kind": "terrain",
+ "name": "진흙 길(풀밭 가장자리)",
+ "label": "gothic_manor/gm-path-dirt",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mud path terrain patch",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain patch depicting a mud/dirt path surrounded by grass.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3358
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "mud path terrain patch",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile representing a mud path bordered by grass, viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3611
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "mud path terrain patch on grass",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The asset is a flat ground terrain tile showing a mud path with rocky pebbles bordered by grass, viewed correctly from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3065
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "mud path terrain patch on grass",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile representing a muddy path with small stones surrounded by grass, viewed top-down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3019
+  }
+ ],
+ "decidedAt": "2026-10-14T07:55:00.836Z",
+ "cells": {
+  "16": [
+   "10d32295521a27e5",
+   "1284096bffa57165",
+   "16d2c0e0928031c9",
+   "78c5f31561f043b7",
+   "828ff5fdd42d6f58",
+   "9300d8c127cd9987",
+   "f2b662d4326fb1a5",
+   "f55e5d57d1fbc00d",
+   "f6b88bbe2b8d7924"
+  ],
+  "24": [
+   "154ba7c1d3db9e7e",
+   "23e6c196c3f76b76",
+   "5cf8ed16a33d69fb",
+   "fe7ae07013b45718"
+  ],
+  "32": [
+   "023a2c9bb402002b",
+   "02ee74c8e26b4b02",
+   "178747e8223d346a",
+   "1884f274efc1fdc9",
+   "1aae6b01fda2c43f",
+   "3d416e8d69bec28a",
+   "523e80b8721e6de8",
+   "5a3f8646d6ad2eb6",
+   "613a2937e82108ef",
+   "68420bc70f87512e",
+   "6c348622aa74efaa",
+   "7407be8724b31050",
+   "851ee5579edd971c",
+   "8cd4793ed5e8e36c",
+   "8faf1dad10b5658d",
+   "9562d92f75c622dd",
+   "9726594545368914",
+   "abfa561e042ddf17",
+   "bdcbe771630a0ded",
+   "d5c88fd854375dff",
+   "d9d319d4b500c887",
+   "e026991d7c65d3a0",
+   "f045e78971e87d3f",
+   "f5e2fa8b3cb3f1db"
+  ],
+  "48": [
+   "89fba78747a454ff"
+  ]
+ }
+}

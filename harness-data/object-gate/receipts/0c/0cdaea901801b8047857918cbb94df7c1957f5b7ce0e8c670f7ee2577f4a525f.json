@@ -1,0 +1,125 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0cdaea901801b8047857918cbb94df7c1957f5b7ce0e8c670f7ee2577f4a525f",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "prehistoric stone-age menhir tall",
+ "label": "prehistoric/ph-menhir-tall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall stone menhir with carved/painted runes",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the standing stone displays a distinct lighter, foreshortened top surface across rows 4–8 (approx 5 rows tall) before transitioning to the vertical front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5322
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone menhir / standing pillar",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the standing stone is clearly drawn with a lighter foreshortened top surface spanning rows 4 to 8 (5 rows tall) above the vertical shaft.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4488
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone menhir pillar",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the pillar is clearly visible on rows 4-8 (about 5 pixel rows tall) as a distinct, lighter horizontal plane before dropping to the front vertical face with runes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4752
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall stone menhir / standing pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The menhir is drawn in flat front elevation with a rounded arch silhouette at the top and a completely straight horizontal bottom line at row 45. There is no visible foreshortened top surface or cut face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8373
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.706Z",
+ "cells": {
+  "16": [
+   "351f288ddeb58e21",
+   "883055bce2af0edb",
+   "b2f9c5f85fedb835"
+  ],
+  "24": [
+   "0ef8d4f972f5287e",
+   "1f05762240fb4f5c",
+   "5ae9a10e8a56789e",
+   "604a7f9e207f0548",
+   "a49fa0897d4b003c",
+   "b6e54ecd18287413"
+  ],
+  "32": [
+   "1aba2aa698c004aa",
+   "214b7e104407867f",
+   "30bc12ff85f560c0",
+   "5a585d29559e0b0d",
+   "7a11e4adf43e16a4",
+   "a585e47bd1ba04ad",
+   "a5a63ca25cf4c958",
+   "ae9a316b9b8ae184",
+   "df389d1a1f89f840",
+   "e596c49d87f50e7d",
+   "e9da5d6c0cb8d243",
+   "f5ee0e03c0282d74"
+  ],
+  "48": [
+   "59f479dd17b64d8e",
+   "9063f02df2d7ccc7",
+   "e493470cb77260ca"
+  ]
+ }
+}

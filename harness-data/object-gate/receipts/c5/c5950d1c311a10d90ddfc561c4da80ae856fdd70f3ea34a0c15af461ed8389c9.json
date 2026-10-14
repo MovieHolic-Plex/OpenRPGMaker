@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c5950d1c311a10d90ddfc561c4da80ae856fdd70f3ea34a0c15af461ed8389c9",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "의무실 링 스캐너(넓은 판 윗면 + 고리 몸체 앞면 + 시안 링 + 앞으로 나온 침대 윗면)",
+ "label": "sf-station/sf-med-scanner",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "medical ring scanner (MRI/CT gantry with patient bed)",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the main gantry enclosure is clearly foreshortened and visible across rows 1-8 (8 rows tall, highlighted lighter grey) above the south-facing front body (rows 10-24). The scanner bore opening shows its dark interior (rows 13-17) behind the forward-extending bed.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6620
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "medical ring scanner (gantry cabinet and protruding examination bed)",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main cabinet body features an 8-row top surface (rows 1-8) clearly differentiated in value from the vertical front face (rows 10-24). The scanner borehole shows a recessed dark interior opening (rows 13-17), and the examination bed also displays a 5-6 row cyan top surface (rows 19-24).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7819
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "medical ring scanner (CT/MRI machine)",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the main scanner housing is clearly depicted across rows 1-8 (8 rows tall) in a lighter tone with console details, above the vertical front face (rows 10-25). Additionally, the protruding scanner bed displays its cyan top surface across rows 18-24.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6048
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "medical ring scanner (MRI/CT machine)",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main machine body shows a clearly visible light-toned top surface (rows 1-9, 9 rows tall) above the darker south front face (rows 10-25). Additionally, the protruding scanner bed clearly displays its horizontal top surface (rows 19-24) and front edge (rows 26-27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7219
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.253Z",
+ "cells": {
+  "16": [
+   "1a505ee5f3dbc62b",
+   "6e701933f8196916",
+   "70cd4dacc3784521",
+   "ec691487ba4f2c83"
+  ],
+  "24": [
+   "013155642864e954",
+   "0421259ad76b6844",
+   "277b6956ed0b349c",
+   "286b53fe02691ada",
+   "3354a8a9114d83d7",
+   "411c18a878e57c90",
+   "41d81248bdfcd437",
+   "6ad8109d3fa1f8c9",
+   "6fbe05c6bcc25236",
+   "72ec265c4f48221b",
+   "7dc396e2ceb292da",
+   "9131919d18836875",
+   "9a1a8c18288bfd52",
+   "a73fb43d0f353f2d",
+   "a775a7c540546134",
+   "aedbd944d4585ffd",
+   "b225a8ed4e74284d",
+   "c6e4c6ffcfb256bd",
+   "e5549272f077de8c",
+   "eaac29fad96517c1",
+   "ebd7c129be87b3e0",
+   "ec86c499ede6e603",
+   "f6a4dffbf87c682b",
+   "ff161cfc7e31c03e"
+  ],
+  "32": [
+   "1e4cb52206c1a42d"
+  ],
+  "48": [
+   "22d915c8ec3e8b42",
+   "4401485d20cad246",
+   "602ab73e28649776",
+   "902526266c6a4fc3",
+   "9e2d74c9f7bd0fc9",
+   "cee35b17832bef8f"
+  ]
+ }
+}

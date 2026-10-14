@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ddd29936a1ec732891dd5975f36366dfb8470697c8fc46ab72e3b0d49492f8cf",
+ "width": 48,
+ "height": 32,
+ "kind": "debris",
+ "name": "prehistoric stone-age dino skull",
+ "label": "prehistoric/ph-dino-skull",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dinosaur skull",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The skull is drawn as a completely flat lateral 2D side elevation (like a side-scroller asset). There is no visible top surface across the cranium or snout to indicate 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4961
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dinosaur skull",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The skull is drawn as a flat 2D side-scroller profile with circular eye/fenestra sockets facing directly to the screen and vertical teeth/jaw bars. There is no visible top/dorsal surface (0 rows); the lighter color band is purely vertical gradient shading.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5768
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dinosaur skull",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The dinosaur skull is drawn in flat side-profile elevation with no visible top surface or 3/4 top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4878
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dinosaur skull",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The skull is drawn in pure 2D side elevation (profile view) like a side-scroller sprite, with no visible top surface across the cranium or snout and flat vertical teeth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4028
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.707Z",
+ "cells": {
+  "16": [
+   "1a9945bc2169a63a",
+   "283e166c1be496f0",
+   "2c97985ce7c62407",
+   "3ec254ebc00da50d",
+   "5e992f99387af652",
+   "77794bc8b71f5d30"
+  ],
+  "24": [
+   "06c4018299bf250d",
+   "21ebfbc25df9d4ca",
+   "330712a8538cbe6f",
+   "5a3a7d0c6df018e8",
+   "b22f48663d1b6972",
+   "d0aee59931436463",
+   "d880d6e3e63906fc",
+   "fc29798cd063ed56"
+  ],
+  "32": [
+   "05331f5abb781c76",
+   "0c3a86158bd3dace",
+   "142bff17a9210aa9",
+   "c965434ed1330516",
+   "d605bf89badd5c6e",
+   "ed52e54bf7377c59"
+  ],
+  "48": [
+   "45dd7b0ebac0eb12",
+   "4b5f5e2e929f4e85"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e68766c129fffce951a6987a3c9d656b55337c8cd041b82c4e47b8795464c48a",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "prehistoric stone-age rock s",
+ "label": "prehistoric/ph-rock-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone/rock",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock displays a clear top surface rendered with lighter tones spanning rows 6-9 (4 rows tall), sloping down to the shaded south-facing front face on rows 10-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4000
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone rock",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock has a clearly delineated upper facet illuminated from rows 6 through 10 (approx. 5 rows), contrasting with darker south-facing cliff/shadow facets beneath it, properly depicting 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3626
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "boulder / rock",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock displays a well-defined illuminated top facet from rows 5 to 9 (approx. 5 rows tall) angled towards the camera, with a shaded south-facing front slope below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3824
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone rock",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock has a clearly defined lighter top surface visible across rows 6 to 9 (4 rows tall) sloping down to the shadowed south/front face on rows 10 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3043
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.703Z",
+ "cells": {
+  "16": [
+   "51559ab00eb9546a"
+  ],
+  "24": [
+   "20baab2c57deadf5",
+   "29ba9937806e6c1a",
+   "3641f3fdc6cf47e8",
+   "a15fe09cf02f8b28",
+   "e6e7a63ba2a26d9e",
+   "f2a534a0db41f1cc"
+  ],
+  "32": [
+   "09d49805a0d3e9e4",
+   "1f74807873ffa274",
+   "5b364e5f163f0220",
+   "64800df7f01e8fa1",
+   "783c0a9f73fc76d2",
+   "912c4c44c46b4d31"
+  ],
+  "48": [
+   "10c89405d19c5f59",
+   "218ff88bd20bf0b5",
+   "601c8d8974309919",
+   "9e4fe396849dc103",
+   "b25c818261a097c2",
+   "e0d1663cb1d338d1"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a7d209a9d93476afb65bf2ec6fc0c5ec7e0d5df50f4deaef69869df45618b8aa",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "철쭉 덤불(분홍 꽃)",
+ "label": "modern-campus/mc-azalea",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "azalea bush dome",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush forms a rounded dome with the upper foliage crown visible across rows 1-6 before stepping down into the south-facing front clusters.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6432
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "azalea bush",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush is rendered in 3/4 perspective with an upper foliage tier/top mound spanning rows 1-6 (about 5 rows) visible above the front foliage clumps (rows 7-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8462
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bush dome",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The azalea bush is drawn with a foreshortened top dome spanning rows 1-5 above the lower front foliage clusters, consistent with 3/4 view organic shrubs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5171
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "azalea bush foliage mound",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush mound shows a curved top canopy spanning rows 1-6 with leaf clumps lit from above, transitioning down to the south-facing lower lobes and base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4089
+  }
+ ],
+ "decidedAt": "2026-10-14T08:06:14.291Z",
+ "cells": {
+  "16": [
+   "1cacbf4b779d7c10"
+  ],
+  "24": [
+   "4ec267b53df1491f",
+   "59d3e5cf8aa7f795",
+   "664006b64be16e62",
+   "df719c3d4e609c14",
+   "e253c124e795882d",
+   "e5a11e1b72e54d08"
+  ],
+  "32": [
+   "395eb70b02d0c668",
+   "8531de81c746bb58",
+   "9239700a9dce78d4",
+   "b6fa9e55cec18a3d",
+   "c079d98ae6fd33f0",
+   "e4d0c5d07ed3db89"
+  ],
+  "48": [
+   "0c8c52b648137e31",
+   "43993afee77409d6",
+   "4e74ae4a90be8769",
+   "60fe7d0684bea8ca",
+   "7426422ebcd29fbd",
+   "8e11bcf260c7e071"
+  ]
+ }
+}

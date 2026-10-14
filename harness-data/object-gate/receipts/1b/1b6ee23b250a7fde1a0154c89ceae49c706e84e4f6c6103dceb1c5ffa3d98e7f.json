@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1b6ee23b250a7fde1a0154c89ceae49c706e84e4f6c6103dceb1c5ffa3d98e7f",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "prehistoric stone-age grass",
+ "label": "prehistoric/ph-grass",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground texture tile representing grass covering the full 16x16 top-down ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5761
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 flat ground grass texture filling the entire tile, viewed top-down as expected for terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3289
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 seamless top-down ground terrain texture depicting grass.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2342
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 ground terrain tile representing grass viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3144
+  }
+ ],
+ "decidedAt": "2026-10-14T08:04:55.972Z",
+ "cells": {
+  "16": [
+   "76d1a5c7089a427c"
+  ],
+  "24": [
+   "0bcf8c78e0fa9171",
+   "0e365047a0ab5088",
+   "16f6125bd9a76eda",
+   "2d235460c16651b4",
+   "9707622e1ebc2e15",
+   "cd00ba83100f4c8c"
+  ],
+  "32": [
+   "1a0d3fa4e004984a",
+   "3191842257e3d3a8",
+   "32c8e9e44db559c8",
+   "4597e28d60f647e2",
+   "b438e541c7c9306e",
+   "c2062d0b04641bce"
+  ],
+  "48": [
+   "09048a8240248897",
+   "4898f6120c27028b",
+   "89c4db5807d8a1f0",
+   "c7bc80770e230197",
+   "ec6d7396e617dcfa",
+   "f9d07bb1c4793341"
+  ]
+ }
+}

@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e0af53cd4b3bec507b91080ffcd7a6fa6acfebbf7aa7ae09d7d8e011989dcf7d",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "beach hut with palm-leaf thatch roof and plank walls",
+ "label": "pirate-isles/pi-hut-palm",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "beach hut with thatched roof and plank walls",
+    "kind_matches": true,
+    "top_rows": 39,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building shows a prominent, foreshortened south-facing roof slope spanning rows 0 to 39 with multi-tiered thatch leaves, directly above vertical plank front walls.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6100
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "beach hut with palm thatch roof and wood plank walls",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The thatch roof's southward-facing slope is extensively visible from above spanning rows 1 to 40, fully rendering the top slope in standard 3/4 view above the south wall face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5381
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "beach hut with thatched roof and wooden plank walls",
+    "kind_matches": true,
+    "top_rows": 38,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The palm-leaf thatch roof spans rows 0-38 as an expansive foreshortened top slope facing the camera in standard 3/4 JRPG view, set over the south-facing plank wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5485
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "beach hut with thatched roof and wooden plank walls",
+    "kind_matches": true,
+    "top_rows": 38,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The thatch roof is shown sloping downward from row 1 to row 38, presenting extensive foreshortened top/slope area in classic 3/4 top-down RPG perspective over the vertical front plank wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5312
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.581Z",
+ "cells": {
+  "16": [
+   "088141a625a4b99c",
+   "204f8f91c8202609",
+   "68ee1b6e39bbf67c",
+   "6fa1cf9f1b556038",
+   "7e6b68334f8a90ea",
+   "ac24ce80b568416f",
+   "b26596a02e28273d",
+   "b4ab57b0b4068a14",
+   "d253b0deb8ed6949",
+   "f041f1afde7d3f88",
+   "f971f2ec48c07537",
+   "fe1faaaaa349c463"
+  ],
+  "24": [
+   "0d23f1dc66163457",
+   "330b0167d4b8a880",
+   "399dd86408e496b8",
+   "45d103fdcf922851",
+   "4dfd31468b596e4e",
+   "5b8ae8ebc194c093",
+   "6ee0d90e6863c127",
+   "7a276280906399fe",
+   "cad73800bbf8c8ac",
+   "e491fb090532519f",
+   "e91ea71bbfde88bb",
+   "fcae6eb2462ce4b4"
+  ],
+  "32": [
+   "0a7e17cef5d5f560",
+   "174c9993826d3707",
+   "1ef4ac431c5e73ea",
+   "20555967654c7318",
+   "22ef1ea1edba138b",
+   "3fc5ab5c4c90495f",
+   "56d402f9e3bdfda9",
+   "7dbf430b656d9057",
+   "8c5ac9763e2533b4",
+   "8eeace0d2f43d48b",
+   "939c1fc13ecdabec",
+   "bb604786124038ca"
+  ],
+  "48": [
+   "62a40d4cf9db7c9c",
+   "95c5da940e636a1a",
+   "c4b34467b1d8dc69",
+   "e3a9d8fd7cd8f6c5"
+  ]
+ }
+}

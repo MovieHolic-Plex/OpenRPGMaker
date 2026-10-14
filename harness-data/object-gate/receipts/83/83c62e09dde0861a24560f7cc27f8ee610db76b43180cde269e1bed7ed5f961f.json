@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "83c62e09dde0861a24560f7cc27f8ee610db76b43180cde269e1bed7ed5f961f",
+ "width": 32,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden fence section of round log posts with sawn tops seen from above, two rails",
+ "label": "pirate-isles/pi-fence",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round log fence posts",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tops of the vertical log posts clearly depict sawn end-grain surfaces visible from above, spanning approximately 3 pixel rows of light wood interior.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6939
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round log posts of a wooden fence",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each vertical log post displays a clearly foreshortened sawn top face measuring 3 pixel rows tall (including back rim and inner growth ring detail) before transitioning to the south-facing column shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 27557
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vertical log posts with horizontal connecting rails",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each log post clearly shows a 3-row tall sawn top surface viewed from above with visible end-grain concentric coloring.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4220
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "log posts of wooden fence",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each log post clearly shows an oval sawn top cross-section with pith/annual ring detail spanning rows 1-3 (or 2-4 on alternating posts), measuring 3 pixel rows from back to front edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6798
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.586Z",
+ "cells": {
+  "16": [
+   "ab1bc67515fd5044",
+   "c632cb5f15587506"
+  ],
+  "24": [
+   "2ca00d9d2b3cd9ba",
+   "3a0b1f347641f188",
+   "57df4f9b810c73af",
+   "678adb91c22458c2",
+   "6b0ffc98ed6094b3",
+   "918dff9485512e76",
+   "9210551d7a269594",
+   "9cc60ea2169e0778",
+   "a7c23aad8fb4625f",
+   "a956230c5aeaaaf4",
+   "aa1dc4c445660de8",
+   "ffea5cb4ce459053"
+  ],
+  "32": [
+   "716c2732f1003d72",
+   "a50549bb85c4df57"
+  ],
+  "48": [
+   "5d054646872c5e93",
+   "65c582c56ac7793b",
+   "88598dd5b26a3da3",
+   "c0c02b5b0302c8af",
+   "d16c6b854c91fdc2",
+   "f9ef89dced76d281"
+  ]
+ }
+}

@@ -1,0 +1,161 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d1a906adb1137eb99b0a0433798ff5a43d60e07dc142d6a2cda1b674a46d632c",
+ "width": 48,
+ "height": 80,
+ "kind": "structure",
+ "name": "흰 돔 회칠 집",
+ "label": "desert-east/de-house-dome-white",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "whitewashed domed building with rooftop terrace",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building clearly shows its top surface as a deep rooftop terrace (rows 16 to 47, ~32 rows) enclosed by parapets with a dome sitting on the floor, above the south vertical wall (rows 49 to 79).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12953
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "white domed building with rooftop terrace and front door",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a wide rooftop terrace and dome spanning rows 16-47 visible from above, set over the south-facing front wall (rows 49-79) with an arched door.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4556
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "white plastered building with roof terrace and dome",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building clearly shows its top roof terrace floor and parapet from above (rows 18-46) with a central dome, above a south-facing front wall with an arched door (rows 49-79).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4649
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "white domed building with rooftop terrace",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building clearly shows its horizontal rooftop terrace floor and surrounding parapet from row 16 to row 47 (approx 30px deep) above the front facade (rows 48-79), correctly matching 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8813
+  }
+ ],
+ "decidedAt": "2026-10-14T08:01:48.460Z",
+ "cells": {
+  "16": [
+   "0e3d049659d8f818",
+   "22ef0e71980b8481",
+   "32e71163b572373b",
+   "405ab2490a9be04c",
+   "5c79f4b873bc6419",
+   "721ae0cc5b599c84",
+   "75f2824a485e081a",
+   "8101b501ffa5cf67",
+   "a27b303d5685999e",
+   "b453fb232d50cfc6",
+   "b556f863e3991f1d",
+   "e1dc353a99759090",
+   "e389390f5f2f530a"
+  ],
+  "24": [
+   "00fcb68a98b98c0f",
+   "203d0f9f9bb82d16",
+   "397fdb74a6b079ba",
+   "498420b034355e3f",
+   "4c4c655a4ee83870",
+   "769e0ba10f2be448",
+   "775d80ef0ab00b3f",
+   "82d7e64f821691f5",
+   "a5a08447c8be5700",
+   "ca91399c1aa36416",
+   "d4c8f46676a82aa2",
+   "db3a2e8a95f4bdb0",
+   "e8106373848f2578",
+   "f1645c0284b94b38"
+  ],
+  "32": [
+   "128965e5a3892893",
+   "149e6e11e4498528",
+   "168b39771732e3f6",
+   "1853f6bbacc3750f",
+   "33f07c4fb6a5e294",
+   "377af22de72f919b",
+   "3b293647ae27f1eb",
+   "5130039c43ba7f00",
+   "5dd003e3dddfdb15",
+   "647e1d42279aae00",
+   "6e50b13983214e41",
+   "6ed1f9a7b27bdc92",
+   "702971ee183bb321",
+   "7d780946ba707baf",
+   "8e7691a266da67c2",
+   "8ee85587bc631893",
+   "9117394d5295a3e8",
+   "9ab869623bffa384",
+   "afa88fb64e7b51db",
+   "c0d76d5fc41c0b17",
+   "c2a580efcc39cb7a",
+   "c5735e486adf8f55",
+   "df52cc4b195a312d",
+   "e609ea5f0b8aaad5",
+   "e7f7050c456063d6",
+   "e8542095d305aa4f",
+   "e9a95bc590c72954",
+   "ec7601a92a482377",
+   "ee35cdac1aa36689",
+   "f0d926f91f20250d",
+   "f3c4f01a2b4a4205",
+   "fb52baae876b4081",
+   "ff578498c95c4d39"
+  ],
+  "48": [
+   "2121a480a4b1cc09",
+   "992930889b7d8c83",
+   "a3caf4ec9c78c1e3",
+   "fa58d2104f5dd991"
+  ]
+ }
+}

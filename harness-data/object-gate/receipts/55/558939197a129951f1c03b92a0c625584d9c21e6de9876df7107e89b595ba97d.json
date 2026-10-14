@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "558939197a129951f1c03b92a0c625584d9c21e6de9876df7107e89b595ba97d",
+ "width": 64,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "선술집 바(놋쇠 난간 + 잔)",
+ "label": "steampunk-city/sp-bar-counter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tavern bar counter",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bar counter top surface spans rows 4 through 12 (approx. 9 pixel rows) with items resting on it, followed by a brass railing/edge trim at rows 13-14 and the south vertical panelled face down to row 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5226
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tavern bar counter with brass trim and paneled front",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter top is clearly visible from rows 4 to 12 (9 pixel rows) with mugs and bottles resting on it, leading to a brass edge at row 13-14 and a paneled front face below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5338
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tavern bar counter",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden bar counter has a broad foreshortened top surface spanning rows 4-12 (approx. 9 pixel rows) holding mugs and bottles, with a brass rail edge, above the south-facing paneled front facade (rows 15-26).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3605
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tavern bar counter",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter's horizontal top surface is prominently visible across rows 5-13 (approx 9 rows tall) displaying mugs and bottles, with the front-facing wooden paneling and brass rails below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6075
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.532Z",
+ "cells": {
+  "16": [
+   "16e633d011e4a5b0",
+   "170f236382c0eb26",
+   "3129256cc4149f27",
+   "4fc33ab712a6f963",
+   "7e0fd2b5d6c9b831",
+   "d8e5ad14bbb7760d",
+   "e076f14534584541",
+   "f300a4193d71c070"
+  ],
+  "24": [
+   "07df1359d0ea11e6",
+   "0b192870fbad0de9",
+   "0b7ac0236d215184",
+   "115b2584ac54d93c",
+   "295dc1c8e743f81d",
+   "2ac24d3afb792307",
+   "3dc0c62c56c93363",
+   "3e97f66345791842",
+   "46599f601b47459b",
+   "4fee145084e7f5ce",
+   "6301e739632c33c9",
+   "69372091e6a30b15",
+   "6bbe11fb408432b0",
+   "6fa291b52acccf5e",
+   "715d755b1f707928",
+   "78f158d1fbf1dc6f",
+   "7a2a9b5d6408aede",
+   "7a82883cfa0a7e73",
+   "7d42558c80c3bf7e",
+   "83f6f3ca981a1af4",
+   "922ef630f15ffc76",
+   "9cc9d059fdbc4bc9",
+   "a01c0ac405bb3355",
+   "a5688c80793e89c9",
+   "b278bf5a6a920c43",
+   "b3d1357ba64cf629",
+   "c1b9eb6306374f1a",
+   "c47e972e794b3607",
+   "cfcfcc6c7b6989ba",
+   "d14c7beb463568d1",
+   "d375c8e4126a8761",
+   "e42fbd149d4f51de",
+   "e9ab81edc23d40c5",
+   "ec241c9fc4a856a0",
+   "f01d663eeb4b3cd1",
+   "f585a24847de60fe"
+  ],
+  "32": [
+   "05cff348045838ad",
+   "81e547dd0e4b6a76"
+  ],
+  "48": [
+   "149f91e8a057d1f5",
+   "1bf3a7218958d250",
+   "252e1dd57508809e",
+   "25d9697a3552917b",
+   "48abadd21539557c",
+   "48ecd7dafa96a52c",
+   "5692d414c96e98f4",
+   "7c69004cf2812db9",
+   "8258113bbb94c0be",
+   "867a6d47d5281218",
+   "94819b22e62999cd",
+   "ab3e3bbd6a2fd705"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f9ac0dd620f7868797d957db11078cb5159f4582f155661057f87db45c8884f0",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "운하 돌다리 서쪽 난간(남북으로 건넌다)",
+ "label": "steampunk-city/sp-bridge-w",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "west railing and pavement of north-south stone bridge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Top-down bridge edge terrain tile showing the canal water on the far left, a vertical railing top surface (columns 2-5) running north-south, and stone pavement on the right across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5035
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "west railing and deck of north-south stone bridge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A terrain tile showing the top surface of a north-south bridge railing on columns 1-5 and stone bridge deck paving on columns 6-15, viewed properly from above in top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4070
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "west railing and deck of north-south stone bridge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a north-south canal bridge segment; the stone railing running along the west edge shows its top horizontal surface viewed from above across all 16 rows (columns 1-4) beside the bridge deck surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3984
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone bridge deck with west railing",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "North-south bridge terrain tile displaying the top surface of the west railing along the left edge and the bridge walking surface across the remaining width, viewed correctly from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 21567
+  }
+ ],
+ "decidedAt": "2026-10-14T08:37:24.710Z",
+ "cells": {
+  "16": [
+   "1568eb1aa1401c01"
+  ],
+  "24": [
+   "5264bb5cde603f8e",
+   "77b4fde2cd40ae42",
+   "926b1c03d0b218e0",
+   "c188e6333792c27d",
+   "d9eb7280bf1381eb",
+   "e8d5c515b05d6275"
+  ],
+  "32": [
+   "003f844a24b82bad",
+   "1d78c679fd5bd148",
+   "835396200a8c7297",
+   "a16c069eebf5c7e2",
+   "a5ead32030e4dff5",
+   "a6e38be3181788e4"
+  ],
+  "48": [
+   "16d85197b8f30ed8",
+   "50918d2188488cd6",
+   "a0b015b1d0d1253f",
+   "a8bef8d24c18862e",
+   "aff170e50e5b5572",
+   "d5c80d3263674c63"
+  ]
+ }
+}

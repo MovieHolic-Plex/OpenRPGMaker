@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e4c264845e023b0d38626af3d5922b0d93889aa408ef836610b6fa51f19ee0fe",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "bottom tip of a floating island rock underside (terrain)",
+ "label": "sky-island/si-tip-l",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floating rock underside tip",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing the underside/bottom tip of a floating rock island against the open sky; as an underside rock face, no horizontal top surface is expected.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6766
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "floating island rock underside tip",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rocky downward-pointing tip representing the underside cliff/stalactite terrain of a floating island against the sky; properly categorized as terrain cliff face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5032
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "floating island rock underside",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing the hanging underside/stalactite-like bottom tip of a floating island against sky background; properly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5755
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bottom tip of rock underside",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rocky underside/hanging tip of a floating island against a sky backdrop; correctly classified as terrain/cliff underside where no top surface is expected.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4352
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.883Z",
+ "cells": {
+  "16": [
+   "75f9518150500e4b"
+  ],
+  "24": [
+   "173473041aba951f",
+   "30bce3e038f8cf0e",
+   "34b0950415d1c23a",
+   "6a05b621ca193093",
+   "c2aebcefc3d4e261",
+   "fe98c5c89b9b8696"
+  ],
+  "32": [
+   "1f4e25ec7569ffe6",
+   "570a0eee84faa4c0",
+   "5a853fe6e4ddd081",
+   "7b2a1bd981b438cf",
+   "b8c6a731eb7b166a",
+   "ddcc6cc49375540e"
+  ],
+  "48": [
+   "3e4efa124940b873",
+   "3eab37423947906c",
+   "98df2ad1e9621be5",
+   "a3ce0d0fac166e31",
+   "dea498f35fbe9827",
+   "e030c11c6e310ba6"
+  ]
+ }
+}

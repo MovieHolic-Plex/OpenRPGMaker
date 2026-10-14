@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5ccd103e0fe5c2878b67988ec1f39aa52ecf873310321de7f14c88ec81d94cec",
+ "width": 48,
+ "height": 48,
+ "kind": "container",
+ "name": "석탄 화물칸(위가 트여 석탄이 보인다)",
+ "label": "steampunk-city/sp-wagon-coal",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "coal freight car",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": true,
+    "opening_rows": 11,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the freight car is open and viewed from above at a 3/4 angle, displaying an 11-row deep interior filled with coal from row 8 to row 18 above the front rim (rows 19-20).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5151
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "coal freight car / hopper",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 12,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the freight car is open, showing a 12-row deep interior filled with coal in 3/4 top-down perspective, with the south wall visible below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6481
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "coal freight cart",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": true,
+    "opening_rows": 12,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The open top of the freight car is clearly visible from above (rows 7-19) showing the dark coal load inside surrounded by the cart's rim, with the front face visible below (rows 21-33).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3642
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "coal cargo cart",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 12,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The open top of the cart is drawn foreshortened in 3/4 top-down view with about 12 pixel rows of coal visible inside the rim, above a prominent south-facing side wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4787
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.528Z",
+ "cells": {
+  "16": [
+   "10b1bbfc14dd4005",
+   "4abd42560cab859b",
+   "58b4871a1ccce061",
+   "8d1d7a2a9122fdf5",
+   "9bd574f1c6e11cd0",
+   "c5c727a56fdaf184",
+   "c9f6924b98bdca5c",
+   "ef737bb336aa366e",
+   "f040e61902f1c799"
+  ],
+  "24": [
+   "5fe7b5d0eff8cf8e",
+   "8114ab1cf99ef97e",
+   "92ed95b0ded3e1d2",
+   "bece2839e7441d8d"
+  ],
+  "32": [
+   "085e278a0ab44d5e",
+   "1c1d7fb8184a2d18",
+   "211de024d8bfd07b",
+   "2da6ebfcba9c595c",
+   "380dc314355a0877",
+   "3dd535423cd52062",
+   "42294a32db466838",
+   "4e2ef88a1215aecb",
+   "4f79f4164ec6c031",
+   "59beb844849c4d56",
+   "5d032e3421e8a939",
+   "6f10b21090267c4c",
+   "8569feaf51dae340",
+   "b1a498929c008ce1",
+   "bdab35f0aad4dfc5",
+   "bde4c67cd80f6076",
+   "c2f432af5e72259c",
+   "ccf676eac2c9e51f",
+   "d715f9577cc1fed8",
+   "ec8b4e6778193fe7",
+   "f66bebd2471079a2",
+   "f7f5f2611834c5b4",
+   "fcb9cf609d176483",
+   "fd8c2a0a6a8d4336"
+  ],
+  "48": [
+   "7a4a70ebc557a03b"
+  ]
+ }
+}

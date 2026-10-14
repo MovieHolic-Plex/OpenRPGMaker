@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fd781efb5ac974749f842ca936c9c3e46ca0f360fcd3e10dbdde384647b308cb",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "round dartboard with red and cream segments and two darts stuck in it",
+ "label": "pirate-isles/pi-dartboard",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dartboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Dartboard is drawn flat-on as appropriate for a wall-mounted item hanging on a north wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4437
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dartboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted dartboard displayed flat against the wall with colored segments and embedded darts, consistent with the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6036
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round dartboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted circular dartboard mounted flat to the wall with segments and darts; flat front elevation is appropriate for wall-mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3266
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "circular dartboard mounted flat against wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Dartboard is mounted flat against the north wall, showing its face directly to the viewer as expected for wall-mounted decor.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4046
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.593Z",
+ "cells": {
+  "16": [
+   "4b39a0809eff648b"
+  ],
+  "24": [
+   "1127dbdc4a5322b5",
+   "22bc28d8aafe213c",
+   "71cbb4a21a1b22b8",
+   "c40b68325e1a958a",
+   "c549820144af1973",
+   "f80e2c6adce067eb"
+  ],
+  "32": [
+   "5f1642102b4c4f0c",
+   "65a3f14c58704402",
+   "ab76bd8a520e56bb",
+   "ee0066506299f763",
+   "f96e2c20d92c20ae",
+   "fd7dc365b5af7f81"
+  ],
+  "48": [
+   "2eee2b0e33108fc9",
+   "6cb95d63780753de",
+   "74f1d4c67c7c7986",
+   "79a341c59f815b34",
+   "dce568148aff9a0b",
+   "e81f0b2011aa6158"
+  ]
+ }
+}

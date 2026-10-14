@@ -33,7 +33,7 @@ def cone_mask(ax, ay, cx, ey, rx, ry, x, y, power=0.62):
     return u, (y - ay) / max(1, ey + ry - ay)
 
 
-def thatch_cone(c, ax, ay, cx, ey, rx, ry, base=3, tier=5, s=0, mat='thatch', power=0.62):
+def thatch_cone(c, ax, ay, cx, ey, rx, ry, base=3, tier=5, s=0, mat='thatch', power=0.62, ramp=True):
     """이엉 원뿔 지붕: 처마 곡선을 따라 휜 겹(tier px). 겹마다 머리 빛·몸 짚 가닥(짧은 세로 획)·밑 그늘.
     빛은 왼쪽(원뿔 둘레 위치 u)에서 오른쪽으로 네 단계. 잡음 점은 쓰지 않는다(가닥 획만)."""
     n = NT[MI[mat]]
@@ -50,6 +50,8 @@ def thatch_cone(c, ax, ay, cx, ey, rx, ry, base=3, tier=5, s=0, mat='thatch', po
             tp = int(yy) % tier; ti = int(yy) // tier
             t = base + (1 if u < 0.22 else 0 if u < 0.55 else -1 if u < 0.82 else -2)
             if v < 0.12: t += 1
+            # 2판(화풍 정렬): 위에서 내려다보이는 꼭대기 쪽 겹을 한 단 밝게(처마 쪽까지 어둡히면 관문이 정면 입면으로 읽었다)
+            if ramp and v < 0.4: t += 1
             # 짚 가닥: 겹마다 엇갈린 세로 획
             col = (x + ti * 2) % 3
             if tp == 0: t += 1
@@ -210,7 +212,7 @@ def rock_hill(c, x0, y0, w, h, top_h, mat='stone', cap='grass', s=0, cell=10, ro
             j = y - back[i]
             if cap == 'grass':
                 import terrain as _T
-                gm, gt = _T.p_grass((x0 + i) % 16, y % 16)
+                gm, gt = _T.p_grass0((x0 + i) % 16, y % 16)
                 t = gt + (1 if u < 0.3 else 0 if u < 0.72 else -1)
                 if j == 0: t = 1
                 elif j == 1: t = max(t, 4)

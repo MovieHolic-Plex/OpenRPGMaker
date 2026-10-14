@@ -21,7 +21,9 @@ class Reg:
         return deco
 
     def render(s, it):
-        c = C(it['w'] * 16, it['h'] * 16); it['draw'](c); return c
+        c = C(it['w'] * 16, it['h'] * 16); it['draw'](c)
+        if it['id'] not in KEEP_INK.get(s.group, ()): retone_outline(c)
+        return c
 
     def export(s, only=None):
         d = os.path.join(OUT, s.group, '_gate'); os.makedirs(d, exist_ok=True)
@@ -34,6 +36,50 @@ class Reg:
             with open(os.path.join(d, 'items.jsonl'), 'w') as f:
                 for r in rows: f.write(json.dumps(r, ensure_ascii=False) + '\n')
         return rows
+
+
+# ─────────── 윤곽 재질 톤(화풍 정렬 3판, 2026-10-14) ───────────
+# 1판은 실루엣 테·접지선을 따뜻한 먹(ink 1 #1e1517, V30)으로 그렸다. 버들항·농장 3판은 윤곽이 그 재질 램프의 가장 어두운 톤이다.
+# 실루엣 가장자리(4이웃 중 투명이 있는) 먹 화소는 옆 재질의 윤곽 톤으로, 재질 램프 0단이 V<30 으로 거의 검으면 1단으로 올린다.
+# 속의 먹(문 구멍·연기 구멍·눈)은 그대로. 관문에서 떨어진 조각은 KEEP_INK 에 넣어 1판 그대로 둔다.
+KEEP_INK = {   # 3판 윤곽을 넣으면 관문에서 떨어진 조각(1판 먹 윤곽 그대로)
+    'dwellings': {'hut-thatch-s'},
+    'props': {'drying-rack', 'hide-frame', 'menhir', 'ribcage', 'bridge-post'},
+}
+
+
+def _v(rgb): return max(rgb)
+
+
+def outline_tone(mat):
+    from palette import RGB
+    for t, rgb in enumerate(RGB[mat]):
+        if _v(rgb) >= 30: return t
+    return len(RGB[mat]) - 1
+
+
+def retone_outline(c):
+    from px import MATS
+    m0, t0 = c.m.copy(), c.t.copy()
+    ink = MATS.index('ink')
+    H, W = c.h, c.w
+    def tr(x, y): return not (0 <= x < W and 0 <= y < H) or m0[y, x] < 0
+    for y in range(H):
+        for x in range(W):
+            mi = m0[y, x]
+            if mi < 0: continue
+            if not any(tr(x + dx, y + dy) for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))): continue
+            if mi == ink:
+                pick = None
+                for dx, dy in ((0, -1), (-1, 0), (1, 0), (0, 1), (-1, -1), (1, -1), (-1, 1), (1, 1), (0, -2), (-2, 0), (2, 0)):
+                    X, Y = x + dx, y + dy
+                    if 0 <= X < W and 0 <= Y < H and m0[Y, X] >= 0 and m0[Y, X] != ink: pick = MATS[m0[Y, X]]; break
+                if pick: c.P(x, y, pick, outline_tone(pick))
+            else:
+                mat = MATS[mi]
+                if mat in ('tar',): continue
+                ot = outline_tone(mat)
+                if t0[y, x] < ot: c.P(x, y, mat, ot)
 
 
 def _font(sz=12):

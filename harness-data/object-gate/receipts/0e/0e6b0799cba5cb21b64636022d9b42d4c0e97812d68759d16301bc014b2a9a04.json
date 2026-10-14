@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0e6b0799cba5cb21b64636022d9b42d4c0e97812d68759d16301bc014b2a9a04",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "pile of fallen coconuts",
+ "label": "pirate-isles/pi-coconuts",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pile of coconuts",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coconuts are spherical debris with top-down lighting and spherical shading. The upper coconut and pile arrangement show appropriate 3/4 top-down perspective without flat horizontal surfaces missing top visibility.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13030
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pile of three coconuts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Three spherical coconuts lying on the ground in a triangular cluster (one north coconut further back, partially occluded by two south coconuts in front). Spherical objects have no flat top surfaces, and the depth arrangement correctly reflects the 3/4 top-down ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12891
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pile of three coconuts",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coconuts are arranged with depth along the Y axis, with the rear coconut positioned further north and overlapped by the two front coconuts. Top-down spherical shading clearly defines the top and front surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6975
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pile of coconuts",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coconuts are arranged on the ground plane in 3/4 perspective with one coconut placed behind (north of) the two foreground coconuts. The spherical surfaces show top-down lighting and upper curved surfaces spanning about 3-4 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12027
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.577Z",
+ "cells": {
+  "16": [
+   "0c02e7050f1ad3ae"
+  ],
+  "24": [
+   "28be0b5c02c22906",
+   "35ca016a0643f515",
+   "415c499a07b46d5a",
+   "7b8776459b7a6da3",
+   "c1cfac655d67f713",
+   "db0c7b6ea05b405d"
+  ],
+  "32": [
+   "152b487ef626db38",
+   "219584e94e8dd52e",
+   "34e8595667047d15",
+   "54abd21b529b6c40",
+   "8e1f72f5545372c8",
+   "9948c9772a74293e"
+  ],
+  "48": [
+   "10808bd40fb45e93",
+   "90a76952891609de",
+   "915e8bc657432157",
+   "a71744843fd02c64",
+   "c66845316419ffd9",
+   "cc130c4f77608c07"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "863384fd82e844172ccee341f75b5528679caa2be31d8ac15612aebfcd1abecf",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "물가 돌 축대(남서쪽 뭍)",
+ "label": "sengoku-edo/se-water-sw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water and stone edge tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Water terrain tile bordered by a stone ledge on the west and south edges, forming a pool/waterway corner terrain block.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3595
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water and stone embankment terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting water bordered by a stone embankment on the south and west edges, viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3941
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water basin / stone embankment corner tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting water edged by stone borders on the west and south, viewed from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3596
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water surface with stone embankment border",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting water bordered by stone revetment edging along the south and west edges viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3639
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:28.013Z",
+ "cells": {
+  "16": [
+   "4c2afe957977b211"
+  ],
+  "24": [
+   "63531891b0281f6a",
+   "7ba349da95bad994",
+   "9c5d898a55575223",
+   "a4d9cb5833cee82f",
+   "bc87cffb5d2ce123",
+   "fbb8e597e441a27d"
+  ],
+  "32": [
+   "27866d19fbbbc1d5",
+   "39893db7310f1355",
+   "3e5dfb3a407b6d4f",
+   "b7fd9b32c8c90dd8",
+   "e7f15c2b13eda88f",
+   "f54d5e40d396b6de"
+  ],
+  "48": [
+   "2541d9bc4a621435",
+   "48d3af8560c00263",
+   "97530e8d4ebe4fa4",
+   "994f918228d00af1",
+   "a2752bcd29ac5091",
+   "f83e2d362ac2ae3c"
+  ]
+ }
+}

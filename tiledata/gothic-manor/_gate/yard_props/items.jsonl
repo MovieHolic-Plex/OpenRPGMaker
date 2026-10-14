@@ -1,13 +1,13 @@
-{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/yard_props/gm-hearse.png", "kind": "other", "name": "검은 영구 마차(유리 관실·깃털 장식)", "label": "gothic_manor/gm-hearse"}
-{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/yard_props/gm-willow-dead.png", "kind": "organic", "name": "마른 수양버들(늘어진 가지)", "label": "gothic_manor/gm-willow-dead"}
-{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/yard_props/gm-bush-dead.png", "kind": "organic", "name": "마른 관목", "label": "gothic_manor/gm-bush-dead"}
-{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/yard_props/gm-roses-dead.png", "kind": "organic", "name": "시든 장미 덤불(검붉은 꽃)", "label": "gothic_manor/gm-roses-dead"}
-{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/yard_props/gm-mushrooms.png", "kind": "organic", "name": "버섯 고리(창백한 버섯)", "label": "gothic_manor/gm-mushrooms"}
-{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/yard_props/gm-rock-moss.png", "kind": "organic", "name": "이끼 덮인 바위", "label": "gothic_manor/gm-rock-moss"}
-{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/yard_props/gm-tomb-angel.png", "kind": "figure", "name": "천사 묘비(날개 접은 천사상)", "label": "gothic_manor/gm-tomb-angel"}
-{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/yard_props/gm-sundial.png", "kind": "column", "name": "해시계 받침", "label": "gothic_manor/gm-sundial"}
-{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/yard_props/gm-planter.png", "kind": "container", "name": "큰 돌 화분(마른 덩굴)", "label": "gothic_manor/gm-planter"}
-{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/yard_props/gm-steps-stone.png", "kind": "terrain", "name": "바깥 돌계단(3단)", "label": "gothic_manor/gm-steps-stone"}
-{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/yard_props/gm-sign-gallery.png", "kind": "frame", "name": "미술관 안내판(액자 그림 판)", "label": "gothic_manor/gm-sign-gallery"}
-{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/yard_props/gm-woodpile.png", "kind": "organic", "name": "장작더미(통나무 끝 나이테)", "label": "gothic_manor/gm-woodpile"}
-{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/yard_props/gm-crates.png", "kind": "box", "name": "쌓은 나무 상자 둘", "label": "gothic_manor/gm-crates"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/yard_props/gm-hearse.png", "kind": "other", "name": "검은 영구 마차(유리 관실·깃털 장식)", "label": "gothic_manor/gm-hearse"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/yard_props/gm-willow-dead.png", "kind": "organic", "name": "마른 수양버들(늘어진 가지)", "label": "gothic_manor/gm-willow-dead"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/yard_props/gm-bush-dead.png", "kind": "organic", "name": "마른 관목", "label": "gothic_manor/gm-bush-dead"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/yard_props/gm-roses-dead.png", "kind": "organic", "name": "시든 장미 덤불(검붉은 꽃)", "label": "gothic_manor/gm-roses-dead"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/yard_props/gm-mushrooms.png", "kind": "organic", "name": "버섯 고리(창백한 버섯)", "label": "gothic_manor/gm-mushrooms"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/yard_props/gm-rock-moss.png", "kind": "organic", "name": "이끼 덮인 바위", "label": "gothic_manor/gm-rock-moss"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/yard_props/gm-tomb-angel.png", "kind": "figure", "name": "천사 묘비(날개 접은 천사상)", "label": "gothic_manor/gm-tomb-angel"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/yard_props/gm-sundial.png", "kind": "column", "name": "해시계 받침", "label": "gothic_manor/gm-sundial"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/yard_props/gm-planter.png", "kind": "container", "name": "큰 돌 화분(마른 덩굴)", "label": "gothic_manor/gm-planter"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/yard_props/gm-steps-stone.png", "kind": "terrain", "name": "바깥 돌계단(3단)", "label": "gothic_manor/gm-steps-stone"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/yard_props/gm-sign-gallery.png", "kind": "frame", "name": "미술관 안내판(액자 그림 판)", "label": "gothic_manor/gm-sign-gallery"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/yard_props/gm-woodpile.png", "kind": "organic", "name": "장작더미(통나무 끝 나이테)", "label": "gothic_manor/gm-woodpile"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/yard_props/gm-crates.png", "kind": "box", "name": "쌓은 나무 상자 둘", "label": "gothic_manor/gm-crates"}

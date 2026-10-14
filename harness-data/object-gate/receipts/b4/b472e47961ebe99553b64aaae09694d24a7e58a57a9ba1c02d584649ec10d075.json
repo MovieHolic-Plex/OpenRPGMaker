@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b472e47961ebe99553b64aaae09694d24a7e58a57a9ba1c02d584649ec10d075",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "증기 구멍(쇠 굴뚝 토막에서 김이 오른다) (프레임 3)",
+ "label": "steampunk-city/sp-steam-vent-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "metal pipe vent / steam hole opening",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pipe opening is drawn from an overhead 3/4 perspective as a clear ellipse spanning rows 17 to 22 (6 rows deep) with rim surrounding it, leading down into a cylindrical body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5213
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "short metal steam vent / chimney segment",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pipe opening and surrounding flange form an ellipse foreshortened at approximately 45 degrees (9 px tall, 13 px wide), showing into the dark interior cavity (5 px tall opening), with the front cylinder wall extending below to row 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6562
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "metal vent pipe stub",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The steam pipe has a clear elliptical opening seen from above spanning rows 17-23, with a foreshortened top rim extending from row 15 to 23 above the vertical pipe front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10531
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "metal chimney stub / steam vent",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chimney top features a clear elliptical flange and opening (rows 17-23, ~6 rows tall interior) viewed from above in 3/4 perspective, with steam rising from it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4027
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.527Z",
+ "cells": {
+  "16": [
+   "344a1e20cfea7690",
+   "acf6e6eff007aebd"
+  ],
+  "24": [
+   "3b36908958ffd6dd",
+   "3ece2998e1743f21",
+   "4940e4b553dbf375",
+   "7855c0b8661b12c8",
+   "7fcae5b46033a073",
+   "8e9f614301deede6",
+   "96912bfdd58addca",
+   "aaee2f1bcf70ef47",
+   "b1f8da125d60eb4e",
+   "bcc79eb7637d1ff7",
+   "caa08178885f7a20",
+   "d55beb4dcad749a2"
+  ],
+  "32": [
+   "5f7fc0ebaaed1fab",
+   "61a0da0e6a1cae3c",
+   "b7a3a89ef4e478be"
+  ],
+  "48": [
+   "214cc02150f19190",
+   "6245b82040432078",
+   "6a0aa0222513ca22",
+   "7f5cef90fb1dad1d",
+   "82414aef3d4aaffa",
+   "cdfb30272bbccce6"
+  ]
+ }
+}

@@ -9,6 +9,54 @@ from px import C, ROOT, save
 OUT = os.path.join(ROOT, 'tiledata', 'steampunk-city')
 
 
+# ═══ 윤곽 재질 톤(화풍 정렬 2026-10-14 2판) ═══
+# 실루엣 가장자리(4이웃에 투명이 있는) 먹(ink) 화소를 맞닿은 재질 램프의 «V≥30 중 가장 어두운 단» 으로 바꾼다.
+# 그 단도 너무 밝은 램프(V>70 — 범포·켜진 등·증기)는 짝 재질로. 캔버스 밖은 투명으로 보지 않는다(이어 칠하는 바닥 칸은 그대로).
+# 3/4 관문에서 떨어진 조각은 OUTLINE_KEEP('<묶음>/<id>') 에 넣어 옛 먹 윤곽 그대로 둔다.
+OUTLINE_KEEP = {   # 2026-10-14 재질 윤곽판이 관문에서 떨어진 조각 — 옛 먹 윤곽·옛 영수증 유지
+    'street/pillar-box', 'street/hydrant', 'buildings/pump-house', 'props/bench', 'props/barrels',
+    'interior/drill-press', 'interior/curio-cabinet', 'interior/wardrobe'}
+_PAIR = {'canvas': 'wood', 'lit': 'brass', 'steam': 'iron'}
+
+
+def _dark_step(mat):
+    from palette import RGB
+    for k, (r, g, b) in enumerate(RGB[mat]):
+        if max(r, g, b) >= 30: return k, max(r, g, b)
+    return len(RGB[mat]) - 1, 255
+
+
+def outline_tone(mat):
+    k, v = _dark_step(mat)
+    if v > 70 and mat in _PAIR: return outline_tone(_PAIR[mat])
+    return mat, k
+
+
+def material_outline(c):
+    from palette import MATS
+    import collections
+    ink = MATS.index('ink'); m = c.m; H, W = m.shape
+    edge = []
+    for y in range(H):
+        for x in range(W):
+            if m[y, x] != ink: continue
+            if any(0 <= x + dx < W and 0 <= y + dy < H and m[y + dy, x + dx] < 0 for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+                edge.append((x, y))
+    out = []
+    for x, y in edge:
+        mat = None
+        for rad in (1, 2, 3):
+            cnt = collections.Counter()
+            for dy in range(-rad, rad + 1):
+                for dx in range(-rad, rad + 1):
+                    X, Y = x + dx, y + dy
+                    if (dx or dy) and 0 <= X < W and 0 <= Y < H and m[Y, X] >= 0 and m[Y, X] != ink:
+                        cnt[MATS[m[Y, X]]] += 2 if abs(dx) + abs(dy) == 1 else 1
+            if cnt: mat = cnt.most_common(1)[0][0]; break
+        if mat: out.append((x, y, outline_tone(mat)))
+    for x, y, (mt, k) in out: c.P(x, y, mt, k)
+
+
 class Reg:
     def __init__(s, group):
         s.group = group; s.items = []; s.by = {}
@@ -21,7 +69,9 @@ class Reg:
         return deco
 
     def render(s, it):
-        c = C(it['w'] * 16, it['h'] * 16); it['draw'](c); return c
+        c = C(it['w'] * 16, it['h'] * 16); it['draw'](c)
+        if s.group + '/' + it['id'] not in OUTLINE_KEEP: material_outline(c)
+        return c
 
     def export(s, only=None):
         d = os.path.join(OUT, s.group, '_gate'); os.makedirs(d, exist_ok=True)

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "78b38c01d1a728c6375fcc9e29851945d1c711d24138d2262c2ae2422d09ec0b",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "마른 풀밭 D (짙은 풀 덩이)",
+ "label": "gothic_manor/gm-ground-grass-d",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ground terrain tile with dark grass clump",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile represents a flat ground surface with varied grass and clump texturing, viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3213
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dark grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a 16x16 flat terrain tile representing a patch of dark grass/ground viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2686
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dark grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile is flat ground terrain viewed from above with a dark grass texture.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3089
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dark grass / terrain ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a full 16x16 ground terrain tile representing a dark patch of grass/earth viewed from above, naturally matching top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2605
+  }
+ ],
+ "decidedAt": "2026-10-14T07:55:00.836Z",
+ "cells": {
+  "16": [
+   "853dc4accf4fd2c5"
+  ],
+  "24": [
+   "0b8fefdbea1abcde",
+   "377db8b843a2739d",
+   "5ff2a0fcb6cb5377",
+   "7908df16a7a90e28",
+   "8d0469821dc9c5d6",
+   "9b809a38d56b18c0"
+  ],
+  "32": [
+   "53a5d151d7c7e6fc",
+   "618104ef3ada5e3a",
+   "70c9a26a4bb8924d",
+   "92d7332c0ffafc12",
+   "c7d83a290a6bedaf",
+   "e481393f3b7e11f8"
+  ],
+  "48": [
+   "2d15235a2bd91baf",
+   "2ebbf14d4831b808",
+   "2fced0bc735904a4",
+   "956d7ddfa0cc454c",
+   "960af54a88f46584",
+   "f2ee608bc92a9cf9"
+  ]
+ }
+}

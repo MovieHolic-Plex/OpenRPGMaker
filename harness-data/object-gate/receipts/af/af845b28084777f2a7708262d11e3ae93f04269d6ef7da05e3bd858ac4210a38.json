@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "af845b28084777f2a7708262d11e3ae93f04269d6ef7da05e3bd858ac4210a38",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "다진 흙길",
+ "label": "sengoku-edo/se-road",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "packed dirt ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting packed dirt ground with embedded pebbles viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4654
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dirt path ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Packed dirt terrain ground tile covering the full 16x16 area with embedded pebbles, viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2959
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "packed dirt ground tile with embedded pebbles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a full ground/terrain tile depicting a packed dirt surface seen from a top-down oblique angle, occupying all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2799
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dirt ground tile with embedded pebbles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Compact dirt ground texture with embedded pebbles covering the entire 16x16 tile, functioning as top-down terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3626
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:28.012Z",
+ "cells": {
+  "16": [
+   "2ded69a52c5639bb"
+  ],
+  "24": [
+   "01e13a879c6d42af",
+   "5a1d4e8b308065dd",
+   "8ad3a325075b0ee7",
+   "978a0c266a507902",
+   "984a13262ba64a09",
+   "f9993329fdcf4040"
+  ],
+  "32": [
+   "03c93b4d33592705",
+   "1fd525c8bc19b8e8",
+   "41369318f043b8e3",
+   "530ee99bb9ee896d",
+   "53f12621c0af12e3",
+   "de7199c1377c3aa1"
+  ],
+  "48": [
+   "0913dab7ec8970fc",
+   "0e7261f84fc1f7f9",
+   "4c9835b3db6229c2",
+   "a0b5abf91e0f5d0a",
+   "c526a12a3775d8af",
+   "dba3e1c81e2c05b0"
+  ]
+ }
+}

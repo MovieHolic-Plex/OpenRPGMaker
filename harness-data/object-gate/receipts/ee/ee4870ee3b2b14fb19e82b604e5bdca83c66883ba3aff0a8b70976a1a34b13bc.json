@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ee4870ee3b2b14fb19e82b604e5bdca83c66883ba3aff0a8b70976a1a34b13bc",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "드릴 프레스(세운 기둥 + 둥근 작업대)",
+ "label": "steampunk-city/sp-drill-press",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "drill press (head, column, worktable, base)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire drill press is drawn in flat front elevation. The top box, blue head unit, column, worktable, and base block all lack a foreshortened horizontal top surface (the head has only a 1-2px top edge, and the base has no visible top).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5613
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "drill press (head unit, column, worktable, and base)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire drill press is drawn in flat front elevation like a side-scroller sprite. The upper head unit, top motor housing, worktable, and base show no foreshortened top surfaces (only 1-2px outline/highlight bands), lacking the required 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5958
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "drill press machine (head unit, column, and base)",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire machine, especially the upper motor/pulley housing (rows 0-13) and the bottom base plinth (rows 25-31), is drawn as a flat front elevation. Horizontal surfaces show only 1-2px cap lines rather than visible foreshortened top surfaces required for 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6696
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "drill press machine (head, column, work table, and base)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire drill press is drawn in a flat front elevation. The topmost motor/belt housing (rows 0-5) has no visible top surface (0 rows), terminating directly at a flat 1px outline at row 0, and neither the table nor the base shows a foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6525
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.531Z",
+ "cells": {
+  "16": [
+   "663cf78c7305139d",
+   "fc246e73f329f80f"
+  ],
+  "24": [
+   "0469655ac8cafffc",
+   "097bbc47801615af",
+   "0c2982d582b627e0",
+   "0eab8aa2d01a3403",
+   "40b7cbcdb952662c",
+   "434a00890b283b0d",
+   "6527c6e00d346d37",
+   "815ff8f9f38a68d0",
+   "87a27fe526bf8cc9",
+   "acc370cb9f9d3812",
+   "ccc1d8700bf2ec70",
+   "e66481c31d5aa430"
+  ],
+  "32": [
+   "09182ca9963db1e7",
+   "12cfa44e334c9e08",
+   "62dd861cf83d5717"
+  ],
+  "48": [
+   "3a039dc6e6077f32",
+   "4601240c6cb8a222",
+   "d1b7b844d24fa80d",
+   "d1ba9c5bc1508c97",
+   "dec4e02a2db61df8",
+   "ec9e71472c8b1255"
+  ]
+ }
+}

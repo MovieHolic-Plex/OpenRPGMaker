@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "37301f7c257b2d069f322f58c3820c4dd9a8d33f15136687a54d8e30170d85c5",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "테슬라 코일(둥근 받침 + 구리 감은 탑 + 꼭대기 놋쇠 도넛 + 불꽃) (프레임 2)",
+ "label": "steampunk-city/sp-tesla-coil-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tesla coil tower with brass toroid terminal and base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brass toroid terminal at the top clearly reveals its elliptical top surface and center hole across rows 5-11, accurately rendering the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4667
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tesla coil tower with brass toroid terminal and rounded base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brass toroid at the top of the column is clearly viewed from above (rows 5-11), showing the ring's foreshortened top surface and central hole in proper 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5618
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tesla coil tower with brass toroid terminal and cylindrical base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brass toroid terminal at the top (rows 5-11) is drawn in clear 3/4 perspective as an ellipse showing its foreshortened top surface and center hole (approx 6 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5339
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brass toroid top terminal and coiled copper column",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top toroid is drawn as a foreshortened elliptical ring spanning rows 5 to 11 with its inner hole clearly visible from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5073
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.532Z",
+ "cells": {
+  "16": [
+   "17340d7063879118",
+   "420d677b24776c15",
+   "d8685f85508ee478"
+  ],
+  "24": [
+   "178823f3da70076d",
+   "69b9e9ed5ff4a025",
+   "95e955d927b0dce8",
+   "985ff8d8a8e725a1",
+   "9fc16faba3998764",
+   "f45512bc6991fb71"
+  ],
+  "32": [
+   "02a756c2cf87a964",
+   "080f0edbad6b16af",
+   "4a52dd223487c40f",
+   "58a3542e9fa84a0e",
+   "5b11cf3b9db5cda8",
+   "76e4621204c1b75c",
+   "83bbff7a276d5cee",
+   "988c72478b9b0779",
+   "9f9a9679d43bfd31",
+   "c6e6e94207ff0ae5",
+   "f21566110ec7408b",
+   "fa3205f62f5450ca"
+  ],
+  "48": [
+   "20befb2ffa2378c0",
+   "2465a61d4f02c335",
+   "84ec141f7b147e18"
+  ]
+ }
+}

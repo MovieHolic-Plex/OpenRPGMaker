@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ccf2aacaa5f74ec22742427122fa3174da86a99e3db66cfe1426b37526d05590",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "식당 냉장고(윗면 + 위·아래 두 문 + 세로 손잡이 + 온도 램프)",
+ "label": "sf-station/sf-galley-fridge",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "restaurant refrigerator",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the refrigerator is clearly visible from rows 1 to 5 (about 5 pixel rows) before transitioning via a dark dividing line into the front doors.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4199
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "restaurant refrigerator",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the refrigerator is clearly depicted across rows 1-5 (5 pixel rows tall) above the front face containing the doors and display.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4032
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tall restaurant refrigerator with two doors, handle, and temperature indicator",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the refrigerator is clearly visible from rows 1 to 5 (5 source pixel rows deep) before transitioning to the front face at row 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6372
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "restaurant refrigerator",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the refrigerator is clearly visible from rows 1 to 5 (5 pixels tall) with proper foreshortening and shading, leading into the front doors and bottom grill.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3317
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.255Z",
+ "cells": {
+  "16": [
+   "2de0bf14d1e0ca96",
+   "3a42d27cbc22187f"
+  ],
+  "24": [
+   "0678a08ec7d3b10c",
+   "22b73d4ff9317c0e",
+   "34ddd94951593761",
+   "52b74a30cd015c36",
+   "59a1effa10e79deb",
+   "6a673fe406555224",
+   "72af7dfbf91cf01f",
+   "9a01ea1c631acc83",
+   "9b380f1060e548b1",
+   "b7a4dd37b5e7f702",
+   "c98594da1c5e00a9",
+   "f298fa7e2fa35ae3"
+  ],
+  "32": [
+   "5bc14f69f388d186",
+   "e3ebfea1f9a364cf",
+   "f4f930f1dcb4b62c"
+  ],
+  "48": [
+   "3334dd09ed1f0cb6",
+   "4f3d1b13654e0f8f",
+   "62b4d4c61da23ef4",
+   "6bddf1598c730a14",
+   "97289a8762cbfada",
+   "fcfb2609021a7afd"
+  ]
+ }
+}

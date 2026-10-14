@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e5ba7fc4c88fa83fc38c217558cd65bab623b4ae9f5b9d2b6897da16216c27f0",
+ "width": 32,
+ "height": 48,
+ "kind": "low_furniture",
+ "name": "무쇠 틀 침대(누비 이불, 머리판 북쪽)",
+ "label": "steampunk-city/sp-bed",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cast iron frame bed with mattress, pillow and quilt",
+    "kind_matches": true,
+    "top_rows": 33,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bed (pillow, sheet fold, and quilted blanket) is fully visible from above across rows 9 to 41 (over 30 rows tall), properly foreshortened in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6237
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron frame bed with quilted blanket and north headboard",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the bed (pillow and quilted blanket) is foreshortened and clearly visible from row 9 to row 40 (approx 32 pixel rows), with headboard at north and footboard at south.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5065
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron frame bed with quilt and headboard",
+    "kind_matches": true,
+    "top_rows": 33,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bed (pillow, sheet fold, and quilted blanket) is viewed from above across rows 9 to 41 (33 rows) between the north headboard and south footboard.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9178
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cast iron frame bed with quilt and headboard",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed is viewed from a 3/4 top-down angle, displaying the headboard at the north end and roughly 32 rows of top surface covering the pillow, sheet fold, and patterned quilt down to row 40.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6377
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.533Z",
+ "cells": {
+  "16": [
+   "1dd332f82ca1e9d9",
+   "4e6af21e42bf2932",
+   "74a719fa6be1ee3a",
+   "852c04281ead2f80",
+   "d2e97562cdb21627",
+   "dfd02d7aca0eb16a"
+  ],
+  "24": [
+   "060b56a66887020d",
+   "0c422bba45af0e7f",
+   "320342c755c2d831",
+   "42356152a4c98a6b",
+   "439a0a216bad9e96",
+   "4dd50f020d96cf5d",
+   "55ee7c895e8df6d4",
+   "570571a8cf213f18",
+   "803f7dd1ac21a373",
+   "a1601ac8f19d5f4c",
+   "b0f1af6c6060ab38",
+   "f9d82df87731cce1"
+  ],
+  "32": [
+   "1282c1ce725d049f",
+   "d00b690027db0276",
+   "db4520086fc784b8",
+   "dd7a3d802edeab28"
+  ],
+  "48": [
+   "9384d9540780410c",
+   "c62c5cbfa4215c4c",
+   "e37c940dae6e7213"
+  ]
+ }
+}

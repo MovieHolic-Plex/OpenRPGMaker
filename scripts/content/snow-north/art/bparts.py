@@ -8,7 +8,7 @@ from px import C, rnd, h32
 
 
 # ═══════════════════════ 벽 ═══════════════════════
-def log_wall(c, x0, y0, w, h, s=0, base=4, ends=True):
+def _log_wall_base(c, x0, y0, w, h, s=0, base=4, ends=True):
     """가로 통나무 벽. 통나무 한 줄 4px(윗면 반사 · 몸 · 아래 그늘 · 틈), 줄마다 굵기 단이 조금 다르고 옹이·결.
     ends=True 면 양 끝에 엇갈려 튀어나온 통나무 머리(나이테 단면)를 그린다(벽 밖으로 1~2px)."""
     for j in range(h):
@@ -44,17 +44,50 @@ def log_wall(c, x0, y0, w, h, s=0, base=4, ends=True):
                     if dy == 0 and j > 0: c.P(ex + 1, y0 + j - 1, 'snow', 6)                         # 머리 위에 쌓인 눈 한 점
 
 
+def log_wall(c, x0, y0, w, h, s=0, base=4, ends=True):
+    """둥근 통나무 벽: 통나무 한 줄 4px = 윗 반사(6/5) · 몸(4, 껍질 결 점) · 아래 그늘(2) · 틈(0 + 낀 눈).
+    줄마다 굵기 단·옹이·갈라진 결. 오른쪽 끝 그늘. 끝 머리(나이테 단면)는 옛 그리개와 같다."""
+    _log_wall_base(c, x0, y0, w, h, s, base, ends)
+    for j in range(h):
+        row = j // 4; yy = j % 4
+        dv = (h32(row, s, 3) % 3) - 1
+        for i in range(w):
+            X, Y = x0 + i, y0 + j
+            g = c.get(X, Y)
+            if not g or g[0] != 'log': continue
+            if ends and (i < 1 or i >= w - 2): continue
+            r = rnd(i, j, s + 21)
+            if yy == 0: t = 5 + (1 if (i // 5 + row) % 3 == 0 and r < 0.6 else 0) + (0 if dv >= 0 else -1)
+            elif yy == 1: t = base + dv + (1 if r < 0.12 else -1 if r > 0.86 else 0)
+            elif yy == 2: t = 2 + (1 if r < 0.25 else 0)
+            else: continue
+            if (i + row * 3) % 9 == 0 and yy == 1: t -= 1                 # 껍질 갈라짐
+            if i >= w - 3: t -= 1
+            if i < 2 and yy < 2: t += 1
+            c.P(X, Y, 'log', max(1, min(6, t)))
+
+
 def plank_wall(c, x0, y0, w, h, mat='drift', base=3, s=0, bw=4):
-    """세로 판자 벽(바랜 회색 또는 타르 칠 나무). 판 폭 bw, 이음 어둡게, 판 왼쪽 결 밝게, 아래로 갈수록 어둡게."""
+    """세로 판자 벽(바랜 회색 또는 타르 칠 나무). 판 폭 bw, 이음 어둡게(그 왼쪽 판 끝은 그늘), 판 왼쪽 결 밝게,
+    판마다 결 줄·옹이·바랜 반점, 처마 밑은 그늘, 아래로 갈수록 어둡고 밑동은 젖은 얼룩."""
+    from px import NT, MI
+    top_t = NT[MI[mat]] - 1
     for j in range(h):
         for i in range(w):
             k = i % bw; b = i // bw
             t = base + ((h32(b, s, 5) % 3) - 1 if bw > 2 else 0)
-            if k == bw - 1: t = 1
+            if k == bw - 1: t = 1 if (j + b) % 7 else 0
             elif k == 0: t += 1
+            elif k == bw - 2 and bw > 3: t -= 1
+            if k not in (0, bw - 1) and h32(b * 5 + k, j // 3, s + 17) % 7 == 0: t -= 1      # 결 줄
+            if k not in (bw - 1,) and rnd(i, j, s + 19) < 0.05: t += 1                          # 바랜 반점
             if j > h - 4: t -= 1
+            if j > h - 2 and (i + j) % 2: t -= 1
             if h32(b, j // 5, s + 3) % 9 == 0 and k == 1: t -= 1
-            c.P(x0 + i, y0 + j, mat, max(0, t))
+            c.P(x0 + i, y0 + j, mat, max(0, min(top_t, t)))
+        if j % 11 == 5:                                                                           # 옹이
+            b = h32(j, s, 23) % max(1, w // bw)
+            c.P(x0 + b * bw + 1, y0 + j, mat, 0); c.P(x0 + b * bw + 1, y0 + j - 1, mat, max(0, base - 1))
 
 
 def stone_plinth(c, x0, y0, w, h=3, s=0):
@@ -172,24 +205,32 @@ def icicles(c, x0, y, w, s=0, maxlen=5, step=(2, 4)):
 
 # ═══════════════════════ 지붕 ═══════════════════════
 def roof_snow_px(i, j, w, h, s=0):
-    """지붕 눈 한 화소 단 — 너와 줄을 따라 눈이 «베개»처럼 부풀어 6px 마다 띠를 이룬다:
-    띠 윗줄 반사(6) → 몸(5) → 아랫줄 그늘(4) → 틈(3, 너와 끝마다 늘어진 가리비 모양).
-    덩어리감: 왼쪽 1/6 은 한 단 밝게, 오른쪽 1/3 은 한 단 어둡게(빛 왼쪽 위), 용마루 바로 밑 두 줄은 반사."""
+    """지붕 눈 — 너와 줄(6px)을 따라 폭이 들쭉날쭉한 «베개» 덩이: 덩이 윗테 반사(6) → 몸(5, 왼쪽 위 6 디더) → 아래 오른쪽 그늘(4, 3 디더) → 덩이 사이 틈(3·2).
+    면 전체 빛: 왼쪽 위 밝고 오른쪽 1/3 은 한 단 어둡게. 잔 반짝임 점."""
     P = 6
     band = (j + 2) // P; yy = (j + 2) % P
-    off = h32(band, s, 3) % 5
-    sc = (i + off + (band * 2)) % 6
-    t = 5
-    if yy == 0: t = 6
-    elif yy == 4: t = 4 if sc not in (2, 3) else 5
-    elif yy == 5: t = 3 if sc in (0, 1) else 4
-    elif yy == 3 and sc == 0: t = 4
-    if j < 2: t = 6
+    # 이 줄의 덩이 경계: 폭 5~9 로 흔들린다
+    x = -((h32(band, s, 3) % 7)); k = 0
+    while True:
+        bw = 5 + h32(band * 31 + k, s, 5) % 5
+        if x + bw > i: break
+        x += bw; k += 1
+    lx = i - x; u0 = (lx + 0.5) / bw                     # 덩이 안 위치 0..1
+    sag = 1 if (u0 < 0.18 or u0 > 0.82) else 0          # 덩이 끝은 한 줄 처진다
+    yb = yy - sag
+    if yb < 0: t = 3 if (i + j) % 2 else 4              # 위 덩이 처진 끝 밑 틈
+    elif yb == 0: t = 6 if u0 < 0.7 else 5
+    elif yb == 1: t = 6 if u0 < 0.35 else 5
+    elif yb == 2: t = 5 if u0 < 0.75 else 4 if (i + j) % 2 else 5
+    elif yb == 3: t = 5 if u0 < 0.45 else 4
+    elif yb == 4: t = 4 if u0 < 0.6 else 3
+    else: t = 3 if u0 < 0.8 else 2
+    if j < 2: t = 6 if j == 0 else 5
     u = i / max(1, w - 1)
-    dz = 0.68 + 0.05 * ((j % 2) * 2 - 1) + 0.04 * ((j // 2) % 2)
-    if u > dz and yy != 0: t -= 1
-    if u > 0.91: t -= 1
-    if u < 0.16 and yy in (1, 2, 3): t = min(6, t + 1)
+    if u > 0.66 and yb not in (0,): t -= 1
+    if u > 0.9 and (i + j) % 2: t -= 1
+    if u < 0.18 and 1 <= yb <= 3: t = min(6, t + 1)
+    if t == 5 and h32(i, j, s + 77) % 23 == 0: t = 6        # 반짝
     return max(2, min(6, t))
 
 
@@ -236,10 +277,14 @@ def roof_gable(c, x0, y0, w, h, s=0, under='shingle', barge=True, ridge=True, pe
     for i in range(w):
         lump = 1 if (math.sin((i + s * 5) * 0.7) + math.sin((i + s) * 0.27)) > 0.6 else 0
         u = i / max(1, w - 1)
+        lp = (i + s * 3) % 7                                   # 처마 눈 덩이(폭 7): 덩이 왼쪽 밝고 오른쪽·밑 그늘
         for d in range(cornice + lump):
-            t = 6 if d == 0 else 4 if d < 3 else 3
+            t = 6 if d == 0 else 5 if d == 1 and lp < 4 else 4 if d < 3 else 3
+            if d == 2 and lp in (5, 6): t = 3
+            if d in (1, 2) and lp == 6 and (i + d) % 2: t -= 1
             if u > 0.68 and d > 0: t -= 1
             if u < 0.12 and d in (1, 2): t += 1
+            if d == 0 and h32(i, s, 91) % 13 == 0: t = 5
             c.P(x0 + i, ey + d, 'snow', max(1, t))
         c.P(x0 + i, ey + cornice + lump - 1, 'snow', 1 if u > 0.68 else 2)
     c.VL(x0, ey, cornice, 'ink', 1); c.VL(x0 + w - 1, ey, cornice + 1, 'ink', 1)

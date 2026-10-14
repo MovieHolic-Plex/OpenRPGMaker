@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8144153e874c57871278fa853c45e10273527104fa0ce25bce3b70305c15469e",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "coiled ship rope lying on the deck",
+ "label": "pirate-isles/pi-rope-coil",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "coiled rope lying flat on the deck",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coiled rope is drawn as a foreshortened ellipse spanning rows 2-14, viewed from an overhead angle consistent with a flat object on the floor.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3134
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "coiled rope on deck",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coiled rope lies flat on the floor, rendered as a foreshortened ellipse spanning roughly 11 pixel rows from row 3 to row 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5694
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "coiled rope",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coiled rope is depicted lying flat on the deck as a foreshortened ellipse spanning rows 3-13 with an inner hollow, consistent with top-down 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4533
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "coiled rope",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coiled rope lies flat on the floor as a foreshortened ellipse spanning rows 3-13, viewed properly from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2793
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.584Z",
+ "cells": {
+  "16": [
+   "342507e0dbc343ba"
+  ],
+  "24": [
+   "20231fb0d599577f",
+   "2776a25e1d61da90",
+   "3f00c1157f7e74bc",
+   "624f47e163e79504",
+   "adef1cdcc8568923",
+   "e1e5c32684626789"
+  ],
+  "32": [
+   "160bbfa407b5a210",
+   "46b9f203e7c3fd0d",
+   "4ccbbf3c18786774",
+   "8cb7c591c2be5cf7",
+   "b53d5b2093015809",
+   "f37abe0bc154d7b2"
+  ],
+  "48": [
+   "0dd97d42c96a48db",
+   "75cc19001a322941",
+   "a1708a95d6d2fe63",
+   "b6e4e1c5c399ab12",
+   "ca429c7685f794f5",
+   "fe170d32bf5e35b5"
+  ]
+ }
+}

@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4840090807b9b85bb2725325fd2616223ba9be01712a570fa486461fbc68fed7",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "주거 모듈(사다리꼴 지붕 + 환기 상자 + 흰 판 앞면 + 창 넷 + 문)",
+ "label": "sf-station/sf-hab-module",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "residential module building",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building has a clearly visible forward-facing sloped roof plane spanning rows 4 to 21 (18 rows tall) above the vertical south facade (rows 22-45), properly conveying 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3629
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "residential module / prefabricated building",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building has a large, clearly sloped roof facing the camera from row 4 to row 21 (about 18 pixel rows) above the vertical front wall facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4421
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "residential module building",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a prominent sloped/trapezoidal roof visible from above across rows 4 to 21 (~17 source pixel rows) with roof fittings, sitting atop a south-facing front facade with windows and a central entrance door.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4833
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "residential module structure",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The trapezoidal roof occupies rows 4 to 20 (~17 source pixel rows) showing a fully rendered sloped top surface in 3/4 top-down perspective above the front wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3676
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.240Z",
+ "cells": {
+  "16": [
+   "274fb66bf8be60c1",
+   "3f952d53dab7ee66",
+   "57b478cf6d29a23c",
+   "646e2686d0aa3c8d",
+   "712f3e28fbcc9f58",
+   "7d0cec55206fb16e",
+   "7f6c522441921fdc",
+   "8ea29b8f1fa168fc",
+   "b163e61b5512670c",
+   "b8a4f51d768909e2",
+   "bd2763591b4337b3",
+   "d326aaca6d55322b"
+  ],
+  "24": [
+   "036a37375134a8dc",
+   "037ec6ce447fff8a",
+   "0b46f125afd07598",
+   "1a78f9359751cbd7",
+   "25d14eb499500fa0",
+   "2c5a3666e370a0d7",
+   "2fba0c92c119ebba",
+   "3a5c1f48e879504f",
+   "476beb239fa48647",
+   "4b90cbd13ffb2126",
+   "617cc55931068b6d",
+   "6344a6cda4dae6af",
+   "65b150102b02012e",
+   "6ecfb2722354dbb6",
+   "b0908d4b42156695",
+   "beed8f6dd833d5bc",
+   "deeb1e74f036b9d7",
+   "ed2e2be2a1e28bbe"
+  ],
+  "32": [
+   "0b6a0656c7c029c9",
+   "1c373ca57aafe261",
+   "965cb88f81222ad0",
+   "9caeb215f35f349c",
+   "b3d3642d36fd342d",
+   "ce3ca1305d1361f3",
+   "d7d51b6e7a57aa75",
+   "fb92455edbc9eb7b"
+  ],
+  "48": [
+   "00cf472bd3b65656",
+   "7c91a7bd5ea32fb9",
+   "9352fe0d3c1e6d19",
+   "a5556872935da240",
+   "b61d58799aeec75a",
+   "b714752b8ec98159"
+  ]
+ }
+}

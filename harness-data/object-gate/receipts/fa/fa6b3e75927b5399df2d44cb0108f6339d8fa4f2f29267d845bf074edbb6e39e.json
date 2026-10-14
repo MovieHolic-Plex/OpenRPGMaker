@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fa6b3e75927b5399df2d44cb0108f6339d8fa4f2f29267d845bf074edbb6e39e",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "둥근 걸상(시안 쿠션 윗면 + 흰 몸통)",
+ "label": "sf-station/sf-stool",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round stool seat and body",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round stool seat (cyan cushion inside a circular rim) forms an elliptical top surface occupying rows 3 to 9 (7 rows tall) above the south-facing cylindrical body (rows 10-12).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3473
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round stool with cyan cushion",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stool top is clearly drawn as a foreshortened ellipse spanning rows 3-9, with the cyan cushion and white seat rim viewed from above, above a curved front face extending down to row 12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4358
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round stool seat and body",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round stool seat features a prominent cyan elliptical cushion top spanning rows 3-8 (about 6 rows tall) resting on a south-facing cylindrical front body spanning rows 9-12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3382
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round stool with cyan cushion",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top circular seat surface spans rows 3 to 8 (6 rows tall ellipse with cyan cushion and outer rim), followed by the front vertical curve of the seat body and central pedestal down to row 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4025
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.252Z",
+ "cells": {
+  "16": [
+   "96de20b2ace50edb"
+  ],
+  "24": [
+   "281af8e198887cf6",
+   "406145840f983a79",
+   "585222d66f528165",
+   "7c543a44c6607920",
+   "cd7057ac9a9c4d38",
+   "ffe8f3ac39047403"
+  ],
+  "32": [
+   "0018b7eebbc5895e",
+   "3096aa0a1f135871",
+   "3258b4dc5a56d23a",
+   "447349645f638ec0",
+   "86fbb059bb4f4757",
+   "9a042a2c1dd7f8fd"
+  ],
+  "48": [
+   "26556c1c0189bafd",
+   "3b17711c8717e7c0",
+   "75e8a889fefc31df",
+   "a4a449b49f1cb065",
+   "d1126e75c9aea38f",
+   "db72bde2dba867c3"
+  ]
+ }
+}

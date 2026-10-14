@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "325c2be7de4c1eb5f89e0f8348caf7efc0b1fe8aa646a58fd49c69371c1deb04",
+ "width": 32,
+ "height": 16,
+ "kind": "other",
+ "name": "bamboo raft floating on the water seen from above, lashed poles, a paddle and a small crate",
+ "label": "pirate-isles/pi-bamboo-raft",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bamboo raft",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The raft deck is viewed from above across rows 2-11 (10 rows of top surface), with the south front edge visible at rows 12-13 sitting in the water.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7988
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bamboo raft deck",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bamboo raft deck shows its top surface across rows 2-12 (approx 10-11 rows) with a south edge along rows 13-14. The small crate on top also shows a 3-row top surface and south face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3555
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bamboo raft deck",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The raft deck is clearly visible from above across rows 2-11 (approx 10 pixel rows tall) with lashed bamboo poles, a small crate, and a south-facing edge at row 12-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3586
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bamboo raft deck",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The raft deck is clearly viewed from above across rows 2-11 (approx 10 rows of visible top surface) with a south-facing edge at rows 12-14. A small crate atop it also exhibits both top and front surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4617
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.588Z",
+ "cells": {
+  "16": [
+   "b7ba4b4cfa89377e",
+   "d52030eefaf7f13e"
+  ],
+  "24": [
+   "0710354ed707aa48",
+   "09703f65c754eb88",
+   "28518dca098d9cb0",
+   "2ad5d2a26ff34edd",
+   "70ed36b0b10f06a8",
+   "8064201112935b91",
+   "94d403471011eeb2",
+   "a6d0cc00fa747d68",
+   "aa6e1a7497b6faaf",
+   "c7872c489867bcc0",
+   "dfd272f1d3975cde",
+   "f966ddde013e3acd"
+  ],
+  "32": [
+   "c2d6f9cd4e55c7d2",
+   "c5dfb8de45fdf86e"
+  ],
+  "48": [
+   "22d5e305773feee8",
+   "38759643e84c487f",
+   "3f8a1646e99d4985",
+   "a7973b3f5b31e53f",
+   "caa5e34553e19c2f",
+   "f4023947ddceda32"
+  ]
+ }
+}

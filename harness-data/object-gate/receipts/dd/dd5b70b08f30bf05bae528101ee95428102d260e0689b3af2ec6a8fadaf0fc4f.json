@@ -1,0 +1,151 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dd5b70b08f30bf05bae528101ee95428102d260e0689b3af2ec6a8fadaf0fc4f",
+ "width": 64,
+ "height": 48,
+ "kind": "debris",
+ "name": "prehistoric stone-age ribcage",
+ "label": "prehistoric/ph-ribcage",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "large arched ribcage structure",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ribcage is a large standing structure rather than scattered debris lying flat on the floor. The spine and ribs are drawn in pure front/side elevation with no visible top surface (0 top rows) and vertical verticality characteristic of a 2D side-scroller graphic.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 6789
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "standing ribcage archway",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ribcage is drawn as a flat 2D side-scroller archway facing the camera directly. The arched spine at the top shows no horizontal dorsal surface seen from above (0-2px thick line), and the object is a standing structure rather than scattered debris lying flat on the floor.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 16477
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "arched bone ribcage / spine structure",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ribcage is a standing monumental structure rather than scattered debris. Its main body (the spine and ribs) is drawn in a flat 2D side-scroller elevation with no foreshortened top surfaces visible on the spine or ribs, despite the small dirt plinth at the base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 4937
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertebral arch and rib cage",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ribcage is drawn as a flat 2D front/side elevation (like a platformer archway) across the screen. The spine along the top has no visible foreshortened top surface, and the entire structure lacks 3/4 top-down perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 7407
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.707Z",
+ "cells": {
+  "16": [
+   "2010975390fe2e19",
+   "20e6246845976e70",
+   "33c4f5eb3a094480",
+   "39b6e408b84401f7",
+   "4250e41671a45aa5",
+   "7012f59bbb8dba27",
+   "8e32565606e4fe9d",
+   "b96cec7decf4f520",
+   "c638376ebd339a16",
+   "e03d1eccce9001b8",
+   "e2ede864712a4383",
+   "eb5665ff617f702e"
+  ],
+  "24": [
+   "057adcd719ad7fad",
+   "082378e0967aeb65",
+   "12aa6e4e8ee8908d",
+   "12ef98ac2631dac8",
+   "1a038b6e082dfc25",
+   "301f19660f611513",
+   "36ca90d1f5591239",
+   "3852242ffcfd0758",
+   "5b4f86f72771dc54",
+   "65970d0fe3437c59",
+   "8b62e68e3f8e75f7",
+   "8dcfce7b4cf7b19e",
+   "9b5a841a0290cd1d",
+   "ae9937f3e59e03f1",
+   "d546ea47cc289651",
+   "e4a8ea38800a426d",
+   "e77542d02135ec0f",
+   "f2cd0c1a6547dbbd"
+  ],
+  "32": [
+   "14734d676e71ed7b",
+   "17df523c7ba4af4e",
+   "39946f279d4c7dad",
+   "42460e58368efa82",
+   "4c23afee5dc4f158",
+   "68810ff00fec16f9",
+   "c3e3e0a0573b7520",
+   "edb1f802323be2d9"
+  ],
+  "48": [
+   "75752a2c2b6a8ab8",
+   "9097aff74a35fd16",
+   "9452a67793e00132",
+   "b5380083d630beb3",
+   "bf82166524960dff",
+   "c0aea5690679ddb4"
+  ]
+ }
+}

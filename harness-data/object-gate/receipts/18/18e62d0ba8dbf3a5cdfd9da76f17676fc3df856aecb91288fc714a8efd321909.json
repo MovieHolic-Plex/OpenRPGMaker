@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "18e62d0ba8dbf3a5cdfd9da76f17676fc3df856aecb91288fc714a8efd321909",
+ "width": 48,
+ "height": 32,
+ "kind": "box",
+ "name": "운송 컨테이너(주름 판 앞면 + 윗면 이음 + 문 잠금대)",
+ "label": "sf-station/sf-container",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "shipping container",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the container roof is clearly visible from rows 2 through 11 (approx. 10 pixel rows tall) with rib seams, and the corrugated front face extends below row 12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3408
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "shipping container",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof surface of the shipping container is prominently visible across rows 2-11 (10 pixel rows tall) above the corrugated front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3007
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "shipping container",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the container is clearly visible from row 2 to row 10 (around 9 source pixel rows tall) with cross-rib details, while rows 12-28 depict the corrugated front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3068
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "shipping container",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shipping container is prominently visible across rows 2-11 (10 source pixel rows) with panels and seams viewed from above, sitting above the front corrugated face (rows 12-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4856
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.244Z",
+ "cells": {
+  "16": [
+   "01a1964748f81785",
+   "1728d931cba3030c",
+   "3575229aa56a9589",
+   "5175f12856ac430b",
+   "8e1a2739664bcee9",
+   "f6540f35ac47ff20"
+  ],
+  "24": [
+   "13d3fda5fdd257ae",
+   "1b0cb691d6569de0",
+   "228d4e108cea7697",
+   "262e8cd61f469892",
+   "740f5a96d32b59a0",
+   "752ba27dec17e3fa",
+   "b4137f4186583fac",
+   "c1a95bf5e091005c"
+  ],
+  "32": [
+   "4380847f9966674c",
+   "47dad4674d06c059",
+   "4fc7957eb0f3b2af",
+   "9c8528b917ce7b61",
+   "af26180285e6e1ce",
+   "e0cbe666a98a3cb7"
+  ],
+  "48": [
+   "00cde0e19f148c36",
+   "f92628e7fe331add"
+  ]
+ }
+}

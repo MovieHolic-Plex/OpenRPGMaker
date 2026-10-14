@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ff4cd5839da2f48328301cf7c9ff520fe94e5742de292c8509503205d1fdb7dd",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass to cloud floor transition tile (terrain)",
+ "label": "sky-island/si-gc-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass ground transitioning to cloud edge",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile showing top-down grass surface spanning rows 0 to 11 transitioning into dirt overhang and cloud floor at rows 12-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4508
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass ground to cloud transition",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain transition tile showing top-down grass ground from row 0 to 11 transitioning into dirt edge and cloud floor beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4197
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "terrain transition tile from grass to cloud/void floor",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile featuring grass surface top view transitioning at rows 11-14 to a cloud floor below, appropriate for JRPG ground perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7625
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass terrain edge over cloud floor",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a grass ledge transitioning to cloud floor below; appropriate top-down perspective for ground terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4658
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.885Z",
+ "cells": {
+  "16": [
+   "8fdb3ad6172c4ab9"
+  ],
+  "24": [
+   "04ac9a9396a1dd8e",
+   "78746e983e934562",
+   "867826ced9ce83d5",
+   "ba3cacd1fad140dc",
+   "dd879e38746e3817",
+   "f9d92cf88eb4d9ad"
+  ],
+  "32": [
+   "09a6a509a8be7761",
+   "12cad3ce7149f2a3",
+   "54d4a36af3721bf4",
+   "87c6d63b68517c3b",
+   "e55721ad1a3fb80d",
+   "fbb0c5fdc7c47e49"
+  ],
+  "48": [
+   "24e57c58a2397300",
+   "6a9d33989024e108",
+   "9cf0bb2d8fea2493",
+   "c2e4b6541ab6502d",
+   "cc55918a2a50bd95",
+   "f5b9bc341e255a9d"
+  ]
+ }
+}

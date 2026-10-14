@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3d5aa63b86a113fe7e0721444b048d6702fecdc92af0d4eb1cd6019b83f9067b",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "운하 돌다리 동쪽 난간(남북으로 건넌다)",
+ "label": "steampunk-city/sp-bridge-e",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bridge floor and north-south east railing",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing a stone bridge deck on the left and a continuous north-south stone railing on the right, viewed from above with proper top surface shading throughout rows 0-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5657
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "canal stone bridge east railing (north-south bridge edge)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts the eastern edge of a north-south stone bridge, consisting of bridge pavement on the west and the top surface of the east railing on the right (columns 11-14) extending along the full height of the tile (16 rows).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5645
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone bridge floor and east railing",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a bridge terrain segment running north-south, showing the stone pavement on the left and the foreshortened top surface of the stone railing running continuously along the right side.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4449
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "canal stone bridge east railing tile with stone floor and north-south balustrade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a terrain/bridge tile showing the bridge stone floor on the west and the east balustrade running north-south, functioning as standard map terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5216
+  }
+ ],
+ "decidedAt": "2026-10-14T08:37:24.710Z",
+ "cells": {
+  "16": [
+   "83dc9b2b13f10de9"
+  ],
+  "24": [
+   "0af7b6d6d83f63ae",
+   "17e11474b08cc968",
+   "493a9d9b0a74aa4b",
+   "4fa1dcde24c4a592",
+   "a608704c958834dc",
+   "afab8727377847e0"
+  ],
+  "32": [
+   "00f8a3ce5a0ed549",
+   "456effbcf55ef02b",
+   "8d4d7b0ba2984b22",
+   "a3a211b45fa38df4",
+   "d5ae5d26a424cdee",
+   "e1e2e26501f06fa0"
+  ],
+  "48": [
+   "104212261d09c687",
+   "11a5e21ee59d561d",
+   "64daa7e719e1e580",
+   "7567cf59c8d9ccf4",
+   "8c76ee81499c7669",
+   "a0919822d839627c"
+  ]
+ }
+}

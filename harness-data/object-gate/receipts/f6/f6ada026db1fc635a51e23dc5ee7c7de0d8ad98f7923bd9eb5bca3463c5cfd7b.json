@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f6ada026db1fc635a51e23dc5ee7c7de0d8ad98f7923bd9eb5bca3463c5cfd7b",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "rock cliff face tile with a tapered side (terrain)",
+ "label": "sky-island/si-face-mid-ol",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rock cliff face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a vertical cliff face with tapered rock edge over water; as terrain wall face it correctly fills the vertical tile space.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4659
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rock cliff face tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a vertical rock cliff face tapering off into water/background at the bottom-left; as a vertical terrain face, no top surface is required.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5038
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rock cliff face tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a terrain autotile representing a vertical rock cliff face with a cut-out diagonal edge over water/background. As vertical terrain/wall face, it naturally depicts the vertical surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4943
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rock cliff face tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a vertical rock cliff face autotile section with an angled lower-left edge over water, matching the terrain category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 21833
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.884Z",
+ "cells": {
+  "16": [
+   "f83cbb89bb40ce05"
+  ],
+  "24": [
+   "562c3eeb01477906",
+   "9545f2c797b6c11c",
+   "add48db9935b5fe0",
+   "c5506265b3dbf077",
+   "e4d13ce3745cafcf",
+   "ff048cdda1995faf"
+  ],
+  "32": [
+   "0e81847d5f9c0e5f",
+   "164cbce3da122df2",
+   "6a5200eff580c50e",
+   "70d01c5579ed902f",
+   "96e43adbe1c8afa2",
+   "fc18f8232eeee73c"
+  ],
+  "48": [
+   "10b249ad6a400c45",
+   "170adff6d34038aa",
+   "709dbb9d4aef5eaa",
+   "93c62aa6acb667b9",
+   "d1db0847162d3ada",
+   "eae3de2e7fc4b824"
+  ]
+ }
+}

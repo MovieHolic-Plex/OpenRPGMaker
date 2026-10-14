@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7e809f829b79d2d27daaa2cbce75e9543aaecf57762dbbb5fc454d74cc3d9561",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "자갈 포석(얼룩 변주)",
+ "label": "steampunk-city/sp-cobble-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone paving terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image shows a full 16x16 ground terrain tile representing stone paving blocks with stains; as terrain viewed top-down, it fills the tile without standing object elevation issues.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3723
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone paving tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing stone paving / cobblestone ground texture. It fills the tile as a flat terrain surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4485
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone paving terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting cobblestone/stone pavement with subtle discoloration variations, filling the full 16x16 footprint.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5048
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone paving terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts horizontal stone paving (ground terrain) filling the entire 16x16 canvas, viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4047
+  }
+ ],
+ "decidedAt": "2026-10-14T08:37:24.706Z",
+ "cells": {
+  "16": [
+   "f6d964c98afcff43"
+  ],
+  "24": [
+   "1c8f522870c792b5",
+   "30682f53d5edd511",
+   "50593b64ed4cf9d5",
+   "9846802406ebc275",
+   "aef5ba5053a13503",
+   "de601572752df536"
+  ],
+  "32": [
+   "167e58ebe91cfc25",
+   "2cf7ab5464a69b20",
+   "438149569387bd15",
+   "848c38fc4e7664fd",
+   "852b4fc94710733b",
+   "9dc642d6286289ab"
+  ],
+  "48": [
+   "0686e38d59d51d66",
+   "213d18ab79956a16",
+   "acc7e720c8fbaf62",
+   "b27317cba120a8c0",
+   "d8d15fc19957bd2d",
+   "e43b9da93e1faf9e"
+  ]
+ }
+}

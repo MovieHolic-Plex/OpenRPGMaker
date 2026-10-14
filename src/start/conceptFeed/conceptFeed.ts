@@ -47,10 +47,14 @@ export type ConceptFeedOptions = {
   /** 「골라서 만들기」 — 빠른 인터뷰(장르 + 질문 셋)가 낸 기획으로 만들기. 없으면 띠를 보이지 않는다. 약속은 onMake 와 같다. */
   readonly onInterview?: (brief: GameDesignBrief, title: string) => Promise<boolean>;
   readonly onClose?: () => void;
-  /** 런처만 — 「이어하기」 줄. */
+  /** 런처만 — 「이어가기」 줄. */
   readonly continueRow?: HTMLElement | null;
   /** 런처만 — 위 막대 오른쪽(폴더 열기·팀 참여·언어). */
   readonly topActions?: readonly HTMLElement[];
+  /** 런처만 — 왼쪽 고정 레일. */
+  readonly launcherRail?: HTMLElement | null;
+  /** 런처만 — 최근 작업을 강조하는 히어로. */
+  readonly launcherHero?: HTMLElement | null;
   /** 「내가 쓴 걸로 만들기」 전에 — AI 연결 관문. false 면 초안을 쓰지 않고 피드에 남는다. */
   readonly beforeDraft?: () => Promise<boolean>;
   /** 입력 문장 → 컨셉 초안. 기본은 src/concepts/draft.ts 를 지연 로드한다. */
@@ -63,6 +67,8 @@ export type ConceptFeed = {
   readonly element: HTMLElement;
   /** Escape 한 번. 상세면 피드로 돌아가고 true. 피드면 false(닫기는 호출부 몫). 편집기 창은 modalStack 이 이걸 부른다. */
   escape(): boolean;
+  /** 상세 화면에서 피드로 돌아간다. 만들기 중이면 false. */
+  returnToFeed(): boolean;
   /** 만들기가 진행 중이면 true — 덮는 창은 이동안 닫지 않는다. */
   busy(): boolean;
   dispose(): void;
@@ -105,7 +111,7 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
   let searchTimer: ReturnType<typeof setTimeout> | undefined;
   let stopObserving: () => void = () => {};
 
-  const root = el("div", { class: `cf-root cf-${options.mode}`, dataset: { testid: CONCEPT_FEED_TESTIDS.root } });
+  const root = el("div", { class: `cf-root cf-${options.mode}${options.launcherRail ? " cf-has-rail" : ""}`, dataset: { testid: CONCEPT_FEED_TESTIDS.root } });
   if (options.mode === "overlay") {
     root.setAttribute("role", "dialog");
     root.setAttribute("aria-modal", "true");
@@ -181,6 +187,7 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
     ] }),
   ] }) : null;
   const feed = el("section", { class: "cf-feed", children: [
+    ...(options.launcherHero ? [options.launcherHero] : []),
     ...(quickBand ? [quickBand] : []),
     chips,
     ...(options.continueRow ? [options.continueRow] : []),
@@ -189,7 +196,8 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
   const detail = el("section", { class: "cf-detail", dataset: { testid: CONCEPT_FEED_TESTIDS.detail } });
   detail.hidden = true;
   const body = el("div", { class: "cf-body", children: [feed, detail] });
-  root.append(top, body, errorLine);
+  const main = el("div", { class: "cf-main", children: [top, body, errorLine] });
+  root.append(...(options.launcherRail ? [options.launcherRail] : []), main);
 
   const renderChips = (): void => {
     chips.replaceChildren(...["전체", ...(source.tags?.() ?? CONCEPT_TAGS)].map((tag) => {
@@ -333,6 +341,11 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
     detail.replaceChildren();
     setError("");
     body.scrollTop = feedScroll;
+  };
+  const returnToFeed = (): boolean => {
+    if (making) return false;
+    showFeed();
+    return true;
   };
 
   const renderDetail = (concept: GameConcept, similar: readonly GameConcept[], heroOverride?: Promise<string | null>): void => {
@@ -481,6 +494,7 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
   return {
     element: root,
     escape,
+    returnToFeed,
     busy: () => making,
     dispose() {
       closeQuick();

@@ -33,7 +33,7 @@ P = dict(png=os.path.join(ROOT, 'public/assets/modern-campus/modern-campus-chips
          pins=os.path.join(TD, 'bake-pins.json'), report=os.path.join(TD, 'bake-report.json'))
 GROUP_KO = dict(terrain='바닥·도로', buildings='건물', props='교정 소품')
 FENCE_IDS = {'mc-fence-mesh', 'mc-wall-brick', 'mc-hedge', 'mc-gate-pillar', 'mc-gate-slide'}
-TREE_IDS = {'mc-tree-zelkova', 'mc-tree-ginkgo', 'mc-tree-cherry', 'mc-tree-pine', 'mc-shrub', 'mc-azalea'}
+TREE_IDS = {'mc-tree-zelkova', 'mc-tree-zelkova-l', 'mc-tree-ginkgo', 'mc-tree-cherry', 'mc-tree-pine', 'mc-shrub', 'mc-azalea'}
 ANIM_SETS = [  # (id, 이름, 프레임 id 목록, fps) — 프레임 0 은 정지 그림(mc-fountain)과 같은 조각이다
     ('mc-fountain-anim', '분수(물 움직임)', ['mc-fountain', 'mc-fountain-f1', 'mc-fountain-f2'], 4),
 ]

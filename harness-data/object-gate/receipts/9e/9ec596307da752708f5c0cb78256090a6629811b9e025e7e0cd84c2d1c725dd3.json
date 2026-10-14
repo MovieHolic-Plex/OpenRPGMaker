@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9ec596307da752708f5c0cb78256090a6629811b9e025e7e0cd84c2d1c725dd3",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "flowing stream channel on grass (terrain)",
+ "label": "sky-island/si-stream-lip",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stream channel with water flowing between stone banks on grass",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain channel visible from above (rows 0-10) dropping down a vertical ledge with foamy water at rows 11-15; correctly depicts top-down 3/4 perspective terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4593
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stream channel in grass/cliff terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting a stream channel cut into grass flowing southward down a slight step/cliff edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5074
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water stream channel bordered by stone and grass terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting a flowing stream channel between grass and stone banks viewed from above in standard top-down 3/4 RPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3966
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stream channel on grass",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting a vertical stream channel between grass banks, transitioning to white water/small drop at the bottom; properly viewed from top-down/3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5227
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.893Z",
+ "cells": {
+  "16": [
+   "ebebc2a3744cd3d2"
+  ],
+  "24": [
+   "072cd4d718ee545f",
+   "557bea76ba99265d",
+   "623f5485451bcbc0",
+   "6f5b444f852a3938",
+   "868ea92483d0242d",
+   "f1fd5cc208cce18d"
+  ],
+  "32": [
+   "22d40be14aebb870",
+   "340da3c2e01bcd95",
+   "3e3a3718ef286af3",
+   "403e75788124bc40",
+   "aa852926b9ef2a2c",
+   "e43d3ce63b000cc3"
+  ],
+  "48": [
+   "1daa78adf537e92e",
+   "2c39d19744ded8b6",
+   "5331b5cfd1b0e29e",
+   "a151f388bf82a562",
+   "d0d5d6d9be5e1bb5",
+   "e96db0e9cf5cdd4f"
+  ]
+ }
+}

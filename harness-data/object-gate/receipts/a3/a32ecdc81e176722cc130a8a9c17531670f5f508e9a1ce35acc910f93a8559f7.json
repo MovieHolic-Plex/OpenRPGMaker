@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a32ecdc81e176722cc130a8a9c17531670f5f508e9a1ce35acc910f93a8559f7",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "tall bamboo shelf seen from above at 3/4 with clay pots, gourds and a basket, a water gourd on the top surface",
+ "label": "pirate-isles/pi-shelf-hut",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bamboo shelving unit",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shelf is clearly rendered across rows 3-7 (approx 5 rows deep), on which a gourd rests, bounded by a front horizontal bamboo rail at rows 8-9.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4058
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall bamboo shelf",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the shelf is clearly visible across rows 3-7 (about 5 rows deep) supporting a gourd on top, meeting RPG Maker 3/4 perspective requirements.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4511
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tall bamboo shelf",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shelf is visible from row 3 to row 7 (about 5 rows deep), upon which a gourd rests, before transitioning to the front beam at rows 8-9 and the open front bays below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5733
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall bamboo shelf",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shelf is clearly drawn across rows 3-7 (approx 5 rows deep) supporting a gourd on top, with a defined front crossbar at rows 8-9.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5466
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.595Z",
+ "cells": {
+  "16": [
+   "a14c86cebac85ec7",
+   "be5badea2b1f537c"
+  ],
+  "24": [
+   "05807be0833ecf5c",
+   "061d7050927d8cd5",
+   "1c891ca548976dfb",
+   "3fa08f642dec2b3d",
+   "47797916a4db7b82",
+   "51e85033ac958dc3",
+   "5e3feb4b87df848e",
+   "6790555226bd21ad",
+   "6916502db4b8fc15",
+   "92cd3efadb8bd390",
+   "e9c9078409d075fb",
+   "fba2084ca527e299"
+  ],
+  "32": [
+   "65720a53716f0693",
+   "6d0c5134735d286b",
+   "f550acf4b6fdcad0"
+  ],
+  "48": [
+   "1a2078906b794e95",
+   "6ae485be0bf1ce31",
+   "7146bdc8975e29bf",
+   "9f7d210d714319bc",
+   "df7991fde1772cf3",
+   "efcb859b464f3f07"
+  ]
+ }
+}

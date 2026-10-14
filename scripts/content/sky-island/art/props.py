@@ -16,6 +16,38 @@ A = R.add
 
 
 # ═══════════════════════ 나무·풀 ═══════════════════════
+def leafy(c, pts, mat, base, s=1):
+    """잎 덩이 결(화풍 정렬 2026-10-14 — 버들항 나무처럼): 4×3 칸 격자(줄마다 어긋남)에 흔들린 잎 뭉치 중심을 두고,
+    뭉치 안 왼쪽 위는 한 단 밝게(햇빛 잎), 오른쪽 아래 가장자리는 한 단 어둡게, 뭉치 사이 틈은 한 단 어둡게 — 덩이 명암 위에 잎 뭉치 단위 반사·그늘이 얹혀 5~6단.
+    윤곽 화소는 건드리지 않는다."""
+    n = NT[MI[mat]]
+    edge = {p for p in pts if any((p[0] + a, p[1] + b) not in pts for a, b in ((1, 0), (-1, 0), (0, 1), (0, -1)))}
+    def centers(gx, gy):
+        ox = 2 if gy % 2 else 0
+        return (gx * 4 + ox + 1.5 + (rnd(gx, gy, s + 91) - 0.5) * 1.6, gy * 3 + 1.0 + (rnd(gx, gy, s + 92) - 0.5) * 1.2)
+    for (x, y) in pts:
+        if (x, y) in edge: continue
+        g = c.get(x, y)
+        if not g or g[0] != mat: continue
+        gy0 = y // 3; best = None
+        for gy in (gy0 - 1, gy0, gy0 + 1):
+            ox = 2 if gy % 2 else 0
+            gx0 = (x - ox) // 4
+            for gx in (gx0 - 1, gx0, gx0 + 1):
+                cx, cy = centers(gx, gy)
+                dx, dy = x + 0.5 - cx, (y + 0.5 - cy) * 1.25
+                d = math.sqrt(dx * dx + dy * dy)
+                if best is None or d < best[0]: best = (d, dx, dy)
+        d, dx, dy = best
+        t = g[1]
+        if d < 1.7:
+            if dx + dy < -0.6 and t >= base - 1: t = min(n - 1, t + 1)       # 잎 뭉치 햇빛 쪽
+            elif dx + dy > 1.2: t = max(0, t - 1)                              # 뭉치 오른쪽 아래
+        elif d > 2.3:
+            t = max(0, t - 1)                                                  # 뭉치 사이 틈
+        c.P(x, y, mat, t)
+
+
 def round_tree(c, s=1, mat='leaf', base=3, flowers=None):
     W, H = c.w, c.h
     cx = W // 2
@@ -24,6 +56,7 @@ def round_tree(c, s=1, mat='leaf', base=3, flowers=None):
     c.P(cx - 3, H - 3, 'wood', 2); c.P(cx + 3, H - 3, 'wood', 1)          # 뿌리 뻗음
     cl = [(cx + 6, H - 24, 9), (cx - 7, H - 25, 9), (cx + 1, H - 33, 11), (cx - 5, H - 36, 8), (cx + 6, H - 37, 8), (cx, H - 21, 9)]
     pts = blob(c, cl, mat, base, s, rim=0)
+    leafy(c, pts, mat, base, s)
     if flowers:
         fm, ft = flowers
         for (x, y) in pts:
@@ -36,6 +69,25 @@ def round_tree(c, s=1, mat='leaf', base=3, flowers=None):
 @A('tree-round', '둥근 활엽수', 2, 3, 'organic', ['나무', '숲'], '풀 칸 위에만. 집 옆·섬 가장자리 안쪽 2칸. 줄기 칸(맨 아랫줄 가운데)이 막힘.',
    gate_name='round leafy tree')
 def _(c): round_tree(c, 3)
+
+
+@A('tree-big', '큰 활엽수', 3, 4, 'organic', ['나무', '숲'], '마을 기본 나무(버들항 활엽수 크기). 풀 칸 위에만, 집·길에서 1칸 띄운다. 줄기 칸(맨 아랫줄 가운데)이 막힘.',
+   gate_name='large round leafy broadleaf tree')
+def _(c):
+    W, H = c.w, c.h
+    cx = W // 2
+    shadow_ell(c, cx + 2, H - 5, 17, 4.2)
+    trunk(c, cx - 3, H - 24, H - 3, 6)
+    for dx, t in ((-5, 2), (-4, 3), (6, 1), (7, 2)): c.P(cx + dx, H - 3, 'wood', t)              # 뿌리 뻗음
+    c.P(cx - 4, H - 4, 'wood', 3); c.P(cx + 5, H - 4, 'wood', 1)
+    c.line(cx + 2, H - 25, cx + 8, H - 32, 'wood', 2)                                             # 가지(잎 사이로 보임)
+    cl = [(cx - 13, H - 30, 9), (cx + 13, H - 29, 9), (cx - 6, H - 40, 11), (cx + 7, H - 41, 11), (cx, H - 52, 10),
+          (cx - 11, H - 48, 8), (cx + 12, H - 50, 8), (cx - 2, H - 28, 10), (cx + 5, H - 30, 8)]
+    pts = blob(c, cl, 'leaf', 3, 41, rim=0)
+    leafy(c, pts, 'leaf', 3, 41)
+    for x in range(cx - 4, cx + 7):                                                              # 잎 덩이 밑 그늘이 줄기에 드리운다
+        g = c.get(x, H - 24)
+        if g and g[0] == 'wood': c.P(x, H - 24, 'wood', 1)
 
 
 @A('tree-blossom', '꽃나무(분홍)', 2, 3, 'organic', ['나무', '꽃'], '신전 앞·광장 모퉁이에 한두 그루.', gate_name='round blossom tree with pink flowers')
@@ -55,9 +107,13 @@ def _(c):
             half = 1 + u * hw
             for x in range(int(cx - half), int(cx + half) + 1):
                 v = (x - (cx - half)) / max(1, 2 * half)
-                t = 4 if v < 0.35 else 3 if v < 0.7 else 2
+                t = 5 if v < 0.22 else 4 if v < 0.45 else 3 if v < 0.72 else 2
                 if y >= y0 - 1: t = 1
-                if rnd(x // 2, y, 9 + k) < 0.18: t += 1 if v < 0.5 else -1
+                elif y >= y0 - 3 and v > 0.3: t = min(t, 2)                       # 층 밑 그늘(아래 층을 덮는 처마)
+                # 바늘잎 결: 아래로 처진 짧은 사선 획(밝은 끝 + 그늘 밑)
+                ph = (x * 2 - y * (1 if x < cx else -1) + k * 3) % 5
+                if ph == 0 and y < y0 - 2: t = min(6, t + 1)
+                elif ph == 1 and y < y0 - 2 and t > 1: t -= 1
                 c.P(x, y, 'leaf', clamp(t, 0, 6))
             c.P(int(cx - half), y, 'leaf', 1); c.P(int(cx + half), y, 'leaf', 0)
     c.P(cx, H - 49 + 1, 'leaf', 5) if False else None
@@ -67,19 +123,20 @@ def _(c):
 def _(c):
     shadow_ell(c, 8.5, 28, 6, 2.2)
     trunk(c, 7, 18, 30, 3)
-    blob(c, [(5, 13, 5), (11, 12, 5), (8, 7, 5), (8, 15, 5)], 'leaf', 3, 11, rim=0)
+    leafy(c, blob(c, [(5, 13, 5), (11, 12, 5), (8, 7, 5), (8, 15, 5)], 'leaf', 3, 11, rim=0), 'leaf', 3, 11)
 
 
 @A('bush', '덤불', 1, 1, 'organic', ['덤불', '풀'], '집 벽 앞·울타리 끝. 막힘.', gate_name='round green bush')
 def _(c):
     c.HL(3, 15, 10, 'grass', 1)
-    blob(c, [(5, 10, 4.5), (11, 10, 4.5), (8, 7, 5)], 'leaf', 3, 13, rim=0)
+    leafy(c, blob(c, [(5, 10, 4.5), (11, 10, 4.5), (8, 7, 5)], 'leaf', 3, 13, rim=0), 'leaf', 3, 13)
 
 
 @A('bush-flower', '꽃덤불', 1, 1, 'organic', ['덤불', '꽃'], '창 아래·문 옆.', gate_name='round bush with small flowers')
 def _(c):
     c.HL(3, 15, 10, 'grass', 1)
     pts = blob(c, [(5, 10, 4.5), (11, 10, 4.5), (8, 7, 5)], 'leaf', 3, 17, rim=0)
+    leafy(c, pts, 'leaf', 3, 17)
     for (x, y) in pts:
         if rnd(x, y, 3) < 0.12 and c.get(x, y)[1] >= 3: c.P(x, y, 'flower', 3 if rnd(x, y, 4) < 0.5 else 4)
 

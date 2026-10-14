@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "be09b5d662149598680811ce3365059a7758349045ad128b583dcbe46a241fb5",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "prehistoric stone-age grass b",
+ "label": "prehistoric/ph-grass-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass ground terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 seamless top-down ground terrain tile representing grass/vegetation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4000
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 ground texture representing prehistoric grass terrain viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4188
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 pixel grass terrain texture viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3744
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass ground surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile is a continuous top-down ground terrain texture depicting grass.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4086
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.698Z",
+ "cells": {
+  "16": [
+   "8403445881c5f6db"
+  ],
+  "24": [
+   "0ced4b21da07e5bf",
+   "227531e39d9af807",
+   "611dbd0a61d469be",
+   "a8bdcc3b2ce2098d",
+   "f0393bbde3b33bf3",
+   "fb8ce132fe03319a"
+  ],
+  "32": [
+   "37f8430156040645",
+   "44236c7d84398031",
+   "8d5205b5b86c1876",
+   "adc6e080d17e403c",
+   "e4610d0761ff7275",
+   "f5c6d7c404c70733"
+  ],
+  "48": [
+   "0b154e7c3e40262a",
+   "2fecdd10581ac0e2",
+   "4ba88156ed61ea60",
+   "7010281f084897e6",
+   "ca53b5c0219b5ee5",
+   "d69f57e22cc3c8d0"
+  ]
+ }
+}

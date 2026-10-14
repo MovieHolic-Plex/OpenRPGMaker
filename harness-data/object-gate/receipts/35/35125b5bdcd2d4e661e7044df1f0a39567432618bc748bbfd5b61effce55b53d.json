@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "35125b5bdcd2d4e661e7044df1f0a39567432618bc748bbfd5b61effce55b53d",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "석탄재 마당(바퀴 자국)",
+ "label": "steampunk-city/sp-cinder-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ground tile with wheel ruts",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire tile is flat ground terrain showing dark grey coal ash earth with horizontal wheel ruts across rows 4 and 11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3288
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "coal ash ground surface with wheel ruts",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing coal ash yard with horizontal wheel ruts across the surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2743
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ground texture with wheel tracks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire tile is a flat ground terrain surface depicting coal ash ground with horizontal wheel ruts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2770
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "coal ash ground with wheel tracks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tile depicting coal ash surface with dark horizontal wheel tracks around rows 4 and 11. As ground terrain, it inherently represents a horizontal surface filling the entire 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3502
+  }
+ ],
+ "decidedAt": "2026-10-14T08:37:24.708Z",
+ "cells": {
+  "16": [
+   "4fe96df1c81aefcc"
+  ],
+  "24": [
+   "2c633f75899b2c82",
+   "3ec2f8e2630bf38e",
+   "49438c462a030610",
+   "6dcf49a43ebea4b9",
+   "a332e42e230bdd76",
+   "d74d0722a4e80f78"
+  ],
+  "32": [
+   "76490ccba609f5fe",
+   "8cfcc6ba86354d02",
+   "b771d32d9d7b682c",
+   "ce1e7a6d4b44d5e6",
+   "e81fe19a7e328e64",
+   "ee6e1c5ae6a58020"
+  ],
+  "48": [
+   "03acfe4cf07068b6",
+   "0e13a8a3b9049f77",
+   "13ccb53e98bcbd46",
+   "40573bd2db709822",
+   "a9293398aee7773b",
+   "f35dfafb0a33ed8d"
+  ]
+ }
+}

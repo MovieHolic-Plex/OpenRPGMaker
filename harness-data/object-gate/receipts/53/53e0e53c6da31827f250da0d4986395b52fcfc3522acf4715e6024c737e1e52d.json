@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "53e0e53c6da31827f250da0d4986395b52fcfc3522acf4715e6024c737e1e52d",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "무쇠 창살 낮은 돌담(동서 — 위에서 길게 보이는 갓 위 창끝 줄)",
+ "label": "steampunk-city/sp-fence",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "low stone wall with iron railing running east-west",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-2 provide a 3-pixel-tall foreshortened top surface (tiled stone wall cap) seen from above, with the south wall face and railing extending below from row 4 downward.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5006
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "low stone wall with iron railing",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-2 form a 3-row tall top surface of the wall cap with alternating stone texture, followed by the south-facing wall and railing structure on rows 4-11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5121
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "low stone wall with iron railing details",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wall cap is visible across rows 0–2 (3 pixel rows tall) with textured slate capping, followed by a shadow line at row 3 and the south vertical wall face from row 4 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7116
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "low stone wall with iron grating running east-west",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coping/top surface of the wall is rendered across rows 0–2 (3 pixel rows tall with a stone block/tile texture) above the shadowed front face (rows 4–14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6447
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.526Z",
+ "cells": {
+  "16": [
+   "32299ef8bec54468"
+  ],
+  "24": [
+   "2cc6ed99e6186bc0",
+   "3e61bd93529d8a74",
+   "45984baa38d88df1",
+   "a587f93025ab12f9",
+   "d9ec2e9894d1d412",
+   "f247b391365aa0ce"
+  ],
+  "32": [
+   "06b49402b52285d5",
+   "92ad8aad9bd563fe",
+   "9e5dec7792960cb6",
+   "b45a7e1ad7c827c8",
+   "e3526b62c91f1e7b",
+   "fe17b80cad5e3202"
+  ],
+  "48": [
+   "34500d57a4d61980",
+   "4dd5f6c8dba56333",
+   "935197a86d3da1c6",
+   "b139d0256a035640",
+   "b20761be8cc21205",
+   "cd4d25beda90c324"
+  ]
+ }
+}

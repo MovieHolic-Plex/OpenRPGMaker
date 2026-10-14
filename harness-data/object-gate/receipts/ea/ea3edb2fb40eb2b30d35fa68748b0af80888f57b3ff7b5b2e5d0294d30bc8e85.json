@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ea3edb2fb40eb2b30d35fa68748b0af80888f57b3ff7b5b2e5d0294d30bc8e85",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "low bamboo table with a bowl of rice, a coconut shell cup and a bunch of bananas on top",
+ "label": "pirate-isles/pi-low-table-hut",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "low bamboo table",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bamboo tabletop is clearly visible in 3/4 perspective spanning rows 1-9 with food items placed on top, bordered by a front edge at row 10 and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4944
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bamboo table",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bamboo tabletop is prominently viewed from above spanning rows 1 to 9, displaying food items across its horizontal surface with a clear front edge at row 10 and legs beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7802
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bamboo table",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop has a clearly visible top surface spanning rows 2 to 9 (8 pixels tall) upon which the rice bowl, cup, and bananas rest, with a front edge on rows 10-11 and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3608
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "low bamboo table",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bamboo tabletop is clearly visible from above across rows 1 to 9 (about 9 rows deep), displaying the bowl, cup, and bananas resting on its horizontal surface, with the front edge and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3509
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.594Z",
+ "cells": {
+  "16": [
+   "8a9059af8231e83e",
+   "ec21f301acc093bf"
+  ],
+  "24": [
+   "09cba05d284fe409",
+   "19c88fd410b0c52d",
+   "25ccf5da49706632",
+   "359c4cff43ed1790",
+   "5ded3274c9c47039",
+   "61117229741c6af2",
+   "7e6530f39557bf9f",
+   "83e4ea7e9e180b79",
+   "8924560e83e0e78b",
+   "8d71e250f9ffe414",
+   "95b6a3d4af4a6b86",
+   "b8b1f7f4e828d4df"
+  ],
+  "32": [
+   "3f596bfb52f4cdd5",
+   "84a207580abe9e69"
+  ],
+  "48": [
+   "0623ab190e0698da",
+   "98f8b053b2bc3e92",
+   "9a5448f7497ef86d",
+   "dc0596824f00d0bc",
+   "f294d9ce71bfed48",
+   "f3d82d6f3560c7c4"
+  ]
+ }
+}

@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cfca3e033f648466c67127ce76e7d4380bd153c859ee5c955a75c4389bac48fc",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "stone-ringed cooking fire pit with a wooden tripod holding a hanging iron stew pot",
+ "label": "pirate-isles/pi-fire-pit",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hanging iron stew pot over a stone fire pit",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hanging pot clearly displays its interior opening filled with stew (rows 7-10) seen from above at a 3/4 angle, with the front wall of the pot extending below it (rows 11-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4968
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hanging iron stew pot over fire pit",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stew pot clearly shows its interior opening from above filled with orange stew (rows 6-10) before transitioning to its front south wall (rows 11-15). The stone fire pit below is also appropriately foreshortened in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4707
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hanging iron stew pot over fire pit",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hanging stew pot clearly shows its interior opening with orange stew visible from rows 7 to 9 (3 rows tall) above the front face of the pot. The surrounding stone fire pit also displays a 3/4 top-down elliptical view.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 3984
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hanging iron stew pot over stone-ringed fire pit",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hanging pot displays a clear 3/4 top-down opening from row 6 to 9 showing the orange stew interior, and the surrounding stone fire pit forms an elliptical ring viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3539
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.593Z",
+ "cells": {
+  "16": [
+   "08e25e13f55cf6d9",
+   "64e9477fdb755a11",
+   "71a70e6aa0ca601c",
+   "c36abcaf12a14fbc"
+  ],
+  "24": [
+   "063d2c6207075863",
+   "15b253043e6c261a",
+   "1db2ed9c5c831d83",
+   "2a094200e027fdf1",
+   "39809772eb999fc2",
+   "418f59725d04904a",
+   "4d0beaa60ffae114",
+   "4f9ae4145e60c218",
+   "590861eb4d14704c",
+   "5b28efbece1f213c",
+   "7228e0b2a3ecccef",
+   "88a7b248bd33a3b5",
+   "9533395b4b7c8e0d",
+   "9d7f8b15059458ba",
+   "a437813edf3bec56",
+   "a9747250962b3751",
+   "c7a4827edfe1d7b6",
+   "c8470e216fc877ce",
+   "ca8f1ce2788a372c",
+   "d634008c870e8269",
+   "e3403bdd1d9e2f50",
+   "ea97f07c1a4fa459"
+  ],
+  "32": [
+   "2acb7c68c1a97e3d"
+  ],
+  "48": [
+   "22f4d0f79969d22b",
+   "5f32c25889f78c05",
+   "61957ab6b72a7139",
+   "74af12e09c07e8ab",
+   "886bb1e3f3ada984",
+   "f1b8f5d2ff99ae63"
+  ]
+ }
+}

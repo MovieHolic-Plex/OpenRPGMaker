@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2346457442974923972ac49893e02646c7812345547aab56779636dc54128468",
+ "width": 16,
+ "height": 32,
+ "kind": "organic",
+ "name": "prehistoric stone-age horsetail",
+ "label": "prehistoric/ph-horsetail",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "segmented horsetail plant stems",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horsetail stems and horizontal whorls/nodes are drawn completely straight across with no 3/4 top-down foreshortening or curvature; the tops of the stems end in flat or 1px tips with 0 visible top surface rows.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4895
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "segmented plant stalks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horsetail stalks and their whorled horizontal segments are drawn straight-on in flat front elevation with horizontal lines and no foreshortened top surfaces visible on the stalk tips or nodes.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3289
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horsetail plant stalks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The segmented vertical stalks and horizontal nodes are drawn as a flat 2D grid/ladder-like side-scroller elevation with no foreshortened top surfaces or depth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3667
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horsetail plant stalks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horsetail stalks and their segments/rings are drawn completely flat horizontally as a 2D side/front elevation with no top-down foreshortening or elliptical tops.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3034
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.702Z",
+ "cells": {
+  "16": [
+   "1abf8bb774b4831b",
+   "be9b45a78179ef67"
+  ],
+  "24": [
+   "0b62d2628dacf28c",
+   "12ec792e9fa10011",
+   "15c7c47202538e76",
+   "2b4a6a07bffddfa3",
+   "42884b63489a3d43",
+   "5524c741b419c66d",
+   "63e1d0e1069c54e6",
+   "7fb4f0ba1efff28e",
+   "8a99559fdbe79c8f",
+   "bd757d2b20b9625a",
+   "df2474693a9bdd2c",
+   "ff9bd41d90787a6b"
+  ],
+  "32": [
+   "a2b49163bd0c0d54",
+   "c4832c2ebb96d364",
+   "f33bb2134d878a64"
+  ],
+  "48": [
+   "0f2152e9b303358f",
+   "3c8c6ee6cf34cfcd",
+   "4252b1a85c94295e",
+   "4c5047a0f0f081e1",
+   "dad137cb0319c6fb",
+   "f4ae52d6089a8b16"
+  ]
+ }
+}

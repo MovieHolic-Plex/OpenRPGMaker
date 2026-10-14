@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "02d0b66a08619ab8d66fbc287b7d6edf0821ab4fdfcc751464d2c0c3528aa499",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "twin coconut palm trees from one clump",
+ "label": "pirate-isles/pi-palm-pair",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "twin palm trunks and frond canopies",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The palm trees and fronds are drawn in flat side-scroller profile with horizontal trunk segments and a flat bottom line; the canopies do not spread radially or reveal any top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4517
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "twin palm trees",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The palm trees are drawn as a flat 2D side-scroller silhouette: the trunks rise vertically from a completely flat bottom line at row 46, and the fronds are depicted entirely in side/front elevation rather than showing an overarching top-down view of the crown radiating outward from above.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4362
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "twin palm trees",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The palm trees are drawn as a flat side/front elevation typical of a 2D side-scroller: the fronds droop in a side profile without any foreshortened top-down view of the crowns (top_rows = 0), and the base terminates in a completely flat horizontal line.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5552
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "twin palm trunks and fronds",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The palm trees are drawn in a flat side-scroller/platformer profile. The fronds hang in a 2D silhouette without revealing an overhead circular canopy, the trunk bands are completely horizontal, and the base ends in a flat horizontal line with no depth or 3/4 foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5771
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.575Z",
+ "cells": {
+  "16": [
+   "04d85a55c1a42d49",
+   "28466f54140a1ae6",
+   "2ef8ea8901a450c1",
+   "348edb47766e44e4",
+   "5f07f3e9cb01ee88",
+   "84895e5bc8c6148d"
+  ],
+  "24": [
+   "01f930691c996554",
+   "06921d1377f26d3b",
+   "105fd534a1ae1fea",
+   "160bb5ada6fc350d",
+   "5d689ab6eeff1f33",
+   "78f50784f6c247fb",
+   "a6dfabecd7db9261",
+   "a76a074e9e772125",
+   "a8bd46da27fd1745",
+   "b36a89c6ef850e01",
+   "c8b7810430af73ac",
+   "db7a378d1c2e1507"
+  ],
+  "32": [
+   "84f7f4d04a692833",
+   "c292c106cc729ab3",
+   "cdd80847abd5c343",
+   "d2433610e6821327"
+  ],
+  "48": [
+   "a3991c033f374762",
+   "d2545b75d09a91e2",
+   "ff6917f3f4db3d0b"
+  ]
+ }
+}

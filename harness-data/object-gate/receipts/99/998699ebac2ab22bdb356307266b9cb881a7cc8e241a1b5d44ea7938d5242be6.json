@@ -1,0 +1,161 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "998699ebac2ab22bdb356307266b9cb881a7cc8e241a1b5d44ea7938d5242be6",
+ "width": 96,
+ "height": 96,
+ "kind": "structure",
+ "name": "two-storey harbor tavern with tile roof, timber-framed plaster walls, porch canopy and hanging mug sign",
+ "label": "pirate-isles/pi-tavern",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tavern building with large tiled roof slope and timber-framed facade",
+    "kind_matches": true,
+    "top_rows": 44,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a massive south-facing tiled roof slope measuring approximately 44 pixel rows tall (rows 0-43), as well as a sloped canopy over the porch (rows 62-65), consistent with the standard RPG Maker 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5634
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tavern building",
+    "kind_matches": true,
+    "top_rows": 44,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof shows a large foreshortened top/front slope spanning rows 0 to 43 in standard JRPG 3/4 overhead perspective, along with an angled canopy over the porch.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4357
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two-storey tavern building with tiled pitched roof",
+    "kind_matches": true,
+    "top_rows": 44,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large tiled roof slope is clearly visible from above across rows 0 to 43 (~44 rows tall). The chimney at the top right also shows an interior opening (rows 8-11), and the porch canopy shows a visible top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3771
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "two-storey harbor tavern building",
+    "kind_matches": true,
+    "top_rows": 44,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof slope is clearly visible from above, occupying rows 0-43 (44 source pixels tall) over the vertical south-facing facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 18849
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.579Z",
+ "cells": {
+  "16": [
+   "062ff1b092e1d16f",
+   "06df8c27adb627ba",
+   "218cf5108ef8c3c3",
+   "3104ce9c0c860622",
+   "396a3880aad54781",
+   "3c6cd8c42c42ac54",
+   "42758439464a98b3",
+   "50830c4d16f8c5df",
+   "58c940394954c926",
+   "5c8e6fc54c87d7ee",
+   "60544d5b75dd0b75",
+   "6cb46a1716b6a966",
+   "6e2e26c6a76dce57",
+   "70b02f9b5f83c555",
+   "75457718c2f65a3a",
+   "768453c04ff63687",
+   "7dddb318d7e4bc8b",
+   "89929fdbabe464d4",
+   "8ad756377d5864db",
+   "8f05fd58efb8a945",
+   "9936bb7eec29353b",
+   "aecaa6ab6a8521bf",
+   "b0ea94de94335ab8",
+   "b203913cd2ead95b",
+   "b54dbba7d3dfe05a",
+   "b6d6329d2743babf",
+   "ba0c7f50da205684",
+   "d88335b3a7cc9fcc",
+   "e3c2b031a274d3a4",
+   "eaca81ef79c05019",
+   "ee369de8cace46b3",
+   "efbe0160d1af37eb",
+   "f6b67c3e40609d9c",
+   "f6b853b53008c98b",
+   "f7827e6fc1f88659"
+  ],
+  "24": [
+   "05f2bb6af13b531b",
+   "217b669817a87d0c",
+   "2bc0435c6ae575d6",
+   "51ca27ac7f46bd47",
+   "7c5726dadf227f23",
+   "87f7346586089b06",
+   "8f0bae2908ad51a8",
+   "99ff307fcbe744d1",
+   "a1778d193668ff2c",
+   "c3f11403ab41db19",
+   "cf505ceef7932166",
+   "cfe30e5c8b541825",
+   "dd9dee69ecb8ae82",
+   "ec82234d79eeca98",
+   "f033dbcc303fb6ca",
+   "f21233419f6b3f8a"
+  ],
+  "32": [
+   "02d64bbf54fb9609",
+   "28088592eaa447f6",
+   "5492e37d985c94d4",
+   "7187773b1d1e9b92",
+   "84757093a24c30de",
+   "90bc2842457cd542",
+   "9873d9cd655570de",
+   "d62933f145d51fe8",
+   "f0577e8190b64980"
+  ],
+  "48": [
+   "049e6e29503b4ba9",
+   "06eb156a71ddcf49",
+   "823632c328366189",
+   "e6b1a3045585220c"
+  ]
+ }
+}

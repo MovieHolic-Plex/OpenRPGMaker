@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6f64d187e2bf2738c658499753dea9367d89ebe54f59757a51f59fb4a7779579",
+ "width": 48,
+ "height": 48,
+ "kind": "terrain",
+ "name": "잔디 (16px 칸 3×3 반복)",
+ "label": "modern_city/street-green/lawn-base-401",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "seamless grass ground terrain tile (3x3 repeat)",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ground terrain texture showing grass patches repeating across 3x3 tiles (48x48 px total), appropriately flat.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3657
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass ground terrain",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 3x3 repeating 16px grass ground tile pattern representing flat horizontal terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5668
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass ground surface",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ground terrain tile repeated 3x3 across the canvas; entirely top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4847
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass ground terrain tile (3x3 repeat)",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 grass terrain texture tiled 3x3 across the 48x48 area; represents a flat horizontal ground surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3761
+  }
+ ],
+ "decidedAt": "2026-10-14T08:05:10.642Z",
+ "cells": {
+  "16": [
+   "bce741e1e847a5b0"
+  ],
+  "24": [
+   "25d9390ae89f5591",
+   "547aab806552825b",
+   "97158020fe8777a3",
+   "c46971b48ff98910"
+  ],
+  "32": [
+   "10a454b37e67bf4d",
+   "1d02c0602607cff8",
+   "3071b860826be1ae",
+   "3dd56df5e8d17cbb",
+   "41e16ec0d1e4d48d",
+   "4d9b827dca122ff0",
+   "51e4d24e98e12561",
+   "770036aa91e236d9",
+   "7f895acfb7c48962",
+   "a2cddf56ec376cbd",
+   "c2a699224a0c7e5d",
+   "c65eb6a5bea9f753",
+   "c7928ccabc28d074",
+   "e187390ca7097a2e",
+   "eb7e14d3e28de8db"
+  ],
+  "48": [
+   "3851fcb2dc06e1ec"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8afe11e66a31e885c6efaba8a389474ae760e2571cd1db0c31a7e9dae01eaf61",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "rock cliff face end tile (terrain)",
+ "label": "sky-island/si-face-top-l",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cliff edge tile showing top terrain surface and vertical cliff face",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile correctly shows the brown top ground surface on rows 0-3 and the vertical rock face below it starting at row 4.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3607
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rock cliff edge tile with plateau top and vertical cliff face",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting the west edge of a rock cliff. Rows 0-3 show the top plateau surface in brown earth tones, and rows 4-15 show the front rock face dropping off to the left.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6897
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cliff edge tile showing top plateau and vertical rock face",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brown top cliff surface occupies rows 0-3 (4 rows tall), leading down to the vertical rock cliff wall from row 4 to 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5049
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rock cliff edge tile with top plateau and vertical face",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-3 show the top brown terrain plateau surface (4 rows visible), and rows 4-15 show the vertical rocky cliff face next to water/empty space, properly matching standard 3/4 top-down terrain autotile format.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4769
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.882Z",
+ "cells": {
+  "16": [
+   "b61827dc9a577196"
+  ],
+  "24": [
+   "2d75853a0d87ec81",
+   "50767f4c94dc0c06",
+   "cba543f3ca825b9e",
+   "d5e48c6979e91e3f",
+   "ebbba63e6361d310",
+   "fd0cab255ab80ac9"
+  ],
+  "32": [
+   "0132f6f4517717a3",
+   "20d19ef924b94b4e",
+   "6749ad9539ad38f7",
+   "7acf8eee710bfdc3",
+   "939e59f7a098dde6",
+   "d715f4d850f57703"
+  ],
+  "48": [
+   "19e56b4dad69954d",
+   "8cbcb77a2fb7e903",
+   "a5012fa9189ec795",
+   "abf948ff8043e9d5",
+   "b64572d3460f3c36",
+   "d3d7310ca11c658b"
+  ]
+ }
+}

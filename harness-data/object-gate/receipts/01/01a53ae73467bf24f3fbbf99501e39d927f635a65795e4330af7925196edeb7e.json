@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "01a53ae73467bf24f3fbbf99501e39d927f635a65795e4330af7925196edeb7e",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "돌 벽난로(넓은 선반 + 화덕 석판 + 장작불) (프레임 2)",
+ "label": "snow-north/sn-hearth-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone fireplace with wooden mantel and hearth",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hearth slab displays a 4-row foreshortened top surface, and the wooden mantel shelf features a visible top plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15798
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone fireplace with hearth slab and mantel",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lower hearth slab displays a 4-row foreshortened top surface (rows 26-29). Additionally, the pot on the upper section shows a clear 2-row elliptical opening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 23015
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone fireplace",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden mantle beam has only a 1px edge highlight for its top, and the chimney breast/fireplace body is rendered straight-on as a flat elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 17060
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone fireplace with mantel and hearth slab",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Mantel shelf shows top depth; lower hearth slab shows a 4-row top surface with cast light.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 16789
+  }
+ ],
+ "decidedAt": "2026-10-14T08:01:22.991Z",
+ "cells": {
+  "16": [
+   "4db29923c1b399c8",
+   "7036d93d18e652ce",
+   "951b74cdc5c87bb1",
+   "b246ca93cd92d0e3"
+  ],
+  "24": [
+   "04dc044d63f492dc",
+   "0b0269fb1b11a4e8",
+   "19377067d211b60a",
+   "1a17b10075a1d85d",
+   "2838e9ac5ac50200",
+   "2bd60ca69866dbde",
+   "3d849b2f5b92babc",
+   "5bf6a235ec2b9348",
+   "687db49c6c9146c7",
+   "7b07c001714e4aa4",
+   "7ef66ec6dfbf44b9",
+   "8050a83fa363b3f3",
+   "82f03eb5001b6a22",
+   "86473d682ea19176",
+   "b1f13aad69786bb3",
+   "bbcafaa69faa2223",
+   "bda9a74b56f6a01a",
+   "c0fc651c95a63653",
+   "c30ea3db44c44802",
+   "c42430daca827019",
+   "c523660b7d972baf",
+   "c52a966c5eee5bb0",
+   "ed8e26fbe085091e",
+   "fb4a516f2e9eb71c"
+  ],
+  "32": [
+   "0d891e5f337e8442"
+  ],
+  "48": [
+   "202e04dfe6f9f20a",
+   "6e71631b656bf637",
+   "741908a50886c404",
+   "9fcebee1d4c46f8e",
+   "a71b985eb0954b4b",
+   "ccc7d35080e22298"
+  ]
+ }
+}

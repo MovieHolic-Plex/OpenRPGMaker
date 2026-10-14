@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8d61df9c4544595b2e14d5e465343906af0b2ad6e838414f12d834d0a71d26df",
+ "width": 48,
+ "height": 64,
+ "kind": "organic",
+ "name": "큰 고사목(뒤틀린 가지·옹이 구멍)",
+ "label": "gothic_manor/gm-dead-tree",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dead tree trunk and bare branches",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The dead tree is drawn in a flat 2D side-scroller/platformer elevation. The branches branch strictly within the vertical screen plane without top-down foreshortening or forward-facing limbs, and the base rests on a flat horizontal baseline (row 61) rather than a foreshortened top-down root footprint.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5529
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "trunk and branches of a dead tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The dead tree is drawn in a flat side-scroller / 2D elevation style. All branches extend strictly left, right, and upward within the screen plane with no branches foreshortened toward the viewer, and the base ends in a completely flat horizontal baseline at row 61 rather than a rounded, foreshortened root base appropriate for top-down 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5345
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dead tree trunk and branches",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The dead tree is drawn entirely in 2D side-scroller / front elevation. The branches spread only along the vertical plane without any top-down foreshortening or forward/backward depth, and the base rests on a completely flat 1px horizontal line at rows 61-62 with no circular or elliptical ground footprint.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5539
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dead tree trunk and branches",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn in a pure 2D side-scroller/front elevation view: the branches spread entirely within the vertical 2D plane without foreshortening towards the south, and the root base sits on a perfectly flat horizontal baseline (row 61) rather than forming a rounded footprint on the ground plane.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7781
+  }
+ ],
+ "decidedAt": "2026-10-14T07:55:00.835Z",
+ "cells": {
+  "16": [
+   "1e0c0601301cb6a3",
+   "23bcbe4a94beb37a",
+   "4a60c9123795c907",
+   "5d02955276b063bc",
+   "7d16bd34c71d87a5",
+   "7e6de33c4f18afa6",
+   "9debd0a18269bd90",
+   "af7820318c4c7857",
+   "b6cfafa24ed66665",
+   "c7b46589b62ef490",
+   "ca299424f97953c8"
+  ],
+  "24": [
+   "49bf3411e35304e3",
+   "568ae0600a23932a",
+   "6d0fadf0a4981cce",
+   "6e97d25c26e322fa",
+   "773a2b5bd8880dfe",
+   "8e4175d9ab24f4d2",
+   "c86d084ace10a652",
+   "caf02d6e2f65d38d",
+   "cd9de4e7ebccd000",
+   "e5345abe93595ca9",
+   "ef8fa1b0bb54d199",
+   "fced4ef83ec1827c"
+  ],
+  "32": [
+   "0011c7887c93aafc",
+   "10745c71894b0a1e",
+   "11ae9ce98c213886",
+   "23be36e7bb180719",
+   "3ee89a952220ef0e",
+   "444e6a3009ae4c5d",
+   "5570eb7a33ede234",
+   "705c890e70d8aa4c",
+   "7739757cf880acea",
+   "a611c99ea15f9817",
+   "f916d2ed3980f3d3",
+   "f99ab6a76f134cde"
+  ],
+  "48": [
+   "41f5be7ed0306656",
+   "7c0a4ea2c1d49576",
+   "b867d092e91ee0e1",
+   "d32e1fa0ef5c66dd"
+  ]
+ }
+}

@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "947a098c4a92fee2e55bea99d24ebf1dd99b413c0fb258ec295f75b3e2eef1b0",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "prehistoric stone-age lean to",
+ "label": "prehistoric/ph-lean-to",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "thatched lean-to roof over wooden posts",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The thatched roof slope facing the camera occupies rows 4 to 18 (15 rows tall), clearly presenting the angled top surface of the lean-to above the lintel and sheltered opening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3815
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "thatched lean-to shelter",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sloping thatched roof occupies rows 3 to 18 (approx. 16 rows) foreshortened towards the viewer, standard for 3/4 RPG Maker roof slopes over an open shelter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4317
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "thatched lean-to shelter",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sloping thatched roof occupies rows 4-18 (approx 15 rows) seen from above, resting on a wooden frame with an open interior underneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3592
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "thatched lean-to roof and wooden frame",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The multi-tiered thatched roof slope is clearly visible from above, spanning rows 3 to 18 (16 rows) before meeting the support beam and open shelter underneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4706
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.701Z",
+ "cells": {
+  "16": [
+   "3c0a0e73d4e34f0c",
+   "4df21e883abd45d3",
+   "6c7ed587c501dd46",
+   "9ff9981208e74470",
+   "a474222cbbef4b50",
+   "dbe959daf51d9a80"
+  ],
+  "24": [
+   "1115588268a4bed2",
+   "6403a47b288f7360",
+   "7374d5fc8df2c4a4",
+   "8aae8e327412cc1e",
+   "ace7095d2e8da9e7",
+   "b7f8a9e1bdda1ca1",
+   "bd22afc122b5a5d6",
+   "e33cf55f3dda3225"
+  ],
+  "32": [
+   "584e1ad9fdafddb0",
+   "886f51f90e62aaa3",
+   "a8458a4010cb00ca",
+   "bf3c06104a13f2c9",
+   "ef8d8c921f900b12",
+   "fb8c9826f54dc7fe"
+  ],
+  "48": [
+   "0f70fb00b2348f4e",
+   "dfbdc0f0553d6c0f"
+  ]
+ }
+}

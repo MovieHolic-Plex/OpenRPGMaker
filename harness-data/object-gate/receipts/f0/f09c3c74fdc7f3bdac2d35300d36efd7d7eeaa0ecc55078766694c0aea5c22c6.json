@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f09c3c74fdc7f3bdac2d35300d36efd7d7eeaa0ecc55078766694c0aea5c22c6",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "소형 거주 돔(유리 돔 + 원통 기단 + 문)",
+ "label": "sf-station/sf-hab-dome-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical base with glass dome habitat",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylindrical base has a clearly foreshortened horizontal deck/ring visible around the base of the dome from row 27 to row 33 (~7 rows deep), confirming proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6089
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cylindrical habitat base with glass dome",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylindrical base features a prominent foreshortened top ledge/collar (rows 27-33, ~6 rows tall) surrounding the dome, and the bottom perimeter curves downward appropriately for a 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6305
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "residential dome with cylindrical base and glass dome",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylindrical base features a prominent elliptical top collar/ledge measuring about 6-7 source pixel rows (rows 27-33) encircling the glass dome, properly foreshortened in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5917
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical base with glass dome structure",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylindrical base has a clearly foreshortened horizontal top rim/ledge visible across rows 28 to 33 around the base of the glass dome, and both the base rim and bottom edges curve downward in proper top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6095
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.239Z",
+ "cells": {
+  "16": [
+   "23c0fb4426bbb65e",
+   "3da4e23dca59f460",
+   "3fdc4bda712d289b",
+   "99e2e75900031ac7",
+   "c6782baa71989737",
+   "d3bdef55911c8a08",
+   "de91e9b0d065873c",
+   "eb25af64f4ff540b",
+   "fc6e5c1398169b00"
+  ],
+  "24": [
+   "04dc94b2f5adbdde",
+   "5960ba031c21503a",
+   "8c6b171ee772fe52",
+   "f41e143046f6bca9"
+  ],
+  "32": [
+   "00824ce720075be6",
+   "03799f0c669041c6",
+   "0617e2ab0f89ecf0",
+   "0f10759fccccd8b9",
+   "16ec6b2548a787a7",
+   "1bbb794f0e740ca5",
+   "4f29e1758ae1486f",
+   "4f966855d4c2f35f",
+   "549c710c1f8a8f15",
+   "57affbc7e980df03",
+   "6852dd6c2d291f20",
+   "ae3ad2eb5e6d5ce9",
+   "b2afab160bea3451",
+   "b5805d1776581c12",
+   "b8444060b45d93ea",
+   "c6d206e3b1526586",
+   "c908cdf0b0633616",
+   "d377b1e05bea46dc",
+   "d5e082eedcc92bb5",
+   "d6749c75de8d8559",
+   "d80f25f79aba8743",
+   "e04e74894a57ca46",
+   "eddb8ccaa466145b",
+   "f215d633a8151a3a"
+  ],
+  "48": [
+   "36021741c2df1521"
+  ]
+ }
+}

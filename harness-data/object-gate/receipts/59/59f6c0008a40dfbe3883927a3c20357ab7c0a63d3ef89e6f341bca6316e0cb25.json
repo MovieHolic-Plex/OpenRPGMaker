@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "59f6c0008a40dfbe3883927a3c20357ab7c0a63d3ef89e6f341bca6316e0cb25",
+ "width": 32,
+ "height": 16,
+ "kind": "seat",
+ "name": "긴 벤치(쿠션 둘 + 금속 받침)",
+ "label": "sf-station/sf-bench",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bench with metal base and two cushions",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bench platform is clearly visible from above across rows 3-9 (7 source pixels deep), with two cushions resting on it and margins around them, followed by the south-facing front apron across rows 10-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7454
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "long bench with metal base and cushions",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bench is clearly foreshortened and visible from above across rows 3-9 (7px tall) holding two cushions, with the south front face extending below from row 10 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4416
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "long bench with two cushions",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bench platform's top surface is seen from above across rows 2-9 (8 rows tall), upon which two cushions rest. The front face of the base extends below along rows 10-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3669
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "long bench with two cushions on a metal base",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal seat/plate surface of the bench is clearly visible from rows 3 to 9 (7 rows tall) showing two cushions placed on top, while the front face of the base extends below along rows 10-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4405
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.252Z",
+ "cells": {
+  "16": [
+   "292c6c6181d83a4e",
+   "bf3e7f52e7b1b96d"
+  ],
+  "24": [
+   "1dc87a1509164534",
+   "34492a4fe1e56716",
+   "4d7c6fbe05d7ff51",
+   "50155f68e3a01b2d",
+   "6d5b93f7ae066650",
+   "6ff382fcbfe19afd",
+   "753e32ca8dc3750f",
+   "76812f42798fea9a",
+   "851a5f206c5ff388",
+   "ba130d29d5e96948",
+   "c178c9d98f8e7828",
+   "ebc6e70e7ecfa1fd"
+  ],
+  "32": [
+   "7264c5f6779de774",
+   "81e4018846cc9635"
+  ],
+  "48": [
+   "0681f97cca0f8855",
+   "0c53f9c9fb6df9eb",
+   "4c5ffeb4e9b5c3ea",
+   "be055425520b2d60",
+   "d2fae7169f67fd20",
+   "f5a8bc407aca6d8b"
+  ]
+ }
+}

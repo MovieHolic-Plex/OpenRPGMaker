@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8b4de137220cb0f4a06c7e13afeb22a26069c37708fff8ffc25dcda2f262cfda",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "마른 관목",
+ "label": "gothic_manor/gm-bush-dead",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dry shrub trunk and branches",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shrub/branches are drawn entirely in a flat side elevation, with no foreshortened top surfaces visible on the main trunk or branch ends.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4460
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dry shrub trunk and branches",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The dry shrub/stump is drawn entirely in front elevation with no visible top surfaces or cut cross-sections on its trunk or branches.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4624
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dry shrub",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shrub/bush is drawn as a flat side-scroller silhouette with branches extending vertically and horizontally in a pure front elevation, showing no top-down foreshortened surfaces.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3492
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dry shrub trunk and branches",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shrub is drawn in a flat side-scroller elevation with branches spreading purely in the vertical 2D plane and no visible top surfaces or top-down depth foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3663
+  }
+ ],
+ "decidedAt": "2026-10-14T07:55:00.837Z",
+ "cells": {
+  "16": [
+   "a0f32ccd55f8b033"
+  ],
+  "24": [
+   "23a8d09fd78c60e6",
+   "8dc26cba51463d4f",
+   "c3afeeeef15d3b2a",
+   "c9191f8dea07912e",
+   "f5dc025866c1716a",
+   "fb64296cd318a39d"
+  ],
+  "32": [
+   "487db12402755120",
+   "5b380dafa8f59cc7",
+   "7901ad967c75ef07",
+   "bac17db5866c1399",
+   "ce8c1c0596921692",
+   "fde2d74496a5296a"
+  ],
+  "48": [
+   "7640a52e37d9c654",
+   "82506b29c371603b",
+   "c16617f9b16c005e",
+   "c1846cb8e4534303",
+   "cc710dc93e896c6a",
+   "e5d64274482f57a1"
+  ]
+ }
+}

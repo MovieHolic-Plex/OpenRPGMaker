@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bc8a27f4bebdb7cafe2c07cfa50e9ff1d182889d2fb5ef59c243eb1b78a3bc22",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "prehistoric stone-age rock mossy",
+ "label": "prehistoric/ph-rock-mossy",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mossy boulder",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The boulder clearly differentiates its top upward-facing surface (rows 9-19, with moss and lighter stone) from its shadowed south-facing front face (rows 20-28).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3709
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "mossy rock boulder",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock has a distinctly lit and moss-covered top surface spanning rows 9-18, separated from the darker, shaded south-facing front wall (rows 19-28), fitting the 3/4 top-down angle well.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4000
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "mossy boulder",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The boulder clearly displays a large top surface (rows 9-18) covered in moss and lighter stone highlights, sloping down into a shaded vertical front face (rows 19-28).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2848
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "mossy rock boulder",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock shows a broad top surface visible from above (rows 9-18) covered in moss and highlights, descending into a shadowed south face (rows 19-28).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4580
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.703Z",
+ "cells": {
+  "16": [
+   "05c82d11adea8d79",
+   "7fb1f2dbd426cde1",
+   "ce46967c0b6d95e3",
+   "f61894db5295e9ac"
+  ],
+  "24": [
+   "0d84b6d78591c3cb",
+   "17f4ad92e6f27731",
+   "1996e40b9b829682",
+   "2bac57df77d05af3",
+   "30ca8f36e21b3b6d",
+   "42c5c605b882690c",
+   "46dd9d05c215623a",
+   "5b33bae95100fcb3",
+   "6b8397252e1f4d22",
+   "74e71a29ebb652f7",
+   "853f204a72243934",
+   "931b772a5e583e17",
+   "96d7580399385a7b",
+   "99d4607c60f64300",
+   "a5c7c926c431d04e",
+   "a81c163e80dbced9",
+   "a85dc44fbaf707f0",
+   "fd325245a0836882"
+  ],
+  "32": [
+   "2822c560b818b0f1"
+  ],
+  "48": [
+   "1de1ccd7ecd76090",
+   "3fb21b978657b6f5",
+   "4c19c4be7faa808f",
+   "4ef42e03d82d7bfb",
+   "92c71bfa6b0b2eb8",
+   "a4f11ea4792ba586"
+  ]
+ }
+}

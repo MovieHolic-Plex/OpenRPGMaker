@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "315c2219fe79554e3b6e6272d33c8cb6ab29396ad6dc06a956613f394509273d",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "방열 패널(눕힌 핀 판 윗면 + 받침 상자)",
+ "label": "sf-station/sf-radiator-panel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal heat dissipation panel with fin plate and support box",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main finned radiator panel displays a deep 16-row top surface (rows 1-16) showing the cooling fins and heat pipe from above, followed by its front face (rows 17-20). The support base also shows its top face (rows 21-24) and front face (rows 25-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4502
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "heat sink panel and support base",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main heatsink panel shows its horizontal top surface across rows 1-16 (16 rows) with fins and a heat pipe, followed by a 4-row south-facing front edge (rows 17-20). The support pedestal below also shows a 4-row top surface (rows 21-24) and front face (rows 25-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6414
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "radiator heatsink panel mounted on a support box",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The heatsink fin plate is laid horizontally showing its large top surface across rows 1-16 (with heat pipe and fin grid), followed by a 4px front edge at rows 17-20. The base pedestal also shows a 3-4px top surface (rows 21-24) above its front face (rows 25-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4022
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal heatsink panel on a support base",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main heatsink panel displays its laid-flat top surface with fins and a copper pipe from row 1 to row 16 (16 rows tall), with a 4-row front face below it (rows 17-20). The support box also shows both its top surface (rows 21-23) and front face (rows 24-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5971
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.244Z",
+ "cells": {
+  "16": [
+   "38e2db2955797464",
+   "89941418b20c54e7",
+   "9b7cfa437648024c",
+   "cd77ad55b7df8736",
+   "d593dc503bd8cc18",
+   "ef30bc73e8dc3f22"
+  ],
+  "24": [
+   "469d655de0f1a2c6",
+   "6bbf99ef113698e5",
+   "a538d609a7b3b7e1",
+   "b362cec61531e0f1",
+   "d7ccdfc45991c189",
+   "ddb0998fb578851c",
+   "e289f5d13cc2d231",
+   "fafaf845bc5a5aa8"
+  ],
+  "32": [
+   "06c45b582f568eaf",
+   "09a75dbbdd2e259b",
+   "2d713b103b79f419",
+   "6ce7c557e70d543d",
+   "b162fd26895e2e3b",
+   "c7160d06b5ab9e5a"
+  ],
+  "48": [
+   "799d66b97b38f201",
+   "86a5f3644f4334b0"
+  ]
+ }
+}

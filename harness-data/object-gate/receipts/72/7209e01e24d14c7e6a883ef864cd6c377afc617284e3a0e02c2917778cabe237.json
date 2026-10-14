@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7209e01e24d14c7e6a883ef864cd6c377afc617284e3a0e02c2917778cabe237",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "small plank fish shack on the pier with net hanging and fish sign",
+ "label": "pirate-isles/pi-fish-shack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fish shack with thatched roof and wooden plank walls",
+    "kind_matches": true,
+    "top_rows": 36,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The shack features a prominent forward-sloping thatched roof visible from above across rows 0-36, sitting over a south-facing front wall with a door, fishing net, and fish sign.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4511
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden shack with thatched roof",
+    "kind_matches": true,
+    "top_rows": 36,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a large south-facing thatched roof slope measuring approximately 36 pixel rows (rows 0-35) viewed from above at a 3/4 angle over the front plank wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4388
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "thatched roof fish shack",
+    "kind_matches": true,
+    "top_rows": 36,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The thatched roof shows an extensive downward-sloping top surface from row 1 down to row 36, correctly foreshortened in 3/4 top-down perspective over the vertical south plank wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3455
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "thatched/plank fish shack with front door, net, and fish sign",
+    "kind_matches": true,
+    "top_rows": 36,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The shack features an extensive foreshortened roof slope occupying rows 1-37 above the south-facing front wall (rows 38-63), correctly conforming to the standard top-down 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3790
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.582Z",
+ "cells": {
+  "16": [
+   "0e729713425fb936",
+   "10c230c6a2cb37db",
+   "18fb58421e44a82f",
+   "287cdd5f27102c39",
+   "298f991b8fa54749",
+   "3ee8bb8ee6841b53",
+   "68b79e898acf65b7",
+   "8333056fa57e219e",
+   "8d5356b1dc7fcf9c",
+   "e88dc5bbb0baf56f",
+   "f0cb4947e939b175",
+   "f118ed96b6750abc"
+  ],
+  "24": [
+   "0516bef8d95daf41",
+   "2361bf66fac8c710",
+   "4ab94c082c766c00",
+   "5573709c376011b6",
+   "635071850d134b22",
+   "70089bd69a38eb8d",
+   "719325eceee0a472",
+   "bbfe5b5b544fa60b",
+   "c296aeb9bf8bf45e",
+   "e2df5be4dadae0c6",
+   "fdd06e913e44085c",
+   "fe98ab3a6937f569"
+  ],
+  "32": [
+   "07b5b7f9c44f167b",
+   "098cb0e53d6e4c2c",
+   "2603c0cd664cb38e",
+   "4ca1faffa0495378",
+   "68863fda021f80fc",
+   "8241e9e0f2040b43",
+   "8d20dffb370a1f41",
+   "8e37fd6f6a20f596",
+   "94a4db46902c296e",
+   "9f25d7c858ca25e9",
+   "a7ed77579b94991b",
+   "b41d445833b503d4"
+  ],
+  "48": [
+   "099f2ba75fdf20f7",
+   "54a371518afa6c54",
+   "6424c251eae72c8d",
+   "b233e3b37a693cbc"
+  ]
+ }
+}

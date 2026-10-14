@@ -396,7 +396,7 @@ python3 scripts/content/jp-city/bake_refs.py                   # 문서·그림�
 - 건물 둘레 1칸·이미 선 소품 둘레 1칸은 비운다. 쓰임 사이 1칸 여백. 같은 씨앗이면 같은 결과.
 - 멈춤: 「반경 2칸 안에 소품 없는 대지」 비율 ≤ 7%, 또는 직사각형이 바닥나거나 쓰임 수 상한. 내부 계산은 측정기 `scripts/qa/jpLotEmptiness.mts` 와 같은 분류(하천 석축·다리·노면 표시 키트는 «길·물», 소품 아님)여야 한다 — 다르면 일찍 멈춘다.
 - 손댄 맵: `compose_jp_city_street({mapId, lotsOnly:true, style})` 가 다시 짜지 않고 빈터만 채운다(건물은 타일로 찾는다 — 건물·집·가게 키트 목록이 측정기와 같아야 한다).
-- 생울타리·철망·블록담은 `fill_region`/`build_wall` 이 받지 않는다(위층 4방 오토타일) → 4방 비트(N1 E2 S4 W8)로 `variantMap` 칸을 골라 `stamp_layer_block` 3층으로 찍는다(`edgeLine`). **구성기 본문의 `fill(…, "생울타리"/"블록담")` 은 optional 단계라 조용히 실패한다**(미수정, 별건).
+- 생울타리·철망·블록담은 `fill_region`/`build_wall` 이 받지 않는다(위층 4방 오토타일) → 4방 비트(N1 E2 S4 W8)로 `variantMap` 칸을 골라 `stamp_layer_block` 3층으로 찍는다(`edgeLine`). **구성기 본문의 `fill(…, "생울타리"/"블록담")` 은 optional 단계라 조용히 실패했다 — 2026-10-14 수정:** `runJpStreetPlan` 이 `view` 가 있으면 그 재료의 `fill_region` 단계를 `stampEdgeRect`(`jpCityLotUse.ts`)로 3층에 4방 오토타일로 직접 찍는다(이미 위층이 있는 칸은 건드리지 않는다). `view` 없는 호출(예: NOLOT 프로브)은 옛 동작. 구성기가 이제 `composed-layout` 표식을 건물 이름표에 단다(`labelStreetBuildings`) — 거리 맵은 배치 품질 권고에서 빠진다.
 - 측정: `bun scripts/qa/jp-street-probe.mts --from 3 --seeds 3 --w 64 --h 56 --style shopping` 이 `empty <seed> X%` 와 `.empty.json`(마스크)을 낸다. `NOLOT=1` 이면 이 단계 없이(비교용).
 - 키트 그림 `scripts/content/jp-city/blocks/lot_art.py`(`ENABLED` 만 굽는다, `street_hand.py` 가 등록). 관문 실패로 빠진 것: `jp-lot-pay`·`jp-lot-hoarding`·`jp-lot-notice`.
 

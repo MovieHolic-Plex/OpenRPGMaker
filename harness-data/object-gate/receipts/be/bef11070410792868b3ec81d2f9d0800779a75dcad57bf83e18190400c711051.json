@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bef11070410792868b3ec81d2f9d0800779a75dcad57bf83e18190400c711051",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "prehistoric stone-age skull shelf",
+ "label": "prehistoric/ph-skull-shelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone shelf structure",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lower stone slab exhibits a clearly defined top surface across rows 17-21 (approx 5 rows deep) before dropping down to the south-facing front rim and base, properly depicting 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4965
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone shelf tier",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both stone shelf tiers clearly show horizontal top surfaces viewed from above (the lower shelf surface spans rows 17-21, roughly 5 source pixels deep) upon which the skulls rest, above a vertical front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7559
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone shelf with skull tiers",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lower stone ledge displays a clear horizontal top surface from row 17 to 21 (about 5 pixel rows) upon which skulls rest, and the upper shelf similarly has a visible top plane around rows 6-8.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4473
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone shelf structure",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lower shelf slab shows a foreshortened top surface spanning rows 17 to 21 (approximately 5 rows deep) upon which skulls rest, with the front edge and south face rendered below at rows 22-30. The upper ledge also displays visible depth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3904
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.710Z",
+ "cells": {
+  "16": [
+   "79b78cbe97825b5c",
+   "908854d76884b31b",
+   "bcef007ae5795c71",
+   "d6ccbd06e7c2d902"
+  ],
+  "24": [
+   "06ba5f235a30d1da",
+   "105e83e18a4891e8",
+   "13400bfaccc3d2d7",
+   "1e32eaa96e4884ee",
+   "1fbd86fd26eaa789",
+   "2198d71892204f5c",
+   "2614f6206aac6dce",
+   "2e3a3a470221447a",
+   "347fc2b16f6410b9",
+   "36c914c92ab54a90",
+   "45cd875acc98ec23",
+   "6287ca4104f793a7",
+   "6a21a4e1304611ff",
+   "89a9f35f5072ff80",
+   "971037d4070e5cdb",
+   "990fba7508cb9380",
+   "a61bb45cd58e0205",
+   "a8ecc08e44dc053b",
+   "cc838ccef8276af0",
+   "dd1f9978dc62a379",
+   "dfa962d0337ab975",
+   "e7c339d95af6650b",
+   "ece88aecde8cd547",
+   "efd4ebcc86461df4"
+  ],
+  "32": [
+   "7498945c7ebc9791"
+  ],
+  "48": [
+   "3679aae7668b7710",
+   "3c95767285914595",
+   "45662a1c397c73e7",
+   "6ed4d20afab4517c",
+   "b0572c28002cf08c",
+   "b1f229909060a298"
+  ]
+ }
+}

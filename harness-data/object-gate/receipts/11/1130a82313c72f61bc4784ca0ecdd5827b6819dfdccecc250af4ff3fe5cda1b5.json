@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1130a82313c72f61bc4784ca0ecdd5827b6819dfdccecc250af4ff3fe5cda1b5",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "전차 정류장 지붕(무쇠 기둥 + 녹청 철판 지붕 + 벤치)",
+ "label": "steampunk-city/sp-tram-shelter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tram stop shelter roof and bench",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The green patina iron roof slope is visible from above across rows 2–12 (11 rows) terminating in a front fascia at rows 13–14. Additionally, the bench below clearly shows its horizontal seat surface across rows 20–22 (3 rows).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6059
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tram shelter canopy roof and bench",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The patinated metal canopy roof clearly displays its south-sloping top surface across rows 2–11 (10 rows) above a front fascia board/edge (rows 12–14). Additionally, the bench below features a clear 3-row top sitting surface (rows 20–22) and a 2-row front face (rows 23–24).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5828
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tram stop canopy roof and bench",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The patinated iron sheet canopy shows its foreshortened top surface across rows 1-12 (12 rows tall) facing the 3/4 camera view, with an edge beam at rows 13-14. Additionally, the bench below clearly shows its horizontal seat top across rows 20-22 (3 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5624
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tram stop canopy roof and bench",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The canopy roof clearly shows its top corrugated slope facing the camera across rows 2-12 (11 source pixels) ending in an eave/fascia at rows 13-14. The bench underneath also properly shows its 3-pixel-tall seat top surface (rows 20-22) above a 2-pixel front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7832
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.520Z",
+ "cells": {
+  "16": [
+   "212e65c965443bca",
+   "34baa6cdd3dd9c9d",
+   "39f3251680fd56d7",
+   "48fe2181d5d561ca",
+   "5cc0ac7c459de4c0",
+   "d60bfcb00a056c7d"
+  ],
+  "24": [
+   "53138ce9c99c65b7",
+   "60a9e5d4d86b0382",
+   "672afbd573f5c900",
+   "8920af6df2396f9d",
+   "bd4d210a8171a543",
+   "d7729765137fba75",
+   "f2aa0a15d9ce683c",
+   "f3b2d65840285ffe"
+  ],
+  "32": [
+   "440e8fb7c41b6e51",
+   "7189cb53ea5fcaf3",
+   "86feec732a815cdc",
+   "b8c0ba165f44c86a",
+   "e58e8782206d174d",
+   "f1b0938cc65c1e46"
+  ],
+  "48": [
+   "34a17e9b9cfbb34d",
+   "4a6bf47c54244e42"
+  ]
+ }
+}

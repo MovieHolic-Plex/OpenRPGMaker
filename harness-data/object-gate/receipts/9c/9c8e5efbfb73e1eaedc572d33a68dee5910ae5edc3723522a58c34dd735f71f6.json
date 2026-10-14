@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9c8e5efbfb73e1eaedc572d33a68dee5910ae5edc3723522a58c34dd735f71f6",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "계선주(무쇠 버섯 머리)",
+ "label": "steampunk-city/sp-bollard",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mooring bollard with mushroom cap",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rounded mushroom cap of the bollard clearly shows its top surface facing up from rows 2 to 6 with highlighted top planes, before curving down to the front overhang and stem below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3888
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "mushroom-head mooring bollard",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mushroom-shaped top cap shows a clear foreshortened elliptical top surface spanning rows 2 to 6 (about 5 rows) above the cap rim and cylindrical post.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4784
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "mushroom-head mooring bollard",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mushroom-shaped bollard head clearly displays its upward-facing domed top surface across rows 2–6 (approx. 5 rows of light gray top highlights) before curving into the south overhang and post stem.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4672
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "mushroom-head mooring bollard",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mushroom cap clearly shows its rounded top surface spanning rows 2 to 6 (about 5 rows) in 3/4 top-down perspective above the front rim and stem.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3593
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.519Z",
+ "cells": {
+  "16": [
+   "dfbbbb824488b737"
+  ],
+  "24": [
+   "300a219787385440",
+   "34b4c413eeec884b",
+   "87625a5000e42a4b",
+   "a76c61c428cc7f9f",
+   "b762eddf6ad697a8",
+   "e791207343c94453"
+  ],
+  "32": [
+   "112abab55bb45120",
+   "3ad4e66906b2d949",
+   "4bf77a999685d749",
+   "887149c9a6fd0b7c",
+   "9a0e67155361f406",
+   "b1b2d60559698e4d"
+  ],
+  "48": [
+   "465064c2c4fab7b3",
+   "ad08a104b1231ba3",
+   "b312c562c736d874",
+   "ce83eb4095b4ee75",
+   "cee89f77f94db65e",
+   "f6dfcd4beabac11d"
+  ]
+ }
+}

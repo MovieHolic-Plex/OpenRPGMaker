@@ -177,8 +177,16 @@ class Board {
         for (let r = 0; r < d[i]!; r++) {
           let id: string;
           if (r === 0) id = endL ? "face-top-l" : endR ? "face-top-r" : hash2(c.x, 5, this.seed) < 0.25 ? "face-top-b" : hash2(c.x, 6, this.seed) < 0.06 ? "face-top-crystal" : "face-top";
-          else if (r < d[i]! - 1) id = hash2(c.x, r, this.seed) < 0.3 ? "face-mid-b" : "face-mid";
-          else id = endL ? "tip-l" : endR ? "tip-r" : `tip-${"abcd"[Math.floor(hash2(c.x, y0, this.seed + 3) * 4)]}`;
+          else if (r < d[i]! - 1) {
+            // 이웃 열이 이 줄에서 끝나면(이웃이 tip) 그 쪽 아래 귀퉁이를 깎은 몸통(화풍 정렬 2026-10-14 — 옆면이 하늘에 칼로 자른 듯 드러나던 것)
+            const ol = !endL && d[i - 1] === r + 1, or = !endR && d[i + 1] === r + 1;
+            const side = ol && or ? "face-mid-olr" : ol ? "face-mid-ol" : or ? "face-mid-or" : null;
+            id = side && this.pal.tile(side) >= 0 ? side : hash2(c.x, r, this.seed) < 0.3 ? "face-mid-b" : "face-mid";
+          } else {
+            const ol = !endL && d[i - 1]! <= r, or = !endR && d[i + 1]! <= r;
+            const side = ol && or ? "tip-olr" : ol ? "tip-ol" : or ? "tip-or" : null;
+            id = endL ? "tip-l" : endR ? "tip-r" : side && this.pal.tile(side) >= 0 ? side : `tip-${"abcd"[Math.floor(hash2(c.x, y0, this.seed + 3) * 4)]}`;
+          }
           this.underCell(c.x, y0 + r, id);
         }
       });
@@ -360,13 +368,32 @@ class Board {
   // ───────────── 바닥 변주·빈 땅 쓰임·하늘 ─────────────
   groundVariety(): void {
     const grass = this.t("grass"), gb = this.pal.tile("grass-b"), gf = this.pal.tile("grass-flower"), gfb = this.pal.tile("grass-flower-b");
+    // 화풍 정렬(2026-10-14): 짙은 풀 그늘 덩이는 얼룩 진한 곳에 몰아서, 풀포기는 낱칸으로 드물게. 구운 정의에 없으면(-1) 예전 그대로.
+    const shade = [this.pal.tile("grass-shade-a"), this.pal.tile("grass-shade-b")].filter((t) => t >= 0);
+    const tuft = [this.pal.tile("grass-tuft-a"), this.pal.tile("grass-tuft-b")].filter((t) => t >= 0);
+    const light = [gb, this.pal.tile("grass-b2"), this.pal.tile("grass-b3")].filter((t) => t >= 0);
+    // 포석 큰길: 길 칸마다 풀과 닿는 쪽(n·s·w·e)에만 연석. 구운 정의에 road 가 없으면 디딤돌 길(path-1~3) 그대로.
+    if (this.pal.tile("road") >= 0) {
+      const paved = (x: number, y: number) => this.in(x, y) && (this.u(x, y) === "path" || this.u(x, y) === "plaza");
+      for (let y = 0; y < this.H; y++) for (let x = 0; x < this.W; x++) {
+        if (this.u(x, y) !== "path") continue;
+        const sd = (paved(x, y - 1) ? "" : "n") + (paved(x, y + 1) ? "" : "s") + (paved(x - 1, y) ? "" : "w") + (paved(x + 1, y) ? "" : "e");
+        const id = sd ? `road-${sd}` : hash2(x, y, this.seed + 27) < 0.3 ? "road-b" : "road";
+        const t = this.pal.tile(id);
+        if (t >= 0) this.lower[this.k(x, y)] = t;
+      }
+    }
     const sky = this.t("sky"), glint = this.pal.tile("sky-glint");
     for (let y = 0; y < this.H; y++) for (let x = 0; x < this.W; x++) {
       const k = this.k(x, y);
       if (this.use[k] === "grass" && this.lower[k] === grass) {
         const n = vnoise(x + 1000, y + 1000, 6, this.seed) * 0.8 + vnoise(x + 1000, y + 1000, 3, this.seed + 7) * 0.2;
+        const dn = vnoise(x + 2000, y + 2000, 5, this.seed + 17) * 0.75 + vnoise(x + 2000, y + 2000, 2, this.seed + 19) * 0.25;
         const f = vnoise(x + 500, y + 500, 5, this.seed + 13);
-        if (gb >= 0 && n > 0.62) this.lower[k] = gb;
+        const h = hash2(x, y, this.seed + 23);
+        if (shade.length && dn > 0.64 && h < 0.7) this.lower[k] = shade[Math.floor(hash2(x, y, this.seed + 24) * shade.length)]!;
+        else if (light.length && n > 0.6 && h < 0.4) this.lower[k] = light[Math.floor(hash2(x, y, this.seed + 26) * light.length)]!;
+        else if (tuft.length && h > 0.955) this.lower[k] = tuft[Math.floor(hash2(x, y, this.seed + 25) * tuft.length)]!;
         else if (gf >= 0 && f < 0.17 && hash2(x, y, this.seed + 3) < 0.5) this.lower[k] = hash2(x, y, this.seed + 4) < 0.5 || gfb < 0 ? gf : gfb;
       } else if (this.use[k] === "sky" && this.lower[k] === sky && glint >= 0 && hash2(x, y, this.seed + 21) < 0.025) this.lower[k] = glint;
     }
@@ -382,13 +409,14 @@ class Board {
     return true;
   }
   /** 나무 덩이: (x,y) 둘레에 나무 n 그루를 엇갈려 심고 밑에 덤불·풀을 깐다(같은 간격 줄 금지 — QA D2·D6). 심은 수. */
-  grove(rng: () => number, x: number, y: number, n: number, kinds: readonly string[] = ["si-tree-round", "si-tree-round", "si-tree-pine", "si-tree-blossom"]): number {
+  grove(rng: () => number, x: number, y: number, n: number, kinds: readonly string[] = ["si-tree-big", "si-tree-big", "si-tree-round", "si-tree-pine", "si-tree-blossom"]): number {
     const offs = [[0, 0], [2, 1], [-2, 1], [1, 2], [3, -1], [-1, -1], [4, 2], [-3, 0]];
     let planted = 0;
     for (const [dx, dy] of offs) {
       if (planted >= n) break;
       const id = pick(rng, kinds);
-      if (this.prop(id, x + dx!, y + dy!, 0)) planted++;
+      // 큰 활엽수(3×4)가 안 들어가는 자리는 같은 자리에 둥근 활엽수(2×3)로 — 마을 기본 나무는 큰 활엽수(화풍 정렬 2026-10-14)
+      if (this.prop(id, x + dx!, y + dy!, 0) || (id === "si-tree-big" && this.prop("si-tree-round", x + dx!, y + dy!, 0))) planted++;
     }
     for (const [dx, dy] of [[1, 3], [-1, 3], [3, 2], [2, 3], [-2, 2]]) if (rng() < 0.55) this.prop(pick(rng, ["si-bush", "si-bush-flower", "si-tallgrass", "si-tree-young"]), x + dx!, y + dy!, 0);
     return planted;
@@ -585,7 +613,7 @@ function composeVillage(b: Board, rng: () => number): SkyCell {
   for (const bb of placed) b.connect(bb);
   // 집 뒤 나무숲 두 덩이(일정 간격 줄 대신)
   const backXs = [px0 + 2 + ri(rng, 0, 4), Math.floor((px0 + px1) / 2) + ri(rng, -3, 3), px1 - 6 + ri(rng, 0, 3)];
-  for (const gx of backXs.slice(0, 2 + (rng() < 0.5 ? 1 : 0))) b.grove(rng, gx, ay, ri(rng, 2, 3), ["si-tree-round", "si-tree-pine", "si-tree-round", "si-tree-blossom"]);
+  for (const gx of backXs.slice(0, 2 + (rng() < 0.5 ? 1 : 0))) b.grove(rng, gx, ay, ri(rng, 2, 3), ["si-tree-big", "si-tree-big", "si-tree-pine", "si-tree-round", "si-tree-blossom"]);
   // 길 남쪽: 우물 광장(테두리 없는 포석 — QA D3) · 울타리 밭(문 하나 — QA D5)
   const mill = placed.find((p) => p.kit === "si-windmill");
   const southTop = pr + 2;

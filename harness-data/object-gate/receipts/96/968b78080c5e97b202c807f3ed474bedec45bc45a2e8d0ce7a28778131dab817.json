@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "968b78080c5e97b202c807f3ed474bedec45bc45a2e8d0ce7a28778131dab817",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "stump of a thick ship mast with a sawn round top face, iron rings, standing in a round wedged deck collar, all seen from above at 3/4",
+ "label": "pirate-isles/pi-mast-base",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stump of a thick ship mast with collar",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sawn circular top of the mast stump is clearly rendered as a foreshortened ellipse spanning rows 1-4, with curved iron bands and deck collar below confirming the 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3653
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "mast stump with sawn top face and deck collar",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sawn circular top of the mast stump is clearly rendered as a foreshortened elliptical surface across rows 1-3, with the cylindrical body, iron bands, and collar descending below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3856
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "mast stump",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sawn cut face of the mast stump is clearly drawn from above spanning rows 1 to 3 with lighter cross-section wood tones, leading into the vertical cylinder with iron bands and the deck collar below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4417
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "mast stump",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sawn top surface of the mast stump is rendered as a foreshortened elliptical face spanning rows 2 to 4 (approx. 3 rows tall), showing proper 3/4 perspective above the banded cylindrical trunk and deck collar.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5047
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.591Z",
+ "cells": {
+  "16": [
+   "69b0ffd176bd148b"
+  ],
+  "24": [
+   "0295dcebd4527142",
+   "070bf93735f7e4f6",
+   "0c07b37251a0e362",
+   "7b8b4068df8faa58",
+   "96f57871c5a64dd9",
+   "e12f3cfe90567499"
+  ],
+  "32": [
+   "216ea62c7129b8f1",
+   "45eb7a072796351f",
+   "4671e0c01b3c771a",
+   "aa6864e9286311d6",
+   "ced5dca569621d23",
+   "d94452cc0948c342"
+  ],
+  "48": [
+   "18a42a64aceb99ca",
+   "1d009b9a97e7dca6",
+   "2334eec38b75cd25",
+   "4a86231b155c19f7",
+   "8339826f9d029cb8",
+   "e34aff0536de1471"
+  ]
+ }
+}

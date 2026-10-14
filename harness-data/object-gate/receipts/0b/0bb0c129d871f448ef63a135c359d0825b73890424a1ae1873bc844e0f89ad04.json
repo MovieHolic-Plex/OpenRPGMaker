@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0bb0c129d871f448ef63a135c359d0825b73890424a1ae1873bc844e0f89ad04",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "round brass ship porthole with rivets showing the blue sea and sky outside",
+ "label": "pirate-isles/pi-porthole",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round brass porthole frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted porthole window mounted flat against a wall, showing brass rim, bolts, and a sea view through the glass. Appropriately flat for wall-mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5194
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round brass porthole frame with circular glass window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted ship porthole viewed directly on a north wall face; permitted to be flat with no visible top surface under the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5793
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brass ship porthole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted ship porthole viewed directly on a north wall; wall-mounted objects mounted flat to the wall are permitted to be flat front view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3932
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brass ship porthole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted circular brass porthole depicted flat on a wall showing sea and sky view; wall-mounted items are permitted to be flat.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2973
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.595Z",
+ "cells": {
+  "16": [
+   "b864ade1059d459f"
+  ],
+  "24": [
+   "012ea62cbfa1d102",
+   "104cba6c90ce417a",
+   "62a93d301f94b1af",
+   "8e19f28901d8075c",
+   "95e4d008f11b4c19",
+   "c3a7385964f09579"
+  ],
+  "32": [
+   "66274a32b81093d1",
+   "6e2f2043db762371",
+   "82ace33518588574",
+   "a676b709c68298a3",
+   "a72a816b852b9df4",
+   "cb39eb1a8a6d18cb"
+  ],
+  "48": [
+   "211389fe8fd2504e",
+   "2fee884088339650",
+   "9c10eb806ab862b0",
+   "a654b8ece68e8d4d",
+   "bb89431dd74030f7",
+   "fa7180834804c46b"
+  ]
+ }
+}

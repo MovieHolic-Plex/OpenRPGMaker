@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "848aabfc0932dfe43bbda8e5882acfec6dfe6290e3c1a5387af25440073d3cd3",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "rocky islet sea stack standing in the water with surf foam ring",
+ "label": "pirate-isles/pi-sea-stack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rocky sea stack",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rocky islet has a visible illuminated top surface (rows 3-8) and sits within a foreshortened elliptical water and surf ring (rows 20-30) that establishes the 3/4 top-down ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5621
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rocky sea stack boulder",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rocky islet has a clearly rounded, upward-facing top dome shaded across rows 4-9 with highlights, sitting inside an elliptical foreshortened foam ring at its base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9138
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rocky islet sea stack",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rocky mound features top-lit shading across rows 3-8 indicating an upward-facing dome surface visible from the 3/4 perspective, seated within a foreshortened elliptical water and surf foam ring at rows 20-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7529
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rocky islet / sea stack",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rocky mound features a clearly rendered top-sloping surface from rows 3 to 9 with top-down highlights, and sits inside a correctly foreshortened elliptical surf/water ring.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6579
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.576Z",
+ "cells": {
+  "16": [
+   "6699aa3c6bb21dc7",
+   "71a67ab3f4a16f3f",
+   "9d80790780f1efc2",
+   "caf8fb171c84bc94"
+  ],
+  "24": [
+   "00a19ef45397a304",
+   "0316d198744dba4a",
+   "0b11423c3e3a080b",
+   "116d107d197300d7",
+   "1cfe806d98f173ad",
+   "2289921011f8fd15",
+   "2aaa2103c887c84b",
+   "3385f8fcd04bcaaf",
+   "37e8f2450bf100dd",
+   "44588f53f77df6c3",
+   "4ac306b5c7a0d7f8",
+   "5e0266f61900dc2e",
+   "67ee60a364a442d2",
+   "8b18af6fcbe89616",
+   "8b664bb0ea698ce1",
+   "a4801e8c5afe5d09",
+   "a5569112d702bd06",
+   "aec337680de0bc13",
+   "b2a6124eaa8dd42e",
+   "cd0eb27b3cee1a80",
+   "eb74231565e531ae",
+   "fdff84af34c75660",
+   "ff6d6b171d791d5c"
+  ],
+  "32": [
+   "760c7cd0ea12ee6a"
+  ],
+  "48": [
+   "313dabb91641c32a",
+   "48bd06ce0e3140d7",
+   "9feb9313217fd364",
+   "ac428f77271ad7e7",
+   "ae41410f4be69a28",
+   "b300045b4d8f7c8d"
+  ]
+ }
+}

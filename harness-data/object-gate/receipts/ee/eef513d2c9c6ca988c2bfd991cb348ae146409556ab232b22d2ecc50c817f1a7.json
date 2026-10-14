@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "eef513d2c9c6ca988c2bfd991cb348ae146409556ab232b22d2ecc50c817f1a7",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "무쇠 창살 담(남북 줄 — 위에서 길게 보이는 받침 갓)",
+ "label": "steampunk-city/sp-fence-v",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "north-south iron fence and stone base",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The north-south fence is drawn in pure top-down plan view across all 16 rows with zero front (south) face or vertical height shown for either the base or the iron posts, violating the required 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail"
+   ],
+   "ms": 13151
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron bar fence base (north-south wall segment)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fence segment is rendered in pure 90-degree bird's-eye plan view rather than the required 3/4 JRPG view. The fence posts are drawn as flat 2x2 dots along the plinth without any vertical height, upright standing bars, or south-facing projection.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail"
+   ],
+   "ms": 9804
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cast iron fence and stone base running north-south",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base and railing run continuously north-south across the entire 16-row tile, showing the horizontal top surface of the wall base (columns 5–11) along with posts casting shadows across it. It correctly depicts a vertical wall/fence segment in 3/4 perspective rather than a flat front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9488
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "north-south iron fence base/coping with upright bars",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The north-south running fence plinth shows its horizontal top surface continuously along the entire tile (16 rows tall), with vertical iron posts protruding and casting shadows onto the coping in consistent 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8291
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.526Z",
+ "cells": {
+  "16": [
+   "4feb6d328c79fd00"
+  ],
+  "24": [
+   "04371757727594a6",
+   "867bf9215a487439",
+   "a584ce7f630e1e57",
+   "c44c8be487c6e070",
+   "c96cfa9cfcb65c65",
+   "e3de8d140da643a0"
+  ],
+  "32": [
+   "1618cbddb1dc7231",
+   "3f6d0982e2d7ee53",
+   "40d4f0102087d9c6",
+   "61bea6f1b6651579",
+   "6cac4909e3fa7434",
+   "a1a50f95d7ff7bdb"
+  ],
+  "48": [
+   "366f608bf0bee9b6",
+   "3b77ab8a4836bdbd",
+   "741a56a51522c119",
+   "8400d97fb419b1be",
+   "93cbb7b866814bf2",
+   "df5d2ef9969ee821"
+  ]
+ }
+}

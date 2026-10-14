@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a18bf0d2cae6308adb3a610e288d945f91f90ad4569e9d425afc509646dc4c9b",
+ "width": 16,
+ "height": 32,
+ "kind": "frame",
+ "name": "wooden oar stand box seen from above with oars standing upright in it",
+ "label": "pirate-isles/pi-oar-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden oar stand box with upright oars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire stand and the oars are drawn in flat front elevation. The horizontal wooden beams/rims lack top surfaces (only 1-2px flat strips), and the box base shows only its vertical front face (rows 25-30) with no visible interior opening or top depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9445
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden stand box",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden box has a clear top surface spanning rows 17-24 with an opening slot visible at rows 21-22 where oars stand, and a south front face spanning rows 25-30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4031
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden oar stand box",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden stand clearly shows its horizontal top face across rows 17-24 (8 rows tall) with a dark interior slot for the oars, and its front vertical face across rows 25-30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4303
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden oar stand/box",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden stand features a clear top surface spanning rows 17 to 24 (about 8 rows) with an insertion slot/opening at rows 21-22, above a 6-row front face (rows 25-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4429
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.587Z",
+ "cells": {
+  "16": [
+   "1b4fa2e802484fb4",
+   "d31b9a59b8195a21"
+  ],
+  "24": [
+   "02592fa077ac7c94",
+   "05460dcd771c0cd2",
+   "6e4cc4d4b8f42c66",
+   "998fc82dd799edfc",
+   "bdb4f53f17eb5c76",
+   "c4a0e960fd617aea",
+   "c5e12b30b2bc30e3",
+   "cb27dadc1f4952ee",
+   "e7a863e06d8b02f0",
+   "eb406af56a28caa8",
+   "f32a50289bf8ee21",
+   "fac2b38f3e7529ac"
+  ],
+  "32": [
+   "33e11a24835181be",
+   "38e5a3e63cdbfc0e",
+   "c30bf4abec1a2d2f"
+  ],
+  "48": [
+   "2ec902612a1d9a51",
+   "511aaca22376f1bd",
+   "b93b75eac758e961",
+   "e65dedf22e2af84b",
+   "e8831eee91e4503a",
+   "f5c980913c8ab712"
+  ]
+ }
+}

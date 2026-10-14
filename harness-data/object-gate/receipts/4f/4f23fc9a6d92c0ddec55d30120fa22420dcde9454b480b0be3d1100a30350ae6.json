@@ -1,0 +1,129 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4f23fc9a6d92c0ddec55d30120fa22420dcde9454b480b0be3d1100a30350ae6",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "big ornate closed treasure chest seen from above at 3/4: deep domed lid with gold bands and corner plates, big gold lock",
+ "label": "pirate-isles/pi-chest-big",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 3.5행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "closed treasure chest",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chest is drawn in pure front elevation: the lid (rows 0-7) and base (rows 7-15) meet halfway where the lock is placed, with completely straight-on vertical bands, vertical planks, and a straight-on keyhole, showing no foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 11271
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "closed treasure chest with domed lid",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top/lid surface is clearly foreshortened and visible from above across rows 0-6 (7 pixel rows tall), distinctly lighter than the vertical front face spanning rows 8-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10283
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "closed treasure chest",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chest is drawn in a pure front elevation. Rows 1-6 represent the front face of the lid, row 7 is the horizontal seam/rim, and rows 8-15 are the front face of the lower box, with the lock mounted squarely on the front vertical plane. There is no foreshortened top surface visible receding into the background.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 9269
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "closed treasure chest with domed lid and gold hardware",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The domed lid (top surface seen foreshortened from above) occupies rows 0 to 6 (7 rows tall) above the horizontal seam at row 7, showing the curved top of the chest, while the vertical front face and lock occupy rows 7 to 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12708
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.595Z",
+ "cells": {
+  "16": [
+   "3d06bb1a7d259f13",
+   "711f7908ebeec3a8"
+  ],
+  "24": [
+   "0d3bd346659f0a33",
+   "2fbad9fc7b8a34c6",
+   "33b88f84de32db9c",
+   "3d30b8003533fb30",
+   "4fc9a34903f54099",
+   "5e80e61c718c31b4",
+   "6973b320c9b34974",
+   "873573f899a97136",
+   "8f8ba52c18fb4315",
+   "be5aa0199789a2d7",
+   "e8fb7ffa5c5b9c7c",
+   "ebbf34e1e442fc03"
+  ],
+  "32": [
+   "21c31400ff59b8a3",
+   "c62d6f832593c78d"
+  ],
+  "48": [
+   "17d084b51fe16106",
+   "2d75b9a96f616176",
+   "3badf42333d26742",
+   "5bdd8b45242a30d7",
+   "5f1a553e6f5faa86",
+   "a4f5472ac154f3b7"
+  ]
+ }
+}

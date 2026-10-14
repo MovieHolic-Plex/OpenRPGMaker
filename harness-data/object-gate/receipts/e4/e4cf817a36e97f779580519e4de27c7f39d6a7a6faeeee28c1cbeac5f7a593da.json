@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e4cf817a36e97f779580519e4de27c7f39d6a7a6faeeee28c1cbeac5f7a593da",
+ "width": 48,
+ "height": 48,
+ "kind": "organic",
+ "name": "수양버들(강가, 늘어진 가지)",
+ "label": "sengoku-edo/se-tree-willow",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "weeping willow tree with drooping canopy",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the foliage canopy is viewed from above with illuminated rounded crown clusters spanning rows 2 to 10 before the vertical hanging branches drape downwards, consistent with standard 3/4 top-down RPG tree perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5680
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "weeping willow canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper foliage forms a rounded canopy viewed from above at 3/4 perspective across rows 1-13 before the drooping willow fronds cascade downwards.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8018
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "weeping willow tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rounded upper canopy mass spans rows 2-11 showing a clear foreshortened top surface with top-down lighting typical of RPG Maker trees.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4782
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "weeping willow tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tree canopy features rounded, top-lit foliage masses across rows 1-11 before transitioning into vertically hanging weeping branches, and front foliage overlaps the trunk (rows 26-40) establishing depth consistent with 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4819
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:28.011Z",
+ "cells": {
+  "16": [
+   "01d4d5104762e02d",
+   "0adf005d3cd7aa5a",
+   "11d2ec6b592e29d6",
+   "223a981fc8d04f13",
+   "6cfc9623dcd5a336",
+   "88a76863b29f451c",
+   "8d0bee8321846475",
+   "980d7946ceb5e78c",
+   "f92557c7ccc67610"
+  ],
+  "24": [
+   "0de86876731efd53",
+   "287d27a8e5d405a7",
+   "5bd8e2bd9cd2879c",
+   "67ffc2150b129041"
+  ],
+  "32": [
+   "3273e07df4248722",
+   "369b94c18bcde083",
+   "3b23933acb473d5f",
+   "491fc440ed0ba538",
+   "511174ea4d43b536",
+   "534cd78527556888",
+   "6144a2571ef694ac",
+   "61a09f053df70069",
+   "663294b9e56c2985",
+   "6d7ec8e8ab73d948",
+   "7bfe74009ffa6c2a",
+   "84be18abf05404f3",
+   "8a1db8f75ea2982a",
+   "8df8ec84b465c178",
+   "9216cd5e29aed531",
+   "9b96415f382cb8b4",
+   "a7461c6799881feb",
+   "b5ab1540ee53ba0d",
+   "c4fb65160e9b9191",
+   "dda7b072359d4874",
+   "e4300ca7920d4b1a",
+   "e6f0f82954de4629",
+   "efe03790bd5cf3bf",
+   "ff47de9c353c877b"
+  ],
+  "48": [
+   "361427f7631810b3"
+  ]
+ }
+}

@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8e39bd660005d374611a32814681cd47a54aac78a356a5333f5a861e332d5e96",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "화물 팔레트 적재(받침 판 + 상자 둘 + 묶음 띠)",
+ "label": "sf-station/sf-cargo-pallet",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "two strapped cargo boxes on a pallet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both boxes and the pallet underneath are drawn in pure front elevation; the vertical straps run straight down without any bend indicating a horizontal top surface, and the pallet shows direct front-facing forklift slots with 0px of top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 11730
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pallet loaded with two strapped boxes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the pallet and the two boxes are drawn in pure front elevation. The pallet shows its forklift holes directly from the front with no visible top deck, and the boxes show only their front vertical faces with straps and buckles, lacking any top surface seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 15047
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two strapped cargo boxes/chests resting on a wooden pallet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both chests/boxes are drawn strictly in front elevation showing their front faces (divided into lid and base with a latch/seam at row 7), with no foreshortened top horizontal surface visible at all.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5555
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cargo boxes on a pallet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the pallet and the cargo boxes are drawn in pure front elevation. The pallet shows its front edge and forklift holes directly head-on with 0px of pallet top surface visible. The boxes are also depicted in direct front elevation with horizontal division lines, a front buckle, and perfectly vertical straps without any foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6383
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.256Z",
+ "cells": {
+  "16": [
+   "249dadd4965bf4d5",
+   "337233efb05ed9a0"
+  ],
+  "24": [
+   "0577feccecf8098e",
+   "600236c09b72170f",
+   "601e9f1ecdb9cec9",
+   "65970a992d397514",
+   "833e6c569bd0c78f",
+   "a27975f75c61c06b",
+   "bc45e4ad6a13b2d0",
+   "c31b2ff0e334b0d8",
+   "ca7498f782626d58",
+   "d589e5a22bf125eb",
+   "d5ab61460b25f069",
+   "eb74d8619d516bba"
+  ],
+  "32": [
+   "038535d63e569661",
+   "329de3ca84fe00b1"
+  ],
+  "48": [
+   "7d8a190aca870ccc",
+   "868e48e034fd3190",
+   "a5b9a93fa53bb664",
+   "c37894a39baf0068",
+   "ea4cd40664cf70d2",
+   "ecfa91c942601b7f"
+  ]
+ }
+}

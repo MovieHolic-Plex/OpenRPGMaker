@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d791fcd650a123fb5d16299636c3c93fc78f970e1a87d033d80dba81c2c63cdb",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "판석 보도(금 간·닳은 판 변주)",
+ "label": "steampunk-city/sp-flag-c",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flagstone pavement ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting cracked stone pavement slabs viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4327
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flagstone pavement tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground/terrain tile depicting stone slabs/flagstones seen from above; full 16x16 tile is ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3483
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flagstone pavement tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile depicting cracked stone paving seen from above across the full 16x16 canvas.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3712
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flagstone pavement tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile depicting stone pavers/flagstones viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7352
+  }
+ ],
+ "decidedAt": "2026-10-14T08:37:24.707Z",
+ "cells": {
+  "16": [
+   "fa3a46be6c0239bd"
+  ],
+  "24": [
+   "0b5f270bb7337d0c",
+   "4f583dc377cef3f2",
+   "67fde770ddca32eb",
+   "a764bfed6baa8551",
+   "ce80fc446361f15c",
+   "e045d552d8f5ad77"
+  ],
+  "32": [
+   "026399dc2c371b59",
+   "10be6fd4b95da0f6",
+   "325ff952fd496d84",
+   "76087ab20cb01a66",
+   "8a8dfd857ba4c75c",
+   "cf13d8e6638f4b69"
+  ],
+  "48": [
+   "1029165c30a5bb72",
+   "1a57aaa0ff3f20df",
+   "4f19557e21d748ef",
+   "5bb1f69c706e1e82",
+   "723045d0c0cfaf97",
+   "88d796539378388f"
+  ]
+ }
+}

@@ -1,0 +1,157 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "861e3471fa739e58be1d7c2444320b8c2965be09b8f2a1e18e7d340081030f82",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "prehistoric stone-age hut thatch s",
+ "label": "prehistoric/ph-hut-thatch-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "thatched roundhouse hut",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hut is drawn in pure architectural front elevation: the circular base rests on a completely flat, straight horizontal ground line (row 63), all wall bands and thatch tiers are drawn as horizontal straight lines rather than elliptical curves viewed from 45 degrees, and no top-down surfaces or foreshortened depths are present.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8027
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "thatched hut (conical thatch roof on cylindrical wall)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hut is drawn as a flat architectural front elevation: the stone base at row 62 is a completely straight horizontal line with no elliptical curvature for a cylinder in 3/4 view, the door frame and lintel have no top/depth foreshortening, and the thatch tiers on the roof are horizontal straight bands rather than downward-curving elliptical rings.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8263
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "thatched stone-age hut",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hut is drawn as a flat 2D architectural elevation: the ground line and stone foundation at rows 60-63 are perfectly straight horizontal lines rather than curving downward for a cylindrical base, the thatch tiers are horizontal/flat bands with no top-down circular foreshortening, and the apex cap at rows 0-3 is shown strictly from the side.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11365
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "thatched round hut",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure front elevation: the ground contact line at row 62, the stone plinth, the wall texture lines, and the door lintel are all completely flat horizontal lines. The thatch tiers on the roof are also drawn horizontally across the front with the apex centered at the very top, showing no top-down foreshortening or elliptical curvature for the round walls/roof.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9835
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:47.159Z",
+ "cells": {
+  "16": [
+   "145b833001ad90a3",
+   "1ac5ed4a29661241",
+   "1cc6a907a0c69e78",
+   "2d071f2fa620b1e7",
+   "386bf7dd3fa0e867",
+   "389a4b6657690341",
+   "3a9fe6e020461fd0",
+   "71fb6d39e2ee5852",
+   "9df5b20037caabf5",
+   "b770be2c13d72e62",
+   "c60a21e011bc57d8",
+   "f62dc9900931646c"
+  ],
+  "24": [
+   "0efe0c60f12b3e70",
+   "326f454a1b03cd35",
+   "3463903ba3f55987",
+   "50b56d4bb7e2ed22",
+   "5b80633ad3ae8ef5",
+   "6e5eb98989145ab3",
+   "7c7ac9f9acb71bcd",
+   "8ee054b58761796a",
+   "9a1b39c802c4218f",
+   "c5e302cca4537fd0",
+   "c8b086c218d3fa5e",
+   "dc7cd37018bc6523"
+  ],
+  "32": [
+   "0edfda701585bd22",
+   "145e810249b2910d",
+   "16077f1b09ab8d4e",
+   "1eef6476c94052e6",
+   "22549aedf7d4dc81",
+   "963bcded55708da2",
+   "96782a21dcb8f234",
+   "afe91332cfb26c56",
+   "cea30e74753fcb74",
+   "ead8ea98f88598b8",
+   "ec42716d638d726c",
+   "f6ca30e768df62c1"
+  ],
+  "48": [
+   "1b8234f3db16e723",
+   "1e02f40109b01634",
+   "a728f7b7e0a9ca74",
+   "cfec0e5b326d5606"
+  ]
+ }
+}

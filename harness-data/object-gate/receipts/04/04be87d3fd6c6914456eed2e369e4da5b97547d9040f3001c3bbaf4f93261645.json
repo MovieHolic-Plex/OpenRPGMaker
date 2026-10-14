@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "04be87d3fd6c6914456eed2e369e4da5b97547d9040f3001c3bbaf4f93261645",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "선로 남쪽 레일(자갈 도상)",
+ "label": "steampunk-city/sp-rail-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "railroad track ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting a horizontal rail track on gravel bed and wooden ties viewed from the top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3059
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "train track rail on gravel ballast",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing a horizontal rail crossing vertical wooden ties over stone ballast in top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4048
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "railway track terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal train rail over wooden sleepers and gravel ballast; valid ground terrain tile in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3729
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "railroad track on gravel ballast",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting horizontal railroad tracks on ballast and wooden ties, viewed from top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8147
+  }
+ ],
+ "decidedAt": "2026-10-14T08:37:24.709Z",
+ "cells": {
+  "16": [
+   "e9f21074f204f903"
+  ],
+  "24": [
+   "11aa46852021360a",
+   "1aa996563c3fe3c7",
+   "43bfb0e8a00c8596",
+   "4c58742e3392f507",
+   "678b7217152aeb9c",
+   "9a64e4d27833ea47"
+  ],
+  "32": [
+   "5b884d44909b22d0",
+   "7b909980b77786d9",
+   "83c6d92fde21f03c",
+   "a85244c318510a9c",
+   "bdd3a79019138fb9",
+   "e8782b3f49d850f3"
+  ],
+  "48": [
+   "0f24bb6f7eee60c9",
+   "47477602ff9c4693",
+   "562db882ebc532d4",
+   "6b798a9e26870c63",
+   "a72d89a622bc8793",
+   "b29091df46e7194a"
+  ]
+ }
+}

@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fdd940b7c9220fc2c4a7bc974dd12664a7e4cf06afadce37353a9bc5046ad84f",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "prehistoric stone-age fossil rock",
+ "label": "prehistoric/ph-fossil-rock",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fossil rock",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rock is depicted as two stacked vertical cliff/rock strata viewed directly from the side/front. Neither the upper section nor the lower section shows a foreshortened top surface; the fossils and cracks are displayed directly facing the viewer on a vertical wall plane.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6244
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fossil rock",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fossil rock is drawn in pure front elevation like a side-scroller cross-section. The entire height from row 5 to 30 consists of vertical rock faces and an undercut niche containing the fossil, with only a 1-pixel edge highlight at the top (row 4-5) and no visible horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9158
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fossil rock",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock has a clearly defined, brightly lit top plateau spanning rows 5 to 14 (about 9 rows tall) with cracks, terminating in a shaded overhang above the vertical south face containing the embedded fossils.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6428
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone-age fossil rock",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fossil rock is drawn as a flat vertical slab/wall in pure front elevation. The ammonite and bone are embedded on an upright vertical face, and the upper section above row 15 also functions as a vertical rock wall terminating at an outline edge without any visible horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6395
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.708Z",
+ "cells": {
+  "16": [
+   "26dbe823ea90586f",
+   "47cee9abdbc94707",
+   "9e811df2f5a45650",
+   "c7dac93edb328b12"
+  ],
+  "24": [
+   "0579ad65c1172f95",
+   "0f4a18bdaadbdca5",
+   "193d8bf862515a0e",
+   "2ab1dda4cb23988f",
+   "4598d88818b25dff",
+   "4cb988f2dc1a88dd",
+   "5b5c7343e4efacca",
+   "66cb1cf01aa7880f",
+   "682a874310dd9d05",
+   "6d1df5a956e3f129",
+   "7301b49d5e0a2f86",
+   "7e993256a40e7949",
+   "7ed5c9e1db99145e",
+   "8925a6fc5c6ee3a2",
+   "9339ca67561f5830",
+   "9ba295022d381128",
+   "bdedcbdb42ed349e",
+   "c668408e8759dee0",
+   "ce0eb10499cd2fbc",
+   "d776b777a53efc44",
+   "dab2f9ac978bb92f",
+   "deb35e38ddf2e455",
+   "eb56fe496d8cedf4",
+   "f961cf69b01c7dad"
+  ],
+  "32": [
+   "0c38ee4000933e61"
+  ],
+  "48": [
+   "6006635156d4a217",
+   "73f05081713e7f63",
+   "98037033751e64a4",
+   "c967307ae7cbd219",
+   "d2ecce7f6206626d",
+   "fb643a7c384a0698"
+  ]
+ }
+}

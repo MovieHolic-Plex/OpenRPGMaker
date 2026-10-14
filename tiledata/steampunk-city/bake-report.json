@@ -1,13 +1,13 @@
 {
  "gate": {
-  "provisional_profile_uncalibrated": 187,
+  "provisional_profile_uncalibrated": 191,
   "blocked": [],
-  "pieces": 163,
-  "outdoor": 111,
+  "pieces": 167,
+  "outdoor": 115,
   "interior": 52
  },
  "tiles": {
-  "count": 835,
+  "count": 851,
   "rows": 18,
   "sheetPx": [
    768,
@@ -15,16 +15,16 @@
   ],
   "strips": 38,
   "kits": 102,
-  "groups": 66
+  "groups": 70
  },
  "palette_violations": 0,
  "definition": {
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 835,
+  "tiles_checked": 851,
   "kits_checked": 102,
-  "groups_checked": 66,
+  "groups_checked": 70,
   "autotiles_checked": 0
  },
  "reassembly": {

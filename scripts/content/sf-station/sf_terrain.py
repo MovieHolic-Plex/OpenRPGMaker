@@ -353,6 +353,11 @@ def wall_face(c, mat):
             for x in range(16):
                 t = -1 if y < 22 else -2
                 if y >= 29: t = -3
+                # 화풍 정렬 2026-10-14: 단색 판 → 위는 빛 받는 결(한 단 밝은 짧은 솔결), 아래로 갈수록 때 점, 아래 판은 드문 밝은 긁힘
+                # 2차: 낱점 대신 면의 방향 — 띠 밑 2행 빛, 판 아래 2행 그늘, 아래 판 윗줄 빛 턱
+                if y in (7, 8): t = 0
+                elif y in (19, 20): t = -2
+                elif y == 23: t = -1
                 c.P(ox + x, y, K(base, t))
         c.HL(ox, 0, 16, K(base, 1)); c.HL(ox, 1, 16, K(base, -3))                 # 천장 밑 그늘
         c.HL(ox, 5, 16, K(acc, 1 if mat == 'hull' else 2)); c.HL(ox, 6, 16, K(acc, -1))   # 띠
@@ -360,6 +365,8 @@ def wall_face(c, mat):
         c.HL(ox, 28, 16, K(base, 0)); c.HL(ox, 31, 16, K('shadow', 1))           # 걸레받이 + 바닥 접지
         c.VL(ox, 7, 14, K(base, 0)); c.VL(ox + 15, 7, 14, K(base, -2))            # 판 가장자리(왼 밝음·오 어두움)
         for y in (9, 19): c.P(ox + 2, y, K(base, 2)); c.P(ox + 13, y, K(base, 2))
+        for (x, y, n) in ((3, 12, 4), (8, 15, 3)): c.HL(ox + x + v % 2, y, n, K(base, 0))      # 가로 솔결 짧은 획 둘
+        for (x, y) in ((2, 20), (13, 20), (14, 27), (1, 27)): c.P(ox + x, y, K(base, -3))     # 때는 아래 모서리·이음 곁에만
         if v == 1:
             c.VL(ox + 8, 7, 22, K(base, -3)); c.VL(ox + 9, 7, 22, K(base, 0))
         if v == 2:

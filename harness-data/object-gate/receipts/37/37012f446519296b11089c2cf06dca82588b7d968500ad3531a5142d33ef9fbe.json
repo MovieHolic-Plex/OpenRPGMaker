@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "37012f446519296b11089c2cf06dca82588b7d968500ad3531a5142d33ef9fbe",
+ "width": 48,
+ "height": 48,
+ "kind": "terrain",
+ "name": "잔디(짙은 풀 덩이) (16px 칸 3×3 반복)",
+ "label": "modern_city/street-green/lawn-tuft-601",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image shows a 3x3 repeating ground/terrain tile featuring grass texture and darker grass tuft patches on a horizontal ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4489
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "repeating grass terrain tile with dark patch",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Repeated 16x16 ground terrain tile representing grass; as horizontal ground surface viewed from above, it correctly represents terrain with no vertical front elevation issue.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5129
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "repeating grass terrain tile with darker grass tufts",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 grass terrain tile shown in a 3x3 repetition, depicting ground-level grass texture and tufts viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3887
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 ground terrain tile representing grass with a dark patch, viewed from above as a horizontal surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5295
+  }
+ ],
+ "decidedAt": "2026-10-14T08:05:10.642Z",
+ "cells": {
+  "16": [
+   "664e66a08ab67d71"
+  ],
+  "24": [
+   "25890000eed6f3ae",
+   "6b7924eb7d4f16b3",
+   "84559d99ae988133",
+   "c70ac64d41b1cd14"
+  ],
+  "32": [
+   "0be09c0947d58588",
+   "14115a892e9d5c81",
+   "155fc865ccfae831",
+   "330241c4bbc13f56",
+   "4e43fac62b8faab3",
+   "8d7d745838043bd5",
+   "8defc59ef587a926",
+   "8fca5457a15f09df",
+   "92ad72501b50cd76",
+   "c51bf17a8adacf54",
+   "cf90aab6d14e3f7a",
+   "de1c5a773f27ad20",
+   "de9162e88fdcc36a",
+   "ebb80f3873563c4a",
+   "fb4e366a3f4a7a2a"
+  ],
+  "48": [
+   "ce536f077dec827c"
+  ]
+ }
+}

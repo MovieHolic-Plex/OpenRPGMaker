@@ -1,0 +1,125 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cfceb7924f11df5667ec2f1cf3ee04d8a1622bfdcb3af87d646b59f564e4559a",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "화물 상자 더미(크고 작은 상자 세 개 윗면·띠·표식)",
+ "label": "sf-station/sf-street-crate-pile",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 3.5행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stacked and adjacent cargo boxes",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the wooden crate on the left and the metal container on the right display clear foreshortened horizontal top surfaces of roughly 3-4 pixel rows each, with the smaller green box also displaying its top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4767
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stacked and adjacent cargo boxes",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cargo boxes all clearly display horizontal top surfaces (rows 3-6 for the wooden box and right container, rows 1-3 for the smaller top crate) foreshortened above vertical front faces in standard 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 3행 < 4"
+   ],
+   "ms": 4246
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stacked and adjacent cargo boxes",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the wooden box (rows 3-6) and the smaller green box on top (rows 0-2) as well as the blue container (rows 5-7) show clearly foreshortened horizontal top surfaces seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3590
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stacked and adjacent cargo boxes/crates",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the blue crate on the right (rows 4-6) and the brown crate on the left (rows 3-6) show clearly defined top planes (3-4 pixel rows deep) above their front vertical faces.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 3행 < 4"
+   ],
+   "ms": 3674
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.251Z",
+ "cells": {
+  "16": [
+   "b85d224eb5619770",
+   "c5541e104a21c47a"
+  ],
+  "24": [
+   "02e1c13f6adeffab",
+   "0e7373f320570aff",
+   "55d21fe94088b4a3",
+   "7121c50241fac919",
+   "727978a7387a2020",
+   "8b17876f2262dd58",
+   "9eafe324124134a4",
+   "a2430825906b4333",
+   "a3d3a025735eb1f4",
+   "b93104e86ee1f43e",
+   "da932727c7e7d78d",
+   "fb471a20d4c34e27"
+  ],
+  "32": [
+   "0a071c04c24c7226",
+   "910bfb522f9bae91"
+  ],
+  "48": [
+   "240d7a4302dc7c55",
+   "32f3ef4dc979c590",
+   "44d7ceb4b59ce209",
+   "927c7a324f5f27d9",
+   "ba006cdf6c45e322",
+   "c5c986c681bf317f"
+  ]
+ }
+}

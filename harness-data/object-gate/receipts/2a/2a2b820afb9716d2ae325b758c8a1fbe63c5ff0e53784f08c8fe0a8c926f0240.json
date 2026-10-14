@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2a2b820afb9716d2ae325b758c8a1fbe63c5ff0e53784f08c8fe0a8c926f0240",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "네온 벤치(널 앉는 면 윗면 + 등받이 + 금속 다리 + 밑 네온 빛)",
+ "label": "sf-station/sf-street-bench-neon",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bench seat and backrest",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal seat surface of the bench is clearly foreshortened and visible across rows 6-9 (4 pixel rows tall), with a 2-pixel front edge below it at rows 10-11 and the backrest rising behind it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6763
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "neon bench with backrest and seat surface",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden bench seat surface is clearly visible from above across rows 6 to 9 (4 source pixel rows tall) with divided slats, followed by a dark front edge at rows 10-11 and a neon glow beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6118
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "neon bench seat and backrest",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden bench seat top surface is clearly visible across rows 6 to 9 (4 pixel rows deep) with segmented slats, attached to a backrest above and front rim with neon glow beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5273
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "neon bench seat and backrest",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden bench seat top surface is clearly visible across rows 6 to 9 (4 pixel rows tall) with slatted divisions, with its front edge on rows 10-11 and backrest rising behind it on rows 0-5.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5526
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.250Z",
+ "cells": {
+  "16": [
+   "673ee8e1bada221b",
+   "a0cb5dae96ac570d"
+  ],
+  "24": [
+   "00004403d4f6eae4",
+   "08064715dc9a433f",
+   "1131f4c1ecc5d6de",
+   "1aa6ca47b01583bb",
+   "29bc6f0fe123a3d5",
+   "47dd9e94c3d31c8c",
+   "49ac6cf49d7eb54e",
+   "6f74416ca3b57984",
+   "7a9c54d1bdf63963",
+   "a5194f631f42c00f",
+   "e4f590867869ea95",
+   "f85b8ff734cfa8d6"
+  ],
+  "32": [
+   "a67af0fbd9853b0e",
+   "e0350e2f44da7f09"
+  ],
+  "48": [
+   "336c0eaede0728a9",
+   "54bc17df570c8743",
+   "b0e39d5b61689b56",
+   "cf3face9503cc054",
+   "db963c5c4e6ec8b8",
+   "fea10c57fe5866fa"
+  ]
+ }
+}

@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "38c453984a37fad83dd736ff14b2635342fba12b5b5662d6d8d2116bd89a7aeb",
+ "width": 32,
+ "height": 16,
+ "kind": "debris",
+ "name": "prehistoric stone-age bone pile l",
+ "label": "prehistoric/ph-bone-pile-l",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "animal skeleton / bone structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The skeleton (including skull and ribs) is drawn in a pure 2D side-profile elevation with no horizontal ground-plane foreshortening or top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5904
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fossil skeleton / bone pile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire skeleton (skull with eye/nostril, arched spine/ribs, and bottom bone) is drawn in a pure 2D side-scroller profile elevation with no top surfaces visible to reflect the 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4720
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "skeleton / bone pile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire skeleton is drawn in a flat 2D side profile/elevation view (side-scroller style), with the skull, spine, and long bones showing no foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4828
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "animal skeleton / bone structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The skeleton (arch/neck, skull, and bottom bone) is drawn in a flat side/front elevation profile with 0 rows of visible top surface showing depth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5043
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.707Z",
+ "cells": {
+  "16": [
+   "739299b79f7fc7dc",
+   "bdcb3e8a98750e91"
+  ],
+  "24": [
+   "1cb5ec539b653bed",
+   "55ac32030a4a2aa8",
+   "60aece44e9ec11cb",
+   "6f67311439a05075",
+   "7c2a869412e03deb",
+   "928d58dbb9cafad3",
+   "975eb28f366852b9",
+   "aa5353d73d372001",
+   "ae535feba00192e9",
+   "d00b79fecd1e6548",
+   "da39a69b5060c493",
+   "ebc7dec2d49f3480"
+  ],
+  "32": [
+   "a1341994a4e217df",
+   "da336d07a3753ee6"
+  ],
+  "48": [
+   "0ae4453514b97dd1",
+   "2cc9eff6261cda4e",
+   "6d4280e2d9e69c23",
+   "751b0b000031602a",
+   "b77a2b134e8fb434",
+   "f85bf46b8698ddf9"
+  ]
+ }
+}

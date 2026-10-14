@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b8be60248daa08b80eabbd2a9df6c7f77234200c7dfd6ddc49fe4afda0999d0c",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "prehistoric stone-age hut log",
+ "label": "prehistoric/ph-hut-log",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "thatched conical hut with log walls",
+    "kind_matches": true,
+    "top_rows": 42,
+    "opening_visible": true,
+    "opening_rows": 18,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The conical thatched roof spans rows 1 to 42 with foreshortened concentric curved thatch layers facing the camera. The bottom base ring and doorway also exhibit proper 3/4 perspective curvature.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4073
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "conical thatched roof hut with log walls",
+    "kind_matches": true,
+    "top_rows": 41,
+    "opening_visible": true,
+    "opening_rows": 17,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The thatched roof tiers are drawn as downward-curving circular rings seen from a 3/4 high angle, spanning rows 1 to 42. The circular base plinth also curves downwards into view with a visible top surface on the flanks (rows 48-56).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6259
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "thatched conical hut with log walls",
+    "kind_matches": true,
+    "top_rows": 42,
+    "opening_visible": true,
+    "opening_rows": 18,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The conical thatched roof slopes downward facing the camera (rows 0-42) with curved tiers and an oval top cap (rows 4-6). The circular foundation curves down in 3/4 perspective (rows 48-61), and the open doorway shows internal floor depth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4737
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "thatched conical hut with wooden wall and stone base",
+    "kind_matches": true,
+    "top_rows": 42,
+    "opening_visible": true,
+    "opening_rows": 18,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The conical thatched roof shows its downward-sloping surface across rows 0-42 with curved tiered rings appropriate for a 3/4 perspective. The stone base and foundation rim curve around the cylindrical body and show visible horizontal top surfaces on the flanks (rows 48-54).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4860
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.700Z",
+ "cells": {
+  "16": [
+   "0b890e6763f4b4fe",
+   "2984b55281d3cff9",
+   "37b981a28dbd2f7d",
+   "51e457adbc9db061",
+   "6a575bc3b02c11cf",
+   "7c16ac76eee592dc",
+   "ba2074df1bfac53d",
+   "c118e2dd74d4217d",
+   "da38cf7de7c41c8e",
+   "e8d975c5a09162f9",
+   "f67229b840dbfd81",
+   "fea9d3eb971634bc"
+  ],
+  "24": [
+   "169364d867c264fb",
+   "270378ebe99c295c",
+   "333ab2f3b656110f",
+   "3ab3bb82e913fde2",
+   "6df55258a97b78d4",
+   "7c77b89f5c843795",
+   "8275dc9bdb540aed",
+   "903debffb82b72ae",
+   "b8bb1d402a785856",
+   "dc607f59c497feb2",
+   "f2ede526ec74bd2c",
+   "f881b8c34714478e"
+  ],
+  "32": [
+   "08199f8b542a152c",
+   "1dee2f7d33663cb6",
+   "2a3f345cca2841b4",
+   "392dae8dd007886b",
+   "5eca87e6db652ee3",
+   "97a4b3842d4adca3",
+   "a8492479e569faa0",
+   "cd9955391b1ecd88",
+   "f77fdfc2813bf923",
+   "f9614c72b49a0582",
+   "fc1c43e71e93c49e",
+   "fc3ef006fdbdf751"
+  ],
+  "48": [
+   "436076f70a20aef0",
+   "55c2865b810e677f",
+   "88c2e7c871ede7a6",
+   "f89183b03a0d5a60"
+  ]
+ }
+}

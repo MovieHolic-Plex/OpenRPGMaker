@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "273aa017a5dbdad4c6220fe307f58a08a72a964f461cab69049df0eceb9cb1f5",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "pirate flag on a short pole planted in a big square stone pedestal block seen from above, black flag with white skull",
+ "label": "pirate-isles/pi-flagpole",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone pedestal block with flag pole",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large stone pedestal has a clearly visible top surface from rows 17 to 22 (6 rows) with a socket/hole holding the pole, transitioning to a vertical front face with stone brick details from row 23 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5008
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone pedestal block with planted pole",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large stone pedestal block clearly displays its top surface (rows 17-21, roughly 5 rows tall) in 3/4 perspective with a socket where the flagpole is inserted, meeting the view angle requirements.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4338
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone pedestal block",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large stone pedestal clearly shows its top horizontal surface from row 16 to row 22 (around 7 rows tall) with the pole planted into a central hole, followed by its front/south face below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3293
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone pedestal block with flag pole",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large stone pedestal clearly shows its top horizontal surface across rows 17-22 (around 6 pixels deep) with a socket hole for the pole, before transitioning to the vertical south face on rows 23-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4274
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.584Z",
+ "cells": {
+  "16": [
+   "31b7c91f1fbaa16c",
+   "5c03ba0870795d0f"
+  ],
+  "24": [
+   "0a878ae1b6129cb2",
+   "0de69b8f1e71e5b3",
+   "25fd8b107ad34d07",
+   "81befdeb0e7843d1",
+   "880f69e64aacbcd3",
+   "986e3c2711eb3cfc",
+   "9b639474c2aa2875",
+   "9da6316f2377d8ab",
+   "a7d8bd049ad60d95",
+   "b2789d886dbb5dfd",
+   "e4105251cd5c4d0d",
+   "fa3dfd45933247c3"
+  ],
+  "32": [
+   "b7a18d662f298a48",
+   "cd4a36d6edf47e8f",
+   "d8a9a8d3cf63d31a"
+  ],
+  "48": [
+   "1f76efcc8756a36d",
+   "25acc106108819ae",
+   "90922184b1ba756b",
+   "b9832c4c4a2da646",
+   "d97ee5904db03a56",
+   "e3e6e9f13008758e"
+  ]
+ }
+}

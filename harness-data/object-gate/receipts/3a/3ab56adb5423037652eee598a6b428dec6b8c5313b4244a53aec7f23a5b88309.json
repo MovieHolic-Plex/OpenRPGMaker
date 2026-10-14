@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3ab56adb5423037652eee598a6b428dec6b8c5313b4244a53aec7f23a5b88309",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "소화전(빨강 무쇠, 둥근 머리)",
+ "label": "steampunk-city/sp-hydrant",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "red cast iron fire hydrant body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fire hydrant is drawn in pure front elevation: the top nut projects from the top silhouette at rows 1-2 rather than being positioned within a foreshortened top view, the dome is rendered from the side profile without a visible top surface (0 rows), and the side nozzles stick out horizontally in flat 2D silhouette.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8718
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fire hydrant body and dome",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fire hydrant is drawn in pure front elevation: the top dome is a flat front-facing arch with the operating nut placed directly on the top silhouette crest (row 2), the side nozzles project flatly to the left and right without visible top faces (rows 7-10), and the front nozzle sits flat in the center.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7741
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fire hydrant with dome cap and side nozzles",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The dome-shaped cap spans rows 3-6 (4 rows of visible top surface) with the top nut set back at row 2 and side lug details correctly placed, transitioning to the vertical cylindrical body at rows 7-10.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4734
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "red cast-iron fire hydrant with dome cap and side nozzles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fire hydrant is drawn in flat front elevation: the top nut projects directly out the silhouette top at row 2, side lugs protrude at row 4, and the rim dividing the dome from the body (row 7) as well as the base (row 11) are completely straight horizontal lines with no 3/4 downward curvature or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6620
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.519Z",
+ "cells": {
+  "16": [
+   "4d51f2cac2d465f0"
+  ],
+  "24": [
+   "0409ad228bebc7b1",
+   "122937a5cb646694",
+   "1aedf3124eec4318",
+   "8cda84a5a0a45e38",
+   "d953a2ca9c81dfbb",
+   "fe0fc38ac8840e11"
+  ],
+  "32": [
+   "0171ecd944bdf10d",
+   "49114985814203bd",
+   "4ab99ac95e5492c4",
+   "9f8dc0a9a4466fba",
+   "a03d15e53d64c929",
+   "cfbd1d7c717afbb3"
+  ],
+  "48": [
+   "0b8232d65a89ffa5",
+   "401a6c8bf520f951",
+   "4c51a365c34495b7",
+   "7a506ee7758e2942",
+   "9ec7f1885572ca26",
+   "f4c5c305e4f4258a"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c735c42665ff0866b9935eba520e6aee400df1937bf5f290759a610961aacc7a",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "rock cliff face tile with hanging roots (terrain)",
+ "label": "sky-island/si-face-top-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rock cliff face with upper dirt edge and roots",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting a rock cliff face with an upper dirt ledge on rows 0-2 and brown roots hanging down across the rocky face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5669
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rock cliff face with hanging roots",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting a vertical rock cliff face with hanging roots and an upper soil edge; terrain wall/cliff faces are expected vertical surfaces in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6941
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rock cliff face with dirt top edge and hanging roots",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Cliff terrain tile showing a 3-row upper dirt ledge (rows 0-2) transitioning to a vertical rock cliff face below with hanging roots.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6009
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical rock cliff face with hanging roots",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a vertical cliff face with dirt/overhang and roots above; as a wall/cliff face terrain tile, it is exempt from standing object 3/4 top surface requirements.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 58497
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.881Z",
+ "cells": {
+  "16": [
+   "00e9ce28dde9cfba"
+  ],
+  "24": [
+   "0cec0b1919c30530",
+   "17da1c14307a8070",
+   "469ceb4d102d80aa",
+   "6e935d38271f80f3",
+   "7223ffcbf5fcc43d",
+   "b0bf730213007ce7"
+  ],
+  "32": [
+   "117a8aaa8c378871",
+   "277ae8aaeefb8018",
+   "4e73cd142b04a721",
+   "7d515686dde471ee",
+   "868696a288908991",
+   "da615544c015ba8c"
+  ],
+  "48": [
+   "1d39ae2698a9532d",
+   "26d4b87c23e227a0",
+   "5a0cb6f8b627c944",
+   "88d304effe4ed092",
+   "a376ab6d6206b052",
+   "c092e9a9049632b2"
+  ]
+ }
+}

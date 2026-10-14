@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b4eaef3cbcc73858002c7ef22cad9ee327b25a9639006f289641660cd1a0ca8f",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "paved cobblestone road tile with curb (terrain)",
+ "label": "sky-island/si-road-w",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cobblestone ground tile with curb edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile depicting cobblestone pavement viewed from above across the full 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3037
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cobblestone road terrain tile with curb",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting cobblestone paving and a curb viewed from the standard top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4573
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cobblestone road ground surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting cobblestone pavement viewed from above, filling the 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4111
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cobblestone road surface with curb border",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting cobblestone pavement viewed from above spanning all 16 rows, with curb trim along the left edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2810
+  }
+ ],
+ "decidedAt": "2026-10-14T08:41:08.374Z",
+ "cells": {
+  "16": [
+   "37920e9c966bd925"
+  ],
+  "24": [
+   "0322dd85bbcd4079",
+   "169c7327ef54b208",
+   "33f7f85b33bc9045",
+   "4d2553dc368a954d",
+   "884f4bdbf44ef8a6",
+   "8c2d5585058949a9"
+  ],
+  "32": [
+   "495d2d09be21b8a6",
+   "7464ca34cef0b470",
+   "773f827fa9042c71",
+   "a4893fcabbae8714",
+   "af43333ae79e3b7b",
+   "c110058e457b648c"
+  ],
+  "48": [
+   "57f1921eb688e268",
+   "a20c5aeddb23912b",
+   "a2abd53dff7dee1b",
+   "a4f4ea7e8053bb87",
+   "e015b93f8d224e75",
+   "eeb5f694b0a525eb"
+  ]
+ }
+}

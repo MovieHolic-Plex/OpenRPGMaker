@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c394bdb9048f3fc01b89731541d65565dbdbad038f4f1f3d8208e2473abc8983",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "서랍장(거울 없음, 위에 단지)",
+ "label": "steampunk-city/sp-dresser",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "drawer chest",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the chest of drawers is clearly visible across rows 9-13 (around 5 rows tall) supporting tabletop items, above the front drawer faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4250
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "chest of drawers",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the dresser spans rows 8-13 (6 rows tall) and holds several decorative items, with the front drawers occupying rows 15-30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4552
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "chest of drawers",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the drawer chest spans rows 8 to 13 (6 pixel rows) where various decorative objects rest, followed by the front drawers below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4933
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "chest of drawers",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the drawer chest spans rows 8 to 13 (6 pixels tall) with several objects resting on it, leading down to the front-facing drawers from row 15 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4615
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.534Z",
+ "cells": {
+  "16": [
+   "0946346f0ac371ae",
+   "709d3dd9cac5e449",
+   "d67b390d0518a308",
+   "eebb6c94b6690b6c"
+  ],
+  "24": [
+   "0bd33f8f9257ff39",
+   "0cbfaa1fe56d832e",
+   "0d3314e0e65dbb2e",
+   "12acfc45524b4121",
+   "1b137b20479db1b3",
+   "254a6a72a519143d",
+   "2b56094d2320a152",
+   "3c0020de36aa6b45",
+   "4445eb018fd43b2d",
+   "4d7857daca248bab",
+   "56a102962f679100",
+   "5a22dde835162348",
+   "67b6eb7cdf08ad4c",
+   "67cab69919b37eb1",
+   "7779ff69094a6c95",
+   "80b0afffa3ef0c8c",
+   "887e80f4b76d116b",
+   "8dca2be596e4c8bc",
+   "a369cda5742a1a3f",
+   "b49a283e0915be4a",
+   "ba7b0e95265f5e6f",
+   "d948e869944623a3",
+   "e2e0eb93ce7ebe3c",
+   "fb5d7caaf222fa82"
+  ],
+  "32": [
+   "d32e31a800b55e6c"
+  ],
+  "48": [
+   "1d55e639e62c20e7",
+   "3e4d9aab7fda8fec",
+   "b9a319b1c186b428",
+   "ebbfc8e26a789286",
+   "f478639783789201",
+   "f8e03d78c2ae409f"
+  ]
+ }
+}

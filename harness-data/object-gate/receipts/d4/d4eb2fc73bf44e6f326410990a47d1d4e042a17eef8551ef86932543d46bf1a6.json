@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d4eb2fc73bf44e6f326410990a47d1d4e042a17eef8551ef86932543d46bf1a6",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "벽 소화기 상자(흰 케이스 + 주황 통 + 노즐)",
+ "label": "sf-station/sf-fire-extinguisher",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall-mounted fire extinguisher cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted fire extinguisher box recessed or mounted flat against a wall, correctly drawn in frontal view appropriate for the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10386
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall fire extinguisher box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted fire extinguisher box shown flat against the wall, which is standard and acceptable for the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8624
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall-mounted fire extinguisher box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted cabinet/box drawn flat against the wall surface, which is standard and acceptable for wall_mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3561
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall-mounted fire extinguisher cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted object mounted flat against the wall surface, appropriately rendered flat for its kind without isometric side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9573
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.258Z",
+ "cells": {
+  "16": [
+   "4e268d0209d72d7a"
+  ],
+  "24": [
+   "098a04614f6b0250",
+   "0f48cbfc0f8a219f",
+   "2cf28c101dbdb1f2",
+   "3cb484ff9911b5bb",
+   "954494dab077a6f5",
+   "c3f7da94d6f9214d"
+  ],
+  "32": [
+   "2d9f180b284d2f5a",
+   "6ea1e9db4e949552",
+   "7183a2648a9550cd",
+   "7e9825643efdf94d",
+   "8845d274dbc2b510",
+   "d7ea332ce1073142"
+  ],
+  "48": [
+   "1013d2ccb9cc417c",
+   "227e7b358b049f74",
+   "7e0f61b8454c9d00",
+   "afdfd56c953e2c0a",
+   "db1f8554fd603aa6",
+   "e8cc0d842ca48c11"
+  ]
+ }
+}

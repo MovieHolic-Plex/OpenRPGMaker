@@ -129,48 +129,61 @@ def door(c, x, ybot, w=14, h=27, mat='wood', arch=True, step=True, frame='stone'
 
 
 def shingle_slope(c, x0, x1, y0, y1, mat='roofr', base=4, s=1, taper=0):
-    """앞(남향) 경사 지붕면: 4px 줄 비늘 기와(어긋난 홈), 줄마다 아래 테 그늘, 위로 갈수록 밝다. taper = 양 끝을 위로 갈수록 들이는 정도(모임지붕)."""
+    """앞(남향) 경사 지붕면 — 버들항 민가 기와 문법(화풍 정렬 2026-10-14):
+    기와 줄(4px)마다 한 단씩 내려가는 램프(용마루 쪽 밝음 → 처마 쪽 어두움, 4~5단), 줄마다 기와 한 장 폭 5px 어긋남,
+    기와 한 장 = 윗선 반사 · 몸 · 아랫선 그늘(다음 줄이 덮는 겹침) · 오른쪽 홈. taper = 양 끝을 위로 갈수록 들이는 정도(모임지붕)."""
     H = y1 - y0
+    nrow = max(1, (H + 3) // 4)
+    top_t = min(base + 2, NT[MI[mat]] - 1)
     for y in range(y0, y1):
         u = (y - y0) / max(1, H - 1)
         inset = int(round(taper * (1 - u)))
         row = (y - y0) // 4; yy = (y - y0) % 4
-        b = base + (1 if u < 0.35 else 0) - (1 if u > 0.8 else 0)
+        b = top_t - int(round(row * 4.0 / max(1, nrow - 1)))           # 줄마다 램프 한 단(맨 위 base+2 → 맨 아래 base-2)
+        b = clamp(b, 2, NT[MI[mat]] - 1)
         for x in range(x0 + inset, x1 - inset):
-            xx = (x + (3 if row % 2 else 0)) % 6
-            t = b
-            if yy == 3: t = b - 2
-            elif yy == 0: t = b + 1
-            if xx == 5 and yy < 3: t = b - 1
-            if rnd(x, y, s) < 0.05: t -= 1
-            c.P(x, y, mat, t)
+            xx = (x + (2 if row % 2 else 0) + (row // 2) % 2) % 5
+            k = (x + (2 if row % 2 else 0)) // 5
+            bb = b - (1 if rnd(k, row, s + 17) < 0.12 else 0)          # 드문 낡은 기와
+            t = bb
+            if yy == 3: t = bb - 2                                     # 겹침 그늘
+            elif yy == 0: t = bb + 1 if xx < 3 else bb                 # 윗선 반사(왼쪽 빛)
+            if xx == 4 and yy < 3: t = bb - 1                          # 기와 사이 홈
+            if rnd(x, y, s) < 0.03: t -= 1
+            c.P(x, y, mat, clamp(t, 0, NT[MI[mat]] - 1))
         if x1 - inset - 1 > x0 + inset:
-            c.P(x0 + inset, y, mat, 1); c.P(x1 - inset - 1, y, mat, 1)
+            c.P(x0 + inset, y, mat, 1); c.P(x1 - inset - 1, y, mat, 0)
+            c.P(x0 + inset + 1, y, mat, min(NT[MI[mat]] - 1, base + 1) if yy < 3 else base - 1)   # 박공 끝 왼쪽 빛 테
 
 
 def gable_roof(c, x0, x1, ytop, yeave, mat='roofr', s=1, back=5):
-    """맞배지붕(용마루 동서): 뒤 경사면 띠(back 행, 밝게 — 하늘을 향함) + 용마루 + 앞 경사면(큰 면) + 처마 끝 + 처마 밑 그늘."""
-    # 뒤 경사면(위에서 보면 얇은 밝은 띠)
+    """맞배지붕(용마루 동서): 뒤 경사면 띠(back 행, 밝게 — 하늘을 향함) + 용마루(막새 줄) + 앞 경사면(줄마다 한 단 램프) + 처마 끝 두 단 + 처마 밑 그늘."""
+    n = NT[MI[mat]]
     for y in range(ytop, ytop + back):
         for x in range(x0 + 2, x1 - 2):
-            t = 5 if (x // 3 + y) % 2 else 6
-            if y == ytop: t = 3
+            t = n - 2 if (x // 3 + y) % 2 else n - 1
+            if y == ytop: t = 2
+            elif y == ytop + 1: t = n - 3
             c.P(x, y, mat, t)
     ry = ytop + back
-    c.HL(x0 + 1, ry, x1 - x0 - 2, mat, 6); c.HL(x0 + 1, ry + 1, x1 - x0 - 2, mat, 2)          # 용마루 기와
-    for x in range(x0 + 1, x1 - 1, 4): c.P(x, ry, mat, 4)
-    shingle_slope(c, x0, x1, ry + 2, yeave, mat, 4, s)
-    c.HL(x0, yeave, x1 - x0, mat, 1); c.HL(x0, yeave - 1, x1 - x0, mat, 3)                     # 처마 끝
-    c.VL(x0, ytop + 1, yeave - ytop, mat, 1); c.VL(x1 - 1, ytop + 1, yeave - ytop, mat, 1)
+    # 용마루: 윗선 밝은 기와 + 4px 마다 둥근 막새(밝은 점 위 · 그늘 아래) + 아래 그늘
+    c.HL(x0 + 1, ry, x1 - x0 - 2, mat, n - 1); c.HL(x0 + 1, ry + 1, x1 - x0 - 2, mat, 2)
+    for x in range(x0 + 2, x1 - 2, 4):
+        c.P(x, ry, mat, n - 3); c.P(x + 1, ry + 1, mat, n - 2); c.P(x + 2, ry + 1, mat, 3)
+    c.HL(x0 + 1, ry - 1, x1 - x0 - 2, mat, n - 3)
+    shingle_slope(c, x0, x1, ry + 2, yeave - 1, mat, 4, s)
+    c.HL(x0, yeave - 1, x1 - x0, mat, 3); c.HL(x0, yeave, x1 - x0, mat, 1)                     # 처마 끝(기와 마구리 + 그늘 선)
+    for x in range(x0 + 1, x1 - 1, 5): c.P(x, yeave - 1, mat, 5)                              # 마구리 반사
+    c.VL(x0, ytop + 1, yeave - ytop, mat, 1); c.VL(x1 - 1, ytop + 1, yeave - ytop, mat, 0)
     c.P(x0 + 1, ytop, mat, 1); c.P(x1 - 2, ytop, mat, 1); c.HL(x0 + 2, ytop - 1, x1 - x0 - 4, 'sumi', 1) if ytop > 0 else None
 
 
 def eave_shadow(c, x0, x1, y, rows=2, mat='cream'):
-    """처마 밑 벽 그늘(벽 재질 두 단 내리기)."""
-    for k in range(rows):
+    """처마 밑 벽 그늘 — 버들항처럼 네 단(처마 바로 밑이 가장 어둡고 한 줄마다 한 단씩 풀린다). rows 는 옛 호출 호환용(무시)."""
+    for k, dt in enumerate((3, 2, 1, 1)):
         for x in range(x0, x1):
             g = c.get(x, y + k)
-            if g: c.P(x, y + k, g[0], max(0, g[1] - (2 - k)))
+            if g and not (dt == 1 and k == 3 and (x + y) % 2): c.P(x, y + k, g[0], max(1, g[1] - dt))
 
 
 def chimney(c, x, y, w=7, h=12, mat='stone'):
@@ -247,8 +260,13 @@ def _(c):
         half = (y - 2) / 37 * 22 + 1
         for x in range(int(cx - half), int(cx + half) + 1):
             u = (x - (cx - half)) / max(1, 2 * half)
-            t = 5 if u < 0.3 else 4 if u < 0.6 else 3 if u < 0.85 else 2
-            if (y + int(abs(x - cx) * 0.6)) % 4 == 0: t -= 1
+            t = 4 if u < 0.3 else 3 if u < 0.6 else 2 if u < 0.85 else 1    # 원뿔 둘레 명암(왼쪽 빛)
+            yy = (y + int(abs(x - cx) * 0.25)) % 4                          # 기와 줄은 아래로 휜 호
+            row = (y + int(abs(x - cx) * 0.25)) // 4
+            t += 1 if row < 4 else 0 if row < 8 else -1 if row >= 9 else 0  # 줄마다 램프(꼭지 밝음 → 처마 어두움)
+            if yy == 3: t -= 2
+            elif yy == 0 and u < 0.55: t += 1
+            if (x + (2 if row % 2 else 0)) % 4 == 3 and yy < 3 and u > 0.15: t -= 1
             c.P(x, y, 'roofg', clamp(t, 0, 5))
     c.ell(cx, 38, 22, 3.5, lambda x, y, dx, dy, d: ('roofg', 1) if dy > 0.2 else None)
     for y in range(2, 40):
@@ -442,10 +460,13 @@ def _(c):
         for x in range(int(40 - half), int(40 + half)):
             v = (x - (40 - half)) / (2 * half)
             row = (y - 8) // 4; yy = (y - 8) % 4
-            t = 4 if v < 0.5 else 3
-            if u < 0.3: t += 1
-            if yy == 3: t -= 2
-            if ((x + (2 if row % 2 else 0)) % 5) == 0 and yy < 3: t -= 1
+            b = 5 - int(round(row * 3.0 / 8))                             # 기와 줄마다 램프(화풍 정렬 2026-10-14): 5 → 2
+            if x > 61 + (y - 8) * 0.5: b -= 1                              # 오른쪽 모임면(그늘)
+            elif x < 18 - (y - 8) * 0.5: b = min(5, b + 0)                 # 왼쪽 모임면(빛 — 앞면과 같은 단)
+            t = b
+            if yy == 3: t = b - 2                                         # 겹침 그늘
+            elif yy == 0 and x <= 61 + (y - 8) * 0.5: t = b + 1 if ((x + (2 if row % 2 else 0)) % 5) < 3 else b
+            if ((x + (2 if row % 2 else 0)) % 5) == 4 and yy < 3: t = b - 1
             c.P(x, y, 'roofg', clamp(t, 0, 5))
         c.P(int(40 - half), y, 'roofg', 0); c.P(int(40 + half) - 1, y, 'roofg', 0)
     # 들린 처마 끝 + 금 테

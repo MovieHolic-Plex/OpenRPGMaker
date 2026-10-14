@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e0746ffcbf38bfdf0efac868d739b72b0458e1c1993d3291ec324d3e7973161f",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "closed wooden treasure chest seen from above at an angle: flat plank lid top face, darker front with gold lock",
+ "label": "pirate-isles/pi-chest-closed",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "closed wooden treasure chest",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid surface is clearly visible from above, occupying rows 1-6 with horizontal wood planks and metal straps before reaching the lid front edge at row 7, above the darker vertical front face (rows 8-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11915
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "closed wooden treasure chest",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chest lid top face is clearly visible from above across rows 1 to 6/7 with horizontal plank shading, leading down to the darker vertical front face and lock from row 8 to 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4761
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "closed wooden treasure chest",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chest lid top surface is clearly visible from above, spanning approximately rows 1-6 (about 6 pixels deep) with horizontal wooden planks and metal straps extending across it, before transitioning to the front face (rows 7-14) containing the keyhole lock.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9983
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "closed wooden treasure chest",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chest is drawn in pure front elevation as an arched/barrel-lid chest: vertical metal straps run completely straight down rows 1-14 with no perspective break, and horizontal slats shade a curved lid facing directly toward the camera without any foreshortened horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 11036
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.585Z",
+ "cells": {
+  "16": [
+   "5e644166d14d3c27"
+  ],
+  "24": [
+   "135d345eb84c6e1d",
+   "39e770d0a608cfee",
+   "7f746e779b1473cd",
+   "b90219ea1b32bbd4",
+   "ce2db50c9b2de74a",
+   "f7679e763e1b0e78"
+  ],
+  "32": [
+   "637c60390872c91b",
+   "760bcf18e51e451c",
+   "791a01e8ad0f1a7a",
+   "8db7b819729d0076",
+   "afe1416583f22a42",
+   "facfccffbfe005dc"
+  ],
+  "48": [
+   "0cb5b6f00895cc7a",
+   "3a657b4a4bff4e33",
+   "547a08eb026dca4c",
+   "6c04a641afcb8f3f",
+   "871670c5abaed31a",
+   "e92a7666cdb36c50"
+  ]
+ }
+}

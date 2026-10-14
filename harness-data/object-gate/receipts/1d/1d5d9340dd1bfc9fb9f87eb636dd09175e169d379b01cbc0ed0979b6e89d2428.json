@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1d5d9340dd1bfc9fb9f87eb636dd09175e169d379b01cbc0ed0979b6e89d2428",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass island edge tile against sky (terrain)",
+ "label": "sky-island/si-gs-n",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass ground surface meeting sky at the northern edge",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts horizontal grass terrain surface spanning rows 4-15 seen from above, bordering open sky at rows 0-3.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4307
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass island terrain surface",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts the top edge of a floating grass island against a blue sky backdrop, with the ground surface viewed from above occupying rows 4-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3521
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "floating grass island edge terrain tile",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a terrain piece depicting a grassy ground surface (rows 4-15) ending at a northern edge against blue sky (rows 0-3). As terrain viewed from above, it correctly displays the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3831
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "floating grass island ground tile edge against sky",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a terrain tile depicting a top-down grass surface (rows 3-15) ending against a sky background (rows 0-3), serving as the northern edge of a floating island.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8729
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.879Z",
+ "cells": {
+  "16": [
+   "22e65c7de5b2e01c"
+  ],
+  "24": [
+   "0e9c8b45bbee496d",
+   "144868e1bff0a2aa",
+   "45f477d33979798f",
+   "5aaf1315fb4a7639",
+   "847e6f6f7ba74386",
+   "8f45eb9abecbd6a2"
+  ],
+  "32": [
+   "045709955dd9931a",
+   "148126f56fdf8018",
+   "2f48e8c69125adf1",
+   "8e94bd8f120ab96b",
+   "9d64aa32466a8b02",
+   "ab98ff46abacdb24"
+  ],
+  "48": [
+   "13178cb92ad29895",
+   "97cb947a4f4932f2",
+   "b122e8a6611b01e4",
+   "c54f27be490f4df0",
+   "c5b71b4417a714f1",
+   "e6b7bf3dc2997e66"
+  ]
+ }
+}

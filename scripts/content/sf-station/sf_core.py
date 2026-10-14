@@ -253,10 +253,49 @@ def piece(id_, name, w, h, kind, group='outdoor', solid=(), frames=1, tags=(), w
     return deco
 
 
+# ------------------------------------------------------------------ 재질 윤곽(화풍 정렬 2026-10-14: 버들항처럼 윤곽을 검정이 아니라 재질의 가장 어두운 톤으로)
+# 그림 함수는 그대로 OL(#06070e)로 윤곽을 긋고, render() 가 마지막에 OL 화소마다 맞닿은 재질의 어두운 톤으로 바꾼다(sel-out).
+# 모든 색은 기존 램프 안의 값이다(새 색 없음). 금속·검은 장비·유리는 남청 선체 최암(#1c2230), 색 재질은 그 램프 최암.
+OL_BY_RAMP = {
+    'hull': 0x1c2230, 'white': 0x1c2230, 'deck': 0x1c2230, 'navy': 0x1c2230, 'glass': 0x1c2230, 'cable': 0x1c2230,
+    'star': 0x1c2230, 'shadow': 0x1c2230, 'glow': 0x1c2230,
+    'conc': 0x1a1a22, 'regolith': 0x24242a, 'rust': 0x2a1208, 'orange': 0x3a1808, 'yellow': 0x3a3008,
+    'plant': 0x0e2418, 'green': 0x0c2a14, 'cyan': 0x08303a, 'magenta': 0x3a0c34, 'violet': 0x1c1040,
+}
+OL_FALLBACK = 0x1c2230
+_RAMP_OF = {}
+for _n, _r in RAMPS.items():
+    for _c in _r: _RAMP_OF.setdefault(_c, _n)
+# 재질 윤곽으로 바꾼 그림이 관문에서 떨어진 조각 — 옛 검정 윤곽 그림(통과 영수증 있음)으로 되돌린다(2026-10-14 판정 6건 FAIL, 재시도로 통과를 사지 않음).
+KEEP_OL: set = {'street-pod-car-cyan', 'street-cargo-drone', 'street-crate-pile', 'captain-chair', 'cargo-pallet', 'elevator-door'}
+
+
+def selout(a):
+    """OL 화소 → 맞닿은(4방향, 없으면 8방향) 비-OL 불투명 화소 재질 중 가장 많은 램프의 윤곽 톤."""
+    al = a[..., 3] == 255
+    v = (a[..., 0].astype(np.int64) << 16) | (a[..., 1].astype(np.int64) << 8) | a[..., 2].astype(np.int64)
+    olm = al & (v == OL)
+    if not olm.any(): return a
+    H, W = v.shape; out = a.copy()
+    ys, xs = np.nonzero(olm)
+    for y, x in zip(ys, xs):
+        cnt = {}
+        for nb in (((1, 0), (-1, 0), (0, 1), (0, -1)), ((1, 1), (-1, 1), (1, -1), (-1, -1))):
+            for dx, dy in nb:
+                xx, yy = x + dx, y + dy
+                if 0 <= xx < W and 0 <= yy < H and al[yy, xx] and not olm[yy, xx]:
+                    r = _RAMP_OF.get(int(v[yy, xx]))
+                    if r: cnt[r] = cnt.get(r, 0) + 1
+            if cnt: break
+        col = OL_BY_RAMP.get(max(cnt, key=cnt.get), OL_FALLBACK) if cnt else OL_FALLBACK
+        out[y, x, :3] = rgb(col)
+    return out
+
+
 def render(p, f=0):
     c = Cv(p['w'] * T, p['h'] * T)
     p['draw'](c, f) if p['frames'] > 1 else p['draw'](c)
-    return c.a
+    return c.a if p['id'] in KEEP_OL else selout(c.a)
 
 
 def palette_issues(a, tag):

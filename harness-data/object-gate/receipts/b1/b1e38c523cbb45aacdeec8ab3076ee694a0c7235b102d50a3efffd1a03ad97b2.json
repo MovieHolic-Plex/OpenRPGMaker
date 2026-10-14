@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b1e38c523cbb45aacdeec8ab3076ee694a0c7235b102d50a3efffd1a03ad97b2",
+ "width": 16,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "세면대 유닛(흰 상판 + 눌린 세면볼 + 수전 + 아래 문)",
+ "label": "sf-station/sf-sink-unit",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sink vanity unit with countertop and cabinet below",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Countertop surface occupies rows 2 to 9 (8 rows tall) with a clearly visible recessed sink basin filled with blue water; the cabinet front face below occupies rows 10 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6020
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sink vanity counter with recessed basin and lower cabinet",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Countertop top surface extends across rows 2-9 with a clearly recessed water basin and faucet, sitting above a 5-pixel tall front cabinet face (rows 10-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7585
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sink countertop and cabinet unit",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The white countertop with its recessed sink basin forms a clear horizontal top surface spanning rows 2-9 (8 source pixel rows tall), supported by a front-facing cabinet base on rows 10-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5316
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sink countertop vanity unit",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The white countertop with recessed basin spans rows 2-9 (8 rows tall), and the front cabinet face spans rows 10-14, presenting a clear 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4870
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.256Z",
+ "cells": {
+  "16": [
+   "f3b08cd21e0d184d"
+  ],
+  "24": [
+   "13e8d876006cbb9e",
+   "2708016bfe907bec",
+   "73970190cd2ce560",
+   "ae76a0c90eb837a5",
+   "b4b98c9ea213cb21",
+   "c6d3c618949ef391"
+  ],
+  "32": [
+   "2195ff5eacce2c77",
+   "3bac4a4bd121a745",
+   "53a9f7da574897e8",
+   "644ffc509028d576",
+   "9c78d871ad867743",
+   "d9737c292021535a"
+  ],
+  "48": [
+   "15e1e8baebd8dca6",
+   "1f45544f71284454",
+   "5c0803d9509f3c0a",
+   "b317eb781ac40f8d",
+   "e6d5194e5c01baed",
+   "f293a5d6e8d4007a"
+  ]
+ }
+}

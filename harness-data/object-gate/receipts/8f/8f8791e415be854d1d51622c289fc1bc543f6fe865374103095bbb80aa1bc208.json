@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8f8791e415be854d1d51622c289fc1bc543f6fe865374103095bbb80aa1bc208",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "레이돔 탑(판 기단 + 굵은 기둥 + 육각 판 레이돔)",
+ "label": "sf-station/sf-radome-tower",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "radome tower with radome sphere, central pillar, and platform base",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The platform base features a clearly visible top deck surface spanning rows 46 to 54 (approx. 8-9 source pixel rows tall) with deck railings, and the radome sphere is shaded with top-down paneling.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5249
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "radome and tower platform",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure clearly presents a 3/4 top-down perspective: the base deck displays a broad horizontal platform surface (rows 46 to 54, 9 pixel rows deep) with railing details, resting above a vertical front wall, while the radome sphere shows top-down lighting and panel curvature.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7941
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "radome tower with platform base and sphere",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base structure features a clearly foreshortened top platform deck (rows 46-53, 8 pixel rows deep) with railings, supporting the central pillar and spherical radome above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5172
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "radome on base platform",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base platform clearly displays a foreshortened top deck (rows 46 to 54, ~9 rows tall) with floor railings and lights, showing proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3968
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.242Z",
+ "cells": {
+  "16": [
+   "042a8645f229cdb8",
+   "0470bff3ca26be17",
+   "13c67e03bb8e92e7",
+   "52868b3afd5dfd3b",
+   "72c87c34095b8e7a",
+   "7776216a85f3b2d5",
+   "7a3c0c628c7d29b1",
+   "87f7a6d819622e51",
+   "88abc5831ec0709e",
+   "b14ca2f0c02c5d00",
+   "c5af3afae6684469",
+   "db34d68347dff4f7"
+  ],
+  "24": [
+   "0b6af27b5dd51667",
+   "17a6ebdc7420a737",
+   "1b62f33851f72a01",
+   "1b95be8dcc51b295",
+   "2480c5467e48ae59",
+   "25eb81e39528ab2b",
+   "26c43b2c3818aaf5",
+   "7b1acf1185862f77",
+   "d9c769bc9c655cab",
+   "e0ef6d2299d69885",
+   "f5b7538cfe780e29",
+   "fa531f9858c46058"
+  ],
+  "32": [
+   "164f1330937f7a64",
+   "3df2825f12b1d7bc",
+   "52c9323920c71262",
+   "925aa015b1a28b95",
+   "9525bc48b0dc100e",
+   "9a524fb95f204ce5",
+   "a2ed0af476e6dac1",
+   "b4cc28bdcbf4369e",
+   "ba71959859d9bc0a",
+   "badf768e6c3573eb",
+   "e77443ce31df4674",
+   "eddde014c23cbfde"
+  ],
+  "48": [
+   "453f6b176eaa8577",
+   "573f2adc06f3bcf6",
+   "9c1f88c89b588892",
+   "f8b4ff9135691a48"
+  ]
+ }
+}

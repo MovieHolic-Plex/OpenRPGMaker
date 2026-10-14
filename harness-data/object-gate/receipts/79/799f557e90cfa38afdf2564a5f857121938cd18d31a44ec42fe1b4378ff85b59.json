@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "799f557e90cfa38afdf2564a5f857121938cd18d31a44ec42fe1b4378ff85b59",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "물가 돌 축대(남동쪽 뭍)",
+ "label": "sengoku-edo/se-water-se",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "waterside stone embankment terrain tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing water meeting a stone embankment along the south and east borders. As a terrain surface tile, it is viewed directly from above in standard top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3761
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water and stone embankment terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Water surface tile with south and east embankment borders, viewed from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3947
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water and embankment corner terrain tile",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing water meeting an edge/embankment to the south-east; properly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3867
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water and embankment terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile showing water bordering an embankment on the south and east edges, correctly presented as ground/water surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7140
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:28.013Z",
+ "cells": {
+  "16": [
+   "60be415f3eb76348"
+  ],
+  "24": [
+   "8a2cb9e08c686b7f",
+   "9277f96f1337f1cd",
+   "928c1eca537cd739",
+   "a5a7769b0bee7658",
+   "d3a6cd02685e29bb",
+   "dce6a1b5dbb74e08"
+  ],
+  "32": [
+   "14403dcb170b0f1c",
+   "1ade01e79b628234",
+   "5f60aae78812395a",
+   "91d0e711c99e124c",
+   "aa9f7e6f5d5e4e79",
+   "c2a82474fb6aa004"
+  ],
+  "48": [
+   "10d773bcfcbf9546",
+   "2602be623d5bc805",
+   "7bd8bdc3a539b50f",
+   "7bf4325dd6fa0bde",
+   "9c47cce19a4c1d80",
+   "e93ca203976289a2"
+  ]
+ }
+}

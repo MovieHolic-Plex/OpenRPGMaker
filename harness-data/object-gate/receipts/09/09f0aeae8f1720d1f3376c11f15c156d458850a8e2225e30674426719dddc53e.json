@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "09f0aeae8f1720d1f3376c11f15c156d458850a8e2225e30674426719dddc53e",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "석탄재 마당",
+ "label": "steampunk-city/sp-cinder",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "coal ash terrain ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 pixel ground tile representing dark coal ash dirt/gravel terrain seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3793
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "coal ash ground terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 ground terrain tile representing dark ash/dirt floor, correctly shown as a ground surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2888
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "coal ash ground terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 ground terrain tile representing coal ash/dirt surface with subtle texture and rock flecks.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5170
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "coal ash terrain ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 terrain ground tile depicting coal ash / dark stony ground texture seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2360
+  }
+ ],
+ "decidedAt": "2026-10-14T08:37:24.708Z",
+ "cells": {
+  "16": [
+   "8909bce5c549462d"
+  ],
+  "24": [
+   "483e4261ddc62a6e",
+   "4b1f91e8046324a1",
+   "922ce21a6d2d1766",
+   "c89201b2704ae1c2",
+   "d18b16c66a1a0177",
+   "d86de670ac1f97db"
+  ],
+  "32": [
+   "22465962eee9068b",
+   "331d022cb24d9cc4",
+   "77447291c6aac44b",
+   "83de8c3881c92581",
+   "84bf122f4927207f",
+   "c0a726d310f6d202"
+  ],
+  "48": [
+   "48a323b99dbacbfb",
+   "4fc8ceccf2f460ef",
+   "6c90029635c642df",
+   "715716f26b063871",
+   "9a97d252f9475aec",
+   "cac4e1a90971c6fd"
+  ]
+ }
+}

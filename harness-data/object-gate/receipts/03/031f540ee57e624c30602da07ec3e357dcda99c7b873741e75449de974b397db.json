@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "031f540ee57e624c30602da07ec3e357dcda99c7b873741e75449de974b397db",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "화물 상자 더미(큰 회색 상자 + 위 주황 상자 + 옆 작은 상자)",
+ "label": "sf-station/sf-crate-stack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "large grey cargo container",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large grey container clearly displays a foreshortened top surface across rows 13-18 (6 rows), above its south front face (rows 20-30). Both stacked wooden chests also clearly show their lids/tops viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8740
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "large grey cargo container with stacked crates",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main grey box displays a substantial top surface (rows 13-18, approx 6 rows) viewed from above, and its vertical front face (rows 19-30). The stacked orange crates also clearly display top lid surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9390
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "large grey cargo container",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main grey cargo container clearly shows a distinct top surface (rows 12-18, 7 rows tall) and a south front face (rows 19-30). The smaller chests stacked on and beside it also display 3/4 top/lid surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8860
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "large grey cargo container with stacked chests",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large grey container clearly displays a foreshortened top surface across rows 13-18 (6 rows), and the stacked orange chests also clearly display their top lid surfaces (rows 1-7 and rows 17-24) in proper 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8798
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.244Z",
+ "cells": {
+  "16": [
+   "03ea95a0dc2ba322",
+   "2ac62058a28920e0",
+   "877f5cfa28cf3646",
+   "ebdc1991245dc071"
+  ],
+  "24": [
+   "2208901f5d3ada3e",
+   "2dc1528892345252",
+   "2e737b1ae869e8f5",
+   "350b798fc0d21c55",
+   "39aecdd1fcd1d832",
+   "39f7b2aec56182f4",
+   "48a38a78e3f3263a",
+   "4a2d83549294aa40",
+   "61378d76b6b729fc",
+   "61a4b1742272cd22",
+   "63805903e0c411f0",
+   "89b83359b7d5e66d",
+   "89ca64bd7f69c54f",
+   "8af6bdbd3302418e",
+   "9962defac8245ca7",
+   "b14fe6f07c1b21d6",
+   "c4d858d797b60205",
+   "c68be2f191295e24",
+   "dd9cb0ccdee6726d",
+   "e9454bd103516d73",
+   "f39292f55f889e66",
+   "f4a8b72f0a4412ea",
+   "f96184a9e158c2a6"
+  ],
+  "32": [
+   "eda8095c6b9a434c"
+  ],
+  "48": [
+   "148f28b884a119c6",
+   "1deb8de5f4fbd058",
+   "4319b6fce16cddf1",
+   "4dc9690cf74ac9a5",
+   "a4151ba77fc962da",
+   "c419b40010b12d39"
+  ]
+ }
+}

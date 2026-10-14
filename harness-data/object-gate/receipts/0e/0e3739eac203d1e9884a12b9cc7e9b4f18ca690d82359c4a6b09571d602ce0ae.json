@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0e3739eac203d1e9884a12b9cc7e9b4f18ca690d82359c4a6b09571d602ce0ae",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "tavern wooden floorboards tiles, 2 variants",
+ "label": "pirate-isles/pi-floor-tavern",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden floorboards terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floorboard terrain pattern covering the tile surface from a top-down perspective with horizontal planks and nail/knot details.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3861
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden floorboards pattern",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat wooden floorboard terrain tiles viewed from above; entire surface represents ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3561
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden floorboards",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting wooden floor planks seen from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3445
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden floorboards pattern",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floorboard terrain pattern viewed from above across the full 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2674
+  }
+ ],
+ "decidedAt": "2026-10-14T08:46:20.695Z",
+ "cells": {
+  "16": [
+   "28881a180d7c8041",
+   "34f864e1a86afe87"
+  ],
+  "24": [
+   "066c730e5f1a678b",
+   "1f8efb71cd218aab",
+   "22a75212b59d4fa6",
+   "429678272548ecc6",
+   "4aedace55176ed63",
+   "541c013bfc500bb8",
+   "5871578962b15afb",
+   "6659725f89c01aa5",
+   "71396a13520a4f6d",
+   "b0629d4fb08021d1",
+   "eec36918c27e2663",
+   "f97854b630d76e68"
+  ],
+  "32": [
+   "8d2e9a533ef4891a",
+   "df52960dfea23ad3"
+  ],
+  "48": [
+   "27955e40a09779b3",
+   "5f6fbfe7fc128435",
+   "9761218c31453dc0",
+   "e58549c0cbd5b2de",
+   "ea818af7d0250b6d",
+   "f27d20a5f500871d"
+  ]
+ }
+}

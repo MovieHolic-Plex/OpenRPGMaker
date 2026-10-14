@@ -42,7 +42,7 @@ def p_cave(lx, ly, s=31):
 
 
 def p_hut(lx, ly, s=33):
-    m, t = T.p_dirt(lx, ly, s)
+    m, t = T.p_dirt0(lx, ly, s)
     # 흩어진 짚 오라기(짧은 사선)
     for (x0, y0, d) in ((2, 3, 1), (10, 5, -1), (5, 11, 1), (13, 13, -1), (8, 8, 1)):
         for k in range(3):

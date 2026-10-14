@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a2f70480d8fce584ed799dfec99dfdd268f92efacfe93bd5cb6b4cb14038001a",
+ "width": 48,
+ "height": 48,
+ "kind": "organic",
+ "name": "대추야자 두 그루",
+ "label": "desert-east/de-palm-pair",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "date palm trees",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The palm trees and canopies are drawn entirely in side-view platformer elevation; there is no top-down view of the crown radiating fronds toward the camera.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5525
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "two date palm trees",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The palm trees are depicted in pure side/front elevation typical of a 2D side-scroller: the trunks extend vertically without top-down foreshortening, and the fronds form an umbrella profile seen from the side, exposing the underside where the dates hang underneath rather than showing the radiating crown viewed from a 45-degree angle above.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6892
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "canopy and trunk of the date palm trees",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The palm canopies display illuminated top surfaces measuring approximately 5 rows tall on the left tree and 4 rows on the right, typical of top-down JRPG palm foliage viewed from a 3/4 angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7009
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "two palm trees",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both palm trees are drawn in a flat side-scroller / front elevation perspective. The trunks are vertical columns seen straight-on, the dates hang down vertically, and the fronds form a 2D umbrella silhouette spread left and right with no foreshortened top-down view of the crown or radial fronds extending toward the viewer.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5271
+  }
+ ],
+ "decidedAt": "2026-10-14T08:01:48.462Z",
+ "cells": {
+  "16": [
+   "0c97ab0ed66309b8",
+   "26857929e5e6284c",
+   "4da4a29e73fa74d4",
+   "7e7f7984e7638f60",
+   "a2a4032d38a05c9c",
+   "a871f3db975f8910",
+   "d28d64bd7ed17a48",
+   "d3a562e617b06e8b",
+   "d6c60ebb41e72d7d"
+  ],
+  "24": [
+   "1e790039a68f61f2",
+   "96d456bce5455b25",
+   "b73b5c98ed125725",
+   "f25f1ab20b572a1b"
+  ],
+  "32": [
+   "0b0afa4d3308d61a",
+   "0b23ba4bb09a4709",
+   "0e181c647b16e2fa",
+   "37cab812217a8303",
+   "4a39b72e310111f6",
+   "5f6d0721a086a1de",
+   "66bd2c71a5227d76",
+   "797fa8bfd7eaa5b2",
+   "7ad6296fc185d219",
+   "7edba4b40ff284ab",
+   "974820fc33e3cd59",
+   "98f138ab9cada6c3",
+   "9f94c0512913b578",
+   "baa6602c4e914119",
+   "c0528b58b3d8aac4",
+   "ce1193c9b959c83a",
+   "ce862ba3b6783010",
+   "d4753dd817d08068",
+   "dafbea640953f0d3",
+   "e3cf183e631cebf8",
+   "e48ced3a1e8f606e",
+   "ecf377d8b92821e9",
+   "f13d21ae1e2b0c49",
+   "fea43af941ba124e"
+  ],
+  "48": [
+   "2023d3fb4ceedeb3"
+  ]
+ }
+}

@@ -24,7 +24,7 @@ only = set(sys.argv[1:])
 for g, R in REGS.items():
     if only and g not in only: continue
     for it in R.items:
-        if it['id'].startswith('w-'): continue
+        if it['id'].startswith(('w-', 'lane-')): continue
         if g == 'interior' and it['id'].startswith(('wall-', 'paint-', 'ceil')): continue
         png = os.path.abspath(os.path.join(OUT, g, '_gate', 'ph-%s.png' % it['id']))
         base = re.sub(r'-f\d+$', '', it['id'])

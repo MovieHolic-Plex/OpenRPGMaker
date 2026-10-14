@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "85118a9143333fed551948766812d720fa2835ee88889cf8c34113c620bd625b",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass ground tile with darker grass patch",
+ "label": "sky-island/si-grass-shade-a",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ground terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground tile depicting green grass with a darker green patch; fully top-down terrain surface spanning all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4727
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flat grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile viewed from above with a dark patch of grass across the center.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4213
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flat grass ground tile with a darker green grass patch",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile viewed from above across all 16 rows; no vertical standing elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3577
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ground terrain tile with darker grass patch",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a flat ground surface entirely visible from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5093
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.878Z",
+ "cells": {
+  "16": [
+   "d9e87534d01ff281"
+  ],
+  "24": [
+   "4aba6a38fbca976f",
+   "64fea91f2da5a909",
+   "796b3ccf914cf13e",
+   "e353064e9b87e7b1",
+   "e46c7f61e85a6e6f",
+   "e862761eeae8177c"
+  ],
+  "32": [
+   "095dc7a20d960b29",
+   "302635a229db02fe",
+   "472023676a7669db",
+   "91a57a0219787cb5",
+   "9fd436c6de44090e",
+   "d2ba76dc4007da5b"
+  ],
+  "48": [
+   "14d8f87b7f725c07",
+   "2ca97a705cce6018",
+   "5ecf7c410e6a1872",
+   "76add6708a1bf258",
+   "9004ed30eeffe786",
+   "ecdd1316e072d7fc"
+  ]
+ }
+}

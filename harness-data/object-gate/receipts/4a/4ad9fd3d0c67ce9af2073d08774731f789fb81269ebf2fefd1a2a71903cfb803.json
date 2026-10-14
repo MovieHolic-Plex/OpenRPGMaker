@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4ad9fd3d0c67ce9af2073d08774731f789fb81269ebf2fefd1a2a71903cfb803",
+ "width": 32,
+ "height": 16,
+ "kind": "other",
+ "name": "outrigger canoe with a side float, floating",
+ "label": "pirate-isles/pi-canoe",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "canoe hull",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The canoe hull clearly shows its open interior/deck from above across rows 7-11 with plank details, and its south side hull across rows 12-14, matching the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4503
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "canoe hull",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The canoe interior/deck is seen from above spanning rows 7-11 (5 rows tall), with the south hull face shown below on rows 12-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3290
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "canoe hull",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The canoe hull clearly shows its top interior/deck surface across rows 7-11 (approx 5px tall) foreshortened from above, with the south hull face visible on rows 12-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4610
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "canoe hull",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The canoe hull clearly shows a 5-row deep top/interior surface (rows 7-11) foreshortened from above, along with a 3-row front hull face (rows 12-14) in standard 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3814
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.589Z",
+ "cells": {
+  "16": [
+   "82a1a03e28df206d",
+   "d305f415f3889100"
+  ],
+  "24": [
+   "17fe8854eb35cc6e",
+   "1de7487e419ea024",
+   "21a7be22fee994c9",
+   "3b935d760ec45750",
+   "8996d5e36d737698",
+   "bf9286290236dd93",
+   "c41dfbcc1c23c827",
+   "c509fbe3c8f5d5e9",
+   "e4816f78cd4ef601",
+   "e6629d9439e35e40",
+   "e9743d33463ae102",
+   "ecb67dd9c0e877b4"
+  ],
+  "32": [
+   "6383b44505f41eb9",
+   "666a8a6e322064aa"
+  ],
+  "48": [
+   "458523fc5e493195",
+   "4683df2f512ec3cc",
+   "6dd2079b5e430796",
+   "7630b6f3e35f28dc",
+   "b5ed5ff8e3d1a3bd",
+   "c67472cc86377d91"
+  ]
+ }
+}

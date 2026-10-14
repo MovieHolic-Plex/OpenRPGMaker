@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "06a55e66e85b09e70244bf046e4b2aae97ef88c938a5f34796b5e663c0432b6b",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "이층 침대(밝은 위 칸 매트 윗면·담요 + 두꺼운 틀 앞면 + 그늘진 아래 칸 + 사다리 + 기둥)",
+ "label": "sf-station/sf-bunk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bunk bed",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top bunk mattress, pillow, and blanket surface are clearly visible from above across rows 3-9 (~7 pixel rows), showing proper 3/4 foreshortening rather than a pure side/front profile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4526
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bunk bed",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top bunk's horizontal mattress surface (pillow and blanket) is clearly visible and foreshortened from above across rows 3-9 (7 rows tall), with the front guard rail and lower bunk cavity below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6664
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bunk bed",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top bunk mattress and bedding (pillow and blanket) are viewed from above across rows 3 to 9 (7 rows tall) in proper 3/4 perspective, followed by the front railing and the lower bunk interior.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4391
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bunk bed",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top bunk clearly displays the foreshortened top horizontal surface of the mattress, pillow, and blanket across rows 3 to 9 (approx 7px tall), correctly conveying the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3365
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.238Z",
+ "cells": {
+  "16": [
+   "0310502c7af1a6d0",
+   "0c7fc3869bd9b264",
+   "475f7d893956aca9",
+   "9cddf19778215664"
+  ],
+  "24": [
+   "10b7b011e975df04",
+   "1180b5cf57b9bee8",
+   "14ce09608e51f285",
+   "23cb80ec7f2a81c5",
+   "26dfa5641d0d8b5c",
+   "387a26a139268c0f",
+   "3f54a53d12ecb3d8",
+   "501f07599491249f",
+   "5f46f989f2fc5c01",
+   "5f5af2787027dbfb",
+   "654ed36afb72f617",
+   "669f8b5c270f5eef",
+   "6caa81af18587af0",
+   "8817e25a91561b27",
+   "9172f655cc1e042e",
+   "99b75426e7be32d7",
+   "aac4ef690ed59477",
+   "c0af6906b9a6e574",
+   "d0089f0b748885ec",
+   "eda689cddb08ce31",
+   "eda94f36e40d7582",
+   "f4a4f96affa56c64",
+   "f917370e933f4439",
+   "fc1602f41086e7a5"
+  ],
+  "32": [
+   "aae11dc8f198aa68"
+  ],
+  "48": [
+   "0af7b401f78cc3e4",
+   "211799dd48af0def",
+   "3b655335b6abc913",
+   "de81dbc872c9f4b4",
+   "e20eed30fa4c088f",
+   "fb4b615c28369063"
+  ]
+ }
+}

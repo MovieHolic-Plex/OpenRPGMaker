@@ -187,8 +187,16 @@ def _bench(c):
     finish(c, tex=True)
 
 
+def _branch_tone(d, n, px, py):
+    """가지 단면 명암(빛 왼위): 윗 가장자리 밝음 → 가운데 → 밑 그늘. 1px 가지는 껍질 결로 두 단을 번갈아."""
+    if n >= 3: t = 5 if d == 0 else 1 if d == n - 1 else 3 if d < n - 2 or n == 3 else 2
+    elif n == 2: t = 4 if d == 0 else 2
+    else: t = 3 if hsh(px, py, 7) < .6 else 2
+    return t
+
+
 def branch(c, x, y, ang, length, th, depth, rnd, m='bark'):
-    """고사목 가지(재귀): 두께 th 를 줄이며 꺾여 뻗고 갈라진다. 굵기는 가지에 수직으로, 위/왼 가장자리 밝게."""
+    """고사목 가지(재귀): 두께 th 를 줄이며 꺾여 뻗고 갈라진다. 굵기는 가지에 수직으로, 윗 가장자리 밝고 밑은 그늘(4~5단)."""
     for k in range(int(length)):
         ang += rnd.uniform(-.16, .16)
         x += math.cos(ang); y += math.sin(ang)
@@ -198,7 +206,8 @@ def branch(c, x, y, ang, length, th, depth, rnd, m='bark'):
         for d in range(n):
             o = d - (n - 1) / 2
             px, py = (int(x), int(y + o)) if horiz else (int(x + o), int(y))
-            t = 4 if d == 0 and n >= 2 else 1 if d == n - 1 and n >= 3 else 2 if n >= 2 else 3
+            t = _branch_tone(d, n, px, py)
+            if n >= 3 and 0 < d < n - 1 and hsh(px // 2, py, 9) < .14: t -= 1        # 껍질 갈라짐
             c.P(px, py, K(m, t))
     if depth <= 0: return
     n = 2 if depth > 1 else rnd.choice((1, 2))
@@ -207,22 +216,40 @@ def branch(c, x, y, ang, length, th, depth, rnd, m='bark'):
         branch(c, x, y, na, length * rnd.uniform(.5, .68), max(1, th * .62), depth - 1, rnd, m)
 
 
-def dead_tree(c, cx, base_y, height, spread, seed, th=6, depth=3):
+def _trunk_tone(u):
+    """원통 줄기 단면 u(0 왼 → 1 오른) → 껍질 단(빛 왼위, 5단)."""
+    return 5 if u < .16 else 4 if u < .36 else 3 if u < .6 else 2 if u < .84 else 1
+
+
+def dead_tree(c, cx, base_y, height, spread, seed, th=6, depth=3, moss=True):
     rnd = random.Random(seed)
-    # 뿌리 퍼짐
+    # 뿌리 퍼짐: 줄기에서 흘러내린 둔덕(왼 밝음 → 오른 그늘) + 땅으로 파고드는 뿌리 끝
     for k in range(-th - 2, th + 3):
         h = max(0, 3 - abs(k) // 2)
-        for y in range(base_y - h, base_y + 1): c.P(cx + k, y, K('bark', 3 if k < 0 else 2 if k < 3 else 1))
+        u = (k + th + 2) / (2 * th + 5)
+        for y in range(base_y - h, base_y + 1):
+            t = _trunk_tone(u) - (1 if y == base_y else 0)
+            c.P(cx + k, y, K('bark', max(1, t)))
+    for (dx, L) in ((-th - 2, 3), (th + 2, 2)):
+        for i in range(L): c.P(cx + dx + (i if dx > 0 else -i), base_y - (1 if i == 0 else 0), K('bark', 3 if dx < 0 else 2))
     trunk_top = base_y - height * .45
     x, y = float(cx), float(base_y)
-    for k in range(int(height * .45)):
+    hh = int(height * .45)
+    for k in range(hh):
         y -= 1; x += math.sin(k * .25 + seed) * .35
         w = th - k / (height * .45) * (th * .35)
-        for d in range(int(-w / 2), int(w / 2) + 1):
-            t = 4 if d <= int(-w / 2) + 1 else 3 if d < 0 else 2 if d < w / 4 else 1
-            if hsh(int(x) + d, int(y) // 3, seed) < .15: t -= 1     # 껍질 결
-            c.P(int(x + d), int(y), K('bark', t))
-    c.ellipse(int(x) - 1, int(base_y - height * .25), 1.5, 2, K('ink', 1))        # 옹이 구멍
+        lo, hi = int(-w / 2), int(w / 2)
+        for d in range(lo, hi + 1):
+            u = (d - lo + .5) / (hi - lo + 1)
+            t = _trunk_tone(u)
+            px = int(x + d)
+            if hsh(px, int(y) // 3, seed) < .16 and 0 < u < .9: t -= 1                 # 세로 껍질 골(3행 단위로 이어진다)
+            elif hsh(px, int(y) // 5, seed + 3) > .93 and u < .7: t += 1               # 껍질 결 볕
+            c.P(px, int(y), K('bark', t))
+            if moss and k < hh * .55 and u < .3 and hsh(px // 2, int(y) // 2, seed + 5) < .32:   # 북서쪽 이끼
+                c.P(px, int(y), K('ivy', 3 if hsh(px, int(y), seed + 6) < .5 else 4))
+    kx, ky = int(cx) - 1, int(base_y - height * .25)                                # 옹이 구멍: 깊은 속 + 밝은 위 입술
+    c.ellipse(kx, ky, 1.5, 2, K('bark', 0)); c.P(kx - 1, ky - 2, K('bark', 5)); c.P(kx, ky - 2, K('bark', 4)); c.P(kx + 1, ky + 1, K('bark', 2))
     angs = (-2.25, -1.7, -1.3, -.8) if depth >= 3 else (-2.1, -1.45, -.9)
     for i, a in enumerate(angs):
         branch(c, x + (i - 1.5) * 1.2, y, a + rnd.uniform(-.15, .15), height * rnd.uniform(.3, .4) * spread, th * .62, depth, rnd)
@@ -233,14 +260,14 @@ def dead_tree(c, cx, base_y, height, spread, seed, th=6, depth=3):
            rules='묘지·저택 정원 가장자리에 2~3그루씩 덩이로. 밑동 칸만 막는다.')
 def _dead_tree(c):
     dead_tree(c, 24, 61, 60, 1.0, seed=4, th=9, depth=3)
-    finish(c, tex=True)
+    finish(c, tex=True, soft=True)
 
 
 @REG.piece('gm-dead-tree-s', '작은 고사목', 2, 3, 'auto', 'nature', SP, role='prop', kind='organic',
            tags=['고사목', '나무'], desc='가는 줄기의 작은 고사목, 가지 셋.', rules='큰 고사목 곁·길가에.')
 def _dead_tree_s(c):
     dead_tree(c, 16, 45, 38, .9, seed=9, th=6, depth=2)
-    finish(c, tex=True)
+    finish(c, tex=True, soft=True)
 
 
 @REG.piece('gm-stump', '고목 그루터기(도끼)', 1, 1, ['S'], 'nature', SP, role='prop', kind='organic',

@@ -126,64 +126,193 @@ def trunk(c, x, y0, y1, w=4, mat='ki', lean=0.0):
         c.P(xs - 1, y, 'sumi', 1); c.P(xs + ww, y, 'sumi', 1)
     c.HL(x - 2, y1 - 1, w + 4, 'sumi', 1)
 
+# ═══════════════ 나무 (2판, 2026-10-14 quality-b: 버들항 결 — 잎 덩이 여럿·5단 명암·가지 틈·뿌리) ═══════════════
+def canopy(c, clumps, mat, base=2, s=0, top=None, bot=None, rough=0.32, hl=True):
+    """꽃양배추 수관: 잎 덩이(cx, cy, r[, ry]) 여럿을 뒤(위)부터 겹쳐 그린다.
+    덩이마다 왼위 빛 · 오른아래 그늘 · 아래 가장자리 어두운 테(앞 덩이와 갈라지는 틈) · 2px 잎결 · 하이라이트 점 무리.
+    수관 전체로도 아래쪽이 한 단 어둡다(top..bot)."""
+    cl = [q if len(q) == 4 else (q[0], q[1], q[2], q[2] * 0.82) for q in clumps]
+    ys = [q[1] for q in cl]
+    top = min(ys) - 6 if top is None else top
+    bot = max(ys) + 6 if bot is None else bot
+    for k, (cx, cy, r, ry) in enumerate(sorted(cl, key=lambda q: (q[1], q[0]))):
+        def f(X, Y, dx, dy, d, k=k):
+            e = d + (rnd(X, Y, s + k * 3) - 0.5) * rough
+            if e > 1.0: return None
+            l = -dx * 0.55 - dy * 0.85
+            t = base + (1 if l > 0.15 else 0 if l > -0.4 else -1)
+            if l > 0.55 and e < 0.72: t = base + 2
+            g = (Y - top) / max(1, bot - top)
+            if g > 0.78: t -= 1
+            if e > 0.8 and dy > -0.05: t = min(t, base - 1)
+            if e > 0.9 and dy > 0.25: t = base - 2
+            q = h32(X // 2, Y // 2, s + 31 + k) % 7
+            if q == 0: t -= 1
+            elif q == 1 and l > -0.1: t += 1
+            elif q == 2 and (X + Y) % 2 and l > 0.3: t += 1          # 잎결 점(밝은 면)
+            elif q == 3 and (X + Y) % 2 and l < -0.2: t -= 1         # 잎결 점(그늘 면)
+            return (mat, clamp(mat, t))
+        c.ell(cx, cy, r, ry, f)
+        if hl and r >= 4:
+            hx, hy = int(cx - r * 0.38), int(cy - ry * 0.5)
+            for ddx, ddy in ((0, 0), (1, 0), (0, 1), (2, -1) if k % 2 else (-1, 1)):
+                g = c.get(hx + ddx, hy + ddy)
+                if g and g[0] == mat: c.P(hx + ddx, hy + ddy, mat, NT[MI[mat]] - 1)
 
-# ═══════════════ 나무 ═══════════════
+
+def fill_holes(c, mat, t=1, reach=7, ymax=999):
+    """수관 속 구멍(사방이 수관인 투명 화소)을 짙은 틈 색으로 메운다."""
+    m0 = c.m.copy()
+    def hit(x, y, dx, dy):
+        for k in range(1, reach + 1):
+            X, Y = x + dx * k, y + dy * k
+            if not (0 <= X < c.w and 0 <= Y < c.h): return False
+            if m0[Y, X] >= 0: return True
+        return False
+    for y in range(c.h):
+        for x in range(c.w):
+            if y <= ymax and m0[y, x] < 0 and all(hit(x, y, dx, dy) for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+                c.P(x, y, mat, t)
+
+
+def twig(c, x0, y0, x1, y1):
+    """수관 틈으로 보이는 가지(2px, 위 밝게)."""
+    c.line(x0, y0, x1, y1, 'ki', 1); c.line(x0, y0 - 1, x1, y1 - 1, 'ki', 3)
+
+
+def trunk2(c, x, y0, y1, w=5, roots=True, lean=0):
+    """짧은 줄기 + 아래 뿌리 퍼짐. 왼 빛(4)·가운데(3)·오른 그늘(1~2), 윤곽은 줄기 램프 0단(순흑 아님)."""
+    for y in range(y0, y1):
+        k = (y - y0) / max(1, y1 - y0 - 1)
+        flare = int(round(3 * max(0.0, k - 0.6) / 0.4)) if roots else 0
+        xs = x - flare + int(round(lean * (1 - k)))
+        ww = w + 2 * flare
+        for i in range(ww):
+            u = i / max(1, ww - 1)
+            t = 4 if u < 0.25 else 3 if u < 0.55 else 2 if u < 0.8 else 1
+            if h32(i, y // 3, 17) % 6 == 0: t -= 1          # 껍질 결
+            c.P(xs + i, y, 'ki', t)
+        c.P(xs - 1, y, 'ki', 0); c.P(xs + ww, y, 'ki', 0)
+    if roots:
+        for dx, dy in ((-5, 0), (-4, -1), (w + 3, 0), (w + 2, -1)):
+            c.P(x + dx, y1 - 1 + dy, 'ki', 2 if dx < 0 else 1)
+        c.HL(x - 5, y1, w + 9, 'ki', 0)
+
+
+def ground_shade(c, cx, y, rx, ry=2):
+    """수관 그늘(풀 위 접지 그림자, 오른쪽으로 치우침) — 풀 램프 짙은 단 + 가장자리 디더."""
+    for yy in range(int(y - ry), int(y + ry) + 1):
+        for xx in range(int(cx - rx), int(cx + rx) + 1):
+            if c.on(xx, yy): continue
+            dx = (xx + 0.5 - cx) / rx; dy = (yy + 0.5 - y) / max(ry, 0.5)
+            d = dx * dx + dy * dy
+            if d > 1: continue
+            if d > 0.6 and (xx + yy) % 2: continue
+            c.P(xx, yy, 'kusa', 2)
+
+
 @P('tree-pine', '흑송(구부러진 줄기 + 층진 잎 판)', 3, 3, 'organic', ['나무', '소나무', '정원', '성', '무가'], '정원·성 해자 둘레·무가 저택 앞. 줄기 칸(맨 아랫줄 가운데)만 막힘.')
 def _(c):
-    # 굽은 줄기
-    pts = [(24, 46), (23, 40), (21, 35), (22, 29), (26, 24), (28, 19)]
+    ground_shade(c, 28, 46, 13, 2)
+    pts = [(24, 46), (23, 41), (21, 36), (22, 30), (25, 25), (28, 19)]
     for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
         for k in range(8):
             t = k / 7
             x = round(x0 + (x1 - x0) * t); y = round(y0 + (y1 - y0) * t)
-            c.R(x - 2, y, 5, 1, 'ki', 3); c.P(x - 2, y, 'ki', 4); c.P(x + 2, y, 'ki', 1); c.P(x - 3, y, 'sumi', 1); c.P(x + 3, y, 'sumi', 1)
-    c.line(22, 33, 12, 27, 'ki', 2); c.line(22, 32, 12, 26, 'ki', 3)
-    c.line(27, 22, 36, 18, 'ki', 2)
-    # 잎 판(납작한 타원, 위 밝게)
-    for cx, cy, rx, ry in ((12, 24, 10, 5), (35, 16, 11, 5.5), (25, 9, 12, 6), (18, 15, 7, 4)):
-        blob(c, cx, cy, rx, ry, 'matsu', 3, s=cx * 7 + cy)
+            c.R(x - 2, y, 5, 1, 'ki', 3); c.P(x - 2, y, 'ki', 4); c.P(x - 1, y, 'ki', 4); c.P(x + 2, y, 'ki', 1)
+            if (y // 2) % 3 == 0: c.P(x, y, 'ki', 2)
+            c.P(x - 3, y, 'ki', 0); c.P(x + 3, y, 'ki', 0)
+    c.HL(19, 46, 11, 'ki', 0); c.P(18, 45, 'ki', 2); c.P(29, 45, 'ki', 1)
+    c.line(21, 33, 10, 28, 'ki', 2); c.line(21, 32, 10, 27, 'ki', 4)
+    c.line(27, 22, 38, 18, 'ki', 2); c.line(27, 21, 38, 17, 'ki', 4)
+    pads = [  # 층진 잎 판: 판마다 작은 솔잎 덩이 여럿
+        [(4, 27, 5), (9, 25, 5.5), (15, 27, 5), (11, 29, 4), (5, 30, 3.5), (17, 30, 3.5)],
+        [(28, 17, 5), (34, 15, 6), (40, 17, 5), (44, 19, 3.5), (33, 19, 4), (39, 20, 4)],
+        [(15, 9, 5), (21, 7, 6), (28, 6, 6), (34, 9, 5), (18, 12, 4), (26, 11, 5), (32, 12, 4)],
+        [(13, 17, 4), (18, 16, 4.5), (16, 19, 3.5)],
+    ]
+    for p, pad in enumerate(pads):
+        canopy(c, [(x, y, r, r * 0.62) for x, y, r in pad], 'matsu', base=3, s=11 + p * 17, rough=0.28)
     outline_ramp(c, ('matsu',))
-    c.HL(19, 47, 10, 'sumi', 1)
+    for x in range(c.w):            # 윤곽: 솔 0단이 너무 검어 1단
+        for y in range(c.h):
+            g = c.get(x, y)
+            if g and g == ('matsu', 0): c.P(x, y, 'matsu', 1)
 
 
 @P('tree-pine-small', '작은 소나무(정원 다듬은 솔)', 2, 2, 'organic', ['나무', '소나무', '정원'], '정원 바위 옆·문 양옆.')
 def _(c):
-    trunk(c, 14, 20, 31, 4)
-    for cx, cy, rx, ry in ((9, 17, 7, 4), (22, 12, 8, 4.5), (15, 7, 9, 5)):
-        blob(c, cx, cy, rx, ry, 'matsu', 3, s=cx + cy)
+    ground_shade(c, 18, 30, 9, 1.5)
+    trunk2(c, 14, 21, 31, 4, roots=False, lean=-2)
+    c.HL(12, 31, 8, 'ki', 0)
+    c.line(15, 22, 8, 18, 'ki', 2); c.line(17, 20, 24, 14, 'ki', 2)
+    canopy(c, [(6, 18, 4.5, 3), (10, 17, 4.5, 3), (13, 20, 3.5, 2.5)], 'matsu', base=3, s=5, rough=0.26)
+    canopy(c, [(20, 12, 4.5, 3), (25, 13, 4, 2.8), (23, 15, 3.5, 2.4)], 'matsu', base=3, s=9, rough=0.26)
+    canopy(c, [(11, 6, 5, 3.2), (17, 5, 5.5, 3.4), (21, 8, 4, 2.8), (14, 9, 4, 2.6)], 'matsu', base=3, s=13, rough=0.26)
     outline_ramp(c, ('matsu',))
+    for x in range(c.w):
+        for y in range(c.h):
+            if c.get(x, y) == ('matsu', 0): c.P(x, y, 'matsu', 1)
 
 
 @P('tree-cherry', '벚나무(분홍 꽃 둥근 수관)', 3, 3, 'organic', ['나무', '벚나무', '봄', '정원', '강가'], '강가·참배길·성 해자 둘레에 줄지어. 줄기 칸만 막힘.')
 def _(c):
-    trunk(c, 21, 28, 47, 6)
-    c.line(23, 30, 13, 22, 'ki', 2); c.line(25, 30, 35, 21, 'ki', 2)
-    for cx, cy, rx, ry in ((14, 18, 12, 10), (33, 17, 13, 10), (24, 11, 14, 10), (24, 24, 10, 6)):
-        blob(c, cx, cy, rx, ry, 'sakura', 2, s=cx * 3 + cy)
+    ground_shade(c, 27, 45, 16, 2.5)
+    trunk2(c, 21, 33, 46, 6)
+    canopy(c, [(9, 15, 7), (17, 9, 8), (28, 7, 8), (38, 12, 7.5), (42, 21, 6), (6, 25, 6),
+               (15, 20, 7.5), (26, 18, 8), (35, 23, 7), (13, 30, 6.5), (24, 29, 7), (33, 31, 6)],
+           'sakura', base=2, s=3, top=1, bot=37)
+    for x0, y0, x1, y1 in ((23, 34, 17, 27), (26, 34, 31, 26), (20, 26, 12, 22), (30, 25, 37, 19)):
+        for k in range(0, 5):
+            X = round(x0 + (x1 - x0) * k / 4); Y = round(y0 + (y1 - y0) * k / 4)
+            g = c.get(X, Y)
+            if g and g[0] == 'sakura' and g[1] <= 1: c.P(X, Y, 'ki', 1)
+    fill_holes(c, 'sakura', 0, ymax=34)
     outline_ramp(c, ('sakura',))
-    for k in range(18):
-        x = 6 + h32(k, 1, 3) % 36; y = 4 + h32(k, 2, 3) % 26
-        if c.get(x, y) and c.get(x, y)[0] == 'sakura': c.P(x, y, 'sakura', 4)
+    for k in range(26):                           # 흩날린 꽃잎 · 잎 사이 연두 새순
+        x = 3 + h32(k, 1, 3) % 42; y = 3 + h32(k, 2, 3) % 32
+        g = c.get(x, y)
+        if g and g[0] == 'sakura' and g[1] >= 2: c.P(x, y, 'sakura', 4)
+        elif g and g[0] == 'sakura' and g[1] == 1 and k % 3 == 0: c.P(x, y, 'kusa', 4)
 
 
 @P('tree-maple', '단풍나무(붉은 잎 수관)', 3, 3, 'organic', ['나무', '단풍', '가을', '절', '정원'], '절·정원·계곡. 줄기 칸만 막힘.')
 def _(c):
-    trunk(c, 21, 30, 47, 5)
-    c.line(23, 31, 12, 25, 'ki', 2); c.line(24, 31, 36, 24, 'ki', 2)
-    for cx, cy, rx, ry in ((12, 21, 11, 8), (35, 19, 12, 9), (24, 12, 14, 10), (24, 26, 8, 5)):
-        blob(c, cx, cy, rx, ry, 'momiji', 2, s=cx * 5 + cy)
+    ground_shade(c, 27, 45, 16, 2.5)
+    trunk2(c, 21, 33, 46, 5)
+    canopy(c, [(10, 14, 7), (19, 8, 8), (30, 7, 7.5), (39, 13, 7), (43, 22, 5.5), (5, 23, 5.5),
+               (16, 19, 7.5), (27, 17, 8), (36, 23, 7), (12, 29, 6.5), (23, 28, 7), (32, 31, 6)],
+           'momiji', base=2, s=7, top=1, bot=37)
+    for x0, y0, x1, y1 in ((22, 34, 16, 26), (25, 34, 31, 25), (19, 25, 11, 20)):
+        for k in range(0, 5):
+            X = round(x0 + (x1 - x0) * k / 4); Y = round(y0 + (y1 - y0) * k / 4)
+            g = c.get(X, Y)
+            if g and g[0] == 'momiji' and g[1] <= 1: c.P(X, Y, 'ki', 1)
+    fill_holes(c, 'momiji', 0, ymax=34)
     outline_ramp(c, ('momiji',))
+    for k in range(16):                           # 햇빛 받은 잎 끝(금빛)
+        x = 4 + h32(k, 1, 13) % 40; y = 3 + h32(k, 2, 13) % 20
+        g = c.get(x, y)
+        if g and g == ('momiji', 4): c.P(x, y, 'kin', 4)
 
 
 @P('tree-cedar', '삼나무(곧고 높은 원뿔, 가도 가로수)', 2, 4, 'organic', ['나무', '삼나무', '가도', '신사', '숲'], '가도 양옆에 4~5칸 간격 줄. 신사 숲. 줄기 칸만 막힘.')
 def _(c):
-    trunk(c, 13, 50, 63, 6)
-    for k in range(7):
-        y = 6 + k * 7
-        rx = 4 + k * 1.6
-        blob(c, 16, y + 4, rx, 5, 'matsu', 2 + (1 if k < 2 else 0), s=k * 11, rough=0.12)
-    c.P(15, 1, 'matsu', 4); c.P(16, 1, 'matsu', 3); c.R(15, 2, 2, 4, 'matsu', 3)
+    ground_shade(c, 19, 62, 10, 1.5)
+    trunk2(c, 13, 52, 63, 6)
+    tiers = []
+    for k in range(8):
+        y = 5 + k * 6.3
+        w = 2.5 + k * 1.55
+        tiers.append((16 - w * 0.55, y + 2, max(2.5, w * 0.6), 3.2))
+        tiers.append((16 + w * 0.55, y + 2.5, max(2.5, w * 0.6), 3.2))
+        tiers.append((16, y + 1, max(2.8, w * 0.7), 3.6))
+    canopy(c, tiers, 'matsu', base=3, s=21, top=2, bot=56, rough=0.24)
+    c.P(15, 1, 'matsu', 4); c.P(16, 1, 'matsu', 3); c.R(15, 2, 2, 3, 'matsu', 4); c.P(16, 3, 'matsu', 3)
     outline_ramp(c, ('matsu',))
+    for x in range(c.w):
+        for y in range(c.h):
+            if c.get(x, y) == ('matsu', 0): c.P(x, y, 'matsu', 1)
 
 
 @P('bamboo', '대숲(곧은 대 여럿 + 잎 덩이)', 2, 3, 'organic', ['대나무', '대숲', '정원', '절', '숲'], '정원 가장자리·절 뒤·마을 뒤 숲 덩이로 여럿.')
@@ -200,27 +329,46 @@ def _(c):
     c.HL(3, 47, 26, 'sumi', 1)
 
 
+
+
 @P('tree-willow', '수양버들(강가, 늘어진 가지)', 3, 3, 'organic', ['나무', '버들', '강가', '해자'], '강가·해자 둘레, 다리 옆. 줄기 칸만 막힘.')
 def _(c):
-    trunk(c, 22, 22, 47, 5)
-    blob(c, 24, 12, 15, 9, 'take', 3, s=7)
-    for k in range(13):
-        x = 9 + k * 2.4
-        L = 18 + h32(k, 0, 9) % 14
+    ground_shade(c, 27, 46, 15, 2)
+    trunk2(c, 21, 26, 47, 6)
+    canopy(c, [(14, 10, 7, 5.5), (24, 6, 8, 5.5), (34, 9, 7.5, 5.5), (19, 14, 7, 5), (30, 14, 7, 5)], 'take', base=3, s=7, top=1, bot=22)
+    for k in range(21):                               # 늘어진 가지: 줄마다 길이·흔들림이 다르고 위 밝게·끝 어둡게
+        x = 5 + k * 1.85 + (h32(k, 3, 9) % 2)
+        y0 = 9 + int(5 * math.sin(math.pi * (x - 6) / 38) * -1) + 8
+        L = 14 + h32(k, 0, 9) % 16
         for j in range(L):
-            y = 12 + j
-            xx = int(round(x + math.sin(j / 5 + k) * 0.8))
-            c.P(xx, y, 'take', 4 if j < L // 2 else 3); c.P(xx + 1, y, 'take', 2)
+            y = y0 + j
+            if y > 44: break
+            xx = int(round(x + math.sin(j / 5 + k) * 0.9))
+            u = j / L
+            t = 4 if u < 0.3 else 3 if u < 0.65 else 2
+            if (k + j) % 7 == 0: t += 1
+            if c.get(xx, y) and c.get(xx, y)[0] == 'ki' and k % 3: continue
+            c.P(xx - 1, y, 'take', min(5, t + 1)) if j < L - 2 and not c.on(xx - 1, y) else None
+            c.P(xx, y, 'take', t); c.P(xx + 1, y, 'take', max(1, t - 2))
     outline_ramp(c, ('take',))
 
 
 @P('azalea', '철쭉 덤불(분홍 꽃)', 1, 1, 'organic', ['덤불', '정원', '꽃'], '정원 바위 둘레·담 밑·길가.')
 def _(c):
-    blob(c, 8, 9, 7.5, 6.5, 'matsu', 3, s=3)
+    canopy(c, [(5, 8, 5, 4.5), (11, 8, 5, 4.5), (8, 5, 5.5, 4), (8, 11, 6, 4)], 'matsu', base=3, s=3, top=1, bot=15, rough=0.18)
+    fill_holes(c, 'matsu', 1, ymax=13)
     outline_ramp(c, ('matsu',))
-    for k in range(9):
-        x = 3 + h32(k, 1, 5) % 11; y = 4 + h32(k, 2, 5) % 8
-        if c.get(x, y): c.P(x, y, 'sakura', 3); c.P(x, y - 1, 'sakura', 4) if c.get(x, y - 1) else None
+    for x in range(c.w):
+        for y in range(c.h):
+            if c.get(x, y) == ('matsu', 0): c.P(x, y, 'matsu', 1)
+    for k in range(11):
+        x = 2 + h32(k, 1, 5) % 12; y = 2 + h32(k, 2, 5) % 9
+        g = c.get(x, y)
+        if g and g[1] >= 2:
+            c.P(x, y, 'sakura', 3)
+            if c.get(x + 1, y): c.P(x + 1, y, 'sakura', 2)
+            if c.get(x, y - 1) and c.get(x, y - 1)[0] == 'matsu': c.P(x, y - 1, 'sakura', 4)
+
 
 
 @P('hedge', '산울타리(다듬은 생울, 1칸)', 1, 1, 'organic', ['울타리', '생울', '농촌', '정원'], '농가·정원 둘레에 가로로 잇는다.')

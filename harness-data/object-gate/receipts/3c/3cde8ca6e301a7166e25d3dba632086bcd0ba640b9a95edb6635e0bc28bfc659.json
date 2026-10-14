@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3cde8ca6e301a7166e25d3dba632086bcd0ba640b9a95edb6635e0bc28bfc659",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "small pile of three skulls and crossed bones",
+ "label": "pirate-isles/pi-bones",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pile of three skulls",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The skulls are arranged in depth with the upper skull's dome/cranium visible for 3 pixel rows (rows 0-2) above the eye sockets, providing appropriate 3/4 downward-angled perspective for rounded organic shapes without flat front elevation or isometric side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9463
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pile of three skulls",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All three skulls are drawn in pure front elevation with eyes and jaws facing straight at the camera. The top of the cranium above the eye sockets is only 2 pixels tall (e.g. rows 1-2 on the top skull, rows 6-7 on the lower skulls), lacking the foreshortened top dome expected from a 45-degree top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8729
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pile of three skulls and crossed bones",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The three skulls and crossed bones are arranged in a flat 2D pyramid and drawn in a pure front elevation facing straight at the viewer, with no visible top surface or downward 3/4 tilt.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6626
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pile of skulls and bones",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pile is layered in depth with the rear skull sitting higher and further back than the two front skulls; each skull shows 2-3 rows of rounded cranium above the eye sockets.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7750
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.594Z",
+ "cells": {
+  "16": [
+   "9d9dee007d441426"
+  ],
+  "24": [
+   "0471ed9fa144c39b",
+   "36b31495e9fd879a",
+   "5e74b67cdc40e5e3",
+   "8467787bf487d1d7",
+   "c5fe1866d21ab23e",
+   "d06c52b2886695b1"
+  ],
+  "32": [
+   "19335c91fc44443f",
+   "27f6c85fb624c5a0",
+   "4ffbeda89af40eea",
+   "c6085398c31fe932",
+   "dd151ce4db3b6ccb",
+   "de5e0b770e09b5fe"
+  ],
+  "48": [
+   "3c839af751133872",
+   "5afbd39c0f65f682",
+   "7354db71f34b6f0b",
+   "d733a50f33a6e445",
+   "ec97675062dab1ce",
+   "fd68a645e5574017"
+  ]
+ }
+}

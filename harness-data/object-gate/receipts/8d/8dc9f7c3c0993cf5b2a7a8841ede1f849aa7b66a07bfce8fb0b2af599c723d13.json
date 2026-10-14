@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8dc9f7c3c0993cf5b2a7a8841ede1f849aa7b66a07bfce8fb0b2af599c723d13",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "노면 궤도 북쪽 레일(자갈 포석 속)",
+ "label": "steampunk-city/sp-tram-n",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cobblestone ground tile with embedded horizontal rail track",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground surface tile depicting stone paving with an embedded steel rail viewed top-down across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3261
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cobblestone ground tile with embedded tram track rail",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting cobblestone paving with an embedded rail running horizontally across rows 7-9, viewed from the standard top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6599
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cobblestone ground tile with embedded tram track rail",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile depicting cobblestone pavement with an embedded rail running horizontally across rows 7-9; the entire surface is viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3401
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "embedded tram rail in cobblestone pavement (ground terrain tile)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts ground terrain with cobblestone paving and a horizontally embedded tram rail, filling the 16x16 ground surface plane correctly for 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3969
+  }
+ ],
+ "decidedAt": "2026-10-14T08:37:24.709Z",
+ "cells": {
+  "16": [
+   "8d41f55352e0d11d"
+  ],
+  "24": [
+   "1aa865b29f602ad6",
+   "3a170640dc49dacf",
+   "8c580d093dfc8c28",
+   "9dedc8b07cd5b613",
+   "c1520e537eb13691",
+   "ff73fe82174c6d45"
+  ],
+  "32": [
+   "9bea7a9738e5fc10",
+   "a9bd639c253569eb",
+   "d38e96d040c2fe95",
+   "edd2c9ab0368445d",
+   "f7e628bab48253f0",
+   "faedc7bed092e8d2"
+  ],
+  "48": [
+   "12ac6351bd9e40dd",
+   "2b6073307075beb7",
+   "6128d76465eadc05",
+   "897bb3675cec12a5",
+   "ab12382eb2a33c8b",
+   "e1fc0074f0328975"
+  ]
+ }
+}

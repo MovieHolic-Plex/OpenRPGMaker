@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d2d8bf244b78344a7358c389d5caadcc1d5543d8e10acf8a8f04406ff6a167a9",
+ "width": 32,
+ "height": 16,
+ "kind": "frame",
+ "name": "bamboo pole fence section, hollow cut bamboo tops seen from above, lashed with rope",
+ "label": "pirate-isles/pi-fence-bamboo",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bamboo pole fence",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 1,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tops of the vertical bamboo poles clearly show their cut cross-sections seen from above across rows 1-5, complete with hollow inner holes, giving a 3-4px top surface depth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6160
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bamboo pole fence",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of each bamboo pole clearly shows a foreshortened circular/cut-cylinder top surface with hollow centers spanning rows 1-5 (approx 3-4 rows deep per pole top).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12840
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bamboo pole fence",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cut tops of the vertical bamboo poles span rows 1 to 4-5 (approx 4 source pixel rows), clearly showing foreshortened circular ends with hollow centers viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6956
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bamboo fence section with cut pole tops and horizontal lashings",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bamboo poles feature clearly rendered cut tops viewed from above spanning rows 1-5, each showing a hollow center opening (rows 3-4) encircled by the bamboo rim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6340
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.586Z",
+ "cells": {
+  "16": [
+   "625639496f36914c",
+   "d015e6208c43e99a"
+  ],
+  "24": [
+   "1ced249dae10cdec",
+   "2897a5c56cded074",
+   "2ada0d558b7b7ac4",
+   "68d68518ad579c14",
+   "88c00ee875f90680",
+   "8b9aab5d2b92bcd2",
+   "94b2f26b9fbecd48",
+   "97a10ca9d074c525",
+   "b794bca4ac42c549",
+   "bc6a8b0a2ccf9ffe",
+   "c9d083460b05bddc",
+   "e580e767931aa6a8"
+  ],
+  "32": [
+   "48ffb14b650be47e",
+   "8011eba77a140f3a"
+  ],
+  "48": [
+   "47c51205cc8373ff",
+   "936045aecb05e01d",
+   "c2585ba3695f7f95",
+   "d51501644c98888b",
+   "eceaa65a1fc19e56",
+   "fd9a3a391209515c"
+  ]
+ }
+}

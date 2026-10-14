@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a35984ebbf560dd8d82433b053260527bfa7869ecd723cc85b28ae7393e7186c",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "round blossom tree with pink flowers",
+ "label": "sky-island/si-tree-blossom",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "foliage canopy",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The foliage canopy is rendered as overlapping volumetric spherical clusters with visible upper surfaces, anchored by an elliptical foreshortened grass base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7493
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "foliage canopy",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The blossom tree features a multi-tiered rounded canopy whose upper clusters (rows 3–17) form the crown seen from a high 3/4 angle, grounded by an elliptical base patch (rows 41–47).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5824
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree canopy and trunk are drawn in a flat side-scroller/front elevation view. The trunk is a flat vertical column with 2D profile roots on the left and right, and the canopy lacks any top-down foreshortening or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8133
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "blossom tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree canopy is drawn as stacked lobes facing directly toward the viewer without any foreshortened top surface (0 rows). The trunk and its flat arch/footed base are also drawn in pure front elevation, typical of a side-scroller rather than a 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8906
+  }
+ ],
+ "decidedAt": "2026-10-14T08:17:41.839Z",
+ "cells": {
+  "16": [
+   "517d3e26a0f0f0bd",
+   "b376715872ef255b",
+   "cbdd49c33d672688",
+   "e107dfac4c1a21ec",
+   "e6012b382e67647c",
+   "e6e29f5d72d9b186"
+  ],
+  "24": [
+   "17f348acdbb3a9b2",
+   "3ef2d986081dcb03",
+   "6e8cb0001db91a64",
+   "77c19326d0a81656",
+   "9dc721569fec332e",
+   "a3f949738e0b6d5d",
+   "b73ca6be8d0a863c",
+   "c85af26e5e7e0279",
+   "ca3e6170ad0665a7",
+   "d0c6a078afc54fc3",
+   "d7a9d57ba394b1d2",
+   "f252e17b3f33d83e"
+  ],
+  "32": [
+   "38f9a218499e0cde",
+   "912bd6db782b0735",
+   "be326fc286ea7202",
+   "fe0ed328cc6451c3"
+  ],
+  "48": [
+   "19f2e6e87316036d",
+   "9cd28932053cbeb3",
+   "9df902ffe0552b9c"
+  ]
+ }
+}

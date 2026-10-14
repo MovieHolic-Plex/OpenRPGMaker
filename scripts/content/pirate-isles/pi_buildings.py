@@ -28,13 +28,24 @@ def wall_bamboo(c, x, y, w, h, s=0, bands=(6, 18)):
 
 
 def wall_plaster(c, x, y, w, h, s=0, timber=True):
+    """회칠 벽(화풍 2판): 흰 단색 대신 바른 자국 얼룩(3×2 덩이 +1/0)·잔 점·갈라짐·아래로 갈수록 때(빗물 자국 -1),
+    밑 돌 굽 5행 + 굽 위 그늘 1행. 양 끝 목재 기둥."""
     for j in range(h):
         for i in range(w):
-            t = 1 if hsh(i, j, s + 3) % 23 else 0
-            if hsh(i // 3, j // 2, s + 5) % 31 == 0: t = 0
+            t = 1 if hsh(i // 3, j // 2, s + 5) % 5 < 3 else 0                       # 바른 자국 덩이
+            r = hsh(i, j, s + 3) % 23
+            if r == 0: t = 0
+            elif r == 1: t = 2
+            elif r == 2: t -= 1
+            if j > h - 13 and hsh(i, j // 3, s + 7) % 4 == 0: t -= 1                 # 아래쪽 때
+            if hsh(i // 2, 0, s + 9) % 11 == 0 and j > h - 9 and hsh(i, j, s + 11) % 2: t = -1   # 빗물 자국
             c.P(x + i, y + j, K('plaster', t))
+    # 가는 갈라짐 몇 줄
+    for k in range(max(1, w // 24)):
+        cx0 = x + 4 + hsh(k, s, 13) % max(1, w - 8); cy0 = y + 6 + hsh(k, s, 15) % max(1, h - 16)
+        for d in range(4): c.P(cx0 + (d // 2), cy0 + d, K('plaster', -1))
     c.R(x, y + h - 5, w, 5, K('stone', 0)); stones(c, x, y + h - 5, w, 5, 'stone', -1, bh=5, blen=(4, 7), s=s)   # 돌 굽
-    c.HL(x, y + h - 6, w, K('plaster', -1))
+    c.HL(x, y + h - 6, w, K('plaster', -2)); c.HL(x, y + h - 7, w, K('plaster', 0))
     if timber:
         c.R(x, y, 3, h - 5, K('dark', 1)); c.VL(x, y, h - 5, K('dark', 2)); c.VL(x + 2, y, h - 5, K('dark', -1))
         c.R(x + w - 3, y, 3, h - 5, K('dark', 0)); c.VL(x + w - 1, y, h - 5, K('dark', -2))
@@ -45,11 +56,28 @@ def wall_stone(c, x, y, w, h, s=0, moss=0.08):
 
 
 def under_eave(c, x, y, w, rows=2):
-    """처마 밑 그늘: 벽 위 rows 행을 두 단·한 단 어둡게."""
-    for j in range(rows):
+    """처마 밑 그늘(화풍 2판, 버들항 4단): 벽 위 4행을 -3·-2·-1·-1 단 어둡게(rows 는 옛 호출 호환용, 최소 4행)."""
+    if STYLE['outline'] == 'black':                     # 1판 그림(관문에서 2판이 떨어진 조각)
+        for j in range(rows):
+            for i in range(w):
+                col = c.get(x + i, y + j)
+                if col is not None: c.P(x + i, y + j, shift_col(col, None, -2 + j))
+        return
+    sh = (-3, -2, -1, -1)
+    for j in range(max(4, rows)):
+        d = sh[j] if j < 4 else 0
+        if d == 0: continue
         for i in range(w):
             col = c.get(x + i, y + j)
-            if col is not None: c.P(x + i, y + j, shift_col(col, None, -2 + j))
+            if col is not None: c.P(x + i, y + j, shift_col(col, None, d))
+
+
+def wall_ends(c, xl, xr, y, h):
+    """벽 양 끝 세로 그늘(화풍 2판): 검은 줄 대신 그 자리 벽 재질을 왼쪽 -2·오른쪽 -3 단 어둡게."""
+    for j in range(int(h)):
+        for xx, d in ((xl, -2), (xr, -3)):
+            col = c.get(xx, y + j)
+            if col is not None: c.P(xx, y + j, shift_col(col, None, d))
 
 
 def step(c, x, y, w, mat='stone'):
@@ -86,7 +114,7 @@ def house(c, W, H, wall_h, wall='planks', roof='thatch', door_x=None, wins=(), s
             for i in range(ww): c.P(wx0 + i, wy0 + j, K('wood', (1 if r == 0 else 0 if r == 1 else -1 if r == 2 else -3) - (1 if hsh(i // 5, j // 4, s) % 5 == 0 and r < 3 else 0)))
         for k in range(0, wall_h, 4): c.R(wx0 - 1, wy0 + k, 3, 3, K('wood', 1)); c.R(wx1 - 2, wy0 + k, 3, 3, K('wood', -1)); c.P(wx0, wy0 + k + 1, K('wood', -2))
     # 벽 양 끝 세로 그늘(입체)
-    c.VL(wx0, wy0, wall_h, K('shadow', 2)); c.VL(wx1 - 1, wy0, wall_h, K('shadow', 1))
+    wall_ends(c, wx0, wx1 - 1, wy0, wall_h)
     for wxw in wins:
         shutter_window(c, wxw, wy0 + 8, 8, 8, 'teal' if wall in ('plaster', 'stone') else 'wood', 'wood' if wall != 'stone' else 'stone', s=s, lit=lit)
     dw, dh = 12, 23
@@ -190,7 +218,7 @@ def _tavern(c):
     hanging_sign(c, 66, 70, 'mug')
     hip_roof(c, 0, 0, PW, wy0 + 4, 'terra', inset=14, s=5)
     under_eave(c, 4, wy0 + 4, 88, 2)
-    c.VL(3, wy0 + 4, PH - wy0 - 4, K('shadow', 2)); c.VL(92, wy0 + 4, PH - wy0 - 4, K('shadow', 1))
+    wall_ends(c, 3, 92, wy0 + 4, PH - wy0 - 4)
     # 굴뚝(지붕 윗면 위, 윗면 보이는 상자)
     box(c, 70, 8, 8, 3, 7, 'stone', tt=2, ft=0); c.R(71, 8, 6, 2, K('shadow', 0))
     c.outline()
@@ -202,7 +230,7 @@ def _tavern(c):
 def _warehouse(c):
     PW = 80
     wall_planks(c, 3, 26, 74, 38, 'wood', -1, s=6)
-    c.VL(3, 26, 38, K('shadow', 2)); c.VL(76, 26, 38, K('shadow', 1))
+    wall_ends(c, 3, 76, 26, 38)
     # 큰 화물문(두 짝, X 버팀)
     c.R(25, 34, 30, 30, K('dark', -1)); c.HL(25, 34, 30, K('dark', 1))
     for (dx0) in (26, 40):
@@ -225,7 +253,7 @@ def _warehouse(c):
 def _office(c):
     PW, PH = 80, 96
     wall_stone(c, 3, 34, 74, 62, s=7)
-    c.VL(3, 34, 62, K('shadow', 2)); c.VL(76, 34, 62, K('shadow', 1))
+    wall_ends(c, 3, 76, 34, 62)
     for wx in (10, 62): shutter_window(c, wx, 42, 8, 9, 'teal', 'stone')
     for wx in (10, 62): shutter_window(c, wx, 70, 8, 9, 'teal', 'stone')
     # 발코니(2층 문 앞): 윗면 판자 + 난간 + 받침
@@ -265,7 +293,7 @@ def _stilt(c):
     c.clear(18, 58, 12, 3); [c.R(18, 58 + k, 12, 1, K('wood', 1 - k)) for k in range(3)]
     # 벽(대나무) + 문
     wall_bamboo(c, 4, 26, 40, 26, s=9, bands=(4, 17))
-    c.VL(4, 26, 26, K('shadow', 2)); c.VL(43, 26, 26, K('shadow', 1))
+    wall_ends(c, 4, 43, 26, 26)
     door(c, 18, 29, 12, 23, 'wood', 'dark', s=9)
     shutter_window(c, 7, 33, 6, 7, 'wood', 'wood', sill=False); shutter_window(c, 36, 33, 6, 7, 'wood', 'wood', sill=False)
     # 난간(마루 양옆)
@@ -560,7 +588,7 @@ def _wreck(c):
 def _hut_palm(c):
     PW, PH = 48, 64
     wall_planks(c, 4, 34, 40, 30, 'wood', 0, s=21)
-    c.VL(4, 34, 30, K('shadow', 2)); c.VL(43, 34, 30, K('shadow', 1))
+    wall_ends(c, 4, 43, 34, 30)
     shutter_window(c, 33, 41, 6, 7, 'wood', 'wood', sill=True)
     door(c, 16, 38, 12, 23, 'wood', 'dark', s=21); step(c, 14, 60, 16, 'stone')
     # 야자잎 지붕: 사다리꼴 + 잎 결(사선 잎맥, 들쭉날쭉 처마)
@@ -587,7 +615,7 @@ def _hut_palm(c):
 def _longhouse(c):
     PW, PH = 80, 64
     wall_bamboo(c, 4, 30, 72, 24, s=22, bands=(4, 15))
-    c.VL(4, 30, 24, K('shadow', 2)); c.VL(75, 30, 24, K('shadow', 1))
+    wall_ends(c, 4, 75, 30, 24)
     for wx in (10, 22, 54, 66): shutter_window(c, wx, 34, 6, 7, 'thatch', 'wood', sill=False)
     door(c, 34, 31, 12, 23, 'wood', 'dark', s=22)
     planks(c, 1, 54, 78, 5, 'wood', 1, bw=3, plen=13, s=22, nails=False); c.HL(1, 54, 78, K('wood', -1))   # 마루 윗면
@@ -683,7 +711,7 @@ def _barracks(c):
 def _chapel(c):
     PW, PH = 64, 96
     wall_plaster(c, 3, 56, 58, 40, s=29, timber=False)
-    c.VL(3, 56, 40, K('shadow', 2)); c.VL(60, 56, 40, K('shadow', 1))
+    wall_ends(c, 3, 60, 56, 40)
     door(c, 18, 70, 12, 23, 'wood', 'dark', arch=True, s=29); step(c, 16, 92, 16, 'stone')
     for wx in (40, 50):
         c.R(wx, 64, 5, 10, K('plaster', -1)); c.R(wx + 1, 65, 3, 8, K('blue', 1)); c.HL(wx + 1, 65, 3, K('blue', 3))

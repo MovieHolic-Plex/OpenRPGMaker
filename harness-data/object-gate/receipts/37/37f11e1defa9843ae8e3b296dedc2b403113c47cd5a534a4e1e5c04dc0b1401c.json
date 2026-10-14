@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "37f11e1defa9843ae8e3b296dedc2b403113c47cd5a534a4e1e5c04dc0b1401c",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "통신 중계기(넓은 장비 상자 윗면(환기 격자·안테나 받침) + 위를 향한 작은 접시 + 앞 램프 패널)",
+ "label": "sf-station/sf-comms-relay",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "equipment box with top surface and front panel",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main box clearly displays a large horizontal top surface (rows 7-19, 13 rows tall) featuring an upward-facing elliptical satellite dish and vent markings, above a front vertical panel (rows 20-30) with status lights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4358
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "equipment box with dish antenna",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the main equipment box spans rows 7 to 19 (13 rows tall), showing ventilation slots and an upward-facing satellite dish, while rows 20 to 30 depict the vertical south front face with LED indicators.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3627
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "equipment box with top surface containing dish and vents over a front lamp panel",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the equipment box spans rows 8 to 20 (13 rows) showing an upward-facing satellite dish, antenna mount, and ventilation grid, while the front south face spans rows 21 to 30 with status lights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4134
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "equipment box / communication relay",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The equipment box clearly shows a large top surface spanning rows 8 to 20 with mounted antenna, dish, and vent grooves, sitting above a 10-row front face (rows 21-30) equipped with an indicator light panel.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4253
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.245Z",
+ "cells": {
+  "16": [
+   "2e12e83159d001d4",
+   "317c63e5480261ab",
+   "98367bd0b1b0d560",
+   "ca886011f63358d6"
+  ],
+  "24": [
+   "0356ac010a269451",
+   "08b0034edd26ef9e",
+   "09dc2683e422b966",
+   "2067c14495693e4b",
+   "258ea9222727ae37",
+   "27879cefe39dd3a5",
+   "2fd3edc88c77b595",
+   "41089cbe56eccf72",
+   "44640748740a50cf",
+   "4dcfd69b614df8a1",
+   "4ec2657aa1b02f21",
+   "5fd2ffdc1a4bd455",
+   "642a269a1f22f8b5",
+   "6d58f8ad80be6937",
+   "72142f9b332e28cf",
+   "9a93689f4c1d1b1b",
+   "9f91943cda198e96",
+   "a5ae4041e337a1e4",
+   "b3349f81a8951b53",
+   "ca061e127719a5d2",
+   "de557e7cf43cbc80",
+   "e52710e8faf9fbd4",
+   "f1da16d02ba28cfc",
+   "f22dd53bd38c0791"
+  ],
+  "32": [
+   "c42e022a816a4168"
+  ],
+  "48": [
+   "2d630a9b9b22e4c5",
+   "693d3be36dedfa1e",
+   "7390db708c19878f",
+   "ad71b4858717a432",
+   "d8ae9b79b26d7ed4",
+   "fe80059a83e86851"
+  ]
+ }
+}

@@ -169,24 +169,40 @@ def _(c):
     # 흙 둘레(위에서 본 둥근 흙 + 무쇠 울)
     c.ell(16, 42, 10, 4, lambda X, Y, dx, dy, d: ('soot', 1 if d < 0.6 else 2))
     # 줄기
-    c.R(14, 26, 5, 16, 'wood', 2); c.VL(14, 26, 16, 'wood', 3); c.VL(18, 26, 16, 'wood', 1)
-    for (y, x) in ((30, 15), (35, 16), (38, 15)): c.P(x, y, 'canvas', 2)
+    c.R(14, 26, 5, 16, 'wood', 2); c.VL(14, 26, 16, 'wood', 4); c.VL(15, 26, 16, 'wood', 3); c.VL(18, 26, 16, 'wood', 1)
+    for (y, x) in ((29, 16), (30, 16), (34, 17), (35, 17), (38, 15), (39, 15)): c.P(x, y, 'wood', 1)      # 나무껍질 결
+    for (y, x) in ((31, 15), (36, 16)): c.P(x, y, 'wood', 5)
+    c.HL(14, 26, 5, 'wood', 0); c.HL(14, 27, 5, 'wood', 1)                                               # 수관 밑 그늘
     # 무쇠 울(둥근 테 + 살)
     c.ell(16, 41, 9, 3.5, lambda X, Y, dx, dy, d: ('iron', 4 if dx < 0 else 2) if d > 0.7 else None)
     for x in range(8, 26, 3): c.VL(x, 37, 4, 'iron', 3)
     c.ell(16, 37.5, 9, 3, lambda X, Y, dx, dy, d: ('iron', 5 if dx < 0 else 3) if d > 0.75 and dy < 0 else None)
-    # 수관: 덩이 여럿(뒤 → 앞), 왼쪽 위 밝게, 그을린 초록
-    blobs = [(9, 12, 8), (23, 11, 8), (16, 7, 8), (12, 20, 8), (21, 20, 8), (16, 15, 9)]
-    for (bx, by, r) in blobs:
-        def leaf(X, Y, dx, dy, d, bx=bx, by=by):
-            k = rnd(X // 2, Y // 2, 17)
-            t = 3 if (dx + dy < -0.5) else 2 if (dx + dy < 0.4) else 1
-            if k > 0.82 and t < 4: t += 1
-            if k < 0.12: t = max(0, t - 1)
-            if d > 0.86 and dy > 0: t = 0
+    # 수관(화풍 정렬 2026-10-14, 버들항 나무 문법): 잎 덩이 여럿을 뒤 → 앞으로, 덩이마다 자기 둥근 면으로 5단(0~4),
+    # 덩이 안 잔 잎뭉치(3px 결)로 빛 점을 끊고, 앞 덩이 밑 가장자리는 뒤 덩이 위에 그늘(단 0~1)을 드리운다. 윤곽은 먹이 아니라 moss 0.
+    blobs = [(8, 13, 7.5), (24, 12, 7.5), (16, 6, 8.5), (5, 21, 5.5), (27, 21, 5.5), (11, 22, 7.5), (22, 22, 7.5), (16, 15, 8.5)]
+    for n, (bx, by, r) in enumerate(blobs):
+        def leaf(X, Y, dx, dy, d, bx=bx, by=by, n=n):
+            l = dx * 0.7 + dy * 0.8                                       # 왼쪽 위가 빛
+            t = 4 if l < -0.75 else 3 if l < -0.2 else 2 if l < 0.35 else 1
+            k = rnd((X + n) // 3, (Y + (X // 3) % 2) // 2, 17 + n)       # 잎뭉치 결
+            if k > 0.78 and t < 4 and l < 0.5: t += 1
+            elif k < 0.2: t = max(0, t - 1)
+            if d > 0.78 and dy > 0.15: t = 0                               # 덩이 밑 가장자리 그늘
+            elif d > 0.9 and dx > 0.3: t = min(t, 1)
             return ('moss', t)
-        c.ell(bx, by, r, r * 0.9, leaf)
-    c.ell(16, 28, 12, 3, lambda X, Y, dx, dy, d: None)
+        c.ell(bx, by, r, r * 0.88, leaf)
+    # 잎 끝 반짝(빛 쪽 덩이 윗머리) + 수관 틈 깊은 그늘 몇 점
+    for (x, y) in ((11, 3), (12, 2), (5, 9), (19, 1), (21, 7), (8, 17), (14, 10), (26, 7), (3, 17)):
+        if c.get(x, y) and c.get(x, y)[0] == 'moss' and c.get(x, y)[1] >= 2: c.P(x, y, 'moss', 4)
+    # 수관 실루엣 윤곽 = moss 0 (먹 대신 재질 가장 어두운 단)
+    m0 = c.m.copy()
+    from palette import MATS
+    mi = MATS.index('moss')
+    for y in range(0, 31):
+        for x in range(32):
+            if m0[y, x] != mi: continue
+            if any(not (0 <= x + ex < 32 and 0 <= y + ey < 48) or m0[y + ey, x + ex] < 0 for ex, ey in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+                g = c.get(x, y); c.P(x, y, 'moss', 0 if g[1] <= 2 else 1)
 
 
 # ── 화분 1×1 ──

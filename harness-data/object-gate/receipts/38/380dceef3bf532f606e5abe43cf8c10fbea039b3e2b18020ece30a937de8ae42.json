@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "380dceef3bf532f606e5abe43cf8c10fbea039b3e2b18020ece30a937de8ae42",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "곡식 자루(주둥이를 접어 연, 낟알이 보인다)",
+ "label": "steampunk-city/sp-sack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "open grain sack with folded lip showing grains inside",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mouth of the sack is folded open and viewed from above at ~45 degrees, revealing 4 source pixel rows (rows 2-5) of golden grains inside before the front rim and south face (rows 6-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10280
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "open grain sack",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The folded mouth of the sack clearly reveals the top opening filled with grains across rows 2 to 5 (approx. 4 rows tall) viewed from a 3/4 perspective above the south face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6898
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "open grain sack",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the sack is folded open showing a 4-5px tall elliptical bed of grains visible from above (rows 2-6), atop an 8px tall front face (rows 7-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5110
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grain sack with folded-open mouth",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface showing the golden grain inside the folded mouth is clearly visible from above across rows 2–6 (5 rows tall). The south front face extends from row 7 to row 14 (8 rows tall). Drawn in proper 3/4 top-down perspective with no isometric side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 45724
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.534Z",
+ "cells": {
+  "16": [
+   "38c9633c769c151b"
+  ],
+  "24": [
+   "21aa0525dabebc59",
+   "5abdacf0a4bdded5",
+   "7aa966750d7eac60",
+   "8802a752203fcb29",
+   "9386a7a9467b7db3",
+   "9db552ad3aa3e85d"
+  ],
+  "32": [
+   "ab8d59c6b20511e2",
+   "b953ee30e7b68387",
+   "c0843bf9abfd9c8a",
+   "d4449075a6e0fe5d",
+   "d76cf360fa158d59",
+   "fc3e8811f695eecb"
+  ],
+  "48": [
+   "1125b84f754c29d2",
+   "191c3fc0b9f99586",
+   "43b73463d1312bfe",
+   "52b2e212fd3b13c0",
+   "556f18a918500369",
+   "ad30a56c7b623b71"
+  ]
+ }
+}

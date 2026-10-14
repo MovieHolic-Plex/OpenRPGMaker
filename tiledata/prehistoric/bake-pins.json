@@ -686,7 +686,22 @@
 "out/ph-longneck/3.0": 750,
 "out/ph-longneck/4.0": 751,
 "out/ph-longneck/5.0": 752,
-"out/ph-longneck/0.2": 753
+"out/ph-longneck/0.2": 753,
+"out/ph-lane-0000/0.0": 754,
+"out/ph-lane-0001/0.0": 755,
+"out/ph-lane-0010/0.0": 756,
+"out/ph-lane-0011/0.0": 757,
+"out/ph-lane-0100/0.0": 758,
+"out/ph-lane-0101/0.0": 759,
+"out/ph-lane-0110/0.0": 760,
+"out/ph-lane-0111/0.0": 761,
+"out/ph-lane-1000/0.0": 762,
+"out/ph-lane-1001/0.0": 763,
+"out/ph-lane-1010/0.0": 764,
+"out/ph-lane-1011/0.0": 765,
+"out/ph-lane-1100/0.0": 766,
+"out/ph-lane-1101/0.0": 767,
+"out/ph-lane-1110/0.0": 768
 },
 "strips": {
 "out/ph-swamp/0.0": [

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "79b25c4a39d3af78239c3d9f06a11f44230cff82a3e58a3ed23ab7f416a4f223",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "rock cliff face tile (terrain)",
+ "label": "sky-island/si-face-mid",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rock cliff face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting a vertical rock cliff face; as terrain representing a wall surface rather than an isolated standing object, absence of an integrated top surface is expected and correct.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7034
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rock cliff wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 vertical rock cliff/wall face terrain tile, correctly textured for a top-down vertical surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3859
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cliff face tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 rock wall/cliff vertical terrain tile texture; terrain kind exempt from standing object top surface requirements.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4017
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rock cliff / stone wall face tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a vertical rock cliff face; as a terrain surface tile rather than a freestanding object, standard top-down wall face conventions apply.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3484
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.882Z",
+ "cells": {
+  "16": [
+   "92a487001fa1a437"
+  ],
+  "24": [
+   "1bcb01a99b2b340c",
+   "28f28f0b004e7cc5",
+   "687aa07151bf59a4",
+   "bde83ed3c0ce2e1f",
+   "c44f84cc3031ed21",
+   "c818a06ef5bbdab9"
+  ],
+  "32": [
+   "4b0fbaa50055e0f3",
+   "60fdba6f5b769e21",
+   "75fccd22a7fa94eb",
+   "8d161966b30fb40e",
+   "b78c3ef304d04398",
+   "ec4b576f7b130c07"
+  ],
+  "48": [
+   "106edf1056912cb1",
+   "5a5603552eb55e03",
+   "9290fd68972632bf",
+   "a597675c4600f95b",
+   "b3fde2cefa8c40fe",
+   "ee2397b80335e038"
+  ]
+ }
+}

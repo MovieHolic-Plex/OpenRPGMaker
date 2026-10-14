@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6ad2ebb6ef85ecb00855f0bc771b6b3b276147707ec4bbf0392bd650d312075e",
+ "width": 32,
+ "height": 16,
+ "kind": "seat",
+ "name": "prehistoric stone-age log seat",
+ "label": "prehistoric/ph-log-seat",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal bench/log seat",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat surface is clearly visible from above, spanning rows 4 through 8 (5 rows), with rows 9 through 12 forming the south-facing front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4839
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal log seat / bench with feet",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top seating surface spans rows 4 through 8 (5 pixels tall) with clear texture, while the front south face spans rows 9 through 11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3848
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "log bench seat",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top seating surface is clearly visible from above, spanning rows 4 to 8 (5 source pixels tall), with a 3-pixel-tall front face below it on rows 9-11 and feet underneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6196
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "log/bench seat with padded or woven top surface",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat surface is clearly visible from above across rows 4 to 8 (5 source pixels tall), followed by a 3-row south/front face and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2970
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.705Z",
+ "cells": {
+  "16": [
+   "ae4b35e45b3aa845",
+   "e9f056256957e0bf"
+  ],
+  "24": [
+   "1b2d8e2235a1f9ea",
+   "499643d0fb14616c",
+   "4c2c4eaf0e28da76",
+   "701384d50e70913d",
+   "940c2c10eb306583",
+   "b468f46089c22ae1",
+   "c127cba30e3f60b9",
+   "cbf31158690cad16",
+   "d284fc472a08cf28",
+   "de489507d124fdcb",
+   "f4794ca63fef529e",
+   "f6c341e283038264"
+  ],
+  "32": [
+   "58fd034714951747",
+   "a9ee7972cc36d571"
+  ],
+  "48": [
+   "3b5cfbc9eaa22876",
+   "61e397ad2e108d09",
+   "9137722566084793",
+   "93b08612ccd0823b",
+   "b69ede2f5dae110a",
+   "e6d15040e49461af"
+  ]
+ }
+}

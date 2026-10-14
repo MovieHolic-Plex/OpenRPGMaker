@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "987c3c9d4e771284134c3516a0901b583a29365ce03fbf16b3347b79a103ab89",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "운하 갓돌(남쪽 물가)",
+ "label": "steampunk-city/sp-quay-lip",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "canal stone wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting a stone masonry canal wall face/curb; valid terrain surface for RPG map autotiles/walls.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6008
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "canal embankment stone wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical stone masonry wall face for a canal bank; as a terrain wall face tile in standard 3/4 top-down perspective, it correctly depicts the vertical front surface of the embankment.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12112
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone canal wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Masonry canal wall face tile. As a terrain wall surface, it correctly depicts the vertical stone face without a top surface on this tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7368
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone canal wall / coping terrain tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting stone masonry/curbing for a canal bank, not a standing object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4326
+  }
+ ],
+ "decidedAt": "2026-10-14T08:37:24.709Z",
+ "cells": {
+  "16": [
+   "57820c45c0bc2fa9"
+  ],
+  "24": [
+   "2334a3be8eba8ac1",
+   "758bd161a793f1c1",
+   "ad7477c8cf031ccd",
+   "bca7f4a63a59305b",
+   "c5a27a64c48fa2a9",
+   "d87aa773639f931f"
+  ],
+  "32": [
+   "240ef45281d548c0",
+   "2e45bd21f6cb5abf",
+   "39fcb3f56dc81952",
+   "4c5c32ad51dd9ec4",
+   "9e5d3857901c6e5b",
+   "fe8416d1f12e8d11"
+  ],
+  "48": [
+   "1ade243927adda09",
+   "2508b98d4b7b6eb0",
+   "5e80922047570fe2",
+   "80077ff142148e9b",
+   "9d680e5100cd52cc",
+   "b9f386e3974388d1"
+  ]
+ }
+}

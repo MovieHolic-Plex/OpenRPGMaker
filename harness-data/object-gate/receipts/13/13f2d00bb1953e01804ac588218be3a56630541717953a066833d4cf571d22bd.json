@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "13f2d00bb1953e01804ac588218be3a56630541717953a066833d4cf571d22bd",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "captain's high-backed wooden armchair with red leather seat cushion, back toward the north",
+ "label": "pirate-isles/pi-chair-ship",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "armchair seat cushion and frame",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The red leather seat surface is clearly foreshortened and viewed from above across rows 7-10 (4 rows deep), with the backrest rising behind it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5331
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "armchair with red cushion",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The red leather seat cushion has a visible top surface foreshortened from rows 7 to 10 (4 pixel rows deep) before terminating at the front edge highlight on row 11 and the wooden front rail on row 12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5742
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "captain's high-backed armchair",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The red seat cushion top surface is clearly visible from above across rows 7-10 (4 rows tall), with row 11 acting as its front edge and rows 12-14 showing the front apron and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4513
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "captain's armchair with backrest and cushion",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The red seat cushion is drawn foreshortened from above across rows 7 to 11 (5 pixel rows deep) with front edge highlight and lower wooden frame/legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4301
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.590Z",
+ "cells": {
+  "16": [
+   "2896afedc2d50f0d"
+  ],
+  "24": [
+   "0c4b03d56feeffcf",
+   "285386c5cffffd83",
+   "31b79ce36631b9eb",
+   "7d400f9829a628de",
+   "b4f5ebe7c69ba5de",
+   "fcc2285f28890ff5"
+  ],
+  "32": [
+   "1e380b6e9748b076",
+   "316f6de1f707ef3f",
+   "671958d996af7a32",
+   "7c6f563dae51675c",
+   "bdf6f1c4f41e41a4",
+   "fe1e41629e57dbd0"
+  ],
+  "48": [
+   "230144c5c486faff",
+   "4b7124c9cb087a38",
+   "a0e89d88ac519cee",
+   "aa02fee10cbd436c",
+   "ad25e8c501806602",
+   "f57d3221e924a23b"
+  ]
+ }
+}

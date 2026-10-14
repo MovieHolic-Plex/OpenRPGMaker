@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "506dc4959dc9db0364edbb16a8a062694b968e68ea9944ff44eb2c88886878ec",
+ "width": 32,
+ "height": 32,
+ "kind": "round_body",
+ "name": "나무 통 두 개",
+ "label": "steampunk-city/sp-barrels",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "two wooden barrels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both barrels are drawn in pure front elevation: the vertical stave seams run continuously from top to bottom, metal hoops wrap around front staves at the top and bottom, the bases are flat horizontal lines (row 26 and row 27), and there is no elliptical top cap visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11513
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "two wooden barrels",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both barrels show a foreshortened elliptical top cap (approx. 4-5 pixel rows tall, e.g. rows 7-11 on the left barrel and rows 10-14 on the right barrel) displaying the top wooden lid planks seen from above, combined with the vertical front faces of the barrels.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 22709
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two wooden barrels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrels are drawn in pure front elevation. The metal hoops are completely straight horizontal lines across the front (rows 11-12 and 24 on the left barrel), the vertical staves share the exact same column-based vertical shading from top to bottom, and no top circular cap/ellipse is visible from above (the top edge arches upward rather than presenting a foreshortened top surface).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 16132
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "two wooden barrels",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both barrels clearly show their circular top lids foreshortened into ellipses (left barrel rows 6–10, right barrel rows 9–13, both 5 rows tall) above the south-facing front staves and metal hoops.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9713
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.525Z",
+ "cells": {
+  "16": [
+   "05a7f4433f423268",
+   "0617e0757a5f0d2c",
+   "3dd71a02ec6ff688",
+   "9c1e3516a7f58a43"
+  ],
+  "24": [
+   "0c5c6c761bfa808b",
+   "14f7c0c61643032c",
+   "19c3bccb6f8f6ca6",
+   "34bbe3c7f1eedae8",
+   "4494d1729002533d",
+   "47938de90cf98a04",
+   "4959edfdf9859846",
+   "59b1fb9d9e8f47a6",
+   "5af840f637a24067",
+   "649c17e9d8f05670",
+   "6b457a268b51552b",
+   "6c77885da01511e9",
+   "6e65c3013dda8649",
+   "9870e5a2185ce706",
+   "a00172c31b24da0d",
+   "a622a79dc9dfaa27",
+   "ad63dd479585ca1e",
+   "af27a30acb20f48d",
+   "b2f091f2d88ec9d1",
+   "c8cf853e3098fa04",
+   "de2c659c70bba75e",
+   "f0c40fb677a63cc1"
+  ],
+  "32": [
+   "8781101d5c39b4f5"
+  ],
+  "48": [
+   "05122c00a0e15090",
+   "0bf111a1a1ff6245",
+   "873a4d67fcc9edfb",
+   "8fac45a2e067f489",
+   "df73024561e11b85",
+   "f66bc273d57e4267"
+  ]
+ }
+}

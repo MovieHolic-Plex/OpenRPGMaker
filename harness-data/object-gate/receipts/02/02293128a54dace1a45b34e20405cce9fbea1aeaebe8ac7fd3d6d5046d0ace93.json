@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "02293128a54dace1a45b34e20405cce9fbea1aeaebe8ac7fd3d6d5046d0ace93",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "분석 콘솔(윗면 화면 둘 + 시료병 받침 + 앞 램프 패널)",
+ "label": "sf-station/sf-analysis-console",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "analysis console desk",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-9 form the foreshortened top console deck displaying screens and controls, while rows 10-14 form the front south face featuring an indicator lamp strip.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4125
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "analysis console desk",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The console clearly shows its top horizontal surface across rows 1–9 (housing two embedded screens and a control/sample pad) and its front south-facing panel with indicator lights across rows 10–14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5964
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "analysis console desk",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The console top surface occupies rows 1-9 containing two embedded display screens and an input panel, while the front south face spans rows 10-14 featuring an indicator lamp bar.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3817
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "analysis console desk",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The console clearly shows a foreshortened top surface (rows 1-9) housing two displays and a button pad, and a distinct front south face (rows 10-14) containing an indicator lamp strip.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4665
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.254Z",
+ "cells": {
+  "16": [
+   "c366f9009adec74b",
+   "ed4afb98d0c8bd95"
+  ],
+  "24": [
+   "07061cb337bfcec7",
+   "098d80d8d7d4acf9",
+   "20057a90c7362a00",
+   "207c9fd2fb23fe6a",
+   "2c5e05bca51114f3",
+   "3fb6a4202f0cc7ca",
+   "8cd213be80fd5a6d",
+   "bf7c501c284a78af",
+   "e1ef49a892b723f5",
+   "e5e51e2c4b6b9f38",
+   "f0b347f2ecc4c8de",
+   "f3093dddbf5fda05"
+  ],
+  "32": [
+   "3737efd1bf327a62",
+   "686a53ec8ed0897f"
+  ],
+  "48": [
+   "4f814501f5d720e3",
+   "5974ce80bcb49b72",
+   "6b647ddacd59b3c4",
+   "8235be9a9061f672",
+   "b04989270565e5e5",
+   "c9e732f66b9ed85e"
+  ]
+ }
+}
