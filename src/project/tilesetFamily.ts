@@ -25,6 +25,7 @@ const KNOWN_FAMILY_LABELS: Readonly<Record<string, string>> = {
   "oprn-scifi": "SF 정거장·네온 거리",
   "oprn-gothic": "고딕 저택·묘지(호러)",
   "oprn-prehistoric": "선사 원시 세계(도트)",
+  "oprn-snow": "북방 설원(도트)",
   "oprn-monster": "몬스터 수집(포켓몬풍)",
   "oprn-monster-emerald": "몬스터 수집(에메랄드풍)",
 };

@@ -23,7 +23,6 @@
 {"png": "sn-long-table.png", "kind": "low_furniture", "name": "긴 잔칫상(가대 다리, 나무 그릇·빵·뿔잔)", "label": "snow-north/sn-long-table"}
 {"png": "sn-bench.png", "kind": "seat", "name": "긴 의자(통나무 판 + 모피 깔개)", "label": "snow-north/sn-bench"}
 {"png": "sn-stool.png", "kind": "seat", "name": "그루터기 걸상(나이테 윗면)", "label": "snow-north/sn-stool"}
-{"png": "sn-barrel-in.png", "kind": "round_body", "name": "나무 술통(세움, 쇠테)", "label": "snow-north/sn-barrel-in"}
 {"png": "sn-keg-rack.png", "kind": "frame", "name": "술통 받침대(받침 판 위 세운 통 둘 + 꼭지)", "label": "snow-north/sn-keg-rack"}
 {"png": "sn-bar-counter.png", "kind": "low_furniture", "name": "선술집 바(통나무 상판 + 잔·뿔잔·꼭지)", "label": "snow-north/sn-bar-counter"}
 {"png": "sn-shelf.png", "kind": "wall_mounted", "name": "벽 선반(질그릇 단지·자루)", "label": "snow-north/sn-shelf"}

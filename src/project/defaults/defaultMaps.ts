@@ -37,6 +37,8 @@ const BUNDLED_PLAIN_GROUND_TILES: Record<string, number> = {
   sf_station: 60,
   // 선사 시대 원시 세계: 4번 = 원시 풀밭(반복 가능한 아래층 바닥, 굽기 핀 tiledata/prehistoric/bake-pins.json 이 번호를 고정한다).
   prehistoric: 4,
+  // 북방 설원: 1번 = 눈밭(반복 가능한 아래층 바닥, 굽기 핀 tiledata/snow-north/bake-pins.json 이 번호를 고정한다).
+  snow_north: 1,
   scarloxy_chipset_grassland: 0,
   scarloxy_chipset_wilds: 0,
   atlas_biome_interior: 258,
