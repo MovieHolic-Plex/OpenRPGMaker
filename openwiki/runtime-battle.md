@@ -1,5 +1,10 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 필드 적 접촉 전투 진형 (2026-10-14)
+
+접촉 트리거(eventTouch·touch·playerTouch) 이벤트의 `battleProcessing` 은 `playCommandBattle` 의 `contactEventFormation` 으로
+`symbolContactFormation`(선제/기습)을 따른다. 명령에 `formation` 이 있으면 그쪽이 이긴다. 도구·계약·한계는 [필드 적](field-enemy.md).
+
 ## 주인공 연출 5종 · 사용자 재반려 후 수정 (2026-10-05)
 
 직전 `snes-study-redraw-20261005` 판도 사용자에게 반려됐다. 현재 공용 그림은
