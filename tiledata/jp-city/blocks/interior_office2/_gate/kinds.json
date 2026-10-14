@@ -1,0 +1,15 @@
+{
+"ox-projector-screen": "wall_mounted",
+"ox-standing-table": "low_furniture",
+"ox-bar-stool": "seat",
+"ox-bench-desk": "low_furniture",
+"ox-lounge-sofa": "seat",
+"ox-planter-box": "container",
+"ox-shredder": "box",
+"ox-desk-wagon": "box",
+"ox-whiteboard-wall": "wall_mounted",
+"ox-coffee-counter": "low_furniture",
+"ox-water-boiler": "wall_mounted",
+"ox-security-desk": "low_furniture",
+"ox-trash-column": "round_body"
+}

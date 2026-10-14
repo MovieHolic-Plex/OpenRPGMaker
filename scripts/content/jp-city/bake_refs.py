@@ -315,7 +315,8 @@ for _b, _name in (('autotiles_ground', 'at8'), ('autotiles_lines', 'at4'), ('roa
                ('interior_konbini', 'interior'), ('interior_food', 'interior'), ('interior_shop', 'interior'), ('interior_public', 'interior'), ('interior_home2', 'interior'),
                ('interior_school', 'interior'), ('interior_gym', 'interior'), ('interior_station', 'interior'), ('interior_office', 'interior'), ('interior_post', 'interior'),
                ('dungeon_underground', 'interior'), ('dungeon_hospital', 'interior'), ('dungeon_school', 'interior'), ('dungeon_construction', 'interior'), ('dungeon_warehouse', 'interior'),
-               ('interior_amuse', 'interior'), ('interior_karaoke', 'interior'), ('interior_famires', 'interior'), ('interior_hotel', 'interior'), ('interior_mall', 'interior')):
+               ('interior_amuse', 'interior'), ('interior_karaoke', 'interior'), ('interior_famires', 'interior'), ('interior_hotel', 'interior'), ('interior_mall', 'interior'),
+               ('interior_hospital', 'interior'), ('interior_school2', 'interior'), ('interior_office2', 'interior')):
     for _t in PIN_BLOCK.get(_b, ()): REGION[_t] = _name
 assert '?' not in set(REGION.values()), [t for t in REGION if REGION[t] == '?'][:10]
 RUNS = {r: runs_of([t for t in range(COUNT) if REGION[t] == r]) for r in set(REGION.values())}
@@ -2604,7 +2605,7 @@ def doc_in_rules():
 가게·공공 실내(편의점·슈퍼·라멘·이자카야·초밥·킷사텐·빵집·서점·약국·꽃집·채소가게·이발소·목욕탕·코인세탁·파출소·의원)와 집 보강(맨션 2LDK·베란다·목조 아파트·단층 옛집)은 용도 「일본 가게·공공 실내」(`jp-interior-shop-*`). 사람(가족·점원 NPC)은 Actor1 캐릭터를 이벤트로 놓는다.
 
 ## 없는 것
-세로 벽(동·서 벽면)에 거는 창·액자 없음(걸이는 북쪽 벽면만). 간판·메뉴판·가격표·노렌에 글자·상표 없음(색 띠·점). 점원·손님 NPC 와 가게 이벤트(계산·주문)는 없다 — Actor1 캐릭터·이벤트로 단다. 학교·체육관·유치원·역(승강장·전철 차내)·사무 빌딩·우체국·맨션 공용부는 용도 「일본 학교·역·사무실 실내」(`jp-interior-p3-index`). 병원 병동은 아직 없다.
+세로 벽(동·서 벽면)에 거는 창·액자 없음(걸이는 북쪽 벽면만). 간판·메뉴판·가격표·노렌에 글자·상표 없음(색 띠·점). 점원·손님 NPC 와 가게 이벤트(계산·주문)는 없다 — Actor1 캐릭터·이벤트로 단다. 학교·체육관·유치원·역(승강장·전철 차내)·사무 빌딩·우체국·맨션 공용부는 용도 「일본 학교·역·사무실 실내」(`jp-interior-p3-index`). 병원(대기실·접수·진찰실·병실·간호사 대기소·원내 약국)·학교 특별교실동·IT 사옥은 용도 「일본 병원·학교 별관·IT 사옥 실내」(`jp-interior-hospital-index`) — 학교·사무실 보강 기물(sx-·ox-)도 같은 6묶음이다.
 '''
 
 
@@ -2615,7 +2616,8 @@ _IN_ORDER = [o for b in ('interior_entry', 'interior_washitsu', 'interior_ldk', 
                           'interior_konbini', 'interior_food', 'interior_shop', 'interior_public', 'interior_home2',
                           'interior_school', 'interior_gym', 'interior_station', 'interior_office', 'interior_post',
                           'dungeon_underground', 'dungeon_hospital', 'dungeon_school', 'dungeon_construction', 'dungeon_warehouse',
-                          'interior_amuse', 'interior_karaoke', 'interior_famires', 'interior_hotel', 'interior_mall') for o in JPI['objects'] if _IN_BLOCK[f'jp-in-{o}'] == b]
+                          'interior_amuse', 'interior_karaoke', 'interior_famires', 'interior_hotel', 'interior_mall',
+                          'interior_hospital', 'interior_school2', 'interior_office2') for o in JPI['objects'] if _IN_BLOCK[f'jp-in-{o}'] == b]
 assert len(_IN_ORDER) == len(JPI['objects']), (len(_IN_ORDER), len(JPI['objects']))
 _chunks = []; _cur = []; _size = 0
 for _oid in _IN_ORDER:
@@ -2841,11 +2843,58 @@ if _P5:
         add_doc(C_INT5, f"interior-ex-{_m}", f"일본 도시 · 오락·숙박·상업 실내 예제 · {_IN_EX_KO[_m]}", doc_in_ex(_m))
 
 
+
+# 6묶음 — 병원(대기실·접수·진찰실·처치실·병동·간호사 대기소·원내 약국) + 학교·사무실 방 구성(program) 안내. 표: examples/places6*.json (2026-10-14)
+_P6 = [p for _f6 in sorted(os.listdir(_EXD)) if _f6.startswith('places6') and _f6.endswith('.json') for p in json.load(open(os.path.join(_EXD, _f6), encoding='utf-8'))]
+_P6_FILES = [m for p in _P6 for m in (p.get('maps') or [p['file']])]
+for _p in _P6:
+    for _m in (_p.get('maps') or [_p['file']]): _IN_EX_KO[_m] = EIN['examples'][_m]['args']['name']
+if _P6:
+    C_INT6 = new_cat('interior-hospital', f'일본 도시 · 일본 병원·학교 별관·IT 사옥 실내 ({len(_P6)}곳, 맵 {len(_P6_FILES)}장)',
+                     '종합병원(1층 외래 대기실·종합 접수·진찰실·처치실·원내 약국, 2층 병동 복도·간호사 대기소·2인 병실), 학교 특별교실동(취주악부실·인쇄실·트로피장 복도), IT 회사 사옥(1층 경비·방문자 접수 로비 + 자유석 층): 장소 목록(장소 id·가져오기·거리 문 잇기·층 이동), '
+                     '방 구성(program)으로 새로 짓기, 맵마다 도구 인자 + 4층 정답 배열 + 원본 그림. 짓는 규칙·가구 사전은 용도 「일본 집 실내」와 같다.')
+
+    def doc_in_p6_index():
+        rows = [[f"`{p['placeId']}`", p['name'], p['kindKo'], ' → '.join(f"`jp-interior-ex-{m}`" for m in (p.get('maps') or [p['file']])), p['rules'][0]] for p in _P6]
+        rk = sorted({(k, v[0]) for p in _P6 for k, v in (p.get('roomKinds') or {}).items()})
+        return f'''# 일본 도시 — 병원·학교 별관·IT 사옥 실내 장소 {len(_P6)}곳 · 학교·사무실·병원 방 구성
+
+{HEAD}
+
+**가져오기**: `import_region_reference({{id:"<장소 id>"}})` → 층이 여럿이면 계단·엘리베이터 이동으로 이미 이어져 있다. **거리 건물 문과 잇기**: `link_jp_city_interior({{door:{{x,y}}, width, place:"<장소 id>"}})` 한 번 — 1층에만 잇는다.
+
+**새로 짓기(방 구성)**: `build_hand_interior_room({{tileset:"jp_city", layout:{{program:"<예제 맵 또는 건물 id>"}}}})` — 방 사각형은 도구가 짜고, 방마다 같은 종류 예제의 가구 한 벌을 옮겨 심는다.
+| 요청 | program | 방 |
+|---|---|---|
+| 병원 1층(대기실·접수·진찰실·약국) | `hospital-1f` | 외래 대기실 → 진찰실·처치실·약국 |
+| 병동(병실·간호사 대기소) | `hospital-2f` | 병동 복도 → 2인 병실·간호사 대기소 |
+| 학교 교실 층 | `school-2f` | 교실 둘 + 복도 |
+| 학교 1층(신발장 현관·교무실·보건실) | `school-1f` | 昇降口·복도·교무실·보건실·화장실 |
+| 특별교실(음악·도서·이과) | `school-3f` | 음악실·도서실·이과실 + 복도 |
+| 특별교실동(취주악부실·인쇄실) | `school-annex` | 현관 복도 → 취주악부실·인쇄실·계단 홀 |
+| 사무층(자유석·회의실·급탕실·엘리베이터 홀) | `office-floor` | 사무실·회의실·급탕실·엘리베이터 홀 |
+| 사무 빌딩 1층(로비·접수) | `office-1f` | 로비·엘리베이터 홀·계단 |
+| IT 회사 자유석 층(긴 책상 섬·스탠딩 회의·라운지) | `office-free` | 자유석 사무 공간·회의실·급탕실·엘리베이터 홀 |
+| IT 사옥 1층(경비·방문자 접수) | `office-tower-1f` | 사옥 로비 |
+방 종류만 골라 짤 때는 `layout:{{rooms:[{{kind:"hosp-ward"}},{{kind:"hosp-corridor"}}]}}`. 이 묶음의 방 종류: {', '.join(f'`{k}` {ko}' for k, ko in rk)}.
+
+{md_table(['장소 id', '이름', '종류', '맵(예제 문서)', '짜임'], rows)}
+
+## 없는 것
+의사·간호사·환자 NPC(Actor1 캐릭터를 이벤트로 놓는다), 진료·입원 이벤트, 수술실(폐병원 던전의 수술실은 용도 「현대 던전」). 화면·호출 번호판·안내판에 글자·숫자는 없다(색 덩이·점). 십자 표시도 없다.
+'''
+
+    add_doc(C_INT6, 'interior-hospital-index', '일본 도시 · 병원·학교 별관·IT 사옥 실내 · 장소 목록·방 구성·거리 문 잇기·층 이동', doc_in_p6_index())
+    for _m in _P6_FILES:
+        add_doc(C_INT6, f"interior-ex-{_m}", f"일본 도시 · 병원·학교 별관·IT 사옥 실내 예제 · {_IN_EX_KO[_m]}", doc_in_ex(_m))
+else:
+    _P6_FILES = []
+
 def img_in():
-    for f in list(_IN_EX) + [p['file'] for p in _P2] + _P3_FILES + _P4_FILES + _P5_FILES:
+    for f in list(_IN_EX) + [p['file'] for p in _P2] + _P3_FILES + _P4_FILES + _P5_FILES + _P6_FILES:
         e = EIN['examples'][f]; W, H = e['W'], e['H']
         k = max(1, min(4, 820 // (W * T), 820 // (H * T)))
-        save_img(f'interior-{f}', up(render(e['layers'], W, H), k), f'{_IN_EX_KO[f]} {W}×{H}칸(×{k}, 엔진 4층 합성 — 도구가 실제로 지은 맵). 배열·입력 `jp-interior-ex-{f}`.', C_INT if f in _IN_EX else (C_INT3 if f in _P3_FILES else (C_INT4 if f in _P4_FILES else (C_INT5 if f in _P5_FILES else C_INT2))))
+        save_img(f'interior-{f}', up(render(e['layers'], W, H), k), f'{_IN_EX_KO[f]} {W}×{H}칸(×{k}, 엔진 4층 합성 — 도구가 실제로 지은 맵). 배열·입력 `jp-interior-ex-{f}`.', C_INT if f in _IN_EX else (C_INT3 if f in _P3_FILES else (C_INT4 if f in _P4_FILES else (C_INT5 if f in _P5_FILES else (C_INT6 if f in _P6_FILES else C_INT2)))))
     items = [(oid, _in_obj_img(oid)) for oid in _IN_ORDER]
     for i, pg in enumerate(_in_pack(items)):
         save_img(f'interior-dict-{i + 1}', pg, f'일본 집 실내 가구 도감 {i + 1}쪽(×2, 체크 = 투명, 라벨 = 가구 id, 발자국 위로 솟은 칸 포함). 칸 번호는 `jp-interior-dict-*`.', C_INT)

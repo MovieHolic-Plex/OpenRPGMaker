@@ -1,9 +1,9 @@
-# 일본 도시 — 타일 그룹 사전 (341개)
+# 일본 도시 — 타일 그룹 사전 (345개)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **15554칸**, 16px 칸, 시트 1536×2608px, 한 줄 **96칸** — 번호 n 의 칸은 열 n%96, 행 n÷96(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **15876칸**, 16px 칸, 시트 1536×2656px, 한 줄 **96칸** — 번호 n 의 칸은 열 n%96, 행 n÷96(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 그룹은 「같은 뜻의 칸 묶음」이다(`fill_region`·`lay_path` 의 material 은 그룹 **이름**으로 찾는다 — id 를 넣지 않는다). 항목 = `id`·한국어 이름·역할(role)·기본 층(layer: 멤버 칸의 엔진 홈에서 유도 — 전부 위 `upper`, 전부 아래 `lower`, 섞이면 `mixed` 로 칸마다 엔진이 판정)·칸 수(n)·번호 최소~최대(`from`~`to`, 구간 사이에 다른 칸이 끼어 있을 수 있다).
-역할별 개수: building 26, fence 6, prop 95, roof 17, terrain 97, wall 97, water 3.
+역할별 개수: building 26, fence 6, prop 95, roof 17, terrain 99, wall 99, water 3.
 id 머리 `jp:band:` = 건물 층 띠, `jp:deco:` = 부착물, `jp:street:` = 거리 바닥, `jp:prop:` = 소품 칸, 그 밖(`jp:sidewalk-curb` 등) = 오토타일·도로 키트 칸.
 정확한 칸 목록은 정의 JSON(`src/assets/jpCityTileset.json` 의 `tileGroups[].tileIds`)이 정본이고, 건물 띠·부착물의 **칸 배열**은 용도 「건물 조립 도구」의 부품 사전에 전부 있다.
 
@@ -364,6 +364,10 @@ id 머리 `jp:band:` = 건물 층 띠, `jp:deco:` = 부착물, `jp:street:` = �
 {"id":"jp:interior-floor-ml-shop-floor","name":"실내 바닥 · 가게 나무 바닥","role":"terrain","layer":"lower","n":56,"from":14150,"to":14205},
 {"id":"jp:interior-floor-ml-cinema-carpet","name":"실내 바닥 · 영화관 카펫","role":"terrain","layer":"lower","n":64,"from":14206,"to":14269},
 {"id":"jp:interior-wall-ml-wall","name":"실내 벽면 · 몰 흰 패널 벽","role":"wall","layer":"lower","n":8,"from":14270,"to":14277},
-{"id":"jp:interior-wall-ml-cinema-wall","name":"실내 벽면 · 극장 천 벽","role":"wall","layer":"lower","n":10,"from":14278,"to":14287}
+{"id":"jp:interior-wall-ml-cinema-wall","name":"실내 벽면 · 극장 천 벽","role":"wall","layer":"lower","n":10,"from":14278,"to":14287},
+{"id":"jp:interior-floor-hs-floor-sheet","name":"실내 바닥 · 병원 비닐 시트(연한 민트 회색)","role":"terrain","layer":"lower","n":64,"from":15554,"to":15617},
+{"id":"jp:interior-floor-hs-floor-ward","name":"실내 바닥 · 병실 비닐 타일(연베이지 나뭇결)","role":"terrain","layer":"lower","n":64,"from":15618,"to":15681},
+{"id":"jp:interior-wall-hs-wall","name":"실내 벽면 · 병원 벽(흰 칠 + 연녹 허리판 + 나무 손잡이)","role":"wall","layer":"lower","n":8,"from":15682,"to":15689},
+{"id":"jp:interior-wall-hs-wall-room","name":"실내 벽면 · 병실·진찰실 벽(연크림 + 의료 가스 띠)","role":"wall","layer":"lower","n":8,"from":15690,"to":15697}
 ]
 ```

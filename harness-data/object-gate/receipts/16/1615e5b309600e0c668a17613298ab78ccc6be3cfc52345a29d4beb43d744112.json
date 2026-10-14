@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1615e5b309600e0c668a17613298ab78ccc6be3cfc52345a29d4beb43d744112",
+ "width": 16,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "학급 표찰(문 위 돌출)",
+ "label": "jp_city/interior_school2/sx-class-plate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rectangular classroom sign plate hanging from a wall bracket",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sign is wall-mounted via an upper bracket and hangs flat against the vertical wall surface, which is valid for wall-mounted objects in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9704
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "classroom sign plaque",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted classroom sign plaque mounted flat against the wall; as a flat wall-mounted object, no horizontal top surface is required.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14775
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hanging sign board",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted classroom sign hanging above a doorway. Wall-mounted plaques and signs facing south are permitted to be flat elevation without top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9396
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "classroom door sign hanging from a wall/ceiling bracket",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Classroom plaque/sign mounted against the wall; as a wall-mounted flat object, it correctly faces south toward the camera without a foreshortened top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12032
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.784Z",
+ "cells": {
+  "16": [
+   "bab1bf0c191585f4",
+   "e9dde3084d059855"
+  ],
+  "24": [
+   "0bad110c63975070",
+   "11b84e290fdd7151",
+   "30dbfd84f78c5625",
+   "6ace0329510a6419",
+   "7a448d8d57669548",
+   "b2badddea89fb2b3",
+   "c0f72d2bf14e447d",
+   "ef14293e0c7facc9",
+   "f82e200afbbac9c7"
+  ],
+  "32": [
+   "2caed6a4413d1f1f",
+   "30055ef0b036ec0e",
+   "e8772caddfc0bf57"
+  ],
+  "48": [
+   "0a2d8668d9b69346",
+   "7debcc9f7731e80a",
+   "a3344472808ab0d9",
+   "b7f60f75edc0be65",
+   "df51d79ed5b3b9f1",
+   "fa4a48417cd83e10"
+  ]
+ }
+}

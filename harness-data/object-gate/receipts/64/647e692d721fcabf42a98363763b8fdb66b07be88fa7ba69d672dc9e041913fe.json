@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "647e692d721fcabf42a98363763b8fdb66b07be88fa7ba69d672dc9e041913fe",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "흰 천 3폭 칸막이",
+ "label": "jp_city/interior_hospital/hs-folding-screen",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "three-panel folding hospital partition screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The partition screen is drawn in pure front elevation with vertical legs and flat horizontal bars/fabric. Neither the top horizontal beam nor the screen tops or base feet show a horizontal top surface receding in 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5003
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "3-panel fabric partition screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The partition frame and fabric panels are drawn in flat front elevation with no visible top surface on the horizontal rails, post caps, or feet.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5023
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "3-panel cloth privacy screen on metal frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The partition screen is drawn in flat front elevation. The top rail is only 1-2px thick with no visible top surface, and the curtains and frame posts drop straight down without 3/4 view perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4929
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "3-panel medical/cloth partition screen with metal frame and legs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The partition is drawn straight-on in a flat front elevation. Neither the top horizontal beam nor the cloth panels show any horizontal top surface foreshortened from above (top_rows = 0), and the panels are completely flat rather than angled in depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4994
+  }
+ ],
+ "decidedAt": "2026-10-14T06:16:49.339Z",
+ "cells": {
+  "16": [
+   "207368b24c5fbdf6",
+   "c169a6b7fed340fd",
+   "f9ad56ce61897002",
+   "fac68dcada63222e"
+  ],
+  "24": [
+   "07499301e0fb461d",
+   "1aa8d16fb07656b7",
+   "1e4a64b73efeac92",
+   "25b03a6b5e15a2a2",
+   "4904ef708f822448",
+   "4a0bee759dcba8c1",
+   "6b54b81a3f8af802",
+   "7040e7b11c25fb37",
+   "84d2c0e17b4f267e",
+   "897cb1da7b67bb84",
+   "8dbdaa2ecae26d5d",
+   "94b74f2f321151f3",
+   "98190be780612e59",
+   "a80f0132e90b3fe7",
+   "b7930c90f590f884",
+   "c013c4bcede1c7a1",
+   "c80bf8945801de60",
+   "ca51c4ce9f8fa0c6",
+   "caee1e88c6f405bf",
+   "cbb5afbd19e63fce",
+   "d709dd82980f4c27",
+   "d71a437be107225c",
+   "fab09cc6aee4ef8d",
+   "fd33f84cd5f5c36c"
+  ],
+  "32": [
+   "12a9ae24deb4be27"
+  ],
+  "48": [
+   "3884566d88c99e5c",
+   "717f9c1c2ff1372f",
+   "9e59a54f8cd60a00",
+   "c0ade7951747a916",
+   "d7e4091c49cb25d9",
+   "eef2f69fb3b2ca74"
+  ]
+ }
+}

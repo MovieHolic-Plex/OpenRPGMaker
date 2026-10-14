@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0d98d666daa5c59175015e52297938191493bbce9e31c5a61768b45d4dd5107b",
+ "width": 32,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "회의용 대형 화면 스탠드",
+ "label": "jp_city/interior_office2/ox-display-stand",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "conference screen and stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (the large display screen spanning rows 0-23) is drawn in a pure front elevation, showing only its front bezel and screen face with diagonal glare lines and a front-facing webcam. No horizontal top surface of the screen housing is visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6336
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "conference display screen on a stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire monitor cart, including the screen, webcam bar (rows 1-5), intermediate shelf, and bottom base, is drawn completely flat in direct front orthographic view with 0 visible top rows.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5206
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "conference screen stand / mobile AV cart",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire monitor, intermediate shelf, and lower base are drawn in flat front elevation with no visible top surfaces showing 3/4 perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4515
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "large screen / monitor on a conference stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire screen, shelf, and base are drawn in flat front elevation with zero top surface visible (no top depth on the screen, shelves, or base unit).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5356
+  }
+ ],
+ "decidedAt": "2026-10-14T06:16:49.342Z",
+ "cells": {
+  "16": [
+   "1395453b811f717e",
+   "229f34b7a6b9818c",
+   "28207f12a2b99ca3",
+   "4658c991c6245080",
+   "c254ef8798991c65",
+   "ef032f4908cd3340"
+  ],
+  "24": [
+   "097c390b8ee9c84f",
+   "279bad14a1917166",
+   "28bcea215acecba9",
+   "4a3359f4f4e5adb7",
+   "56af32a2db2138ee",
+   "93d7c6baad8ff744",
+   "9dabe5b8087ae592",
+   "b2ceab9a10179257",
+   "bf748383a73fd158",
+   "d2d05f224df2e1ca",
+   "de0edaf72146d512",
+   "f78188c7649a9f65"
+  ],
+  "32": [
+   "2cdc3bccb4253393",
+   "4d3978d129bda6cf",
+   "5a517de8e7ab5ac7",
+   "cbd6ad7078d67374"
+  ],
+  "48": [
+   "6f8a07bd6bbb11ee",
+   "80e1531f4a6056a2",
+   "8c615081c01e1ad3"
+  ]
+ }
+}

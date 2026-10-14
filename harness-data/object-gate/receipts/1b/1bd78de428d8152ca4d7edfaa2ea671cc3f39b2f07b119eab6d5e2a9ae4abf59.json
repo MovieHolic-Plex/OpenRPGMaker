@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1bd78de428d8152ca4d7edfaa2ea671cc3f39b2f07b119eab6d5e2a9ae4abf59",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "병실 협탁(床頭台·작은 TV)",
+ "label": "jp_city/interior_hospital/hs-bedside-cabinet",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hospital bedside cabinet (lower drawer chest with countertop)",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet features a clearly visible horizontal countertop surface spanning rows 11–16 (approx 6 pixel rows deep) upon which the TV base and a small item rest, with an overhanging front edge on row 17 casting a shadow over the drawer front below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6653
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hospital bedside cabinet with TV",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet has a prominent 6-row countertop (rows 11-16) shown from above in 3/4 view, upon which a small TV (with its own visible top) and a paper/item rest, above the drawer front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7899
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hospital bedside cabinet with TV",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet top surface is clearly visible across rows 11-16 (6 rows tall), complete with cast shadow beneath the TV and an item resting on it, above the south front face with drawers (rows 18-30). The TV also shows its top surface (rows 4-6).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8162
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hospital bedside cabinet (nightstand with TV)",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main countertop/top surface of the cabinet is clearly visible from above across rows 11-16 (6 rows tall), with the TV base and an item resting on its horizontal surface, sitting atop the front drawer unit (rows 18-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6457
+  }
+ ],
+ "decidedAt": "2026-10-14T06:16:49.338Z",
+ "cells": {
+  "16": [
+   "1a05d787f550a21c",
+   "2a7049ec464a9076"
+  ],
+  "24": [
+   "1f4f651becd37cfd",
+   "27392dc71b448146",
+   "446b8ae9d432377a",
+   "46c6c546051e3674",
+   "76c3f11ebbae42f2",
+   "96a158f5e3456b27",
+   "a4ef1c29228cf278",
+   "ac11c44b98f81651",
+   "c36be5da00ffe1c5",
+   "d5c0e81b828cbb78",
+   "e218928f78c73fca",
+   "f674fd6f951505be"
+  ],
+  "32": [
+   "56fe4ccd44905765",
+   "7f472c3dd1a75082",
+   "ed0794c5f0e0861c"
+  ],
+  "48": [
+   "00af67dd791e39b7",
+   "385b072db21bcd47",
+   "3ebf5a866b0d17fe",
+   "ce64242d9c08bebd",
+   "d7c6f5d17c935e63",
+   "e06a4fb8f5766513"
+  ]
+ }
+}

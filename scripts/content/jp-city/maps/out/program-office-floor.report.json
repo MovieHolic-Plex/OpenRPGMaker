@@ -1,0 +1,113 @@
+{
+ "program": "office-floor",
+ "size": [
+  28,
+  19
+ ],
+ "summary": "손 도트 실내 'program office-floor' 28×19 (jp-program-office-floor, jp_city) — 배치 후보 1/3(방 5개, 견본 가구 82점 — data.layout.picture 로 배치를 보고, 다른 배치는 layout.variant 를 바꿔 replace:true) — 출입구에서 닿는 칸 175, 닿지 못한 빈 바닥 0, 경고 0",
+ "warnings": [],
+ "layout": {
+  "variant": 0,
+  "variants": 3,
+  "score": 1.27,
+  "notes": [],
+  "picture": [
+   "############################",
+   "#CCCC#BBBBBB#EEEEE##########",
+   "#CCCC#BBBBBB#EEEEE##########",
+   "#CCCC#BBBBBB#EEEEE##########",
+   "#CCCC#BBBBBB#EEEEE##########",
+   "#CCCC#BBBBBB#EEEEE##########",
+   "#CCCC#BBBBBB#EEEEE##########",
+   "##+#####+######+############",
+   "#AAAAAAAAAAAAAAAAAAAAAA#DDD#",
+   "#AAAAAAAAAAAAAAAAAAAAAA+DDD#",
+   "#AAAAAAAAAAAAAAAAAAAAAA+DDD#",
+   "#AAAAAAAAAAAAAAAAAAAAAA+DDD#",
+   "#AAAAAAAAAAAAAAAAAAAAAA#DDD#",
+   "#AAAAAAAAAAAAAAAAAAAAAA#####",
+   "#AAAAAAAAAAAAAAAAAAAAAA#####",
+   "#AAAAAAAAAAAAAAAAAAAAAA#####",
+   "#AAAAAAAAAAAAAAAAAAAAAA#####",
+   "#AAAAAAAAAAAAAAAAAAAAAA#####",
+   "###########+################"
+  ],
+  "rooms": [
+   {
+    "letter": "A",
+    "id": "openoffice",
+    "kind": "openoffice",
+    "x0": 1,
+    "y0": 8,
+    "x1": 22,
+    "y1": 17,
+    "template": "office-floor:openoffice#0",
+    "furniture": {
+     "template": "office-floor:openoffice#0",
+     "placed": 65,
+     "dropped": 0
+    }
+   },
+   {
+    "letter": "B",
+    "id": "meetingroom",
+    "kind": "meetingroom",
+    "x0": 6,
+    "y0": 1,
+    "x1": 11,
+    "y1": 6,
+    "template": "office-floor:meetingroom#1",
+    "furniture": {
+     "template": "office-floor:meetingroom#1",
+     "placed": 7,
+     "dropped": 0
+    }
+   },
+   {
+    "letter": "C",
+    "id": "pantry",
+    "kind": "pantry",
+    "x0": 1,
+    "y0": 1,
+    "x1": 4,
+    "y1": 6,
+    "template": "office-floor:pantry#2",
+    "furniture": {
+     "template": "office-floor:pantry#2",
+     "placed": 8,
+     "dropped": 0
+    }
+   },
+   {
+    "letter": "D",
+    "id": "stairwell",
+    "kind": "stairwell",
+    "x0": 24,
+    "y0": 8,
+    "x1": 26,
+    "y1": 12,
+    "template": "office-floor:stairwell#3",
+    "furniture": {
+     "template": "office-floor:stairwell#3",
+     "placed": 1,
+     "dropped": 0
+    }
+   },
+   {
+    "letter": "E",
+    "id": "elevatorhall",
+    "kind": "elevatorhall",
+    "x0": 13,
+    "y0": 1,
+    "x1": 17,
+    "y1": 6,
+    "template": "office-floor:elevatorhall#4",
+    "furniture": {
+     "template": "office-floor:elevatorhall#4",
+     "placed": 1,
+     "dropped": 0
+    }
+   }
+  ]
+ }
+}

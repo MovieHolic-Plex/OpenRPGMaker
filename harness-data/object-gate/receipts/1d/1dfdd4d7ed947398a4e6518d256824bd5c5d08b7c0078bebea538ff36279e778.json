@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1dfdd4d7ed947398a4e6518d256824bd5c5d08b7c0078bebea538ff36279e778",
+ "width": 48,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "종합 접수대(総合受付)",
+ "label": "jp_city/interior_hospital/hs-front-counter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "reception counter",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The reception desk has a clearly rendered top surface extending 9 source pixel rows (rows 7-15) with items placed on it, meeting a vertical green front face spanning rows 16-30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5035
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "reception counter",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal counter top surface is clearly visible from row 7 through row 15 (9 rows tall) with items resting on it, above a front vertical face from row 16 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3690
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "reception counter",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter surface is clearly visible from rows 7 to 15 (9 pixel rows), showing tabletop items, above a front vertical face spanning rows 16 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4368
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "reception desk/counter",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk surface is clearly visible from above across rows 7-16 (10 pixel rows deep) with objects placed on top, transitioning to a vertical front face spanning rows 17-30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5513
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.779Z",
+ "cells": {
+  "16": [
+   "64b089d1d0d91dd5",
+   "9d22ef180be7ee41",
+   "c2d78dc9c77ed060",
+   "cf8be4e6a5a7002d",
+   "d42f2a97fc65fe3c",
+   "fe9934e3ddc110f2"
+  ],
+  "24": [
+   "0a8210a62ebdc975",
+   "6fb518e21a912063",
+   "751d339de2cbfc13",
+   "79b4d2244a55e65f",
+   "7dcb50c0704274e1",
+   "a47a12b1bb3ed3d4",
+   "c2a5558aed25eea4",
+   "fdd3e36b739c7008"
+  ],
+  "32": [
+   "238a994ab45bd9dc",
+   "2708a5c010b3b8f0",
+   "2ebca716325b6d00",
+   "aecd5daea0153953",
+   "c862233d16f9b06b",
+   "f2976b1cfd28de1b"
+  ],
+  "48": [
+   "301e5fa25e68e6db",
+   "d3d4270d57e377b0"
+  ]
+ }
+}

@@ -19,6 +19,11 @@ import { handInteriorPlanExits } from '@/editor/handInterior/exits';
 import { withComposedRooms } from '@/editor/handInterior/rooms';
 import { layoutAscii, layoutCandidates, LayoutError, type LayoutCandidate, type LayoutRequest } from '@/editor/handInterior/layout';
 import { furnishRooms } from '@/editor/handInterior/furnish';
+import { addMapLocation } from '@/project/mapNamedLocations';
+import { COMPOSED_LAYOUT_TAG } from '@/ai/piAgent/layoutQuality';
+
+/** layout 으로 짠 방의 이름표 — 다시 지을 때 이 이름표만 갈아 끼운다. */
+const HAND_LAYOUT_ROOM_TAG = 'hand-layout-room';
 import { roomPrograms, roomTemplates } from '@/editor/handInterior/templates';
 import { genId } from "@/util/id";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
@@ -207,7 +212,9 @@ function eventTransfers(event: GameEvent): TransferCommand[] {
 function fitDoorsToPlan(draft: Project, mapId: string, events: GameEvent[], shape: HandInteriorShape, notes: string[]): void {
   const occupied = new Set(events.map((e) => `${e.x},${e.y}`));
   for (const event of events) {
-    const outbound = eventTransfers(event).filter((t) => t.mapId !== mapId);
+    // 층 사이 이동(계단·엘리베이터 — 도착 맵도 실내 climate.indoor)은 문이 아니다: 저자가 계단 위에 둔 자리 그대로 둔다.
+    // 2026-10-14 jp_city 실측: 문 맞춤을 모든 역할표 칩셋에 넓히자 집 1층 계단(11,9)이 현관 틈(9,14)으로 옮겨지고, 2층은 «바깥으로 나가는 문인데 틈이 없다»로 거부됐다.
+    const outbound = eventTransfers(event).filter((t) => t.mapId !== mapId && draft.maps[t.mapId]?.climate?.mode !== "indoor");
     if (!outbound.length) continue;
     if (shape.openings.some((o) => o.x === event.x && o.y === event.y)) continue;
     const target = nearestOpening(shape, event);
@@ -641,6 +648,13 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
       events, climate: { mode: "indoor" },
     } as GameMap;
     delete (map as Partial<GameMap>).lowerTileStacks; delete (map as Partial<GameMap>).upperTileStacks; delete (map as Partial<GameMap>).shadowBits; delete (map as Partial<GameMap>).relief;
+    // layout(program·rooms)으로 짠 방은 방마다 제작자 예제 가구 한 벌을 심은 배치다 — 방 이름표(composed-layout)를 달아 배치 품질 권고(빈 바닥 → 줄여라)가
+    // 이 배치를 손으로 다시 짜게 하지 않는다. 2026-10-14 gemini-4-argon 실조수: 「학교 복도와 신발장」을 school-1f 로 잘 지은 뒤 권고를 받고
+    // 35×16 → 22×16 손 평면·손 가구로 다시 지어 견본 배치를 버렸다(복도는 원래 비어 있는 동선이다).
+    if (picked) {
+      map.locations = (map.locations ?? []).filter((l) => !(l.tags ?? []).includes(HAND_LAYOUT_ROOM_TAG));
+      for (const r of picked.c.rooms) addMapLocation(map, { name: r.kind, x: r.x0, y: r.y0, w: r.x1 - r.x0 + 1, h: r.y1 - r.y0 + 1, note: "layout 으로 짠 방(견본 가구 한 벌)", tags: [HAND_LAYOUT_ROOM_TAG, COMPOSED_LAYOUT_TAG] });
+    }
     draft.maps[mapId] = map;
     const trimNote = trimmed.trimmed
       ? `평면 바깥 막힌 여백을 잘라 ${built.width}×${built.height} 로 지었다 — 입력 좌표는 왼쪽 ${trimmed.dx}·위 ${trimmed.dy} 칸만큼 옮겨졌다. 이후 이 맵 좌표는 새 기준을 쓴다.`
@@ -654,7 +668,8 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
     if (shape.plainBox && shape.innerCells >= PLAIN_BOX_MIN_CELLS) warnings.push(`방이 칸막이·알코브 없는 직사각형 하나(ㅁ자, 실내 ${shape.innerCells}칸)다 — 큰 방은 ㄱ·ㄷ자 외곽, 벽에서 들어간 알코브, 두꺼운 칸막이('#' 덩이)로 공간을 나누거나 평면을 줄인다`);
     warnings.push(...fitNotes);
     if (!composed) warnings.push(...floatingZones(input, shape));
-    const copied = copiedExample(draft, tileset, input.plan);
+    // layout.program 은 도구가 예제 구성대로 짠 평면이다 — 예제를 손으로 베꼈는지 보는 경고는 모델이 plan·rooms 를 줄 때만(2026-10-14: 병원 1층 program 이 예제와 96% 같다고 경고해 조수가 다시 짜게 했다).
+    const copied = picked ? undefined : copiedExample(draft, tileset, input.plan);
     if (copied) {
       // 2026-10-14 campus 실조수(argon): 「교실 둘 + 복도」 요청에 교실 둘 + 복도 예제가 그대로 맞았는데 이 경고가 「새로 짠다」만 말해
       // 같은 방을 3~6번 다시 지었다(361초) — 닮음 %를 낮추려는 재시공 루프. 경고의 뜻은 「요청과 안 맞는데 베꼈다」이지 「닮으면 불합격」이 아니다.

@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "837d098110b0a388208db0ba39ca749dfeb4baa0b80234acc46b6af29e5c8217",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "실로폰(목금)",
+ "label": "jp_city/interior_school2/sx-xylophone",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "xylophone bed and soundboard on stand",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the instrument bed is viewed from above across rows 5-18 (14 pixel rows) showing the keys and mallets, with a 5-row front apron below it (rows 19-23) on legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4348
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "xylophone bed with bars and front wooden frame",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top playing surface containing the wooden bars spans rows 4 to 18 (15 rows tall) seen from above, atop a 4-row south-facing front apron (rows 19-22) and vertical stand legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14923
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "xylophone soundboard and keys on stand",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the instrument holding the bars and mallets is clearly visible from rows 5 to 18 (14 pixel rows tall), with the front wooden face shown below it at rows 19-22 above the legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4910
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "xylophone bed and keys",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the xylophone is clearly visible from row 5 to row 18 (approx 14 rows), displaying the flat keys and mallets resting on top, with a 4-pixel front face (rows 19-22) and stand legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4619
+  }
+ ],
+ "decidedAt": "2026-10-14T06:02:44.918Z",
+ "cells": {
+  "16": [
+   "216e7a884f260d3d",
+   "61e0f512799725cc",
+   "921e0f7672a86688",
+   "9338f593e8047e3d"
+  ],
+  "24": [
+   "053c159db2e60c41",
+   "06416e6b74770dc9",
+   "08b533331c87e384",
+   "12f0eb149be15433",
+   "18ec032012c4121b",
+   "20e7032ecbd0293d",
+   "2eebefb07ed8870e",
+   "37b6b3770afa3abe",
+   "6c5057fd09f3a742",
+   "6f4d9e47b72f3b8b",
+   "71d7afff256cba6c",
+   "72ce03cf97041a95",
+   "734736e84dd2f5ac",
+   "8131cc9e1bb7c0eb",
+   "85c65c2b2aec97ee",
+   "8b5ea34822f970a7",
+   "a35ff35637961f7e",
+   "b23f08844120ca0a",
+   "c720b024c1eb25aa",
+   "ccde0778f8b52213",
+   "d566c96c5146fc00",
+   "d9ab82b067720a9f",
+   "de3c401ea20f36ed",
+   "e994e8ea1ba81066"
+  ],
+  "32": [
+   "2a489f6202ecb44a"
+  ],
+  "48": [
+   "06da4d7134ed7f84",
+   "18c9c720c8ff18b2",
+   "8e6471a448e938f1",
+   "b29982d8e966bf8c",
+   "cc7cfcc9f155cde0",
+   "e44f7ed81a035649"
+  ]
+ }
+}

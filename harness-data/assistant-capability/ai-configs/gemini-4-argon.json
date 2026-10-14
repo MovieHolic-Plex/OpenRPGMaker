@@ -2,15 +2,16 @@
   "providerId": "google-antigravity",
   "model": "gemini-4-argon",
   "liteModel": "gemini-4-argon",
-  "reasoningEffort": "high",
+  "reasoningEffort": "medium",
   "ultrabrainProviderId": "google-antigravity",
   "ultrabrainModel": "gemini-4-argon",
   "ultrabrainReasoningEffort": "high",
   "roleModels": {
-    "deep": { "provider": "google-antigravity", "model": "gemini-4-argon", "thinkingLevel": "low" },
+    "deep": { "provider": "google-antigravity", "model": "gemini-4-argon", "thinkingLevel": "medium" },
     "vision": { "provider": "google-antigravity", "model": "gemini-4-argon", "thinkingLevel": "medium" },
-    "writer": { "provider": "google-antigravity", "model": "gemini-4-argon", "thinkingLevel": "medium" }
+    "writer": { "provider": "google-antigravity", "model": "gemini-4-argon", "thinkingLevel": "medium" },
+    "build": { "provider": "google-antigravity", "model": "gemini-4-argon", "thinkingLevel": "medium" }
   },
-  "modelSelectionOverrides": { "ultrabrain": true, "deep": true, "vision": true, "writer": true },
+  "modelSelectionOverrides": { "ultrabrain": true, "deep": true, "vision": true, "writer": true, "build": true },
   "roleModelsPolicyVersion": 1
 }

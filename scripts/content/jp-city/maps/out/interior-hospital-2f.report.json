@@ -1,0 +1,64 @@
+{
+ "map": {
+  "id": "jp-city-hospital-2f",
+  "size": [
+   30,
+   22
+  ]
+ },
+ "start": [
+  23,
+  19
+ ],
+ "summary": "손 도트 실내 '일본 종합병원 2층(병동)' 30×22 (jp-city-hospital-2f, jp_city) — 출입구에서 닿는 칸 281, 닿지 못한 빈 바닥 0, 경고 1 — 평면이 참고 예제 「일본 도시 · 병원·학교 별관·IT 사옥 실내 예제 · 일본 종합병원 2층(병동)」와 100% 같다 — 이미 다시 지은 방이다. 이 방이 요청(방 수·쓰임·크기)을 충족하면 그대로 두고 끝낸다: 닮은 정도를 낮추려고 같은 방을 또 짓지 않는다. 다시 지을 때는 방 수·쓰임·크기를 실제로 바꿀 때만",
+ "tool": {
+  "mapId": "jp-city-hospital-2f",
+  "tilesetId": "jp_city",
+  "width": 30,
+  "height": 22,
+  "reachable": 281,
+  "floorCells": 364,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 23,
+    "y": 19
+   }
+  ],
+  "exitWidth": 1,
+  "exits": [],
+  "links": 4,
+  "warnings": [
+   "평면이 참고 예제 「일본 도시 · 병원·학교 별관·IT 사옥 실내 예제 · 일본 종합병원 2층(병동)」와 100% 같다 — 이미 다시 지은 방이다. 이 방이 요청(방 수·쓰임·크기)을 충족하면 그대로 두고 끝낸다: 닮은 정도를 낮추려고 같은 방을 또 짓지 않는다. 다시 지을 때는 방 수·쓰임·크기를 실제로 바꿀 때만"
+  ]
+ },
+ "warnings": [],
+ "links": [
+  {
+   "x": 26,
+   "y": 17,
+   "to": "jp-city-hospital-1f",
+   "reached": true
+  },
+  {
+   "x": 27,
+   "y": 17,
+   "to": "jp-city-hospital-1f",
+   "reached": true
+  },
+  {
+   "x": 19,
+   "y": 16,
+   "to": "jp-city-hospital-1f",
+   "reached": true
+  },
+  {
+   "x": 20,
+   "y": 16,
+   "to": "jp-city-hospital-1f",
+   "reached": true
+  }
+ ],
+ "reach": 281,
+ "ok": true
+}

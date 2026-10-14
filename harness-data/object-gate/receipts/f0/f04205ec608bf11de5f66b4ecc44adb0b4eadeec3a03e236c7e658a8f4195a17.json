@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f04205ec608bf11de5f66b4ecc44adb0b4eadeec3a03e236c7e658a8f4195a17",
+ "width": 16,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "약품 냉장고(유리문)",
+ "label": "jp_city/interior_hospital/hs-med-fridge",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "medicine refrigerator with glass door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The refrigerator is drawn strictly in pure front elevation. Rows 2-5 depict a vertical front illuminated header/signboard enclosed within the front side frame, with no visible top surface at all (0px). All shelf horizontal lines are also drawn completely flat.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5195
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "medicine refrigerator with glass door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The refrigerator is drawn strictly in front elevation. The white section at rows 2-5 is the front lightbox/header panel above the door, not a top surface. Shelves inside and the compressor vents at the bottom are drawn straight-on with zero visible depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6996
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "medicine refrigerator with glass door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in pure front elevation. Rows 2-5 depict the front-facing illuminated canopy/lightbox of a commercial display cooler (sharing identical vertical column shading with the rest of the front face), with 0 rows representing the top surface of the cabinet. The shelves inside are also drawn as flat 1px horizontal lines with no depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6973
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "glass-door medicine refrigerator",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The refrigerator is drawn in pure front elevation with a 1px top outline. Rows 2-5 depict the front-facing illuminated marquee/canopy lightbox rather than a horizontal top surface. All internal shelves, bottles, and bottom vent slats are rendered completely flat with no 3/4 top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7217
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.783Z",
+ "cells": {
+  "16": [
+   "19bdfac859bc079a",
+   "2269c2f62e07fd22",
+   "4989a0280dc81ccb"
+  ],
+  "24": [
+   "14c1d4c902327e25",
+   "aad1691f4147ca45",
+   "ae73c44ddbd89f6f",
+   "d53c9801889711d1",
+   "d81a5d6bb5936357",
+   "e90ff4586fc5c116"
+  ],
+  "32": [
+   "1164657aa98c9246",
+   "33e2692ba1a6dc0d",
+   "3b5fb701e4c18e83",
+   "510017fc83d9e1fe",
+   "553352d6c7aff90d",
+   "654a26c00f482f6b",
+   "669ef38ee90a16ef",
+   "89b1f179c4cd90b5",
+   "9b3fc36bb3166e5a",
+   "b782e59444ba799e",
+   "be1c6a608e08c94f",
+   "f15b57c9944bd0b9"
+  ],
+  "48": [
+   "4b69fb1049383252",
+   "8f13fa19b6e42291",
+   "d83825425770566e"
+  ]
+ }
+}

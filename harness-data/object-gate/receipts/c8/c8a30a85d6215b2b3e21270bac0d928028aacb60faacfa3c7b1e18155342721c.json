@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c8a30a85d6215b2b3e21270bac0d928028aacb60faacfa3c7b1e18155342721c",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "생체 정보 모니터 스탠드",
+ "label": "jp_city/interior_hospital/hs-vitals-monitor",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "monitor unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The monitor housing at rows 2-20 is drawn as a flat frontal rectangle with only a 1px top outline (row 2) and no foreshortened top surface visible from the 3/4 camera angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13241
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "monitor unit on wheeled stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The monitor box at rows 2-21 is drawn completely flat from the front with only a 1px border outline at row 2 and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6950
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "monitor unit on a rolling stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main monitor housing spans rows 2-21 and has only a 1px dark border at row 2 with no foreshortened top surface visible from above, making it a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5260
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "monitor unit on stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The monitor casing is drawn directly from the front (rows 2-20) with only a 1px outline along the top edge and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3596
+  }
+ ],
+ "decidedAt": "2026-10-14T06:02:44.916Z",
+ "cells": {
+  "16": [
+   "1642bb36ebc67d45",
+   "3a0763c054e0c57f",
+   "928699703617799b"
+  ],
+  "24": [
+   "197e72a49ce3a05a",
+   "27466e4b40c7b09f",
+   "7f5a4fa228fb6226",
+   "be996f17b4a15516",
+   "e780da1ff0e2bf7a",
+   "f50670fe5aabd6c6"
+  ],
+  "32": [
+   "109695009b5a0e7a",
+   "1861a8cfb27aefe5",
+   "1900a681789eec21",
+   "410e8ddb6be3ed2a",
+   "458046e7b126c7c9",
+   "47a5685e8f57a8d6",
+   "4918cd4f983474b7",
+   "4bd7ccf6dfc48962",
+   "59c6c6f558e6e847",
+   "66fd6e548311a019",
+   "aafde8964ac661f2",
+   "bb1592b06233c724"
+  ],
+  "48": [
+   "15e1249a6b5d19ff",
+   "2bdbbe8d6d401c54",
+   "6cbfd3cb11e158e7"
+  ]
+ }
+}

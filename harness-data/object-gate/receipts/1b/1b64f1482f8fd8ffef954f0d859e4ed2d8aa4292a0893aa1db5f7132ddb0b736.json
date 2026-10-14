@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1b64f1482f8fd8ffef954f0d859e4ed2d8aa4292a0893aa1db5f7132ddb0b736",
+ "width": 16,
+ "height": 32,
+ "kind": "round_body",
+ "name": "소화기(받침 위)",
+ "label": "jp_city/interior_school2/sx-extinguisher",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fire extinguisher cylinder",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap/shoulder of the extinguisher cylinder is foreshortened from above across rows 8–13 (around 5–6 rows tall), with the valve stem clearly positioned within the top surface rather than on a flat silhouette.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6641
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fire extinguisher tank",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main cylinder of the fire extinguisher is drawn in pure front elevation: it has a straight flat bottom (row 26), a straight rectangular label (rows 19-21) with zero cylindrical curvature, and a hemispherical dome drawn as a front-facing silhouette rather than a top surface seen foreshortened from above. Although the base plinth shows a 3/4 top surface, the main body itself shows 0 top rows.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8924
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fire extinguisher cylinder",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top dome/cap of the extinguisher cylinder is clearly visible from above across rows 8-13 (approx 5 rows tall) above the south-facing cylinder body (rows 14-26). The stand beneath also shows a visible top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4260
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fire extinguisher cylinder",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top dome/shoulder of the extinguisher cylinder is foreshortened and visible from above across rows 8-13 (approx 5 rows), surrounding the valve assembly, with the vertical cylinder body extending below from row 14 to 26.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4492
+  }
+ ],
+ "decidedAt": "2026-10-14T06:16:49.340Z",
+ "cells": {
+  "16": [
+   "7fee77bb83c1141b",
+   "b1e30da2b8302161"
+  ],
+  "24": [
+   "0a14e174a702cb1d",
+   "1a9505675071d4a7",
+   "3ca6ff622ebccb0d",
+   "6b943c9753b45112",
+   "701a9db204acef49",
+   "8881f57dc4513001",
+   "892c97f8678c838d",
+   "9a2d4cd703c29313",
+   "9ac88b6c846794dc",
+   "ba18ceebf7c4d560",
+   "c54d7decce392038",
+   "cb2c70c16f70c304"
+  ],
+  "32": [
+   "37f6e6b079db9471",
+   "516d68163e3dd814",
+   "953635bab9005fc4"
+  ],
+  "48": [
+   "125013ad45b79976",
+   "461dee91376ed05e",
+   "58d8462e6e9a4ae2",
+   "7d7f32639525e509",
+   "815dc8a89575bbdb",
+   "93b5b96ece8a79ba"
+  ]
+ }
+}

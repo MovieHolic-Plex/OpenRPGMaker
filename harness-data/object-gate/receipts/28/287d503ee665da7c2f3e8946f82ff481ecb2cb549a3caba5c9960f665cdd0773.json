@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "287d503ee665da7c2f3e8946f82ff481ecb2cb549a3caba5c9960f665cdd0773",
+ "width": 48,
+ "height": 32,
+ "kind": "seat",
+ "name": "대기실 연결 의자(3석·남향)",
+ "label": "jp_city/interior_hospital/hs-bench-row-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "connected waiting-room chairs (south-facing)",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The south-facing chairs show their backrests in front view (rows 2–10) and their horizontal seat surfaces viewed from above (rows 10–18, ~8 rows deep) terminating in a front cushion edge (rows 18–20) above the mounting frame.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10219
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "waiting room chairs (3 connected seats)",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chairs face south in 3/4 top-down view. Below the backrests (rows 2-9), each seat cushion displays a prominent horizontal seat surface seen from above spanning rows 10 to 18 (approx. 9 pixel rows) with the front edge/thickness on rows 19-20.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7325
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "waiting room chairs (3 connected seats)",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The south-facing chairs clearly show both the vertical backrests (rows 3-10) and the top of the horizontal seat cushions seen from above (rows 11-18, approx 8 rows deep), with front cushion rims and undercarriage below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6330
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "connected waiting room chairs (3 seats)",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chairs face south in 3/4 perspective, showing the backrests (rows 2–9) and foreshortened horizontal seat cushions seen from above (rows 10–18, ~9 source pixels tall) above the supporting beam and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11275
+  }
+ ],
+ "decidedAt": "2026-10-14T06:02:44.915Z",
+ "cells": {
+  "16": [
+   "0b66ffece4024394",
+   "0b7bc88082e38751",
+   "0d3e6eb3df5c484e",
+   "4ae06b9fac0a5d43",
+   "9b537a92594aac1a",
+   "b7e808ba1042a0ca"
+  ],
+  "24": [
+   "085973a210ade644",
+   "26510c9f9cbd3cc6",
+   "34894c198a77cec3",
+   "5293f1f0a52a2e48",
+   "5a196515839f8f5f",
+   "661113b3707555f7",
+   "86560cb10fa7c479",
+   "fb4bdcdf7ffa5e8c"
+  ],
+  "32": [
+   "15918b4748f415c0",
+   "29bfd7546288634b",
+   "449826ec63e57d5d",
+   "57c5977f63cffdb6",
+   "582ce07ad57ea3bd",
+   "f3796cd594e965d4"
+  ],
+  "48": [
+   "1f34793eeef16375",
+   "ab3324517b2e7b42"
+  ]
+ }
+}

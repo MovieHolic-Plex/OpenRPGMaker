@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a0cce687bd2a66b940c907c38692ac41a1f90ff8db17a4eb1bc849d0384e996a",
+ "width": 48,
+ "height": 32,
+ "kind": "seat",
+ "name": "대기실 연결 의자(3석·남향)",
+ "label": "jp_city/interior_hospital/hs-bench-row-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "connected waiting room chairs (3 seats)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chairs are drawn in a flat 2D front elevation (like a side-scroller sprite). There is no visible top/horizontal seat surface seen from above, nor a visible top edge to the backrests or the connecting beam; the full vertical front profile of the cushions and legs is shown straight-on.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6480
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "connected waiting room chairs (3 seats)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chairs are drawn entirely in a flat front architectural elevation with 0px top-down depth. The horizontal support beam, legs, feet, armrests, and cushions show no horizontal surface seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6008
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "connected waiting room chairs (3 seats)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chairs, armrests, support beam, and legs are drawn in a completely flat front elevation with no visible horizontal seat cushion surface or top surfaces seen from above (0 rows of depth).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6141
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "three connected waiting room seats mounted on a metal beam",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chairs face south in 3/4 perspective: the vertical backrests occupy rows 6–10, and the horizontal seat cushions seen from above occupy rows 11–18 (about 8 px tall), flanked by armrests running front-to-back alongside the seats.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10631
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.779Z",
+ "cells": {
+  "16": [
+   "7dae02929b9a8d24",
+   "9bec1ca17995ed38",
+   "bdc24703418d7c6e",
+   "c131fef3626fbbb1",
+   "dbd5d1d98f4a27ab",
+   "e2748ebf1f55fa57"
+  ],
+  "24": [
+   "094312a876b89a61",
+   "2f83c662c0759a69",
+   "919cdad9679ebbac",
+   "a25739109db9c261",
+   "bb2ca0ad33ac1c25",
+   "c61568824ead003c",
+   "d0fb345825dde9ca",
+   "f20dfe0f4352a869"
+  ],
+  "32": [
+   "840cdbefa1df4345",
+   "b98fdcf8e8c9b3ad",
+   "d5a2ef8ddf8588d0",
+   "da54616ab9c1ff8c",
+   "ead8fc2a29c0858a",
+   "ed3afd927d851864"
+  ],
+  "48": [
+   "621ef78a6ac3afe5",
+   "db430dcf3e756eb3"
+  ]
+ }
+}

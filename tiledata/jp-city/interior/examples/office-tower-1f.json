@@ -1,0 +1,186 @@
+{
+ "name": "IT 회사 사옥 1층 로비",
+ "plan": [
+  "################",
+  "#..........#####",
+  "#..........#####",
+  "#..............#",
+  "#..............#",
+  "#..............#",
+  "#..............#",
+  "#..............#",
+  "#..............#",
+  "#..............#",
+  "#######..#######"
+ ],
+ "floor": "of-lobby-stone",
+ "wall": "of-lobby-wall",
+ "ceiling": "default",
+ "zones": [],
+ "objects": [
+  {
+   "id": "of-window-blind",
+   "x": 1,
+   "y": 1
+  },
+  {
+   "id": "wall-clock",
+   "x": 9,
+   "y": 1
+  },
+  {
+   "id": "of-directory",
+   "x": 12,
+   "y": 3
+  },
+  {
+   "id": "of-stairs-up",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "of-elevator",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "of-elevator",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "of-plant-big",
+   "x": 9,
+   "y": 3
+  },
+  {
+   "id": "ox-trash-column",
+   "x": 11,
+   "y": 9
+  },
+  {
+   "id": "ox-security-desk",
+   "x": 2,
+   "y": 6
+  },
+  {
+   "id": "of-desk-chair-n",
+   "x": 2,
+   "y": 7
+  },
+  {
+   "id": "hs-sanitizer-stand",
+   "x": 5,
+   "y": 6
+  },
+  {
+   "id": "ox-planter-box",
+   "x": 10,
+   "y": 6
+  },
+  {
+   "id": "of-plant-big",
+   "x": 14,
+   "y": 9
+  },
+  {
+   "id": "of-lobby-sofa-n",
+   "x": 12,
+   "y": 7
+  },
+  {
+   "id": "of-lobby-sofa-n",
+   "x": 3,
+   "y": 9
+  },
+  {
+   "id": "sx-umbrella-rack",
+   "x": 5,
+   "y": 9
+  },
+  {
+   "id": "ox-trash-column",
+   "x": 9,
+   "y": 9
+  },
+  {
+   "id": "cv-autodoor",
+   "x": 7,
+   "y": 10
+  }
+ ],
+ "tables": [],
+ "goods": [],
+ "rooms": [
+  {
+   "room": "towerlobby",
+   "x0": 0,
+   "y0": 0,
+   "x1": 15,
+   "y1": 10
+  }
+ ],
+ "start": [
+  7,
+  9
+ ],
+ "exitWidth": 2,
+ "open": [
+  {
+   "x0": 1,
+   "y0": 3,
+   "x1": 14,
+   "y1": 5,
+   "why": "계단·엘리베이터 앞 기다리는 줄"
+  },
+  {
+   "x0": 6,
+   "y0": 4,
+   "x1": 9,
+   "y1": 9,
+   "why": "현관 자동문에서 엘리베이터까지 주 동선"
+  }
+ ],
+ "links": [
+  {
+   "x": 1,
+   "y": 3,
+   "toMapId": "jp-city-office-free",
+   "toX": 20,
+   "toY": 15,
+   "direction": "up"
+  },
+  {
+   "x": 3,
+   "y": 3,
+   "toMapId": "jp-city-office-free",
+   "toX": 15,
+   "toY": 15,
+   "direction": "up"
+  },
+  {
+   "x": 4,
+   "y": 3,
+   "toMapId": "jp-city-office-free",
+   "toX": 16,
+   "toY": 15,
+   "direction": "up"
+  },
+  {
+   "x": 6,
+   "y": 3,
+   "toMapId": "jp-city-office-free",
+   "toX": 15,
+   "toY": 15,
+   "direction": "up"
+  },
+  {
+   "x": 7,
+   "y": 3,
+   "toMapId": "jp-city-office-free",
+   "toX": 16,
+   "toY": 15,
+   "direction": "up"
+  }
+ ]
+}

@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "528ccee04c21f871056027169f8bf53b56efc5835d918e0bdc1284f012a5438c",
+ "width": 48,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "간호사 대기소 카운터",
+ "label": "jp_city/interior_hospital/hs-nurse-counter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "nurse station counter",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter's top surface clearly spans from row 8 to row 17 (10 rows) with items placed on it, and the front vertical face spans from row 18 to row 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3770
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "nurse station counter",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter top surface is prominently visible from rows 8 to 16 (approx 9 rows tall) with items sitting on it, followed by the front vertical face from rows 17 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4583
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "nurse station counter with monitors and supplies",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter's white top surface is clearly visible across rows 9-17 (approx. 9 rows deep), showing items resting on it, followed by the south-facing front panels from row 18 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4181
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "nurse station counter",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter top is clearly visible from row 9 to row 17 (9 rows tall) with items and monitors placed on it, above a front vertical face spanning rows 18 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3257
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.782Z",
+ "cells": {
+  "16": [
+   "4a24e6dc1e06d6a0",
+   "57057200619f0d4d",
+   "5934f608a0425d67",
+   "9214e26f45d50c06",
+   "c40c79c880aa25c2",
+   "f0130e21c504e204"
+  ],
+  "24": [
+   "0a8210a62ebdc975",
+   "4506a72b27945b6a",
+   "4f11a12fb8052c94",
+   "504bd9b148ff35ec",
+   "6fb518e21a912063",
+   "8ddb245b422871d8",
+   "b731f867e7e24cc8",
+   "f546e692170fdfd8"
+  ],
+  "32": [
+   "31601ee2e48f7173",
+   "60c634b6403fb5c6",
+   "630e77ad7fc8b26f",
+   "6f65f2331b255f3f",
+   "7c301c7f61a3adb2",
+   "c738a6dff406d1ed"
+  ],
+  "48": [
+   "ade7b1bb06d31a5c",
+   "f043f296548838cf"
+  ]
+ }
+}

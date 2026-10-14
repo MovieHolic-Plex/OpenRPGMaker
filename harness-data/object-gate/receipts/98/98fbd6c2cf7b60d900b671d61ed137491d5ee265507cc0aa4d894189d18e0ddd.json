@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "98fbd6c2cf7b60d900b671d61ed137491d5ee265507cc0aa4d894189d18e0ddd",
+ "width": 32,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "교원 우편 칸 선반(레터 케이스)",
+ "label": "jp_city/interior_school2/sx-letter-shelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mail slot shelf / letter case unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mail slot unit is drawn purely from a straight-on front elevation. The top shows only a 1px outline above a vertical front header panel (rows 9-12) with no visible top surface (0 rows), and all internal shelves and dividers are 1px flat grid lines with no foreshortened horizontal depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5719
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "mail cubby shelf unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire unit is drawn in pure 2D front elevation. The top of the cabinet has only a 1px dark outline (row 8) with no visible top horizontal surface (rows 9-12 form a vertical front header panel with name tags/labels). Additionally, all interior shelf dividers are 1px flat lines with no top depth visible for the compartments.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7356
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tall mail cubby shelf / letter case",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire unit is drawn in flat front elevation. Rows 9-12 form a vertical front header panel with nameplate slots rather than a top surface receding in depth, and the shelf dividers and cubby floors are drawn as flat 1-pixel horizontal lines with no visible depth or top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5723
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "mail cubby shelf unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shelf unit is drawn in direct front elevation with a 1px top border at row 8 above a vertical front header board (rows 9-12); no top surface of the cabinet is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4336
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.784Z",
+ "cells": {
+  "16": [
+   "1c5b7ba1bdd898d2",
+   "381b1cf87b9abf33",
+   "656d91cf33f742ae",
+   "c6b24346cdb63c66",
+   "da1f2e8f2df55f7d",
+   "e1e56c408f82903e"
+  ],
+  "24": [
+   "008cc6c5edf89869",
+   "0ef4323cfe1a93fa",
+   "4b0dde7ac0f8f20b",
+   "4d81488d993e5541",
+   "6d716aa2f845b76b",
+   "855d9bd7b473ee4f",
+   "9a5651435c74ccd4",
+   "af2b60da63a27197",
+   "b2a8829497d80678",
+   "bde9dd67b1c3c443",
+   "ed572261b65a2873",
+   "f4b16268d86471e6"
+  ],
+  "32": [
+   "5b5a58d6b5a894c9",
+   "be4cfe6c8f252013",
+   "dc6e7281e72c0c4a",
+   "e5094c2e580607ef"
+  ],
+  "48": [
+   "3361565208250d9c",
+   "b9dd279a16f7b798",
+   "d9b144eb7a8f22be"
+  ]
+ }
+}

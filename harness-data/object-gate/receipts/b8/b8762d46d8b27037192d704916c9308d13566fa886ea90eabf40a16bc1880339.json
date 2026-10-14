@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b8762d46d8b27037192d704916c9308d13566fa886ea90eabf40a16bc1880339",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "분리수거통 3개(캔·페트·종이)",
+ "label": "jp_city/interior_school2/sx-recycle-bins",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "recycling bin station with three bins in a frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire recycling station and bins are drawn straight-on in pure front elevation. The top beam of the frame is merely a 2px outline line (rows 4-5), and no top surface of the frame or the bins is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 3727
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "recycling bin station with 3 compartments",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire recycling station and bins are drawn straight-on in pure front elevation with only a 2px horizontal frame line at row 4-5; no top surfaces of the frame or bins are visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4734
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "recycling bin station with 3 bins in a frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The recycling bins and outer frame are depicted entirely in flat front elevation. The top beam of the frame is only a 2px line at rows 4-5, and neither the frame roof nor the tops of the three bins show any visible horizontal top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4957
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "recycling bin station with three bins in a frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire recycling station is drawn straight-on from the front. The top bar of the frame is only 2px thick, and the bins show only vertical front faces with slot openings; no horizontal top surfaces are visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4083
+  }
+ ],
+ "decidedAt": "2026-10-14T06:02:44.917Z",
+ "cells": {
+  "16": [
+   "00cfcb39fd29b735",
+   "3ca52c6cff85c11a",
+   "ba90adaccd303bbc",
+   "c87bf13c671fd53e"
+  ],
+  "24": [
+   "00f6e801b6a5763c",
+   "05d7648b3580d695",
+   "062a4bfdc29fe624",
+   "10fb90a3b917cdbf",
+   "1d2cc36053d9f1d9",
+   "5ac4246fcbbc6e7b",
+   "5e15b51d0e031a88",
+   "736a3ad6be6251f5",
+   "793672c6989aa62a",
+   "7a25cb24fd10a1b2",
+   "7aa04b854d6ee578",
+   "807946870b570ee7",
+   "82a0de4a402f4626",
+   "8654055d2add0bcf",
+   "8ad8f251650db9ae",
+   "94f04f8fe0652e95",
+   "9cb6871568282f7c",
+   "b1ad5104b15fba46",
+   "bb6539e891923f3b",
+   "c4aff23d81f20e46",
+   "e1061b03412928f9",
+   "e760d44226e4a615",
+   "f355df103e92584c",
+   "fd3e6a87aacc9b80"
+  ],
+  "32": [
+   "2d920ffb509c9bcf"
+  ],
+  "48": [
+   "0b4add487168dad6",
+   "12d8b9489d615a41",
+   "30bc5103f1b13ae5",
+   "8601004ad13319b3",
+   "c663a42285858f8b",
+   "e07e59fd94b89c3b"
+  ]
+ }
+}

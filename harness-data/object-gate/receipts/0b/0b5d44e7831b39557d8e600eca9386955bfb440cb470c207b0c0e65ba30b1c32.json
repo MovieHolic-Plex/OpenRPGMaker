@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0b5d44e7831b39557d8e600eca9386955bfb440cb470c207b0c0e65ba30b1c32",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "방문자 접수 태블릿 받침",
+ "label": "jp_city/interior_office2/ox-visitor-kiosk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tablet and mount head",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (the tablet and its mounting head, rows 1-12) is drawn in a pure front elevation with only a 1px top outline and no visible foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7468
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tablet screen housing and stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (the tablet enclosure at the top) is drawn in pure front elevation with only a 1-2px outline/band at the top (rows 1-2) and no visible horizontal top surface, despite the base plinth having foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7422
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tablet and enclosure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (the tablet housing) is drawn in pure front elevation with only a 1-2px border line along the top edge, lacking any visible top surface. Although the base plinth shows a foreshortened top, base plinths do not count for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6990
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tablet display on stand",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tablet housing at the top is drawn from a flat front view with only a 1-2px top outline (rows 1-2) and no visible top surface. The base plinth shows foreshortening, but plinths do not count for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11810
+  }
+ ],
+ "decidedAt": "2026-10-14T06:02:44.921Z",
+ "cells": {
+  "16": [
+   "1d5972da4475987c",
+   "c3415ef5a1586364"
+  ],
+  "24": [
+   "49c0dd349791d9bf",
+   "76f454d55ab5888f",
+   "887a22b9bf8e9ed2",
+   "95ab1f75a3888abf",
+   "9b2cc46b21aa5893",
+   "ac2eea3b06d919ad",
+   "cca939672336f87a",
+   "d4aa4a879b84a485",
+   "dfc4a2a3c51b88ca",
+   "e047ec2bd3e5e105",
+   "f1470e82b371086f",
+   "f3efb9889b760fee"
+  ],
+  "32": [
+   "94561953f5b4074c",
+   "bd29607b2ed75077",
+   "cf015d0d730270da"
+  ],
+  "48": [
+   "007da3b83b3973c5",
+   "4a5591e4a18973bf",
+   "636cfe35fc37bbed",
+   "beb010c2ff2e1c7b",
+   "c6f74c0fbdf148f8",
+   "fa5ad164eb7baa8f"
+  ]
+ }
+}

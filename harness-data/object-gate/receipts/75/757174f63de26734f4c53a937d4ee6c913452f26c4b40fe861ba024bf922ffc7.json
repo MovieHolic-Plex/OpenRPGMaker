@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "757174f63de26734f4c53a937d4ee6c913452f26c4b40fe861ba024bf922ffc7",
+ "width": 16,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "오버 테이블(침대용 탁자)",
+ "label": "jp_city/interior_hospital/hs-overbed-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "overbed table top and wheeled base",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop shows 3 source pixel rows of horizontal top surface (rows 11-13) with a cup/coaster on top, above a 2-pixel front face (rows 14-15). The base also shows a 2-pixel top surface (rows 27-28).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5170
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tabletop of overbed table",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop shows a 3-row foreshortened top surface (rows 11-13) with a cup/object placed on it, above a 2-row front face (rows 14-15), conforming to the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5339
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "overbed table top and base",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop shows a 3-pixel-tall top surface (rows 11-13) with a small object resting on it, followed by a 2-pixel-tall brown front edge (rows 14-15). The base plinth similarly displays a visible top surface (rows 27-28).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4311
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tabletop of the overbed table",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop shows a 3-row foreshortened top surface (rows 11-13) with an object placed on it, and a 2-row front edge/apron (rows 14-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6122
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.778Z",
+ "cells": {
+  "16": [
+   "d62b048bfab5a50c",
+   "da34c7f67b87c812"
+  ],
+  "24": [
+   "4a8aef0cdb17fa2f",
+   "71ff8c47ae1a8cee",
+   "730440449f5f9795",
+   "8165810dedf42ba2",
+   "82dc75fd5115d773",
+   "959898b46192424a",
+   "9fadc3ef95695bee",
+   "ce67c99230d58e63",
+   "f56b839a7ef32b05"
+  ],
+  "32": [
+   "30ded6f194978ef8",
+   "47811a376bd1e418",
+   "8ecc6b511a46b899"
+  ],
+  "48": [
+   "496d27f1cae718d0",
+   "50b13a59cb1a266f",
+   "609fc448129657fb",
+   "8139b3215bbeff97",
+   "b666cc5cbaf67d8c",
+   "c8c8ebe7897d1a5e"
+  ]
+ }
+}

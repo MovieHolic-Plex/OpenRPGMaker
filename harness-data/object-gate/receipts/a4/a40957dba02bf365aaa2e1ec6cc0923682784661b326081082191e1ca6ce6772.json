@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a40957dba02bf365aaa2e1ec6cc0923682784661b326081082191e1ca6ce6772",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "윤전 인쇄기(인쇄실)",
+ "label": "jp_city/interior_school2/sx-riso-printer",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "office printer / photocopier unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire photocopier is drawn in pure front elevation: the lower cabinet (rows 24-30), mid section (rows 15-22), and top control panel/scanner section (rows 7-13) all face the camera directly with zero top horizontal surface shown above row 6.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5026
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "photocopier / printer console and cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The printer is drawn strictly in front elevation. The top edge at row 6 is a single-pixel outline immediately followed by vertical front features (screen panel, buttons, and cabinet doors) with 0 pixel rows of foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5486
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "office printer / copier",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The copier/printer is rendered in pure front elevation with control panel, trays, and cabinet doors facing straight at the camera. There is only a 1px outline along row 6 with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3903
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "photocopier / printing machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire multifunction copier is drawn in pure front elevation: the top edge at row 6 is a flat 1px outline with no visible top surface. The control panel with screen and start/stop buttons, paper output cavity, and lower cassette drawers are all rendered straight-on from the front.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10205
+  }
+ ],
+ "decidedAt": "2026-10-14T06:16:49.341Z",
+ "cells": {
+  "16": [
+   "2ad2f159484e3b99",
+   "4fc7ff1660756ee9",
+   "6147f4ecd6ae9e71",
+   "c05c628130fdf017"
+  ],
+  "24": [
+   "037d95e94bb29f04",
+   "0ffe48da40610760",
+   "10a6b5d5229acae5",
+   "14c51678fb07c770",
+   "32d7b11fc693de65",
+   "452729b7cc6ea7c2",
+   "5104a7d016473298",
+   "5956bef218f3f6ba",
+   "5b2d0531dc9c9315",
+   "6bf1023890e09e58",
+   "815ed0ba2f8a95f1",
+   "869d47b8f4634ab2",
+   "93c29111f7b01862",
+   "971ece70e9198ede",
+   "9da22d41b9824fcc",
+   "a404afc350b8f646",
+   "a5ddec88b63bbe3e",
+   "b2a027cf2ed5da25",
+   "b8864cc0266d0840",
+   "c55ac2d136a9d996",
+   "c6574d787b91cd7f",
+   "d02047e1c801bc53",
+   "e197d41cc723974c",
+   "e5e987e2b2d28977"
+  ],
+  "32": [
+   "65cf11bf99f5e853"
+  ],
+  "48": [
+   "32cd1947455e41d6",
+   "6050604e2c26f017",
+   "8976b756bc54d7af",
+   "8f56045934acff9e",
+   "cdba2892d9b35b33",
+   "e0ee887da19810de"
+  ]
+ }
+}

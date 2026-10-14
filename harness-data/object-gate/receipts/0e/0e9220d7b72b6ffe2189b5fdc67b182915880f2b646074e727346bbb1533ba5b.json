@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0e9220d7b72b6ffe2189b5fdc67b182915880f2b646074e727346bbb1533ba5b",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "링거 걸이(점적 스탠드)",
+ "label": "jp_city/interior_hospital/hs-iv-stand",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "IV stand pole and bag",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, hooks, and hanging IV bag are drawn entirely in flat front elevation with no visible top surface at the pole's top end. Although the wheeled base legs spread in perspective, the main body shows 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6576
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "IV drip stand (pole and hanging IV bag)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole terminates at row 2 with no visible top cut face or elliptical cap, and the IV fluid bag (rows 4–12) is rendered as a flat frontal rectangle without any top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6744
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "IV drip stand pole and bag",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, hooks, and hanging IV bag are drawn in a flat side/front elevation with no top surface visible (top_rows: 0). While the caster legs spread in perspective, the main body itself lacks any top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4910
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "IV drip pole with hanging fluid bag",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The IV bag and pole are drawn in pure front elevation with no visible top surface (top of the pole is capped by a single 1px row, and the bag has no top depth). Although the caster feet at the bottom are arranged in an ellipse, the main body itself lacks any 3/4 view top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6713
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.778Z",
+ "cells": {
+  "16": [
+   "281e190a79236132",
+   "4879e90b4dd9e63c",
+   "c506738cba6c98c1"
+  ],
+  "24": [
+   "195ea2bc6e0c509b",
+   "1be3fabb7d9deb89",
+   "31f8418106d55bf8",
+   "53e6ec0578f3466f",
+   "7a68e1a7193d35bf",
+   "9d86dbb8a2c9b2c9"
+  ],
+  "32": [
+   "13652866c2a2cd52",
+   "1e5fb5a60ab744c0",
+   "5d592fd1d03069d8",
+   "a7e338374ff8959a",
+   "b71443d906559534",
+   "c5f66396dc08c65c",
+   "d432c9c53a537d95",
+   "dbb1c29ac8e7fa89",
+   "dd1760a4f323a9b1",
+   "def5d30ba8bbcfa2",
+   "e279b0339f581c5e",
+   "feede495f730e015"
+  ],
+  "48": [
+   "923254d2c25049c7",
+   "97e2b443b468820e",
+   "a8f74d35f3a8d0ab"
+  ]
+ }
+}

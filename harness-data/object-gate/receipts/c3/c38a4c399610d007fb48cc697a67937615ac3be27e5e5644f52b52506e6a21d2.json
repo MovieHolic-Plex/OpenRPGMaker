@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c38a4c399610d007fb48cc697a67937615ac3be27e5e5644f52b52506e6a21d2",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "스탠딩 높은 탁자",
+ "label": "jp_city/interior_office2/ox-standing-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "standing desk / high table with items on the surface",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from above across rows 2–11 (~10 source pixel rows), displaying objects resting on it (laptop/terminal, papers/books, mug) with a shaded front bevel and apron at rows 12–13 above the vertical legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12134
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "standing desk / tall table with tabletop, lower shelf, and two legs on base feet",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is viewed from above across rows 2–11 (~10 rows tall), displaying items placed upon it (documents, device, mug/control). Below it, the front edge lip (row 12), legs, lower shelf (rows 23–24), and base feet tops (rows 28–29) are correctly rendered in standard top-down 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8636
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "standing desk / drafting table",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire standing table (feet, legs, crossbar, and main panel/tabletop) is drawn in a flat 2D front elevation suitable for a side-scroller rather than a 3/4 top-down perspective. No foreshortened top surface is visible on the horizontal planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12371
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "standing desk / tall work table",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from above across rows 2-11 (10 source pixels tall) with various items (papers/notebooks, terminal/device, mug) resting on top of it, terminating in a front rim and skirt at rows 12-13 above the support legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9785
+  }
+ ],
+ "decidedAt": "2026-10-14T06:02:44.919Z",
+ "cells": {
+  "16": [
+   "187de0e116a897fe",
+   "2d9b0e06af226ac5",
+   "8b6963553aa33a1e",
+   "a4fa2e8cb06e03dd"
+  ],
+  "24": [
+   "061f12396381e90e",
+   "0628374c63e6817b",
+   "06406c278711e27e",
+   "10f2900c2d508e34",
+   "1df0dda243fada96",
+   "1f2c630f6972c4a1",
+   "347c7146cc0f9010",
+   "38a9a8f70f2313e8",
+   "42844c12ef8e6834",
+   "42f5d9c65d0ef856",
+   "44727ccda5a38829",
+   "4ee70d768919279a",
+   "5198a55b086076ee",
+   "55c7f474e4a63f84",
+   "6ed36d445606562e",
+   "962a81bf15eacc9b",
+   "9fafc409008da152",
+   "abf3bcbbe1927ba6",
+   "c7bb074139e30bb3",
+   "caae7510d38676d8",
+   "d23830efd49da7e5",
+   "fa67af4523ee867c",
+   "fb5ea29e36d2ab94",
+   "fd143c19b691d042"
+  ],
+  "32": [
+   "9615f76520b00e7a"
+  ],
+  "48": [
+   "03759f1c265a5de1",
+   "04e5729c43a1e579",
+   "c1ad71ee197241fb",
+   "ca4c7b85cc957ed9",
+   "f0a9e6e8df345e13",
+   "fc9656e2e68f1f89"
+  ]
+ }
+}

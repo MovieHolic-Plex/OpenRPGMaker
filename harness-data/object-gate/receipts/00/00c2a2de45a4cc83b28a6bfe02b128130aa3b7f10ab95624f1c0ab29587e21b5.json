@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "00c2a2de45a4cc83b28a6bfe02b128130aa3b7f10ab95624f1c0ab29587e21b5",
+ "width": 16,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "교실 방송 스피커",
+ "label": "jp_city/interior_school2/sx-pa-speaker",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "classroom wall speaker box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted classroom speaker drawn flat on the wall plane with speaker grille and wooden casing; valid for wall-mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4967
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall-mounted classroom broadcast speaker box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted speaker box shown flat against the wall with wooden casing and central fabric grille; permitted flat elevation for wall_mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7004
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "speaker enclosure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Classroom speaker box mounted flat against a south-facing wall with front-facing grille and drop shadow below; permitted to be flat per wall_mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11325
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden wall-mounted classroom speaker box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Classroom broadcast speaker mounted flat against a wall; as a wall-mounted flat fixture, showing a front elevation with speaker grille and upper panel is appropriate for 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6839
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.784Z",
+ "cells": {
+  "16": [
+   "866cbed1f1213ebd",
+   "93b33dd2e2e0bf88"
+  ],
+  "24": [
+   "0b3de547adead014",
+   "4574dd3940eac9fe",
+   "5cff59a29ad380f6",
+   "6a04faaaa22c5e55",
+   "8379dc47f8b4467e",
+   "9f0fb5df64080a31",
+   "b61f236ee4d99134",
+   "c2d72589cbc46ca0",
+   "eaa49ee4fa88ca1a"
+  ],
+  "32": [
+   "028063fbc01e6c0f",
+   "bdf517be3c7c7430",
+   "f7718bb92cf6acd0"
+  ],
+  "48": [
+   "0a1e16481bff581a",
+   "1e9d60b87907c269",
+   "90a54ed125049dcb",
+   "954d7958c40dbe23",
+   "a0e23054035b1ef7",
+   "e9ffd042bd05c505"
+  ]
+ }
+}

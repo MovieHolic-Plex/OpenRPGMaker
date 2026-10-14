@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2db9e7bf341263cf54333dafff17312dce821baf787d4d5dc1d595b756c6ea9f",
+ "width": 48,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "벽 붙박이 화이트보드",
+ "label": "jp_city/interior_office2/ox-whiteboard-wall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall-mounted whiteboard with marker tray",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a flat wall-mounted whiteboard with notes, diagrams, and a lower marker tray; wall-mounted objects viewed flat against a north wall are valid in this perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5561
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "whiteboard mounted on wall with marker tray",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted whiteboard drawn flat against the north wall, which is standard perspective for wall fixtures in 3/4 view. It includes a marker tray projecting at the bottom.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5807
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall-mounted whiteboard with notes, charts, and marker tray",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The whiteboard is wall-mounted and appropriately depicted flat on the wall plane with marker tray below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11305
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall-mounted whiteboard with marker tray",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Object is classified as wall_mounted, which is appropriately drawn flat against a north wall. The bottom marker ledge additionally depicts a foreshortened top surface (rows 26-28) holding markers and an eraser.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6827
+  }
+ ],
+ "decidedAt": "2026-10-14T06:02:44.920Z",
+ "cells": {
+  "16": [
+   "0cc20bc4249352c8",
+   "0f601ac0efc1c058",
+   "116cec9b147538e0",
+   "16239968b9009d2e",
+   "32940bb6e4ad2d4c",
+   "fa86f47d254db7e2"
+  ],
+  "24": [
+   "2b940ffce50f09af",
+   "3b1426629a198f06",
+   "55c5439c76e6f8df",
+   "571ad264b926bcfa",
+   "5d9bdaa7601dde84",
+   "792d24efb88ecb47",
+   "87dde3625bfbaabc",
+   "afd7ac2a6c422aa3"
+  ],
+  "32": [
+   "09165e7e5829ef50",
+   "18ea27dae277fa4a",
+   "26b898bddb6e560c",
+   "7809c9f77e579d3c",
+   "7d17318a9500ffa3",
+   "cb0c837425be00f9"
+  ],
+  "48": [
+   "71b9feded45c7c40",
+   "7cb9f05484f329ce"
+  ]
+ }
+}

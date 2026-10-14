@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5baa58320f3ee4eaf4e5e2007006d433a54cb5be89a697901b1a45c0dfcfe84a",
+ "width": 32,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "트로피 유리 진열장",
+ "label": "jp_city/interior_school2/sx-trophy-case",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "trophy display cabinet",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet has a clearly visible top surface across rows 6-11 (approx 6 px tall) where a box and trophy base rest, rendered in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3810
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "trophy display cabinet",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cabinet is clearly rendered from rows 6 to 12 (7 rows deep) with items resting on it, leading down into the glass-fronted cabinet face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4319
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "trophy display cabinet",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet has a clearly visible top surface spanning rows 6 to 11 (6 pixel rows) where items rest, leading into the front vertical face below row 12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2848
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "trophy display cabinet",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cabinet is clearly visible across rows 6 to 11 (6 pixel rows deep) with items (a box and trophy) placed on top before the front glass display section begins at row 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3503
+  }
+ ],
+ "decidedAt": "2026-10-14T06:02:44.917Z",
+ "cells": {
+  "16": [
+   "0d818c17468cbeb0",
+   "16c34e91b809496c",
+   "45990119c017c92a",
+   "49e6c78d639d9719",
+   "7f3403fe2148b58a",
+   "adc8aaaa819bd708"
+  ],
+  "24": [
+   "172394ba8fdbc3fb",
+   "22f59e1d2ff20382",
+   "3d76304301b115cc",
+   "4c7d1645cab73859",
+   "513a6995affce88a",
+   "5d244f55b0e79824",
+   "73ac9d274e5b9422",
+   "bddb2973c2b881da",
+   "de97fd78142d0ae3",
+   "e0428c26f9cbc4b7",
+   "ee9d1bc115893d95",
+   "ef4c3cd3cd04ad18"
+  ],
+  "32": [
+   "31e264745b07db63",
+   "693b16a4f4e7e749",
+   "a814344db6b5ae60",
+   "abdc476b8e2375cf"
+  ],
+  "48": [
+   "0972a7e90d887cb1",
+   "7a73c057c56777b6",
+   "a034e35909a4a6f5"
+  ]
+ }
+}

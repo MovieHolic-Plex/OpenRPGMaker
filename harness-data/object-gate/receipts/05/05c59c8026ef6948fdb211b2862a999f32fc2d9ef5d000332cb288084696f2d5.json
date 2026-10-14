@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "05c59c8026ef6948fdb211b2862a999f32fc2d9ef5d000332cb288084696f2d5",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "이송용 침대(스트레처)",
+ "label": "jp_city/interior_hospital/hs-stretcher",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stretcher mattress and frame",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal mattress surface is clearly foreshortened and visible from above across rows 5-15 (11 pixels tall), showing the pillow and sheet, while rows 16-20 show the front south-facing side rail.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3264
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hospital stretcher bed",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal mattress surface with sheet and pillow is visible from rows 6 to 15 (~10 rows tall), with the front side of the bed frame visible below it on rows 16 to 20.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2918
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hospital stretcher / bed",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mattress top surface is clearly visible from row 6 to row 15 (10 pixel rows tall) showing the sheet and blanket/pillow from above. The south front edge/rail is shown from row 16 to 21 with legs and wheels extending below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5940
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hospital stretcher mattress and frame",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal mattress surface is clearly foreshortened and visible from row 6 to 16 (11 rows), showing bedding details, followed by a south-facing front mattress edge from row 17 to 21 and the undercarriage frame below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3037
+  }
+ ],
+ "decidedAt": "2026-10-14T06:02:44.916Z",
+ "cells": {
+  "16": [
+   "4cb87acf65b5e83a",
+   "4f5e099783a8747b",
+   "a67400483613cef9",
+   "f7be29658237f909"
+  ],
+  "24": [
+   "04836d16fb4b31c2",
+   "04e0b03dabbd5111",
+   "0815ba49c640ffaf",
+   "083b25d8d3fbc3de",
+   "117ed84e0c9da413",
+   "267723c324340d46",
+   "6211435a9c63dd25",
+   "66118c155c68c6f4",
+   "6be481b0ee03c8e0",
+   "6cecef7564b02f7b",
+   "845d634ddd9dcdb6",
+   "96bb890610660be3",
+   "9b2669a893c4d552",
+   "9dc7cf1d2f131f26",
+   "bc77baaa47e644c8",
+   "c510c51d37480695",
+   "d920894455f0d87a",
+   "e3122c6a104e9a05",
+   "e61b6b2e92bca6d5",
+   "e8b098283f9c696d",
+   "ea9446f1b073756f",
+   "ebba1355b7724cd9",
+   "ef3987643a64a1a0",
+   "f322ebeed8c40b9e"
+  ],
+  "32": [
+   "948d5a11b7861ef9"
+  ],
+  "48": [
+   "1f46ab156778cff4",
+   "a26014142713f372",
+   "a8bad24916e1e9e8",
+   "b85f6c400ffb438f",
+   "c67cceccf5877385",
+   "de149a8fb99d2d3d"
+  ]
+ }
+}

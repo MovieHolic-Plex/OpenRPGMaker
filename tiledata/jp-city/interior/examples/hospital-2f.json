@@ -1,0 +1,582 @@
+{
+ "name": "일본 종합병원 2층(병동)",
+ "plan": [
+  "##############################",
+  "#........#........#..........#",
+  "#........#........#..........#",
+  "#........#........#..........#",
+  "#........#........#..........#",
+  "#........#........#..........#",
+  "#........#........#..........#",
+  "#........#........#..........#",
+  "####.########.#####..........#",
+  "#............................#",
+  "#............................#",
+  "#............................#",
+  "#............................#",
+  "####.########.#########..#####",
+  "#........#........#..........#",
+  "#........#........#..........#",
+  "#........#........#..........#",
+  "#........#........#..........#",
+  "#........#........#..........#",
+  "#........#........#..........#",
+  "#........#........#..........#",
+  "##############################"
+ ],
+ "floor": "hs-floor-sheet",
+ "wall": "hs-wall",
+ "ceiling": "default",
+ "zones": [
+  {
+   "x0": 0,
+   "y0": 0,
+   "x1": 9,
+   "y1": 8,
+   "floor": "hs-floor-ward",
+   "wall": "hs-wall-room"
+  },
+  {
+   "x0": 9,
+   "y0": 0,
+   "x1": 18,
+   "y1": 8,
+   "floor": "hs-floor-ward",
+   "wall": "hs-wall-room"
+  },
+  {
+   "x0": 0,
+   "y0": 13,
+   "x1": 9,
+   "y1": 21,
+   "floor": "hs-floor-ward",
+   "wall": "hs-wall-room"
+  },
+  {
+   "x0": 9,
+   "y0": 13,
+   "x1": 18,
+   "y1": 21,
+   "floor": "hs-floor-ward",
+   "wall": "hs-wall-room"
+  }
+ ],
+ "objects": [
+  {
+   "id": "hs-bed-headwall",
+   "x": 3,
+   "y": 1
+  },
+  {
+   "id": "hs-bed-headwall",
+   "x": 6,
+   "y": 1
+  },
+  {
+   "id": "hs-patient-locker",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "hs-bedside-cabinet",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "hs-ward-bed",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "hs-ward-bed",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "hs-bedside-cabinet",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "hs-patient-locker",
+   "x": 8,
+   "y": 3
+  },
+  {
+   "id": "hs-overbed-table",
+   "x": 3,
+   "y": 5
+  },
+  {
+   "id": "hs-overbed-table",
+   "x": 6,
+   "y": 5
+  },
+  {
+   "id": "gy-pipe-chair",
+   "x": 7,
+   "y": 5
+  },
+  {
+   "id": "hs-iv-stand",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "pb-curtain",
+   "x": 5,
+   "y": 3
+  },
+  {
+   "id": "hs-bed-headwall",
+   "x": 12,
+   "y": 1
+  },
+  {
+   "id": "hs-bed-headwall",
+   "x": 15,
+   "y": 1
+  },
+  {
+   "id": "hs-patient-locker",
+   "x": 10,
+   "y": 3
+  },
+  {
+   "id": "hs-bedside-cabinet",
+   "x": 11,
+   "y": 3
+  },
+  {
+   "id": "hs-ward-bed",
+   "x": 12,
+   "y": 3
+  },
+  {
+   "id": "hs-ward-bed",
+   "x": 15,
+   "y": 3
+  },
+  {
+   "id": "hs-bedside-cabinet",
+   "x": 16,
+   "y": 3
+  },
+  {
+   "id": "hs-patient-locker",
+   "x": 17,
+   "y": 3
+  },
+  {
+   "id": "hs-overbed-table",
+   "x": 12,
+   "y": 5
+  },
+  {
+   "id": "hs-overbed-table",
+   "x": 15,
+   "y": 5
+  },
+  {
+   "id": "gy-pipe-chair",
+   "x": 16,
+   "y": 5
+  },
+  {
+   "id": "hs-iv-stand",
+   "x": 13,
+   "y": 3
+  },
+  {
+   "id": "pb-curtain",
+   "x": 14,
+   "y": 3
+  },
+  {
+   "id": "hs-bed-headwall",
+   "x": 3,
+   "y": 14
+  },
+  {
+   "id": "hs-bed-headwall",
+   "x": 6,
+   "y": 14
+  },
+  {
+   "id": "hs-patient-locker",
+   "x": 1,
+   "y": 16
+  },
+  {
+   "id": "hs-bedside-cabinet",
+   "x": 2,
+   "y": 16
+  },
+  {
+   "id": "hs-ward-bed",
+   "x": 3,
+   "y": 16
+  },
+  {
+   "id": "hs-ward-bed",
+   "x": 6,
+   "y": 16
+  },
+  {
+   "id": "hs-bedside-cabinet",
+   "x": 7,
+   "y": 16
+  },
+  {
+   "id": "hs-patient-locker",
+   "x": 8,
+   "y": 16
+  },
+  {
+   "id": "hs-overbed-table",
+   "x": 3,
+   "y": 18
+  },
+  {
+   "id": "hs-overbed-table",
+   "x": 6,
+   "y": 18
+  },
+  {
+   "id": "gy-pipe-chair",
+   "x": 7,
+   "y": 18
+  },
+  {
+   "id": "hs-iv-stand",
+   "x": 5,
+   "y": 16
+  },
+  {
+   "id": "hs-bed-headwall",
+   "x": 12,
+   "y": 14
+  },
+  {
+   "id": "hs-bed-headwall",
+   "x": 15,
+   "y": 14
+  },
+  {
+   "id": "hs-patient-locker",
+   "x": 10,
+   "y": 16
+  },
+  {
+   "id": "hs-bedside-cabinet",
+   "x": 11,
+   "y": 16
+  },
+  {
+   "id": "hs-ward-bed",
+   "x": 12,
+   "y": 16
+  },
+  {
+   "id": "hs-ward-bed",
+   "x": 15,
+   "y": 16
+  },
+  {
+   "id": "hs-bedside-cabinet",
+   "x": 16,
+   "y": 16
+  },
+  {
+   "id": "hs-patient-locker",
+   "x": 17,
+   "y": 16
+  },
+  {
+   "id": "hs-overbed-table",
+   "x": 12,
+   "y": 18
+  },
+  {
+   "id": "hs-overbed-table",
+   "x": 15,
+   "y": 18
+  },
+  {
+   "id": "gy-pipe-chair",
+   "x": 16,
+   "y": 18
+  },
+  {
+   "id": "hs-iv-stand",
+   "x": 14,
+   "y": 16
+  },
+  {
+   "id": "sc-classroom-door",
+   "x": 4,
+   "y": 8
+  },
+  {
+   "id": "sc-classroom-door",
+   "x": 13,
+   "y": 8
+  },
+  {
+   "id": "sc-classroom-door",
+   "x": 4,
+   "y": 13
+  },
+  {
+   "id": "sc-classroom-door",
+   "x": 13,
+   "y": 13
+  },
+  {
+   "id": "wall-clock",
+   "x": 19,
+   "y": 1
+  },
+  {
+   "id": "hs-call-display",
+   "x": 21,
+   "y": 1
+  },
+  {
+   "id": "hs-drug-drawers",
+   "x": 19,
+   "y": 3
+  },
+  {
+   "id": "hs-drug-drawers",
+   "x": 21,
+   "y": 3
+  },
+  {
+   "id": "of-fridge-small",
+   "x": 23,
+   "y": 3
+  },
+  {
+   "id": "sc-sink",
+   "x": 24,
+   "y": 3
+  },
+  {
+   "id": "of-copier",
+   "x": 26,
+   "y": 3
+  },
+  {
+   "id": "of-cabinet",
+   "x": 28,
+   "y": 3
+  },
+  {
+   "id": "hs-chart-cart",
+   "x": 19,
+   "y": 5
+  },
+  {
+   "id": "hs-dispense-table",
+   "x": 22,
+   "y": 5
+  },
+  {
+   "id": "hs-chart-cart",
+   "x": 26,
+   "y": 5
+  },
+  {
+   "id": "hs-med-cart",
+   "x": 27,
+   "y": 5
+  },
+  {
+   "id": "hs-exam-stool",
+   "x": 23,
+   "y": 6
+  },
+  {
+   "id": "hs-wheelchair",
+   "x": 26,
+   "y": 7
+  },
+  {
+   "id": "of-plant-big",
+   "x": 28,
+   "y": 8
+  },
+  {
+   "id": "pb-office-chair-s",
+   "x": 21,
+   "y": 8
+  },
+  {
+   "id": "pb-office-chair-s",
+   "x": 24,
+   "y": 8
+  },
+  {
+   "id": "hs-nurse-counter",
+   "x": 20,
+   "y": 9
+  },
+  {
+   "id": "hs-nurse-counter",
+   "x": 23,
+   "y": 9
+  },
+  {
+   "id": "of-plant-big",
+   "x": 19,
+   "y": 9
+  },
+  {
+   "id": "wall-clock",
+   "x": 2,
+   "y": 9
+  },
+  {
+   "id": "sx-hydrant-box",
+   "x": 9,
+   "y": 9
+  },
+  {
+   "id": "hs-aed",
+   "x": 16,
+   "y": 9
+  },
+  {
+   "id": "of-elevator",
+   "x": 19,
+   "y": 16
+  },
+  {
+   "id": "ox-trash-column",
+   "x": 21,
+   "y": 16
+  },
+  {
+   "id": "of-stairwell-down",
+   "x": 26,
+   "y": 16
+  },
+  {
+   "id": "hs-bench-row-n",
+   "x": 21,
+   "y": 20
+  },
+  {
+   "id": "hs-sanitizer-stand",
+   "x": 25,
+   "y": 20
+  },
+  {
+   "id": "sx-extinguisher",
+   "x": 28,
+   "y": 20
+  }
+ ],
+ "tables": [],
+ "goods": [],
+ "rooms": [
+  {
+   "room": "hosp-ward",
+   "x0": 0,
+   "y0": 0,
+   "x1": 9,
+   "y1": 8
+  },
+  {
+   "room": "hosp-ward",
+   "x0": 9,
+   "y0": 0,
+   "x1": 18,
+   "y1": 8
+  },
+  {
+   "room": "hosp-nurse",
+   "x0": 18,
+   "y0": 0,
+   "x1": 29,
+   "y1": 9
+  },
+  {
+   "room": "hosp-corridor",
+   "x0": 0,
+   "y0": 9,
+   "x1": 17,
+   "y1": 12
+  },
+  {
+   "room": "hosp-ward",
+   "x0": 0,
+   "y0": 13,
+   "x1": 9,
+   "y1": 21
+  },
+  {
+   "room": "hosp-ward",
+   "x0": 9,
+   "y0": 13,
+   "x1": 18,
+   "y1": 21
+  },
+  {
+   "room": "hosp-stairs",
+   "x0": 18,
+   "y0": 13,
+   "x1": 29,
+   "y1": 21
+  }
+ ],
+ "start": [
+  23,
+  19
+ ],
+ "inner": true,
+ "open": [
+  {
+   "x0": 19,
+   "y0": 9,
+   "x1": 28,
+   "y1": 19,
+   "why": "복도 동쪽 끝 — 간호사 대기소 카운터 앞과 엘리베이터·계단 홀(이송 침대·휠체어가 도는 자리)"
+  }
+ ],
+ "links": [
+  {
+   "x": 26,
+   "y": 17,
+   "toMapId": "jp-city-hospital-1f",
+   "toX": 26,
+   "toY": 4,
+   "direction": "down"
+  },
+  {
+   "x": 27,
+   "y": 17,
+   "toMapId": "jp-city-hospital-1f",
+   "toX": 26,
+   "toY": 4,
+   "direction": "down"
+  },
+  {
+   "x": 19,
+   "y": 16,
+   "toMapId": "jp-city-hospital-1f",
+   "toX": 27,
+   "toY": 4,
+   "direction": "down"
+  },
+  {
+   "x": 20,
+   "y": 16,
+   "toMapId": "jp-city-hospital-1f",
+   "toX": 28,
+   "toY": 4,
+   "direction": "down"
+  }
+ ]
+}

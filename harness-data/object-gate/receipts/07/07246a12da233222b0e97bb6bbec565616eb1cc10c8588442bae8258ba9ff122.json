@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "07246a12da233222b0e97bb6bbec565616eb1cc10c8588442bae8258ba9ff122",
+ "width": 32,
+ "height": 32,
+ "kind": "seat",
+ "name": "복도 나무 긴 의자",
+ "label": "jp_city/interior_school2/sx-hall-bench",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden bench seat",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal seat surface is clearly foreshortened and visible from above across rows 10-18 (~9 rows), upon which a book rests flat, followed by a south-facing front apron from rows 19-22 and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5307
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden bench seat surface and legs",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal seat of the bench is viewed from above across rows 10-18 (approx 9 rows tall) with a book resting on it, followed by the south-facing front edge on rows 20-22 and legs extending down to row 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3941
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden bench",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal seat surface is clearly seen from above across rows 9-18 (10 rows deep) with a book resting on it, followed by the front edge of the seat slab at rows 19-22 and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5772
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden bench seat",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal seat surface of the bench spans rows 9-18 (10 rows tall, with a book resting on top), followed by a 4-row front apron on rows 19-22 and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4598
+  }
+ ],
+ "decidedAt": "2026-10-14T06:02:44.917Z",
+ "cells": {
+  "16": [
+   "097f4051c9e5daf0",
+   "3d14382d420b41df",
+   "972b6cb8d5f336f5",
+   "a38e60f0c8126183"
+  ],
+  "24": [
+   "04389723bf02a2f0",
+   "05279b949e67463c",
+   "11a70255f38d1dfa",
+   "1377cfc6d4043337",
+   "13de85277c6f51cc",
+   "20787c4cbddb5f5a",
+   "24dce20c5dcfbd78",
+   "2c528b15aeaf19ff",
+   "4340c6489f93e556",
+   "5081a161854a04db",
+   "8748cb6d83c6cd17",
+   "875323091e1b894c",
+   "95641e477b53f3c1",
+   "a7b75950d92c8930",
+   "c1ee0ae5fe5739ae",
+   "c895a3e1c0bf5774",
+   "e431e52583159f72",
+   "f3d62b07c6ef6294"
+  ],
+  "32": [
+   "4440d89b9f95f893"
+  ],
+  "48": [
+   "1d9d5ae6d81de64f",
+   "5ce73fced165988a",
+   "5e93e060c6bf6d7a",
+   "820735df33c101a2",
+   "aab65a14ababac8f",
+   "c93c060175bb52a5"
+  ]
+ }
+}

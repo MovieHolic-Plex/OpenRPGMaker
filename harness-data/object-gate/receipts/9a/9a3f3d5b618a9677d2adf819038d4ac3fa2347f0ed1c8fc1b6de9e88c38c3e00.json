@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9a3f3d5b618a9677d2adf819038d4ac3fa2347f0ed1c8fc1b6de9e88c38c3e00",
+ "width": 16,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "약품 냉장고(유리문)",
+ "label": "jp_city/interior_hospital/hs-med-fridge",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "medicine refrigerator with glass door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The refrigerator is drawn in flat front elevation with no visible top surface (0 rows, only a 1px top outline) and completely flat horizontal shelves.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4162
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "medicine refrigerator with glass door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The refrigerator is drawn in a flat architectural front elevation with only a 1px outline on top (row 0) and no visible top surface at all.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5662
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "medicine refrigerator with glass door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tall refrigerator has no visible top surface at rows 1-2 (only a 1px outline border above the front panel). The entire cabinet and its interior shelves are drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4388
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "medical refrigerator with glass door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The refrigerator is drawn strictly from a front elevation with no visible top surface (row 1 is a 1px outline directly meeting the vertical front panel on row 2).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5404
+  }
+ ],
+ "decidedAt": "2026-10-14T06:02:44.916Z",
+ "cells": {
+  "16": [
+   "46d92c3732413e26",
+   "c54986bb4c749bae",
+   "c62c3314d2d1d316"
+  ],
+  "24": [
+   "674fab35ffeb0566",
+   "928fe6ff1695d29c",
+   "9612ef66b4b063ac",
+   "bac640f44b711109",
+   "c7228910886665d3",
+   "fd3259f10d593d51"
+  ],
+  "32": [
+   "0c747c36f4a47660",
+   "0dadfba541b977dc",
+   "4e03eac494e78eb0",
+   "509725421a7a09b8",
+   "6d72549480afeb22",
+   "74f4cb66269cd9ab",
+   "a563caf204465f08",
+   "b223a0ff8b09ed47",
+   "e2a827fe00596d26",
+   "ea8c7414ebf0b030",
+   "edb40858de943936",
+   "ef35f274ef52eeb4"
+  ],
+  "48": [
+   "45140ea8d3c4c470",
+   "d0cee2d9aaa6ed03",
+   "f53d9d592132f6ee"
+  ]
+ }
+}

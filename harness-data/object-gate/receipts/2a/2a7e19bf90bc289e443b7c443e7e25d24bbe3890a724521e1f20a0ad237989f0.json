@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2a7e19bf90bc289e443b7c443e7e25d24bbe3890a724521e1f20a0ad237989f0",
+ "width": 16,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "1인 텔레워크 부스",
+ "label": "jp_city/interior_office2/ox-phone-booth",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "telework booth / phone booth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire booth is rendered in flat front elevation. There is no visible top surface at rows 0-2 (only a 1px border line), and the upper equipment box, glass door, interior, and base plinth are all viewed straight-on.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6191
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "telework booth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The booth is drawn completely flat from the front (pure front elevation). There is no visible top roof surface foreshortened from above (top_rows is 0); rows 1-9 depict a vertical front header panel.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3730
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "single-person telework booth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire booth is rendered in direct front elevation with no visible top surface (0px top surface); the upper unit and glass door are viewed straight-on without 3/4 perspective foreshortening on top.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4961
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "single-person telework booth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The booth is drawn in a pure front architectural elevation with no visible top surface (0 rows at the top). The upper panel, glass door, interior, and base plinth all face directly forward with zero 3/4-view downward tilt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10612
+  }
+ ],
+ "decidedAt": "2026-10-14T06:02:44.918Z",
+ "cells": {
+  "16": [
+   "3ecead0cb269acfa",
+   "ad9706db6268bb5b",
+   "f6f9f25f920bf60c"
+  ],
+  "24": [
+   "0cd5b16381ba72f9",
+   "281a36364ce8b372",
+   "390bf27177a2cfc0",
+   "52386f635fc98abb",
+   "c3f4bc2bccfd54a8",
+   "f2e39e1550013d4e"
+  ],
+  "32": [
+   "1b96f5a320dd0581",
+   "1f9aaa94260cbd76",
+   "2014a32816417cec",
+   "2ec23d48c21621e5",
+   "62ddb1d24eaf9924",
+   "64a6350fa18230f5",
+   "81e33377f371c783",
+   "93812ad1e8dea2ea",
+   "96319c84fb61d30c",
+   "9c11e9053331b050",
+   "c09017cd51c1a775",
+   "d345e889b331504e"
+  ],
+  "48": [
+   "1792cb3bab57b6f5",
+   "8f7fa5ec1197c884",
+   "9f47393f0505136b"
+  ]
+ }
+}

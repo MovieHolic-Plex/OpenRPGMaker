@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8cb6ae1eafc7c701cc4b6f34871c755f20c0818f1cc1bb1dd129471a95c447d3",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "신문 걸이대",
+ "label": "jp_city/interior_school2/sx-newspaper-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "newspaper rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire newspaper stand is drawn in pure flat front elevation. The top edge at row 1 immediately starts the front face/backboard with no visible horizontal top surface, and the shelves and base feet are shown straight-on without 3/4 perspective foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5763
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "newspaper rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The newspaper rack is drawn as a flat front architectural elevation with zero rows of visible top surface on its frame or upper panel.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5141
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "newspaper rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The newspaper rack is drawn as a flat front elevation from row 0 to 31 with no visible top surface showing the furniture's depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5219
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "newspaper rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire newspaper stand is drawn in pure front elevation with no visible top surface (0 rows of top depth at row 0) or foreshortened horizontal planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4691
+  }
+ ],
+ "decidedAt": "2026-10-14T06:02:44.918Z",
+ "cells": {
+  "16": [
+   "3fbf7270f37dad17",
+   "d4cda99aaa2fa95d"
+  ],
+  "24": [
+   "26bcf419ebcdd9ea",
+   "2c4bd595135a4a8c",
+   "5f6690c226589451",
+   "75feb4d8d06a9895",
+   "8137340fe9405766",
+   "82c41327c36e7d41",
+   "95394379102bfe0c",
+   "af66f9d3c29e372a",
+   "b201505630ccb43b",
+   "ba22ad9440429ef3",
+   "cebaa6099a59d61a",
+   "ef5229e31fe65966"
+  ],
+  "32": [
+   "0149ac3923c1239b",
+   "0f76d7847241a5eb",
+   "6b010523e4050288"
+  ],
+  "48": [
+   "42ba69916bd10fc7",
+   "542c55e32362dd9a",
+   "647380c4b6d1974a",
+   "cc7096cfd2fd29c8",
+   "d04cfadb6c304503",
+   "df0bbbef5080081b"
+  ]
+ }
+}

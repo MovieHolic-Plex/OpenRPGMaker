@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e5cf32f940d993e6c3f50632a517e366ab037dcb7a7b1af7df1be7e732fbe65a",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "자동 정산기(自動精算機)",
+ "label": "jp_city/interior_hospital/hs-pay-machine",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "automatic payment machine (kiosk)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire kiosk is drawn within a flat rectangular front-facing box (rows 1-5 represent the front illuminated header/sign panel, sharing the same vertical left highlight and right shadow columns as the rest of the machine). There is no visible top surface beyond the 1px black outline at row 0.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7931
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "automated payment machine kiosk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The machine is drawn in a pure front elevation with 0 rows of visible top surface; rows 1-5 represent the front header/marquee panel sharing the south-facing vertical highlight/shadow columns.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5041
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "automated payment machine (fare adjustment kiosk)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire kiosk is drawn in pure flat front elevation. The continuous left-edge highlight runs uninterrupted from row 1 to row 29, showing that rows 1-5 are merely a top header sign on the vertical front face rather than a horizontal top surface. There is no visible top surface receding from the viewer.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6398
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "automated payment machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The machine is drawn in a pure front elevation. Rows 1-5 represent a front lightbox/header panel (sharing the same vertical left-highlight/right-shadow column shading as the rest of the front face), with only a 1px outline at row 0 where the top surface should be seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6011
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.779Z",
+ "cells": {
+  "16": [
+   "0d9f29722b300cba",
+   "80abef88734e5396"
+  ],
+  "24": [
+   "0ff78125c801a969",
+   "2e206526bb519777",
+   "5f2a71f985d38a61",
+   "669ae5278ddefe59",
+   "728d23ea19e7bbd2",
+   "80ca8c950a7b8935",
+   "bd0866aff06fed6f",
+   "c2c8ba20c92b8c1f",
+   "d2b37c210ba4fcb6",
+   "d69776c3592f15e1",
+   "d765c91336bcda83",
+   "e62b2366481d0b70"
+  ],
+  "32": [
+   "3c1edc29486ca994",
+   "91eb398556da0f40",
+   "c3ddac32ea4290c2"
+  ],
+  "48": [
+   "34d914592100bd11",
+   "5beab96cc271a2ff",
+   "7a47aef03238a574",
+   "7cb97a93c4e4950b",
+   "e6858e3340aadd61",
+   "f782ec6559c1a8a2"
+  ]
+ }
+}

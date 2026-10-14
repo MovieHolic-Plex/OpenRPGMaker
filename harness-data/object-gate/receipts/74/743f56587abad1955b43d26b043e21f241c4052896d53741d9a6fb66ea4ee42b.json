@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "743f56587abad1955b43d26b043e21f241c4052896d53741d9a6fb66ea4ee42b",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "문서 파쇄기",
+ "label": "jp_city/interior_office2/ox-shredder",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "paper shredder cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in pure front elevation with a flat outline, front-facing head unit with slot and LED, front viewing window, and bin handle. There is no visible top surface (0px).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 9826
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "paper shredder cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire shredder is drawn as a flat front elevation with head unit, paper slot, LED, viewing window, and bin handle all rendered on a vertical front-facing plane. No horizontal top surface of the main body is visible (0 px).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 12547
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "document shredder",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shredder is drawn in pure front elevation as a completely flat vertical rectangle with only a 1px outline at row 6. No top horizontal surface is rendered in 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 28372
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "paper shredder",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shredder is drawn as a flat 2D front elevation inside a vertical rectangular outline with only a single 1px outline row at row 6 and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5022
+  }
+ ],
+ "decidedAt": "2026-10-14T06:02:44.920Z",
+ "cells": {
+  "16": [
+   "41fd0ad1683b2521",
+   "49d783fb382e1827"
+  ],
+  "24": [
+   "38b33270fee343df",
+   "3ed0e92999f00118",
+   "4eee47db7520877b",
+   "52b2508180c192ff",
+   "5c4c8ef1d19780f0",
+   "7981d9b9feef6527",
+   "8f49ea78e9654129",
+   "c2327d737c46d65d",
+   "c4ca8587e64eb71a",
+   "ddb02a43075995e7",
+   "e97cc3ac393f96c2",
+   "f7a196122a64437b"
+  ],
+  "32": [
+   "3a69e222d63d5d82",
+   "638d804975d93379",
+   "b22bc78853a18c6a"
+  ],
+  "48": [
+   "0f5a255ec874c802",
+   "2773f03412f55901",
+   "9770816f938f020a",
+   "b1da1cf72798b51b",
+   "f819b6a74ac1d6b9",
+   "f8aa018d6c8f4c7e"
+  ]
+ }
+}

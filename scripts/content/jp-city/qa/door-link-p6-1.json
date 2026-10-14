@@ -1,0 +1,5 @@
+[
+ { "building": "A2", "example": "hospital-1f", "maps": ["hospital-1f", "hospital-2f"] },
+ { "building": "B1a", "example": "school-annex", "maps": ["school-annex"] },
+ { "building": "E1", "example": "office-tower-1f", "maps": ["office-tower-1f", "office-free"] }
+]

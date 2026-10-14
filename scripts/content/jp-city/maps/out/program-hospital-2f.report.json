@@ -1,0 +1,152 @@
+{
+ "program": "hospital-2f",
+ "size": [
+  30,
+  25
+ ],
+ "summary": "손 도트 실내 'program hospital-2f' 30×25 (jp-program-hospital-2f, jp_city) — 배치 후보 1/3(방 7개, 견본 가구 78점 — data.layout.picture 로 배치를 보고, 다른 배치는 layout.variant 를 바꿔 replace:true) — 출입구에서 닿는 칸 264, 닿지 못한 빈 바닥 0, 경고 0",
+ "warnings": [],
+ "layout": {
+  "variant": 0,
+  "variants": 3,
+  "score": 5.74,
+  "notes": [
+   "hosp-ward2 를 지나가야 다른 방에 간다",
+   "hosp-stairs 를 지나가야 다른 방에 간다"
+  ],
+  "picture": [
+   "##############################",
+   "###################CCCCCCCCCC#",
+   "###################CCCCCCCCCC#",
+   "#FFFFFFFF#BBBBBBBB#CCCCCCCCCC#",
+   "#FFFFFFFF#BBBBBBBB#CCCCCCCCCC#",
+   "#FFFFFFFF+BBBBBBBB#CCCCCCCCCC#",
+   "#FFFFFFFF+BBBBBBBB#CCCCCCCCCC#",
+   "#FFFFFFFF+BBBBBBBB#CCCCCCCCCC#",
+   "#FFFFFFFF#BBBBBBBB#CCCCCCCCCC#",
+   "#FFFFFFFF#BBBBBBBB#CCCCCCCCCC#",
+   "#############+#####+##########",
+   "#AAAAAAAA#GGGGGGGGGG#EEEEEEEE#",
+   "#AAAAAAAA#GGGGGGGGGG#EEEEEEEE#",
+   "#AAAAAAAA+GGGGGGGGGG#EEEEEEEE#",
+   "#AAAAAAAA+GGGGGGGGGG#EEEEEEEE#",
+   "#AAAAAAAA+GGGGGGGGGG#EEEEEEEE#",
+   "#AAAAAAAA#GGGGGGGGGG#EEEEEEEE#",
+   "#AAAAAAAA#GGGGGGGGGG#EEEEEEEE#",
+   "##############+########+######",
+   "##########DDDDDDDDDDDDDDDDD###",
+   "##########DDDDDDDDDDDDDDDDD###",
+   "##########DDDDDDDDDDDDDDDDD###",
+   "##########DDDDDDDDDDDDDDDDD###",
+   "##########DDDDDDDDDDDDDDDDD###",
+   "##################+###########"
+  ],
+  "rooms": [
+   {
+    "letter": "A",
+    "id": "hosp-ward",
+    "kind": "hosp-ward",
+    "x0": 1,
+    "y0": 11,
+    "x1": 8,
+    "y1": 17,
+    "template": "hospital-2f:hosp-ward#4",
+    "furniture": {
+     "template": "hospital-2f:hosp-ward#4",
+     "placed": 12,
+     "dropped": 0
+    }
+   },
+   {
+    "letter": "B",
+    "id": "hosp-ward2",
+    "kind": "hosp-ward",
+    "x0": 10,
+    "y0": 3,
+    "x1": 17,
+    "y1": 9,
+    "template": "hospital-2f:hosp-ward#4",
+    "furniture": {
+     "template": "hospital-2f:hosp-ward#4",
+     "placed": 12,
+     "dropped": 0
+    }
+   },
+   {
+    "letter": "C",
+    "id": "hosp-nurse",
+    "kind": "hosp-nurse",
+    "x0": 19,
+    "y0": 1,
+    "x1": 28,
+    "y1": 9,
+    "template": "hospital-2f:hosp-nurse#2",
+    "furniture": {
+     "template": "hospital-2f:hosp-nurse#2",
+     "placed": 20,
+     "dropped": 0
+    }
+   },
+   {
+    "letter": "D",
+    "id": "hosp-corridor",
+    "kind": "hosp-corridor",
+    "x0": 10,
+    "y0": 19,
+    "x1": 26,
+    "y1": 23,
+    "template": "hospital-2f:hosp-corridor#3",
+    "furniture": {
+     "template": "hospital-2f:hosp-corridor#3",
+     "placed": 3,
+     "dropped": 0
+    }
+   },
+   {
+    "letter": "E",
+    "id": "hosp-ward3",
+    "kind": "hosp-ward",
+    "x0": 21,
+    "y0": 11,
+    "x1": 28,
+    "y1": 17,
+    "template": "hospital-2f:hosp-ward#0",
+    "furniture": {
+     "template": "hospital-2f:hosp-ward#0",
+     "placed": 13,
+     "dropped": 0
+    }
+   },
+   {
+    "letter": "F",
+    "id": "hosp-ward4",
+    "kind": "hosp-ward",
+    "x0": 1,
+    "y0": 3,
+    "x1": 8,
+    "y1": 9,
+    "template": "hospital-2f:hosp-ward#4",
+    "furniture": {
+     "template": "hospital-2f:hosp-ward#4",
+     "placed": 12,
+     "dropped": 0
+    }
+   },
+   {
+    "letter": "G",
+    "id": "hosp-stairs",
+    "kind": "hosp-stairs",
+    "x0": 10,
+    "y0": 11,
+    "x1": 19,
+    "y1": 17,
+    "template": "hospital-2f:hosp-stairs#6",
+    "furniture": {
+     "template": "hospital-2f:hosp-stairs#6",
+     "placed": 6,
+     "dropped": 0
+    }
+   }
+  ]
+ }
+}

@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "946bfc0efd1c5e8bbd13c9ca148868e88106082d125f531845db1e2413d783c7",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "의료 폐기물 통(노랑)",
+ "label": "jp_city/interior_hospital/hs-sharps-bin",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "medical waste box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire sprite depicts the front elevation of a yellow cardboard medical waste container, featuring a front handle cutout (rows 3-4) and a red band (rows 7-8). The top edge is a flat horizontal line at row 0 with 0 source pixels of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 9587
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "medical waste box/bin",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object from row 1 to row 13 is a flat front-facing elevation with continuous vertical bevel shading along the left and right edges (highlight on columns 3-4, shadow on column 12). There is no visible top surface foreshortened from above (top_rows = 0), only a 1px flat black outline along row 0.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 19159
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "medical waste box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The box is drawn as a flat 2D front elevation: the handle cutout (rows 3-4) and horizontal red sealing band (rows 7-8) face directly forward with zero foreshortening, and there is no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 8064
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "medical waste box/bin",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn entirely from a flat front view with a 1px outline at row 0 and no visible top surface foreshortened from above. The handle cutout and red band are both rendered as straight front elevation features.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4992
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.781Z",
+ "cells": {
+  "16": [
+   "67f7b22676567946"
+  ],
+  "24": [
+   "107705a80b61b522",
+   "72a97173d7857015",
+   "95e59c301ea84c2f",
+   "9fbbfa6378811ae7",
+   "ac70f3ca9dee0644",
+   "c7ba9e3182e2bf2c"
+  ],
+  "32": [
+   "036e5ea91e850060",
+   "0a4df432f73e62aa",
+   "375d33e20beb6ab7",
+   "4bd9c882c869c5e9",
+   "823b883fe4befc75",
+   "b1900b170f99429d"
+  ],
+  "48": [
+   "3b5882f9326adb7f",
+   "4be3cd844c4043ff",
+   "4e1a864a6bb34df1",
+   "626d909074f0380a",
+   "9da840619c82d9ae",
+   "b82b0f8be1c8f325"
+  ]
+ }
+}

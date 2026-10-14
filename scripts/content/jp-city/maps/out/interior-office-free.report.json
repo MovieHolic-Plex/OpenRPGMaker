@@ -1,0 +1,64 @@
+{
+ "map": {
+  "id": "jp-city-office-free",
+  "size": [
+   24,
+   19
+  ]
+ },
+ "start": [
+  17,
+  15
+ ],
+ "summary": "손 도트 실내 'IT 회사 사옥 자유석 층' 24×19 (jp-city-office-free, jp_city) — 출입구에서 닿는 칸 198, 닿지 못한 빈 바닥 0, 경고 1 — 평면이 참고 예제 「일본 도시 · 병원·학교 별관·IT 사옥 실내 예제 · IT 회사 사옥 자유석 층」와 100% 같다 — 이미 다시 지은 방이다. 이 방이 요청(방 수·쓰임·크기)을 충족하면 그대로 두고 끝낸다: 닮은 정도를 낮추려고 같은 방을 또 짓지 않는다. 다시 지을 때는 방 수·쓰임·크기를 실제로 바꿀 때만",
+ "tool": {
+  "mapId": "jp-city-office-free",
+  "tilesetId": "jp_city",
+  "width": 24,
+  "height": 19,
+  "reachable": 198,
+  "floorCells": 268,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 17,
+    "y": 15
+   }
+  ],
+  "exitWidth": 1,
+  "exits": [],
+  "links": 4,
+  "warnings": [
+   "평면이 참고 예제 「일본 도시 · 병원·학교 별관·IT 사옥 실내 예제 · IT 회사 사옥 자유석 층」와 100% 같다 — 이미 다시 지은 방이다. 이 방이 요청(방 수·쓰임·크기)을 충족하면 그대로 두고 끝낸다: 닮은 정도를 낮추려고 같은 방을 또 짓지 않는다. 다시 지을 때는 방 수·쓰임·크기를 실제로 바꿀 때만"
+  ]
+ },
+ "warnings": [],
+ "links": [
+  {
+   "x": 21,
+   "y": 15,
+   "to": "jp-city-office-tower-1f",
+   "reached": true
+  },
+  {
+   "x": 22,
+   "y": 15,
+   "to": "jp-city-office-tower-1f",
+   "reached": true
+  },
+  {
+   "x": 15,
+   "y": 14,
+   "to": "jp-city-office-tower-1f",
+   "reached": true
+  },
+  {
+   "x": 16,
+   "y": 14,
+   "to": "jp-city-office-tower-1f",
+   "reached": true
+  }
+ ],
+ "reach": 198,
+ "ok": true
+}

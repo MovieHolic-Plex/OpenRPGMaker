@@ -21,7 +21,8 @@ const NAMES_CAMPUS_RE = /modern[_-]?campus|oprn-campus|캠퍼스\s*(?:칩셋|타
 /** 학교 풍경 낱말 — 학교·학원·캠퍼스·교실·동아리·교정(운동장·교문·기숙사·급식실·강의실·도서관 포함). 일본풍 학교는 아래 JP_SCHOOL_RE 가 먼저 뺀다. */
 const CAMPUS_RE = /학교|학원|캠퍼스|교실|동아리|교정|교문|운동장|기숙사|급식실|강의실|교무실|보건실|대학(?:교)?|고등학교|중학교|\b(?:campus|school|classroom|dormitory|dorm|high\s*school|college|university)\b/iu;
 /** 일본 학교 — jp_city 의 소학교·학교 키트가 맡는다(jpCityPolicy JP_STREET_RE 와 겹치는 «일본풍 학교»). */
-const JP_SCHOOL_RE = /일본(?:풍|식)?\s*(?:초등|소|중|고등)?학교|일본\s*학원|소학교|jp[_-]city|oprn-jp|japan(?:ese)?\s+school/iu;
+/** + 신발장·昇降口·下駄箱·上履き(우와바키) — 일본 학교에만 있는 현관(2026-10-14, jpCityPolicy.jpFacilityOf 와 같은 표지). */
+const JP_SCHOOL_RE = /일본(?:풍|식)?\s*(?:초등|소|중|고등)?학교|일본\s*학원|소학교|jp[_-]city|oprn-jp|japan(?:ese)?\s+school|일본[^.。!?]{0,12}(?:교실|복도|교무실|보건실)|신발장|昇降口|下駄箱|上履き|우와바키|日本/iu;
 /** 판타지 학교(마법 학교)는 wizarding_world 가 맡는다. */
 const WIZARD_SCHOOL_RE = /마법\s*(?:학교|학원)|wizarding|마법사\s*학교|호그|witch\s+school/iu;
 

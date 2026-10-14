@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0c44f0aeb591cb626ed9e8b6414c2a9ef7fba8d400f2213cc712e09b135a485f",
+ "width": 32,
+ "height": 16,
+ "kind": "seat",
+ "name": "복도 나무 긴 의자",
+ "label": "jp_city/interior_school2/sx-hall-bench",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden bench",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bench is rendered as a flat vertical rectangle of horizontal wooden planks with two feet at the bottom. There is no horizontal seat surface visible from above (0 top rows); the entire object is drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7020
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden bench",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bench is drawn in pure front elevation as flat horizontal wooden planks with legs underneath; there is no horizontal seat surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5497
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden bench",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bench is rendered entirely as a flat front elevation consisting of stacked horizontal wooden slats with legs at the bottom (row 15) and a 1px outline at the top, showing 0 rows of top seat surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5969
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden bench",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in a flat front elevation consisting of stacked horizontal planks within an outline and two feet at the bottom; there is no distinct top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4591
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.784Z",
+ "cells": {
+  "16": [
+   "06d7bd00ba45d611",
+   "73ce940530e0cd33"
+  ],
+  "24": [
+   "03b9e7c1d0a28bd7",
+   "30c2d53785d86275",
+   "41b490dba011c739",
+   "666e1f6c822b16d3",
+   "7a083c5901344026",
+   "8699852c16352750",
+   "953f1d938b16b0c7",
+   "9f18c97159a2fbf5",
+   "b3e80f0a9f0f2b66",
+   "c0b95eaf2d88013e",
+   "d07c17fe2849a577",
+   "fb5e82176ff9887c"
+  ],
+  "32": [
+   "5746c1c94761943c",
+   "61d22ee5c1056357"
+  ],
+  "48": [
+   "40ec51b36e535240",
+   "6a1d73436c960939",
+   "8dc31ebfdd4d3846",
+   "93a9f23ab01071f4",
+   "e79bc5bd9d517e13",
+   "f30d93815793fa2b"
+  ]
+ }
+}

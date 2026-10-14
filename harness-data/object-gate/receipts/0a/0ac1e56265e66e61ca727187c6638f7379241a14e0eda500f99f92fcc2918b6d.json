@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0ac1e56265e66e61ca727187c6638f7379241a14e0eda500f99f92fcc2918b6d",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "투약 창구",
+ "label": "jp_city/interior_hospital/hs-pickup-window",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pharmacy counter",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter top surface is prominently visible from rows 11 to 21 (11 source pixel rows deep) with items resting on it, meeting a vertical south face from rows 22 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4121
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "counter with dispensing window",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter's top surface spans rows 11 to 21 (11 rows tall) with items resting on it, meeting the green front face below (rows 22-31) in proper 3/4 RPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2855
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pharmacy counter with dispensing window",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter's top surface is prominently visible from rows 11 to 21 (11 pixel rows) with items placed on it, meeting the 3/4 RPG top-down view standard above the front-facing lower counter wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3473
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pharmacy counter",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter features an ample top surface measuring 12 pixel rows (rows 10-21) with items resting on it, above a south front face extending from row 22 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3620
+  }
+ ],
+ "decidedAt": "2026-10-14T06:16:49.340Z",
+ "cells": {
+  "16": [
+   "07aad23b823e43fd",
+   "9a389fc508de17eb",
+   "a405ebefd5604859",
+   "e0e245e41767b773"
+  ],
+  "24": [
+   "0a8210a62ebdc975",
+   "11dffc4195da728d",
+   "1646eed72f9c2176",
+   "1921db9528aaeac1",
+   "1cffd5f3e556235e",
+   "2030fd15c91ba41b",
+   "30a7a7cf31d800f0",
+   "41312502fd1b3cb4",
+   "601fd34f73cf2ab8",
+   "698b622fb1ca2ba3",
+   "6b071e21c877e68e",
+   "6f60839b2ad79e66",
+   "6fb518e21a912063",
+   "71413c1bdd9b82b1",
+   "73bf4f258fe1aef0",
+   "8dff2873da8830c2",
+   "9010903e6a085407",
+   "aabbee18cb20ddfb",
+   "b082350db752ec32",
+   "b297445832f355f5",
+   "b6cbe4618b15e325",
+   "c0d806d054b44aed",
+   "c62b55884f59f641",
+   "dad19fd2434f6c2f"
+  ],
+  "32": [
+   "10515ef3e0331113"
+  ],
+  "48": [
+   "02f3020815050f44",
+   "06fff135ff70291d",
+   "5a25729e1c31aa75",
+   "86d2ad0697d5b9f1",
+   "dff90df81d5d3a1f",
+   "e8ffe6ccf113fcba"
+  ]
+ }
+}

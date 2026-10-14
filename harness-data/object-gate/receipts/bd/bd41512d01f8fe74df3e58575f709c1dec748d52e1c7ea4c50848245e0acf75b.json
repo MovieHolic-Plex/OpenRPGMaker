@@ -1,0 +1,138 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bd41512d01f8fe74df3e58575f709c1dec748d52e1c7ea4c50848245e0acf75b",
+ "width": 32,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "교원 우편 칸 선반(레터 케이스)",
+ "label": "jp_city/interior_school2/sx-letter-shelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "faculty mail sorting cabinet (letter case)",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cabinet is clearly rendered from rows 4 to 11 (8 rows tall) in foreshortened 3/4 view, complete with items resting on it (paper pad, pen holder, mail tray) and a front edge highlight on row 11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 23410
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "faculty mail pigeonhole cabinet (letter case)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn entirely as a flat architectural front elevation. The upper compartment (rows 5-11) and pigeonhole grid (rows 12-42) are viewed straight-on, and the very top at row 4 is capped with a single 1px outline with no visible top surface (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10120
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "teacher mail slot cabinet / letter case",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn entirely in flat front elevation with a 1px dark outline at row 4 and 0 rows of top surface. The pigeonholes and top section are viewed straight-on with no top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12393
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "mail slot cabinet / letter case unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn entirely in a flat front elevation. The top of the unit at row 4 is simply a 1px outline with no visible top surface foreshortened from above (top_rows = 0). The upper section (whiteboard/organizer) and the lower mail slots are all viewed directly from the front.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6801
+  }
+ ],
+ "decidedAt": "2026-10-14T06:16:49.340Z",
+ "cells": {
+  "16": [
+   "17ab0dbc33d044f1",
+   "18b85466a54ef947",
+   "57f47faf0fd317d9",
+   "98bb9d9ce125ced8",
+   "b335d32419949d0e",
+   "e4c659b60affa1c5"
+  ],
+  "24": [
+   "027d3d1b10eb11f0",
+   "3ac50eaf208ef795",
+   "4f4aeb3547f574f1",
+   "540c285e3096a671",
+   "61c82451ecbc75a0",
+   "71de8feb956f014f",
+   "add0aa8f01e7a01b",
+   "ae8e0c34e2ec2077",
+   "f197c1017bb1d10a",
+   "f20d024cfc6ce0f1",
+   "f31b3d8cc156438c",
+   "f58756fce3c1cfbf"
+  ],
+  "32": [
+   "134b64037e287d3b",
+   "51c9c764e682b620",
+   "acaf89210a509d60",
+   "df997d4a0c732d97"
+  ],
+  "48": [
+   "2d44a61bd0bc3c0d",
+   "5c06ce8e681456fc",
+   "cb4bb004c7a2e7a9"
+  ]
+ }
+}

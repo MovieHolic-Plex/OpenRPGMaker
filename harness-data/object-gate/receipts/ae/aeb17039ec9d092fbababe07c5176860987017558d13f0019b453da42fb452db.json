@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "aeb17039ec9d092fbababe07c5176860987017558d13f0019b453da42fb452db",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "키즈 코너 낮은 장난감 선반",
+ "label": "jp_city/interior_hospital/hs-toy-shelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "low toy shelf",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shelf unit is clearly visible from rows 9 to 14 (6 pixels deep) with toys placed on top, showing proper 3/4 perspective above the front-facing cubbies.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4108
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "low toy shelf unit",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shelf is visible from row 9 to row 14 (6 rows deep) with toys placed on it, seen in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3094
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "toy shelf unit",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the low shelf is clearly visible spanning rows 9 to 14 (6 rows deep) with toy blocks resting on it, leading to the front compartments below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4112
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "low toy shelf",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shelf spans rows 9 to 14 (6 pixel rows) where toy blocks rest, clearly foreshortened in standard 3/4 view above the front compartment openings.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4142
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.780Z",
+ "cells": {
+  "16": [
+   "03de0caf55c18507",
+   "53b7f693579ed272",
+   "c4e6ed8606f25bba",
+   "cd9bd2e8df49dbf1"
+  ],
+  "24": [
+   "05e57c32791b6d78",
+   "14e8577a2c072357",
+   "1a819fdd0523986e",
+   "3ac6c1852d98e4fc",
+   "4794a35be0a116ab",
+   "4ddd537c15dd983a",
+   "4f5b59388be840e2",
+   "720fa6f5ebe5a871",
+   "9830982616be4c42",
+   "a72e5ba8a629f7dc",
+   "a8b44e896e827ba1",
+   "abc899c2d69046b8",
+   "d441d6e149c387b3",
+   "d9b3923a75f568a8",
+   "ecd148b75f3bb2b2",
+   "ef3d3846eb177c1e",
+   "ef90ae0d48a2397e",
+   "f322b641dbd47ef9"
+  ],
+  "32": [
+   "512648369e7f4cfe"
+  ],
+  "48": [
+   "27e49ce7dbc68208",
+   "3495ae43ac99240b",
+   "39faa8feec7c9340",
+   "3be6c34b376e7dba",
+   "5ddfcfa3febd4531",
+   "9882bb05b6f86705"
+  ]
+ }
+}

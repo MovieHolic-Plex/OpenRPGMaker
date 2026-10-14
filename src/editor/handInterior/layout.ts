@@ -38,10 +38,11 @@ const DEFAULT_SIZE: Record<string, [number, number]> = {
   living: [8, 6], ldk: [8, 7], dining: [7, 6], great_hall: [12, 8], tavern: [10, 7], shop: [9, 6],
 };
 /** 지나다니는 방 — 문 나무의 가지가 여기서 뻗는다. 나머지(화장실·욕실·침실…)는 끝방이 되도록 점수를 준다. */
-const HUB = /^(genkan|entrance|hall|corridor|ldk|living|great_hall|tavern|dining|waiting_room|.*_shop|shop|konbini|supermarket|chapel|throne_room|engine_hall|casino|theater|common|museum_lobby|museum_gallery|ship_crew|ship_gundeck|arena_floor|arena_stands)$/u;
+const HUB = /^(genkan|entrance|hall|corridor|ldk|living|great_hall|tavern|dining|waiting_room|.*_shop|shop|konbini|supermarket|chapel|throne_room|engine_hall|casino|theater|common|museum_lobby|museum_gallery|ship_crew|ship_gundeck|arena_floor|arena_stands|shoegenkan|lobby|elevatorhall|openoffice|concourse|postlobby|hosp-lobby|hosp-corridor|annexcorridor|towerlobby|freeoffice)$/u;
 // 손님이 드는 방(가게·주점·대청)이 복도보다 먼저 — 여관이 복도로 들어가 주점을 거치게 짜였다(2026-10-09).
+// jp_city 시설(2026-10-14): 학교 昇降口·사무 빌딩 로비·병원 외래 대기실이 거리 문 쪽 방.
 // 박물관은 매표 홀, 배는 선원 칸(위 갑판)·화물칸(아래 갑판), 투기장은 무기고(선수 입구)로 든다.
-const ENTRANCE_ORDER = [/^genkan$/u, /^entrance$/u, /_shop$|^shop$|^tavern$|^great_hall$|^konbini$|^supermarket$|^common$/u,
+const ENTRANCE_ORDER = [/^genkan$/u, /^entrance$/u, /^(shoegenkan|lobby|hosp-lobby|postlobby|concourse|towerlobby|annexcorridor)$/u, /_shop$|^shop$|^tavern$|^great_hall$|^konbini$|^supermarket$|^common$/u,
   /^museum_lobby$|^ship_crew$|^ship_cargo$|^arena_armory$/u, /^hall$/u, /^corridor$/u, HUB];
 /** 기본으로 트는 쌍(종류). */
 const OPEN_DEFAULT: [string, string][] = [["genkan", "hall"], ["genkan", "ldk"], ["genkan", "entrance"], ["kitchen", "ldk"], ["kitchen", "dining"], ["arena_stands", "arena_floor"]];
@@ -79,6 +80,7 @@ export function layoutWants(tilesetId: string, req: LayoutRequest): Want[] {
   // 화풍: program 이면 그 예제 맵의 묶음, 아니면 방 종류들이 가장 많이 나오는 묶음.
   const P = req.program ? programKinds(tilesetId, req.program) : undefined;
   let style = P ? templateStyle({ map: P.map }) : undefined;
+  const programBuilding = P ? roomTemplates(tilesetId).find((t) => t.map === P.map)?.building : undefined;
   if (!style) {
     const votes = new Map<string, number>();
     for (const q of rooms) for (const t of roomTemplates(tilesetId)) if (t.kind === q.kind) votes.set(templateStyle(t), (votes.get(templateStyle(t)) ?? 0) + 1);
@@ -88,7 +90,12 @@ export function layoutWants(tilesetId: string, req: LayoutRequest): Want[] {
     const n = (seen.get(q.kind) ?? 0) + 1; seen.set(q.kind, n);
     const id = q.id ?? (n === 1 ? q.kind : `${q.kind}${n}`);
     const near = q.w && q.h ? { w: q.w, h: q.h } : undefined;
-    const pool = templatesOfKind(tilesetId, q.kind, near, style);
+    const all = templatesOfKind(tilesetId, q.kind, near, style);
+    // 화풍 묶음이 없는 칩셋(jp_city 등)에서 program 이면 그 예제 맵 → 같은 건물의 견본을 먼저 쓴다
+    // (2026-10-14: 사옥 자유석 층 program 의 엘리베이터 홀에 호텔 붉은 카펫·금빛 문, 학교 1층 복도에 다른 건물 나무 복도가 들어왔다).
+    const ownMap = P && style === "any" ? all.filter((t) => t.map === P.map) : [];
+    const ownBuilding = P && style === "any" && !ownMap.length ? all.filter((t) => t.building === programBuilding) : [];
+    const pool = ownMap.length ? ownMap : ownBuilding.length ? ownBuilding : all;
     // 크기를 주지 않았으면 같은 종류 견본 중 하나를 고른다(seed 마다 다른 견본 — 같은 집이 반복되지 않게).
     const template = near ? pool[0] : pool[Math.floor(r() * pool.length)];
     const [dw, dh] = DEFAULT_SIZE[q.kind] ?? (/_shop$/u.test(q.kind) ? DEFAULT_SIZE.shop! : [6, 5]);

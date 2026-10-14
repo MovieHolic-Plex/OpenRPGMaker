@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b29cd66af7534bec2da9da58c50d718b38b518c2bd6458cfa368c0c74b69560a",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "경비 데스크",
+ "label": "jp_city/interior_office2/ox-security-desk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "security desk",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk surface is visible from rows 10 to 19 (10 source pixel rows) with items placed on top, and the front wooden face extends from row 20 to 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6359
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "security desk",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk tabletop surface is prominently visible from rows 10 to 19 (10 source pixel rows deep), with the brown front paneling facing south from rows 20 to 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6679
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "security desk",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk surface is clearly visible from row 10 to row 19 (10 source pixel rows) holding dual monitors, a keyboard, clipboard, and radio, with the wooden front face visible below from row 20 to row 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6282
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "security desk",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk surface is clearly visible from rows 10 to 19 (10 rows deep) holding monitors, a clipboard, and a radio, atop a vertical front panel from rows 20 to 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5871
+  }
+ ],
+ "decidedAt": "2026-10-14T06:02:44.920Z",
+ "cells": {
+  "16": [
+   "1fed35bd075220d5",
+   "4945f48c877ffc97",
+   "7412ab723bb8f7e0",
+   "c595065dc9c2b7f2"
+  ],
+  "24": [
+   "0cddc858ef19e205",
+   "0dc034ad64a13c94",
+   "1c76a6b791b04ca7",
+   "317b52c4e0fd6968",
+   "37a323ae5a3fdefb",
+   "4566fa973de49a88",
+   "4837b2ca91000faa",
+   "63e08a78c5a1e170",
+   "6409c8ad3b5c28d0",
+   "71437e5e9ac348c6",
+   "7ea11f21848cf28d",
+   "876db2a93a8dfca0",
+   "8f3deaca11b66956",
+   "9650b7da970fe38c",
+   "9ebf7246fd98a365",
+   "ab41db3a3fa06bba",
+   "bb5539acaaf090bc",
+   "c2589b97ab869fdd",
+   "c498a04df60208ea",
+   "cb5031f7be463fc5",
+   "cd1246847dd06635",
+   "da75a920bed0cc8c",
+   "e50fe686ba11e527",
+   "f68b33e3dd322ea2"
+  ],
+  "32": [
+   "744cb5a5dfcf0b61"
+  ],
+  "48": [
+   "01651bb7ad542b05",
+   "493ce7bed1b3f28d",
+   "646b4a46f458ecd4",
+   "94d2f57ed4f44061",
+   "a80c8a96d5842d02",
+   "d5c094db04ec6a11"
+  ]
+ }
+}

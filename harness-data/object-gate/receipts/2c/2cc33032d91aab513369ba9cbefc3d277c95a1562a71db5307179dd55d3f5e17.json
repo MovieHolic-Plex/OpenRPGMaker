@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2cc33032d91aab513369ba9cbefc3d277c95a1562a71db5307179dd55d3f5e17",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "재진 접수기(再来受付機)",
+ "label": "jp_city/interior_hospital/hs-reception-kiosk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "kiosk terminal body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The check-in kiosk terminal head, pole, and base are drawn entirely in a flat front elevation with no visible top surface at the crown (row 5 is just a flat 1px horizontal outline).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3505
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "kiosk head and stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the kiosk has only a 1px outline at row 5 with no foreshortened top surface visible. The entire machine is drawn in flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5397
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "kiosk / reception machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The kiosk is drawn in pure front elevation with a completely flat top horizontal outline at row 4 and a 1px highlight at row 5; no foreshortened top surface is visible on the head, intermediate ledge, or base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4857
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "kiosk unit / terminal head",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The reception machine is drawn in flat front elevation; the top of the machine only has a 1px outline/highlight line (row 5) with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3437
+  }
+ ],
+ "decidedAt": "2026-10-14T06:16:49.339Z",
+ "cells": {
+  "16": [
+   "468916976e901481",
+   "e06a45c1bbcf3b2d",
+   "f4c358e944dbd36f"
+  ],
+  "24": [
+   "0cdfe20a0583366e",
+   "66d809208f9e1767",
+   "87eaaf120dd6b0aa",
+   "ce9d238c89f85c3d",
+   "f0739ffb59cd539a",
+   "fdc35aa62987dc21"
+  ],
+  "32": [
+   "00f722a2d6a60a50",
+   "214e7efe33c9bbfa",
+   "61ac036c499f5745",
+   "652ce28d1ab8865b",
+   "90889430177ca3ee",
+   "9b5506cd35896e12",
+   "b3fd3d14235fc0bb",
+   "b7e3fcaa552db952",
+   "b9f892500ba2cee2",
+   "d5ff40ca17450a48",
+   "dc2e887a094cbdf9",
+   "fc5341d6a784c22f"
+  ],
+  "48": [
+   "64d32ff693e57db8",
+   "9b39929dc279275f",
+   "ad5031b41f14887c"
+  ]
+ }
+}

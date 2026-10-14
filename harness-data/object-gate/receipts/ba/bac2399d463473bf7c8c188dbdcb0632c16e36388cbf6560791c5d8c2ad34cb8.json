@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bac2399d463473bf7c8c188dbdcb0632c16e36388cbf6560791c5d8c2ad34cb8",
+ "width": 16,
+ "height": 32,
+ "kind": "round_body",
+ "name": "소화기(받침 위)",
+ "label": "jp_city/interior_school2/sx-extinguisher",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fire extinguisher cylinder",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fire extinguisher body and handle are drawn in pure front elevation. The white label is a straight horizontal rectangle with no cylindrical curvature, and the top of the cylinder has no foreshortened elliptical top surface, only front-facing dome shoulders.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4561
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "red fire extinguisher tank",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylindrical body of the fire extinguisher is drawn in pure front elevation without any elliptical foreshortened top surface or dome seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3928
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fire extinguisher cylinder",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The red cylinder is drawn in pure front elevation: its top shoulder is a rounded 2D dome silhouette without an elliptical top surface, the white label is a straight horizontal rectangle, and the base is a flat horizontal line.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6592
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fire extinguisher cylinder",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The red cylindrical body is drawn in pure front elevation with straight vertical sides, a flat horizontal bottom, a flat rectangular label (rows 19-21), and dome shoulders leading to the valve without any foreshortened elliptical top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6031
+  }
+ ],
+ "decidedAt": "2026-10-14T06:02:44.917Z",
+ "cells": {
+  "16": [
+   "7fee77bb83c1141b",
+   "96bfb536fe68a5fa"
+  ],
+  "24": [
+   "0a14e174a702cb1d",
+   "228df9046394d1bf",
+   "3ca6ff622ebccb0d",
+   "4dab6637639c9a87",
+   "596c65725f529561",
+   "6b943c9753b45112",
+   "701a9db204acef49",
+   "869e0a118ea6cbec",
+   "892c97f8678c838d",
+   "cb2c70c16f70c304",
+   "cc1b783a46abe6cb",
+   "f7787914a1cf3122"
+  ],
+  "32": [
+   "1daeca265e425bc8",
+   "9484fcf3d4478d96",
+   "9f0e9f668ca8102a"
+  ],
+  "48": [
+   "3b083c151796aec9",
+   "6c102dd91252e878",
+   "97610cb68ef31889",
+   "ab44dcff24019412",
+   "d528d984498274d3",
+   "e5bf6c99df554e00"
+  ]
+ }
+}
