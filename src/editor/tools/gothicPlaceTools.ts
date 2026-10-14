@@ -191,7 +191,9 @@ export const BUILD_GOTHIC_PLACE_TOOL: ToolDefinition = {
       const baseSeed = seed ?? 1;
       let r = buildWizardingSpace({ ...input, seed: baseSeed }, tileset, GOTHIC_SPACE_SPEC);
       const fitsLimits = (x: typeof r) => {
-        if (x.issues.some((i) => i.severity === "error") || x.width * x.height < 150) return true;
+        if (x.issues.some((i) => i.severity === "error")) return true;
+        if (x.issues.some((i) => i.severity === "warning")) return false;   // 가구가 모자란 배치(자리 부족 경고)보다 다른 시드를 먼저 본다
+        if (x.width * x.height < 150) return true;
         const probe = { id: "_probe", name: "_probe", width: x.width, height: x.height, tilesetId: GOTHIC_MANOR_ID, events: [],
           lowerTiles: x.lowerTiles, upperTiles: x.upperTiles, lowerOverlayTiles: x.lowerOverlayTiles, upperOverlayTiles: x.upperOverlayTiles } as unknown as GameMap;
         const q = measureLayoutQuality(draft, probe);

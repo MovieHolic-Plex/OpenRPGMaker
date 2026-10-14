@@ -168,7 +168,7 @@
      ],
      "clearance": 0,
      "wallTop": 2,
-     "wallMatch": "plain"
+     "wallMatch": "bare"
     },
     {
      "kit": "gm-paint-portrait",
@@ -179,7 +179,7 @@
      ],
      "clearance": 0,
      "wallTop": 1,
-     "wallMatch": "plain"
+     "wallMatch": "bare"
     },
     {
      "kit": "gm-paint-cursed",
@@ -190,7 +190,7 @@
      ],
      "clearance": 0,
      "wallTop": 1,
-     "wallMatch": "plain"
+     "wallMatch": "bare"
     },
     {
      "kit": "gm-paint-landscape",
@@ -201,7 +201,7 @@
      ],
      "clearance": 0,
      "wallTop": 2,
-     "wallMatch": "plain"
+     "wallMatch": "bare"
     },
     {
      "kit": "gm-armor",
@@ -235,12 +235,15 @@
     },
     {
      "kit": "gm-candelabra",
-     "placement": "side-wall",
+     "placement": "beside",
      "count": [
       1,
       2
      ],
-     "clearance": 1,
+     "clearance": 0,
+     "near": [
+      "gm-armor"
+     ],
      "access": false
     },
     {
@@ -252,21 +255,27 @@
      ],
      "clearance": 0,
      "access": false
+    },
+    {
+     "kit": "gm-ov-cobweb",
+     "placement": "corner",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 0,
+     "access": false,
+     "corners": [
+      "nw"
+     ]
     }
    ],
    "decals": [
     {
-     "kit": "gm-ov-cobweb",
-     "count": [
-      1,
-      2
-     ]
-    },
-    {
      "kit": "gm-ov-dust",
      "count": [
       1,
-      3
+      1
      ]
     },
     {
@@ -319,7 +328,7 @@
        ],
        "clearance": 0,
        "wallTop": 1,
-       "wallMatch": "plain"
+       "wallMatch": "bare"
       },
       {
        "kit": "gm-paint-cursed",
@@ -330,7 +339,7 @@
        ],
        "clearance": 0,
        "wallTop": 1,
-       "wallMatch": "plain"
+       "wallMatch": "bare"
       },
       {
        "kit": "gm-paint-landscape",
@@ -341,7 +350,7 @@
        ],
        "clearance": 0,
        "wallTop": 2,
-       "wallMatch": "plain"
+       "wallMatch": "bare"
       },
       {
        "kit": "gm-armor",
@@ -371,7 +380,7 @@
        ],
        "clearance": 0,
        "wallTop": 2,
-       "wallMatch": "plain"
+       "wallMatch": "bare"
       }
      ]
     },
@@ -464,7 +473,8 @@
        ],
        "clearance": 1,
        "wallTop": 0,
-       "wallMatch": "plain"
+       "wallMatch": "plain",
+       "align": "center"
       },
       {
        "kit": "gm-paint-portrait",
@@ -475,7 +485,7 @@
        ],
        "clearance": 0,
        "wallTop": 1,
-       "wallMatch": "plain"
+       "wallMatch": "bare"
       },
       {
        "kit": "gm-paint-cursed",
@@ -486,7 +496,7 @@
        ],
        "clearance": 0,
        "wallTop": 1,
-       "wallMatch": "plain"
+       "wallMatch": "bare"
       },
       {
        "kit": "gm-paint-landscape",
@@ -497,7 +507,7 @@
        ],
        "clearance": 0,
        "wallTop": 2,
-       "wallMatch": "plain"
+       "wallMatch": "bare"
       },
       {
        "kit": "gm-clock",
@@ -508,7 +518,7 @@
        ],
        "clearance": 0,
        "wallTop": 2,
-       "wallMatch": "plain"
+       "wallMatch": "bare"
       },
       {
        "kit": "gm-candelabra",
@@ -574,7 +584,8 @@
      ],
      "clearance": 1,
      "wallTop": 0,
-     "wallMatch": "plain"
+     "wallMatch": "plain",
+     "align": "center"
     },
     {
      "kit": "gm-bookshelf",
@@ -585,7 +596,7 @@
      ],
      "clearance": 0,
      "wallTop": 2,
-     "wallMatch": "plain"
+     "wallMatch": "bare"
     },
     {
      "kit": "gm-bookshelf",
@@ -666,22 +677,28 @@
      ],
      "clearance": 0,
      "wallTop": 1,
-     "wallMatch": "plain"
+     "wallMatch": "bare"
+    },
+    {
+     "kit": "gm-ov-cobweb",
+     "placement": "corner",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 0,
+     "access": false,
+     "corners": [
+      "nw"
+     ]
     }
    ],
    "decals": [
     {
-     "kit": "gm-ov-cobweb",
-     "count": [
-      1,
-      2
-     ]
-    },
-    {
      "kit": "gm-ov-dust",
      "count": [
       1,
-      3
+      1
      ]
     },
     {
@@ -735,7 +752,7 @@
      ],
      "clearance": 1,
      "wallTop": 3,
-     "wallMatch": "plain"
+     "wallMatch": "bare"
     },
     {
      "kit": "gm-vanity",
@@ -746,7 +763,7 @@
      ],
      "clearance": 0,
      "wallTop": 3,
-     "wallMatch": "plain"
+     "wallMatch": "bare"
     },
     {
      "kit": "gm-wardrobe",
@@ -779,7 +796,7 @@
      ],
      "clearance": 0,
      "wallTop": 1,
-     "wallMatch": "plain"
+     "wallMatch": "bare"
     },
     {
      "kit": "gm-armchair",
@@ -799,21 +816,27 @@
      ],
      "clearance": 0,
      "access": false
+    },
+    {
+     "kit": "gm-ov-cobweb",
+     "placement": "corner",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 0,
+     "access": false,
+     "corners": [
+      "nw"
+     ]
     }
    ],
    "decals": [
     {
-     "kit": "gm-ov-cobweb",
-     "count": [
-      1,
-      2
-     ]
-    },
-    {
      "kit": "gm-ov-dust",
      "count": [
       1,
-      3
+      1
      ]
     },
     {
@@ -867,7 +890,7 @@
      ],
      "clearance": 1,
      "wallTop": 3,
-     "wallMatch": "plain"
+     "wallMatch": "bare"
     },
     {
      "kit": "gm-pot-shelf",
@@ -878,7 +901,7 @@
      ],
      "clearance": 0,
      "wallTop": 3,
-     "wallMatch": "plain"
+     "wallMatch": "bare"
     },
     {
      "kit": "gm-kitchen-table",
@@ -923,7 +946,7 @@
      "kit": "gm-ov-stain",
      "count": [
       1,
-      2
+      1
      ],
      "near": [
       "gm-kitchen-table"
@@ -932,8 +955,8 @@
     {
      "kit": "gm-ov-dust",
      "count": [
-      2,
-      3
+      1,
+      1
      ]
     }
    ],
@@ -980,7 +1003,7 @@
      ],
      "clearance": 0,
      "wallTop": 3,
-     "wallMatch": "plain"
+     "wallMatch": "bare"
     },
     {
      "kit": "gm-wine-rack",
@@ -997,7 +1020,7 @@
      "kit": "gm-barrel",
      "placement": "corner",
      "count": [
-      2,
+      1,
       3
      ],
      "clearance": 0
@@ -1023,6 +1046,19 @@
      ],
      "clearance": 0,
      "access": false
+    },
+    {
+     "kit": "gm-ov-cobweb",
+     "placement": "corner",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 0,
+     "access": false,
+     "corners": [
+      "nw"
+     ]
     }
    ],
    "decals": [
@@ -1030,28 +1066,21 @@
      "kit": "gm-ov-stain",
      "count": [
       1,
-      2
-     ]
-    },
-    {
-     "kit": "gm-ov-cobweb",
-     "count": [
-      1,
-      2
+      1
      ]
     },
     {
      "kit": "gm-bones",
      "count": [
       0,
-      2
+      1
      ]
     },
     {
      "kit": "gm-ov-puddle",
      "count": [
       1,
-      2
+      1
      ]
     }
    ],
@@ -1093,7 +1122,8 @@
     "ns": "gm-runner-ns",
     "ew": "gm-runner-ew",
     "nEnd": "gm-runner-n-end",
-    "sEnd": "gm-runner-s-end"
+    "sEnd": "gm-runner-s-end",
+    "northGap": 2
    },
    "furniture": [
     {
@@ -1105,20 +1135,20 @@
      ],
      "clearance": 1,
      "wallTop": 4,
-     "wallMatch": "plain"
-    },
-    {
-     "kit": "gm-candelabra",
-     "placement": "beside",
-     "count": [
-      2,
-      2
-     ],
-     "clearance": 0,
-     "near": [
-      "gm-altar"
-     ],
-     "access": false
+     "wallMatch": "bare",
+     "align": "center",
+     "with": [
+      {
+       "kit": "gm-candelabra",
+       "dx": -1,
+       "dy": 0
+      },
+      {
+       "kit": "gm-candelabra",
+       "dx": 3,
+       "dy": 0
+      }
+     ]
     },
     {
      "kit": "gm-pew",
@@ -1140,6 +1170,19 @@
      ],
      "clearance": 0,
      "access": false
+    },
+    {
+     "kit": "gm-ov-cobweb",
+     "placement": "corner",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 0,
+     "access": false,
+     "corners": [
+      "nw"
+     ]
     }
    ],
    "decals": [
@@ -1147,14 +1190,7 @@
      "kit": "gm-ov-dust",
      "count": [
       1,
-      3
-     ]
-    },
-    {
-     "kit": "gm-ov-cobweb",
-     "count": [
-      1,
-      2
+      1
      ]
     }
    ],
@@ -1252,18 +1288,24 @@
      ],
      "clearance": 0,
      "access": false
+    },
+    {
+     "kit": "gm-ov-cobweb",
+     "placement": "corner",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 0,
+     "access": false,
+     "corners": [
+      "nw"
+     ]
     }
    ],
    "decals": [
     {
      "kit": "gm-bones",
-     "count": [
-      1,
-      3
-     ]
-    },
-    {
-     "kit": "gm-ov-cobweb",
      "count": [
       1,
       2
@@ -1273,7 +1315,7 @@
      "kit": "gm-ov-puddle",
      "count": [
       0,
-      2
+      1
      ]
     }
    ],
@@ -1324,7 +1366,7 @@
      ],
      "clearance": 0,
      "wallTop": 1,
-     "wallMatch": "plain"
+     "wallMatch": "bare"
     },
     {
      "kit": "gm-paint-landscape",
@@ -1335,7 +1377,7 @@
      ],
      "clearance": 0,
      "wallTop": 2,
-     "wallMatch": "plain"
+     "wallMatch": "bare"
     },
     {
      "kit": "gm-paint-cursed",
@@ -1346,7 +1388,7 @@
      ],
      "clearance": 0,
      "wallTop": 1,
-     "wallMatch": "plain"
+     "wallMatch": "bare"
     },
     {
      "kit": "gm-display-case",
@@ -1411,7 +1453,7 @@
      "kit": "gm-ov-dust",
      "count": [
       1,
-      3
+      1
      ]
     },
     {
