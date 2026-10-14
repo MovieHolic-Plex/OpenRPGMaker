@@ -7,6 +7,7 @@ import { isPassable } from "@/project/collision";
 import { setLayerTileAt } from "@/project/mapLayers";
 import { clearTileStack } from "@/project/mapOverlayTiles";
 import { addMapLocation } from "@/project/mapNamedLocations";
+import { COMPOSED_LAYOUT_TAG } from "@/ai/piAgent/layoutQuality";
 import { extractTreeNode, insertTreeNode } from "@/project/mapTree";
 import {
   DESERT_KIND_LABEL, DESERT_MIN_SIZE, DESERT_ROOM_LABEL, DESERT_ROOM_MAX, DESERT_ROOM_MIN,
@@ -114,7 +115,7 @@ export const COMPOSE_DESERT_EAST_MAP_TOOL: ToolDefinition = {
       if (!door) continue;
       addMapLocation(target, { name: `${d.name}`, x: d.rect.x, y: d.rect.y, w: d.rect.w, h: d.rect.h, note: `문 (${door.x},${door.y}) 외 ${d.doors.length - 1}칸 · 접근칸 (${d.access[0]!.x},${d.access[0]!.y}) — 실내는 compose_desert_east_room 으로 지어 link_desert_east_interior 로 잇는다`, tags: ["desert-east-building", d.kit] });
     }
-    for (const z of r.zones) addMapLocation(target, { name: z.name, x: z.rect.x, y: z.rect.y, w: z.rect.w, h: z.rect.h, note: z.use, tags: ["desert-east-zone"] });
+    for (const z of r.zones) addMapLocation(target, { name: z.name, x: z.rect.x, y: z.rect.y, w: z.rect.w, h: z.rect.h, note: z.use, tags: ["desert-east-zone", COMPOSED_LAYOUT_TAG] });
     const blocked = (target.events ?? []).filter((e) => !walkable(next, target, e.x, e.y)).map((e) => `${e.name ?? e.id}(${e.x},${e.y})`);
     draft.maps[mapId] = target;
     const doors = r.buildings.filter((d) => d.doors.length);
@@ -165,6 +166,10 @@ export const COMPOSE_DESERT_EAST_ROOM_TOOL: ToolDefinition = {
     const target = writeLayers(next, mapId, r.lower, r.upper);
     if (!walkable(next, target, r.start.x, r.start.y)) throw new ToolError(`문 안쪽 칸 (${r.start.x},${r.start.y}) 이 막혔다 — seed 를 바꾼다`, { code: "compose-failed", mapId });
     for (const c of r.doors) if (!walkable(next, target, c.x, c.y)) throw new ToolError(`문 틈 (${c.x},${c.y}) 이 막혔다`, { code: "compose-failed", mapId });
+    // 구성기가 가구 자리·통로를 정해 깐 방이다 — 배치 품질 권고(빈 바닥·대칭)가 «흩뿌려 채우기»를 시키지 않게 composed-layout 이름표를 단다
+    // (2026-10-14 실제 입력창: 묘실 «대칭 8.4배» 권고를 받은 조수가 궤짝을 낱개로 덧찍었다).
+    target.locations = (target.locations ?? []).filter((l) => !(l.tags ?? []).includes("desert-east-room"));
+    addMapLocation(target, { name: DESERT_ROOM_LABEL[kind], x: 1, y: 1, w: map.width - 2, h: map.height - 2, note: "구성기로 짠 방(가구 자리·통로가 정해져 있다)", tags: ["desert-east-room", COMPOSED_LAYOUT_TAG] });
     draft.maps[mapId] = target;
     return {
       summary: `${DESERT_ROOM_LABEL[kind]}를 ${map.width}×${map.height} 맵(${mapId})에 짰다(seed ${seed}) — 가구 ${r.props.length}개, 문 틈 ${r.doors.map((c) => `(${c.x},${c.y})`).join(" ")}. 야외 건물 문과 link_desert_east_interior 로 잇는다.`,
