@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a896cb14a951180850c7c747fa9e656dea69d780794ba88658ad88eb28e36255",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "진창(녹은 눈과 흙)",
+ "label": "snow-north/sn-slush",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mud and slush ground terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile depicts flat ground terrain composed of mud and patches of melting snow, viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4389
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "mud and slush ground terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting melted snow and muddy ground filling the entire 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5551
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "mud and melting snow ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile depicting mud, dirt, and patches of melting snow; standard top-down terrain filling the full 16x16 space.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4457
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "mud and slush ground terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ground terrain tile showing muddy soil with melting snow patches across the entire 16x16 surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5440
+  }
+ ],
+ "decidedAt": "2026-10-14T08:00:44.469Z",
+ "cells": {
+  "16": [
+   "dc6d9467858a26b4"
+  ],
+  "24": [
+   "088d8ac73604e0cb",
+   "5eb41fcf0d68a125",
+   "66a580bb0fd7f94f",
+   "8de53111582f284a",
+   "9f804a3d041a4a73",
+   "c9996a2571fe14a3"
+  ],
+  "32": [
+   "1873f07737cf426f",
+   "44507483d6c1fb87",
+   "75231ffd047d7dd4",
+   "82dd470404d7482c",
+   "d2ecaa67c7578aef",
+   "f9f608b4a8a2820e"
+  ],
+  "48": [
+   "24c776e099fb2207",
+   "3359ede0aa740908",
+   "50cc6d3475a04f7d",
+   "b7ecb0a33d533703",
+   "c3af33677b3504e8",
+   "fbb1880e0cd2748e"
+  ]
+ }
+}

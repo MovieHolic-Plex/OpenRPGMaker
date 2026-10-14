@@ -1,0 +1,148 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "26fba9a87d1ba6c27cdc97453e855f999b9d8cfe8cea91d530dce3f866b62961",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "돌 벽난로(넓은 선반 + 화덕 석판 + 장작불)",
+ "label": "snow-north/sn-hearth",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone fireplace with mantel shelf and firebox",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fireplace structure is drawn in pure front elevation. The chimney extends flatly to the top edge with no top surface, the mantel beam has only a 1px edge highlight (row 9) instead of a visible horizontal shelf plane (requires >=3px), and the firebox arch is drawn straight-on.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11590
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone fireplace with wide mantel shelf",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fireplace features a wide mantel shelf top surface spanning rows 0-8 (9 rows deep) viewed from above in 3/4 perspective, populated with items (a mug with a foreshortened top opening, a book, and a candle) placed at varying depths. Below the shelf is the front face of the wooden mantel beam (rows 9-12), the stone firebox surround (rows 13-26), and a projecting hearth slab with its own top surface visible at rows 27-29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 21984
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone fireplace with mantle and hearth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fireplace is drawn in flat front elevation. The chimney breast and main stone body show no visible top surface (top_rows = 0), and the wooden mantle shelf has only a 1px top highlight (row 9) with a 2-3px front face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10196
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone fireplace with wooden mantel beam and hearth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main fireplace structure and the wooden mantel beam are drawn straight-on in front elevation; the mantel shelf has only a 1px highlight row (row 9) above its 3px front face (rows 10-12), lacking a visible horizontal top surface despite the 3/4 perspective requirement.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9496
+  }
+ ],
+ "decidedAt": "2026-10-14T08:01:22.990Z",
+ "cells": {
+  "16": [
+   "32af5476a44c3a7a",
+   "4915ef8e914ebe34",
+   "b246ca93cd92d0e3",
+   "dada5b9bb7f11527"
+  ],
+  "24": [
+   "0b0269fb1b11a4e8",
+   "2838e9ac5ac50200",
+   "2bd60ca69866dbde",
+   "2f6aad368dab790b",
+   "2fd1b338bd333c6d",
+   "5064893a70a02c53",
+   "5bf6a235ec2b9348",
+   "687db49c6c9146c7",
+   "75174c94cf2149c3",
+   "7ef66ec6dfbf44b9",
+   "8050a83fa363b3f3",
+   "83162c0a57340b58",
+   "8d2c962d73c15546",
+   "95b145f9faa7fd41",
+   "abb243c9428cdbf3",
+   "bbcafaa69faa2223",
+   "bda9a74b56f6a01a",
+   "c32dc62092fa4b15",
+   "c523660b7d972baf",
+   "c52a966c5eee5bb0",
+   "de4c999c520fb723",
+   "dfe7735bfea0f22c",
+   "f27a7c068a76fa60",
+   "fb4a516f2e9eb71c"
+  ],
+  "32": [
+   "c7f7577434997594"
+  ],
+  "48": [
+   "3f0b975b8186856d",
+   "6475a853e7cfceae",
+   "88200811422edc59",
+   "966f569148343413",
+   "dad7439e5fab3866",
+   "e4b08eb3360b9672"
+  ]
+ }
+}

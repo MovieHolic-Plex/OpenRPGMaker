@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fdf2dbbf5a71ee6ebb3ef6ba154de2d65fab830d9092574ea5310f07d8fb6228",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "장작더미(처마 지붕 밑, 단면 나이테)",
+ "label": "snow-north/sn-woodpile",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "woodpile shelter under snow-covered eave roof",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered roof at the top shows a clear foreshortened downward slope covering rows 1 through 7 (approx. 7 pixel rows) before dropping into the eave/icicle overhang.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5961
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "snow-covered shed roof over stacked wood",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered roof slope is clearly visible from above across rows 2–7 (approx 6 rows tall) before reaching the overhanging eaves/icicles on rows 8–10, providing proper 3/4 perspective for the structure.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6419
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "firewood shed with snow-covered roof",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered roof eave shows a clear top slope foreshortened over rows 1-8 (~7 rows tall) above the frontal stack of wood/shelving.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5637
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wood shelter / firewood shed with snow-covered roof",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered roof slope facing the viewer occupies rows 2 to 8 (about 7 source pixels tall), providing clear 3/4 top-down perspective over the structure.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5702
+  }
+ ],
+ "decidedAt": "2026-10-14T08:02:24.503Z",
+ "cells": {
+  "16": [
+   "5bd874145a75fef8",
+   "709256f7ba7155f5",
+   "dc32df127311c6bf",
+   "fb51e87839b9f062"
+  ],
+  "24": [
+   "0c1f1a0594c10c27",
+   "14e8130e15731c65",
+   "183c77c2e8cb513f",
+   "31ffcafe1de05c65",
+   "34a70987f97eb8b3",
+   "395e6ce9cf709573",
+   "3d9967e08719c983",
+   "4bd5c06b467b0d4a",
+   "62640d3ab0e7dd29",
+   "79b009775568dff8",
+   "8ae30b7de51ec3d8",
+   "9002c0cd9268d42e",
+   "9d95c82c2131531d",
+   "a862cd46390de096",
+   "b573095fe5ddd601",
+   "ba54be90e57b7b9b",
+   "bcbb39b5e73d050c",
+   "be3ab1176b3ad7c6",
+   "c1795c33096dbe98",
+   "cca29705dcf52c7f",
+   "d7c4d5937c2d4399",
+   "e8479f47234a4745",
+   "e957ac1686c0f572",
+   "f38ee5ccee498107"
+  ],
+  "32": [
+   "76fddaba15554755"
+  ],
+  "48": [
+   "394c4d6d7a38d94c",
+   "3bb155b38546ac81",
+   "49558acc7101f75d",
+   "aa9b13b125ebc3fa",
+   "dbb3d986f8a3254b",
+   "ef7830d2c2a9c675"
+  ]
+ }
+}
