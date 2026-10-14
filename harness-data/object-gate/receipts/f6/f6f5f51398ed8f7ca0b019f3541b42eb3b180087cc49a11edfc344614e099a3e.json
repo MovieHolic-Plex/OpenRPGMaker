@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f6f5f51398ed8f7ca0b019f3541b42eb3b180087cc49a11edfc344614e099a3e",
+ "width": 16,
+ "height": 32,
+ "kind": "round_body",
+ "name": "차 가마(풍로 위 무쇠 솥)",
+ "label": "sengoku-edo/se-tea-kettle",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron tea kettle on top of a brazier",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn as a flat front elevation. Both the top edge (row 5) and the bottom edge (row 23) are straight horizontal lines with 1px chamfered corners, the junction between pot and brazier is purely horizontal, and no elliptical top surface or opening is visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10387
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "kettle on brazier (cauldron/stove)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in pure front elevation: all horizontal boundaries (top rim, lid seam at row 9/10, brazier rim at row 17/18, and base) are completely flat horizontal lines with no elliptical curvature or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9034
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "kettle on top of a brazier",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in pure front elevation: all horizontal junctions (kettle base at row 16, brazier rim at rows 17-18, firebox opening at rows 20-22, and the base at row 23) are flat, straight horizontal lines with zero downward elliptical curvature. The top lid is drawn as a flat-front rounded dome rather than an elliptical top surface viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10391
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "kettle on stove (iron pot over brazier)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in pure front elevation: the top outline at row 5 is a flat horizontal line with 1px chamfers, the separation between pot and stove (rows 17-18) is completely horizontal, and the stove firebox opening is a flat 2D rectangle with no top surface visible anywhere.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8071
+  }
+ ],
+ "decidedAt": "2026-10-13T19:37:02.185Z",
+ "cells": {
+  "16": [
+   "36210b7797a5350d",
+   "e1112db8b8eea360"
+  ],
+  "24": [
+   "36637204e2cd73f1",
+   "4fe13f326e1f5bd6",
+   "611a7822a56a58b8",
+   "7c6a82cbbe7b8698",
+   "b09946be90477f35",
+   "d5b2d23d9205249d",
+   "db6b5d08e5e247d7",
+   "f4a69cc45a1b5acc",
+   "f7c0cb5db17e4545"
+  ],
+  "32": [
+   "6670048da87c8b1e",
+   "827a8903e5362b5b",
+   "ce6dcf9994a0ebab"
+  ],
+  "48": [
+   "17ab654b27e2ba79",
+   "71e2738f9fe940ca",
+   "92369eed0cd7acd8",
+   "c1c3b814f638ea83",
+   "e966f84cc8a40730",
+   "fc4669a528a778ed"
+  ]
+ }
+}

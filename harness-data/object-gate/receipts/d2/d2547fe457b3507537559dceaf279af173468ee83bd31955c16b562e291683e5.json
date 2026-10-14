@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d2547fe457b3507537559dceaf279af173468ee83bd31955c16b562e291683e5",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "방화 물통 더미(받침 위 통 여섯)",
+ "label": "sengoku-edo/se-bucket-stack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stack of water buckets/tubs",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each bucket clearly displays an elliptical opening filled with blue water (4 rows tall) viewed from above, with cylindrical south faces below them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4417
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water barrels / fire tubs stack",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tubs feature clearly foreshortened elliptical openings showing blue water (approx 3-4 pixel rows tall) and vertical front faces below, properly matching top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4280
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water tubs/buckets stacked",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each round tub shows an elliptical opening filled with water (~4 rows tall) viewed from above, with clear south-facing front walls below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3360
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water tubs/barrels stacked together",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tubs clearly show foreshortened elliptical top surfaces/openings filled with blue water (approx 4 rows tall) along with their front curved bodies below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3916
+  }
+ ],
+ "decidedAt": "2026-10-13T19:42:40.482Z",
+ "cells": {
+  "16": [
+   "d823d259f6eb441c"
+  ],
+  "24": [
+   "033234c4baaf7c99",
+   "749cbf133489ff55",
+   "b488953fe2100936",
+   "b6f15bbe2f8a101b",
+   "cf260c642634cb72",
+   "cf29f7bff0af2351"
+  ],
+  "32": [
+   "140e15997a5705f7",
+   "2b1d1fc75b696055",
+   "450af234a25315e6",
+   "5c948cc90ae33a17",
+   "a94829d95a11c97a",
+   "eec33155b4392861"
+  ],
+  "48": [
+   "0fef2b7e6a4e33f3",
+   "109868f0a20075d6",
+   "458ea6905f662339",
+   "b95fd0c6827e2091",
+   "c34cdd665fa1885d",
+   "ecfdd99dad2d7bbc"
+  ]
+ }
+}

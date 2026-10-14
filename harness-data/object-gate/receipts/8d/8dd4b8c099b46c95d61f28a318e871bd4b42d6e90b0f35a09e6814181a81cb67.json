@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8dd4b8c099b46c95d61f28a318e871bd4b42d6e90b0f35a09e6814181a81cb67",
+ "width": 16,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "바둑판(다리 달린 두꺼운 판)",
+ "label": "sengoku-edo/se-go-board",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Go board (baduk table)",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top playing surface with grid and stones occupies rows 6-13 (8 rows tall), and the south front face of the thick wooden board occupies rows 14-18.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4277
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "baduk board (Go table)",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The Go board top surface spans rows 6 to 13 (8 pixel rows) showing the playing grid and stones, while the front south face spans rows 14 to 18.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3238
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "thick go board (baduk table)",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the Go board spans rows 6-13 (8 rows tall) showing grid lines and game stones, while the south vertical face spans rows 14-18 (5 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3424
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "thick go board (baduk table)",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The board shows an 8-row foreshortened top playing surface (rows 6-13) with grid lines and stones, above a 5-row vertical front face (rows 14-18).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3175
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.079Z",
+ "cells": {
+  "16": [
+   "159fea26d6ff681c",
+   "3016dbac3b93c548"
+  ],
+  "24": [
+   "0b4b5d2490adda41",
+   "1b8d143b6d250141",
+   "20794c8077e57d37",
+   "23a6c229724b27d4",
+   "293151760f40eac6",
+   "2a6dacb6efd33ca3",
+   "3dc11be6a5f70090",
+   "bcac76612dc616ef",
+   "d5ebc8cebad6269f"
+  ],
+  "32": [
+   "65a7d62db7c57b5d",
+   "85fa6a395c91bb18",
+   "c7d43dcc57dbd895"
+  ],
+  "48": [
+   "8d52a8ff56f0c62e",
+   "9c09e4e52966b266",
+   "9cc48761d1b8448f",
+   "becdf37113529a1f",
+   "bf0b8c53334040e2",
+   "faeb60bc50a26f10"
+  ]
+ }
+}

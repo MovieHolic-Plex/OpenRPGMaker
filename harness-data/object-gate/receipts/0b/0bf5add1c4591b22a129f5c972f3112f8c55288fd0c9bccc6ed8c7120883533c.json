@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0bf5add1c4591b22a129f5c972f3112f8c55288fd0c9bccc6ed8c7120883533c",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "풀밭 모서리(남동쪽 흙길)",
+ "label": "sengoku-edo/se-grass-edge-se",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass terrain tile edge bordering dirt path",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile transition (grass to dirt path at the southeast corner), correctly represented as top-down ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3483
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass autotile transition to dirt path",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain autotile showing the edge of a grassy surface bordering a dirt path to the south and east, viewed from above as standard top-down ground terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6895
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass to dirt path corner terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing grass transition to dirt path at south-east; appropriately drawn as top-down RPG ground terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6542
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass terrain edge tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile showing the corner border between grass and dirt path. Appropriately rendered as ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2484
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.060Z",
+ "cells": {
+  "16": [
+   "f604b1ce7618d2c9"
+  ],
+  "24": [
+   "22c414c60f5cc5d8",
+   "26b71c8ff995dd4e",
+   "8fd1ad8d7f40fd46",
+   "b1aff92b4e3174bc",
+   "b7c5622575de3244",
+   "cfc4b02d110d2434"
+  ],
+  "32": [
+   "3448ce40c8eeb552",
+   "558bcaf027c205e6",
+   "5f6ffba09bdcc168",
+   "8157a872bf9d7fe4",
+   "bdd343d2e250850e",
+   "bec95112f28dde42"
+  ],
+  "48": [
+   "0e9329dc7424dc10",
+   "1694f0df48992481",
+   "83e3a08c6a8bb721",
+   "8dba47e5603996a3",
+   "bc113e81009d5958",
+   "d55a81b9cc2af6b0"
+  ]
+ }
+}

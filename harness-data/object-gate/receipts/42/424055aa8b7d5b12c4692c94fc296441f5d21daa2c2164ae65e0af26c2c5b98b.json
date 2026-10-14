@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "424055aa8b7d5b12c4692c94fc296441f5d21daa2c2164ae65e0af26c2c5b98b",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "다실 초암(작은 초가 + 흙벽 + 둥근 창, 폭 3)",
+ "label": "sengoku-edo/se-chashitsu",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "thatched-roof tea hut (chashitsu)",
+    "kind_matches": true,
+    "top_rows": 33,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a prominent south-facing thatched roof slope spanning rows 1 to 33, correctly showing the roof surface from a 3/4 overhead perspective over the front mud wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6083
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "thatched roof tea hut",
+    "kind_matches": true,
+    "top_rows": 35,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features a large forward-sloping thatched roof with a decorated ridge spanning rows 0 to 34, showing extensive top surface area above the front wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4208
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "thatched tea house structure",
+    "kind_matches": true,
+    "top_rows": 35,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building has a large sloping thatched roof visible from above spanning rows 0 to 34 (35 rows tall) over the front wall (rows 36 to 61), perfectly matching standard 3/4 top-down JRPG building perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3452
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "thatched roof cottage",
+    "kind_matches": true,
+    "top_rows": 35,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The thatched roof displays a large foreshortened front slope spanning rows 0 to 34 (35 pixel rows) above the vertical front wall (rows 35-61), matching standard 3/4 top-down JRPG structure perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4689
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.068Z",
+ "cells": {
+  "16": [
+   "081062e986943870",
+   "3a4746d840350323",
+   "4aafed3d53178636",
+   "4d2f9a4005d39f48",
+   "6334c69eebcc89cf",
+   "6a89f1f2176b5f20",
+   "703f9fa4264f2a4d",
+   "786054b1e2af889e",
+   "8bf193ded80cc802",
+   "f32264930159181b",
+   "f75a8c82ef44a74b",
+   "fa0187d9a73bf2a3"
+  ],
+  "24": [
+   "04b3e3b0b6821dde",
+   "3f8978143a9523af",
+   "4139a151b90dbe00",
+   "4982ce9286fc0a29",
+   "818b32fe477b1897",
+   "8fe697da7cf92553",
+   "9e7e1e167b244825",
+   "b5b5235c8e98e677",
+   "b9f00318723308c1",
+   "dcc1b64f9033bd2f",
+   "ea41461c05d4a596",
+   "fc7bd30fbd3e33ed"
+  ],
+  "32": [
+   "0362937bd673a712",
+   "0a2cbea79541dfd4",
+   "133d119d328d4d53",
+   "2707df5019a30b8f",
+   "3cb74baf3b329e52",
+   "4089b095431b5219",
+   "7b4f698d189f4532",
+   "a1f6877f7b0d10eb",
+   "a51dbacf3578588d",
+   "c7786e68d0ca2e98",
+   "d8cf8c0e1aaec3d9",
+   "e64a14f241071245"
+  ],
+  "48": [
+   "6ccf2cf91c89dbed",
+   "a7594cc9ca2487a6",
+   "bf7b1bf05970688b",
+   "fafc291e76e1ac83"
+  ]
+ }
+}

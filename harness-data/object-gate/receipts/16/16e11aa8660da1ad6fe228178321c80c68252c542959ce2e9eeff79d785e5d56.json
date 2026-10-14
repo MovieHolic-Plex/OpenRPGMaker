@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "16e11aa8660da1ad6fe228178321c80c68252c542959ce2e9eeff79d785e5d56",
+ "width": 32,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "두루마리 서가(벽 앞)",
+ "label": "sengoku-edo/se-scroll-shelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall scroll bookcase",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bookcase is clearly visible from row 2 to row 9 (8 pixels deep) with documents/scrolls resting flat on it, before meeting the front face starting at row 10.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6731
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "scroll bookshelf",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bookshelf spans rows 2-9 (8 rows tall) with items/scrolls resting on it, and the interior shelves also display horizontal surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6720
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "scroll bookshelf",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bookshelf is clearly visible from rows 2 to 9 (8 rows tall) in foreshortened view, with horizontal scrolls/papers resting on top of it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5613
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "scroll bookcase / cabinet",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cabinet is clearly visible across rows 2–9 (approx. 8 source pixel rows tall) with items/scrolls resting flat on top of it. No isometric side faces are visible.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5161
+  }
+ ],
+ "decidedAt": "2026-10-13T19:42:40.483Z",
+ "cells": {
+  "16": [
+   "152b43fa124d4583",
+   "3241fae846819669",
+   "3cb5cf982a48daa1",
+   "8dea00343262a81d",
+   "d5f9b577fb87fc43",
+   "ffc62788d63899b1"
+  ],
+  "24": [
+   "11b029613863bbd7",
+   "19480f36c4d74639",
+   "38d71f1fd0950784",
+   "5aec15e367af6457",
+   "8be8b0309f6be4b7",
+   "8c613d9cc680a3f7",
+   "9f20b8d9e8ad09c7",
+   "a1e08ccaaaf42461",
+   "b667d66e85ceb83b",
+   "bca1538afe0c07e9",
+   "d698e986094f55ae",
+   "e30352a67211a443"
+  ],
+  "32": [
+   "438468e5960a0593",
+   "45be147ce3e1e7f8",
+   "5db290e2849408e9",
+   "7e7cdd22c1f4850d"
+  ],
+  "48": [
+   "0564c1f4ea4b4731",
+   "4806ba863dcf646d",
+   "8b8b0ec0a99a1460"
+  ]
+ }
+}

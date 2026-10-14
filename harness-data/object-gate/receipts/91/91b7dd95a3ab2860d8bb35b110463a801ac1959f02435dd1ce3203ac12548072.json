@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "91b7dd95a3ab2860d8bb35b110463a801ac1959f02435dd1ce3203ac12548072",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "생선 노점(나무 판 + 생선 줄)",
+ "label": "sengoku-edo/se-stall-fish",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fish stall counter / table",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop displaying rows of fish occupies rows 6-17 (12 rows tall) foreshortened from above, above a vertical front face on rows 18-23 and legs below, fitting standard 3/4 top-down projection.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3603
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fish stall counter with display board and legs",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden counter top displaying rows of fish spans rows 6 to 17 (12 px tall), showing a clear foreshortened top surface, with a 6px tall front skirt (rows 18-23) and two front legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3005
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fish stall counter",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden counter top surface spans rows 6-17 (12 rows tall) showing fish arranged on it, while the south front face is visible on rows 18-23 above the legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3390
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fish stall table/counter",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden tabletop display surface where fish are laid out spans rows 6 through 17 (~12 source pixel rows), resting atop a vertical front apron (rows 18-23) and table legs, providing clear 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4978
+  }
+ ],
+ "decidedAt": "2026-10-13T19:37:02.182Z",
+ "cells": {
+  "16": [
+   "0c04192e0caba8fa",
+   "4d86e7395c807e2f",
+   "8e89bcbe16ca847a",
+   "ba2971b3b44bde1a"
+  ],
+  "24": [
+   "09a04b398024222e",
+   "1b29f98df7b8715b",
+   "36027c5b8dd7df8d",
+   "3b76b17c23fae9db",
+   "48145b643fa1d610",
+   "4befde2d036cdc16",
+   "66b21c4bec36275d",
+   "6baed4d6dd17030f",
+   "6bf8fe16d84fe87a",
+   "6d28f725e20e2979",
+   "6d4fc91142bc4cb1",
+   "72f1bd5f1c9e72ed",
+   "7ca37ddaa2fbfc88",
+   "85a4a2000f11ff42",
+   "8ae6262ce73665b6",
+   "ab6a6bb88703bd57",
+   "af3cb3f63a731432",
+   "ce5ae8ced5db697a",
+   "d6cdce644c2af731",
+   "d72d68e157c8fde0",
+   "dde10160e66679cc",
+   "e1c033db5303ded0",
+   "f917a0bddf34062c",
+   "fdeb8ef663b565b9"
+  ],
+  "32": [
+   "be5c0c9b19a29b14"
+  ],
+  "48": [
+   "21b3644c014f56c0",
+   "2e6009371a1eb3c0",
+   "537a52089edd0b17",
+   "825f681bcf527b86",
+   "a950114336a160f7",
+   "dce03e071bf489c5"
+  ]
+ }
+}

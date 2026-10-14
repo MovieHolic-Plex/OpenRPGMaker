@@ -14,6 +14,7 @@ import joseonBaramSheet from "./joseonBaramSheet.json";
 import modernCitySheet from "./modernCitySheet.json";
 import jpCitySheet from "./jpCitySheet.json";
 import wizardingWorldSheet from "./wizardingWorldSheet.json";
+import sengokuEdoSheet from "./sengokuEdoSheet.json";
 import skyIslandSheet from "./skyIslandSheet.json";
 import steampunkCitySheet from "./steampunkCitySheet.json";
 import modernCampusSheet from "./modernCampusSheet.json";
@@ -148,6 +149,9 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   // 마법 학교 · 해리포터풍(2026-10) — HP 테마 42색 손 도트(성채 벽·12개 공간 기물·자연·탈것·생물·효과 움직임)를 48열 16px 칸으로 구운 시트. 칸 번호는 덧붙이기 전용(자리 키 핀).
   // 재생성: scripts/content/wizarding/bake_wz.py (검수 통과 조각만), 정의는 project/defaults/wizardingWorld.ts, openwiki/wizarding-world.md.
   {textureKey:"tex_wizarding_world",path:"assets/wizarding-world/wizarding-world-chipset.png",name:"마법 학교 · 해리포터풍 (손 도트)"},
+  // 전국·에도 일본(2026-10) — 잠긴 sengoku 팔레트 손 도트 야외(마치야·가게·여관·무가 저택·천수각·신사·절·농가·다리·논·해자·소품)와 실내(다다미·장지·후스마·이로리·다실·알현실)를 48열 16px 칸으로 구운 시트. 칸 번호는 덧붙이기 전용(자리 키 핀).
+  // 재생성: scripts/content/sengoku-edo/bake_se.py (object-gate 통과 조각만), 정의는 project/defaults/sengokuEdo.ts, openwiki/sengoku-edo.md.
+  {textureKey:"tex_sengoku_edo",path:"assets/sengoku-edo/sengoku-edo-chipset.png",name:"전국·에도 일본 (손 도트)"},
   // 하늘섬(2026-10) — 하늘섬 전용 팔레트 손 도트(풀·구름 섬 가장자리와 밑면 바위·구름 바닥·밧줄/돌다리·잔교·폭포·건물·섬 소품·비공정·실내 방 넷)를 48열 16px 칸으로 구운 시트. 칸 번호는 덧붙이기 전용(자리 키 핀).
   // 재생성: scripts/content/sky-island/bake_si.py (object-gate 통과 조각만), 정의는 project/defaults/skyIsland.ts, openwiki/sky-island.md.
   {textureKey:"tex_sky_island",path:"assets/sky-island/sky-island-chipset.png",name:"하늘섬 (손 도트)"},
@@ -195,6 +199,7 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === "tex_modern_city") return modernCitySheet.count;
   if (key === "tex_jp_city") return jpCitySheet.count;
   if (key === "tex_wizarding_world") return wizardingWorldSheet.count;
+  if (key === "tex_sengoku_edo") return sengokuEdoSheet.count;
   if (key === "tex_sky_island") return skyIslandSheet.count;
   if (key === "tex_steampunk_city") return steampunkCitySheet.count;
   if (key === "tex_modern_campus") return modernCampusSheet.count;

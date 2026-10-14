@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7cdd2b835e54ad950052800dfb40a5cdb7e2d48b7071f33b16d142bb2be88a76",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "고마이누(돌 사자, 받침 위, 왼쪽 봄)",
+ "label": "sengoku-edo/se-komainu-l",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "komainu (stone lion) statue on a rounded plinth",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The figure is shown facing west in profile (normal for side-facing objects). The pedestal/plinth clearly shows a foreshortened top surface spanning rows 21 to 26 (~5-6 rows) before transitioning to the shaded front face below row 26.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5161
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "komainu statue on a rounded stone plinth",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The statue faces west showing its side silhouette as permitted, and its plinth/base shows a clear elliptical top surface between rows 21 and 26 (approx 5 rows) before transitioning to the darker south-facing lower section.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5020
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "komainu statue on pedestal",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The statue rests on a pedestal whose foreshortened top surface is clearly visible across rows 21-26 (approx 5-6 source pixel rows tall) before transitioning to the front vertical face below row 26.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5185
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone lion statue on pedestal",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The statue rests on a rounded stone pedestal whose top surface is clearly visible from row 21 to row 25 (about 5 pixel rows tall) before curving down into the shaded front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5239
+  }
+ ],
+ "decidedAt": "2026-10-13T19:42:40.481Z",
+ "cells": {
+  "16": [
+   "4bd0d9c3fc427562",
+   "95ad57518aedbe52"
+  ],
+  "24": [
+   "0d69e8d1afd8dca5",
+   "0e05a35b1abde8f2",
+   "301b3db403ab8e9b",
+   "43136fbfb33843bc",
+   "765eea3c2463fe9a",
+   "a55cd79eb076df9e",
+   "b0bb713b48985fa1",
+   "b1a5155b8396e895",
+   "bd0cb9a9b82ecbbe",
+   "c2855c9d8fd72b7d",
+   "d33ce1d6f8a35ad2",
+   "f4242f8333287958"
+  ],
+  "32": [
+   "3b6430d031d2e845",
+   "75d0e23d617f3ea9",
+   "d899dd34380e904e"
+  ],
+  "48": [
+   "0d1765b151d19337",
+   "154b56235ad943eb",
+   "2fa31d8edbecf04f",
+   "9e369efdeaa878d0",
+   "baabe7267f40b9a7",
+   "cc621dfd0eb7334d"
+  ]
+ }
+}

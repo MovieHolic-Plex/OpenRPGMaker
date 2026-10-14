@@ -1,0 +1,146 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f559c7dd14f6d078b1250d858b56da1c7a4297ad274cff72362718bf122b5e2b",
+ "width": 32,
+ "height": 32,
+ "kind": "round_body",
+ "name": "쌀섬 더미(짚 섬 다섯)",
+ "label": "sengoku-edo/se-rice-bales",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pile of five straw rice sacks (cylinders)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Whether standing upright or stacked, none of the cylinders show an elliptical top cap or visible top surface from above. The tops end abruptly in flat horizontal outline lines (rows 9 and 19-20) with 0 rows of visible top surface, drawn as a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9121
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stack of straw rice sacks (five sacks: two on top, three on bottom)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylinders/sacks have no foreshortened elliptical top caps visible from above; the tops are capped by a flat 1px horizontal outline (row 8 on the top pair, row 18-19 on the bottom trio), rendering the stack as a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13013
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pile of rice straw sacks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylinders/sacks have no visible top elliptical cap or top surface; each sack is drawn strictly from the side/front with 0 pixel rows of top surface foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6765
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pile of five upright straw rice sacks (two in back, three in front)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sacks are drawn as flat vertical pill/capsule shapes in pure front elevation. Neither the back nor front sacks have a visible foreshortened elliptical top surface (0 pixel rows of top plane).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9393
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.073Z",
+ "cells": {
+  "16": [
+   "01c9ab045eaea02e",
+   "208dd20971ec50c3",
+   "3e72758be413bb31",
+   "83883936ddc3b11a"
+  ],
+  "24": [
+   "00e65b6cbabe9fb0",
+   "0a4ec59ce806daae",
+   "0de1db7a4a5833d1",
+   "1d0698bf7cc0236b",
+   "4a237cd8e92806bf",
+   "5931e0ce1e02ee9e",
+   "6562c226c6d5059d",
+   "66e1a7f07c62cea0",
+   "6776dcb108d7cb94",
+   "7754fa6ca7680f88",
+   "8db109763fe8fa88",
+   "c043298bc87e55ef",
+   "c53dcf27c9900cd6",
+   "c8a6285042083bab",
+   "f68923a428c52d1f",
+   "f750f79b93d0cd88",
+   "f82cbb72cd87e58f",
+   "fb03bf74bde5e684"
+  ],
+  "32": [
+   "0cd87ca13816947f"
+  ],
+  "48": [
+   "0c04bdec855aebe0",
+   "10aed709fd4191ab",
+   "14ce83ee15a6a0ba",
+   "1c472e6fa1b154c5",
+   "bcf128f0d9becdef",
+   "eb76af7ce6193c57"
+  ]
+ }
+}

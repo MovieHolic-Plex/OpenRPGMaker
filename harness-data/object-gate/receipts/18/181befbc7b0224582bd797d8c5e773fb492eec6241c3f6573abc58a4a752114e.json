@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "181befbc7b0224582bd797d8c5e773fb492eec6241c3f6573abc58a4a752114e",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "마치야(단층, 짙은 판자벽 + 격자, 감물빛 노렌)",
+ "label": "sengoku-edo/se-machiya-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "single-story machiya building with tiled roof slope and wooden facade",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof slope is clearly depicted in 3/4 top-down perspective spanning rows 5 to 29 (~25 pixel rows), topped with ridge ornaments, over a front-facing ground-floor facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4834
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "single-story machiya building with tiled roof slope and wooden facade",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof shows an extensive foreshortened top slope facing south spanning rows 5 to 29 (approx. 25 rows tall), clearly viewed from above at a 3/4 angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4940
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "single-story machiya townhouse facade with tiled roof",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof slope is clearly depicted from above, occupying rows 6 to 29 (24 pixel rows of top slope), topped by a ridge beam at rows 0-5 above the vertical south facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6187
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "single-story machiya townhouse with tiled roof",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof slope is clearly foreshortened and visible from above across rows 6-29 (around 24 pixel rows of roof slope), properly establishing the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4709
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.064Z",
+ "cells": {
+  "16": [
+   "20457efcefbc59da",
+   "482454dfda9ae141",
+   "482ed9f160011ee3",
+   "5de9a506e7548aed",
+   "62484fd429cfb28e",
+   "670dfe91c626bba7",
+   "88040b2eb563f78e",
+   "8895a2d136eecfb0",
+   "a06b84a570a22f75",
+   "c589784386f0c676",
+   "c5fdb36976af91df",
+   "fc013adf3925bd4f"
+  ],
+  "24": [
+   "023e6ea2dddf3923",
+   "0460f5936c432adf",
+   "1ac2a3f2bbff30f4",
+   "1e0736ec6bb70132",
+   "28a8a11426354ea9",
+   "4aa98beaacec7d71",
+   "82e8bb52c4e823ca",
+   "91e1fd7fca002cb4",
+   "939a281187cb26a8",
+   "b5b81e1b92d04205",
+   "ddea071a0e13cd35",
+   "f632892317e4a529"
+  ],
+  "32": [
+   "0f6965672794c58c",
+   "21145fa0a3ab1f36",
+   "26233cf73ce44e8f",
+   "4dc6e50ebb34338f",
+   "4dc827032fb05641",
+   "530295fd30b9475c",
+   "592a6f59780e6168",
+   "772944c7e72c0587",
+   "9b303f11cce8cad4",
+   "c2a5e6d01189b28f",
+   "c2c766642e7879db",
+   "fcf98487a5043631"
+  ],
+  "48": [
+   "2dea3281d01f71a2",
+   "6e0ae0647dfe1485",
+   "96dec469468ef724",
+   "f1d374fddd861a0d"
+  ]
+ }
+}

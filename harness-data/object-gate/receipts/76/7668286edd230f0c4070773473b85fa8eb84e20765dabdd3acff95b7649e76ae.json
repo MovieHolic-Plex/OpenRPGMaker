@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7668286edd230f0c4070773473b85fa8eb84e20765dabdd3acff95b7649e76ae",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "히바치(둥근 도자기 화로)",
+ "label": "sengoku-edo/se-hibachi",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical ceramic hibachi brazier",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening is clearly visible from above as an elliptical cavity from row 5 to row 10 filled with grey ash and glowing coals, showing both the interior depth and the front cylindrical body below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5124
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ceramic hibachi brazier",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening of the hibachi is clearly visible from above across rows 5-9, showing the interior ash bed and burning charcoal embers inside an elliptical rim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3806
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ceramic hibachi brazier",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening is clearly visible from rows 5 to 9 as an elliptical basin showing grey ash and glowing charcoal embers, surrounded by a front rim at rows 10-11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3713
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ceramic hibachi brazier",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening of the round brazier is viewed from above across rows 5-10, showing the interior filled with grey ash and colored embers.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2797
+  }
+ ],
+ "decidedAt": "2026-10-13T19:37:02.184Z",
+ "cells": {
+  "16": [
+   "747e47a7f029db1e",
+   "9247131120cc3fc2"
+  ],
+  "24": [
+   "1566e6ef13f24cb1",
+   "1e5e8732562834a8",
+   "4c6d2d6ca8251839",
+   "5826e1f1d9230d09",
+   "783e9aa674460591",
+   "b089df4d70a523b3",
+   "dc7e82fdec87343f",
+   "ee410cb4550aa11d",
+   "f43fe14af233aebd"
+  ],
+  "32": [
+   "55788070043e9c95",
+   "b67a9cc2be915539",
+   "dd51e27aac735ff1"
+  ],
+  "48": [
+   "0fa9dc192918d565",
+   "183b0c547cb33357",
+   "216c048ed8ac223b",
+   "5eb763680bcdb851",
+   "804db7ba4ec65285",
+   "f04b758b1f6491d2"
+  ]
+ }
+}

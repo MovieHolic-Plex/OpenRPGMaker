@@ -1,0 +1,150 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d7c6db121d0455ecfc280f0cc699054fcee25759e9d29816e3645ddbcec3947c",
+ "width": 32,
+ "height": 32,
+ "kind": "column",
+ "name": "눈보기 석등(유키미, 넓은 갓)",
+ "label": "sengoku-edo/se-lantern-snow",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone lantern (yukimi doro)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern is drawn in pure 2D front elevation: the wide roof (kasa) has a completely flat, horizontal bottom edge (rows 9-10) instead of an elliptical foreshortened curve seen from above, and the firebox and legs are drawn straight-on without any visible top or receding surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6148
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone lantern (yukimi-doro with wide umbrella roof and legs)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire lantern is drawn in flat front elevation: the umbrella roof has a straight horizontal bottom rim with no elliptical curvature or top-down view, the lantern chamber is a flat square, and the legs are straight vertical rectangles with no top/depth visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3981
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "yukimi stone lantern (umbrella roof, light chamber, and legs)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire lantern is drawn in pure 2D front elevation: the umbrella roof bottom rim is a straight horizontal line with no elliptical curvature, the finial/neck and legs have no visible top surfaces, and the light chamber is a flat square.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5965
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone lantern (yukimi doro)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire lantern is drawn in pure 2D front elevation: the wide umbrella roof has a dead-straight horizontal bottom rim at row 10 with no foreshortened elliptical curvature, the light chamber is a flat square, and the legs are straight vertical rectangles with horizontal bottom cuts.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5052
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.070Z",
+ "cells": {
+  "16": [
+   "93e441560f8f6cc1",
+   "a84cfe8dead0a111",
+   "aefdb58090c45abe",
+   "bea313b89f358c20"
+  ],
+  "24": [
+   "0965238afa033e16",
+   "0a7138ad49738b20",
+   "14164ba291e7bcf4",
+   "18081462cdced761",
+   "19a4db8c40cd80ff",
+   "2afd0d1d4e86ecfd",
+   "322b3db4f0b8e3ee",
+   "41e6d787f094617d",
+   "551328cbae907b79",
+   "5d5f48fcde05cb80",
+   "64196442b023e8d6",
+   "6e8e33ad6f69b177",
+   "811c2d2ea2b6c817",
+   "9407e9b801c49d93",
+   "a35928b6e47675b8",
+   "a698a7f4f526a284",
+   "ab6830437525217f",
+   "d3ef87e7e0686f30",
+   "dd72a67af529a5c8",
+   "df4e0701ba940011",
+   "e99524578491133a",
+   "eb22f9814bfbb920"
+  ],
+  "32": [
+   "5c8535d9f60a80c5"
+  ],
+  "48": [
+   "080826b2793fa6ed",
+   "316f15258a365185",
+   "bb36589abcc08da5",
+   "c661695a77af84d9",
+   "e1493444928b92bc",
+   "f8b09a582de6ba15"
+  ]
+ }
+}

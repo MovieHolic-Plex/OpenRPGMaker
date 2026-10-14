@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3073b43bb33800047a781fdeff9b906429bcec4f08a821b175ac3d9468c0a6c3",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "논(익은 벼)",
+ "label": "sengoku-edo/se-paddy-ripe",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ripe rice field ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Entire 16x16 sprite is a flat ground terrain texture representing ripe rice paddy/field.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4264
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ripe rice field ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 seamless top-down ground terrain texture depicting golden ripe rice stalks/paddy field.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2891
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ripe rice paddy terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 ground terrain texture representing a ripe rice paddy field viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2692
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rice field terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 ground texture tile depicting ripe rice field/grain terrain viewed from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2621
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.061Z",
+ "cells": {
+  "16": [
+   "b647b8802b5535c6"
+  ],
+  "24": [
+   "1c6c9ee0b33aef30",
+   "2a801fab6338edd6",
+   "5f513c25e2f14e05",
+   "963474d7ca7d9b76",
+   "9df77119851d2fd1",
+   "f4ea9d825925baec"
+  ],
+  "32": [
+   "17e71947b5607384",
+   "202a799eb2ad5f89",
+   "c148ac87ab1e19a2",
+   "c91c2855a7d114a1",
+   "e0435336f5084cda",
+   "fc45cdbfa2f57e2a"
+  ],
+  "48": [
+   "469958587d1f9f71",
+   "5720288c0a497bc0",
+   "93ecca3569453516",
+   "ad9360c9e7ab2e21",
+   "bba1a62746e5468b",
+   "d7b58df0f544774e"
+  ]
+ }
+}

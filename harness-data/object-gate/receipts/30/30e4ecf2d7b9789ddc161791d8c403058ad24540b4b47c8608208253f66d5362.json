@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "30e4ecf2d7b9789ddc161791d8c403058ad24540b4b47c8608208253f66d5362",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "장지 벽(밝은 종이 칸 + 나무 기둥)",
+ "label": "sengoku-edo/se-wall-shoji",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "장지 벽면 (shoji wall face)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Traditional paper sliding door (장지문/shoji) wall face tile designed as vertical interior terrain; wall faces correctly show the south-facing vertical plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4726
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "shoji wall face with sliding paper screen panels and wooden frame/pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Classified as terrain (wall face). Vertical wall face tiles in RPG Maker 3/4 view are viewed directly from the south, representing the room partition wall surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4040
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "shoji paper wall face with wooden framing",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a wall face terrain tile (shoji sliding screen wall with wood frame and pillars). As an interior wall face terrain element rather than a freestanding object, it correctly fills the vertical wall plane in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5066
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "shoji screen wall face with wooden pillars and lattice framing",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a wall face terrain tile (shoji sliding door / paper wall partition). In standard 3/4 top-down RPG perspective, south-facing vertical wall surfaces are drawn directly facing the camera, with top surfaces handled by adjacent ceiling/wall-top tiles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5816
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.075Z",
+ "cells": {
+  "16": [
+   "293ffff19b2b24f4",
+   "46c777cc5269d7bb",
+   "601dd08561848d99",
+   "faf93a80d8785de9"
+  ],
+  "24": [
+   "01d9fde55d5748f6",
+   "0a4f7dccc8fdc2e2",
+   "0a66ea7cb0a0188d",
+   "0f4a9e1d43073bd5",
+   "199e34b384930b8a",
+   "21cc4c0d70482179",
+   "396e117e9b01e01b",
+   "48522471f07bc2bf",
+   "4ca25928fe7a767a",
+   "560975b7271a4115",
+   "620ad2df3c70535b",
+   "7d01174fce6198f8",
+   "7d620038eafe22a1",
+   "882148204b1d3c4d",
+   "898da3b960375939",
+   "924438cc00d5e470",
+   "98bc76ac07a414b1",
+   "9b0080f4ac0e4107",
+   "a0795667f1af36f4",
+   "bb6e3bb499391e33",
+   "c3a2c86e3a4d97c3",
+   "c42a62234370a773",
+   "f71a8638bd763f45",
+   "fa7fd8810e187e7a"
+  ],
+  "32": [
+   "613088e14a0decf3"
+  ],
+  "48": [
+   "3613a620edbe02f3",
+   "a6876d3aa67a5384",
+   "aec8d4a112f711b0",
+   "b6bfe0e050a8261c",
+   "c3bc656a843806a9",
+   "c60d69ca98fe53e4"
+  ]
+ }
+}

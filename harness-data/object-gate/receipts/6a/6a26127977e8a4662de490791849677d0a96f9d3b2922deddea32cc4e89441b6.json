@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6a26127977e8a4662de490791849677d0a96f9d3b2922deddea32cc4e89441b6",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "판자벽(도장·가게, 가로 판 + 누름대)",
+ "label": "sengoku-edo/se-wall-board",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden plank wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain wall face tile showing horizontal wood planks and vertical battens/strips. As a standard wall face terrain tile, no top surface is required on the vertical wall face itself.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4996
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden plank wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid vertical wall face terrain tile with horizontal wooden boards and vertical battens.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5286
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden plank wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain wall face tile showing horizontal wooden boards with vertical battens and an upper framing beam.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3181
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden board wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless vertical wall face terrain tile with horizontal planks and vertical battens. As a wall-face terrain tile, it correctly represents a vertical south-facing wall surface without an integrated wall top.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3621
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.075Z",
+ "cells": {
+  "16": [
+   "7912ae508dad414b",
+   "ca97d41cf05fc22d"
+  ],
+  "24": [
+   "00a8f24272c8eeb7",
+   "07c2345f989b52a4",
+   "08d41201cea72d91",
+   "11bd195b70b79cca",
+   "15d12fdbd3e0982a",
+   "22b2a5282c5c7cbb",
+   "41ee661b74a11445",
+   "438409ae5621d3a9",
+   "4b27447c270b93c8",
+   "518103b4751f8566",
+   "5c70dd18884b2428",
+   "5de6fac8b5df979c",
+   "625c0ef90912a950",
+   "872e29fc3dbb540e",
+   "8bbdafd62407a27d",
+   "8f92c61f7876279c",
+   "9bccb19e294b5917",
+   "b43b366cb7c00167",
+   "c6af35f05d06d1ae",
+   "d4bd3490407fab9e",
+   "e144a7f28d820478",
+   "e5f2585c7be533a9",
+   "e8c2a22d5de0e7d0",
+   "f39c3aabeab59ce2"
+  ],
+  "32": [
+   "8e9ce4fc21ef803d"
+  ],
+  "48": [
+   "1b5dc3cf97cc360a",
+   "2e810eb05d092b2b",
+   "599a530392459be7",
+   "5e9c468727def0c5",
+   "9b7ecfe4b43cefad",
+   "bf8f5dabfe97f31e"
+  ]
+ }
+}

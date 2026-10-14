@@ -13,6 +13,7 @@ import { formatWorldmapChoiceNote } from '../worldmapChoiceNote';
 import { formatBeodeulTownNote, type BeodeulTownTarget } from "./beodeulTownRoute";
 import { formatJpCityNote, type JpCityTarget } from "@/ai/jpCityPolicy";
 import { formatGothicNote, type GothicTarget } from "@/ai/gothicPolicy";
+import { formatSengokuNote, type SengokuTarget } from "@/ai/sengokuEdoPolicy";
 import { formatSkyIslandNote, type SkyIslandTarget } from "@/ai/skyIslandPolicy";
 import { formatSteampunkNote, type SteampunkTarget } from "@/ai/steampunkCityPolicy";
 import { formatCampusNote, type CampusTarget } from "@/ai/campusPolicy";
@@ -91,6 +92,8 @@ export interface PiIntentNoteInput {
   readonly jpCity?: JpCityTarget | null;
   /** 요청·대상 맵이 고딕 저택(gothic_manor) 칩셋이면 그 대상(gothicPolicy). jp_city 대상이 잡히면 쓰지 않는다. */
   readonly gothic?: GothicTarget | null;
+  /** 요청·대상 맵이 전국·에도(sengoku_edo) 칩셋이고 프로젝트에 칩셋이 있으면 그 대상(sengokuEdoPolicy). jp_city 보다 먼저 잡힌다. */
+  readonly sengoku?: SengokuTarget | null;
   /** 요청·대상 맵이 하늘섬(sky_island) 칩셋이고 프로젝트에 칩셋이 있으면 그 대상(skyIslandPolicy). */
   readonly skyIsland?: SkyIslandTarget | null;
   /** 요청·대상 맵이 스팀펑크 도시(steampunk_city) 칩셋이고 프로젝트에 칩셋이 있으면 그 대상(steampunkCityPolicy). jp_city 보다 먼저 판정한다. */
@@ -123,8 +126,9 @@ export function buildPiIntentNote(input: PiIntentNoteInput): string | null {
   const conceptNote = formatConceptCardNote(conceptCardsForText(input.requestText));
   const worldmapNote = formatWorldmapChoiceNote(input.requestText, input.project, input.targetMap?.id);
   const intentNote = formatIntentNote(input.intent, { clarifyBypassed: true, targetMap: input.targetMap });
-  const villageNote = input.steampunk ? formatSteampunkNote(input.steampunk, input.targetMap)
+  const villageNote = input.sengoku ? formatSengokuNote(input.sengoku, input.targetMap)
     : input.beodeulTown ? formatBeodeulTownNote(input.beodeulTown, input.targetMap)
+  const villageNote = input.steampunk ? formatSteampunkNote(input.steampunk, input.targetMap)
   const villageNote = input.sfStation ? formatSfStationNote(input.sfStation, input.targetMap)
     : input.jpCity ? formatJpCityNote(input.jpCity, input.targetMap)
     : input.gothic ? formatGothicNote(input.gothic, input.targetMap)

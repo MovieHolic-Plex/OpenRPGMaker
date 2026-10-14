@@ -23,6 +23,8 @@ const BUNDLED_PLAIN_GROUND_TILES: Record<string, number> = {
   jp_city: 725,
   // 1번 오크 판자와 205번 수리용 석재는 고정 조각이라 반복 시 이음선이 튄다. 반복 가능한 성채 포석 577번을 쓴다.
   wizarding_world: 577,
+  // 1번 = 풀밭(반복 가능한 아래층 바닥).
+  sengoku_edo: 1,
   // 3번 = 하늘섬 풀밭(반복 가능한 아래층 바닥). 섬·하늘은 compose_sky_island_map 이 깐다.
   sky_island: 3,
   // 스팀펑크 도시: 4번 = 판석 보도(반복 가능한 아래층 바닥, 굽기 핀 tiledata/steampunk-city/bake-pins.json 이 번호를 고정한다).

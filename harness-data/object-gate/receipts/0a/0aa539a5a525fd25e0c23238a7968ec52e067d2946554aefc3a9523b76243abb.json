@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0aa539a5a525fd25e0c23238a7968ec52e067d2946554aefc3a9523b76243abb",
+ "width": 32,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "물건 선반(피륙·상자, 벽 앞)",
+ "label": "sengoku-edo/se-goods-shelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden display shelf with bolts of cloth",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cabinet is clearly visible across rows 3-9 (7 rows tall) with items resting on it, and individual interior shelves and bolts of fabric also display top surfaces in proper 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4109
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall display shelf / cabinet with fabrics on shelves",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet displays a foreshortened top surface spanning rows 2 to 8 (about 7 rows deep) with items (a box and an ornament) resting on it, overhanging the front frame at row 9. Furthermore, each interior shelf board shows a 2-pixel-deep horizontal top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9164
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tall apothecary / goods shelf with pediment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shelf is drawn as a flat front elevation. The top section (rows 2–9) is a vertical wooden pediment/header with a sign and cross emblem, showing no foreshortened top surface of the cabinet. The horizontal shelf boards below only have 1px edge highlights.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 15419
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall shelf unit with bolts of fabric",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet top surface is clearly visible from rows 3 to 9 (approx 6-7 rows tall) with items resting on it. Additionally, each interior shelf plank and the stored fabric rolls distinctly show horizontal top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5983
+  }
+ ],
+ "decidedAt": "2026-10-13T19:42:40.482Z",
+ "cells": {
+  "16": [
+   "2ae01964dd0aeb1d",
+   "2c0145fd5beda8e8",
+   "3afb98a14956097e",
+   "4e7ae68f012cd99d",
+   "d9a4b82df356a66e",
+   "fd552e5786786894"
+  ],
+  "24": [
+   "09988c1a6dacd260",
+   "290bbc6b89160ca3",
+   "29e11eb9a372b20e",
+   "2e999222ddfe590d",
+   "2f7c1d8ff4b040ba",
+   "3dac851254168d30",
+   "78714f1fe72ab1ad",
+   "a39eb42651098b9e",
+   "ac533d20b6c5556b",
+   "b67815213dbf1648",
+   "bb6fa259b560e275",
+   "d69e60d8b5ac3557"
+  ],
+  "32": [
+   "136abb6923883111",
+   "643185ad9e7adfef",
+   "9964f0cd632e7fa0",
+   "d90f9329cb108d98"
+  ],
+  "48": [
+   "5a525a32330b8845",
+   "8ded5c53e10301e3",
+   "efffc45a68822e73"
+  ]
+ }
+}

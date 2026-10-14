@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f9b39bdf7f529eb63175ab43d4de1cf8d037245cf17dc27cd6d9c470412fdbab",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "안돈(종이 등잔)",
+ "label": "sengoku-edo/se-andon",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "paper lantern (andon)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the lantern is foreshortened in 3/4 view across rows 2–6 (5 source pixel rows tall, matching an 8px-wide square viewed at ~45 degrees) with a central top handle/opening, and the protruding base also shows a 2–3px top surface (rows 21–23).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 18978
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "andon (traditional standing paper lantern)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern is drawn in pure front elevation. The top cap/roof has only a 1px flat black border at row 1 with no foreshortened horizontal top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5517
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "andon (paper lantern)",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top frame of the lantern is visible from above across rows 2–7 (6 rows tall), featuring a 4-row opening (rows 3–6) looking down into the illuminated interior. The base also displays a 2-row foreshortened top surface (rows 22–23).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11327
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "paper lantern (andon)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the lantern is rendered as a foreshortened horizontal top surface (rows 2-6, 5 rows tall) with a handle, sitting above the front-facing paper screen (rows 7-20). The base plinth also shows a 3-row top surface (rows 21-23) above its front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11708
+  }
+ ],
+ "decidedAt": "2026-10-13T19:37:02.184Z",
+ "cells": {
+  "16": [
+   "42ddd50ba8be6ff4",
+   "b2c4c7319a757141"
+  ],
+  "24": [
+   "20313b5cc400227a",
+   "2f84a1faf304bca5",
+   "685e1249eb220b30",
+   "88952b6329b12751",
+   "974eccf019d51f4e",
+   "9f4f364df5a8926b",
+   "bb0ca0ca267f96bf",
+   "cc44b59fe63399ed",
+   "d605c6ab0e482486",
+   "e46bd3583a4d07e6",
+   "f9beccb8f46391b0",
+   "ffdb46244b74d9bb"
+  ],
+  "32": [
+   "29173926c866b41a",
+   "3031eb562aeb1675",
+   "a301ecc471d7dabc"
+  ],
+  "48": [
+   "06b75a2dc7ff19e8",
+   "2db4ba040a01c4f9",
+   "64139fac48160ecd",
+   "b2e9ba003e863d6d",
+   "d2f492e240f0becd",
+   "e83743219f651539"
+  ]
+ }
+}

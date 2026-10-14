@@ -81,6 +81,8 @@ function applyCustomChipsetMinimalHarness(tileset: TilesetDef): boolean {
       || tileset.image.id === "tex_jp_city"
       // 마법 학교 · 해리포터풍: 칸마다 통행·레이어를 굽기(bake_wz.py)에서 정해 둔 정의다
       || tileset.image.id === "tex_wizarding_world"
+      // 전국·에도 일본: 칸마다 통행·레이어를 굽기(bake_se.py)에서 정해 둔 정의다
+      || tileset.image.id === "tex_sengoku_edo"
       // 하늘섬: 칸마다 통행·레이어를 굽기(bake_si.py)에서 정해 둔 정의다
       || tileset.image.id === "tex_sky_island"
       // 스팀펑크 도시: 칸마다 통행·레이어를 굽기(bake_sp.py)에서 정해 둔 정의다

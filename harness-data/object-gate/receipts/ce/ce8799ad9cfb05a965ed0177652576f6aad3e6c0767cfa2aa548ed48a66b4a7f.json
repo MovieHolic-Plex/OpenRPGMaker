@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ce8799ad9cfb05a965ed0177652576f6aad3e6c0767cfa2aa548ed48a66b4a7f",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "논두렁(북동쪽 둑)",
+ "label": "sengoku-edo/se-paddy-ne",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rice paddy field with ridge terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a flooded rice paddy with seedlings bordered by grass ridges; appropriate top-down perspective for JRPG terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5823
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rice paddy field with embankment (terrain)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a flooded rice paddy with an earth/grass embankment along the north and east borders, viewed in standard top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8458
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rice paddy levee and flooded field terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a top-down flooded rice paddy field bounded by grass and dirt ridges on the north and east.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4906
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rice paddy field with levee ridges",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting flooded rice paddy with seedlings and grassy levee ridges along the north and east borders.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4337
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.062Z",
+ "cells": {
+  "16": [
+   "df89711d49200a5b"
+  ],
+  "24": [
+   "50d69cbaa26449b8",
+   "6eeda68e2d756859",
+   "9cc9f47a8fec8ac0",
+   "d1e8557dccdb83ce",
+   "ed014032bafb4754",
+   "f88723e7cc7bb2ab"
+  ],
+  "32": [
+   "5c0ef9152db14600",
+   "7e1b3fb63537f14f",
+   "827cca0205bdd1d9",
+   "9730fe44b8c34afc",
+   "9feff217aeae2ff8",
+   "eb430bb580887134"
+  ],
+  "48": [
+   "1bcc0b78a2e651dc",
+   "2fe90a67726346ba",
+   "367b7eaabfc50930",
+   "9f69260a5feeecd4",
+   "b26bb54016924d0d",
+   "f0cd243f2212fc46"
+  ]
+ }
+}

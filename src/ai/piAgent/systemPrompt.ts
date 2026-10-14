@@ -13,6 +13,7 @@ import { BEODEUL_GROUND_POLICY_LINE, STORE_TILE_SOURCE_POLICY_LINE, TILESET_FAMI
 import { HAND_INTERIOR_POLICY_LINE } from "../handInteriorPolicy";
 import { jpCityPromptLines } from "../jpCityPolicy";
 import { gothicPromptLines } from "../gothicPolicy";
+import { sengokuPromptLines } from "../sengokuEdoPolicy";
 import { skyIslandPromptLines } from "../skyIslandPolicy";
 import { steampunkPromptLines } from "../steampunkCityPolicy";
 import { campusPromptLines } from "../campusPolicy";
@@ -71,6 +72,8 @@ export function buildPiAgentSystemPrompt(
     // 일본 도시(jp_city) — 칩셋이 있다는 사실과 건물 조립 도구로 가는 길. 범위 맵이 jp_city 면 상세 순서가 더 붙는다.
     ...(spatial ? jpCityPromptLines(project, mapIds) : []),
     ...(spatial ? gothicPromptLines(project, mapIds) : []),
+    // 전국·에도(sengoku_edo) — 칩셋이 프로젝트에 있을 때만 줄이 붙는다.
+    ...(spatial ? sengokuPromptLines(project, mapIds) : []),
     // 하늘섬(sky_island) — 칩셋이 프로젝트에 있을 때만 줄이 붙는다(없는 칩셋을 «있다»고 말하지 않는다).
     ...(spatial ? skyIslandPromptLines(project, mapIds) : []),
     // 스팀펑크 도시(steampunk_city) — 칩셋이 프로젝트에 있을 때만 줄이 붙는다.

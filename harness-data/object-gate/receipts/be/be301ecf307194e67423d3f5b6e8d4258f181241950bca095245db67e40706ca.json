@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "be301ecf307194e67423d3f5b6e8d4258f181241950bca095245db67e40706ca",
+ "width": 48,
+ "height": 32,
+ "kind": "frame",
+ "name": "볏단 걸이(하사, 나무 틀 + 볏단)",
+ "label": "sengoku-edo/se-rice-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hanging rice sheaves on wooden frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rice sheaves and horizontal frame elements are drawn in pure front elevation; the hanging sheaves (rows 6-21) and the bottom beam (row 22) show no top surfaces (0 px depth).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4349
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "straw drying rack with hanging rice straw bundles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hanging rice straw bundles (rows 6-21) and supporting beam (row 22) are rendered in flat front elevation with only a 1px outline on top and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3862
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hanging rice straw sheaves on a wooden drying frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body consists of straw bundles hanging on a wooden rack (rows 6-21). The sheaves and horizontal beam have no foreshortened top surfaces (0 px), drawn as a completely flat front elevation with straight vertical columns and a 1px horizontal outline beam.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4474
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hanging rice sheaves on wooden rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The straw sheaves and the frame are depicted in straight-on front elevation from row 6 to 21 with only a 1px black outline capping the top of the sheaves; no top surface of the horizontal beam or bundles is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4245
+  }
+ ],
+ "decidedAt": "2026-10-13T19:42:40.482Z",
+ "cells": {
+  "16": [
+   "2ebadf37a3c25aaa",
+   "3474039a58329daf",
+   "866911211222114b",
+   "a4c460551f558149",
+   "c7da2da04041d6b0",
+   "d28be8987cd9e0b2"
+  ],
+  "24": [
+   "0b7f0ec1461c5801",
+   "1b39907d161d3149",
+   "2c4af5c0002552a0",
+   "65e9106bc54fc447",
+   "7b23eb45a7b015b2",
+   "80135519ef4ee054",
+   "cf62cfaec241ed58",
+   "d3451ce38ea405de"
+  ],
+  "32": [
+   "30af5f4269e87aa5",
+   "4c0edd74a04c851d",
+   "6b75c0ec45714e29",
+   "caf62402ccab3dd4",
+   "e033003ac46d7e32",
+   "e255f7310c0f6d9c"
+  ],
+  "48": [
+   "425f0640b4756d03",
+   "698584c43928001a"
+  ]
+ }
+}

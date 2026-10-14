@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "540779b0229f8b87d8dde12c506ba104adf60bff9fb6d41ab070e178718485d2",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "갈아 놓은 밭(이랑)",
+ "label": "sengoku-edo/se-field-bare",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "plowed field ridges (ground terrain)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontally striped plowed soil furrows representing ground terrain viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3330
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "plowed field furrows",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting horizontal tilled soil ridges and furrows viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3977
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "plowed field furrow terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal ridges of tilled soil covering the entire 16x16 tile with appropriate top-down ridge highlights and furrow shadow lines; valid terrain tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3237
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "plowed field ridges and furrows",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing horizontal furrows of tilled field soil viewed from above as ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3071
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.063Z",
+ "cells": {
+  "16": [
+   "88f768c13519eb07"
+  ],
+  "24": [
+   "1308f77589212830",
+   "5ae4b52e6f7a8f28",
+   "82099b845f0eff3f",
+   "c970e7b68068ebaa",
+   "e52060b660833ea5",
+   "f305290f4c35479e"
+  ],
+  "32": [
+   "72eff53408c506e0",
+   "c5f12062bf9b8fae",
+   "ca3d9dd54ee22362",
+   "d42b33c745cd56db",
+   "ec85a794034aac11",
+   "f444d08fac851cfe"
+  ],
+  "48": [
+   "3cd4111923f92063",
+   "5757ed420e9362b0",
+   "5842780792402334",
+   "7b67e3c91f1f2246",
+   "980390487f4bf5bb",
+   "f7c2ac3c4271d6a9"
+  ]
+ }
+}

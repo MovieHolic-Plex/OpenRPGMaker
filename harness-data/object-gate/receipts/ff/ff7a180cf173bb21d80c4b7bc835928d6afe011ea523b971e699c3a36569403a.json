@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ff7a180cf173bb21d80c4b7bc835928d6afe011ea523b971e699c3a36569403a",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "병풍(여섯 폭, 금 바탕 구름)",
+ "label": "sengoku-edo/se-byobu",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "six-panel folding screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The folding screen panels are drawn purely in flat front elevation with only vertical Y-offsetting to suggest staggered depth. There is no visible top surface/thickness showing from above (0px, with only 1-2px frame edges).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7294
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "folding screen (six panels)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The folding screen consists of flat vertical rectangular panels staggered vertically without any visible top horizontal thickness (the 2px brown segments are part of the front panel frame/silk mounting, not a top surface seen from above).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5253
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "six-panel folding screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The folding screen consists of flat rectangular panels staggered vertically. The top of each panel shows only a 2px brown frame border rather than a visible horizontal top depth surface seen from a 3/4 overhead perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5479
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "six-panel folding screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The folding screen consists of flat vertical rectangular panels staggered in height to suggest a zigzag, but each panel is drawn in pure front elevation with no visible top horizontal depth surface (only a 1px black outline and 2px brown top border of the front face).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4874
+  }
+ ],
+ "decidedAt": "2026-10-13T19:37:02.184Z",
+ "cells": {
+  "16": [
+   "ea1e3b61ce92689a",
+   "ef868320c5981e3c",
+   "f24912e806b31b9f",
+   "fff8fb37c425709e"
+  ],
+  "24": [
+   "05be40cb80cb1de1",
+   "13e325a7bdb9b1cc",
+   "1627b93b12e9db74",
+   "198b5ed6c587b87d",
+   "25ac5a0aff740204",
+   "327b8cd344e33411",
+   "40e9e77d38caa1e0",
+   "53553f0e23db6083",
+   "5e5750cb9b0215c5",
+   "75ca2af83047ffe7",
+   "8914de00ef462928",
+   "8a6ce6c396b04ac3",
+   "8c749072cc44bd4d",
+   "9218e302e9113734",
+   "95454d39adbbac83",
+   "9fee64e83bcca124",
+   "a7caba47b843c6bc",
+   "b1682af4d2d91228",
+   "d13df3a4fb38bb63",
+   "d9ac1ecc4593ea7e",
+   "e05a5a470ff0e082",
+   "e1d31a258967632f",
+   "e69697edd64ef44d",
+   "f0f5aaad8e90b0d8"
+  ],
+  "32": [
+   "d04e11f1b6c21f3c"
+  ],
+  "48": [
+   "01810cee8c9fe9e8",
+   "02b744d2bee780d6",
+   "09d2a46d68e4b9e4",
+   "4c5c623deeb65e05",
+   "b4fdcf6742cb61e1",
+   "e0d10be62fb1c833"
+  ]
+ }
+}

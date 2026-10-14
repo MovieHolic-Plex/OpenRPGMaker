@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a2bfddbc1e4abdea24b7cc25a08f4c5ff60ff578fde3e9a0c3dfff575af12c85",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "고찰 게시판(작은 지붕 + 빈 나무 판)",
+ "label": "sengoku-edo/se-notice-board",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tiled roof and notice board",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof structure atop the board displays a foreshortened sloped top surface from row 1 to row 9 (showing vertical tile runs leading down to the eave caps at rows 8-9 and eave fascia at rows 10-11), properly representing depth in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 38854
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tiled roof over bulletin board",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof shows a clearly sloping top surface facing the camera from row 1 to row 9 (about 9 rows tall) complete with round end-tile details along the eaves.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5016
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tiled roof and noticeboard",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof clearly displays its foreshortened downward-facing top slope across rows 2-9 (8 rows of tile columns and round eave caps), correctly rendering the roof surface in 3/4 perspective above the vertical board face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5454
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tiled roof and notice board",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof shows its south-facing slope from above across rows 1–9 (approx 8–9 source pixels tall) with individual tile flutes and rounded eave ends, correctly depicting the top slope of the structure in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6498
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.073Z",
+ "cells": {
+  "16": [
+   "58ec1a5f66e0d54c",
+   "b829d8936e47ea00",
+   "d15217af8f7da7f4",
+   "e2eebf7388e9b09a"
+  ],
+  "24": [
+   "0794dcc59b47b089",
+   "0c34270dc2a0e8bf",
+   "0fe46b07b1934bfb",
+   "11183b463ebcde79",
+   "1b82a01abccba16e",
+   "3690c2147f2c1f29",
+   "3b084159aac25126",
+   "3e69b897bbf0eb86",
+   "3fcb9916272fef86",
+   "4c07df22c5f12a0d",
+   "50c4809a1b1f8f03",
+   "51e7343e1318fe81",
+   "697d9966614833eb",
+   "7ed31993b3012f46",
+   "a611b309ad1512ea",
+   "ab69d1564298aa1f",
+   "b160ce193b544dc2",
+   "bea7c9f4530cba49",
+   "c995c23abc80ae7a",
+   "dd41e227ce946f85",
+   "de6717725eba5c4c",
+   "e3815b48c70deb5b",
+   "f0f216784cd5b842",
+   "fac672617df0eded"
+  ],
+  "32": [
+   "dd8d8f12eab0b6fd"
+  ],
+  "48": [
+   "3227cc656a527285",
+   "36f999be069e5a6a",
+   "848de490dc4be20f",
+   "8cc578cda33a2b32",
+   "ddb599c206fd6781",
+   "f3e3945e2a5e4ccc"
+  ]
+ }
+}

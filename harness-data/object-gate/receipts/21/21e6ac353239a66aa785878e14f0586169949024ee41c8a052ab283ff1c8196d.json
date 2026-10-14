@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "21e6ac353239a66aa785878e14f0586169949024ee41c8a052ab283ff1c8196d",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "흰 담(세로로 이어지는 갓 기와 윗면, 1칸)",
+ "label": "sengoku-edo/se-wall-plaster-v",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "roof cap of vertical wall (north-south wall top)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts the top surface/roof cap of a north-south running wall seen from above, spanning all 16 vertical rows with shaded roof slopes and ridge details.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6522
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vertically continuous wall cap (갓 기와)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts the top surface of a north-south continuous wall tile cap seen from above in 3/4 view, spanning all 16 rows with roof ridge shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6361
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vertical wall roof/cap top surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts the top surface of a north-south running tiled wall cap seen from above, fully spanning all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3326
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertically running wall roof cap",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts the top surface of a north-south connecting wall cap/roof tiles viewed from above, spanning all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3512
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.066Z",
+ "cells": {
+  "16": [
+   "9f5dd22a9a92061b"
+  ],
+  "24": [
+   "6f241ac3a608769a",
+   "72153126eb1166ef",
+   "8c7b386757983d6f",
+   "96bf41892e34edad",
+   "af6543ef6ae37bc0",
+   "bf25284b09977a20"
+  ],
+  "32": [
+   "03d2eb0d50c6e273",
+   "0ed3be214117cad5",
+   "65b690ba24c33d50",
+   "9ed9838c0c222084",
+   "c44ab8337b3ed5e0",
+   "f859ac81b269090b"
+  ],
+  "48": [
+   "1cfe04cfdfa21518",
+   "a1011166414b6477",
+   "baf1e3326a07fe03",
+   "c32183a9d4432876",
+   "e4e3f61e1bbd3980",
+   "f4012fb3c334ddee"
+  ]
+ }
+}

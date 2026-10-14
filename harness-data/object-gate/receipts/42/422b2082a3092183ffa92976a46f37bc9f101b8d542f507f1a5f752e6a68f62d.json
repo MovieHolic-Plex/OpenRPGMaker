@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "422b2082a3092183ffa92976a46f37bc9f101b8d542f507f1a5f752e6a68f62d",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "방석(자부톤, 쪽빛)",
+ "label": "sengoku-edo/se-zabuton",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "zabuton cushion",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The floor cushion lies on the ground with a 10-row top surface (rows 2-11) visible from above and a 3-row south thickness/front face (rows 12-14), correctly presented in top-down 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4743
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "zabuton cushion",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cushion is viewed from above with a large 9-pixel-tall top surface (rows 3-11) and a 3-pixel-tall front edge/thickness (rows 12-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5033
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "indigo floor cushion (zabuton)",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cushion lies flat on the floor, shown predominantly from above with roughly 9 to 11 pixel rows of top surface and typical bevel shading around the edges.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6344
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "floor cushion (zabuton)",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": false,
+    "evidence": "The cushion shows a 9-row top surface and a 3-row south front face, but also renders a 2-pixel wide vertical east side face along columns 13-14 in the same dark shading, creating an axonometric/isometric view rather than a standard south-facing 3/4 top-down view.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6985
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.076Z",
+ "cells": {
+  "16": [
+   "39d526490b9d6358"
+  ],
+  "24": [
+   "19e239b905249080",
+   "1a012bace85efade",
+   "3447d031a2d3d471",
+   "4602e23fd4e08c97",
+   "815838ed2285724f",
+   "cfbba55f64185e59"
+  ],
+  "32": [
+   "1042a2bf8f32fbfe",
+   "20117d47b6a88fbb",
+   "2a8bd85677006114",
+   "867a258d5bf1d39d",
+   "99578cfc2414ccc9",
+   "dad122565331b276"
+  ],
+  "48": [
+   "04d18294482b10a0",
+   "1d43ab59ed7bf4fa",
+   "487e8c741353a738",
+   "589052891c34c2a9",
+   "a37b8347a1209d3f",
+   "c6a52b0e214d6ea4"
+  ]
+ }
+}

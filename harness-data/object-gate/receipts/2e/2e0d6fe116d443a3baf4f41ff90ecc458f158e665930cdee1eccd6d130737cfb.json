@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2e0d6fe116d443a3baf4f41ff90ecc458f158e665930cdee1eccd6d130737cfb",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "논두렁(북쪽 둑)",
+ "label": "sengoku-edo/se-paddy-n",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rice paddy ridge and flooded field with seedlings",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing grass and dirt bund at the top (north ridge) bordering flooded rice paddy with regularly planted seedlings, all rendered from standard top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5501
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rice paddy north bank and flooded field",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing a rice paddy ridge/bank transitioning from ground/grass to flooded paddy field planted with seedlings, viewed from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9051
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rice paddy field with northern ridge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing a flooded rice paddy with planted seedlings and the northern grass/dirt ridge seen from above in standard top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3629
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rice paddy ridge and flooded field terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting the northern dirt ridge of a rice paddy transition to flooded water with rice shoots, viewed top-down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3888
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.061Z",
+ "cells": {
+  "16": [
+   "063c95af12a3235a"
+  ],
+  "24": [
+   "2bd961d475decdd6",
+   "68f2409f419b8b3a",
+   "6bdc382f35e176eb",
+   "cb4c94e5992483e0",
+   "d8ab9dfe262c8582",
+   "e2669b3a64993a58"
+  ],
+  "32": [
+   "434e17438d546b83",
+   "584ef4f773e75b67",
+   "631fd06d9631ccfe",
+   "64a223fbd5897279",
+   "a1884a4087643c6c",
+   "a21a6d8e84adac4c"
+  ],
+  "48": [
+   "5452616c5bf9a375",
+   "7763df98419b2836",
+   "a9ba9591b6ae515a",
+   "b14a188691cd5cf4",
+   "b91344f765b3beb2",
+   "f82e1b3c260ca19e"
+  ]
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0b8457e6b7baa98ff2153aa7c591aa0a17851e8582d2c8760e3351e148878dd1",
+ "width": 16,
+ "height": 32,
+ "kind": "flat",
+ "name": "깔아 둔 이불(후톤)",
+ "label": "sengoku-edo/se-futon",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "futon bedding laid flat on the floor",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a futon mattress and blanket laid flat on the ground, correctly presented from a top-down perspective like a rug/mat across rows 2-29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4273
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "laid-out futon bedding",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The futon lies flat on the floor and is viewed entirely from above, showing the pillow and patterned quilt surface spanning 28 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7086
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "futon bedding laid flat on floor",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Futon mat and blanket laid flat on the ground viewed from above in top-down perspective with top surface visible throughout rows 2-29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4141
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "futon bedding laid flat on floor",
+    "kind_matches": true,
+    "top_rows": 26,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a futon mattress and blanket lying flat on the floor, correctly viewed from above across approximately 26 pixel rows with no isometric distortion.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4180
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.076Z",
+ "cells": {
+  "16": [
+   "13d0c6038b3cd305",
+   "c49c726efaba91d9"
+  ],
+  "24": [
+   "07167954cf9209bc",
+   "30fc4758d5164043",
+   "4f7b8f6803ea779a",
+   "6c51289d924fee54",
+   "97b18a6de12e8d99",
+   "98ad59da1773d3d2",
+   "aa10a51ec0853a03",
+   "c93c2747798c6550",
+   "ce5614f583d044b2",
+   "d255bb57e0c29264",
+   "ebe427566a5fa373",
+   "fe99f20ba132ffca"
+  ],
+  "32": [
+   "161d7bf2a1d50423",
+   "583634dc05978029",
+   "e7e7e3ab4a8a442a"
+  ],
+  "48": [
+   "12694aa566b7581c",
+   "6877ec28d96bb2ba",
+   "702ef103ae469135",
+   "7d560c5df02aee8d",
+   "88406adc07ed80e8",
+   "a1cea62a1c1c0d28"
+  ]
+ }
+}

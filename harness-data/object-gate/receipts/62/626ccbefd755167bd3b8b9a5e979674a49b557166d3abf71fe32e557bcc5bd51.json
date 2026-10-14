@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "626ccbefd755167bd3b8b9a5e979674a49b557166d3abf71fe32e557bcc5bd51",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "논두렁(남쪽 둑)",
+ "label": "sengoku-edo/se-paddy-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rice paddy water with south ridge embankment",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting flooded rice paddy rows transitioning southwards to a grassy ridge top (rows 12-13) and dirt embankment face (rows 14-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5319
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rice paddy water and southern embankment ridge",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting flooded rice field with planted seedlings (rows 0-11), grassy ridge top (rows 12-13), and southern earth face (rows 14-15). Properly foreshortened 3/4 terrain tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7423
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rice paddy levee/ridge",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing flooded rice paddy with seedlings (rows 0-11), grass top surface of the ridge (rows 12-13), and south-facing dirt slope (rows 14-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3087
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rice paddy water and southern ridge/levee",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flooded rice paddy terrain tile transitioning into a southern earthen ridge at rows 12-15 (grassy horizontal ridge surface at rows 12-13, earthen edge at rows 14-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4496
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.061Z",
+ "cells": {
+  "16": [
+   "64e7ea7322de8423"
+  ],
+  "24": [
+   "2ba2094340acbdb3",
+   "37ca706fe430abd8",
+   "81523d26d5e31d9a",
+   "c1fded9b53315bee",
+   "cbe82b834c2f1d2b",
+   "d3d88d1adabbafde"
+  ],
+  "32": [
+   "3a618c66eda0eb65",
+   "5277b5c7a068c03b",
+   "7b1d3b409dea60cd",
+   "958f03766a4fda29",
+   "ccc007a26d6a6ad3",
+   "e1794729f5c50f8b"
+  ],
+  "48": [
+   "11fa92ab8154259b",
+   "2adbcecd157e5e45",
+   "3d0ff9b5bf38230e",
+   "7d690bd08cf2663d",
+   "ec2ff0f9c98d4414",
+   "f7efa3621bab0e20"
+  ]
+ }
+}

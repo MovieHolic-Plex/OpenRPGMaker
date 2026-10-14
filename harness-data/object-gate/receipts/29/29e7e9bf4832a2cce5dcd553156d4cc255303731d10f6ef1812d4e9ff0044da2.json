@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "29e7e9bf4832a2cce5dcd553156d4cc255303731d10f6ef1812d4e9ff0044da2",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "물레방아(나무 바퀴 + 받침)",
+ "label": "sengoku-edo/se-water-wheel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden waterwheel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body of the waterwheel is drawn as a flat circular front elevation with no depth, cylindrical thickness, or top paddle surfaces visible. The only element with a top surface is the small rectangular block at the top.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5307
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden waterwheel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is a large waterwheel drawn as a flat 2D circular elevation with spokes and paddles facing straight at the viewer, showing no top surfaces or depth foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6290
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "large wooden water wheel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is a water wheel drawn as a flat, 2D circular front elevation with spokes and outer paddles, showing no top surface, rim depth, or 3/4 perspective foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4963
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water wheel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is the large water wheel (rows 8-39), which is drawn flat facing the camera with radial spokes like a 2D clock face/gear, showing no 3/4 depth or visible top surface on the wheel or its paddles. Only the small top chute/block (rows 2-6) has a top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5158
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.072Z",
+ "cells": {
+  "16": [
+   "7f2fdf0cac87e37f",
+   "aa55e54e98c4d59f",
+   "af66a321cd09812a",
+   "b68a87fa5e3d8b81",
+   "ccd854a88aaf2dfb",
+   "f9b610634196cd3e"
+  ],
+  "24": [
+   "16b6c92eae2ad7a6",
+   "2060d165c8361817",
+   "279cf4215a1d2c2b",
+   "45662bbee40ef256",
+   "4d8825443a8c7929",
+   "5ed90d5f054b50fe",
+   "5f6cda8b73fc61fb",
+   "8d77b8a1bc4e116a",
+   "98eef63162fd7a46",
+   "d1f97ee3735c7e86",
+   "eb6acf244be3f6c0",
+   "fa0e54dd8d6854d6"
+  ],
+  "32": [
+   "911962223a804850",
+   "b050ee846ede8741",
+   "da14f2442cd6a346",
+   "fb82c61433cf05d9"
+  ],
+  "48": [
+   "2cb5e56b6cb1dcba",
+   "5a1202067da1228f",
+   "8410de0689d69296"
+  ]
+ }
+}

@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0e7adad0661086afde9b06b54bc38930a527f873647f7ee45fab421479a55941",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "물레방아(나무 바퀴 + 받침)",
+ "label": "sengoku-edo/se-water-wheel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical wooden waterwheel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is the tall wooden wheel (rows 11-39). It is drawn as a flat, straight-on front elevation of repeating identical horizontal slats and flat side axle blocks, showing no cylindrical top curve, top surface, or 3/4 depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5887
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden waterwheel (vertical wheel body)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The central main body representing the vertical waterwheel (rows 12-39) is drawn as a completely flat, straight front-elevation ladder/conveyor of horizontal slats with no 3/4-view top curvature or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9745
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden water wheel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is the vertical water wheel (rows 12–40), which is drawn as a flat 2D vertical rectangle with straight horizontal slats and no foreshortened top curve or top surface visible under the flume.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8033
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical wooden waterwheel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (the vertical wheel running from row 12 to row 40) is drawn as a flat orthographic column of horizontal slats with no top curve, foreshortening, or visible top surface. Although the top trough and bottom basin show 3/4 perspective, the main body itself is a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5716
+  }
+ ],
+ "decidedAt": "2026-10-13T19:42:40.481Z",
+ "cells": {
+  "16": [
+   "246112c2a2b4fa48",
+   "26def6a4b389bd41",
+   "2ba114437b290930",
+   "4a3a5c3b2497cb17",
+   "ddc53ebf9011ee3d",
+   "f161618d6b397de5"
+  ],
+  "24": [
+   "061175164aa8eb1b",
+   "1019dc2b682aedee",
+   "1e2fe246d2eaf056",
+   "2efc3562462d8758",
+   "4af22626c054b059",
+   "5cc4c8007300bdbf",
+   "601e80438235e42d",
+   "8b7f609145573a85",
+   "96bf6275a6354ae7",
+   "bc3348722a72ab43",
+   "c287ee3d6a355e5c",
+   "d907f5ed305e3eae"
+  ],
+  "32": [
+   "0742af56522cb79c",
+   "20077495e6a6ec8a",
+   "34b184cd9592b549",
+   "5d92ee0fd7649c07"
+  ],
+  "48": [
+   "720e3eca302bf4be",
+   "8306790dd2b06c6b",
+   "c2ef42b0d6997152"
+  ]
+ }
+}

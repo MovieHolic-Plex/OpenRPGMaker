@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6fc27123af6c07567a10420097279f4a9f296b7ab78e284dc9463bdabc923599",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "논두렁(동쪽 둑)",
+ "label": "sengoku-edo/se-paddy-e",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rice paddy water with eastern ridge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting flooded rice paddy with planted seedlings and an adjacent grass ridge/levee along the eastern edge, viewed from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5141
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rice paddy water and eastern ridge terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting flooded rice field with planted seedlings on the left and a grass ridge along the eastern border, viewed directly from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3556
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rice paddy water and east ridge terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a flooded rice paddy with young seedlings on the left and a grassy field ridge on the right.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2582
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rice paddy water with rice seedlings and eastern ridge/levee",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting flooded rice paddy with planted seedlings and the eastern earthen ridge; top-down ground view spanning all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6430
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.062Z",
+ "cells": {
+  "16": [
+   "39e8f90d3fba1a2f"
+  ],
+  "24": [
+   "098f1874e0a3fe2e",
+   "45a5014555b053ff",
+   "56bd90daf3de46ec",
+   "67e6ff46e4ae1f9f",
+   "6ca149f4e719d9a2",
+   "aac4a2f6638b9412"
+  ],
+  "32": [
+   "35326869b2899d68",
+   "41942c52751d0dff",
+   "98ec51b1bc258c5f",
+   "ae8b1d0c55601d64",
+   "b4a8e4b83c564470",
+   "f7ac3e7a3effc751"
+  ],
+  "48": [
+   "26710915b48c317b",
+   "27685afd45d2b5b7",
+   "57cb1d61f891c0fc",
+   "8492e4e010611684",
+   "97b201bf3a474a93",
+   "d1aeb784757e8017"
+  ]
+ }
+}
