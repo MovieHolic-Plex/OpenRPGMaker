@@ -68,34 +68,33 @@ def arch(c, x0, x1, top, bottom, m='straw'):
     return hole
 
 
-@REG.piece('portcullis', '쇠창살 문(닫힘)', 'arena', 'wall', 2, 1, 32, 'structure',
-           '사암 아치 속 내려진 쇠창살 문 — 너머 어두운 통로.', TAGS + ['문', '감방'],
-           '경기장·대기실 북쪽 벽 앞 첫 바닥 줄(벽에 박힌 문). 앞 2칸 비운다.', ['gate winch', 'arena fence 3'], use=('gate',), )
+@REG.piece('portcullis', '쇠창살 문(닫힘)', 'arena', 'hang', 2, 0, 0, 'wall_mounted',
+           '벽면에 박힌 사암 아치 속 내려진 쇠창살 문 — 너머 어두운 통로.', TAGS + ['문', '감방'],
+           '경기장·대기실 북쪽 벽면(두 줄 전체)에 건다. 앞 1~2칸 비운다.', ['gate winch', 'arena fence 3'], use=('gate',))
 def portcullis(c):
-    hole = arch(c, 1, 30, 1, 46)
-    for x, y in hole: c.p(x, y, K('black', 1 if y < 30 else 2))
-    xs = sorted({x for x, _ in hole}); ys = sorted({y for _, y in hole})
+    hole = arch(c, 1, 30, 0, 31)
+    for x, y in hole: c.p(x, y, K('black', 1 if y < 22 else 2))
+    xs = sorted({x for x, _ in hole})
     for x, y in hole:
         if (x - xs[0]) % 4 == 1: c.p(x, y, K('iron', 4))
         if (x - xs[0]) % 4 == 2: c.p(x, y, K('iron', 2))
-        if (y - 10) % 7 == 0: c.p(x, y, K('iron', 5))
-    for x in range(xs[0], xs[-1] + 1, 4): c.p(x + 1, 46, K('iron', 6))      # 창끝
-    c.shadow(1, 44, 31, 47)
+        if (y - 8) % 7 == 0: c.p(x, y, K('iron', 5))
+    for x in range(xs[0], xs[-1] + 1, 4): c.p(x + 1, 31, K('iron', 6))      # 창끝(벽 밑단에 닿는다)
     c.outline()
 
 
-@REG.piece('portcullis open', '쇠창살 문(열림)', 'arena', 'wall', 2, 1, 32, 'structure',
-           '사암 아치, 쇠창살을 끌어 올려 위에 창끝만 보이고 아래는 트인 어두운 통로.', TAGS + ['문'],
-           '경기장 북쪽 벽 앞 첫 바닥 줄. 지나가는 길로 쓰려면 이동 이벤트를 단다.', ['portcullis', 'gate winch'], use=('gate',))
+@REG.piece('portcullis open', '쇠창살 문(열림)', 'arena', 'hang', 2, 0, 0, 'wall_mounted',
+           '벽면에 박힌 사암 아치, 쇠창살을 끌어 올려 위에 창끝만 보이고 아래는 트인 어두운 통로.', TAGS + ['문'],
+           '경기장 북쪽 벽면(두 줄 전체)에 건다. 지나가는 길로 쓰려면 아래 바닥 칸에 이동 이벤트를 단다.', ['portcullis', 'gate winch'], use=('gate',))
 def portcullis_open(c):
-    hole = arch(c, 1, 30, 1, 46)
-    for x, y in hole: c.p(x, y, K('black', 1 if y < 34 else 2 if y < 42 else 3))
+    hole = arch(c, 1, 30, 0, 31)
+    for x, y in hole: c.p(x, y, K('black', 1 if y < 20 else 2 if y < 27 else 3))
     xs = sorted({x for x, _ in hole})
     for x, y in hole:
-        if y < 14:
+        if y < 11:
             if (x - xs[0]) % 4 in (1, 2): c.p(x, y, K('iron', 4 if (x - xs[0]) % 4 == 1 else 2))
-            if y in (6, 12): c.p(x, y, K('iron', 5))
-    for x in range(xs[0], xs[-1] + 1, 4): c.p(x + 1, 14, K('iron', 6))
+            if y in (5, 9): c.p(x, y, K('iron', 5))
+    for x in range(xs[0], xs[-1] + 1, 4): c.p(x + 1, 11, K('iron', 6))
     c.outline()
 
 
@@ -184,8 +183,9 @@ def training_dummy(c):
     for y in (14, 19): c.hl(4, 11, y, K('dwood', 2))          # 묶은 끈
     c.hl(0, 15, 12, K('dwood', 4)); c.hl(0, 15, 13, K('dwood', 2))   # 팔 막대(몸 앞)
     for x in (0, 15): c.vl(x, 11, 15, K('straw', 4))           # 손 짚
-    c.ell(7.5, 6, 3, 3.2, None, only=lambda x, y: K('linen', 4 if x < 8 else 3))
-    c.p(6, 6, K('linen', 2)); c.p(9, 6, K('linen', 2)); c.hl(5, 10, 9, K('straw', 2))
+    c.ell(7.5, 6, 2.6, 2.8, None, only=lambda x, y: K('straw', 5 if x < 7 and y < 6 else 4 if x < 9 else 3))   # 짚 뭉치 머리(얼굴 없음)
+    for y in range(4, 9, 2): c.hl(6, 9, y, K('straw', 2))
+    c.p(7, 2, K('straw', 4)); c.p(8, 2, K('straw', 3)); c.hl(5, 10, 9, K('dwood', 2))
     c.outline()
 
 
@@ -289,7 +289,8 @@ def war_drum(c):
     cy = cyl(c, 8, 6, 6.5, 3, 13, 'red', t0=5, cap='linen')
     for x in range(2, 15, 2): line(c, x, 10, x + (1 if x < 8 else -1), 21, K('linen', 4))
     c.hl(2, 14, 21, K('dwood', 3))
-    line(c, 12, 7, 15, 2, K('dwood', 5)); line(c, 4, 7, 2, 3, K('dwood', 4))
+    line(c, 4, 8, 11, 5, K('dwood', 5)); line(c, 5, 5, 12, 8, K('dwood', 4))   # 북 머리 위에 엇갈려 놓은 북채
+    c.p(11, 5, K('linen', 5)); c.p(12, 8, K('linen', 5))
     c.outline()
 
 

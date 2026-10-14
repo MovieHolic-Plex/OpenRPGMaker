@@ -100,7 +100,7 @@
   {
    "id": "curule seat",
    "x": 11,
-   "y": 4
+   "y": 3
   },
   {
    "id": "arena banner",
@@ -130,22 +130,22 @@
   {
    "id": "war drum",
    "x": 10,
-   "y": 4
+   "y": 3
   },
   {
    "id": "laurel trophy",
    "x": 13,
-   "y": 4
+   "y": 3
   },
   {
    "id": "portcullis",
    "x": 3,
-   "y": 10
+   "y": 8
   },
   {
    "id": "portcullis open",
    "x": 18,
-   "y": 10
+   "y": 8
   },
   {
    "id": "gate winch",
@@ -159,12 +159,12 @@
   },
   {
    "id": "wall torch",
-   "x": 8,
+   "x": 7,
    "y": 8
   },
   {
    "id": "wall torch",
-   "x": 15,
+   "x": 16,
    "y": 8
   },
   {
@@ -174,12 +174,12 @@
   },
   {
    "id": "brazier",
-   "x": 1,
+   "x": 2,
    "y": 17
   },
   {
    "id": "brazier",
-   "x": 22,
+   "x": 21,
    "y": 17
   },
   {
@@ -219,7 +219,7 @@
   },
   {
    "id": "shield rack",
-   "x": 13,
+   "x": 12,
    "y": 20
   },
   {
@@ -269,7 +269,12 @@
   },
   {
    "id": "tier seat 3",
-   "x": 5,
+   "x": 4,
+   "y": 5
+  },
+  {
+   "id": "tier seat 3",
+   "x": 7,
    "y": 5
   },
   {
@@ -279,8 +284,18 @@
   },
   {
    "id": "tier seat 3",
-   "x": 18,
+   "x": 17,
    "y": 5
+  },
+  {
+   "id": "tier seat 3",
+   "x": 20,
+   "y": 5
+  },
+  {
+   "id": "curule seat",
+   "x": 12,
+   "y": 3
   }
  ]
 }

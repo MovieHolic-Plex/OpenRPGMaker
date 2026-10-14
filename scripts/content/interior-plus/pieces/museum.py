@@ -190,21 +190,22 @@ def case_scroll(c):
 def relic_cabinet(c):
     m = 'dwood'
     # 윗면(3줄) + 앞면
-    box(c, 1, 2, 14, 3, 33, m, t0=5, f0=3)
-    for y in range(7, 34):
+    box(c, 1, 6, 14, 4, 29, m, t0=5, f0=3)
+    c.hl(2, 13, 6, K(m, 6)); c.hl(2, 13, 7, K(m, 5))      # 윗면 판(밝게 — 3/4 윗면)
+    for y in range(12, 35):
         for x in range(3, 13):
             c.p(x, y, K('glass', 1) if (x + y) % 5 else K('glass', 2))
-    for sy in (13, 21, 29):   # 선반
+    for sy in (18, 25, 32):   # 선반
         c.hl(3, 12, sy, K(m, 5)); c.hl(3, 12, sy + 1, K(m, 2))
     # 물건들
-    c.ell(5.5, 10, 1.5, 2, None, only=lambda x, y: K('clay', 5 if x < 6 else 3)); c.p(5, 8, K('clay', 2))
-    c.rect(9, 9, 10, 12, K('marble', 5)); c.p(9, 8, K('marble', 6)); c.p(10, 12, K('marble', 3))
-    c.ell(7.5, 19, 2.5, 1.2, None, only=lambda x, y: K('blue', 5 if x < 8 else 3)); c.p(11, 19, K('gold', 5)); c.p(11, 20, K('gold', 3))
-    c.rect(4, 26, 5, 28, K('teal', 4)); c.p(4, 25, K('teal', 5)); c.ell(9.5, 27, 2, 1.5, None, only=lambda x, y: K('gold', 5 if x < 10 else 3))
-    for y in range(7, 34):
+    c.ell(5.5, 15.5, 1.5, 2, None, only=lambda x, y: K('clay', 5 if x < 6 else 3)); c.p(5, 13, K('clay', 2))
+    c.rect(9, 14, 10, 17, K('marble', 5)); c.p(9, 13, K('marble', 6)); c.p(10, 17, K('marble', 3))
+    c.ell(7.5, 23, 2.5, 1.2, None, only=lambda x, y: K('blue', 5 if x < 8 else 3)); c.p(11, 23, K('gold', 5)); c.p(11, 24, K('gold', 3))
+    c.rect(4, 29, 5, 31, K('teal', 4)); c.p(4, 28, K('teal', 5)); c.ell(9.5, 30, 2, 1.5, None, only=lambda x, y: K('gold', 5 if x < 10 else 3))
+    for y in range(12, 35):
         if (y % 6) in (1, 2): c.p(3, y, K('glass', 5))
-    c.vl(8, 7, 33, K(m, 3))   # 두 문짝 사이
-    c.p(7, 20, K('brass', 5)); c.p(9, 20, K('brass', 5))
+    c.vl(8, 12, 34, K(m, 3))   # 두 문짝 사이
+    c.p(7, 24, K('brass', 5)); c.p(9, 24, K('brass', 5))
     c.shadow(1, 36, 15, 39)
 
 
@@ -213,27 +214,28 @@ def relic_cabinet(c):
            '북쪽 벽 앞 첫 바닥 줄.', ['relic cabinet', 'bench museum'], use=('search',))
 def wide_cabinet(c):
     m = 'dwood'
-    box(c, 1, 2, 30, 3, 33, m, t0=5, f0=3)
-    for y in range(7, 34):
+    box(c, 1, 6, 30, 4, 29, m, t0=5, f0=3)
+    c.hl(2, 29, 6, K(m, 6)); c.hl(2, 29, 7, K(m, 5))      # 윗면 판(밝게 — 3/4 윗면)
+    for y in range(12, 35):
         for x in range(3, 29):
             c.p(x, y, K('glass', 1) if (x + y) % 5 else K('glass', 2))
-    for sy in (15, 26):
+    for sy in (19, 28):
         c.hl(3, 28, sy, K(m, 5)); c.hl(3, 28, sy + 1, K(m, 2))
-    c.vl(15, 7, 33, K(m, 3)); c.vl(16, 7, 33, K(m, 4))
-    # 위 칸: 접시 셋(세워 둔)
+    c.vl(15, 12, 34, K(m, 3)); c.vl(16, 12, 34, K(m, 4))
+    # 위 칸: 세워 둔 접시
     for cx in (6, 11, 21, 26):
-        c.ell(cx, 11, 2, 2.5, None, only=lambda x, y, cx=cx: K('white', 5 if x < cx else 3)); c.p(cx, 11, K('blue', 4))
+        c.ell(cx, 15.5, 2, 2.5, None, only=lambda x, y, cx=cx: K('white', 5 if x < cx else 3)); c.p(cx, 15, K('blue', 4))
     # 가운데 칸: 투구·항아리
-    c.ell(7, 22, 2.5, 2.5, None, only=lambda x, y: K('iron', 5 if x < 7 else 3)); c.hl(5, 9, 24, K('iron', 2))
-    c.ell(12, 22, 1.5, 2.5, None, only=lambda x, y: K('clay', 5 if x < 12 else 3))
-    c.ell(20, 23, 2, 1.5, None, only=lambda x, y: K('gold', 5 if x < 20 else 3)); c.rect(24, 19, 26, 24, K('teal', 4)); c.hl(24, 26, 19, K('teal', 5))
+    c.ell(7, 25, 2.5, 2.5, None, only=lambda x, y: K('iron', 5 if x < 7 else 3)); c.hl(5, 9, 27, K('iron', 2))
+    c.ell(12, 25, 1.5, 2.5, None, only=lambda x, y: K('clay', 5 if x < 12 else 3))
+    c.ell(20, 26, 2, 1.5, None, only=lambda x, y: K('gold', 5 if x < 20 else 3)); c.rect(24, 23, 26, 27, K('teal', 4)); c.hl(24, 26, 23, K('teal', 5))
     # 아래 칸: 작은 상·책
-    c.rect(5, 29, 6, 33, K('marble', 5)); c.p(5, 28, K('marble', 6))
-    for i, col in enumerate(('red', 'green', 'blue')): c.rect(10 + i * 2, 29, 11 + i * 2, 33, K(col, 3)); c.p(10 + i * 2, 29, K(col, 4))
-    c.ell(23, 31, 3, 1.5, None, only=lambda x, y: K('clay', 4 if x < 23 else 2))
-    for y in range(7, 34):
+    c.rect(5, 31, 6, 34, K('marble', 5)); c.p(5, 30, K('marble', 6))
+    for i, col in enumerate(('red', 'green', 'blue')): c.rect(10 + i * 2, 31, 11 + i * 2, 34, K(col, 3)); c.p(10 + i * 2, 31, K(col, 4))
+    c.ell(23, 33, 3, 1.2, None, only=lambda x, y: K('clay', 4 if x < 23 else 2))
+    for y in range(12, 35):
         if (y % 6) in (1, 2): c.p(3, y, K('glass', 5)); c.p(17, y, K('glass', 5))
-    c.p(14, 21, K('brass', 5)); c.p(18, 21, K('brass', 5))
+    c.p(14, 24, K('brass', 5)); c.p(18, 24, K('brass', 5))
     c.shadow(1, 36, 31, 39)
 
 
@@ -251,22 +253,20 @@ def frame(c, x0, y0, x1, y1, m='gold'):
            '금 액자 풍경화 — 푸른 산·호수·초록 들(글자 없음).', TAGS + ['그림'],
            '벽면 윗줄에 건다. 그림끼리 1칸 띄워 같은 높이로.', ['painting sea', 'bench museum'], use=('read',))
 def painting_landscape(c):
-    frame(c, 2, 3, 29, 25)
-    for y in range(5, 24):
+    frame(c, 2, 4, 29, 20)
+    for y in range(6, 19):
         for x in range(4, 28):
-            sky = y < 12
-            col = K('blue', 5 if y < 8 else 6) if sky else None
-            c.p(x, y, col if col else K('green', 3))
+            c.p(x, y, K('blue', 5 if y < 8 else 6) if y < 10 else K('green', 3))
     # 먼 산
     for x in range(4, 28):
-        top = 12 - int(4 * max(0, 1 - abs(x - 11) / 7)) - int(3 * max(0, 1 - abs(x - 22) / 6))
-        for y in range(top, 15): c.p(x, y, K('purple', 4) if y < top + 2 and x < 13 else K('blue', 3))
-        c.p(x, top, K('white', 6) if top < 10 else K('blue', 4))
+        top = 10 - int(3 * max(0, 1 - abs(x - 11) / 7)) - int(2 * max(0, 1 - abs(x - 22) / 6))
+        for y in range(top, 12): c.p(x, y, K('purple', 4) if y < top + 2 and x < 13 else K('blue', 3))
+        c.p(x, top, K('white', 6) if top < 9 else K('blue', 4))
     for x in range(4, 28):   # 호수·들
-        for y in range(15, 18): c.p(x, y, K('water', 5) if (x + y) % 6 else K('water', 6))
-        for y in range(18, 24): c.p(x, y, K('green', 4 if y < 20 else 3) if hnoise(x, y) > .15 else K('green', 5))
-    c.ell(24, 7, 1.5, 1.5, K('yellow', 6))
-    for x, y in ((8, 20), (9, 19), (9, 20), (10, 20)): c.p(x, y, K('leaf', 2))
+        for y in range(12, 14): c.p(x, y, K('water', 5) if (x + y) % 6 else K('water', 6))
+        for y in range(14, 19): c.p(x, y, K('green', 4 if y < 16 else 3) if hnoise(x, y) > .15 else K('green', 5))
+    c.ell(24, 7, 1.2, 1.2, K('yellow', 6))
+    for x, y in ((8, 16), (9, 15), (9, 16), (10, 16)): c.p(x, y, K('leaf', 2))
 
 
 @REG.piece('painting sea', '바다 그림', 'museum', 'hang', 1, 0, 0, 'wall_mounted',
@@ -285,45 +285,44 @@ def painting_sea(c):
            '검은 바탕 정물화 — 과일 그릇과 병(글자 없음).', TAGS + ['그림'],
            '벽면 윗줄. 미술관·식당 벽.', ['painting landscape'], use=('read',))
 def painting_still(c):
-    frame(c, 1, 3, 14, 21, 'gold')
-    for y in range(5, 20):
-        for x in range(3, 13): c.p(x, y, K('black', 2 if y < 15 else 3))
-    c.hl(3, 12, 15, K('dwood', 4)); c.hl(3, 12, 16, K('dwood', 3))
-    c.ell(6, 13, 1.5, 1.5, None, only=lambda x, y: K('red', 5 if x < 6 else 3))
-    c.ell(8.5, 13.5, 1.5, 1, None, only=lambda x, y: K('yellow', 5 if x < 9 else 3))
-    c.rect(10, 8, 11, 14, K('green', 3)); c.p(10, 8, K('green', 5)); c.vl(10, 9, 13, K('green', 4)); c.rect(10, 6, 11, 7, K('green', 2))
-    c.p(5, 12, K('red', 6))
+    frame(c, 1, 4, 14, 20, 'gold')
+    for y in range(6, 19):
+        for x in range(3, 13): c.p(x, y, K('black', 2 if y < 14 else 3))
+    c.hl(3, 12, 14, K('dwood', 4)); c.hl(3, 12, 15, K('dwood', 3))
+    c.ell(6, 12, 1.5, 1.5, None, only=lambda x, y: K('red', 5 if x < 6 else 3))
+    c.ell(8.5, 12.5, 1.5, 1, None, only=lambda x, y: K('yellow', 5 if x < 9 else 3))
+    c.rect(10, 8, 11, 13, K('green', 3)); c.p(10, 8, K('green', 5)); c.vl(10, 9, 12, K('green', 4)); c.rect(10, 7, 11, 7, K('green', 2))
+    c.p(5, 11, K('red', 6))
 
 
 @REG.piece('painting grand', '큰 풍경화(3칸)', 'museum', 'hang', 3, 0, 0, 'wall_mounted',
            '넓은 금 액자 그림 — 노을 진 성과 언덕길·나무·강(사람·글자 없음).', TAGS + ['그림', '큰 그림'],
            '전시실 가장 긴 북쪽 벽 가운데. 앞에 벤치.', ['bench museum', 'rope barrier 3'], use=('read',))
 def painting_grand(c):
-    frame(c, 1, 2, 46, 27)
-    for y in range(4, 26):
+    frame(c, 1, 2, 46, 22)
+    for y in range(4, 21):
         for x in range(3, 45):
-            t = (y - 4) / 12
-            c.p(x, y, K('orange', 6) if y < 8 else K('orange', 5) if y < 11 else K('pink', 4) if y < 14 else K('green', 2))
+            c.p(x, y, K('orange', 6) if y < 7 else K('orange', 5) if y < 9 else K('pink', 4) if y < 12 else K('green', 2))
     # 성 실루엣
     for x in range(26, 40):
-        top = 9 if x in (27, 28, 37, 38) else 11 if 29 <= x <= 36 else 13
-        if x == 32 or x == 33: top = 7
-        for y in range(top, 18): c.p(x, y, K('purple', 2))
-    c.p(32, 6, K('red', 3)); c.p(33, 6, K('red', 4))
-    c.p(30, 13, K('yellow', 5)); c.p(35, 12, K('yellow', 5))
-    # 언덕·행렬
+        top = 8 if x in (27, 28, 37, 38) else 10 if 29 <= x <= 36 else 12
+        if x == 32 or x == 33: top = 6
+        for y in range(top, 15): c.p(x, y, K('purple', 2))
+    c.p(32, 5, K('red', 3)); c.p(33, 5, K('red', 4))
+    c.p(30, 11, K('yellow', 5)); c.p(35, 10, K('yellow', 5))
+    # 언덕
     for x in range(3, 45):
-        hy = 16 + int(2 * abs(((x * 7) % 13) / 13 - .5))
-        for y in range(hy, 26): c.p(x, y, K('green', 2 if y < 20 else 1))
+        hy = 13 + int(2 * abs(((x * 7) % 13) / 13 - .5))
+        for y in range(hy, 21): c.p(x, y, K('green', 2 if y < 17 else 1))
     # 앞 언덕의 길·나무 몇 그루(사람 없음)
     for x in range(5, 26):
-        y = 22 - (x - 5) // 4
+        y = 18 - (x - 5) // 5
         c.p(x, y, K('straw', 4)); c.p(x, y + 1, K('straw', 3))
     for tx in (7, 15, 41):
-        c.ell(tx, 17, 2, 2.4, None, only=lambda x, y: K('leaf', 3 if x < tx else 1)); c.vl(tx, 19, 21, K('dwood', 2))
-    for x in range(3, 45):   # 강물 빛
-        if 23 <= x <= 36: c.p(x, 24, K('orange', 5) if x % 3 else K('pink', 5))
-    c.ell(13, 6, 2, 2, K('yellow', 6))
+        c.ell(tx, 14, 2, 2.2, None, only=lambda x, y: K('leaf', 3 if x < tx else 1)); c.vl(tx, 16, 17, K('dwood', 2))
+    for x in range(23, 37):   # 강물 빛
+        c.p(x, 19, K('orange', 5) if x % 3 else K('pink', 5))
+    c.ell(13, 6, 1.6, 1.6, K('yellow', 6))
 
 
 # ───────── 조각 ─────────

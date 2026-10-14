@@ -1,25 +1,247 @@
 {
-  "name": "범선 아래 갑판(포 갑판·화물칸·감방)",
-  "building": "ship_hold",
-  "floor": "deck", "wall": "hull", "ceiling": "wood",
-  "rooms": [
-    {"id": "gundeck", "kind": "ship_gundeck", "x0": 1, "y0": 1, "x1": 20, "y1": 9, "floor": "deck", "wall": "hull"},
-    {"id": "cargo", "kind": "ship_cargo", "x0": 1, "y0": 11, "x1": 13, "y1": 18, "floor": "hold", "wall": "hull"},
-    {"id": "brig", "kind": "ship_brig", "x0": 15, "y0": 11, "x1": 20, "y1": 18, "floor": "hold", "wall": "hull"}
-  ],
-  "connect": [{"a": "gundeck", "b": "cargo"}, {"a": "gundeck", "b": "brig", "at": 17}],
-  "exit": {"room": "cargo"},
-  "objects": [
-    {"id": "ship ladder", "x": 10, "y": 3}, {"id": "rope pin rail", "x": 12, "y": 1}, {"id": "life ring", "x": 8, "y": 1},
-    {"id": "hanging lantern", "x": 4, "y": 1}, {"id": "hanging lantern", "x": 17, "y": 1},
-    {"id": "cannon west", "x": 1, "y": 4}, {"id": "cannon west", "x": 1, "y": 7}, {"id": "cannon east", "x": 19, "y": 4}, {"id": "cannon east", "x": 19, "y": 7},
-    {"id": "cannonball pile", "x": 3, "y": 6}, {"id": "powder keg", "x": 3, "y": 9}, {"id": "cannonball pile", "x": 18, "y": 6}, {"id": "powder keg", "x": 18, "y": 9},
-    {"id": "mast", "x": 10, "y": 6}, {"id": "capstan", "x": 14, "y": 6}, {"id": "deck grate", "x": 6, "y": 5},
-    {"id": "barrel stack", "x": 1, "y": 13}, {"id": "crate stack", "x": 3, "y": 13}, {"id": "cargo netted", "x": 9, "y": 13}, {"id": "cask rack", "x": 11, "y": 13},
-    {"id": "sack pile", "x": 1, "y": 16}, {"id": "anchor chain", "x": 13, "y": 17}, {"id": "powder keg", "x": 12, "y": 16}, {"id": "crate", "x": 5, "y": 17}, {"id": "barrel", "x": 4, "y": 17},
-    {"id": "hanging lantern", "x": 4, "y": 11},
-    {"id": "prison cot", "x": 15, "y": 13}, {"id": "shackles", "x": 18, "y": 11}, {"id": "slop bucket", "x": 20, "y": 13}, {"id": "straw pile", "x": 19, "y": 14},
-    {"id": "stool", "x": 19, "y": 17}
-  ],
-  "lines": [{"id": "bars", "cells": [{"x": 15, "y": 15}, {"x": 16, "y": 15}, {"x": 18, "y": 15}, {"x": 19, "y": 15}, {"x": 20, "y": 15}]}]
+ "name": "범선 아래 갑판(포 갑판·화물칸·감방)",
+ "building": "ship_hold",
+ "floor": "deck",
+ "wall": "hull",
+ "ceiling": "wood",
+ "rooms": [
+  {
+   "id": "gundeck",
+   "kind": "ship_gundeck",
+   "x0": 1,
+   "y0": 1,
+   "x1": 20,
+   "y1": 9,
+   "floor": "deck",
+   "wall": "hull"
+  },
+  {
+   "id": "cargo",
+   "kind": "ship_cargo",
+   "x0": 1,
+   "y0": 11,
+   "x1": 13,
+   "y1": 18,
+   "floor": "hold",
+   "wall": "hull"
+  },
+  {
+   "id": "brig",
+   "kind": "ship_brig",
+   "x0": 15,
+   "y0": 11,
+   "x1": 20,
+   "y1": 18,
+   "floor": "hold",
+   "wall": "hull"
+  }
+ ],
+ "connect": [
+  {
+   "a": "gundeck",
+   "b": "cargo"
+  },
+  {
+   "a": "gundeck",
+   "b": "brig",
+   "at": 17
+  }
+ ],
+ "exit": {
+  "room": "cargo"
+ },
+ "objects": [
+  {
+   "id": "ship ladder",
+   "x": 12,
+   "y": 3
+  },
+  {
+   "id": "rope pin rail",
+   "x": 13,
+   "y": 1
+  },
+  {
+   "id": "life ring",
+   "x": 8,
+   "y": 1
+  },
+  {
+   "id": "hanging lantern",
+   "x": 4,
+   "y": 1
+  },
+  {
+   "id": "hanging lantern",
+   "x": 17,
+   "y": 1
+  },
+  {
+   "id": "cannon west",
+   "x": 1,
+   "y": 4
+  },
+  {
+   "id": "cannon west",
+   "x": 1,
+   "y": 7
+  },
+  {
+   "id": "cannon east",
+   "x": 19,
+   "y": 4
+  },
+  {
+   "id": "cannon east",
+   "x": 19,
+   "y": 7
+  },
+  {
+   "id": "cannonball pile",
+   "x": 2,
+   "y": 5
+  },
+  {
+   "id": "powder keg",
+   "x": 3,
+   "y": 9
+  },
+  {
+   "id": "cannonball pile",
+   "x": 19,
+   "y": 5
+  },
+  {
+   "id": "powder keg",
+   "x": 18,
+   "y": 9
+  },
+  {
+   "id": "mast",
+   "x": 10,
+   "y": 6
+  },
+  {
+   "id": "capstan",
+   "x": 14,
+   "y": 6
+  },
+  {
+   "id": "deck grate",
+   "x": 6,
+   "y": 5
+  },
+  {
+   "id": "barrel stack",
+   "x": 1,
+   "y": 13
+  },
+  {
+   "id": "crate stack",
+   "x": 3,
+   "y": 13
+  },
+  {
+   "id": "cargo netted",
+   "x": 9,
+   "y": 13
+  },
+  {
+   "id": "cask rack",
+   "x": 11,
+   "y": 13
+  },
+  {
+   "id": "sack pile",
+   "x": 1,
+   "y": 16
+  },
+  {
+   "id": "anchor chain",
+   "x": 13,
+   "y": 17
+  },
+  {
+   "id": "powder keg",
+   "x": 12,
+   "y": 16
+  },
+  {
+   "id": "crate",
+   "x": 5,
+   "y": 17
+  },
+  {
+   "id": "barrel",
+   "x": 4,
+   "y": 17
+  },
+  {
+   "id": "hanging lantern",
+   "x": 4,
+   "y": 11
+  },
+  {
+   "id": "prison cot",
+   "x": 15,
+   "y": 13
+  },
+  {
+   "id": "shackles",
+   "x": 18,
+   "y": 11
+  },
+  {
+   "id": "slop bucket",
+   "x": 20,
+   "y": 13
+  },
+  {
+   "id": "straw pile",
+   "x": 19,
+   "y": 14
+  },
+  {
+   "id": "stool",
+   "x": 19,
+   "y": 17
+  },
+  {
+   "id": "crate stack",
+   "x": 5,
+   "y": 15
+  },
+  {
+   "id": "barrel stack",
+   "x": 9,
+   "y": 15
+  }
+ ],
+ "lines": [
+  {
+   "id": "bars",
+   "cells": [
+    {
+     "x": 15,
+     "y": 15
+    },
+    {
+     "x": 16,
+     "y": 15
+    },
+    {
+     "x": 18,
+     "y": 15
+    },
+    {
+     "x": 19,
+     "y": 15
+    },
+    {
+     "x": 20,
+     "y": 15
+    }
+   ]
+  }
+ ]
 }

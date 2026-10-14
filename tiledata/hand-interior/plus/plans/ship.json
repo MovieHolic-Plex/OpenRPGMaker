@@ -1,29 +1,323 @@
 {
-  "name": "범선 갑판 아래(선장실·조타실·주방·선원 선실)",
-  "building": "ship",
-  "floor": "deck", "wall": "hull", "ceiling": "wood",
-  "rooms": [
-    {"id": "cabin", "kind": "ship_cabin", "x0": 1, "y0": 1, "x1": 12, "y1": 8, "floor": "deck", "wall": "cabin"},
-    {"id": "helm", "kind": "ship_helm", "x0": 14, "y0": 1, "x1": 23, "y1": 8, "floor": "deck", "wall": "hull"},
-    {"id": "galley", "kind": "ship_galley", "x0": 1, "y0": 10, "x1": 9, "y1": 16, "floor": "hold", "wall": "hull"},
-    {"id": "crew", "kind": "ship_crew", "x0": 11, "y0": 10, "x1": 23, "y1": 18, "floor": "deck", "wall": "hull"}
-  ],
-  "connect": [{"a": "cabin", "b": "crew"}, {"a": "helm", "b": "crew"}, {"a": "galley", "b": "crew"}],
-  "exit": {"room": "crew"},
-  "objects": [
-    {"id": "stern windows", "x": 5, "y": 1}, {"id": "porthole", "x": 2, "y": 1}, {"id": "painting sea", "x": 10, "y": 1},
-    {"id": "captain bed", "x": 1, "y": 3}, {"id": "wardrobe", "x": 4, "y": 3}, {"id": "globe", "x": 10, "y": 3}, {"id": "sea chest", "x": 3, "y": 6},
-    {"id": "captain desk", "x": 6, "y": 5}, {"id": "chair N", "x": 6, "y": 6}, {"id": "map rolls", "x": 12, "y": 4},
-    {"id": "instrument shelf", "x": 15, "y": 1}, {"id": "porthole", "x": 19, "y": 1}, {"id": "porthole", "x": 22, "y": 1}, {"id": "ship bell", "x": 17, "y": 1},
-    {"id": "chart table", "x": 21, "y": 4}, {"id": "ship wheel", "x": 17, "y": 4}, {"id": "binnacle", "x": 17, "y": 6}, {"id": "rope coil", "x": 14, "y": 8},
-    {"id": "galley stove", "x": 2, "y": 12}, {"id": "pot rack", "x": 5, "y": 10}, {"id": "cask rack", "x": 6, "y": 12},
-    {"id": "sack pile", "x": 1, "y": 16}, {"id": "barrel", "x": 9, "y": 16}, {"id": "barrel", "x": 8, "y": 16},
-    {"id": "hammock", "x": 12, "y": 12}, {"id": "hammock", "x": 15, "y": 12}, {"id": "ship bunk", "x": 21, "y": 12}, {"id": "ship bunk", "x": 22, "y": 12},
-    {"id": "hanging lantern", "x": 16, "y": 10}, {"id": "porthole", "x": 13, "y": 10},
-    {"id": "sea chest", "x": 12, "y": 14}, {"id": "sea chest", "x": 15, "y": 14},
-    {"id": "dice barrel", "x": 19, "y": 15}, {"id": "stool", "x": 18, "y": 15}, {"id": "stool", "x": 20, "y": 15}, {"id": "stool", "x": 19, "y": 16},
-    {"id": "rope coil", "x": 23, "y": 18}, {"id": "life ring", "x": 23, "y": 10}
-  ],
-  "tables": [{"style": "work", "x": 3, "y": 15, "w": 3, "h": 1}],
-  "goods": [{"id": "fish", "x": 3, "y": 15}, {"id": "knife", "x": 4, "y": 15}, {"id": "breadplate", "x": 5, "y": 15}]
+ "name": "범선 갑판 아래(선장실·조타실·주방·선원 선실)",
+ "building": "ship",
+ "floor": "deck",
+ "wall": "hull",
+ "ceiling": "wood",
+ "rooms": [
+  {
+   "id": "cabin",
+   "kind": "ship_cabin",
+   "x0": 1,
+   "y0": 1,
+   "x1": 12,
+   "y1": 8,
+   "floor": "deck",
+   "wall": "cabin"
+  },
+  {
+   "id": "helm",
+   "kind": "ship_helm",
+   "x0": 14,
+   "y0": 1,
+   "x1": 23,
+   "y1": 8,
+   "floor": "deck",
+   "wall": "hull"
+  },
+  {
+   "id": "galley",
+   "kind": "ship_galley",
+   "x0": 1,
+   "y0": 10,
+   "x1": 9,
+   "y1": 16,
+   "floor": "hold",
+   "wall": "hull"
+  },
+  {
+   "id": "crew",
+   "kind": "ship_crew",
+   "x0": 11,
+   "y0": 10,
+   "x1": 23,
+   "y1": 18,
+   "floor": "deck",
+   "wall": "hull"
+  }
+ ],
+ "connect": [
+  {
+   "a": "cabin",
+   "b": "crew"
+  },
+  {
+   "a": "helm",
+   "b": "crew"
+  },
+  {
+   "a": "galley",
+   "b": "crew"
+  }
+ ],
+ "exit": {
+  "room": "crew"
+ },
+ "objects": [
+  {
+   "id": "stern windows",
+   "x": 5,
+   "y": 1
+  },
+  {
+   "id": "porthole",
+   "x": 2,
+   "y": 1
+  },
+  {
+   "id": "painting sea",
+   "x": 9,
+   "y": 1
+  },
+  {
+   "id": "captain bed",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "wardrobe",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "globe",
+   "x": 10,
+   "y": 3
+  },
+  {
+   "id": "sea chest",
+   "x": 3,
+   "y": 6
+  },
+  {
+   "id": "captain desk",
+   "x": 6,
+   "y": 5
+  },
+  {
+   "id": "chair N",
+   "x": 6,
+   "y": 6
+  },
+  {
+   "id": "map rolls",
+   "x": 12,
+   "y": 6
+  },
+  {
+   "id": "instrument shelf",
+   "x": 15,
+   "y": 1
+  },
+  {
+   "id": "porthole",
+   "x": 19,
+   "y": 1
+  },
+  {
+   "id": "porthole",
+   "x": 22,
+   "y": 1
+  },
+  {
+   "id": "ship bell",
+   "x": 17,
+   "y": 1
+  },
+  {
+   "id": "chart table",
+   "x": 21,
+   "y": 4
+  },
+  {
+   "id": "ship wheel",
+   "x": 17,
+   "y": 4
+  },
+  {
+   "id": "binnacle",
+   "x": 17,
+   "y": 6
+  },
+  {
+   "id": "rope coil",
+   "x": 14,
+   "y": 8
+  },
+  {
+   "id": "galley stove",
+   "x": 2,
+   "y": 12
+  },
+  {
+   "id": "pot rack",
+   "x": 5,
+   "y": 10
+  },
+  {
+   "id": "cask rack",
+   "x": 6,
+   "y": 12
+  },
+  {
+   "id": "sack pile",
+   "x": 1,
+   "y": 16
+  },
+  {
+   "id": "barrel",
+   "x": 9,
+   "y": 16
+  },
+  {
+   "id": "barrel",
+   "x": 8,
+   "y": 16
+  },
+  {
+   "id": "hammock",
+   "x": 12,
+   "y": 12
+  },
+  {
+   "id": "hammock",
+   "x": 15,
+   "y": 12
+  },
+  {
+   "id": "ship bunk",
+   "x": 21,
+   "y": 12
+  },
+  {
+   "id": "ship bunk",
+   "x": 22,
+   "y": 12
+  },
+  {
+   "id": "hanging lantern",
+   "x": 16,
+   "y": 10
+  },
+  {
+   "id": "porthole",
+   "x": 13,
+   "y": 10
+  },
+  {
+   "id": "sea chest",
+   "x": 12,
+   "y": 14
+  },
+  {
+   "id": "sea chest",
+   "x": 15,
+   "y": 14
+  },
+  {
+   "id": "dice barrel",
+   "x": 19,
+   "y": 15
+  },
+  {
+   "id": "stool",
+   "x": 18,
+   "y": 15
+  },
+  {
+   "id": "stool",
+   "x": 20,
+   "y": 15
+  },
+  {
+   "id": "stool",
+   "x": 19,
+   "y": 16
+  },
+  {
+   "id": "rope coil",
+   "x": 23,
+   "y": 18
+  },
+  {
+   "id": "life ring",
+   "x": 23,
+   "y": 10
+  }
+ ],
+ "tables": [
+  {
+   "style": "work",
+   "x": 3,
+   "y": 14,
+   "w": 3,
+   "h": 2
+  }
+ ],
+ "goods": [
+  {
+   "id": "fish",
+   "x": 3,
+   "y": 14
+  },
+  {
+   "id": "knife",
+   "x": 4,
+   "y": 14
+  },
+  {
+   "id": "breadplate",
+   "x": 5,
+   "y": 14
+  }
+ ],
+ "lines": [
+  {
+   "id": "rug red",
+   "cells": [
+    {
+     "x": 8,
+     "y": 6
+    },
+    {
+     "x": 8,
+     "y": 7
+    },
+    {
+     "x": 9,
+     "y": 6
+    },
+    {
+     "x": 9,
+     "y": 7
+    },
+    {
+     "x": 10,
+     "y": 6
+    },
+    {
+     "x": 10,
+     "y": 7
+    },
+    {
+     "x": 11,
+     "y": 6
+    },
+    {
+     "x": 11,
+     "y": 7
+    }
+   ]
+  }
+ ]
 }

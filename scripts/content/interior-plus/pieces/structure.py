@@ -37,14 +37,13 @@ def hold(X, Y):
 @REG.floor('sand', '투기장 모래', 4, 4)
 def sand(X, Y):
     X, Y = X % 64, Y % 64
-    n = hnoise(X, Y, 5); n2 = hnoise(X // 3, Y // 2, 11); n3 = hnoise(X // 9, Y // 6, 17)
-    c = 4 if n3 > .35 else 3
-    if n2 > .86: c += 1
-    elif n2 < .1: c -= 1
-    # 고른 갈퀴 자국(얕은 물결 줄)
-    wave = (Y + int(2 * __import__('math').sin(X / 64 * 6.2832 * 2))) % 8
-    if wave == 0 and n > .25: c -= 1
-    if wave == 1 and n > .5: c += 1
+    n = hnoise(X, Y, 5); n2 = hnoise(X // 2, Y // 2, 11)
+    c = 4
+    if n2 > .9: c += 1                                                 # 드문 밝은 알갱이
+    elif n2 < .07: c -= 1                                              # 드문 그늘 알갱이
+    # 갈퀴 자국: 길게 흐르는 얕은 물결(벽돌처럼 끊기지 않게 가로로 이어진다)
+    wave = (Y + int(round(2.5 * __import__('math').sin(X / 64 * 6.2832)))) % 10
+    if wave == 0 and n > .2: c -= 1
     if n > .993: return K('stone', 4)                                 # 작은 자갈
     if n > .988: return K('stone', 2)
     return K('straw', c)
@@ -91,6 +90,10 @@ def _wall_shade(c, fy):
 @REG.wall('hull', '배 선체 판벽(휜 늑골)', 3)
 def hull(X, fy):
     X = X % 48
+    # 걸레받이(밝은 널 한 줄 + 그늘) — 벽과 같은 판자 바닥이 맞닿는 선을 읽히게 한다. 늑골은 걸레받이 위에서 끝난다.
+    if fy == 25: return K('wood', 6)
+    if 26 <= fy <= 28: return K('wood', 4 if fy == 26 else 3) if X % 16 else K('dwood', 2)
+    if fy >= 29: return K('dwood', 2 if fy == 29 else 1)
     # 늑골(세로 들보): 아래로 갈수록 오른쪽으로 휜다 — 선체가 안으로 굽은 느낌
     bend = int(round(3 * (fy / 31) ** 2))
     rx = (X - bend) % 48
@@ -108,7 +111,6 @@ def hull(X, fy):
     if j == 20: return K('dwood', 1)
     if j == 23 and yy == 2: return K('iron', 3)
     if hnoise(X // 4, row, 21) > .85: base -= 1
-    if fy >= 29: return K('dwood', 2 if fy == 29 else 1)
     return K('dwood', base + 2)
 
 

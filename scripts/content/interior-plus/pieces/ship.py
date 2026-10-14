@@ -101,13 +101,13 @@ def barrel_stack(c):
            '나무 받침에 눕힌 큰 물통(꼭지 달림) — 선원 마실 물·럼.', TAGS + ['주방', '화물칸', '통'],
            '주방·화물칸 벽 앞, 꼭지 앞 1칸 비운다.', ['barrel stack', 'galley stove'], use=('search',))
 def cask_rack(c):
-    c.shadow(1, 20, 31, 23)
+    c.shadow(1, 27, 31, 30)
     # 받침(X 다리)
     for x0 in (5, 22):
-        line(c, x0, 21, x0 + 4, 14, K('dwood', 3)); line(c, x0 + 4, 21, x0, 14, K('dwood', 2))
-    c.rect(3, 19, 28, 20, K('dwood', 3)); c.hl(3, 28, 19, K('dwood', 5))
-    barrel_side(c, 6, 11, 22, 7)
-    c.p(3, 12, K('brass', 5)); c.p(2, 12, K('brass', 3)); c.p(2, 13, K('brass', 4))   # 꼭지
+        line(c, x0, 28, x0 + 4, 21, K('dwood', 3)); line(c, x0 + 4, 28, x0, 21, K('dwood', 2))
+    c.rect(3, 26, 28, 27, K('dwood', 3)); c.hl(3, 28, 26, K('dwood', 5))
+    barrel_side(c, 6, 18, 22, 7)
+    c.p(3, 19, K('brass', 5)); c.p(2, 19, K('brass', 3)); c.p(2, 20, K('brass', 4))   # 꼭지
     c.outline()
 
 
@@ -133,14 +133,22 @@ def crate_stack(c):
            '삼베 곡식 자루 다섯을 쌓은 더미.', TAGS + ['화물칸', '주방', '자루'],
            '화물칸·주방 식료 구석.', ['barrel stack', 'crate stack'])
 def sack_pile(c):
-    c.shadow(1, 20, 31, 23)
-    m = 'linen'
+    c.shadow(1, 27, 31, 30)
+    m = 'bread'
     def sack(cx, cy, rx, ry):
-        c.ell(cx, cy, rx, ry, None, only=lambda x, y: K(m, 4 if (x - cx) + (y - cy) < -2 else 3 if (x - cx) < rx * .4 else 2))
-        c.p(int(cx) - 1, int(cy - ry), K(m, 2)); c.p(int(cx), int(cy - ry) - 1, K('straw', 4)); c.p(int(cx) + 1, int(cy - ry), K(m, 2))
-        c.p(int(cx), int(cy), K(m, 3))
-    sack(6, 16, 5, 5); sack(16, 17, 5.5, 4.5); sack(26, 16, 5, 5); sack(11, 9, 5, 4.5); sack(21, 9, 5, 4.5)
-    c.p(10, 18, K('red', 3)); c.p(22, 9, K('blue', 3))
+        # 삼베 자루: 밑이 퍼지고 위가 묶인 모양, 왼쪽 위에서 빛
+        for y in range(int(cy - ry), int(cy + ry) + 1):
+            t = (y - (cy - ry)) / (2 * ry)
+            half = rx * (0.55 + 0.45 * min(1, t * 1.6))
+            for x in range(int(cx - half), int(cx + half) + 1):
+                u = (x - cx) / max(1, half)
+                k = 5 if u < -.45 and t < .6 else 4 if u < .1 else 3 if u < .6 else 2
+                if (x + 2 * y) % 7 == 0: k = max(1, k - 1)           # 삼베 결
+                c.p(x, y, K(m, k))
+        c.hl(int(cx) - 1, int(cx) + 1, int(cy - ry) - 1, K('straw', 3))   # 묶은 끈
+        c.p(int(cx), int(cy - ry) - 2, K(m, 4)); c.p(int(cx) - 1, int(cy - ry) - 2, K(m, 5))   # 묶인 주둥이
+    sack(11, 15, 5, 5); sack(21, 15, 5, 5)
+    sack(6, 23, 5, 5); sack(16, 24, 5.5, 4.5); sack(26, 23, 5, 5)
     c.outline()
 
 
@@ -296,6 +304,10 @@ def capstan(c):
     c.hl(2, 14, 18, K('iron', 4)); c.hl(2, 14, 26, K('iron', 3))
     for x, y in ((5, 14), (8, 13), (11, 14), (8, 16)): c.p(x, y, K('dwood', 1))
     c.ell(8, 15, 1.5, .8, K('iron', 5))
+    # 지렛대 막대 넷(머리 구멍에 꽂혀 사방으로)
+    for (x1, y1) in ((0, 13), (15, 13), (3, 18), (13, 18)):
+        line(c, 8, 15, x1, y1, K('pine', 5)); line(c, 8, 16, x1, y1 + 1, K('pine', 3))
+    c.ell(8, 15, 1.5, .8, K('iron', 5))
     c.outline()
 
 
@@ -373,8 +385,9 @@ def instrument_shelf(c):
 def rope_pin_rail(c):
     m = 'dwood'
     c.rect(1, 6, 30, 8, K(m, 4)); c.hl(1, 30, 6, K(m, 5)); c.hl(1, 30, 8, K(m, 2))
+    for x in (1, 30): c.vl(x, 5, 10, K(m, 2))                       # 벽에 댄 받침
     for cx in (5, 12, 19, 26):
-        c.vl(cx, 3, 6, K('pine', 5)); c.p(cx, 2, K('pine', 6))
+        c.vl(cx, 3, 6, K('wood', 5)); c.p(cx + 1, 4, K('wood', 3)); c.p(cx, 2, K('wood', 6)); c.p(cx + 1, 2, K('wood', 4))
         for y in range(9, 20):
             r = 2.5 if y < 17 else 2
             for x in (int(cx - r), int(cx + r)): c.p(x, y, K('straw', 4 if x < cx else 3))
@@ -401,13 +414,19 @@ def life_ring(c):
            '바닥에 서려 놓은 굵은 닻 쇠사슬.', TAGS + ['화물칸', '갑판'],
            '갑판·화물칸 구석, 닻 곁.', ['anchor', 'capstan'])
 def anchor_chain(c):
-    c.shadow(1, 10, 15, 15)
-    for i, (rx, ry) in enumerate(((6, 3), (4.5, 2.2), (3, 1.4))):
-        cy = 10 - i * 1.6
-        for a in range(0, 360, 20):
-            r = math.radians(a + i * 10)
-            x = int(round(7.5 + rx * math.cos(r))); y = int(round(cy + ry * math.sin(r)))
-            c.p(x, y, K('iron', 5 if (a // 20) % 2 else 2)); c.p(x + 1, y, K('iron', 3))
+    c.shadow(1, 11, 15, 15)
+    # 고리 하나 = 3×2 타원(가로 고리) 또는 2×3(세로 고리), 서로 엇갈려 서린다
+    def link(x, y, flat):
+        pts = [(0, 0), (1, 0), (2, 0), (0, 1), (2, 1)] if flat else [(0, 0), (1, 0), (0, 1), (1, 2), (0, 2), (1, 1)]
+        for dx, dy in pts: c.p(x + dx, y + dy, K('iron', 5 if dy == 0 else 3))
+        if flat: c.p(x + 1, y + 1, K('iron', 1))
+    for i, (rx, ry, cy) in enumerate(((5.5, 2.6, 11), (4, 1.8, 8.5), (2.4, 1.1, 6.5))):
+        n = 9 - i * 3
+        for k in range(n):
+            a = math.radians(k * 360 / n + i * 25)
+            x = int(round(6.5 + rx * math.cos(a))); y = int(round(cy + ry * math.sin(a)))
+            link(x, y, k % 2 == 0)
+    c.p(12, 3, K('iron', 4)); c.p(12, 4, K('iron', 3)); c.p(11, 5, K('iron', 4))   # 위로 올라가는 끝
     c.outline()
 
 

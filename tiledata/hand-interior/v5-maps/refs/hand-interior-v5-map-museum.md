@@ -1,13 +1,13 @@
 # 예제 — 왕립 박물관 (museum, interior-plus)
 
 31×19 · 바닥 check · 벽 marblewall · 천장 default. 방(id=종류): gallery=museum_gallery · relics=museum_relics · sculpture=museum_sculpture · lobby=museum_lobby · natural=museum_natural.
-도구 검사: 오류 0 · 경고 0 · 닿는 칸 296. 그림: `hand-interior-museum`.
+도구 검사: 오류 0 · 경고 0 · 닿는 칸 294. 그림: `hand-interior-museum`.
 조수는 보통 `build_hand_interior_room({layout:{program:"museum"}})` 로 짓는다 — layout 이 방 크기·배치를 새로 짜고 방마다 이 예제 방의 가구 한 벌을 옮겨 심는다.
 아래는 방 사각형을 직접 준 입력(rooms·connect·exit)이다. 좌표를 그대로 복사하지 말고 방 짜임(통로·앵커 가구·벽 걸이 간격)을 배운다.
 
 ## build_hand_interior_room 인자 (rooms 입력)
 ```json
-{"name":"왕립 박물관","rooms":[{"id":"gallery","x0":1,"y0":1,"x1":18,"y1":9,"floor":"parquet","wall":"gallery"},{"id":"relics","x0":20,"y0":1,"x1":29,"y1":9,"floor":"marble","wall":"gallery"},{"id":"sculpture","x0":1,"y0":11,"x1":6,"y1":17,"floor":"marble","wall":"marblewall"},{"id":"lobby","x0":8,"y0":11,"x1":21,"y1":17,"floor":"check","wall":"marblewall"},{"id":"natural","x0":23,"y0":11,"x1":29,"y1":17,"floor":"sandstone","wall":"gallery"}],"connect":[{"a":"gallery","b":"lobby"},{"a":"relics","b":"lobby","at":21},{"a":"sculpture","b":"lobby"},{"a":"lobby","b":"natural"}],"exit":{"room":"lobby","width":2},"floor":"check","wall":"marblewall","ceiling":"default","objects":[{"id":"painting landscape","x":2,"y":1},{"id":"painting still life","x":5,"y":1},{"id":"painting grand","x":8,"y":1},{"id":"painting sea","x":12,"y":1},{"id":"painting landscape","x":15,"y":1},{"id":"rope barrier 3","x":8,"y":3},{"id":"potted fern","x":1,"y":3},{"id":"potted fern","x":18,"y":3},{"id":"bench museum","x":8,"y":6},{"id":"bench museum","x":3,"y":6},{"id":"bench museum","x":14,"y":6},{"id":"wide cabinet","x":21,"y":3},{"id":"relic cabinet","x":24,"y":3},{"id":"relic cabinet","x":25,"y":3},{"id":"wide cabinet","x":27,"y":3},{"id":"shield display","x":23,"y":1},{"id":"shield display","x":26,"y":1},{"id":"case gem","x":22,"y":6},{"id":"case crown","x":25,"y":6},{"id":"case sword","x":27,"y":6},{"id":"plinth helmet","x":23,"y":8},{"id":"case scroll","x":25,"y":8},{"id":"bronze warrior","x":1,"y":13},{"id":"stone sphere","x":6,"y":13},{"id":"skylight light","x":3,"y":15},{"id":"plinth","x":1,"y":17},{"id":"plinth amphora","x":6,"y":17},{"id":"window","x":10,"y":11},{"id":"window","x":18,"y":11},{"id":"lion statue","x":9,"y":15},{"id":"lion statue","x":18,"y":15},{"id":"plaque stand","x":12,"y":13},{"id":"potted fern","x":8,"y":13},{"id":"potted fern","x":20,"y":13},{"id":"relic cabinet","x":26,"y":13},{"id":"relic cabinet","x":27,"y":13},{"id":"plinth fossil","x":24,"y":13},{"id":"geode stand","x":29,"y":13},{"id":"dragon skull","x":25,"y":15},{"id":"rope post","x":29,"y":16}],"tables":[{"style":"counter","x":15,"y":13,"w":3,"h":1}]}
+{"name":"왕립 박물관","rooms":[{"id":"gallery","x0":1,"y0":1,"x1":18,"y1":9,"floor":"parquet","wall":"gallery"},{"id":"relics","x0":20,"y0":1,"x1":29,"y1":9,"floor":"marble","wall":"gallery"},{"id":"sculpture","x0":1,"y0":11,"x1":6,"y1":17,"floor":"marble","wall":"marblewall"},{"id":"lobby","x0":8,"y0":11,"x1":21,"y1":17,"floor":"check","wall":"marblewall"},{"id":"natural","x0":23,"y0":11,"x1":29,"y1":17,"floor":"sandstone","wall":"gallery"}],"connect":[{"a":"gallery","b":"lobby"},{"a":"relics","b":"lobby","at":21},{"a":"sculpture","b":"lobby"},{"a":"lobby","b":"natural"}],"exit":{"room":"lobby","width":2},"floor":"check","wall":"marblewall","ceiling":"default","objects":[{"id":"painting landscape","x":2,"y":1},{"id":"painting still life","x":5,"y":1},{"id":"painting grand","x":8,"y":1},{"id":"painting sea","x":13,"y":1},{"id":"painting landscape","x":15,"y":1},{"id":"rope barrier 3","x":8,"y":4},{"id":"potted fern","x":1,"y":3},{"id":"potted fern","x":18,"y":3},{"id":"bench museum","x":9,"y":6},{"id":"bench museum","x":3,"y":6},{"id":"bench museum","x":15,"y":6},{"id":"wide cabinet","x":21,"y":3},{"id":"relic cabinet","x":24,"y":3},{"id":"relic cabinet","x":25,"y":3},{"id":"wide cabinet","x":27,"y":3},{"id":"shield display","x":23,"y":1},{"id":"shield display","x":26,"y":1},{"id":"case gem","x":21,"y":6},{"id":"case crown","x":24,"y":6},{"id":"case sword","x":27,"y":6},{"id":"plinth helmet","x":23,"y":8},{"id":"case scroll","x":25,"y":8},{"id":"bronze warrior","x":1,"y":13},{"id":"stone sphere","x":6,"y":13},{"id":"skylight light","x":3,"y":15},{"id":"plinth","x":1,"y":17},{"id":"plinth amphora","x":6,"y":17},{"id":"window","x":10,"y":11},{"id":"window","x":18,"y":11},{"id":"lion statue","x":9,"y":15},{"id":"lion statue","x":18,"y":15},{"id":"plaque stand","x":12,"y":13},{"id":"potted fern","x":8,"y":13},{"id":"potted fern","x":20,"y":13},{"id":"relic cabinet","x":26,"y":13},{"id":"relic cabinet","x":27,"y":13},{"id":"plinth fossil","x":24,"y":13},{"id":"geode stand","x":29,"y":13},{"id":"dragon skull","x":25,"y":15},{"id":"rope post","x":29,"y":16},{"id":"plinth amphora","x":6,"y":8},{"id":"plinth helmet","x":13,"y":8}],"tables":[{"style":"counter","x":15,"y":13,"w":3,"h":1}]}
 ```
 
 ## 도구가 만든 평면
@@ -81,14 +81,14 @@
 3층 upperTiles
 ```text
   -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1
-  -1  -169666967  -16972  -1  -1697469756976  -16970  -1  -169666967  -1  -1  -1  -169606961701569576957701569606961  -1  -1
-  -1  -169686969  -16973  -1  -1697769786979  -16971  -1  -169686969  -1  -1  -1  -169626963701669586958701669626963  -1  -1
-  -13722  -1  -1  -1  -1  -1  -1699669976998  -1  -1  -1  -1  -1  -1  -13722  -1  -169646965  -169596959  -169646965  -1  -1
-  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1
-  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -16945  -1  -16947  -169496950  -1  -1
-  -1  -1  -170017002  -1  -1  -170017002  -1  -1  -1  -170017002  -1  -1  -1  -1  -1  -16946  -1  -16948  -169516952  -1  -1
-  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -16941  -169536954  -1  -1  -1  -1
-  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -16942  -169556956  -1  -1  -1  -1
+  -1  -169666967  -16972  -1  -1697469756976  -1  -16970  -169666967  -1  -1  -1  -169606961701569576957701569606961  -1  -1
+  -1  -169686969  -16973  -1  -1697769786979  -1  -16971  -169686969  -1  -1  -1  -169626963701669586958701669626963  -1  -1
+  -13722  -1  -1  -1  -1  -1  -1699369946995  -1  -1  -1  -1  -1  -1  -13722  -1  -169646965  -169596959  -169646965  -1  -1
+  -1  -1  -1  -1  -1  -1  -1  -1699669976998  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1
+  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -16945  -1  -16947  -1  -169496950  -1  -1
+  -1  -1  -170017002  -1  -1  -1  -170017002  -1  -1  -1  -170017002  -1  -1  -1  -16946  -1  -16948  -1  -169516952  -1  -1
+  -1  -1  -1  -1  -1  -16939  -1  -1  -1  -1  -1  -16941  -1  -1  -1  -1  -1  -1  -1  -1  -16941  -169536954  -1  -1  -1  -1
+  -1  -1  -1  -1  -1  -16940  -1  -1  -1  -1  -1  -16942  -1  -1  -1  -1  -1  -1  -1  -1  -16942  -169556956  -1  -1  -1  -1
   -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1
   -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1
   -16980  -1  -1  -1  -1  -1  -1  -1  -13924  -1  -1  -1  -1  -1  -1  -13924  -1  -1  -1  -1  -1  -1  -169576957  -1  -1  -1
@@ -104,7 +104,7 @@
 ```text
   -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1
   -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1
-  -1  -1  -1  -1  -1  -1  -1  -1699369946995  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1
+  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1
   -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1
   -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1
   -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1

@@ -180,7 +180,7 @@
     ],
     [
      "tier seat 3",
-     4
+     6
     ],
     [
      "arena banner",
@@ -188,7 +188,7 @@
     ],
     [
      "curule seat",
-     1
+     2
     ],
     [
      "laurel trophy",
@@ -339,6 +339,14 @@
     ],
     [
      "painting still life",
+     1
+    ],
+    [
+     "plinth amphora",
+     1
+    ],
+    [
+     "plinth helmet",
      1
     ],
     [
@@ -501,6 +509,10 @@
      1
     ],
     [
+     "rug red",
+     1
+    ],
+    [
      "sea chest",
      1
     ],
@@ -575,7 +587,7 @@
      1
     ],
     [
-     "work 3x1",
+     "work 3x2",
      1
     ]
    ]
@@ -680,15 +692,19 @@
    "ship_cargo",
    [
     [
+     "barrel stack",
+     2
+    ],
+    [
+     "crate stack",
+     2
+    ],
+    [
      "anchor chain",
      1
     ],
     [
      "barrel",
-     1
-    ],
-    [
-     "barrel stack",
      1
     ],
     [
@@ -701,10 +717,6 @@
     ],
     [
      "crate",
-     1
-    ],
-    [
-     "crate stack",
      1
     ],
     [
