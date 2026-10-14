@@ -67,7 +67,7 @@ function defineFamily(draft: Project, raw: FamilyArg, takenIds: Set<string>, tak
     const missingSkill = learned.find(s => !known.has(s.skillId) || !Number.isFinite(s.level) || s.level < 1);
     if (missingSkill) throw new Error(`${name}: 존재하지 않는 skillId 또는 잘못된 level: ${JSON.stringify(missingSkill)}`);
     records.push(normalizeMonsterSpeciesRecord({
-      id, name, types, graphic: { graphicHue: 0, transparent: false, ...(typeof st.monsterResourceId === 'string' && st.monsterResourceId ? { monsterResourceId: st.monsterResourceId } : {}) },
+      id, name, types, graphic: { graphicHue: 0, transparent: false, flying: false, ...(typeof st.monsterResourceId === 'string' && st.monsterResourceId ? { monsterResourceId: st.monsterResourceId } : {}) },
       baseStats, expCurve: { ...EXPEDITION_EXP_CURVE }, captureRate: CAPTURE_RATES[Math.min(i + (3 - stages.length), 2)]!,
       skillsByLevel: learned, evolutions: [],
     } as Partial<MonsterSpeciesRecord> & Pick<MonsterSpeciesRecord, 'id' | 'name'>));

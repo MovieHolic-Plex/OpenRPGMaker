@@ -24,7 +24,6 @@ type Template = { width: number; height: number; lower: number[]; upper: number[
 const templates = templateData as unknown as Record<string, Template>;
 const fixed = { type: "fixed", speed: 3, frequency: 3 } as const;
 const invisible = { transparent: true };
-const marker = (key: "exit" | "chest" | "star") => ({ sprite: { type: "uploaded" as const, id: `mx_marker_${key}` }, pattern: 0, direction: "down" as const, transparent: false });
 const directions = [[0, -1], [1, 0], [0, 1], [-1, 0]] as const;
 const mid = (map: GameMap): Point => ({ x: map.width >> 1, y: map.height >> 1 });
 const id = (key: string) => `mx_map_${key}`;
@@ -45,6 +44,7 @@ export interface TournamentManifest {
 export interface TournamentNames { readonly region?: string; readonly startTown?: string; readonly registrar?: string; readonly rival?: string; readonly champion?: string; readonly arena?: string }
 export interface TournamentOptions {
   readonly rounds?: number; readonly startTheme?: StartTheme; readonly names?: TournamentNames;
+  readonly format?: "tournament" | "expedition";
 }
 
 export const TOURNAMENT_MIN_ROUNDS = 2;
