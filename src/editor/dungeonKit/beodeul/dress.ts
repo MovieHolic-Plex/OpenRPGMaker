@@ -96,6 +96,39 @@ export function dressTyped(c: DressCtx, type: DungeonType, r: PlacedRoom, i: num
   }
 }
 
+/**
+ * 통로 장식(2026-10-15). true 면 이 파일이 다 꾸민 통로(공통 규칙의 배수 창살·뼈 흩뿌림을 건너뛴다).
+ * 광산: 선로 줄 위에 광차 한두 대, 갱목 틀(선반 조각)을 양 벽 쪽에 쌍으로 세우고 램프. 동굴·화산: 창살(하수구 그림) 대신 잔돌만.
+ */
+export function dressCorridor(c: DressCtx, type: DungeonType, cor: PlacedCorridor, i: number, rs: () => number): boolean {
+  const r = cor.rect;
+  if (type === "cave" || type === "volcano") {
+    for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) {
+      if (hashDoor(c, x, y) || rs() > 0.05) continue;
+      stand(c, type === "volcano" ? VC("ember-a") : CV("rubble-cave"), x, y);
+    }
+    return true;
+  }
+  if (type !== "mine") return false;
+  const horizontal = cor.dir === "E" || cor.dir === "W";
+  if (!horizontal) {
+    for (let y = r.y + 1; y < r.y + r.h - 1; y += 3) if (rs() < 0.5) stand(c, MV("barrel"), r.x + (rs() < 0.5 ? 0 : r.w - 1), y);
+    return true;
+  }
+  const trackY = r.y + Math.floor(r.h / 2);
+  // 광차: 선로 줄 위(통로 한가운데 줄이 널판이다), 너무 붙지 않게.
+  if (r.w >= 8 && rs() < 0.7) c.put(MV("cart-h"), r.x + 2 + Math.floor(rs() * (r.w - 5)), trackY - 1);
+  // 갱목 틀 쌍: 선로 줄 위아래 가장자리 칸에 3칸 간격(선반 2×2 조각이 곧 갱목 틀 모양이다)
+  for (let x = r.x + 2; x < r.x + r.w - 2; x += 5) {
+    if (rs() < 0.75) { stand(c, MV("rack"), x, r.y + r.h - 1); }
+  }
+  // 램프: 가로 통로 위쪽 벽 앞 줄에
+  if (r.w >= 6 && rs() < 0.6) stand(c, MV("lamp"), r.x + 1 + Math.floor(rs() * (r.w - 2)), r.y);
+  void i;
+  return true;
+}
+const hashDoor = (c: DressCtx, x: number, y: number) => c.doorstep[c.idx(x, y)] === 1;
+
 // ---------------------------------------------------------------- 하수도
 
 function dressSewer(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null, slots: Slot[], centerFirst: Slot[]): boolean {

@@ -21,7 +21,7 @@ import { layoutBlob, layoutMaze } from "../layouts";
 import { layoutDungeon } from "../layoutRooms";
 import { buildMask } from "../mask";
 import { PROFILES } from "./profiles";
-import { dressTyped, type DressCtx } from "./dress";
+import { dressCorridor, dressTyped, type DressCtx } from "./dress";
 import { DUNGEON_DIRS, DUNGEON_ROOM_KINDS, DUNGEON_SIZES, DUNGEON_STYLES, DUNGEON_TYPES } from "../types";
 import type { DungeonCompose, DungeonDir, DungeonLayout, DungeonRoomInput, DungeonRoomKind, DungeonSize, DungeonSpec, DungeonStyle, DungeonType, PlacedCorridor, PlacedRoom } from "../types";
 
@@ -151,7 +151,8 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
       for (const [k, sc] of (fl.scatter ?? []).entries()) if (sc.p > 0 && hasKit(sc.kit) && hash01(x, y, seed * 17 + k) < sc.p) id = sc.kit;
     }
     if (fl.shore && hasKit(fl.shore) && nearLiquid(x, y) && hash01(x, y, seed + 71) < 0.8) id = fl.shore;
-    lower[idx(x, y)] = tileOf(id, x, y);
+    if (fl.mix) { const rows = kit(id).rows; lower[idx(x, y)] = rows[Math.floor(hash01(x, y, seed * 5 + 3) * rows.length)]!.tiles[Math.floor(hash01(y, x, seed * 7 + 1) * rows[0]!.tiles.length)]!; }
+    else lower[idx(x, y)] = tileOf(id, x, y);
   }
   // 광산: 갱도 한가운데 줄을 널판 선로 바닥으로(입구·갈림 방은 가로지르는 줄, 그 밖 방은 통로 구간만). 선로 그림이 따로 없어 널판 바닥이 임시다.
   if (type === "mine" && hasKit("bd-pick-aqueduct-sewer-floor-plank")) {
@@ -483,6 +484,7 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
   (layout.grid ? [] : corridors).forEach((c, i) => {
     const rs = rng(seed * 13 + i * 71 + 9);
     const r = c.rect;
+    if (dressCorridor(ctx, type, c, i, rs)) return;
     if ((c.dir === "E" || c.dir === "W") && r.w >= 4 && rs() < 0.6) {
       const x = r.x + 1 + Math.floor(rs() * (r.w - 2));
       if (wallB[idx(x, r.y - 2)] === 1 && wallB[idx(x - 1, r.y - 2)] === 1 && wallB[idx(x + 1, r.y - 2)] === 1) put(K.torch, x, r.y - 2);

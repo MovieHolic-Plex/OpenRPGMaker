@@ -18,6 +18,8 @@ export interface FloorSpec {
   readonly byKind?: Partial<Record<DungeonRoomKind, string>>;
   /** 물·용암 바로 옆 칸 바닥. */
   readonly shore?: string;
+  /** true 면 2×2·3×3 무늬를 칸마다 무작위 한 칸으로 고른다(타일 반복 격자가 눈에 띄는 마른 바닥용). */
+  readonly mix?: boolean;
 }
 
 export interface TypeProfile extends GrammarInfo {
@@ -55,7 +57,7 @@ export const PROFILES: Record<BeodeulDungeonType, TypeProfile> = {
   cave: {
     ...GRAMMAR.cave,
     face: { h3: C("face-cave-3h"), h2: C("face-cave-2h") },
-    floor: { base: C("floor-cave"), patches: [{ kit: C("floor-wetsand"), at: 0.66 }, { kit: C("floor-sand"), at: 0.84, scale: 3 }], scatter: [{ kit: C("glow-moss-floor"), p: 0.0 }], shore: C("floor-wetsand") },
+    floor: { base: C("floor-cave"), patches: [{ kit: C("floor-wetsand"), at: 0.66 }, { kit: C("floor-sand"), at: 0.84, scale: 3 }], scatter: [{ kit: C("glow-moss-floor"), p: 0.0 }], shore: C("floor-wetsand"), mix: true },
   },
   temple: {
     ...GRAMMAR.temple,
@@ -65,12 +67,12 @@ export const PROFILES: Record<BeodeulDungeonType, TypeProfile> = {
   mine: {
     ...GRAMMAR.mine,
     face: { h3: C("face-cave-3h"), h2: C("face-cave-2h") },
-    floor: { base: C("floor-cave"), patches: [{ kit: M("ground-rock"), at: 0.7, scale: 4 }, { kit: C("floor-wetsand"), at: 0.86, scale: 3 }], scatter: [{ kit: M("ground-rock"), p: 0.02 }] },
+    floor: { base: C("floor-cave"), patches: [{ kit: M("ground-rock"), at: 0.7, scale: 4 }, { kit: C("floor-wetsand"), at: 0.86, scale: 3 }], scatter: [{ kit: M("ground-rock"), p: 0.02 }], mix: true },
   },
   volcano: {
     ...GRAMMAR.volcano,
     face: { h3: K("face-castle-3h"), h2: K("face-castle-2h") },
-    floor: { base: M("ground-slagg"), patches: [{ kit: C("floor-wetsand"), at: 0.7, scale: 5 }, { kit: M("ground-rock"), at: 0.92, scale: 3 }], shore: C("floor-wetsand") },
+    floor: { base: M("ground-slagg"), patches: [{ kit: C("floor-cave"), at: 0.74, scale: 4 }], shore: C("floor-cave"), mix: true },
   },
 };
 

@@ -258,6 +258,17 @@ export function layoutBlob(spec: DungeonSpec, profile: GrammarInfo): DungeonLayo
         if (((x - c.cx) / 3) ** 2 + ((y - c.cy) / 2) ** 2 + (vnoise(x, y, 3, seed + c.index) - 0.5) * 0.5 < 1) g.liquid[g.idx(x, y)] = 1;
       }
     }
+    // 용암 못 가장자리가 계단처럼 각져 보이던 것을 다듬는다(용암은 가장자리 그림이 없어 모양이 곧 가장자리다): 이웃 8칸 다수결 두 번. 물(호수)은 운하 오토타일이 테두리를 그리니 건드리지 않는다.
+    if (profile.liquid === "lava") for (let pass = 0; pass < 2; pass += 1) {
+      const next = g.liquid.slice();
+      for (let y = 1; y < H - 1; y += 1) for (let x = 1; x < W - 1; x += 1) {
+        const i = g.idx(x, y);
+        if (!g.floor[i] || ed[i]! < 2) continue;
+        let n = 0; for (let dy = -1; dy <= 1; dy += 1) for (let dx = -1; dx <= 1; dx += 1) if ((dx || dy) && g.liquid[g.idx(x + dx, y + dy)]) n += 1;
+        if (g.liquid[i] && n <= 3) next[i] = 0; else if (!g.liquid[i] && n >= 5) next[i] = 1;
+      }
+      g.liquid.set(next);
+    }
   }
   // 문 앞 칸은 액체가 아니다
   const rooms: PlacedRoom[] = [{ id: "entrance", kind: "entrance", ...entrance, from: null, dir: null, depth: 0 }];
