@@ -229,12 +229,16 @@ v5 381종 밖의 기물을 추가하는 길. 명세 `tiledata/hand-interior/new/
 v5 시트 **끝에 덧붙인** 손 도트 조각(같은 팔레트 v6·같은 램프, Opus 손 도트)과 방 종류 16개. 칸 번호는 덧붙이기만 한다 — 6557 이전 칸은 화소·통행·층·메타가 그대로이고
 (굽기가 매번 대조한다), 기존 프로젝트는 `ensureAtlasBiomeInteriorCurrent` 가 정의를 새로 고친다(번들 칸 수 이하 = 같은 시트).
 
-- **그림**: `scripts/content/interior-plus/pieces/{structure,museum,ship,arena}.py`(iplib: 램프·box·cyl·barrel·shadow). 기물 74(박물관 28·배 26·투기장 20) + 바닥 5(deck·hold·parquet·sand·sandstone) + 벽면 4(hull·cabin·gallery·arenawall).
-  v5 와 겹치는 것(함포 `ship cannon`·조타륜·해먹·닻·밧줄 더미·흉상·고딕 미술관 조각)은 새로 그리지 않고 v5 id 를 쓴다. 옆 보는 함포(cannon east/west)·나침반 함·선원 3층 침상 등은 새 것.
+- **그림**: `scripts/content/interior-plus/pieces/{structure,museum,ship,arena}.py`(iplib: 램프·box·cyl·barrel·shadow). 기물 69(박물관 24·배 25·투기장 20) + 바닥 5(deck·hold·parquet·sand·sandstone) + 벽면 4(hull·cabin·gallery·arenawall).
+  v5 와 겹치는 것(함포 `ship cannon`·조타륜·해먹·닻·밧줄 더미·흉상·고딕 미술관 조각)은 새로 그리지 않고 v5 id 를 쓴다. 북쪽 벽 포문을 보는 함포(cannon north)·나침반 함·선원 3층 침상 등은 새 것.
 - **굽기**: `python3 scripts/content/interior-plus/bake.py` — 핀 `tiledata/hand-interior/plus/pins.json`(키 → 칸 번호, 덧붙이기 전용; `--repack` 은 내보내기 전에만),
   정의·사양을 v5 끝(base)으로 자른 뒤 다시 얹는다. v5 id 와 겹치는 이름은 거부한다(2026-10-14 `orrery` 가 v5 기물을 덮을 뻔했다). `build_tileset.py` 끝에서 자동으로 다시 돈다(`HAND_INTERIOR_NO_PLUS=1` 로 끔).
 - **3/4 관문**: `gate_export.py pending` → `npm run harness -- object-gate review --batch tiledata/hand-interior/plus/_gate/pending.jsonl`. 바닥·벽면은 조립 방 4장(`gate_rooms.py`, kind structure)이 그 칸을 화소 그대로 품어 덮는다.
   굽기는 모든 영수증이 PASS 여야 한다(프로필이 미보정이면 현재 프로필 PASS 를 「미보정 임시 통과」로 세고 보고한다 — jp-city `gate_kinds.state` 와 같은 뜻).
+  2026-10-14 결과: 처음 78건 중 37건 FAIL(거의 「정면 입면도 · 윗면 0행」) → 다시 그려 기물 69 + 조립 방 4 **모두 현재 프로필 PASS(미보정 임시)**. 끝내 못 넘은 넷(보석·왕관 1칸 유리 진열장, 관람 줄 기둥 하나, 용 두개골)은
+  세트에서 뺐고 예제는 v5 `accessory case`·`crown pedestal`·`plinth fossil` 로 바꿨다. 옆 보는 함포 둘은 옆모습이라 넘지 못해 북쪽 벽 포문을 보는 `cannon north` 하나로 바꿨다(포 갑판은 북벽에 포문+함포 줄).
+  조립 방 그림은 조립기와 같은 천장 띠(벽 윗면) 칸을 v5 시트에서 그대로 쓴다(`gate_rooms.room_image`). 바닥이 벽과 같은 결이면 판정자가 입면도로 읽는다 — 갑판·짐칸 널은 남북으로, 사암 바닥은 네모 판석으로, 벽 머리에 윗면 띠(선체 덮개널·투기장 갓돌)를 그렸다.
+  한 장씩 다시 받기: `python3 scripts/content/interior-plus/gate_some.py <out> "<id,id>"` → `object-gate review --batch <out>/items.jsonl`.
 - **방 종류·견본**: `tiledata/hand-interior/plus/plans/*.json`(museum·ship·ship_hold·arena, 방 사각형 입력) → `rooms_json.py`(사양 rooms: 종류 이름·찾는 말·건물·예제 가구 수) ·
   `templates.mts` → `src/assets/interiorPlusRoomTemplates.json`. `templates.ts` 가 v5·전국 견본과 **배열로 이어 붙인다**(같은 칩셋 키를 펼치기로 합치면 v5 견본이 사라진다).
   `layout.ts`: HUB 에 museum_lobby·museum_gallery·ship_crew·ship_gundeck·arena_floor·arena_stands, 출구 순서에 museum_lobby·ship_crew·ship_cargo·arena_armory, 기본 트임 arena_stands↔arena_floor. 화풍 묶음 museum·ship·arena.
