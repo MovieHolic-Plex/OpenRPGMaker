@@ -79,7 +79,7 @@
 .ai-compat-form-actions .ai-assistant-action.is-primary {
   background: var(--accent);
   border-color: var(--accent);
-  color: var(--on-accent, #fff);
+  color: var(--on-accent);
   font-weight: var(--font-weight-semibold);
 }
 
