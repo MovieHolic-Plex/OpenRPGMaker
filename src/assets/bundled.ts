@@ -22,6 +22,7 @@ import modernCampusSheet from "./modernCampusSheet.json";
 import sfStationSheet from "./sfStationSheet.json";
 import gothicManorSheet from "./gothicManorSheet.json";
 import prehistoricSheet from "./prehistoricSheet.json";
+import desertEastSheet from "./desertEastSheet.json";
 import worldmapSelectedSheet from "./worldmapSelectedSheet.json";
 import worldmapAuthoringSheet from "./worldmapAuthoringSheet.json";
 import atlasBiomeInterior from "./atlasBiomeInteriorSheet.json";
@@ -178,6 +179,9 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   // 꼭짓점 가장자리 바닥 9쌍)와 실내(동굴 거처·벽화 회랑·족장 집·무당 천막)를 48열 16px 칸으로 구운 시트. 칸 번호는 덧붙이기 전용(자리 키 핀).
   // 재생성: scripts/content/prehistoric/bake_ph.py (object-gate 통과 조각만), 정의는 project/defaults/prehistoric.ts, openwiki/prehistoric.md.
   {textureKey:"tex_prehistoric",path:"assets/prehistoric/prehistoric-chipset.png",name:"선사 시대 원시 세계 (손 도트)"},
+  // 사막·동양풍(2026-10) — 실크로드·아라비아·이집트 사막 도시(평지붕 흙집·돔·바자르·첨탑·궁전·성벽·피라미드·오아시스·천막·폐허·사구 모서리 왕 타일)와 실내 여섯을 48열 16px 칸으로 구운 시트. 칸 번호는 덧붙이기 전용(자리 키 핀).
+  // 재생성: scripts/content/desert-east/bake_de.py (object-gate 통과 조각만), 정의는 project/defaults/desertEast.ts, openwiki/desert-east.md.
+  {textureKey:"tex_desert_east",path:"assets/desert-east/desert-east-chipset.png",name:"사막·동양풍 (손 도트)"},
   {textureKey:"tex_worldmap_selected",path:"assets/worldmap-icons/worldmap-selected.png",name:"월드맵 · 사람 선택 아이콘"},
   {textureKey:"tex_worldmap_authoring",path:"assets/worldmap-icons/worldmap-authoring.png",name:"월드맵 · 연결 지형 붓"},
   // 생성 칩셋(oprn-atlas) 공용 실내 — 손 도트 실내 v5 전용 시트(tiledata/hand-interior/v5, 가구·바닥·벽·천장·자동 타일·예제 26맵).
@@ -216,6 +220,7 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === "tex_sf_station") return sfStationSheet.count;
   if (key === "tex_gothic_manor") return gothicManorSheet.count;
   if (key === "tex_prehistoric") return prehistoricSheet.count;
+  if (key === "tex_desert_east") return desertEastSheet.count;
   const monsterKit = monsterKitSheet(key) ?? emeraldMonsterKitSheet(key);
   if (monsterKit) return monsterKit.count;
   if (key === "tex_worldmap_selected") return worldmapSelectedSheet.count;

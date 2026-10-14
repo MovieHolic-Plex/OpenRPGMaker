@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3169dadbd56292be4d83c172e0297189b1aef72bc5f69cf2ba5372a362493025",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "회칠 흰 집(작은)",
+ "label": "desert-east/de-house-plaster-3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "whitewashed house with flat rooftop terrace and south wall with arched door",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building clearly shows its horizontal rooftop terrace from row 1 to 29 (~28 rows) complete with floor surface, objects on the roof, and parapet, followed by the south-facing front wall and arched door from row 32 to 63.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5763
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "whitewashed house with flat roof terrace and arched front door",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure has a prominent flat roof terrace (rows 2-30) surrounded by a parapet, showing objects on its horizontal surface, sitting atop the south front wall (rows 33-63) with an arched door.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5921
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "whitewashed house with flat rooftop terrace and arched front entrance",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper portion (rows 0-31) depicts a large flat rooftop terrace with an interior floor, parapet border, clay jug, and roof hatch seen from above, atop a vertical south facade (rows 32-63) with an arched door.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6210
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "whitewashed house with flat roof terrace",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building shows a full foreshortened flat roof terrace with parapet and props (pot, hatch) spanning rows 1-30, and the front south-facing wall with an arched door spanning rows 32-63.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15815
+  }
+ ],
+ "decidedAt": "2026-10-14T00:12:08.962Z",
+ "cells": {
+  "16": [
+   "08ea5b5890b35f5e",
+   "285071bdeec92f23",
+   "5d7b36c12fc1ce86",
+   "5f94b3b14ab63eab",
+   "7afb35789218cc35",
+   "7bb5e2826844e0d8",
+   "8de29803642d38f7",
+   "99866ed80e2eb4b7",
+   "a34b991530689e76",
+   "b37985bf739fe655",
+   "b9c3a06f9775c465",
+   "e0bb1bf581862b4b"
+  ],
+  "24": [
+   "02a8362116a4f42d",
+   "1adf9018f8ca466c",
+   "3a152871d659c5ab",
+   "530173d86022b1a4",
+   "5bff84821054260c",
+   "651af4c977e1f23a",
+   "893158db39dacac7",
+   "8d054eaa4dcf7bf3",
+   "99c3cb3891a41566",
+   "9c976cfd3126102d",
+   "9e0a390f0c49ab83",
+   "e50bba60f88fb488"
+  ],
+  "32": [
+   "03d36a94661f8258",
+   "1761f7fb2cefaccf",
+   "24e79a3d1ffd0148",
+   "59e02f99bfcf9d81",
+   "65a62c8fd0e1ff04",
+   "784b9053eaee230e",
+   "7859842fed4758a8",
+   "788301ad473e5af9",
+   "94f82f1dae3585e2",
+   "d058396fda46a5ab",
+   "e4609056f468fa70",
+   "ff78050d00b6fc10"
+  ],
+  "48": [
+   "49e8e26da7c59555",
+   "db687f977134e648",
+   "e5242cd6edae2f6c",
+   "fccdc73c28626e20"
+  ]
+ }
+}

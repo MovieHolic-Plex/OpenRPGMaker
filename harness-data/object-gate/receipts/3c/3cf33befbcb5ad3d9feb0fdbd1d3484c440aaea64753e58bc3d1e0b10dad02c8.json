@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3cf33befbcb5ad3d9feb0fdbd1d3484c440aaea64753e58bc3d1e0b10dad02c8",
+ "width": 32,
+ "height": 32,
+ "kind": "other",
+ "name": "낙타(안장)",
+ "label": "desert-east/de-camel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "camel with saddle",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The camel faces west, and its saddle features an elliptical top surface spanning rows 6 to 12 with a decorative cross/oval pattern visible from above, transitioning to a vertical south-facing drape and fringe below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3221
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "camel with saddle facing west",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The camel faces west, and its back/saddle is drawn in clear 3/4 top-down perspective, showing a foreshortened oval top surface on rows 6-12 (approx. 7 rows tall) with the saddle skirt dropping down on rows 13-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5475
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "camel with saddle facing west",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The camel's saddle features an elliptical foreshortened top surface showing the cushion/rug pattern from above across rows 6-12 (7 pixels tall), above the vertical drape on rows 13-16.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3343
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "camel body and saddle",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The saddle/back has a clearly foreshortened horizontal top surface rendered from rows 6 to 12 (~7 rows tall) in 3/4 top-down perspective, with vertical saddle drape and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3804
+  }
+ ],
+ "decidedAt": "2026-10-14T00:27:26.538Z",
+ "cells": {
+  "16": [
+   "3a86f7a5d5a58085",
+   "3bbff7e42b06733f",
+   "6d542c37d1008d1b",
+   "b17466e25dd02896"
+  ],
+  "24": [
+   "000d4a03e8684098",
+   "08aa3a653416c2bd",
+   "1ba5623e9295db8e",
+   "227dad4c61eb9ec8",
+   "2286fbfcdff7f071",
+   "2fb058e4ee94ad65",
+   "420e94e5fb97a477",
+   "48529ecd68ac86fa",
+   "508965335054451e",
+   "5f8d5cdf0289afb8",
+   "75e20133997eb072",
+   "7b1563582530225f",
+   "81ef2e9e24026a2d",
+   "87ef40bfff40dd7f",
+   "a88707d0a159ca85",
+   "b2fc4ea9a390c695",
+   "b7314b7ba06bca82",
+   "bbc2d71bf6636f26",
+   "d0a780c3db8ec555",
+   "d0c6b568e2f4cb3a",
+   "d1add8d223bad1d3",
+   "e53e91ec01641a35",
+   "f87066a8defc8f8f"
+  ],
+  "32": [
+   "2094593364709435"
+  ],
+  "48": [
+   "07f093c18220eb89",
+   "21d2ee0d80944e68",
+   "6d01a1c5a578d744",
+   "9e1c78758487e474",
+   "aaec58ee5bd89613",
+   "e343fb458914a346"
+  ]
+ }
+}

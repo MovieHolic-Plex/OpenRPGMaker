@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "99395b90adb6b22b51252188a8f472cf393b828d48567307e4fd7eee768c3937",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "찻집 젤리주 타일 바닥(이 빠진)",
+ "label": "desert-east/de-floor-zellige-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floor tile pattern",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat decorative floor tile texture with inlaid circular stones and colored diamond accents; valid terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10546
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tiled floor surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image is a repeating floor tile pattern with rounded pavers and accent insets, correctly presented as flat ground terrain seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4726
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "floor tile pattern with circular stones and gem accents",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor/terrain tile pattern covering the full 16x16 canvas, correctly viewed as ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4863
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tiled floor surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a decorative round-tile floor pattern viewed from directly above in perspective; correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4244
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.209Z",
+ "cells": {
+  "16": [
+   "00ebfa0e3a51aa00"
+  ],
+  "24": [
+   "2965e31d5003b949",
+   "305f19f663081edc",
+   "4c9d48bf50cc19e1",
+   "8ef5d177f195bc8a",
+   "c556c67071402f8a",
+   "e02fea61be0f298e"
+  ],
+  "32": [
+   "0fd59495c79c65d7",
+   "34cf297127563e7a",
+   "6dba1580de22be8f",
+   "783030c5d9d00d1e",
+   "a602231a5396d342",
+   "c5c3bab089f8f06e"
+  ],
+  "48": [
+   "1c895275c3394dda",
+   "22fa112f7065c32a",
+   "4b203a11254b40ff",
+   "6b9908b82b4e4199",
+   "c75b518ed61f5bfc",
+   "f83a329ec36d2d26"
+  ]
+ }
+}

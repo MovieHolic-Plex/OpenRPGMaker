@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dcecf568059877f252a9d0b98e6c4a1acdd22ccd94e8a544ab7b77352e2bedd3",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "부러진 기둥",
+ "label": "desert-east/de-column-broken",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "broken column shaft on plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The broken top of the column shaft is drawn as vertical silhouette shards without any horizontal cut face or top surface visible from above. The entire pillar is rendered in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5015
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "broken column shaft on a rectangular plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The broken top end is drawn as a flat 2D jagged silhouette without any visible horizontal cut surface or cross-section seen from above; the plinth also shows only a 1px line for its top.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4531
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "broken column shaft on a rectangular plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The broken top of the pillar is drawn as a flat jagged 2D silhouette without any foreshortened cross-section or top break surface visible from above (0 rows). The plinth base also has only a 1px top highlight line.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5785
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "broken column shaft on a rectangular plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The broken top end is drawn as a jagged 2D silhouette cutout with vertical fluting lines meeting the top edge directly, showing no top fracture surface or foreshortened plane from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5263
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.227Z",
+ "cells": {
+  "16": [
+   "0907b79fd5e5d3c1",
+   "7a9323e30ce59772"
+  ],
+  "24": [
+   "11797da1f8a5bc8f",
+   "1e2eff5fd89b1b01",
+   "25696f9df57e2c85",
+   "269cc95eb5fe5c31",
+   "35dbb537ff12dcb7",
+   "3f459f79e83879d1",
+   "85c7265e4e13db9d",
+   "901f6e542718b5b6",
+   "95177eef8ff143e7",
+   "9ae858a93410e822",
+   "b1fdf3c2e93e16d4",
+   "e08f4ffc11519546"
+  ],
+  "32": [
+   "1da63c34584249df",
+   "6405ffee582f9e3c",
+   "bb101abce086c05a"
+  ],
+  "48": [
+   "055d5f2603201c5b",
+   "090f962441fd9463",
+   "19c85ffc5ff7b12e",
+   "565483db46c83119",
+   "a76482e0692f828e",
+   "f50a63b11939fcd6"
+  ]
+ }
+}

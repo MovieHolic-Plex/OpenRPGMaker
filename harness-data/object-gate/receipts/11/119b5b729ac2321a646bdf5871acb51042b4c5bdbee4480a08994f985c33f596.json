@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "119b5b729ac2321a646bdf5871acb51042b4c5bdbee4480a08994f985c33f596",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "손수레(항아리)",
+ "label": "desert-east/de-handcart",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "handcart bed",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cart faces east/west, showing its south face (front board and wheel) and a clearly visible 7-row top opening/bed interior (rows 2-8) loaded with cargo, conforming properly to 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8098
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cart bed",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden cart bed is viewed from above in 3/4 perspective, showing approximately 7 rows of the horizontal floorboards (rows 2-8) carrying cargo, with the south face/chassis rendered below across rows 9-11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13774
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cart bed",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden cart bed is viewed from above showing horizontal floorboards spanning rows 2-8 (7 rows tall) with the south face/rail shown below on rows 9-10.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5543
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cart bed",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden cart bed is viewed from above across rows 2 to 8 (7 rows tall) showing the interior floor and cargo, with the south edge visible at rows 9-10 above the wheel.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4199
+  }
+ ],
+ "decidedAt": "2026-10-14T00:27:26.538Z",
+ "cells": {
+  "16": [
+   "a6b581c195a1636b",
+   "af157d0fdd0eb117"
+  ],
+  "24": [
+   "0c4219b392052338",
+   "5d9d303b7914c229",
+   "771b53f8a6cb23d0",
+   "8268e6e34b88581a",
+   "a8b0cd3439a9e73e",
+   "ac889554c0fdebac",
+   "c1b73691e6e5fbf2",
+   "c5a8cdae92605374",
+   "e18fc311fc9a8203",
+   "eb3e8f83d38dc9fa",
+   "f44a3defa18ee57f",
+   "fa74ac862a7131d8"
+  ],
+  "32": [
+   "2f3c772041d39bb6",
+   "7bc5b459b77e1fe3"
+  ],
+  "48": [
+   "121fe5983af8cbea",
+   "1dd3dcf1aa7bcd3f",
+   "2d8ace11f3a62b68",
+   "8a83a0ddfe4406ce",
+   "c75d10529d30ab9f",
+   "fee60b70464dae3d"
+  ]
+ }
+}

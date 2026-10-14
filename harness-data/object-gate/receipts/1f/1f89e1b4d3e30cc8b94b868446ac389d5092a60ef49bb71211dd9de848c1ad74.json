@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1f89e1b4d3e30cc8b94b868446ac389d5092a60ef49bb71211dd9de848c1ad74",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "무덤 석회암 바닥",
+ "label": "desert-east/de-floor-tomb",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "limestone floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Limestone brick floor pattern viewed from above; valid terrain tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3843
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "limestone floor tile pattern",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting stone/limestone flooring viewed from above across the full 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3800
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "limestone floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting stone/limestone flooring with mortared seams, properly viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3601
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "limestone floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting stone floor pavers seen from above spanning the full 16x16 frame.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4958
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.210Z",
+ "cells": {
+  "16": [
+   "6e2d719363e0883f"
+  ],
+  "24": [
+   "0fb25801ba5a35ff",
+   "1ec9525fdb706e78",
+   "54bd5d4a4fed7b47",
+   "73cfb79048e08803",
+   "794c124427ca3c0a",
+   "b762069752e8662c"
+  ],
+  "32": [
+   "129be6c1bdabc637",
+   "3d9887559852e594",
+   "3f2407cc71d86770",
+   "5e2bbcf56421bc87",
+   "e6907840ffb5a7d9",
+   "f0e57c0bf605ce66"
+  ],
+  "48": [
+   "1a01a17ddf7e8a94",
+   "1f264a82678a05d3",
+   "292f609a9157464c",
+   "2e549b138811ea0b",
+   "5c234aac18d341b6",
+   "d1ab538ea1030183"
+  ]
+ }
+}

@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5d5ca5aa0934e7d605a747f02927870e5675f67909ddc211da5e004766f773ff",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "제물 돌상",
+ "label": "desert-east/de-offering-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone offering table",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop is clearly visible from rows 5 to 9 (5 source pixel rows deep), displaying offering vessels and food placed on its surface, above a south-facing decorative apron and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4577
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone offering table",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal tabletop surface is visible across rows 5-9 (5 px tall) with offering dishes resting on top of it, followed by the front edge and apron at rows 10-11 and legs at rows 12-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5956
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone offering table",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the table is clearly visible across rows 5–9 (5 source pixel rows deep) with offering bowls and food placed upon it, fronted by the table edge, decorative runner, and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4282
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone ritual table with offerings",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the table spans rows 5 to 9 (5 pixels deep) with offerings placed on it, and the front apron/legs extend from row 10 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3560
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.216Z",
+ "cells": {
+  "16": [
+   "156e8d1b02fc94a7",
+   "d4f403cd57ffd7e3"
+  ],
+  "24": [
+   "026d94dbc199b229",
+   "0874ac82c2ad1f0f",
+   "0d0f6ea5fb89f6b3",
+   "373a5710fd5a4903",
+   "3d1a1a8a95e4d692",
+   "4583196d5c1d621b",
+   "4b564628dba7449b",
+   "50df09e2dc9c9ce4",
+   "6998886b2c58a26a",
+   "6cb1d3f5cb5e19e1",
+   "a26ab5de99d1aba1",
+   "a33511284984c036"
+  ],
+  "32": [
+   "2ebf626eff97b972",
+   "71f5c14fbc85b7a2"
+  ],
+  "48": [
+   "091e58e871994e7a",
+   "0ba3e234921b5d1b",
+   "31773a1814d75904",
+   "6f7cc8d27fa78fdf",
+   "97dec6c316bc8b26",
+   "bce95a26f6fb914e"
+  ]
+ }
+}

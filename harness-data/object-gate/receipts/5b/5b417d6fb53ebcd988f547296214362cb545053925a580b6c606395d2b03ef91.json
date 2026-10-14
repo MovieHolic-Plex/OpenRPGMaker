@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5b417d6fb53ebcd988f547296214362cb545053925a580b6c606395d2b03ef91",
+ "width": 32,
+ "height": 16,
+ "kind": "seat",
+ "name": "긴 방석 의자(디완)",
+ "label": "desert-east/de-divan",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "divan / sofa",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sofa shows a backrest (rows 1–5), a clearly visible horizontal seat cushion surface viewed from above (rows 6–9, 4 rows tall), and a vertical front skirt/base (rows 10–13), correctly rendered in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9882
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "divan / sofa with back cushions and side bolsters",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal seat cushion surface is clearly visible from above across rows 6 to 9 (4 pixel rows deep) between the backrest cushions and the front tasseled skirt/base (rows 10-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6444
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "divan / cushion sofa",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal seat cushion surface is clearly visible from above across rows 6–9 (4 source pixels deep) between the upright backrest cushions and the front fringed base (rows 10–13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7177
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "divan / sofa with back cushions, seat cushion, and side bolsters",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The red seat surface is visible from above between rows 6 and 9 (4 pixel rows tall), situated between the upright backrest cushions and the front gold valance/skirt (rows 10-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9564
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.213Z",
+ "cells": {
+  "16": [
+   "a93100af4fe7c793",
+   "d84924bbf3138ae4"
+  ],
+  "24": [
+   "014ac5b63c71a550",
+   "022e6cd5f2dd5da2",
+   "03a803468f2046dd",
+   "3d12f49be0b83906",
+   "430e2a31ee19f371",
+   "49c3d18af402b677",
+   "6eb1e13911570b8f",
+   "a6fe583e12d9566f",
+   "b5cf93db9c4737b3",
+   "c914284c90b87d49",
+   "df6a6d08165e2cb3",
+   "e66da3686a662a06"
+  ],
+  "32": [
+   "996e22b302302b76",
+   "acf75cc4e2e0c356"
+  ],
+  "48": [
+   "08c776d7883ed228",
+   "181e35a27f0c26a7",
+   "3673e4d329aa3316",
+   "873fd2cb0c6a6993",
+   "9f4a3308e82c5e1f",
+   "f7fd108649735c04"
+  ]
+ }
+}

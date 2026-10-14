@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "876d4cd1561e1d5c154dc5820044ca179225d8063f040c70b4810ad97e439552",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "무덤 석회암 바닥(모래 들이침)",
+ "label": "desert-east/de-floor-tomb-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "limestone tomb floor tile with drifted sand",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor/ground terrain tile displaying limestone blocks with a sandy patch encroaching from the south.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4502
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tomb limestone floor tile with sand patch",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor/ground terrain tile viewed from above showing stone floor slabs and sandy deposit.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3858
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "limestone floor tile with sand patch",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting stone floor with sand blown onto it; valid terrain surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3031
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "limestone tomb floor tile covered with sand drift",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing stone floor blocks with drifted sand viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4351
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.211Z",
+ "cells": {
+  "16": [
+   "3e6a09b2ec955a04"
+  ],
+  "24": [
+   "2acc215f46d929f5",
+   "451d101b3b9b886f",
+   "56bcc6fca2aea54b",
+   "5f40d9e1636c582e",
+   "b8240b9fdf1da574",
+   "c7de023f7d2c54b7"
+  ],
+  "32": [
+   "1f6feac556f685fb",
+   "79d29587562a8fa3",
+   "7ee970ee22badce1",
+   "99582b343ae5fd5b",
+   "f0d9b810b1049787",
+   "f27d6924f271499f"
+  ],
+  "48": [
+   "07b884b132eecf89",
+   "4d0de2e705f40381",
+   "8c040dfc9d4ce66d",
+   "8e560b4c5be96a87",
+   "d3991c1b8293961e",
+   "eae5cc93f25856b4"
+  ]
+ }
+}

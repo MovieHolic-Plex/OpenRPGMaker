@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dcec3e055afaef6f91557d3192bb97e5398665e8977fab4c79e4e7a4f92c471f",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "돌 화톳대",
+ "label": "desert-east/de-torch-stand",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "아가리 2행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone brazier bowl on pedestal",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brazier bowl opening is clearly viewed from above: the back rim is at row 6, side rims curve down, and the front rim sits at row 12, revealing roughly 5 rows of interior depth filled with fire and coals.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6514
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone brazier stand with flame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in flat front elevation. The base plinth (rows 25-31) shows no top surface at all, only a vertical rectangular front face. The bowl rim is not elliptical, and there is no 3/4 top-down foreshortening on any horizontal surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 5909
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone brazier stand with flame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brazier head, pillar, and base are drawn entirely in flat front elevation with straight horizontal edges and no foreshortened top surfaces. The bowl/opening lacks an elliptical rim to show the inside from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 9004
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone brazier bowl holding fire on a pillar and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brazier bowl is viewed from above at a 3/4 angle: the back rim sits at row 6 while the front rim is at row 11, revealing a 4-pixel-tall opening (rows 7-10) showing the coals and fire interior.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8203
+  }
+ ],
+ "decidedAt": "2026-10-14T00:23:19.735Z",
+ "cells": {
+  "16": [
+   "7294bb9f046d609b",
+   "8921663bf791d84f"
+  ],
+  "24": [
+   "0c2dae57c0040254",
+   "0ef70ce5d82718ed",
+   "22d8480f765935be",
+   "4332a8f912dc0776",
+   "4b0b4d2ec5bb7dda",
+   "6e20c568054c74cd",
+   "7654e29389d7522a",
+   "7cd328bde41bcf51",
+   "7d49333df3a983f5",
+   "81151ff08782d9ae",
+   "8ee69a3cf0f5f903",
+   "a2f9320a182a5a71"
+  ],
+  "32": [
+   "6317fa2e1078c18f",
+   "8a0d549885f124c7",
+   "bad7a43d8ce3dbb8"
+  ],
+  "48": [
+   "16843d69de901229",
+   "2f918229e2e2d605",
+   "35d2d665b8513aee",
+   "41e9dfb6e2f1d578",
+   "60fd6bdb2ef23f32",
+   "f125ce7eb7f69bc3"
+  ]
+ }
+}

@@ -1,0 +1,151 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3db1d9ef1a4da3654a1c7c51837fa924a115e19f3a692818f46b5786fefb9346",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "줄무늬 정자 천막",
+ "label": "desert-east/de-tent-pavilion",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "striped pavilion tent",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire tent is drawn in flat architectural front elevation. The roof eave (row 30), doorway, valance, and bottom ground contact line (row 45) are all completely straight horizontal lines with no perspective curvature or ellipse, showing no top-down 3/4 angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9959
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "striped circus pavilion tent",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tent is circular/conical (stripes narrow towards the edges as around a cylinder), but all horizontal cross-sections (the roof eaves at row 30, the valance at row 31, and the base at row 45) are drawn as perfectly flat, straight horizontal lines with zero elliptical curvature or perspective depth, making this a pure 2D front architectural elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10399
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "circus/pavilion tent",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tent is drawn in a pure 2D architectural front elevation: the conical roof eave (row 30) and the ground base (row 45) are completely straight horizontal lines with no elliptical curvature or 3/4 perspective foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7737
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "striped pavilion tent",
+    "kind_matches": true,
+    "top_rows": 27,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tent roof clearly shows its south-facing sloped surface spanning 27 pixel rows (rows 3 to 30) above the vertical front wall, consistent with standard 3/4 top-down perspective for roofed structures.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8923
+  }
+ ],
+ "decidedAt": "2026-10-14T00:12:08.965Z",
+ "cells": {
+  "16": [
+   "24e0810ede8ce5d4",
+   "31637f9f9aea8efd",
+   "450fb92e332d31da",
+   "47c50cad9eaa23b7",
+   "5964ccf061b18871",
+   "5d6c445dd6f62f13",
+   "8f88607627f9f2a0",
+   "a70b36867d3cedd8",
+   "b12255ea2d296439"
+  ],
+  "24": [
+   "12ca2ab804681ff5",
+   "23f4820a0cafd376",
+   "7dc3f3abc3b3379f",
+   "9e4a37d47417edf1"
+  ],
+  "32": [
+   "02c76291e3f6a75d",
+   "0c4c686b4c73ea94",
+   "1264b5ac593fd41c",
+   "1c03014f9de86fb1",
+   "28a043f7b96b21f1",
+   "294e0a4f948831f6",
+   "3e94b8b8a08d87dc",
+   "3ec0f4a4441c9e89",
+   "3f6dc7493e8adca4",
+   "4ae4329b7357f3d9",
+   "5b9a3436ed92747f",
+   "5f5307060417e2ad",
+   "84386908981fb6dd",
+   "96d89bdebb7c8d9c",
+   "bec5f33bf8e4e84b",
+   "bf2072f28dcbe07a",
+   "c6b12c167bee6624",
+   "c8a44fde23bd7b04",
+   "dd1a8a047321f755",
+   "e2cc855bff3c3aed",
+   "e2e10cbfdd6c99f3",
+   "e3ecef86b091499c",
+   "f75e757061c2db20",
+   "fb9ba3387c852f2f"
+  ],
+  "48": [
+   "650c4be05c444e99"
+  ]
+ }
+}

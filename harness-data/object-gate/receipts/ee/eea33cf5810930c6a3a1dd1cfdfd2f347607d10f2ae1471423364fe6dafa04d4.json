@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "eea33cf5810930c6a3a1dd1cfdfd2f347607d10f2ae1471423364fe6dafa04d4",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "돌 깔린 사막(자갈밭)",
+ "label": "desert-east/de-gravel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "gravel desert ground terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing sandy surface with small embedded stones/gravel viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4162
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "gravel desert terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile depicting desert sand with scattered pebbles, viewed from above as appropriate for top-down terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4006
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "desert terrain with embedded stones/gravel",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 ground terrain tile showing desert sand with small stones scattered across the surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4353
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "gravel desert ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile depicting desert sand with small gravel/pebbles seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3680
+  }
+ ],
+ "decidedAt": "2026-10-14T00:10:56.816Z",
+ "cells": {
+  "16": [
+   "4365ccff3d373ccd"
+  ],
+  "24": [
+   "61ec0544540acca4",
+   "836865e26a864ca1",
+   "8380b16fd75d13b6",
+   "cc0a20dba7c31972",
+   "cfba571e8a98531b",
+   "f499fe712072ec1d"
+  ],
+  "32": [
+   "055901a5ee5a263b",
+   "46cf17c42e77baae",
+   "65c9d9876f8a4a30",
+   "75df137f83f7b938",
+   "c29fc51a09ea01af",
+   "f41d05c1c935a9ec"
+  ],
+  "48": [
+   "13607bf74ce6888d",
+   "4f1f5462f06976b3",
+   "af84df22f2f5eb93",
+   "c9ff1c94e561d16c",
+   "f8b7345af7d8ff18",
+   "fadbfc86bab1a3d8"
+  ]
+ }
+}

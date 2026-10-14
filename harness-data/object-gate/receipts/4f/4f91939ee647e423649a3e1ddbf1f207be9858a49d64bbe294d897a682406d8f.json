@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4f91939ee647e423649a3e1ddbf1f207be9858a49d64bbe294d897a682406d8f",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "놋 띠 궤짝",
+ "label": "desert-east/de-chest-brass",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden chest with brass bands",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chest is drawn entirely from a flat front view, showing the four corner brackets, lid seam/horizontal band at row 8, and lock plate at rows 10-13, with no visible top surface foreshortened from above (top_rows=0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 7184
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brass-banded chest",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chest is drawn as a flat front elevation showing the front of the lid (rows 4-7) and the front of the base (rows 8-15) with vertical brass bands and a keyhole plate, but no top surface is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6038
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "chest",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chest is drawn as a flat 2D front elevation: straight vertical brass bands, a horizontal band separating the upper lid and lower body, front-facing corner braces at the four corners, and a flat horizontal outline with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 7690
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "chest",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chest is drawn in pure front elevation as a flat rectangle with symmetrical corner brackets at all four corners, vertical straps running straight down, a central horizontal band at row 8, and a lockplate on the front. No top surface or lid seen from above is depicted.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4376
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.215Z",
+ "cells": {
+  "16": [
+   "25e69157d5fac612"
+  ],
+  "24": [
+   "183250bab851a29f",
+   "27627eaa1e9b85a3",
+   "3b0b0beddb3edfb4",
+   "7eb871de07e68126",
+   "baaae04fb6bb18c1",
+   "e679e72f2c66f7d9"
+  ],
+  "32": [
+   "1af6e7b7917b6dcd",
+   "909252c79e8d93e3",
+   "9c808941285d34cf",
+   "edbb8c89d000b07a",
+   "ee8db052f489c3b8",
+   "f221ad21eb1f9e9b"
+  ],
+  "48": [
+   "0aff4f942d42719b",
+   "194ca2aedc5bdf22",
+   "387b1cd7a6b34cd9",
+   "6dd41b4b9d157c71",
+   "e287fa3eb11f02e9",
+   "ef646011a7f5decc"
+  ]
+ }
+}

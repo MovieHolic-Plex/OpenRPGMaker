@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "13bc276bc6fbe3ee4bd5ec02b7b75699c483e429cc65582658bb51843c4caa75",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "놋 향로(연기)",
+ "label": "desert-east/de-incense-burner",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brass censer bowl on legs",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The censer bowl has an elliptical opening spanning rows 5-8 containing ash and glowing embers, clearly visible from above in 3/4 perspective, with the front rim and south body face visible below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3987
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brass brazier / censer bowl on tripod legs",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The censer bowl has a clearly visible wide opening (rows 4/5-8) viewed from above, showing interior grey ash and glowing orange/yellow coals before the south front rim (rows 9-10) and tripod legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4984
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brass censer bowl on tripod legs",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The censer clearly displays a wide foreshortened circular opening from rows 4-9 containing gray ash and glowing embers, with the south rim and front of the bowl visible below it before the tripod legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4191
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brass censer bowl on tripod legs",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The censer bowl has a clearly foreshortened elliptical opening spanning rows 5 to 8 showing the interior filled with glowing coals/incense, viewed from an appropriate 3/4 top-down angle above the front rim and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5511
+  }
+ ],
+ "decidedAt": "2026-10-14T00:27:26.540Z",
+ "cells": {
+  "16": [
+   "03d84366cf8da1dd"
+  ],
+  "24": [
+   "14e950b880b4062a",
+   "353e30a61e4897b2",
+   "3d6a1d18341fa40f",
+   "59ae5aa69a36eb23",
+   "7031ba0570d32e4d",
+   "dba2a5002635d8c7"
+  ],
+  "32": [
+   "1fae271eafeec1f4",
+   "290a1d8cbabf64e9",
+   "4240d36afae40f88",
+   "918a829ca512a675",
+   "92a2e8146f298e71",
+   "92d9c5e3e4a107a0"
+  ],
+  "48": [
+   "0c54193df117d4d2",
+   "356ec513e4895901",
+   "76e7c0d99f7d0d87",
+   "948e420fe1878dfc",
+   "b0a9e3577b0195bd",
+   "dad763e839004ed1"
+  ]
+ }
+}

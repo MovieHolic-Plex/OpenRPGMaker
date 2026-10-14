@@ -1,0 +1,128 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7839ec91af333ed538b9ce325c6450791b1c1a530065fff1bb71e98de38875e0",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "큰 물 항아리",
+ "label": "desert-east/de-jar-big",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "아가리 2행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water jar / amphora",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The jar's top opening is viewed from above, showing 2 pixel rows of dark interior cavity (rows 1-2) between the back and front rim (total top rim structure is 4 rows tall, rows 0-3).",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 2행 < 4"
+   ],
+   "ms": 9978
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water jar / amphora body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main belly of the jar (rows 5-12, 10px wide) is drawn in pure front elevation with flat horizontal shoulders and a flat 1px base line. While the narrow neck has a small 3x2px opening (rows 1-2), no top surface is visible on the main volume.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 2행 < 4"
+   ],
+   "ms": 13646
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water jar",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The jar's top opening is clearly visible from above with a 2-pixel-tall dark interior ellipse (rows 1-2) surrounded by front and back rim pixels.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 2행 < 4"
+   ],
+   "ms": 5525
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water jar",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The jar's top opening is rendered with an elliptical dark interior spanning rows 1-2 between the back rim (row 0) and front rim (row 3).",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 2행 < 4"
+   ],
+   "ms": 5503
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.224Z",
+ "cells": {
+  "16": [
+   "a1294ad51c21a748"
+  ],
+  "24": [
+   "1e770de868466e0c",
+   "2fefa3243cce6acd",
+   "4381240540756bda",
+   "6073336c3a907176",
+   "ade748263e4e8ae0",
+   "c3e10f12a2164054"
+  ],
+  "32": [
+   "0575298810a9b0e8",
+   "47f5ec30ea91fe0c",
+   "60106a1008b59a70",
+   "9da685254d4715ab",
+   "a7111a7d767572a3",
+   "cfc0b306ca6f6342"
+  ],
+  "48": [
+   "30e14ae92cbb71e4",
+   "33778331d8ac2d1d",
+   "4811a3c88e173535",
+   "667de096e95c3516",
+   "abebcb4a4834d747",
+   "c88167d4a23eeded"
+  ]
+ }
+}

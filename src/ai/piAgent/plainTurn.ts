@@ -32,6 +32,7 @@ import { STEAMPUNK_EXPOSED_TOOLS, steampunkTargetFor } from '../steampunkCityPol
 import { CAMPUS_EXPOSED_TOOLS, campusTargetFor } from '../campusPolicy';
 import { SF_STATION_EXPOSED_TOOLS, sfStationTargetFor } from '../sfStationPolicy';
 import { PREHISTORIC_EXPOSED_TOOLS, prehistoricTargetFor } from '../prehistoricPolicy';
+import { DESERT_EAST_EXPOSED_TOOLS, desertEastTargetFor } from '../desertEastPolicy';
 import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
 import { KIT_AREA_EXPOSED_TOOLS, kitAreaNote } from "@/editor/tools/kitAreaTools";
 import { PLAN_EXECUTION_PREAMBLE, ULTRABRAIN_PLAN_HEADING } from "./planExecution";
@@ -168,7 +169,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     // 실측(2026-10-04): 새 프로젝트(버들항 맵)에서 「일본 상가 거리」+author_village 선언이면 버들항 마을 노트가 먼저 잡아 jp_city 는 어디에도 안 나왔다 — 그래서 버들항보다 앞선다.
     // PAW 전용 게이트·팩 도시 타일셋(Rasak·REFMAP) 마을 노트는 2026-10-07 저작권 정리로 지웠다.
     // 테마 칩셋 노트는 하나만 간다. 순서가 곧 우선순위다 — 앞이 잡으면 뒤는 보지 않는다(각 정책은 그 칩셋이 프로젝트에 있을 때만 잡는다).
-    // 시대·세계 낱말이 분명한 테마(전국·에도, 스팀펑크, SF, 선사)는 jp_city 보다 먼저 본다 — «일본 전통 마을»·«증기기관 도시 거리»·«네온 거리»가
+    // 시대·세계 낱말이 분명한 테마(전국·에도, 스팀펑크, SF, 선사, 사막·동양풍)는 jp_city 보다 먼저 본다 — «일본 전통 마을»·«증기기관 도시 거리»·«네온 거리»가
     // jp_city 의 «도시 거리» 낱말로 새지 않게. 고딕·해적 군도·하늘섬·캠퍼스는 jp_city 가 이긴다. 다 아니고 대상 계열이 버들항이면 author_beodeul_town.
     // 전국·에도(sengoku_edo) — 전국시대·에도 시대·사무라이·성하마을·일본 전통 …(sengokuEdoPolicy).
     const sengoku = sengokuTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
@@ -178,7 +179,9 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     const sfStation = sengoku || steampunk ? null : sfStationTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
     // 선사 원시 세계(prehistoric) — 선사·원시·석기·공룡·동굴 부족 낱말이나 대상 맵이 선사 칩셋(prehistoricPolicy). 그냥 동굴·던전은 잡지 않는다.
     const prehistoric = sengoku || steampunk || sfStation ? null : prehistoricTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
-    const eraTheme = sengoku || steampunk || sfStation || prehistoric;
+    // 사막·동양풍(desert_east) — 사막·오아시스·바자르·피라미드·아라비안·실크로드 낱말이나 대상 맵이 사막 칩셋(desertEastPolicy). «로마풍·버들항 사막»은 버들항.
+    const desertEast = sengoku || steampunk || sfStation || prehistoric ? null : desertEastTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
+    const eraTheme = sengoku || steampunk || sfStation || prehistoric || desertEast;
     const jpCity = eraTheme ? null : jpCityTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
     // 고딕 저택(gothic_manor) — gothicPolicy.
     const gothic = eraTheme || jpCity ? null : gothicTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
@@ -202,6 +205,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
       campus,
       sfStation,
       prehistoric,
+      desertEast,
       requestText: text,
       intent: declared.intent,
       targetMap: noteTargetMap
@@ -216,7 +220,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
       && declared.intent.clarify === null };
     // 숲마을 author_village 의 「마을 계약」은 2026-10-07 저작권 정리로 시공기와 함께 지웠다 — 마을은 author_beodeul_town 이 짓는다.
     routingAudit = `${formatIntentAudit(declared.intent, declared.elapsedMs)}${declared.error ? ` — 선언 오류: ${declared.error}` : ""}`
-      + (sengoku ? " → 전국·에도 맵" : steampunk ? " → 스팀펑크 도시 맵" : sfStation ? " → SF 맵" : prehistoric ? " → 선사 원시 세계 맵"
+      + (sengoku ? " → 전국·에도 맵" : steampunk ? " → 스팀펑크 도시 맵" : sfStation ? " → SF 맵" : prehistoric ? " → 선사 원시 세계 맵" : desertEast ? " → 사막·동양풍 맵"
         : jpCity ? " → 일본 도시 맵" : gothic ? " → 고딕 저택 맵" : pirateIsles ? " → 해적 군도 맵" : skyIsland ? ` → 하늘섬 맵(${skyIsland.style})`
         : campus ? " → 캠퍼스 맵" : beodeulTown ? " → 버들항 마을" : "");
     if (declared.intent.mode === "question") {
@@ -237,6 +241,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
         ...(campus ? CAMPUS_EXPOSED_TOOLS : []),
         ...(sfStation ? SF_STATION_EXPOSED_TOOLS : []),
         ...(prehistoric ? PREHISTORIC_EXPOSED_TOOLS : []),
+        ...(desertEast ? DESERT_EAST_EXPOSED_TOOLS : []),
       ])];
       // 개념 카드 노트가 붙는 요청이면 예제를 짓는 도구를 처음부터 쥐여 준다 — 노트가 이 도구 이름을 부른다.
       if (conceptCardsForText(text).length && !initialToolNames.includes("build_concept_example")) initialToolNames = [...initialToolNames, "build_concept_example"];

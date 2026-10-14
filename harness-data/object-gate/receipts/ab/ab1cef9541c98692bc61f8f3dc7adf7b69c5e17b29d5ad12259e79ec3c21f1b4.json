@@ -1,0 +1,203 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ab1cef9541c98692bc61f8f3dc7adf7b69c5e17b29d5ad12259e79ec3c21f1b4",
+ "width": 96,
+ "height": 80,
+ "kind": "structure",
+ "name": "대상 숙소 문루(이완 통로)",
+ "label": "desert-east/de-caravanserai-gate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "monumental gatehouse and flanking towers",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gatehouse, central lintel/parapet, and flanking tower crenellations have no visible top surfaces (0 px). The entire structure is rendered as a flat architectural front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6232
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "monumental gatehouse and flanking towers",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire gatehouse, flanking towers, and crenellations are rendered as a pure flat architectural front elevation. The main lintel at row 8 and the battlements at row 4 show no top horizontal surface or depth foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5590
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "gatehouse facade with archway and flanking towers",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat architectural front elevation. The central lintel/block and flanking battlemented towers have zero top surface or roof depth visible (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5393
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iwan gatehouse facade with flanking towers",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire gatehouse and flanking towers are drawn in pure front architectural elevation. The central parapet terminates in a flat 1px edge at row 8, and the crenellations on the side towers show no top walkway or depth from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5058
+  }
+ ],
+ "decidedAt": "2026-10-14T00:12:08.966Z",
+ "cells": {
+  "16": [
+   "02ce3004b5ed8944",
+   "0537c54faacba96a",
+   "09473e2899ea2081",
+   "289d7e6a1e0a34b8",
+   "2f620807270f263c",
+   "379b6f430ac3f303",
+   "408907a349cc3529",
+   "4bc6933c7183af5a",
+   "50a3f83ab6f8a098",
+   "5c0174b4b4feb838",
+   "5e76224964c8f422",
+   "6712986f04503fd5",
+   "6ebd12d36ce741e5",
+   "7576527387dbf4a0",
+   "7eee53dd9c5f1fbd",
+   "86a758436507815a",
+   "9cdeb65a3f3b158e",
+   "9d73c268cd4545be",
+   "a3b5b8fb4f908543",
+   "accff25e62332e7c",
+   "b515c3b4f3215a32",
+   "b5802ccce9b17481",
+   "b6da5a31d8369a93",
+   "c26d7e03725199c2",
+   "cb33f7bd2383cc65",
+   "cc84086193f4b858",
+   "da489516c99d92e6",
+   "e3c3ec0f1ec48de2",
+   "febee6505bae3528",
+   "fff1d260e271ecab"
+  ],
+  "24": [
+   "04e3a3577382c79a",
+   "081442e431b1738d",
+   "0ab13e9e55f769dd",
+   "11171715c533185e",
+   "18d7720f2137b57f",
+   "1e576ead9a8259bc",
+   "2f3c8b8a49770ea7",
+   "3569520e79b16dbb",
+   "452fff0c73e39ba7",
+   "486db3381bdd742b",
+   "505d3fbfb8ecc146",
+   "551d40b729ea99a6",
+   "619fa5aa001f1d61",
+   "64f2caca79f04910",
+   "85340c0a14ba3176",
+   "863b8d6257447990",
+   "9512e51dc70beec8",
+   "98acc05ba8b6fd35",
+   "a34eb0c6ec709809",
+   "a61d3f5ee0f1df9c",
+   "c00da9743f484c8d",
+   "cca8fe36dca7153e",
+   "d185310da1cc4f78",
+   "d18a2d140ca8c0af",
+   "d1b06bc662995178",
+   "dd5d42d9783b217a",
+   "e300b59db9a5dac9",
+   "e44401013c67fa81",
+   "eb0ab34fd432a173",
+   "f62b87940ff8cfc2"
+  ],
+  "32": [
+   "280df97205e53708",
+   "36667f90b04a460b",
+   "385b5f1b12c8a1b4",
+   "39835d10c7604af6",
+   "3a671ca735696f32",
+   "3cac1b880e443ab0",
+   "3f1f35a187c60559",
+   "5f004b653367dbac",
+   "61dc3ad911480c33",
+   "760950bb037d6bc9",
+   "859b42d0884d9def",
+   "8b3e35d8ccdbfc65",
+   "8eb9dc2643ce9676",
+   "ae58db7e822eb3b8",
+   "c8cf6beea19d4b8f",
+   "cf8f2a9d85256687",
+   "d26649c2827232e3",
+   "e54101f5e757404e"
+  ],
+  "48": [
+   "1e25be8fa4e7bee5",
+   "3d8fcca5a720db4a",
+   "5061f82d8f3b8ad4",
+   "64d736620cb97f11",
+   "92af6ddb4e4ec794",
+   "a7415532007d8534",
+   "d861a1bf08ddfa12",
+   "f863efe8c9f80844"
+  ]
+ }
+}

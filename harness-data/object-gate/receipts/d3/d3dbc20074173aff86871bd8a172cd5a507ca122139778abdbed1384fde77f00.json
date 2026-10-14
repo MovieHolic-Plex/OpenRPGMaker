@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d3dbc20074173aff86871bd8a172cd5a507ca122139778abdbed1384fde77f00",
+ "width": 16,
+ "height": 32,
+ "kind": "terrain",
+ "name": "사암 벽(등잔 벽감)",
+ "label": "desert-east/de-wall-niche-stone",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sandstone wall face with lamp niche",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall face terrain tile featuring an arched wall niche with a small oil lamp; as a wall face terrain tile (not a standing object), the vertical front orientation is correct for standard 3/4 perspective map walls.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8728
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sandstone wall face with lamp niche",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Classified as terrain (wall face). Vertical wall tiles in RPG Maker 3/4 perspective are viewed directly from the south, and the recessed arched niche correctly displays interior depth shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8460
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sandstone wall face with lamp niche",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall face terrain tile with an embedded wall niche and lamp; as a wall face tile in JRPG 3/4 perspective, front-facing vertical alignment is correct.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5423
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sandstone wall face with niche",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile depicting a vertical sandstone wall with a lamp niche; correctly formatted as a front-facing wall surface for RPG Maker style maps.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5793
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.211Z",
+ "cells": {
+  "16": [
+   "5bd6244d9c01e038",
+   "c5fc9c44761cc0d6"
+  ],
+  "24": [
+   "0c6099ed0a5918e9",
+   "17a891e9f7a70f61",
+   "19b96aecfae0b21c",
+   "20f0e829df60be81",
+   "3291be20a74862b8",
+   "3349b9111b7c1cef",
+   "bebe3ff630cf3185",
+   "bec715d5fd33e19c",
+   "c886a83141fbda80",
+   "ca7277f792fc5e7c",
+   "d1a7e4b7ec81d95e",
+   "edef431ef503e3ca"
+  ],
+  "32": [
+   "18912896074fb5e5",
+   "1a451aac8b845c57",
+   "24c60a150055fcde"
+  ],
+  "48": [
+   "331c4298409ff5fb",
+   "4b5e3058adb79137",
+   "55019ddc47958604",
+   "73a15d61a88222f1",
+   "d57a6f96e9f657dc",
+   "f77f3f170b61952a"
+  ]
+ }
+}

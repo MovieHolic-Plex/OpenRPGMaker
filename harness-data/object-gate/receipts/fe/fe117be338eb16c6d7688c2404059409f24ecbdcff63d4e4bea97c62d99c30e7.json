@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fe117be338eb16c6d7688c2404059409f24ecbdcff63d4e4bea97c62d99c30e7",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "접어 쌓은 양탄자",
+ "label": "desert-east/de-carpet-stack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stack of folded rugs",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the top folded carpet is clearly visible from above across rows 2-6 displaying its pattern and tassels, while the front edges of the stacked carpets are seen on rows 7-14 in proper 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8827
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stack of folded rugs",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top carpet clearly displays its patterned top surface across rows 2–6 (5 source pixels tall) with fringe at row 1, sitting atop the front faces of the stacked folded rugs (rows 7–14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5903
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stack of folded rugs",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the uppermost folded rug is clearly shown from above across rows 2–6 (with fringes extending out back at row 1), while rows 7–14 depict the south-facing folded edges of the stacked rugs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6064
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stack of folded rugs",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the uppermost folded rug is clearly visible from above across rows 2-6 with a patterned design and back fringes, while the front edges of the stacked rugs below span rows 7-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5170
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.214Z",
+ "cells": {
+  "16": [
+   "17fe0c1a1573e0df",
+   "5213891bc0200514"
+  ],
+  "24": [
+   "10843c861e67d01f",
+   "1cc72b5c539b0264",
+   "2b17e7c5e9384b29",
+   "42a6692778c6650e",
+   "50e4c1c6d6a4745a",
+   "653c097785b056ee",
+   "6875753488be9d79",
+   "9a90c473f59f6583",
+   "ac5d585619d36981",
+   "b273ffad37e22db3",
+   "cf1ae4c58f73b4ea",
+   "e1ebcbe1eedc66e2"
+  ],
+  "32": [
+   "15a2d97547a0d8b8",
+   "6368d9c6539dec38"
+  ],
+  "48": [
+   "154ed6d56daa53a8",
+   "469b65a3e5c98edc",
+   "53b291e2e73fbd76",
+   "6b14b78a3fb918e9",
+   "cc11fb783416ca91",
+   "ce5617a8255b13e2"
+  ]
+ }
+}

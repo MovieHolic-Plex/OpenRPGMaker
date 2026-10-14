@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5c305ef021720ce5b59956f41cf2d06e491708ec68413a5a63c3297fb2dad6ff",
+ "width": 16,
+ "height": 48,
+ "kind": "structure",
+ "name": "사암 성벽(가로)",
+ "label": "desert-east/de-wall-h",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sandstone wall",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top 16 rows (rows 0–15) depict the horizontal top surface/walkway of the sandstone wall seen from above, atop 32 rows (rows 16–47) of vertical brick wall face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5098
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sandstone wall (horizontal section)",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the wall (walkway/crenellated top surface) occupies rows 0 to 15 (15-16 source pixel rows tall), while rows 16 to 47 form the vertical front face with horizontal brick courses.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6201
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sandstone wall (horizontal section)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-15 depict the top surface/walkway of the wall with crenellations and parapet/pathway, while rows 16-47 depict the vertical south-facing stone brick front.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4897
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sandstone wall",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the wall spans rows 0 to 15 (16 pixel rows) showing the walkable surface / battlement top, above the 32-row brick front face (rows 16-47).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3716
+  }
+ ],
+ "decidedAt": "2026-10-14T00:12:08.963Z",
+ "cells": {
+  "16": [
+   "4201c4b41c7e8c2f",
+   "bdc5586b580d4790",
+   "fe8d43f801042a76"
+  ],
+  "24": [
+   "13b63b0fa0aeca7c",
+   "242818cde078858d",
+   "78b6c849748de2eb",
+   "817302ff52453f12",
+   "b927fd7a6e95b4de",
+   "c19900551b4c2d66"
+  ],
+  "32": [
+   "3f69f097415aa79f",
+   "44df5493fa530ffc",
+   "71169cb4d1e3dea2",
+   "7480d8801f97bf45",
+   "77a04c4e14185fd4",
+   "877f91497b22d51c",
+   "d3904a8fac9ec890",
+   "da6c294f7ee4dbdc",
+   "ddc3bad7dfe87df7",
+   "e7ec03fbd3d92adb",
+   "ec7fa953a0650358",
+   "f782b7b440acbe14"
+  ],
+  "48": [
+   "365e1aa3cf7e9582",
+   "7e376a3a4437a1ac",
+   "a8266786c08fec45"
+  ]
+ }
+}

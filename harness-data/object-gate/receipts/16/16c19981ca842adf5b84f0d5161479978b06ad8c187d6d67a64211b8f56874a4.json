@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "16c19981ca842adf5b84f0d5161479978b06ad8c187d6d67a64211b8f56874a4",
+ "width": 32,
+ "height": 16,
+ "kind": "container",
+ "name": "돌 물통(구유)",
+ "label": "desert-east/de-trough",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rectangular trough / water basin",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The trough clearly shows its wide top opening (rows 1-9) filled with water (rows 4-8) with interior depth visible, alongside the south front wall (rows 10-15), matching standard 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4556
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone/wooden water trough",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The trough clearly shows a 3/4 top-down view with the rim and water basin visible from rows 1 to 9 (7 rows of interior water/shadow) and the south front wall visible across rows 10 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5236
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rectangular stone/wooden water trough",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The trough clearly shows its open top viewing down into the water (rows 2-8) enclosed by rims, sitting above a 5-pixel tall south front face (rows 10-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4007
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone water trough",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The water basin is clearly seen from above across rows 2-8 inside the rim (rows 1-9), with a 5-pixel tall south-facing stone front wall below (rows 10-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3750
+  }
+ ],
+ "decidedAt": "2026-10-14T00:27:26.536Z",
+ "cells": {
+  "16": [
+   "44c3f1af9b461eca",
+   "fd6e1125da5570e7"
+  ],
+  "24": [
+   "132e1319d4c212ab",
+   "5a0210cd242db47e",
+   "6a5863d4a9ff5c24",
+   "8eda74aa0f4aa5a0",
+   "a24e3ca15dfe575f",
+   "b2d69d00e2b9b80c",
+   "bc146d6a2f9645d2",
+   "be72e05049e13f5e",
+   "c29044d233406b40",
+   "dc71276a75b67f8c",
+   "e3585b37f9d3773b",
+   "ee377a0466cc21be"
+  ],
+  "32": [
+   "530c3f9d948a7fe8",
+   "c5116e6058b4e466"
+  ],
+  "48": [
+   "02134d5efb2e5ed6",
+   "0ed3462b02cdca2b",
+   "18689102ae2ff2da",
+   "25a564e9ef17e526",
+   "8649ff76daec8dac",
+   "f15ba3429aceed87"
+  ]
+ }
+}

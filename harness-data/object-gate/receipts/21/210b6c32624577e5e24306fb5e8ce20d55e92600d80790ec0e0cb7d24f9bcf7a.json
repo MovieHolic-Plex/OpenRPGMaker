@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "210b6c32624577e5e24306fb5e8ce20d55e92600d80790ec0e0cb7d24f9bcf7a",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "말아 쌓은 양탄자",
+ "label": "desert-east/de-carpet-rolls",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stack of rolled rugs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stacked rolled carpets are drawn purely in flat front/side elevation. The top carpet has only a 1px outline at row 2 with no foreshortened top surface showing from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5416
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stacked rolled carpets",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stacked rolled carpets are drawn as horizontal striped bars in pure front elevation with only a 1px outline row at row 2 and no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5289
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stack of three rolled carpets",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rolled carpets are drawn in pure front elevation as flat horizontal bands with 1px outline borders. The topmost carpet shows no top surface seen from above (only a 1px top outline on row 2).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5274
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stack of three rolled carpets",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stacked rolled carpets are drawn purely in side/front elevation as horizontal stripes with 1px outlines; there is no foreshortened top surface visible on the uppermost roll.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 23693
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.224Z",
+ "cells": {
+  "16": [
+   "35065835e3bcf1c8"
+  ],
+  "24": [
+   "0e23a66cae0f3370",
+   "1e49fad6cd8df0b9",
+   "47f8f325b5f0a4e1",
+   "5f23a8fd2dddb202",
+   "6e0c38e1d7ff791e",
+   "e7dfe7665705f86a"
+  ],
+  "32": [
+   "43046244722d61f8",
+   "4ff6ec0a89402550",
+   "616c4bfa055c9bce",
+   "7b8f9477a256d708",
+   "98a8d7a9ac2c55fd",
+   "e7b8d550d948f438"
+  ],
+  "48": [
+   "0d90b1e5356514ce",
+   "26c1a305d2918c48",
+   "3a42814466490ead",
+   "4bf348dfcdbe1cd5",
+   "8317ac31c410770c",
+   "e9a708785755c050"
+  ]
+ }
+}

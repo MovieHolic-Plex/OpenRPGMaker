@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5f70513c63f2b55f0cf515aa5b11e5e2fc68ec8b0d2ccdd883b2cb10e25ea441",
+ "width": 32,
+ "height": 16,
+ "kind": "container",
+ "name": "물항아리 시렁",
+ "label": "desert-east/de-jars-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water jars on a wooden shelf",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The jars clearly show large elliptical interior openings spanning 5 pixel rows (rows 2-6) viewed from above, and the supporting shelf has a visible 2-3 pixel row top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5787
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water jars on a wooden shelf",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The jars show deep, elliptical openings (rows 2-6, ~5 rows of dark interior) seen from above in 3/4 view, resting on a shelf with its top surface visible.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4034
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water jars on a shelf",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The jars clearly show wide elliptical openings into their interiors (approx. 5 pixel rows tall, rows 2-6) with visible front and back rims, and the shelf underneath also shows its horizontal top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3656
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water jars on a shelf",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each jar clearly shows a foreshortened elliptical opening into its dark interior spanning rows 2 to 6 (5 rows tall), resting on a shelf with a visible top surface at rows 11-12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6171
+  }
+ ],
+ "decidedAt": "2026-10-14T00:33:14.418Z",
+ "cells": {
+  "16": [
+   "5a333004c025f06e",
+   "b05c002374f65270"
+  ],
+  "24": [
+   "0d3f37e8c6e82b99",
+   "1a30b103d251053c",
+   "2301c3f9209b8f3d",
+   "28e1dfdf476a50ab",
+   "358db9ba9445f00d",
+   "59f29f8f3c8c657c",
+   "68534c062803163a",
+   "8b09c5e7e0f49644",
+   "bd5d7e49bf1ca4c5",
+   "cdc9eb6cd6d35b2b",
+   "dcebc20c01bf0988",
+   "e3bd07c1b4eb1c80"
+  ],
+  "32": [
+   "8c483438fe7ac264",
+   "a110457f7538e354"
+  ],
+  "48": [
+   "0842ee670d6cd4a2",
+   "6cc5e07ba6af6621",
+   "7c783ca3b75e5b7e",
+   "97ff38f7a2d6a881",
+   "b83d4f50d3abb640",
+   "fc61b82aa8275f3f"
+  ]
+ }
+}

@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5c972df525c1572f6cc68ea5091f35e004839d349875c18aa0c19f95115d1f74",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "큰 저장 항아리",
+ "label": "desert-east/de-jar-tall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "아가리 안쪽이 안 보임",
+  "아가리 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "large ceramic jar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The jar's top rim/lid at rows 0-3 is drawn in flat front elevation with a flat horizontal line at row 0; no elliptical opening or interior is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 4069
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "storage jar with turquoise patterned band",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The jar is drawn in pure front elevation: the rim/mouth at rows 0-3 has no visible opening or foreshortened top ellipse, and the decorative band across rows 8-9 runs straight horizontally across.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 5486
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "large ceramic storage jar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The jar is rendered in pure front elevation; the rim at rows 0-2 has no ellipse showing the interior opening or top surface, appearing as a flat horizontal band.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 5326
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "large jar/pot with neck and turquoise band",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The jar's rim/top (rows 0-3) is drawn straight-on from the side/front with no ellipse or opening into the interior visible, rendering the object a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 5857
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.215Z",
+ "cells": {
+  "16": [
+   "cd0132acf66be37f"
+  ],
+  "24": [
+   "636c79f8c1ad2dbe",
+   "6aa08b6ec216371d",
+   "751646250a433b49",
+   "a159b6e7dee87bbe",
+   "b9e20ebcd96aa14a",
+   "c2373d3a43faec1a"
+  ],
+  "32": [
+   "225dbc1a8df2be19",
+   "593d5c2293432d11",
+   "75241d9b5e72ccd5",
+   "a8dbe382bc160886",
+   "c2164f59d6fef9e1",
+   "d5168e126448f055"
+  ],
+  "48": [
+   "190168fe57abb0d7",
+   "74bf9cc345671024",
+   "91582d55c0fc29fa",
+   "c1d1251ecb48d47a",
+   "c72d0087d541c325",
+   "f6eec5dc448f2580"
+  ]
+ }
+}

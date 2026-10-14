@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3f79c6cb7ee0986689183ec52a19061a5f69a850b1024ef03f9747e45116489c",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "깃대(무늬 없는 천)",
+ "label": "desert-east/de-banner-pole",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical wooden pillar with banner",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the pillar terminates in a flat 1px horizontal outline at row 1 with no foreshortened top surface or cut face visible, rendering the main body in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5695
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall wooden pillar/stele with banner",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the standing pillar ends with a flat 1px horizontal outline at row 1 with no foreshortened top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4953
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tall wooden pillar/stand with banner",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the main wooden upright terminates at row 1 with only a 1px horizontal outline. There is no visible horizontal top surface showing foreshortening from above; the entire main body is drawn in flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5735
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden banner pillar / stele",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The column/pillar has a 1px outline at row 1 with no foreshortened top surface visible, presenting a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3321
+  }
+ ],
+ "decidedAt": "2026-10-14T00:35:53.799Z",
+ "cells": {
+  "16": [
+   "5871efa3a8a0a1f9",
+   "a9116d08c8760c2c"
+  ],
+  "24": [
+   "1b6355e7fc0c6a3b",
+   "31da055c727007fb",
+   "549f2089be79275f",
+   "a6c498b82f7d5dc0",
+   "af627e9e5cb8490a",
+   "b16c302a22db398f",
+   "c192361dd092ecf8",
+   "d6f0089fc49ee756",
+   "e171c1af667cd078",
+   "e25e9aefd9bbb5be",
+   "e995faf7192397c0",
+   "f4c2d98ed52ff6e9"
+  ],
+  "32": [
+   "44e6b5df7a52be90",
+   "8cf33503266a7d9f",
+   "dea820206ebb8803"
+  ],
+  "48": [
+   "2d843806c7b73b38",
+   "2fa9b430b6d3fccd",
+   "9667333ecaf8e4e3",
+   "96829814f827c127",
+   "9e6507e0e8b25ca7",
+   "dbd51df3c441266b"
+  ]
+ }
+}

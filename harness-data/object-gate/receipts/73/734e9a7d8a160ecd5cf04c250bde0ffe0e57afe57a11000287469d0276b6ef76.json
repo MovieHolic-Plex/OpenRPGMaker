@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "734e9a7d8a160ecd5cf04c250bde0ffe0e57afe57a11000287469d0276b6ef76",
+ "width": 48,
+ "height": 32,
+ "kind": "box",
+ "name": "대상 짐수레",
+ "label": "desert-east/de-cart-camel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cart bed and south-facing wagon side",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": true,
+    "opening_rows": 12,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wagon bed is viewed from above across rows 3-15 displaying stored cargo, while the south wooden face occupies rows 16-21 with front-facing wheels attached below, perfectly matching the 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5948
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wagon cart bed and chassis",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 11,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The open bed of the cart displays a generous top-down interior surface (rows 3-14, ~12 rows) containing cargo, meeting the south-facing front wooden wall (rows 15-20) above the wheels.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4691
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden cart bed loaded with cargo",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top-down interior of the cart bed and its contents are clearly visible across rows 3-14 (12 rows tall), while the south wooden side panel spans rows 15-20 above the wheels.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4690
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden cart bed with cargo and south-facing side panel with wheels",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 11,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wagon bed is viewed from above (rows 3-15) containing various cargo items, with the south side face of the wagon body (rows 16-21) and wheels below it, typical of 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4448
+  }
+ ],
+ "decidedAt": "2026-10-14T00:35:53.798Z",
+ "cells": {
+  "16": [
+   "465949fb05227e70",
+   "68bc0f884dc43393",
+   "7aafa7ad5d95f486",
+   "a06ff9d766140aca",
+   "e48ada79d97ef36f",
+   "e8bca084337a7f61"
+  ],
+  "24": [
+   "2ac52784d1b01fa3",
+   "3714d841784cd30f",
+   "5605edde69cf6eb1",
+   "699d2bc7def654c3",
+   "8d136ca7a3c4d5c0",
+   "92f754bd37fcc40c",
+   "cb87cab0e3da0832"
+  ],
+  "32": [
+   "1498ad07928dd0c5",
+   "23fca8ac51d826f8",
+   "2874fd4d4d6157a7",
+   "5b6fbab4828ad4c5",
+   "b789b4b3f6fce544",
+   "d3fe99541890f943"
+  ],
+  "48": [
+   "4bd4ed6ea0bb2aa5",
+   "fee8c8f9b593d74e"
+  ]
+ }
+}

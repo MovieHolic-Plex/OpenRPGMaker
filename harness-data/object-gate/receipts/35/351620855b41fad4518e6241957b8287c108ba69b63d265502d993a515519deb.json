@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "351620855b41fad4518e6241957b8287c108ba69b63d265502d993a515519deb",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "오벨리스크",
+ "label": "desert-east/de-obelisk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "column shaft and capital structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The column shaft, upper block/capital, and middle tier are drawn in flat front elevation with straight horizontal 1px outlines and no visible top surface. Only the lower base plinth shows a horizontal shelf, while the main standing body shows 0 rows of top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7508
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "column shaft and cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The column shaft and upper cap are drawn in flat front elevation with 0 visible top surface rows. Although the lower base plinth shows a top ledge (rows 35-37), the main column body and its capital/top terminate in flat horizontal lines with no top surface foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9205
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "obelisk column shaft and capital",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main shaft and capital are drawn in flat front elevation with no visible top surface foreshortened toward the viewer; visible top surfaces appear only on the base plinth steps below.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4733
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pillar shaft with capital and tiered base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The column shaft and its top capital/finial are drawn in pure front elevation with no visible top surface or 3/4 angle cut face. The top edges are flat horizontal 1px outlines.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4123
+  }
+ ],
+ "decidedAt": "2026-10-14T00:34:24.555Z",
+ "cells": {
+  "16": [
+   "02c0de0a7309bda2",
+   "25babe3c6006bd3e",
+   "e3f407d51eed9100"
+  ],
+  "24": [
+   "5886320526cee068",
+   "60b4204379b7e216",
+   "64afb5b8278df682",
+   "7e8fbcdb5ce81e77",
+   "84a53a0e8e066604",
+   "bff04d950e4962ac"
+  ],
+  "32": [
+   "065a87b9b4d62956",
+   "26c72e230667f181",
+   "5c535f4750c170ce",
+   "9b8b913752e59caf",
+   "a4363da01db88da6",
+   "ba4f9b6840abe3c2",
+   "bbcea46a30028f49",
+   "d7a734211b280ae9",
+   "df7afa8498002f29",
+   "e2414027483e8401",
+   "e97a6219a8d8ae10",
+   "ef89a81060943c2f"
+  ],
+  "48": [
+   "021ad99f3cbdb725",
+   "6b75e1eaa43db8ad",
+   "f22b993b0666c2fd"
+  ]
+ }
+}

@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "11de9d0b65b6f402afed36ccdc2df3ca4b53985c3c4990c21cce367cfb28dc65",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "돌 벤치",
+ "label": "desert-east/de-bench-stone",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone/wooden bench with red cushion on top",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bench spans rows 1 through 7 (7 pixels deep), clearly foreshortened in 3/4 view, with the front edge (rows 9-10) and legs (rows 11-14) extending downwards.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3387
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone bench slab on legs",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bench is clearly visible across rows 1-7 (approx 7 rows tall) with an object resting on it, followed by the front edge of the slab on rows 8-10 and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3559
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone/wooden bench slab and legs",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bench seat is clearly visible across rows 1-7 (~7 rows deep), with the front edge of the bench slab shown on rows 8-9 and legs beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3313
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone/wood bench top and legs",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal bench surface is clearly visible from rows 1 to 7 (approx 7 rows tall) with foreshortened top view, followed by the front edge in rows 8-10 and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3576
+  }
+ ],
+ "decidedAt": "2026-10-14T00:27:26.538Z",
+ "cells": {
+  "16": [
+   "4ae9831622fb7db7",
+   "85c68811fcc3d9be"
+  ],
+  "24": [
+   "02d6bd53f7b7cd9e",
+   "184af00e18c903a4",
+   "282b2ef727f1b1ac",
+   "28535bcf5969c202",
+   "33d67065da816f72",
+   "37c786e1c19673b5",
+   "3f6d5a3523a44278",
+   "5187e930558cb631",
+   "91cb3f1b1df9f647",
+   "cc680f9c86974eea",
+   "d3e2632121bc4c8e",
+   "ef6eebcb56e3638c"
+  ],
+  "32": [
+   "38220816de745f5e",
+   "f57ea5acd032803c"
+  ],
+  "48": [
+   "172938c3aba8738b",
+   "574dd202def8c69e",
+   "8b77d0121bf3997a",
+   "afa8b122b1c8b35b",
+   "bd9fa1b1c6c58f5f",
+   "edeaad692e26ec89"
+  ]
+ }
+}

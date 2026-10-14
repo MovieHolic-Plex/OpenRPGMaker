@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "14b6339d71e54a63858ebc5d23d7cc3b0c426cf7330f5c379f48b4a0f27f7a36",
+ "width": 48,
+ "height": 48,
+ "kind": "organic",
+ "name": "우산 아카시아",
+ "label": "desert-east/de-acacia",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "acacia tree canopy",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The umbrella acacia is drawn in pure side/front elevation: the canopy has a flat profile silhouette rather than showing the foreshortened circular top surface of the umbrella canopy viewed from above at 45 degrees.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6554
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The acacia tree is drawn in a pure 2D front elevation. The trunk and Y-shaped branches branch strictly in the flat vertical plane, attaching to the bottom silhouette line of the canopy. The canopy itself is rendered as a side-profile wedge rather than a foreshortened disc seen from above.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6957
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "umbrella acacia tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The acacia tree is drawn in pure 2D front elevation: the branches form a flat Y-shape in the coronal plane and the canopy is rendered edge-on as a side-profile saucer with no foreshortened top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8501
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "acacia tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn entirely in front elevation (side-scroller style): the canopy has a flat/curved profile with visible underside where the branches attach, and the trunk/branches form a flat 2D Y-fork. There is no visible top surface of the canopy or foreshortened top-down view.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7546
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.221Z",
+ "cells": {
+  "16": [
+   "24b7b76499eac98a",
+   "5d5a8309643ded6f",
+   "5fa927a9e0db7cf5",
+   "6197058535b9051e",
+   "bcf8684d5ad14fe6",
+   "da0bdcd6a0fe4f1f",
+   "f4166d60fcfa2036"
+  ],
+  "24": [
+   "062f9f7e5cb3fcea",
+   "4c51557c3d09eba4",
+   "b56b9f75ddaa2c56",
+   "fa4b422833c88d6e"
+  ],
+  "32": [
+   "014c31e81d8127a9",
+   "0d6a93093194259a",
+   "0f624bab8b9bbbbe",
+   "1146ddc2962571b2",
+   "22a630686b3ddf23",
+   "55053c04649a3d5a",
+   "669239ad797c6513",
+   "6d068e65d94d10da",
+   "72ae7e5a8b7e5430",
+   "83726ef9c822a0c9",
+   "86c4bce1c580ae02",
+   "96cbbd3087d29754",
+   "9da0118dcbcebe68",
+   "9fea3cc9281c2888",
+   "a0b5a9c66ab629ad",
+   "a6fb11edcc0e12e4",
+   "d84bbe96adb9e597",
+   "dec9981937a5eaef",
+   "e0a9b82ed587c3b8",
+   "e3a02fa9684ae2fd",
+   "f4be137211095fa3",
+   "f6f86286c38a8f86"
+  ],
+  "48": [
+   "ed635981a2b16098"
+  ]
+ }
+}

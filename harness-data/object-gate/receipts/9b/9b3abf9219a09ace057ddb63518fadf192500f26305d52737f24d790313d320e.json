@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9b3abf9219a09ace057ddb63518fadf192500f26305d52737f24d790313d320e",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "노점(향신료·주황 차양)",
+ "label": "desert-east/de-stall-spice",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "market stall (awning and spice counter)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stall is drawn entirely in pure flat front elevation like a 2D side-scroller asset. The counter shows only its vertical front face with no horizontal countertop visible (0 rows deep), and the spice containers and posts lack any 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9246
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "market stall with striped awning and counter",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sloping top surface of the fabric awning occupies rows 1-10 (10 source pixel rows) before dropping into scalloped valance overhangs, properly displaying the roof slope in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8490
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "market stall (awning and counter)",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The striped awning clearly displays its south-facing top slope across rows 1–10 before dropping to the valance (rows 11–13). The counter below also provides a tiered top surface where the spice mounds are displayed.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7767
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "market stall (counter and awning)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stall counter is drawn in pure front elevation: rows 21-24 form the front face of the counter slab and rows 25-31 form the vertical lower panels, with 0 source pixels showing the horizontal counter top surface. The spice containers on the counter are also drawn as flat 2D silhouettes without visible openings or top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10613
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.223Z",
+ "cells": {
+  "16": [
+   "898489cc54db5ed7",
+   "ade39086e9146058",
+   "b651152cc4b0899f",
+   "f399508d50369b02"
+  ],
+  "24": [
+   "04039fddb526b387",
+   "1aebc2e0c17b6174",
+   "4f5ccfed372a037a",
+   "58ecf99dcff3ca5c",
+   "5e6036f3f5adda99",
+   "6cc149ae0f08448a",
+   "6f7ab5265b7db96a",
+   "74b2a4c42b148450",
+   "7e27714f1431bb71",
+   "834e3a52d543d495",
+   "8dc043b4bfbfe9c5",
+   "8f70a4cdd4822b65",
+   "8f77d0c36886cd55",
+   "9fe33da1144c7664",
+   "a8a3a302f462c80e",
+   "a9953f318f555929",
+   "aae44e2d85336aac",
+   "ac5e6fbc360229c9",
+   "ad362219f9b4133c",
+   "b922259b40c39b24",
+   "c63660439c8439d2",
+   "d5e75004bcbd9ed2",
+   "ee955f17a3e38422",
+   "fc01d8b035a79b66"
+  ],
+  "32": [
+   "094659ad3fecbb7e"
+  ],
+  "48": [
+   "311e5aa412a8bff9",
+   "7fc1f2e6c33a954e",
+   "81ff7e084c425e45",
+   "b562a2352e5cbfb9",
+   "b7d093b11e565da9",
+   "b88a6145992bb851"
+  ]
+ }
+}

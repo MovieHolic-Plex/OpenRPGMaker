@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ef24fce07e6f76d20f3c1aace2bc700041db3288ad2d606da91c823299e98c3f",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "놋 투각 등(벽걸이)",
+ "label": "desert-east/de-lantern-wall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted lantern hanging flat against the wall; wall-mounted objects are permitted to be flat without a top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10810
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hanging brass openwork wall lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted lantern hanging flat against a wall, conforming to the wall_mounted category specifications.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4786
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hanging brass wall lamp",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted lantern hanging flat against the wall, permitted to be drawn in front view per wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4209
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hanging brass wall lamp",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted lantern hanging flat against the wall, which is permitted to be a flat front view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5531
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.214Z",
+ "cells": {
+  "16": [
+   "c64a27c977f51c1c"
+  ],
+  "24": [
+   "024e9049f5f661e8",
+   "57b128badcd95e05",
+   "7d55f42f8baee123",
+   "c31bdfbcca9a4f7a",
+   "c827d6ff80cc359e",
+   "f1e4a9caca8bcdd8"
+  ],
+  "32": [
+   "2f03489cdda22a06",
+   "a6361f1a615bc694",
+   "ad8aa56ce3a6d4f1",
+   "bebfee9bdf202923",
+   "ec6ab924c17439bc",
+   "f86b5ceee1da7b26"
+  ],
+  "48": [
+   "8fd44fdfbca7f56d",
+   "92aaddec9f7bf7e7",
+   "ae58484a82340fa6",
+   "bb53fe2c1cc1d1c1",
+   "e221f9828cac2167",
+   "f67942e4194799a8"
+  ]
+ }
+}

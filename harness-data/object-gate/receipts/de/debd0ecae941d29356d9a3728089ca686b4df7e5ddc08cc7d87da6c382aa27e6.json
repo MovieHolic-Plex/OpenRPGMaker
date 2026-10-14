@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "debd0ecae941d29356d9a3728089ca686b4df7e5ddc08cc7d87da6c382aa27e6",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "깃대(무늬 없는 천)",
+ "label": "desert-east/de-banner-pole",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flagpole with banner",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole and banner are drawn in flat side/front elevation. The top of the pole at rows 1-2 is completely flat with no top cut surface or 3/4 perspective, and the banner is a flat vertical plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5021
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flagpole with banner and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole terminates at rows 1-2 with a flat 2x2 block with no visible top surface or foreshortened cut face. The banner and pole are rendered as a pure flat side/front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5984
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flagpole shaft and finial",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole is drawn in pure 2D front elevation with a flat 2px wide top at row 0 showing no top cut face or oval cap visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5392
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flagpole with banner",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole's top end at row 1 is a flat horizontal edge with 0 visible top surface rows, drawn entirely in pure side/front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4830
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.226Z",
+ "cells": {
+  "16": [
+   "263d8eedc73d5b42",
+   "3361c78ec3782321"
+  ],
+  "24": [
+   "122907b8f1bf27c6",
+   "1ed78c90f035a0e9",
+   "24f536d029570df7",
+   "284bb22a55863590",
+   "307e091c462807f1",
+   "399f3685aae6ea94",
+   "3cca9510a09a5980",
+   "49b9b67c491b9ac1",
+   "73ece6bc94e22b58",
+   "7ca6873bc24386b2",
+   "b6d9871edfdae086",
+   "cb5d406fbea3369e"
+  ],
+  "32": [
+   "9217635159f82158",
+   "ad896bb2b856a4b4",
+   "eab4eddf2c0ff06c"
+  ],
+  "48": [
+   "1252fac4d12dfc7e",
+   "32c19f0b00738386",
+   "4f9931a9e25f33ee",
+   "a3f0f196f60447f1",
+   "e4709abaca51acbc",
+   "f42ed5cfe360a17b"
+  ]
+ }
+}

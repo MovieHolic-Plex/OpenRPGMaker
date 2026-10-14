@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c2c731a4008fa0da07eddd44912cc630ea690b27064afa57e09883ecbe3cfe40",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "깃대(무늬 없는 천)",
+ "label": "desert-east/de-banner-pole",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pillar / flagpole with draped cloth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The column is rendered in flat front elevation. The capital at the top is drawn from a side/front profile rather than showing a foreshortened top cut surface, the shaft is purely vertical, and the base is a flat rectangular block resting on a straight horizontal groundline.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9242
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pillar capital and shaft with banner",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top capital of the pillar is drawn as a clear foreshortened elliptical disk spanning rows 1-5 (~5 rows of visible top surface). The base also shows its horizontal upper step.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4245
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pillar capital and shaft",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top capital shows a rounded/elliptical top surface foreshortened from rows 0 to 3 (approx. 4 rows), resting above a flared collar and cylindrical shaft with a stepped base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6134
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flagpole with cloth wrap and base stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire flagpole is drawn in pure front elevation (side-scroller style). The base stand (rows 24-29) shows only a flat front face with 0px top surface, and the finial/capital at the top (rows 0-5) is rendered as a front-facing silhouette rather than showing a foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9543
+  }
+ ],
+ "decidedAt": "2026-10-14T00:36:51.618Z",
+ "cells": {
+  "16": [
+   "671ca23e994163cb",
+   "dba7e958e13ad915"
+  ],
+  "24": [
+   "0b2d51a9fa450af8",
+   "12a8d97b45c4cb62",
+   "1541cf48a4981eaa",
+   "175b21ad1194d15e",
+   "3180739a52e03cf7",
+   "3c9d8e7ec4e95985",
+   "413625f920ef4772",
+   "44a5f4a72abba732",
+   "7be0ea0f2897cdcf",
+   "987e5c018859c492",
+   "bfa92361ce403886",
+   "e8526344b47dbe22"
+  ],
+  "32": [
+   "416e75cdb3afcc4b",
+   "465c501fb8a73082",
+   "bb274acd66cddc78"
+  ],
+  "48": [
+   "2510e605e0d40017",
+   "667130bb120fcb99",
+   "8aadaaeac33ddc4b",
+   "95b1b60888acb6ee",
+   "b288910d929c572e",
+   "ef9d0ad43c7ba45f"
+  ]
+ }
+}

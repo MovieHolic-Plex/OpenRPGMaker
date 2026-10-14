@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d8c0bf0d15acc1595832da42a7268e04c6e5a8a3d634274885e2ac6ade8889ed",
+ "width": 32,
+ "height": 16,
+ "kind": "container",
+ "name": "물항아리 시렁",
+ "label": "desert-east/de-jars-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "아가리 2행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water jar shelf (shelf with three jars)",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shelf is drawn in pure front elevation with a 3-4px tall vertical front board (rows 11-14) and only a 1px top edge (row 10) on which the jars sit. The jars themselves feature flat horizontal block cutouts for openings rather than foreshortened elliptical rims in 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 2행 < 4"
+   ],
+   "ms": 8613
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "jars on shelf",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shelf is drawn in pure front elevation with a 1px top edge (row 10) and a flat 3px vertical face (rows 11-13). Furthermore, the jars sit directly on the top outline of the front board, and their rims are drawn with flat horizontal pixel lines without circular/elliptical perspective foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 2행 < 4"
+   ],
+   "ms": 8276
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water jar shelf with three jars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shelf is drawn in pure front elevation with only a 1px top edge line (row 10) and a flat 3px vertical front board. The jars also have flat, straight horizontal rims and bases typical of a 2D side-view platformer asset rather than a 3/4 top-down view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 2행 < 4"
+   ],
+   "ms": 8932
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "three water jars on a wooden shelf",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The jars form the main volume of the sprite and clearly display their interior openings seen from above across rows 1-2 (2 rows of dark interior), bounded by a highlighted front rim on row 3.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 2행 < 4"
+   ],
+   "ms": 16975
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.228Z",
+ "cells": {
+  "16": [
+   "b892948d1b3a8f48",
+   "d0a4e2d3ba3b0892"
+  ],
+  "24": [
+   "283e45acd71b4571",
+   "4741308234ed2aa1",
+   "4a818f396b6b21b0",
+   "63705eacc579b1cf",
+   "66cfdd96f5bc9fc1",
+   "8b4a069803748e2c",
+   "9cf3482ba5fa817f",
+   "bb08ecd36c4457ac",
+   "c6f8ae8cf664b694",
+   "d56a7fe18e941b62",
+   "f3bc337df965fefb",
+   "fdbc53cb1c02005e"
+  ],
+  "32": [
+   "338ffc5bfe0acbd6",
+   "76e076230edf8b5b"
+  ],
+  "48": [
+   "57fcd876588bcac6",
+   "8d54b1bd426498b6",
+   "dc3bf3e842316768",
+   "dea14420f679d5fe",
+   "e47d3f6746c65ac0",
+   "f815d9d998d8d234"
+  ]
+ }
+}

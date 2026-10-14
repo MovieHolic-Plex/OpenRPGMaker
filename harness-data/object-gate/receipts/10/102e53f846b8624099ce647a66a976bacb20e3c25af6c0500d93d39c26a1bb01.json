@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "102e53f846b8624099ce647a66a976bacb20e3c25af6c0500d93d39c26a1bb01",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "무너진 사암 벽",
+ "label": "desert-east/de-ruin-wall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ruined sandstone brick wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall blocks are drawn in pure front elevation with vertical front faces and 1px outline caps on top, lacking any foreshortened horizontal top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5743
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ruined sandstone wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall is depicted as a flat front elevation / side-scroller asset. None of the stepped wall sections show a top surface to convey depth or thickness in 3/4 top-down perspective; only 1-2px rubble outlines cap the vertical brick faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5040
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ruined sandstone wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall is rendered as a flat 2D front elevation (side-scroller style). The tops of the ruined wall blocks have no visible depth or top surface, only 1px silhouette notches along the top edge.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6017
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ruined sandstone brick wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ruined wall is rendered purely in 2D front elevation (side-scroller style), showing only the vertical front faces of the sandstone bricks with no foreshortened top surfaces visible on any of the wall steps.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5926
+  }
+ ],
+ "decidedAt": "2026-10-14T00:30:49.531Z",
+ "cells": {
+  "16": [
+   "2cf0352cc19c78b2",
+   "486f0182313395eb",
+   "59c228044f251e56",
+   "876d15adb0534060",
+   "c32acf1c320521e4",
+   "d9942e39e102a9f8"
+  ],
+  "24": [
+   "309303be1eaa5e63",
+   "415a7ecde95b573c",
+   "6a12462d7c10dd87",
+   "80fffc3c5f1ef4bd",
+   "874074f679ecaa64",
+   "9aac0f2d2d11b066"
+  ],
+  "32": [
+   "5cd071d7b10654b3",
+   "9325dcaeef0db2df",
+   "9940c976492ec483",
+   "b70e99ebd80aedc6",
+   "ed61c61d33bad7c9",
+   "edbcd0046d66651c"
+  ],
+  "48": [
+   "29ad6fc90b466617",
+   "64d667099c7321b0"
+  ]
+ }
+}

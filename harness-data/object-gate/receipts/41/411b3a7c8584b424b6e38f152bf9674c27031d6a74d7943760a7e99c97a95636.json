@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "411b3a7c8584b424b6e38f152bf9674c27031d6a74d7943760a7e99c97a95636",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "말뚝 고삐 기둥",
+ "label": "desert-east/de-hitch-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hitching post / tethering frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire frame and horizontal beam/board are drawn as a flat front elevation. Row 1 is a 1px outline with no visible top surface (0px), the horizontal beam at rows 6-7 shows only its front face, and the legs drop vertically with no top plane visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10238
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hitching rail frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hitching post frame is drawn in flat front elevation. The top edge at row 1 is a single 1px outline with no foreshortened top surface, and the horizontal beam (rows 6-7) and vertical posts show only flat front faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6160
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal beam of the hitching frame resting on two vertical posts",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the horizontal beam is clearly visible across rows 2-5 (4 rows tall) with top-down post joints visible at row 2 and a front-edge highlight at row 5, followed by the south-facing front edge of the beam at rows 6-7.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8693
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hitching post / rack frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hitching frame/rack is drawn in pure front elevation with no visible 3/4 top surface (row 1 is merely a 1px outline border above the framed board/beam, and the horizontal beam at rows 6-7 has no top surface).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7534
+  }
+ ],
+ "decidedAt": "2026-10-14T00:27:26.538Z",
+ "cells": {
+  "16": [
+   "022b6064160c5ad3"
+  ],
+  "24": [
+   "1b20bd74250aae97",
+   "8e3e6671e27c3fba",
+   "b0e37fbf0b946ed7",
+   "bd3d8a3fd390d33c",
+   "dfe97689c9c4c791",
+   "fdca756a2dc2ed43"
+  ],
+  "32": [
+   "05e6aae99fb80360",
+   "45d4d78c54d3c4be",
+   "60e4b6c39859c471",
+   "e0c4dbcca62418ee",
+   "ecc213aa026cb96e",
+   "fa43d6cba4f58fd2"
+  ],
+  "48": [
+   "112d41771b371858",
+   "454d21cf0f088d2d",
+   "629d3e65596dd801",
+   "b31646f35bc7f5be",
+   "b9a3b79d4e01d03e",
+   "d0a22e5d4d491f38"
+  ]
+ }
+}
