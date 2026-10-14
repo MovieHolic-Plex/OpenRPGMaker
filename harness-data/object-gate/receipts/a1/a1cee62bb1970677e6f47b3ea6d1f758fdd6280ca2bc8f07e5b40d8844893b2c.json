@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a1cee62bb1970677e6f47b3ea6d1f758fdd6280ca2bc8f07e5b40d8844893b2c",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "octagonal cabin table",
+ "label": "monster-rooms/sh_table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "octagonal table",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The green tabletop surface spans rows 4 to 18 (15 rows tall), clearly seen from above in 3/4 view, with front apron and legs beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4273
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tabletop and legs",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop shows a large green top surface spanning approximately 14 pixel rows (rows 5 to 18), with the south front edge and legs clearly visible below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11952
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tabletop",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop has a prominent green surface spanning rows 5 to 18 (14 pixel rows) viewed from above, with the south edge and front legs visible below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5460
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "table top and legs",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The green tabletop surface is viewed from above across rows 4 to 18 (15 pixel rows tall), with the front rim and legs extending downward below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3201
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.766Z",
+ "cells": {
+  "16": [
+   "4c12a25a6d2b722f",
+   "86166d7e8bcdda7d",
+   "8ac2d0b87a7d6842",
+   "bbca9e5f76547860"
+  ],
+  "24": [
+   "077dd0f2d599a999",
+   "1a53b765fbed1d36",
+   "215718bb2e82184e",
+   "442c3f9dfdb4337a",
+   "4812a6bff513ea73",
+   "4f25c570090fbba4",
+   "53dbec0371c6d457",
+   "5ba4dd474e24c7f8",
+   "5ce05bef83785839",
+   "5db5e16559b832ae",
+   "71a6bb7ccba9de5e",
+   "79b062ae3a3cf193",
+   "7b7f36adc01ccdb0",
+   "80042628a4499eed",
+   "847fd8f2d94853b3",
+   "8b996880f6267a1f",
+   "948193041f418b79",
+   "9f979aae1f99bbef",
+   "b03fca93d153654d",
+   "b39cf8bd2c95dedc",
+   "bed97d5382eb1f33",
+   "c59e587ce433808c",
+   "e428a137741ad2bc",
+   "f59b2ee2f5321856"
+  ],
+  "32": [
+   "793d3a6c2824250b"
+  ],
+  "48": [
+   "261de3f6e0aeb7c4",
+   "53a95746f17d6137",
+   "78202692957af738",
+   "872c876a444398e6",
+   "8cc849269f3f7fb8",
+   "aeb51e7e524034a7"
+  ]
+ }
+}

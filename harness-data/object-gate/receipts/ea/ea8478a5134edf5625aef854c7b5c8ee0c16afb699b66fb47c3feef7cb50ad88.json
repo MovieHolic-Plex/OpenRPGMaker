@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ea8478a5134edf5625aef854c7b5c8ee0c16afb699b66fb47c3feef7cb50ad88",
+ "width": 32,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "벽 선반(질그릇 단지·자루)",
+ "label": "snow-north/sn-shelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall shelf with books",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shelf board and the books resting on it are drawn in pure front elevation with no visible top surface (0px top for books; shelf surface is merely a 1px highlight line).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5006
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall shelf with books",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shelf board and the standing books/items are drawn in a flat side-scroller / front elevation view. The books have no visible top surfaces (0 rows), and the shelf surface has no foreshortened depth (only a 1px highlight/top edge at row 11).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6157
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall shelf with books",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shelf board and the books resting on it are drawn in pure front elevation with no visible top surfaces (0px top for both the shelf plane and the book tops).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5321
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall shelf with books",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shelf board and all books standing on it are drawn in pure front elevation: the shelf top is only a 1px line (row 11), and none of the upright books have a visible top surface (0px).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4761
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.164Z",
+ "cells": {
+  "16": [
+   "8104211840271de6",
+   "bf00fd208211574f"
+  ],
+  "24": [
+   "04b179ee8ea8f1c0",
+   "0cc07a6f913f22cc",
+   "1f8a755faa12540b",
+   "3f5ce0afd389023d",
+   "6e390ec2fc25dc53",
+   "6e5a3a4a2cdddec2",
+   "738142e0ecb855c2",
+   "80d94926f073a430",
+   "811e5bafe880919b",
+   "94a78a3754f695c1",
+   "b3079f32b368020c",
+   "f14848674cd6cc29"
+  ],
+  "32": [
+   "360c080b0db59a50",
+   "cd0ad64b02bb8481"
+  ],
+  "48": [
+   "07c5b1b55dc86456",
+   "52d1b3de04bf184c",
+   "9d017256f26fdd78",
+   "b860dd45cba8b0ce",
+   "c59885570520c828",
+   "d49bc223838ccf04"
+  ]
+ }
+}

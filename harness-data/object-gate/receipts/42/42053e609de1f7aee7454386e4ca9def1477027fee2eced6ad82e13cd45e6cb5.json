@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "42053e609de1f7aee7454386e4ca9def1477027fee2eced6ad82e13cd45e6cb5",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "얼음(큰 균열)",
+ "label": "snow-north/sn-ice-crack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ice surface with a large crack",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat ice terrain tile displaying a branching fracture across the surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3248
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cracked ice terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting cracked ice viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3201
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cracked ice surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts ice terrain with large cracks across a flat horizontal ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2809
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cracked ice terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ice ground tile depicting a large crack fissure seen from above across the entire 16x16 surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2623
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:23.951Z",
+ "cells": {
+  "16": [
+   "47c3181f6127bbd4"
+  ],
+  "24": [
+   "193f23b139826e01",
+   "4f508a41d0f9f627",
+   "84c49b0008e245d1",
+   "a68d47f906154458",
+   "d59678a6c11956dd",
+   "e95753fc265b1902"
+  ],
+  "32": [
+   "22b6e9969dcd0c93",
+   "289f29e62ce2135e",
+   "3318eaa8a51de2be",
+   "5adecaab21d23131",
+   "8eeba0ec1a53d517",
+   "e909b650f17d4794"
+  ],
+  "48": [
+   "1dab3f3936c1e22a",
+   "b7a85c7aab8c7d17",
+   "d94df1581c00aaf0",
+   "df39960a2705fab5",
+   "e8c04f6100a6453d",
+   "eacadd1fbce761a2"
+  ]
+ }
+}

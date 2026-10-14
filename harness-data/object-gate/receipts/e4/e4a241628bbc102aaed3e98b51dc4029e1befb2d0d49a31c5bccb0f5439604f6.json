@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e4a241628bbc102aaed3e98b51dc4029e1befb2d0d49a31c5bccb0f5439604f6",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "얼음 동굴 바닥(잔잔, 잔금 몇 줄)",
+ "label": "snow-north/sn-floor-ice",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ice cave ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ice cave floor terrain tile spanning the entire 16x16 grid as a flat ground surface with crack details.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3553
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ice cave ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 ice cave terrain floor tile with light cracks and reflections viewed top-down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4022
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ice cave floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile representing an ice surface viewed from above with subtle cracks and glints across the entire 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4380
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ice cave floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a flat ice cave ground/floor surface filling the entire 16x16 footprint with subtle cracks and highlights, correctly representing horizontal terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3050
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.160Z",
+ "cells": {
+  "16": [
+   "8586831e5ca1f5f1"
+  ],
+  "24": [
+   "037bf783df325ff8",
+   "83bc666c5f2501e4",
+   "8f3f72d645ff56e3",
+   "a44325e84fda7721",
+   "cff693a154bc81c4",
+   "ecf4c54055d8e91d"
+  ],
+  "32": [
+   "001b3ecd6f6fffa0",
+   "15b280686e605a0a",
+   "54cf4725c1980110",
+   "a445ba1834a686c6",
+   "d08649da1cd24b39",
+   "f9dad5092f286306"
+  ],
+  "48": [
+   "521b4c9fc38ff94e",
+   "6443fb1d6ecb9039",
+   "84363aa8625042fe",
+   "a124efa662089d5a",
+   "d91d288ea6af90df",
+   "dea82cc5e70db344"
+  ]
+ }
+}

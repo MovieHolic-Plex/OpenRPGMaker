@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "66a0597cba3d6d9bb1dd8e976ad0347928fb8ab53390e2235f35f6c66b016256",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "쇠 화로(타오름) 프레임 3",
+ "label": "snow-north/sn-brazier-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brazier bowl",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brazier bowl opening forms an ellipse spanning from row 13 to row 20 (interior height approx 6 rows, rows 14-19 filled with fire), and the base plate at rows 28-31 also shows a foreshortened top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3766
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron brazier bowl with burning coals",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brazier bowl opening is drawn as an ellipse spanning roughly rows 14-19 between the back rim (rows 13-14) and front rim (rows 20-21), with fire and coals visible inside. The base plate at rows 28-31 is also properly foreshortened in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4457
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron brazier bowl on tripod stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brazier bowl has an elliptical rim seen from above spanning rows 14 to 20, enclosing 5 rows of burning fire/embers inside. The base plate at rows 28-31 is also rendered as a foreshortened ellipse.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3541
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron brazier bowl with flames",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brazier bowl is drawn with an elliptical opening visible from row 14 to 20 (about 6 rows tall) containing the fire, with the front rim and south bowl curve foreshortened below it at rows 20-22.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3384
+  }
+ ],
+ "decidedAt": "2026-10-14T01:19:07.397Z",
+ "cells": {
+  "16": [
+   "af031a0aa6391729",
+   "ce2b9913562db1fe"
+  ],
+  "24": [
+   "144c80b7935dfe4b",
+   "294c2a68cebd25ad",
+   "4227669309907648",
+   "5897ae209ab71542",
+   "5b3a615feddfe333",
+   "a966f9bd88c4da56",
+   "ae7db59b0d537e8b",
+   "b7a7ef3c479bf11f",
+   "f9f7fbb509f46997"
+  ],
+  "32": [
+   "492e4b686af947b7",
+   "85b716c4c2028224",
+   "e9efa196613349f9"
+  ],
+  "48": [
+   "395401e774eca103",
+   "5ad145204907aff1",
+   "5c6567b9f97b8302",
+   "7273b704554c8794",
+   "742d25c1774c0c75",
+   "dcd7d33b664a2fbc"
+  ]
+ }
+}

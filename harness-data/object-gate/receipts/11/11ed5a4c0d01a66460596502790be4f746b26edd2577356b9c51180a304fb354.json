@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "11ed5a4c0d01a66460596502790be4f746b26edd2577356b9c51180a304fb354",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "aquarium tank set in the back wall",
+ "label": "monster-rooms/mu_tank",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "aquarium tank frame and glass",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire aquarium tank and surrounding frame are drawn completely flat from the front (elevation view), with no top horizontal surface or 3/4 perspective foreshortening visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5044
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "aquarium tank frame and glass",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tank and outer frame are drawn entirely in front elevation with no visible top surface or 3/4 downward tilt (top border is just a flat 2px frame edge).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5153
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "aquarium tank and frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tank and surrounding frame are drawn completely flat from the front with only a 2px outer border at the top and no visible top surface or 3/4 perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4802
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall-inset aquarium tank in a rectangular frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn completely flat from the front like a picture frame or screen, with only a 1-2px border at rows 3-4 and no foreshortened top surface or wall recess depth visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4120
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.764Z",
+ "cells": {
+  "16": [
+   "3ff6d64d9e48ccd0",
+   "78c5d30207dbdc7c",
+   "a78153c5ea027def",
+   "cfb87d2d7073e6f6"
+  ],
+  "24": [
+   "06cb9d3cbbeace80",
+   "0a47416762875b1c",
+   "134e4717e462adfb",
+   "22ab471ebcb29b6c",
+   "37024490c610c1ae",
+   "4047784ad4bbaf20",
+   "411d0be3e62cf74b",
+   "448b66a3762ed69e",
+   "5d408d8781a1fa56",
+   "6061a21803add268",
+   "819aa28b355cf891",
+   "98746c2c6aca321a",
+   "9e61e3a25b0d89ea",
+   "9ff342a172809ea5",
+   "a4fb7c24bed6ffe4",
+   "b1bc3a63527b3ebf",
+   "b2a4aadcf2b33694",
+   "c81f209075084d27",
+   "d9a408e8d7ff7f94",
+   "db1671d458b89e4c",
+   "f512a7da56647a50",
+   "f717d151666209c8",
+   "fd05131ac05f97d7",
+   "ff60ba5283f794c1"
+  ],
+  "32": [
+   "c6543e97e05025da"
+  ],
+  "48": [
+   "5a7ddd7dc916152a",
+   "7aff28d40097eade",
+   "9464e435c0960183",
+   "acbe072a08475cd9",
+   "b7693e1e86b261cb",
+   "c5bafa89b0f48a1b"
+  ]
+ }
+}

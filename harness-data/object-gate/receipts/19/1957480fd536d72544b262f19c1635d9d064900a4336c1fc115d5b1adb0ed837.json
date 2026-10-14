@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1957480fd536d72544b262f19c1635d9d064900a4336c1fc115d5b1adb0ed837",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "1인 안락의자",
+ "label": "modern_city/interior/mci-armchair",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "armchair",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The armchair is drawn in 3/4 top-down view showing both the backrest top (rows 6-8, 3 rows) and the horizontal seat cushion surface viewed from above (rows 16-21, 6 rows tall), resting above the front base face (rows 22-27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7148
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "single armchair",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The armchair shows both the top surface of the backrest (rows 6-8, 3px tall) and the foreshortened horizontal seat cushion seen from above (rows 16-21, 6px tall) above the south-facing front apron (rows 22-27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5360
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "single armchair",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The armchair is drawn in classic 3/4 top-down perspective: the backrest top (rows 6-8), the vertical back cushion (rows 9-15), the horizontal seat cushion seen from above (rows 16-21, 6 rows tall), and the front apron/base (rows 22-27) with front legs are all properly foreshortened and visible.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7014
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "armchair",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chair faces south with a clearly visible seat cushion seen from above spanning rows 16 to 21 (6 rows tall) between the armrests, as well as a visible backrest top at rows 6-8.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7463
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:12.628Z",
+ "cells": {
+  "16": [
+   "772d127bfa9663ac",
+   "b974ab1ad0d0a7e8"
+  ],
+  "24": [
+   "13a536a1c7b3e5ae",
+   "1698d2f32416036c",
+   "1b6282727cbc9f82",
+   "23e56e7340f5e87f",
+   "39bafb38cf653b30",
+   "3f86946d5579b1b7",
+   "5adbf8017f1b0e01",
+   "93aa40ea36bb3b04",
+   "aab8fe6eb36e1582",
+   "d32cf09d8b131abf",
+   "e3d0432e37aa5e58",
+   "eccc7560d780e417"
+  ],
+  "32": [
+   "081db15df49e68ad",
+   "54d665c0cd9d4a02",
+   "a32cc0a635807313"
+  ],
+  "48": [
+   "0a01ec89a1080d51",
+   "38a49eeb7c1cb4a0",
+   "55fd79e74b250949",
+   "811a690d90d2b74f",
+   "e078ca8ae00f5053",
+   "e08e40e23a193d65"
+  ]
+ }
+}

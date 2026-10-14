@@ -1,0 +1,144 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2316ff4a6f55de271ade6b965b3ea2ff8115eee70425f29edfe73569af36b31a",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "갈림길 이정표(글자 없는 화살 판)",
+ "label": "snow-north/sn-signpost",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "signpost with directional arrow boards",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signboards, post, and base are drawn in flat front elevation with only a 1px white highlight/snow line across the top edges and a 1px flat line for the base plinth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5340
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "signpost with arrow boards",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signpost and horizontal boards are drawn in flat front elevation. The 1px white lines atop the boards are edge highlights/snow strips rather than foreshortened top surfaces, and the central post has no visible top cap.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6652
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "directional signpost",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden post and arrow signboards are drawn entirely in flat 2D front elevation (orthographic projection) without any visible 3/4 top surfaces. The 1-2px white strips on top of each board are merely snow caps/edge highlights on flat shapes, and the base is a flat 1px line.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5997
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "signpost with directional arrow boards",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signpost and its horizontal arrow boards are drawn in flat front elevation. The boards show only front faces with 1-2px white strips (representing snow or highlights) along the top edges rather than foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5750
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.507Z",
+ "cells": {
+  "16": [
+   "396cc20ddd50f066",
+   "7bb76d614ed46582"
+  ],
+  "24": [
+   "3d7b3d10321cb327",
+   "3dd3e9bbf7786946",
+   "4197c34689f0e61a",
+   "6d47a9f684b89c39",
+   "70fcd5ce131e92f8",
+   "8907083130fa6124",
+   "9f716c88a4b72383",
+   "a01a09a8a7a544e5",
+   "b0c13bec9b2a9a0b",
+   "d1c8a5bae43e25e1",
+   "e0a15d031631bf09",
+   "f947c4369232b5e5"
+  ],
+  "32": [
+   "36e0b9afc282164b",
+   "81cd0907e23d6d57",
+   "e9bcd21c9d680629"
+  ],
+  "48": [
+   "008f0a77e7277610",
+   "35ea83376664855a",
+   "5851721c1d016097",
+   "7f0470889d6c873c",
+   "8e1c70c0e526bba9",
+   "aa61ea858e274cd9"
+  ]
+ }
+}

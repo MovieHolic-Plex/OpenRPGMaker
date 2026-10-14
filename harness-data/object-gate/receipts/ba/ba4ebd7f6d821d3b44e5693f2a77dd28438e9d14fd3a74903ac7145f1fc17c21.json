@@ -1,0 +1,148 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ba4ebd7f6d821d3b44e5693f2a77dd28438e9d14fd3a74903ac7145f1fc17c21",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "서버 랙 둘",
+ "label": "modern_city/interior/mci-server-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dual server rack cabinets with monitors on top",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the server rack bodies and the monitors mounted on top are drawn in pure front elevation with no foreshortened top surfaces visible (top_rows = 0). The alternating horizontal bands in rows 6-11 are part of the vertical front face, matching the 2-pixel-tall unit spacing of the rack.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10962
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "server racks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The server racks and the monitors on top are drawn in a flat front elevation. Neither the monitors at the top nor the rack units have any visible top horizontal surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7853
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pair of server racks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The server racks are drawn as flat rectangular front elevations. The main body shows horizontal vent panels (rows 7-11) and rack units (rows 12-30) facing directly forward with no visible horizontal top surface (only a 1-2px dark recessed gap at rows 5-6). Even the small terminals on top are drawn in pure front view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7157
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "server racks",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body of the server racks shows a foreshortened top surface spanning rows 6 to 11 (approx. 5-6 source pixel rows) with monitors resting at the back, followed by the front face with rack-mounted units from row 12 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 16948
+  }
+ ],
+ "decidedAt": "2026-10-14T01:20:34.501Z",
+ "cells": {
+  "16": [
+   "1ba6f060ae9f6439",
+   "2b1ed76a86379cbe",
+   "a10422e635b72625",
+   "bb95c8bd6ebe245f"
+  ],
+  "24": [
+   "0cccfcf8eba65e4a",
+   "122b457aa5b06945",
+   "14405775eb40b455",
+   "245362a12622dc1f",
+   "2502837039cb0023",
+   "2a3ca98d902978c3",
+   "3437a9f4ec091614",
+   "3561921eddd93ace",
+   "387eb085da1b990a",
+   "3c0ceec81a103966",
+   "512e0469309ec007",
+   "5472de50e4d16915",
+   "54d17d84e67b1323",
+   "6f9faa2eff7a5553",
+   "92928317f3391337",
+   "992747da06166074",
+   "a1308e6a881b73b5",
+   "aab61862fd8ef0e2",
+   "b3a3a866d5e264a6",
+   "c10069b5b447d1b4",
+   "d3decf2b1f962ca9",
+   "ef822e7aef1bb3c4",
+   "f92869b0200bdcbe",
+   "fa9b206ae17d324c"
+  ],
+  "32": [
+   "216a5d8e8fff01cf"
+  ],
+  "48": [
+   "013d6d3c0a674187",
+   "3549c6a8d3aa8ab3",
+   "8486bbabfa4aaf80",
+   "87ac35efe31c8d51",
+   "8e1471708a24cf62",
+   "e3e9de2467f2c7dd"
+  ]
+ }
+}

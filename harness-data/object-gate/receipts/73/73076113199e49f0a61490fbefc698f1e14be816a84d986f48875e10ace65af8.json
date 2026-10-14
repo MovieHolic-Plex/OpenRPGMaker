@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "73076113199e49f0a61490fbefc698f1e14be816a84d986f48875e10ace65af8",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "freestanding lab bookshelf",
+ "label": "monster-rooms/lab_shelf_free",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bookshelf",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bookshelf is clearly visible from rows 1 to 7 (7 source pixel rows tall), correctly portraying the top-down 3/4 perspective above the front-facing shelves.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9767
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "metal lab bookshelf",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-7 form a wide, clearly visible top surface (7 pixels deep) above the highlighted front edge at row 8, correctly depicting the top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5900
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bookshelf",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bookshelf is clearly visible from rows 1 to 7 (7 pixels deep) with a front highlight rim on row 7, followed by the south-facing front frame and shelves below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5520
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bookshelf",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bookshelf spans rows 1 to 6 (6 pixels tall) with proper foreshortening and shading, leading into the front-facing frame and shelves below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5227
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.763Z",
+ "cells": {
+  "16": [
+   "06b9c2dc20afc7b1",
+   "70c641f23a144d1d",
+   "8d101df9e446f959",
+   "ea9efff0ee7ee392"
+  ],
+  "24": [
+   "17f069cfa38d4241",
+   "27e54d6169915b67",
+   "29524521e2ea09c3",
+   "3a931b2a6f50e208",
+   "47554e526af0b3b0",
+   "47d395e78b7e4d29",
+   "4e375e21b05519f9",
+   "541d7c024d2bfaae",
+   "570ac9486a5143ab",
+   "5d17f32eb2dbdcf3",
+   "6747d92e5beef8aa",
+   "87a0e6c7c1befa51",
+   "943e2585b6033512",
+   "97276c68f9e0d910",
+   "994ea2ef87b1da8c",
+   "a7e79507e8124ba0",
+   "b955a77bc8bd27fa",
+   "d160792c9ca0a6cf",
+   "db6bca64deda284d",
+   "e1122462d4dda6b2",
+   "e1f5b3b771b7ec41",
+   "f5df41edb12ed0db",
+   "f5faecd459e60755",
+   "f8dc8a64cf45198a"
+  ],
+  "32": [
+   "a52042658407f03d"
+  ],
+  "48": [
+   "0ce2655ed40a4259",
+   "0ea5d48329628d20",
+   "12bfe4e963eadce6",
+   "18a75140303d699c",
+   "4ac431856d78912b",
+   "b3ad3d217b45542d"
+  ]
+ }
+}

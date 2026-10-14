@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f90f9dcf0910aac6956a0002f8f252bc5b4b797b346a5fc04e0ec3d9c49acec4",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "원뿔 가죽 천막(장대 끝 + 연기 구멍)",
+ "label": "snow-north/sn-tent",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "conical teepee tent",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The teepee is drawn in 3/4 perspective: the base curves downward from row 41 at the sides to row 45 at the front, and the smoke hole at the top shows a 3-row foreshortened opening (rows 8-10) with the interior void and protruding poles visible.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6654
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "conical leather teepee tent with top smoke hole and timber poles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The conical tent is drawn in 3/4 top-down perspective: the smoke hole at the apex (rows 7-10) is rendered as an ellipse with visible interior depth (3 rows), horizontal seams curve downward along the cone surface, and the base footprint ring on the ground (rows 42-45) forms a clear foreshortened ellipse.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 0행 < 3"
+   ],
+   "ms": 9197
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "conical leather tipi tent with top smoke hole and poles",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The conical tent is drawn in proper 3/4 perspective. The top smoke hole is rendered as an open ellipse spanning rows 7–11 (~4-5 px tall) showing the dark interior cavity around the protruding poles, and the horizontal seams and base curve downward to reflect the 45-degree downward viewpoint.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8111
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "conical leather tent (teepee)",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top smoke hole is drawn as an elliptical opening across rows 7-11 showing interior depth and poles emerging. Horizontal seams and the circular base curve downward appropriately for 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5629
+  }
+ ],
+ "decidedAt": "2026-10-14T01:20:58.722Z",
+ "cells": {
+  "16": [
+   "03f00b2ec1a24ee8",
+   "062488a723f43f26",
+   "391e681d309f655e",
+   "3f61bc0ff10dbdaa",
+   "da06d3aaa9b59926",
+   "edcd07febbcc5ab3"
+  ],
+  "24": [
+   "0e6e62f9d0e25b08",
+   "1192e5c9e516c826",
+   "16c36fe0038daf77",
+   "1996aed3fffab7b9",
+   "35e2ec8bd6d02265",
+   "43f2a48459967267",
+   "8d5d274550685dcc",
+   "8dfaf82a19f2be46",
+   "ac8df4b293a8013d",
+   "db3472164788799d",
+   "f417bea7d5144f13",
+   "f76351cff319f71a"
+  ],
+  "32": [
+   "602c6d365ff7452f",
+   "c63912f71e4e18ef",
+   "c8be61b4781e3c33",
+   "f7d258d096353461"
+  ],
+  "48": [
+   "318b8956d7da7363",
+   "cae5b8d87e6393ae",
+   "e99febb2774b276f"
+  ]
+ }
+}

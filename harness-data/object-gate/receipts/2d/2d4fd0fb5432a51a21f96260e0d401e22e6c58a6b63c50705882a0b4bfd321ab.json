@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2d4fd0fb5432a51a21f96260e0d401e22e6c58a6b63c50705882a0b4bfd321ab",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "fossil display table",
+ "label": "monster-rooms/mu_fossil",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "display table with glass top and front drawer",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top display surface spans rows 6 to 16 (11 rows) showing the fossil under glass viewed from above, above a south-facing drawer front spanning rows 17 to 27.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4002
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "display table with glass top and drawer front",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the table (with a glass display showing a fossil) spans rows 6-16 (11 rows tall), transitioning via a highlight at row 17 to the front drawer face at rows 18-26 (9 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4036
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "display table with glass top showing fossil and drawer below",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the table/counter is clearly foreshortened and visible from row 6 to 17 (12 rows tall) featuring a glass-enclosed fossil display, with the vertical front face and drawer visible below from row 18 to 27.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2910
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "display table with glass top",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the table (housing the glass fossil display) spans rows 6 to 17 (12 rows tall), while the front face with a drawer spans rows 18 to 27.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4243
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.764Z",
+ "cells": {
+  "16": [
+   "3919cbcb5e07168c",
+   "6058e6770586495b",
+   "7f5e1e1580c9d5a2",
+   "8dbc01da15945f4b"
+  ],
+  "24": [
+   "00eceebe156c55b6",
+   "101cb7032044157d",
+   "105111419949ab3e",
+   "110b4569f7ac3066",
+   "1a34ab0c92c8f1c6",
+   "30feb0158496fc69",
+   "52414a0198c94381",
+   "52c835d3b665e8c5",
+   "57f1ef4ce454c158",
+   "6f49dd6621a7c0bb",
+   "7f2f13283a0fcf0d",
+   "8628436d6fb64eb0",
+   "88fa7137de1c1770",
+   "91ffa67f304775d6",
+   "9be0dc559fc48efb",
+   "a6b87a760ebebe1d",
+   "ae92c90da9bbf1cd",
+   "b11f79405c6f46e4",
+   "b141b819e90b5dac",
+   "be3eda6b8d366f5d",
+   "c43cbd148ddf3c52",
+   "c44fcfa112b311dc",
+   "c616beb6c5ad23dd",
+   "e1439c050ce0490f"
+  ],
+  "32": [
+   "0fbbf71e7b4cb7da"
+  ],
+  "48": [
+   "03bb122983d61bcd",
+   "8120b7b77eca4014",
+   "a58df3fcc616679d",
+   "b71bb190cad767f8",
+   "b7d8e8e0bbf12afd",
+   "bfdcbfc5ac24ec6c"
+  ]
+ }
+}

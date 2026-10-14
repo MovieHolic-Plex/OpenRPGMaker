@@ -1,0 +1,144 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cf8e6d8261d192111946c379422e6d5a0d764ff0a067c27f9fd469458443f40e",
+ "width": 32,
+ "height": 16,
+ "kind": "structure",
+ "name": "맷돌 두 짝(기대 세움)",
+ "label": "snow-north/sn-millstones",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "two leaning millstones",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The kind 'structure' does not match millstone props. Furthermore, the millstones are drawn in pure front elevation as flat circular faces with central square holes, showing only a front highlight rather than the foreshortened cylindrical top edge/thickness required in 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6047
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "two leaning millstones (stone grinding wheels)",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The kind is misclassified as a large structure (gate/pavilion/building). Furthermore, the millstones are drawn in pure front elevation as flat upright circles facing the camera, lacking visible top rim/thickness foreshortening from the 45-degree top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6167
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two upright leaning millstones (circular stone discs)",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is miscategorized as a large structure. The millstones are drawn in pure front elevation as upright round discs facing directly at the camera, with no visible top cylindrical thickness or top surface showing depth from the 3/4 overhead perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5346
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "two millstones leaning upright",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a pair of millstones (not a large structure like a gate or building). Both stones are drawn as flat circular discs in pure front elevation with only a 1-pixel outline at the top and no visible cylindrical top edge or thickness seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5343
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.509Z",
+ "cells": {
+  "16": [
+   "3387b1f44da806b2",
+   "5a8f8d6ef5c92820"
+  ],
+  "24": [
+   "03911de677add4af",
+   "1d05b1d4e38330ae",
+   "6131f4de8c6b0bad",
+   "63a330e6942e271a",
+   "6a4d5b9b76b3dff1",
+   "6f26376f97fd5e7e",
+   "75d3168793c4d8e4",
+   "9747647ded359070",
+   "a29f992b35fc5ed8",
+   "a3dc83e4e551e6c2",
+   "e6c4c8f96f6b2f26",
+   "f3bf0a3fc2f32d71"
+  ],
+  "32": [
+   "6a709cdea846502d",
+   "8b55064408f91b26"
+  ],
+  "48": [
+   "546960e96bdea8aa",
+   "7beec692eea04746",
+   "818418d95d8384c6",
+   "85cc143a5ae5bfc9",
+   "ae204cc4ebdf2be3",
+   "de0c125a081616e8"
+  ]
+ }
+}

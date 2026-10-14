@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "721335a1c7cc51d642940aeebbd9253aa8522db177aa8759e76b9a6b3d8a05a6",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "탕비 카운터",
+ "label": "modern_city/interior/mci-coffee-station",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "counter table with cabinet doors",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter's horizontal top surface is visible from row 15 through row 20 (6 pixel rows deep) before the south front cabinet face starts at row 21.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4914
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "counter with cabinet doors",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter top surface spans rows 15 to 20 (6 pixel rows tall), meeting the front cabinet face at row 21.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4823
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "counter",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter's horizontal work surface is clearly visible from row 15 to row 20 (6 rows tall) before transitioning to the front cabinet face below row 21.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4780
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "counter",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter top is clearly visible from rows 15 to 20 (approx. 6 rows tall) showing depth before the cabinet front face begins at row 21.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4271
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:11.885Z",
+ "cells": {
+  "16": [
+   "0137b90fe16b038a",
+   "7c3743ee1abc07f5",
+   "b665bed53ae0f149",
+   "d119f0dbb72b982c"
+  ],
+  "24": [
+   "0b90088cdabb578a",
+   "189799b8a949e7b3",
+   "1c56c92142dbc5ee",
+   "20584c8abff1515b",
+   "31b12bf1647b7f26",
+   "38386b921e90c36a",
+   "3b87d82b3c59c19a",
+   "3cffd7ac8fc92078",
+   "604b3688b62aa7ef",
+   "690bd1a684b13cd1",
+   "6c05d40ce2af1d84",
+   "77a7c24633a15f48",
+   "8bd1ab9c5c15184b",
+   "94e5a3d4142c1797",
+   "a5b5573f3f2acb25",
+   "a9801c258d249de4",
+   "aba01b656885988c",
+   "bb41b1ffb27ae834",
+   "beb3816c4be27724",
+   "c8a29fcc7d00803b",
+   "c9fb28af03e7e9dd",
+   "cf5d2a55def20334",
+   "e550853592f977e9",
+   "ebb9e82ca52e21d7"
+  ],
+  "32": [
+   "a83dd92c51e1c76a"
+  ],
+  "48": [
+   "21323eac8d6511c5",
+   "4e0bcabf85697fd3",
+   "4e6570c536a218a6",
+   "602fa90df753138f",
+   "c01b3090885bf50f",
+   "d9a8493c67d547e7"
+  ]
+ }
+}

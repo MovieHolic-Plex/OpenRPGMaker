@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dd85f1972f4e20ca35a2c49992d67ea8e92dabc4f4665635b04eb1c447687653",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "통나무 벽 작은 창(아랫줄, 눈 쌓인 창턱)",
+ "label": "snow-north/sn-wall-window-d",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "log wall face with window and sill",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a vertical wall face tile (terrain), not a standing object. As a wall surface tile in standard 3/4 top-down perspective, it correctly depicts the vertical facade (wall tops/roofs are separate tiles). No isometric side faces are present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8246
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "log wall tile with window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall face terrain tile with a window and sill; correctly rendered flat as standard for south-facing wall terrain in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5190
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "log wall with window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a wall face terrain tile showing a log cabin wall with the lower section of a window and sill. As standard vertical terrain (wall face), 3/4 top-down perspective does not require a top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6721
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "log wall face with window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid vertical wall face terrain tile featuring a log wall surface with a window and sill.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4088
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.162Z",
+ "cells": {
+  "16": [
+   "3cd0e555811c8948"
+  ],
+  "24": [
+   "0c8148f1801518ce",
+   "1e154dcdb508d2c1",
+   "64bc53a78d498bc7",
+   "9047bf23bbaa7f7f",
+   "af6c8a5a98ec8480",
+   "c028999af295ddff"
+  ],
+  "32": [
+   "2fa3dc39f2583de9",
+   "7ab5d1c07698e6e3",
+   "a55d7df3aa324e44",
+   "af2bad776fc42ddc",
+   "b1f2471f01104795",
+   "c949a5a5b1b1727c"
+  ],
+  "48": [
+   "5812dade64d70a0f",
+   "64cf8aaaa05624e5",
+   "b2cea99b1e1b01b7",
+   "b3a8f24467aa2970",
+   "bed7e5cb2794d4c2",
+   "e5838543149a8b5e"
+  ]
+ }
+}

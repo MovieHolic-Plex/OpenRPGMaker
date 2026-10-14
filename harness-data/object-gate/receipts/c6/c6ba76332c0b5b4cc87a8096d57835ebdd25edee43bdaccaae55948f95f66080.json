@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c6ba76332c0b5b4cc87a8096d57835ebdd25edee43bdaccaae55948f95f66080",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "진열 냉장 케이스",
+ "label": "modern_city/interior/mci-pastry-case",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "display refrigerator counter",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter clearly displays a recessed teal top surface spanning rows 7 to 14 (approx. 7-8 rows tall) upon which items sit, followed by a front face spanning rows 16 to 28.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4301
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "refrigerated display counter",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter's horizontal display top surface is clearly visible from rows 7 to 15 (around 8 rows tall) showing items resting inside the recessed case, with the front wooden cabinet face extending below from row 16 to 28.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4204
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "display refrigerated case counter",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The recessed top display surface (teal area) is clearly visible from rows 8 to 13 (around 6 px rows), with three display items standing on/in it, showing proper 3/4 view perspective above the wooden south front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3419
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "refrigerated display counter",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The recessed display top/shelf spans rows 8 to 13 (6 pixel rows) seen from above, fronted by a rim at rows 14-15 and the south face from row 16 to 28.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3997
+  }
+ ],
+ "decidedAt": "2026-10-14T01:20:31.481Z",
+ "cells": {
+  "16": [
+   "7f2d18bf3c557a5b",
+   "8ea0d931181451c7",
+   "b0592c985f787e0b",
+   "d1391caf4dd8f2dd"
+  ],
+  "24": [
+   "0aa23b615fa38670",
+   "1039af37f9c52015",
+   "1b38ae957d58e17c",
+   "1d2c515052bd150e",
+   "24a9b015394d5982",
+   "2803862bed4d4430",
+   "30941887febf20f5",
+   "3934d3d65cae45e9",
+   "428176524aa7c7bf",
+   "5bba49da1884b111",
+   "5dd926d6b4dbd1eb",
+   "605f76c666615902",
+   "75c1cbd584008041",
+   "7722ac8e235b1182",
+   "7d60f4506487d7fe",
+   "8a0f9b2bbc37d2bc",
+   "8a226ce6a6e8c66d",
+   "8eca6a8aa9560e50",
+   "9344efb870efc6a9",
+   "b4061fb19920bca1",
+   "b5a2deae653b5f04",
+   "ce5a0f5d8fed481d",
+   "d103cd6c9c5dcf78",
+   "e595383a07540f2e"
+  ],
+  "32": [
+   "385d92369b6c42dc"
+  ],
+  "48": [
+   "11eb8f11cff27fb3",
+   "1a2acc0968c8314e",
+   "2d17ead195749395",
+   "4e5c9a433697f91b",
+   "bbfe7adffab64eed",
+   "ef886668d04acd6e"
+  ]
+ }
+}

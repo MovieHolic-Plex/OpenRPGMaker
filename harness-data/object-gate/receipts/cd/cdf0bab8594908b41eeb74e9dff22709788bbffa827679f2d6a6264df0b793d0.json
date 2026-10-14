@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cdf0bab8594908b41eeb74e9dff22709788bbffa827679f2d6a6264df0b793d0",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "눈 덮인 덤불",
+ "label": "snow-north/sn-bush",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "snow-covered bush",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow cap representing the foreshortened top surface of the bush spans rows 5–7 (3 pixel rows tall), while the green foliage below on rows 8–13 forms the south-facing front body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 18911
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "snow-covered bush",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bush is drawn as a flat 2D circular shape viewed straight from the front. The snow layer on top is separated from the green bush body by a completely flat, straight horizontal line (row 7/8) rather than an ellipse curving downward toward the camera as required by a 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12897
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "snow-covered bush",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bush is drawn as a flat circle in pure front elevation; the snow cap is bounded by a completely straight horizontal line at row 8 rather than curving downward to show the top surface viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12300
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "snow-covered bush",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bush is drawn as a vertically symmetrical 2D circle in pure front elevation, with the snow cap divided by a perfectly straight horizontal line across rows 7-8 rather than foreshortened into a 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10929
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.503Z",
+ "cells": {
+  "16": [
+   "cf717a955ab7f0f6"
+  ],
+  "24": [
+   "20cb8ae5950382c6",
+   "24c15aab5a20958f",
+   "77d7b5e92191ab76",
+   "a283a0f853b6eee2",
+   "badc692529801ee1",
+   "d1c34bc166e44100"
+  ],
+  "32": [
+   "1ca759582ad23deb",
+   "45667df584a7c700",
+   "467c111ca36637e8",
+   "54df2464f4290ae0",
+   "9522f9eada8f0a97",
+   "f0e41125363e01b1"
+  ],
+  "48": [
+   "1a4cc8754a182ef2",
+   "5d9c3d5b95448049",
+   "682720be63f93baf",
+   "6860c496826c3a91",
+   "8a138ab7b5a384bf",
+   "db9c45012bec55fd"
+  ]
+ }
+}

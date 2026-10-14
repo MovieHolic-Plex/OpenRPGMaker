@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "573db3b85dee7d2091298032c791628c45a03d159b4580f3ff4f75cabae09007",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "줄 세우기 기둥",
+ "label": "modern_city/interior/mci-stanchion",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stanchion post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole top and base are drawn with completely flat horizontal lines in pure front elevation without any elliptical or foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4186
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stanchion post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole cap (rows 7-8) and base (rows 25-29) are drawn completely flat in pure front elevation with straight horizontal lines and no foreshortened top surface or circular disc visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4149
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "crowd control stanchion pole with base and rope",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the pole is drawn as a flat 1px white horizontal line at row 7 without any foreshortened circular top face. The base at rows 25-29 is also rendered as a flat frontal silhouette with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3895
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "crowd control stanchion pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stanchion pole and base are drawn entirely in flat front elevation with straight horizontal bands; the top cap at rows 7-8 has no foreshortened elliptical top surface, and the round base at rows 25-29 lacks any visible top curvature.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3205
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:12.631Z",
+ "cells": {
+  "16": [
+   "a9dfedff8980ea5e",
+   "d0f286e1c2f767b5"
+  ],
+  "24": [
+   "01bde473b9ef8e00",
+   "26e8ebd2458a428f",
+   "77494f40aade3923",
+   "82ad8c108ac4667e",
+   "848a49c94d1a9e64",
+   "87514328b8cc1d6c",
+   "89a410ea9fdac2fb",
+   "91e1dedf00d00959",
+   "9fb3acd5296bdfb0",
+   "aada30b81f2bf8ba",
+   "f67ee968710fce31",
+   "fa9980d02cd12e4b"
+  ],
+  "32": [
+   "4e81c99a397ef1a8",
+   "7c2d5ffa026b1e0b",
+   "b72aefbc303820eb"
+  ],
+  "48": [
+   "4659004477dd5daf",
+   "743065ed2b152677",
+   "76be999c2b5df1ac",
+   "a4489881d5cb0c4d",
+   "a7039bc28e0dae6d",
+   "ba2502f3b7856a18"
+  ]
+ }
+}

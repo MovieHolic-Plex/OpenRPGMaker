@@ -1,0 +1,144 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "34896b3c9d36d6791691659385246f49471489e231fe011b2ce5dd35f52e2985",
+ "width": 32,
+ "height": 16,
+ "kind": "structure",
+ "name": "통 두 개와 상자",
+ "label": "snow-north/sn-barrels",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "two barrels and a box with snow on top",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object consists of two barrels and a box covered in snow, not a large structure (gate, pavilion, building). The wooden barrel bodies (rows 7-14) and box front (rows 7-14) are drawn in pure front elevation under flat snow caps.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4600
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "two barrels and a box",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The kind is mislabeled as a large structure instead of containers/props. Furthermore, the barrels are drawn in flat front elevation with straight horizontal bands and rim line (row 7 and 11) with no foreshortened curvature or visible barrel opening/top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4689
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two barrels and a box covered in snow",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrels and box are drawn in pure front elevation with straight horizontal rim lines and vertical columns, without any foreshortened top surfaces or elliptical rims visible in 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4978
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "two wooden barrels and a box covered with snow",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The caller kind 'structure' does not match barrels and a box. Furthermore, the barrels are drawn in flat front elevation with straight horizontal bands (row 11) and flat bottom with no top surface visible under the snow, and the box has no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5222
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.507Z",
+ "cells": {
+  "16": [
+   "68bb04de511e31fe",
+   "f12fa64339acff68"
+  ],
+  "24": [
+   "0b53c9335547f162",
+   "2339fefa324cced6",
+   "275d4a2ec62a31e9",
+   "2bcb68dfefd1a553",
+   "2dedc5c7a811a604",
+   "34126b7d8cd3ad50",
+   "3c2131dfd976a788",
+   "42d777485fa28b52",
+   "6daa0fa74095186b",
+   "7bfa374e2a820e3d",
+   "c903234c1a3f45a6",
+   "d5c9ce83fcbe4169"
+  ],
+  "32": [
+   "a3a8e4d744919ded",
+   "b2bd850c788ad06c"
+  ],
+  "48": [
+   "2bd98a4ab698a9f7",
+   "58e65da9b51a9743",
+   "82ccef093b090907",
+   "a6bfe14b8c503307",
+   "bd1606f4d59c8455",
+   "fc9080390b0999ce"
+  ]
+ }
+}

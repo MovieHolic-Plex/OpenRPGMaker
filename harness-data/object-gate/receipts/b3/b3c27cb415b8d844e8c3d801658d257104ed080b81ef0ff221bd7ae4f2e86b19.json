@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b3c27cb415b8d844e8c3d801658d257104ed080b81ef0ff221bd7ae4f2e86b19",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "사무용 의자(북향)",
+ "label": "modern_city/interior/mci-chair-office-n",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "office chair backrest and wheeled base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn in pure rear elevation. The backrest is a flat vertical rectangle with only a 1-pixel highlight along row 8 (no visible top surface depth), the seat is entirely absent/not visible from above, and the wheeled base is drawn as a flat horizontal line across row 28 without top-down projection.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7089
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "backrest and base of north-facing office chair",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn as a flat orthographic rear elevation. The top edge of the backrest is only 1px tall (row 7), the armrests show no top surfaces, and the rolling caster base is drawn as a completely flat horizontal 2D crossbar (row 28) rather than foreshortened legs extending into the 3/4 plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 7413
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "chair backrest",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair backrest is drawn in a flat rear elevation with only a 1-2px highlight along the top edge (rows 7-8). The caster base is also drawn as a flat 2D horizontal bar, showing no top-down perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9766
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "backrest of office chair",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair (facing north) is drawn in pure flat rear elevation. The top of the backrest is only a 1-2px highlight (row 7), the seat is not visible, and the wheeled base is drawn as a flat horizontal bar without top-down depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 6773
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:11.884Z",
+ "cells": {
+  "16": [
+   "00e236abb41be0ba",
+   "78b78872d087d0eb"
+  ],
+  "24": [
+   "027b11a7fc0697ed",
+   "0932c6345249555d",
+   "2e16039758c9a6ee",
+   "51a9b0a4217b5053",
+   "8d6e7100a204a56b",
+   "947e54afe1a8ba01",
+   "dd94daca008714a4",
+   "e2fabc0cc8161b4f",
+   "e39dea291ff5fe7b",
+   "eadccc34e242a62b",
+   "f7bda2709e411ec1",
+   "f93c3918fa4624a7"
+  ],
+  "32": [
+   "3d080ee3bdd0a450",
+   "931607633b6c13e9",
+   "94882177224dd2d3"
+  ],
+  "48": [
+   "5e7ee20089093d22",
+   "5f9a8cecfab660fc",
+   "afc698b4393c36ef",
+   "b0b76eaa51abb3e3",
+   "bfd6da9e27d8a996",
+   "fcac6d30a6321aab"
+  ]
+ }
+}

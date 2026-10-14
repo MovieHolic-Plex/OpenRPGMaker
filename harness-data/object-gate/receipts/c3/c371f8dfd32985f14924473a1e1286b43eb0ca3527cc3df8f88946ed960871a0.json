@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c371f8dfd32985f14924473a1e1286b43eb0ca3527cc3df8f88946ed960871a0",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "사무용 의자(북향)",
+ "label": "modern_city/interior/mci-chair-office-n",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "backrest of office chair",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The north-facing chair is drawn as a flat rear elevation facing the camera directly, showing only the vertical faces of the headrest, backrest, stem, and base with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13946
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "office chair (facing north/back view)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn as a flat orthogonal rear elevation with no foreshortened top surfaces visible on the headrest, backrest, or base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7263
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "office chair (facing north)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn in pure front/rear elevation with no top-down tilt: the wheeled base is a flat horizontal bar, the stem is a straight vertical pole, and neither the top edge of the backrest nor any horizontal seat surface shows depth from above (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9629
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "office chair (backrest and base)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn as a flat elevation view from the back/front with no horizontal depth. There is no visible top surface of the seat, headrest, or backrest (top edge is a 1px outline at row 6), and the caster base is drawn as a flat horizontal bar rather than spreading in 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11111
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:23.925Z",
+ "cells": {
+  "16": [
+   "631185bb9e0b283d",
+   "98dd1f117518dfcf"
+  ],
+  "24": [
+   "154de9093a045071",
+   "2a1dcb3b4f831e87",
+   "35029a138f8906a1",
+   "504f76fd385762d9",
+   "5cd9f4e51124563e",
+   "91c35f1527fa0b4c",
+   "973d142e2b9c41d3",
+   "b37ce84ea57e5898",
+   "c456c09dbfa135c1",
+   "dca097759e741d3e",
+   "f0f292ae34b93093",
+   "f6509f679843665c"
+  ],
+  "32": [
+   "050324e8a058562e",
+   "13667c8865d045e7",
+   "b0cf0ac81d1d00d1"
+  ],
+  "48": [
+   "1b75df6f2ffe34e8",
+   "31bb39439b21e5c1",
+   "4b1016a86cd13cae",
+   "62d2af93019256f3",
+   "af0ecabfb4835e99",
+   "c6c057ba83cadee7"
+  ]
+ }
+}

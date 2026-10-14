@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "852f9ad23550ef5b4da0cea6132693fab2989f933c0613460072c34161fee6d4",
+ "width": 64,
+ "height": 32,
+ "kind": "terrain",
+ "name": "lab room back wall face (two rows)",
+ "label": "monster-rooms/rm_wall_lab",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lab room back wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile for a two-row-tall vertical back wall in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4255
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "back wall face panels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a two-row vertical back wall face with paneled laboratory wall and lower wainscot/trim, correctly drawn as a south-facing vertical surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5454
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lab room back wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a two-row vertical back wall face (white upper paneling, blue wainscot, and baseboard). Wall faces in 3/4 perspective are flat vertical surfaces, not standing objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6572
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 60227,
+   "error": "Error: Request was aborted"
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.766Z",
+ "cells": {
+  "16": [
+   "1350c315baee92f7",
+   "334c4b35032db37f",
+   "508583392d3b1621",
+   "604a412b0a9010da",
+   "74cbc7806fe97617",
+   "ceaaf7e8783be19a"
+  ],
+  "24": [
+   "029c266240395569",
+   "0baa52e8360c7c3a",
+   "1945c1526a31345e",
+   "1a41730d8b8ccd64",
+   "1ab8426729454042",
+   "1bec871c1de3dab0",
+   "21a6540881b9c250",
+   "25855a5458a31642",
+   "26a0825b8f09e650",
+   "26dbc4374f6a3a34",
+   "2be5dfb569f29a70",
+   "348a1d62a4be881d",
+   "3c6b40257534b986",
+   "48256f68c504aed8",
+   "517208606f5dafdb",
+   "583e05517eb5310c",
+   "5fd263465c7f9bd6",
+   "6876946027a68709",
+   "8094fca59c9f76bc",
+   "88ffb50de7a489ef",
+   "8ae31b440b0d5e09",
+   "8bed2dc4bbf1d35b",
+   "97337e8ed4f4dd7b",
+   "a31b3235e55f850e",
+   "adb5e5897ab8dc13",
+   "b17c31ca6ca1dd9a",
+   "d37766946bf6a078",
+   "d874adb2dca79f16",
+   "d96f5e20e78738b4",
+   "e1c9d2c09cc3d3f4",
+   "f6f22ee809d1beac",
+   "ff3cff4e2f49c1ff"
+  ],
+  "32": [
+   "30171fbbfa319bf8",
+   "773222f6ed118cef"
+  ],
+  "48": [
+   "0129aa31287bcd17",
+   "313ef3d44fa8dc1a",
+   "4fb7286f15a38504",
+   "524072327542101b",
+   "62b7e7a52050a86b",
+   "95bc81071974f60a",
+   "a356e86011e7a2eb",
+   "becd1b9a6d390b7c",
+   "c0ba325abba4ce21",
+   "d2da123f66f54614",
+   "dc151717108622fc",
+   "fbc5041625e5a7fe"
+  ]
+ }
+}

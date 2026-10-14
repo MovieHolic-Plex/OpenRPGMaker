@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "907e8e5845531241a2b0da588865387dfa79b6cca7a75fb7bc0781a491607347",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "사무용 의자(남향)",
+ "label": "modern_city/interior/mci-chair-office-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "office chair seat and backrest",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chair faces south. The horizontal seat surface is clearly visible from above across rows 15–22 (8 source pixel rows tall), with rows 23–24 showing the front edge thickness of the cushion, and the backrest positioned behind it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11193
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "office chair seat cushion and backrest",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The south-facing office chair clearly shows the horizontal top surface of the seat cushion viewed from above (rows 15–22, 8 rows tall) along with its front downward-facing rim/edge (rows 23–24) and base with casters below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7050
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "office chair seat cushion",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat cushion is viewed from above with an 8-row top surface visible from rows 15 to 22, followed by a 2-row front face at rows 23-24. The backrest stands vertically behind the seat from row 13 up to row 3.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14074
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "office chair seat and backrest",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chair faces south with the backrest at rows 3-13 and the seat cushion at rows 14-25. The seat's top surface is visible from above across rows 15-21 (approx 7 rows tall), leading to a foreshortened front face on rows 22-24.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9323
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:23.925Z",
+ "cells": {
+  "16": [
+   "14ae39a7e48cbabc",
+   "ed287ed6deacd859"
+  ],
+  "24": [
+   "1b866122d04344a4",
+   "254b9bc478c1b364",
+   "3ccdc7a7172cf463",
+   "676e1191d95b6ed5",
+   "6bb5d9e0a9873ab1",
+   "8ddf525ad64ed4c5",
+   "91f89d5a866e5eef",
+   "cda10c7865bc28c0",
+   "ce3fb8e4cd9742af",
+   "d07ae930a1f61cd9",
+   "f2baa38e1976bf4a",
+   "facd00f6a7666a59"
+  ],
+  "32": [
+   "35c9dc2196028d53",
+   "6f7af5026682d3f4",
+   "ee9a8d9d0ad0e5a7"
+  ],
+  "48": [
+   "017bd91d45e9d353",
+   "17c70b2ea276c78f",
+   "b2f84f7dda493405",
+   "b352be4884bddef7",
+   "b78c9327c0d4447e",
+   "f9466d21d69d5cd1"
+  ]
+ }
+}

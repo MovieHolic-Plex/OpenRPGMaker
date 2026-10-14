@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c6c7ffd098b738424600ab9871da68a4a26fe2fb6b4c0caec12330c857db3da0",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "big boulder",
+ "label": "monster-gyms/g_bigrock",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "boulder",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the boulder features clear upward-facing facets spanning rows 2 to 8, with shading separating them from the south-facing vertical facets below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3374
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "boulder",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The boulder clearly shows an upward-facing top plane spanning rows 3 to 8 (about 5-6 rows) before breaking at a horizontal crease into the south-facing front facets.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 16309
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "large faceted rock boulder",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The boulder has clearly defined, top-lit upper facets spanning rows 3 to 9 (approx 7 rows) before transitioning into vertical front faces with crevice shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4467
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "large boulder",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The boulder has clearly defined upper facets spanning rows 3 to 8 that represent the top surface viewed from a high 3/4 perspective, transitioning down into front-facing planes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3040
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.767Z",
+ "cells": {
+  "16": [
+   "3b6cf72b5fe2c705",
+   "7585ba06bbae4fef",
+   "c7714c630102df3a",
+   "fbb964348571bbc5"
+  ],
+  "24": [
+   "02a0734ad72d01d5",
+   "07341c03777d377c",
+   "0e2a1c11d0571585",
+   "1a7b9b2408dcb58d",
+   "1e5dd6a2d3430d6b",
+   "2c8d99dda90a369d",
+   "2e0ec7da04e2b61c",
+   "316c680528513c52",
+   "341eba0db5d2e9d1",
+   "4164d1baa5d1cc02",
+   "496e067f3c94c64c",
+   "4d277068f7d546ce",
+   "53dab0cc24f9b932",
+   "8f6615692bd02bd6",
+   "91d2bad895d4d071",
+   "91f6faea54a8bdee",
+   "a45d315a1d8660b1",
+   "b67ed36ecebf8367",
+   "e28ebbe5811c7af9",
+   "e66000001cb402e0",
+   "e742cc36df98bd31",
+   "e8adc89ebcdcd733",
+   "eef9ffe109e4d637"
+  ],
+  "32": [
+   "e92ef64821fbdddf"
+  ],
+  "48": [
+   "0ae34ca7d46bc350",
+   "2648becad7cace25",
+   "c48059b84a844bff",
+   "dd445de692ac775a",
+   "dd69ff13c211f52f",
+   "eeac2d25ca92cd4f"
+  ]
+ }
+}

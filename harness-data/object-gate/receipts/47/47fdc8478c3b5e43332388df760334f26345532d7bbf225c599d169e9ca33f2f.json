@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "47fdc8478c3b5e43332388df760334f26345532d7bbf225c599d169e9ca33f2f",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "걸린 무쇠 솥(사슬 + 작은 불) (프레임 3)",
+ "label": "snow-north/sn-cauldron-in-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hanging cauldron with stew",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cauldron opening filled with stew is drawn as an open elliptical surface visible from above across rows 10-16 (~7 pixel rows), bounded by the front rim at rows 17-18 and south-facing cauldron body down to row 24.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5134
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hanging cauldron with stew over campfire",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pot opening is clearly depicted as an ellipse showing the stew inside from row 11 to row 16 (approx 6 rows tall) above the front rim and south body (rows 17-24).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4854
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hanging cauldron with stew over fire",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pot clearly shows a wide opening filled with brown liquid/contents visible from above (rows 10-16, ~6-7 rows tall) framed by a curved front rim at rows 17-18, followed by the rounded south-facing body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5316
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hanging iron cauldron with stew and fire below",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cauldron opening clearly reveals an elliptical interior filled with stew spanning rows 11-16 (6 rows tall), with the front rim and front rounded belly of the pot below it (rows 17-23).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4943
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.165Z",
+ "cells": {
+  "16": [
+   "9e6bf1f6d1ad5cd0",
+   "d75440d3f066ac35"
+  ],
+  "24": [
+   "1e9f72226b49bce7",
+   "2eeb08f98aa29cd5",
+   "2f631ba8cab7b7f0",
+   "45603fb732f01bbb",
+   "4aba2d1fa56cbc85",
+   "6cd1604e1ebb3fc6",
+   "98f86ed750ec59e5",
+   "bc77e5dae20495df",
+   "c58878524d0a9830",
+   "d1ed83466ebb980e",
+   "fcb7128cd0a9634b",
+   "fe23d88578bd5ea3"
+  ],
+  "32": [
+   "0818902cc6f93cba",
+   "389e65803431d061",
+   "dbebbe34aa8d785b"
+  ],
+  "48": [
+   "04b7e7e130da6fb1",
+   "6bbbaae4b2166f2e",
+   "706ccd529cb3cf4f",
+   "90d02e31986931bb",
+   "ee03ca147ad48e39",
+   "f97899f09a566d36"
+  ]
+ }
+}

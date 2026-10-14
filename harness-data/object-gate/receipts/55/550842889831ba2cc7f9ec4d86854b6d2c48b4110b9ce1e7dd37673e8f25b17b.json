@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "550842889831ba2cc7f9ec4d86854b6d2c48b4110b9ce1e7dd37673e8f25b17b",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "살림 노점(그릇·쇠붙이·천, 청록 천막)",
+ "label": "snow-north/sn-stall-wares",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "market stall with striped awning and counter",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter table has a clearly visible top surface spanning rows 16 to 21 (6 rows deep) with items resting on top of it, fronting a vertical lower wall from row 22 down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4556
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "market stall counter and canopy",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall counter shows a clearly foreshortened top surface across rows 16-21 (6 rows deep) upon which items rest, with a vertical south-facing front counter board from row 22-31. The awning roof also shows an angled highlight/top rim across rows 0-2.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4384
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "market stall (counter and awning)",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall counter shows a clear 6-pixel-tall top surface (rows 16-21) displaying five bowls/wares, with the front panel extending from rows 22-31. The awning canopy slopes forward with ridge highlights and scalloped hem shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9228
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "market stall with striped awning and display counter",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall counter shows a foreshortened top surface around rows 16–21 (approx. 6px deep) where goods are displayed, sitting above a 10px south face (rows 22–31). The canopy roof also slopes forward in standard RPG Maker 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5672
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.508Z",
+ "cells": {
+  "16": [
+   "6965d128e0b82d8b",
+   "9e64815018273816",
+   "c408ff637ee9b31d",
+   "ccf7fc8f8fe87503",
+   "df39f5f37b814f6c",
+   "f8c93b45ae043ed7"
+  ],
+  "24": [
+   "549ec5c7111b97cf",
+   "7233861ca69417ea",
+   "7fc23a719ee60c7a",
+   "92b6728f27908e52",
+   "a03ae7203bd2d4e9",
+   "b26b6c6fc4696b51",
+   "cb846956aed669da",
+   "ff1fe2ad0da16a4e"
+  ],
+  "32": [
+   "081edf045b3a37e9",
+   "10c79ee5d034dbf7",
+   "3068a51f20c05ce1",
+   "77dd36f425def83e",
+   "ae5b22c34fe7a8e3",
+   "b23855b3555feced"
+  ],
+  "48": [
+   "5679789cd017dc51",
+   "a8e31854b57a3178"
+  ]
+ }
+}

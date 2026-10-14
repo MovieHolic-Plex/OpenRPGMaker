@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c49ca0c5d2b0c18e1880f2b5e33cd425d7cda337659b0f0981fcb40bdac55311",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "장바구니 더미",
+ "label": "modern_city/interior/mci-basket-stack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stack of shopping baskets",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": true,
+    "opening_rows": 9,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basket opening is prominently visible from above (rows 7-15, 9px tall) showing the interior mesh bottom, framed by rims, with the front stack faces visible below (rows 18-21).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4820
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stack of plastic shopping baskets",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": true,
+    "opening_rows": 9,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top basket is viewed from above showing its rectangular opening and grid-pattern interior floor (rows 7-15) surrounded by rims, with stacked basket rims visible below on the south face (rows 18-21).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4723
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stack of shopping baskets",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": true,
+    "opening_rows": 9,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top basket opening is clearly visible from above across rows 7-15 (9 rows) with the bottom grid visible, framed by rims, while the front faces of the stacked baskets are visible below (rows 18-21).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7307
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stack of shopping baskets",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top shopping basket has a clearly rendered top opening from row 7 to 14 (8 pixel rows deep) showing the interior mesh pattern, framed by rims, with the front faces of the stacked baskets visible below (rows 18-21).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4610
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:53.420Z",
+ "cells": {
+  "16": [
+   "6f3abca321cf1e47",
+   "7ab643751793de43"
+  ],
+  "24": [
+   "06e07d21791e7cd2",
+   "399cb17e7d9b9b7c",
+   "676a8c14f78ef1db",
+   "6cac265f1a7b69e5",
+   "869fe4e1de3ad6ba",
+   "890d25cac39eff31",
+   "a59920eb9875e8f9",
+   "d685c053a705ff5c",
+   "f9ab53b830fe404a"
+  ],
+  "32": [
+   "104acc75f62635c8",
+   "79b9b4f1ad80bb4b",
+   "d5bbfbc8237d9836"
+  ],
+  "48": [
+   "54708cf98bbe8f56",
+   "68b95bdbfb641468",
+   "7ce996e69cef8ae8",
+   "98f3aeac991182db",
+   "d017b80e7189332b",
+   "e463783ecc812205"
+  ]
+ }
+}

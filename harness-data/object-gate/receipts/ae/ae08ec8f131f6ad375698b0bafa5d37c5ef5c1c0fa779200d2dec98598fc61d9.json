@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ae08ec8f131f6ad375698b0bafa5d37c5ef5c1c0fa779200d2dec98598fc61d9",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "사무 책상(화면 남향)",
+ "label": "modern_city/interior/mci-desk-pc",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "office desk with monitors on top",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk tabletop is clearly visible in 3/4 perspective spanning 8 pixel rows (rows 15-22) with monitors, keyboard, and other items placed on top of it, above a front-facing desk panel (rows 23-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10878
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "office desk",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk surface is clearly seen from above across rows 15 to 22 (8 pixels deep) with keyboard, mouse, and other items placed on it, above a vertical front panel spanning rows 23 to 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3595
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "office desk with dual monitors",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk tabletop is clearly visible spanning rows 15 to 22 (8 source pixel rows) containing a keyboard, mouse, and papers, with the front panel extending from row 23 to 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3295
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "office desk",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk tabletop surface is clearly visible from rows 15 to 22 (8 rows deep) holding office accessories, and the front vertical panel extends below from row 23 to 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3357
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:11.883Z",
+ "cells": {
+  "16": [
+   "35596afe5c41f247",
+   "38c8b98697914fff",
+   "4ff16ed5427e96bc",
+   "ffdd8a925625a6d5"
+  ],
+  "24": [
+   "02c24cc8e15ab1ff",
+   "1f0a3f67a3ff2a50",
+   "27944db6b828f11e",
+   "56654bcba290c12e",
+   "573a1354f360a6bc",
+   "5faf391b297d9d76",
+   "67ecdabe44033bb8",
+   "6c1df773518b1f94",
+   "7bebedbaef316767",
+   "84e6d82bd24132a9",
+   "89438426fa63b16b",
+   "921de8a79cc32310",
+   "b2675ce1cb659477",
+   "b36108e94295024a",
+   "b54bf4720d45ce38",
+   "b6428a41790d90c6",
+   "b6f2f8e12e6a8e62",
+   "bd04ef57f43218f9",
+   "c09cd50a045cb788",
+   "d78a5f6af2900373",
+   "de912bf7a6e32193",
+   "e15de89a308d0e6e",
+   "e7a73e603a1a41d6",
+   "feb60eb3a5d332fe"
+  ],
+  "32": [
+   "0a7b81fd0ced1d76"
+  ],
+  "48": [
+   "18df420d82710bb5",
+   "43fcb11598013f6c",
+   "58a940a1cdca0a54",
+   "592c1d23adcd1ab3",
+   "d9b86afab36b392d",
+   "e1bbeea01520eb65"
+  ]
+ }
+}

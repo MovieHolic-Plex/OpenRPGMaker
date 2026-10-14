@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ff8b2220e38b973e195ba64b269ffedbb891d3edcb6ba2641acfb84275bf0fe2",
+ "width": 16,
+ "height": 48,
+ "kind": "low_furniture",
+ "name": "싱글 침대",
+ "label": "modern_city/interior/mci-bed-single",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "single bed",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed is drawn in standard 3/4 top-down perspective with a large foreshortened top surface showing the pillow (rows 10-21) and blanket (rows 22-42), flanked by a headboard at the top and footboard front face at the bottom.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9489
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "single bed mattress and bedding",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed is viewed in standard 3/4 top-down perspective with the entire mattress surface, pillow, and blanket visible from above spanning rows 11 to 42, followed by a south footboard edge at rows 43-46.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3446
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "single bed",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed is drawn in standard 3/4 top-down perspective spanning 3 tiles high, clearly displaying its top mattress, pillow, and blanket surfaces across rows 11 to 42, with a front footboard at the bottom.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3679
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "single bed",
+    "kind_matches": true,
+    "top_rows": 33,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed is viewed in standard 3/4 top-down perspective, with the pillow and blanket top surfaces clearly visible from row 11 through row 43 (approx. 33 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9131
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:11.886Z",
+ "cells": {
+  "16": [
+   "56e6e6529543fb07",
+   "e672dbc155f8f212",
+   "ffa65032969d7c01"
+  ],
+  "24": [
+   "1fbd76d6ea0c31a8",
+   "2812bbc04b0a00f7",
+   "387843dfbf2a324f",
+   "6809c8433219873f",
+   "926fc16e5671f981",
+   "aa08b9f76695d126"
+  ],
+  "32": [
+   "0827cd3fb5a23fdf",
+   "1de7f209132b7f8c",
+   "1e564ab2340b8a04",
+   "236bf2d2cf9b02d1",
+   "2a4f6e67776db5e3",
+   "4ac620e05661144f",
+   "584a8262c5dc5ab8",
+   "5df43b9cef821eaf",
+   "67afa2375e7731ab",
+   "68ef1064ceb2a260",
+   "97f02e4c936b1b47",
+   "c1c53df17d9c5254"
+  ],
+  "48": [
+   "0ce3ed5f0be7c90a",
+   "79a4086cf3c3353b",
+   "bc591a7c5cca0baa"
+  ]
+ }
+}

@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d69756747d013dd964b9cb994af93043c1c6f98ce14786dd02c3347c423b325f",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "돌 벽난로(넓은 선반 + 화덕 석판 + 장작불) (프레임 2)",
+ "label": "snow-north/sn-hearth-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone fireplace with mantel shelf and hearth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fireplace is drawn as a flat architectural front elevation. The mantel shelf, chimney structure, and base hearth slab only show vertical front faces with vertical mortar lines, with zero visible top surfaces. The hearth floor inside the firebox is also not shown from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10037
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone fireplace with mantel shelf and hearth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fireplace is drawn in a completely flat front architectural elevation. The mantel shelf (rows 6-10) and hearth slab (rows 27-30) only show their vertical front faces (with vertical corbels/joint lines), with 0 rows of top surface depth visible. Objects resting on the shelf (candle, mug) sit directly on the upper edge with no visible surface plane beneath them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9425
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone fireplace with mantel shelf and hearth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fireplace is drawn in flat front architectural elevation. The shelf where items sit has 0px visible top depth, the mantel and wall above feature front-facing vertical brick joints (rows 6-10), and the base hearth slab (rows 27-30) is also drawn as a purely vertical front face with vertical mortar lines.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5900
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone fireplace with mantel shelf and hearth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fireplace is drawn in flat front architectural elevation. The mantel shelf has no visible top surface (the decorative items rest on an edge with zero depth), the fireplace frame and firebox are viewed straight-on, and the base/hearth consists of flat front-facing brick layers with no receding depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8309
+  }
+ ],
+ "decidedAt": "2026-10-14T01:17:43.844Z",
+ "cells": {
+  "16": [
+   "04299e685a205cb0",
+   "424a44a34ae20b36",
+   "485b9f7dff1e7235",
+   "68beecb9bf131eff"
+  ],
+  "24": [
+   "0d0dc7fbc3966bb8",
+   "0ed006928a4c21cf",
+   "22a78e1a8212f0e5",
+   "2990fa2c84760fd7",
+   "2be71a0fdd14d8a3",
+   "3a85469bfa96f312",
+   "46d6303f7d2341d8",
+   "63d22d6fd3db8983",
+   "6bfb71fdfea0b5ab",
+   "7cc4ab02be9cd325",
+   "7e3156a37d80f454",
+   "8ee23e20553014d8",
+   "941dcd55bf977cf7",
+   "9deed2a44c683fd2",
+   "a88521f387b35a76",
+   "aa4cb277b3902846",
+   "ab488752bcc1e84f",
+   "bfddcc253b040315",
+   "c6186aeee033b230",
+   "cbcfdf4da274cf55",
+   "f282a83a6a6cd4cf",
+   "f65b7e650f541bf4",
+   "f6a8019a54f9bea7",
+   "f99b5e5084b2c815"
+  ],
+  "32": [
+   "ed84812d9d6f34ad"
+  ],
+  "48": [
+   "348a7ff751e4b3e8",
+   "46f32ff273220119",
+   "6f77ae734c9c12b3",
+   "717550816f85a8e3",
+   "c65552a2f9133435",
+   "de15e7e89233c4c4"
+  ]
+ }
+}

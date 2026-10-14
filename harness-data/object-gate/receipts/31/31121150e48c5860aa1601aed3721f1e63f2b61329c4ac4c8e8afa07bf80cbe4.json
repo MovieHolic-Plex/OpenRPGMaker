@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "31121150e48c5860aa1601aed3721f1e63f2b61329c4ac4c8e8afa07bf80cbe4",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "오로라 깃발(보라·청록 물결, 반대 무늬)",
+ "label": "snow-north/sn-banner-aurora-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 1.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "banner pole with hanging flag",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, banner, and horizontal beam are drawn in flat front elevation. The finial at the top is drawn as a flat circle, the vertical pole shows no top surface, and the horizontal crossbeam shows at most 2 rows of edge highlight (rows 8-9). No surface of the main body has the required >= 3 rows of top view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8761
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden banner post and crossbeam",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal crossbeam shows a 3-row foreshortened top surface (rows 7-9) above its front face (rows 10-12). The stone base also shows a 2-row top surface (rows 40-41) above its vertical face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12449
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "banner pole with horizontal crossbeam",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal crossbeam shows a clear 3-row top surface (rows 7-9) above its front face (rows 10-11), and the stone base also shows a top surface (rows 40-41). It is not a pure front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9493
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden banner pole with horizontal crossbeam and hanging banner",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (pole, crossbeam, and banner) is drawn in flat front elevation. The top finial is drawn as a flat circle facing the camera, the vertical pole shows no top surface, the crossbeam only has a 2px edge highlight, and the base plinth cannot be used for credit per the instructions.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6799
+  }
+ ],
+ "decidedAt": "2026-10-14T01:21:53.766Z",
+ "cells": {
+  "16": [
+   "7c82dc1faaad2ded",
+   "c06e8bd07d5a650c",
+   "edd4c9eda3b4e9a7"
+  ],
+  "24": [
+   "157f7b52a8428bad",
+   "24250168530f8180",
+   "3a550b4bfa6eb8a7",
+   "7b1fb660b73acb61",
+   "b40a74f657eaf1e7",
+   "c140cc4dae02f82a"
+  ],
+  "32": [
+   "31cdd796cdec47a9",
+   "3ed4fd74d2910736",
+   "8fd46a7495ac672c",
+   "906c3175532ee519",
+   "a1d572a8d5690814",
+   "d72aa032411b7ca7",
+   "d98a75926455adeb",
+   "db9026cc9749446b",
+   "e005b328220f1db0",
+   "e720b8864d4af0c5",
+   "ee00f9d8c27dc676",
+   "fddea3964c0e21c1"
+  ],
+  "48": [
+   "0a7c54e4250e2556",
+   "2c05a996df6ec6d8",
+   "5cd58ed11c8ec238"
+  ]
+ }
+}

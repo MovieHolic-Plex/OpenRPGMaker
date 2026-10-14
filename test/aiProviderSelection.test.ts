@@ -18,7 +18,7 @@ describe("account selection and persisted work models", () => {
       expect(configForRole(next, role).reasoningEffort).toBe("medium");
     }
     expect(configForRole(next, "writer").providerId).toBe(google);
-    expect(configForRole(next, "writer").model).toBe("gemini-3.8-flash");
+    expect(configForRole(next, "writer").model).toBe("gemini-4-argon");
     expect(next.ultrabrainProviderId).toBe(codex);
     expect(next.ultrabrainModel).toBe("gpt-6.1-sol");
     expect(next.ultrabrainReasoningEffort).toBe("high");
@@ -47,7 +47,7 @@ describe("account selection and persisted work models", () => {
   });
 
   it("treats stored legacy choices as explicit until the user aligns them", () => {
-    const legacy = { ...defaultAiConfig(), providerId: google, ultrabrainProviderId: google, ultrabrainModel: "gemini-3.8-flash",
+    const legacy = { ...defaultAiConfig(), providerId: google, ultrabrainProviderId: google, ultrabrainModel: "gemini-4-argon",
       roleModels: { writer: { provider: google, model: "gemini-3-pro", thinkingLevel: "high" } } };
     delete legacy.modelSelectionOverrides;
     vi.stubGlobal("localStorage", { getItem: () => JSON.stringify(legacy) });

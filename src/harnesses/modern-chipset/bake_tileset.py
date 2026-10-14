@@ -793,6 +793,12 @@ def main():
     ap.add_argument('--out-root', default=ROOT, help='산출물 루트(기본 저장소 루트)')
     a = ap.parse_args()
     out = bake(a.out_root, dry=a.dry, budget=a.budget)
+    if not a.dry and os.path.abspath(a.out_root) == os.path.abspath(ROOT):
+        # 실내 조각(scripts/content/modern-city-int)은 이 굽기 뒤에 덧붙인 칸이다. 번호는 pins.json 이 고정하니(옛 칸 그림은 위에서 보존)
+        # 거리 굽기가 지운 그룹(mc:interior-*)·조립 부품(mc-in-*)·메타를 같은 번호로 다시 붙인다.
+        sys.path.insert(0, os.path.join(ROOT, 'scripts', 'content', 'modern-city-int'))
+        import bake_interior
+        bake_interior.apply()
     rep = out['report']
     if a.selftest:
         rep['selftest'] = selftest(a.out_root)

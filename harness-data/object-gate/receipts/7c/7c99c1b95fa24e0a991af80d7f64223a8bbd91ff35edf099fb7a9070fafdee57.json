@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7c99c1b95fa24e0a991af80d7f64223a8bbd91ff35edf099fb7a9070fafdee57",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "새김 돌(추상 띠 무늬, 글자 없음)",
+ "label": "snow-north/sn-rune-stone",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "carved stone stele / monolith cylinder",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the stone pillar is clearly rendered as an elliptical flat top spanning rows 3-7 (approx 5 rows tall), correctly conveying the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4752
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "carved stone stele / pillar",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the standing stone pillar is drawn as a clearly visible foreshortened elliptical top surface spanning rows 3 to 7 (5 source pixel rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5400
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "carved standing stone / stele",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the stone pillar is clearly rendered as an elliptical face spanning rows 4 through 7 (4 source pixel rows), showing the proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3649
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "engraved stone monolith",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone monolith shows a clear foreshortened elliptical top surface spanning rows 4 through 7 (4 source pixel rows tall) viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5568
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.504Z",
+ "cells": {
+  "16": [
+   "39b9118034ec89f7",
+   "4111107e1c00f9f1"
+  ],
+  "24": [
+   "1df5511b88054f2e",
+   "2a11ebfce9e1cbd1",
+   "2a61bcd178abf93a",
+   "35d465bead5f065f",
+   "4e212ce1e8cdf3a5",
+   "82141b19f56722d2",
+   "9e47ca4f385da1bd",
+   "a8655ae59dd4986d",
+   "b63e0ce220ace191",
+   "c6c91cd6477e25e8",
+   "e39ad262b05f0bdc",
+   "ee4fd51ca84cc3ec"
+  ],
+  "32": [
+   "6a228e374ded982d",
+   "9f4f2746953c4805",
+   "bf31701220ad87ae"
+  ],
+  "48": [
+   "1151b58a0650762b",
+   "25599ef9c6785f34",
+   "4a9d237d9f750094",
+   "75e0fb7f3c44966b",
+   "dba98c9ed8a59988",
+   "e6111d66fb5bc887"
+  ]
+ }
+}

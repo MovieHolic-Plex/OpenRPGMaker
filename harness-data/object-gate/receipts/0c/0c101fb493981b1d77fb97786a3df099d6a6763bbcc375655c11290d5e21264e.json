@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0c101fb493981b1d77fb97786a3df099d6a6763bbcc375655c11290d5e21264e",
+ "width": 48,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "teacher desk with open book",
+ "label": "monster-rooms/sc_lectern",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden desk",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desktop surface occupies rows 5 to 16 (12 rows deep), clearly showing items resting on it in 3/4 view, with the front apron and legs visible beneath (rows 18 to 29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4574
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "teacher desk",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk shows a broad top surface visible across rows 5-16 (12 rows tall) with an open book and notebook resting on it, followed by a clear front apron and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3830
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "teacher desk",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk surface is clearly seen from above spanning rows 4 to 16 (13 rows) with an open book and stationery on it, followed by the front apron (rows 17-21) and front/back legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3434
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "teacher desk",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden desk top surface is clearly visible from rows 4 to 16 (13 rows tall), foreshortened with books resting on it, followed by a south-facing front apron and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3168
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.765Z",
+ "cells": {
+  "16": [
+   "12d4f5af29fb8b4e",
+   "1649ea59c3203e77",
+   "20faca5260521abb",
+   "21cb41de68f9f7c5",
+   "5a35c8e916d7970d",
+   "7105002a512f76fb"
+  ],
+  "24": [
+   "096ef0ae8b553fad",
+   "1d0abc7e4511dcf8",
+   "23af5d1045ff2d76",
+   "60fa11c9675b0f9e",
+   "80757f941f91afb0",
+   "90b29708335ce7b3",
+   "d614ddf4f159b098",
+   "e3c148d67f177649"
+  ],
+  "32": [
+   "35f8285d6ffa10bb",
+   "36922c6636f5b2a8",
+   "3cf0f3dadbb5639f",
+   "4be18e8d435e7635",
+   "a7344e53f9caa789",
+   "e3fa05f0d0381916"
+  ],
+  "48": [
+   "3b45ed4b6e03d1a1",
+   "d3b3948779ee009b"
+  ]
+ }
+}

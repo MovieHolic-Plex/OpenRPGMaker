@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6dda8a45d6e4aabc28746526af84c8b70a9e7be631684429b7a46b173452cdfb",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "mooring bollard",
+ "label": "monster-rooms/sh_bollard",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bollard head and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bollard is drawn as a flat side/front elevation profile (T/mushroom shaped head on a stem with base) without any elliptical or foreshortened top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4017
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "mooring bollard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bollard is drawn as a flat side/front elevation profile with standard left-to-right cylindrical shading down both the head and the vertical stem. Neither the top of the head nor the base flange shows a foreshortened horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5936
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "mooring bollard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bollard is drawn in pure front elevation as a flat T-shape silhouette with a vertical post and horizontal cross-cap. There is no visible foreshortened top surface or elliptical top disc.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5788
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bollard head and stem",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mooring bollard is depicted in pure front/side elevation with a flat base and silhouette cap/horn, lacking any visible foreshortened elliptical top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5789
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.765Z",
+ "cells": {
+  "16": [
+   "84efc0cbeced2dad"
+  ],
+  "24": [
+   "12392e779a12bba9",
+   "4ff1506d28cac70b",
+   "5e394005d1c70e16",
+   "912767d228eaeae3",
+   "b446d2d3def54216",
+   "fda907768709202b"
+  ],
+  "32": [
+   "3c8f7f78aeee4b8c",
+   "45400f094b5912bc",
+   "5572eceb691c2a3b",
+   "702d6fa90db949ae",
+   "913cacc40939306b",
+   "c90b3a3c54412df7"
+  ],
+  "48": [
+   "1c5b820a4153f26a",
+   "273f20cdea2fe100",
+   "5c04add3c80d3e9e",
+   "5c767a5d2c4ffd47",
+   "8c6b09509b964caa",
+   "ed16ae1fd7b624ba"
+  ]
+ }
+}

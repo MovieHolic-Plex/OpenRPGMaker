@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ba47efac2be3220efe7e67d0c38e3176a81b0a4a08e4ecafff2d2a107f2b67cf",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "ship cabin bed with headboard",
+ "label": "monster-rooms/sh_bed",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bed mattress and frame",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed clearly displays its horizontal mattress and blanket top surface across rows 7 to 23 (approx 17 rows) viewed foreshortened from above, along with a south-facing footboard frame and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5623
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bed mattress and bedding",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mattress, pillow, and blanket top surface spans rows 7 to 24 (18 rows visible from above), with the wooden footboard and legs facing south at rows 25-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3538
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ship cabin bed",
+    "kind_matches": true,
+    "top_rows": 19,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed shows an extensive top horizontal surface (pillow, sheets, and blanket) spanning roughly rows 6 to 24, with a front-facing footboard at rows 26-29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4527
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bed with mattress and headboard",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal mattress surface (pillow, folded sheet, green blanket) is viewed from above across rows 7-24 (18 source pixel rows tall), with south-facing footboard and legs visible below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3482
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.765Z",
+ "cells": {
+  "16": [
+   "22850cb43c52e623",
+   "9911db5da7f9346a",
+   "c2e1b1a3673331b1",
+   "dc09a78761ec227e"
+  ],
+  "24": [
+   "054d8d5b498d3db8",
+   "2897b2309a366970",
+   "28a752b981e91e76",
+   "312cb61cd08ce74b",
+   "31f7f23d7aa031f9",
+   "41122b071a4a298e",
+   "5e3748137516e016",
+   "61015f6d2d9ca61f",
+   "67571b589a223918",
+   "67f4d8177ac85b8b",
+   "7561ceaedd8277f0",
+   "7c47290d85b9a447",
+   "843abdcb73ac88d7",
+   "8b10db67d3382beb",
+   "8bb5c33c0821361f",
+   "8c3627804ec39ee5",
+   "9c258c488a5de81d",
+   "a403c209d941e99a",
+   "b11622b7d9f77fb7",
+   "b752f419eff76581",
+   "c2b02ab2c3e20ecd",
+   "c2b3547355dae1cb",
+   "c30820bb6e86725a",
+   "d68825560d4b62a2"
+  ],
+  "32": [
+   "e22c0821815fbd90"
+  ],
+  "48": [
+   "1d408df526653633",
+   "2977fd8241721088",
+   "5d43e06ec3bb42d7",
+   "68d5e810c943e4b2",
+   "c3584cbf0f76e688",
+   "e4c7e99d67cd803d"
+  ]
+ }
+}

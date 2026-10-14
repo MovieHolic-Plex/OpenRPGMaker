@@ -1,0 +1,148 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fc764f9f87a75063f563e99933f85653ee84a64c0aff1a377b28b0653ca92dfd",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "aquarium tank set in the back wall",
+ "label": "monster-rooms/mu_tank",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "aquarium tank",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tank and frame are rendered entirely from a straight-on front elevation with no visible top surface (only a 1px frame border at row 2).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4790
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "aquarium tank",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tank features a distinct foreshortened top surface (rows 2–9, 8 pixels tall) showing the illuminated water surface from above, separated by a bright rim (row 10) from the vertical front face (rows 11–23) containing the fish, seaweed, and sand.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13623
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "aquarium tank",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tank and its frame are drawn in pure flat front elevation like a monitor screen or flat window, showing no top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5321
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "aquarium tank",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tank and its frame are drawn in completely flat orthogonal 2D front view with no foreshortened top surface or depth visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4550
+  }
+ ],
+ "decidedAt": "2026-10-14T05:34:57.188Z",
+ "cells": {
+  "16": [
+   "4172cb2dc764b09f",
+   "8d27dbf0586a9eba",
+   "d22e4403a9935970",
+   "ec6a4589647c8d47"
+  ],
+  "24": [
+   "11e5e5516e434503",
+   "1704173f8d98919a",
+   "20a6cee792ba5772",
+   "250dfddc61f69a49",
+   "294dd9c3aa356f41",
+   "4afa650575518db6",
+   "4b6d6f6ca7823650",
+   "507435403ec12848",
+   "675e77ee96003646",
+   "71fb78e70a9d38d6",
+   "90a43095ba1af7b3",
+   "9fafbd154401dedc",
+   "a013386f4ac44bdf",
+   "a0f56048101d57d7",
+   "ad4075e1cc99ab11",
+   "ad6b3f6ac24fa1ae",
+   "c29dd542fe28c0ca",
+   "c754f3f58dc35950",
+   "cd55c09890080477",
+   "f13145074d0c9e4a",
+   "f43c4d0248258b0a",
+   "f5b1b4bafd35dea8",
+   "fa193750adda9c44",
+   "fd34d86cd08d9483"
+  ],
+  "32": [
+   "db22e093d10457c6"
+  ],
+  "48": [
+   "194a499cb0e7b9a6",
+   "2bd8faa6b95f19ce",
+   "572d9f73d6382083",
+   "7e61302a61aa6b7a",
+   "c816b2820d5065ce",
+   "f7c5630f5d2e4c72"
+  ]
+ }
+}

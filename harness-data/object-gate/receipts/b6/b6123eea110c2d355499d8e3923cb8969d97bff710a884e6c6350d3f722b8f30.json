@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b6123eea110c2d355499d8e3923cb8969d97bff710a884e6c6350d3f722b8f30",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "farm crop plants: tomato young (plants only, the soil is a separate tile underneath)",
+ "label": "beodeul_farm/crop_tomato_young",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tomato plants with support stakes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden stakes and foliage are rendered in flat 2D front elevation; the stake tops have only a 1px light edge highlight at row 4 rather than a foreshortened top surface, and the bottoms end in flat horizontal lines.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7426
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "young tomato plants staked to wooden posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the stakes and foliage are drawn in flat front elevation; the stake top is only a 1-pixel edge highlight at row 4, and the leaves have no foreshortened top-down spread or volume.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3802
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tomato plants with supporting wooden stakes",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stakes are drawn as flat vertical rectangles with only a 1px highlight at the top (row 4) rather than a foreshortened top end. The foliage around the stakes is also rendered in a flat 2D front profile with no visible depth or top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4340
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "young tomato plants with wooden stakes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stakes are drawn as flat vertical rectangles with only a 1px cap highlight on row 4, and the tomato foliage is rendered as a flat side-view silhouette without any visible horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3845
+  }
+ ],
+ "decidedAt": "2026-10-14T05:12:51.329Z",
+ "cells": {
+  "16": [
+   "3b400ff304ae102d"
+  ],
+  "24": [
+   "54218f7f0baec9ec",
+   "543323ba983c0bd9",
+   "6ef567ebe01edbfc",
+   "79acccc3fdb66224",
+   "f48439d45c4067f3",
+   "f7226b5dded039ce"
+  ],
+  "32": [
+   "00cd0f87643ce58b",
+   "3fefae8c40e760e5",
+   "a7dd7b5544b4ebb0",
+   "d0f3573c35da4161",
+   "d9994626d031b597",
+   "e0098218bef8cc47"
+  ],
+  "48": [
+   "2e606f7a8115af7e",
+   "45f6e2579b764cf8",
+   "7cbec2adaf1f6f0d",
+   "97575a905508980a",
+   "9cc2b950472344e7",
+   "a12d02e898e5d335"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2a530c865a6490e62dc8cc989ec4fd4d474bb44feb36aa34360b7e5766cfbcec",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece 'cSE' (thick posts with cap tops, rails)",
+ "label": "beodeul_farm/fence_cSE",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence post and rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The central vertical post features a clearly defined 4-row top cap surface (rows 2-5) viewed from above, transitioning to the shaded south-facing post body below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6610
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden fence post and rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main post has a clearly defined 4-row top surface cap (rows 2-5) shown from above in 3/4 perspective, transitioning into a darker south-facing post body below (rows 6-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4023
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden fence corner post with rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The post cap shows a clear 4-row top surface (rows 2-5) with end-grain lighting above the vertical front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5534
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "central wooden fence post with cap",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The central post clearly displays a foreshortened top cap surface spanning rows 2-5 (4 rows tall) above its darker front vertical face (rows 6-14). The rails also show top edge shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 16628
+  }
+ ],
+ "decidedAt": "2026-10-14T05:12:51.330Z",
+ "cells": {
+  "16": [
+   "94c13bcfecb60627"
+  ],
+  "24": [
+   "38cee0c4522668ae",
+   "3ff81100f31f2011",
+   "53d391145c129c6c",
+   "7de8fc9176d32eef",
+   "b80408249510b06d",
+   "d56ac4727e34f32d"
+  ],
+  "32": [
+   "1c272a56ad4f3f0a",
+   "75a3a27670defb3e",
+   "8b2f3456123d84d4",
+   "99f65502b9233720",
+   "a9f6940d0f8c6786",
+   "bd067ec44d6196a3"
+  ],
+  "48": [
+   "4169834569dcc10a",
+   "42fc4b8816ac4a55",
+   "518ae79c71fa7dbe",
+   "872634c91cf10c69",
+   "cfcec86ef7943fb6",
+   "f8cdf220edc7ee2c"
+  ]
+ }
+}

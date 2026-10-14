@@ -349,7 +349,7 @@ describe("installed model window contract", () => {
     const catalog = JSON.parse(readFileSync("node_modules/@oh-my-pi/pi-catalog/src/models.json", "utf8")) as Record<string, Record<string, { contextWindow: number }>>;
     // 번들 밖 로컬 확장(scripts/lib/ohMyPiModel.ts) — 번들에 없는 것이 정상이다.
     const localExtensions: Record<string, readonly string[]> = {
-      "google-antigravity": ["gemini-3.8-flash"],
+      "google-antigravity": ["gemini-4-argon", "gemini-3.8-flash"],
       "openai-codex": ["gpt-6-astra", "gpt-6-sol", "gpt-6-luna"],
     };
     for (const [provider, windows] of Object.entries(ORIGINAL_MODEL_WINDOWS)) {

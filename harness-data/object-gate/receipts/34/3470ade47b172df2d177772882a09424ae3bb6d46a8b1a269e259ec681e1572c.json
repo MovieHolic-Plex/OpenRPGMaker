@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3470ade47b172df2d177772882a09424ae3bb6d46a8b1a269e259ec681e1572c",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "나무 의자(북향)",
+ "label": "modern_city/interior/mci-chair-wood-n",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "chair (back/front view)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn in flat orthographic 2D elevation. The top horizontal bar/rim of the backrest is just a 1px outline (row 8) with no visible top depth, and no horizontal seat or rail top surfaces are foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 43501
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden chair facing north",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn in pure flat elevation (rear/front view). The top horizontal bar of the backrest is only a 1px outline with no visible top surface (0px depth), and no horizontal surfaces (such as the top rail or seat) are shown from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6797
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden chair",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The north-facing chair is drawn as a flat orthographic rear elevation. The backrest panels and legs are shown straight-on with no top surface foreshortening along the upper rim (only a 1px outline).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7104
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden chair facing north (seen from rear)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn in flat orthographic rear elevation with 0 rows of visible top surface on the backrest (only a 1px dark border on row 7) and no top-down perspective foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7196
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:24.134Z",
+ "cells": {
+  "16": [
+   "ecb84a5f2027e57e",
+   "fb04228b9cfa57ec"
+  ],
+  "24": [
+   "0f9f6cbb9c787e0f",
+   "3490b001cfcfa77a",
+   "6b679af4dbe5ca3a",
+   "922ba31a5495f839",
+   "926aa69e86519bb1",
+   "a9815bd0147dfebe",
+   "c7ea91a5eb82e210",
+   "cc89c87276046e74",
+   "cca6c8287459728b"
+  ],
+  "32": [
+   "12cf0130f16ab878",
+   "b3a0e16330de1378",
+   "da6635ecce94cfdb"
+  ],
+  "48": [
+   "096de6276fef8c48",
+   "497caa124e76cd16",
+   "5ba2736161562ef4",
+   "725b59ff9f2cce96",
+   "a5aba80f73d83548",
+   "fdd857e4e2d1c639"
+  ]
+ }
+}

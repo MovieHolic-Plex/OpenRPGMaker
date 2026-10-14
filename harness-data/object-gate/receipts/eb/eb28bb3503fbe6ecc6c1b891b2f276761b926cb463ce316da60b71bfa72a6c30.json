@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "eb28bb3503fbe6ecc6c1b891b2f276761b926cb463ce316da60b71bfa72a6c30",
+ "width": 32,
+ "height": 48,
+ "kind": "low_furniture",
+ "name": "더블 침대",
+ "label": "modern_city/interior/mci-bed-double",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "double bed with headboard, pillows, patterned blanket, and footboard",
+    "kind_matches": true,
+    "top_rows": 33,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mattress, pillows, and blanket top surface span rows 11 to 43 (approx. 33 source pixels high), viewed from above in classic 3/4 top-down perspective, ending in a south-facing footboard.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4590
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "double bed mattress and bedding",
+    "kind_matches": true,
+    "top_rows": 34,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed is viewed from above in standard 3/4 top-down perspective, clearly showing the horizontal surface of the mattress with pillows and checkered duvet (rows 10-43, 34 rows tall), ending at the south-facing wooden footboard at rows 44-46.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4941
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "double bed with wooden headboard, white sheets with two pillows, and checkered teal duvet",
+    "kind_matches": true,
+    "top_rows": 33,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mattress top surface (pillows, sheet, and checkered duvet) is extensively visible from above spanning rows 11 through 43 (33 rows), terminating in a south-facing footboard at rows 44-47.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3660
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bed mattress and frame",
+    "kind_matches": true,
+    "top_rows": 33,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bed (head sheet with pillows and checkered duvet) is extensively visible from rows 11 to 43 (33 pixel rows tall) above the bottom frame/footboard at rows 44-46.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3421
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:11.886Z",
+ "cells": {
+  "16": [
+   "1ce5d5c4706f7dcc",
+   "3592334a83649e36",
+   "937a7d5bb5ea6e5d",
+   "9427310001e4047e",
+   "a6b324aa4e5abaf7",
+   "d6019aab4005e50c"
+  ],
+  "24": [
+   "1ff5ec417d389398",
+   "3fa39a88f7c74bfd",
+   "560a6b1b3459a382",
+   "5929b915d10241f5",
+   "631e56f594af4d54",
+   "66b3dcb4cd6f05e0",
+   "8313720ed5881c83",
+   "ad160807617e949c",
+   "e57aaff92699df06",
+   "f2820a5e60da9db0",
+   "f76a7d266b1aa46a",
+   "fd3313ad4097e0ac"
+  ],
+  "32": [
+   "29606c6b00bcc75a",
+   "3d6d202f6b519f39",
+   "eba726c8223f1cdc",
+   "eeccfc1af1597aa4"
+  ],
+  "48": [
+   "3536feacd839e9d5",
+   "648ac23ca7cc735b",
+   "db7a7774094c0606"
+  ]
+ }
+}

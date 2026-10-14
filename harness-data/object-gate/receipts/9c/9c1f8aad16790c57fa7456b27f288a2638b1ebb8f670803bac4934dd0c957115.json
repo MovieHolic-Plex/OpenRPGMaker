@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9c1f8aad16790c57fa7456b27f288a2638b1ebb8f670803bac4934dd0c957115",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "갈림길 이정표(글자 없는 화살 판)",
+ "label": "snow-north/sn-signpost",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden post of the signpost",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut surface of the central wooden post is clearly visible and foreshortened from rows 2 to 5 (about 4 rows tall) with shading and highlight.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5906
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden post of a signpost with attached directional boards",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the wooden post is clearly drawn as an ellipse from row 2 to row 5 (approx 4 source pixel rows tall), correctly showing the top surface from a 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6988
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden signpost pole with attached planks",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut surface of the wooden post is rendered as an ellipse across rows 2-5 (approx 4px tall) with clear 3/4 view perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6041
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden signpost pole with directional signboards",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the wooden pole is clearly rendered as a 4-row foreshortened ellipse (rows 2-5) viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5450
+  }
+ ],
+ "decidedAt": "2026-10-14T01:19:07.397Z",
+ "cells": {
+  "16": [
+   "e4f1d0dd6061ec52",
+   "fd289237b6cd46f6"
+  ],
+  "24": [
+   "2d3cce2ca18c4165",
+   "2fc57f9080948088",
+   "4dfa603de7b1b89b",
+   "5c94a8b50ba1a1a0",
+   "662632c564bd502f",
+   "921bbc1b4183961c",
+   "a6279541abc826d4",
+   "aa842ad4ca2c92d8",
+   "acbdfd96c2faba2d",
+   "bf8a38ef8b573329",
+   "e7243f9fdc585541",
+   "f6baa287f91f1ec0"
+  ],
+  "32": [
+   "1cf0c9216edeefcd",
+   "3c2d0abc5524868c",
+   "5e068ea6f7112e4a"
+  ],
+  "48": [
+   "4c6f0bb94b6836d2",
+   "4ee76e8b40d6b8c2",
+   "5e4656131b0cd168",
+   "5fbdaa047673169d",
+   "7a460b8769905375",
+   "b99a0b1409eacf98"
+  ]
+ }
+}

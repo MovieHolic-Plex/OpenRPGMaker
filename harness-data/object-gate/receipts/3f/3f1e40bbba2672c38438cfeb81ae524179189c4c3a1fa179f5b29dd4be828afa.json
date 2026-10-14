@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3f1e40bbba2672c38438cfeb81ae524179189c4c3a1fa179f5b29dd4be828afa",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "모닥불(돌 고리 속 타는 장작) 프레임 3",
+ "label": "snow-north/sn-bonfire-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone ring with campfire",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone ring and campfire pit are arranged in a foreshortened ellipse spanning rows 14 to 30, showing clear top-down depth with front stones displaying both top highlights and south faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3739
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "campfire ring with stones and burning logs",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone ring and surrounding pit form a clear 3/4 top-down foreshortened ellipse spanning rows 14 to 30, with back and front stones rendered with proper depth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3910
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone ring with campfire",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone ring is drawn as a clear foreshortened 3/4 ellipse spanning rows 14 to 29, showing the top/receding depth of the ring and fire pit with properly shaded stone tops and front faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2835
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone ring campfire with burning firewood",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 10,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone ring is drawn as a clearly foreshortened 3/4-view ellipse spanning from row 14 to row 30, with stones showing top highlights and south vertical faces around a visible pit interior and central fire.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4526
+  }
+ ],
+ "decidedAt": "2026-10-14T01:15:54.501Z",
+ "cells": {
+  "16": [
+   "59c85aed2619ac18",
+   "661691fae9081a83",
+   "b4365cd3f8a132ad",
+   "bed475bdaff7c1f6"
+  ],
+  "24": [
+   "173f6e6d30547d4c",
+   "23a96464ae672e2c",
+   "453612c136a2f4b7",
+   "4bee41e76f3f9c8b",
+   "50d60914385941d9",
+   "54accea8bba5418c",
+   "5befc5fda3b9f5ad",
+   "681c7b7f22d5b09c",
+   "68818c4cde30f464",
+   "8912c9163688303c",
+   "99e2cfb117b2c6a6",
+   "9c40e5087d4fcc0e",
+   "a8d7fdad0a96eb98",
+   "b7a13c3208a8b415",
+   "b90b6a5f66af0cb0",
+   "d273cf3b64f0cf35",
+   "d823b36ecb5ec517",
+   "d8fd3a8163baff6a",
+   "d90fe17b47edb166",
+   "ea60c3049bd10710",
+   "ebcf3a51ec6042be",
+   "ff585e193ea026c5"
+  ],
+  "32": [
+   "ebc992de9f193ef3"
+  ],
+  "48": [
+   "069c11d025b9c172",
+   "707126d5c392eaf4",
+   "8d7fa59a13f324ff",
+   "ce895fb613859672",
+   "d861816b95c77889",
+   "e807d135b8283b7b"
+  ]
+ }
+}

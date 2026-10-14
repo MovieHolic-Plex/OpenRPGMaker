@@ -1,0 +1,143 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5d06af0361e1a13d5b66a3850ea1234fde231464df1494261867868150133185",
+ "width": 48,
+ "height": 96,
+ "kind": "structure",
+ "name": "망루(통나무 다리·사다리·눈 지붕 감시대)",
+ "label": "snow-north/sn-watchtower",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "snow-covered roof and observation platform of watchtower",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered roof slope clearly displays its top surface over rows 7 to 24 (around 18 px high), providing proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3677
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "snow-covered watchtower roof and platform",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered roof shows a large foreshortened top slope from row 7 to row 22 (approx. 16 pixel rows) conforming to 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3840
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "watchtower with snow-covered roof",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered roof has a large, foreshortened south-facing slope spanning rows 6 to 21 (16 rows) shown from above in 3/4 perspective, with horizontal beam surfaces also showing snow caps.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3652
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "watchtower roof and platform",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered roof shows a large foreshortened south-facing slope from row 7 to row 23 (~17 rows), properly depicting the top surface in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4368
+  }
+ ],
+ "decidedAt": "2026-10-14T01:02:41.800Z",
+ "cells": {
+  "16": [
+   "1556a1dfc8012806",
+   "1a61e04f8b313642",
+   "1af3dee3b6fefd7d",
+   "2172edab89905b84",
+   "2643e1d415bf13f0",
+   "28daeb8b27b3afe2",
+   "4b8ce4f9dd417744",
+   "51af0de5ef98ba6c",
+   "54f4bf5e71b59eb9",
+   "622f2f7f4bb676aa",
+   "6b82bfce0d2036ee",
+   "750e1b7e39270ee1",
+   "7a13e8a2c891ab26",
+   "9aaa5b0c2a378e0e",
+   "ac8572a7b8944ee3",
+   "b279cd22ffd6a646",
+   "b59b518110a5fec4",
+   "fad9d3c44b1fdb14"
+  ],
+  "24": [
+   "23bfd609ec404b90",
+   "3f25e3a120de78b9",
+   "58c6f754bf39d300",
+   "71cfd310f6c97469",
+   "740824d4e85bbfae",
+   "af5f12b12efeec27",
+   "b5de96350b2fdd4c",
+   "c8b137b0631076d9"
+  ],
+  "32": [
+   "00b67f6123a5f982",
+   "0858f66a6f9faedf",
+   "0f0aae76b0da4a74",
+   "15bb8e1977bfcea4",
+   "2aa3b131bd82cdd9",
+   "5440655877cf7c40",
+   "59c9571e7500cec9",
+   "6f38bfda6c73a182",
+   "826c00059c7d5421",
+   "85dd7d49c5a82454",
+   "ac2e7d1ee69f1792",
+   "b40c4a115deb326d",
+   "b81b6ee0a72a9304",
+   "bccf52e42cb82838",
+   "c37a4f95ca32e02c",
+   "c925aed67e001ea5",
+   "ee7875e59e169303",
+   "f472c9aa60162415"
+  ],
+  "48": [
+   "cfb532a89ebabf89",
+   "e54a39e4c9f096a8"
+  ]
+ }
+}

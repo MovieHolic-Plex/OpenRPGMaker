@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b95cf25efcf5ea2eda27aeda560ab25c407b9afea6e9743b4b5c825f737ce320",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "노트북",
+ "label": "modern_city/interior/mci-g-laptop",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "laptop base and screen",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The keyboard base of the laptop is shown from above across rows 9-13 (5 pixel rows) with visible keyboard keys, while the screen stands vertically in rows 2-8 facing south.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4230
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "open laptop (screen and keyboard base)",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base of the open laptop displays its horizontal top surface (keyboard deck) foreshortened over rows 9-12 (4 rows tall), while the screen stands vertically facing south.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5496
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "open laptop with screen and keyboard base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The keyboard base of the laptop is viewed from above across rows 9-13 (5 pixel rows tall) displaying keys, while the screen stands vertically in rows 2-8.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3924
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "open laptop (screen and keyboard base)",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The keyboard base forms a 4-pixel-tall horizontal surface (rows 9-12) seen from above, while the screen stands vertically facing south (rows 2-8).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5630
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:05.389Z",
+ "cells": {
+  "16": [
+   "45afa060872c65e1"
+  ],
+  "24": [
+   "72aee7377febdcb7",
+   "7b5061e16cb9b1aa",
+   "7e97a3a2aa330c10",
+   "94572668351a18f8",
+   "b54e234f9b0bfc94",
+   "e3a6046a4bf7b276"
+  ],
+  "32": [
+   "13fa117c3d3960df",
+   "5088a1ff78a5698e",
+   "5167d250ddfdd73a",
+   "54f6f0ac146177bc",
+   "952b109dc74bbad7",
+   "c9e8ea280a3ce56a"
+  ],
+  "48": [
+   "3db8a8f4582d6b17",
+   "4550a40b03d3be02",
+   "4a025a12b4294c9f",
+   "b9ce6c44e60ee235",
+   "c36462ff95ea0d11",
+   "f318ad02c675284f"
+  ]
+ }
+}

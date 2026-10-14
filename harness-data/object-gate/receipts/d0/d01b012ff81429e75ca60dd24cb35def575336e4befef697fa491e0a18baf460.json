@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d01b012ff81429e75ca60dd24cb35def575336e4befef697fa491e0a18baf460",
+ "width": 16,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "세로 진열대",
+ "label": "modern_city/interior/mci-gondola-v",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical display rack with hanging cards/items and bottom shelves",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The display rack and its compartments are drawn in flat front elevation with no visible top surface (0px) anywhere across the top edges.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4938
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall vertical display shelf/rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The display rack and the items inside it are drawn entirely in flat front elevation with only a 1px outline at the top (row 2 and row 5) and no visible horizontal top surface anywhere.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5821
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vertical display rack / stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tall display rack has no top surface visible (top_rows=0), with the top edges capped only by 1-pixel outlines. All shelves, display slots, and contents are rendered in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4570
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical display rack / magazine stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The display rack is drawn strictly in front elevation. The top at rows 2-6 consists only of 1-pixel outline borders with no visible top surface or shelf depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4063
+  }
+ ],
+ "decidedAt": "2026-10-14T01:20:34.501Z",
+ "cells": {
+  "16": [
+   "22ecfce1401e647a",
+   "38dd2020bca95c3d",
+   "5bdcfbe22dfab0a1"
+  ],
+  "24": [
+   "0ac776ad087fa651",
+   "23a0cd7f0c5677dc",
+   "40b55596b5fca41a",
+   "afca32ca485c8867",
+   "c558b9f1e2d50a34",
+   "de2bfe06d223b89c"
+  ],
+  "32": [
+   "3b8b89b8b887b5a6",
+   "4631aeab5bfb9665",
+   "474772feb843ad10",
+   "4892f2c92bd2523a",
+   "513ee8256a9dd7c0",
+   "75c8c04fd03c69d7",
+   "a98fa368812c2394",
+   "c0dca812c85da0ed",
+   "c6413f260b020cdd",
+   "d0ed5fafa471e27c",
+   "ddb1673b42a8aad9",
+   "f5c9c77be5f91484"
+  ],
+  "48": [
+   "5c0b1714d29be5e1",
+   "89027936486698e9",
+   "f6cd916579d7ef6b"
+  ]
+ }
+}

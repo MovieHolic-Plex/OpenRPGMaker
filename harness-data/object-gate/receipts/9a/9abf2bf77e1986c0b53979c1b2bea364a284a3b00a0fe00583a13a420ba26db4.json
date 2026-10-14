@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9abf2bf77e1986c0b53979c1b2bea364a284a3b00a0fe00583a13a420ba26db4",
+ "width": 16,
+ "height": 48,
+ "kind": "organic",
+ "name": "어린 자작(가는 줄기 둘)",
+ "label": "snow-north/sn-birch-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "birch trunk and branches",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The birch tree trunks and branches are drawn in a completely flat front elevation with branches spreading only in the 2D vertical plane. There is no foreshortening or visible top surface on the main body; only the base snow patch has top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6110
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bare birch trunks and branches",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The birch tree is drawn as a flat 2D side/front elevation with vertical trunks and planar branching; there is no foreshortened top surface or top-down volume on the main body.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6375
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "young birch tree trunks and bare branches",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree trunks and branches are drawn entirely in a flat 2D side-scroller elevation across the X-Y plane with no 3/4 depth or foreshortening; no top surfaces are visible on the main body.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12976
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "birch tree trunk and bare branches",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The birch tree is drawn as a flat 2D front elevation (side-scroller style) with zero top-down perspective or foreshortening; branches only spread laterally in the vertical plane with 0px top surface for the main body.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7450
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.503Z",
+ "cells": {
+  "16": [
+   "57800d8111cf8410",
+   "5996d7c830ed8388",
+   "df5c69b908a90183"
+  ],
+  "24": [
+   "0f45594ff8d3b2d5",
+   "1153e82f78db92af",
+   "33f433d67de46451",
+   "92e79d937398ee64",
+   "bc5940b821edd7c7",
+   "dfe8d4e03cb2a4ed"
+  ],
+  "32": [
+   "1f937a721f3a73fe",
+   "25e21aa2cbe77a7a",
+   "4c80f8920e16b65b",
+   "558d7fe1452fefde",
+   "586b91a1aa3b3778",
+   "5d3532c2671f5be9",
+   "7313773910109e43",
+   "7c85cb827e5eac7a",
+   "91c85afd834836a4",
+   "db76eb2a6bef646f",
+   "ee348e2a21402096",
+   "f31548a3bee22131"
+  ],
+  "48": [
+   "088ce46896ce8feb",
+   "a37c95986478b23d",
+   "c6f9628261fb8671"
+  ]
+ }
+}

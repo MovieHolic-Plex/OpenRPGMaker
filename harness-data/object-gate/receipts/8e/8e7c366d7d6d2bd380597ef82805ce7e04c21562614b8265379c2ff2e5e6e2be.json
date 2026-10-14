@@ -1,0 +1,153 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8e7c366d7d6d2bd380597ef82805ce7e04c21562614b8265379c2ff2e5e6e2be",
+ "width": 64,
+ "height": 32,
+ "kind": "terrain",
+ "name": "museum room back wall face (two rows)",
+ "label": "monster-rooms/rm_wall_museum",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall face tiles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall face terrain tiles showing horizontal brick/panel courses; as a wall face terrain element in JRPG perspective, a front-facing vertical surface is correct.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5285
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "back wall face tiles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tiles correctly depicting a vertical wall surface without receding sides.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3417
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall face tiles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a south-facing interior wall face; as terrain rather than a standing object, it correctly depicts the vertical wall surface without a top plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7238
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "back wall face tiles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting vertical wall surfaces (brick panels with trim). As a wall face terrain tile rather than a freestanding 3D object, it correctly fills the vertical plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4970
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.766Z",
+ "cells": {
+  "16": [
+   "2090536b56eb2478",
+   "23bb9d5b30789a0d",
+   "723ae551a520dd55",
+   "e4be8fa6f31f489b",
+   "e6df822c9fff9ebd",
+   "f630d13cccd9471a"
+  ],
+  "24": [
+   "1934bea61e95c78b",
+   "1ad4055fd91d0862",
+   "26fa37e501491f8a",
+   "36e123cba334972d",
+   "3d92e65571f88671",
+   "3db0c42c3cc31f53",
+   "523545a0a6f98600",
+   "53f1e73058066e5d",
+   "5689c3e2e2af15d2",
+   "5c9f88cbc480f570",
+   "6526b00030f9ed34",
+   "673b4bec3c8130dc",
+   "6df2b6c85dafb8fd",
+   "700be681529ef967",
+   "7aa978c816a9af87",
+   "7cc68c987b2f968c",
+   "84564908e9cc880b",
+   "84fe12d67960f4d9",
+   "86e96d6958b714a2",
+   "88e49b8320d69dfb",
+   "8ae53f8efc35f04d",
+   "8be117c40d53b820",
+   "9a30ddcd83ab4d86",
+   "9c4d8695694fff3c",
+   "9d1e013789c774b9",
+   "9eb9652cf7d53fb2",
+   "a228a507484aa9d4",
+   "a478945518470cf5",
+   "ac8afd529a9e1a16",
+   "b68f2a001b39d366",
+   "c2fe5d0ddd4a0f8f",
+   "ceb4d01987e8637f",
+   "ced52a9142c0229a",
+   "d41b03abe7c77fd6",
+   "e85ef624353a92c3",
+   "f9735e8a774e3cd9"
+  ],
+  "32": [
+   "07580e44ff14a5c4",
+   "b32b298c2b0d7d7f"
+  ],
+  "48": [
+   "09fbe250371314ee",
+   "206fdac759ba6be3",
+   "23c8e9a9e7cccb87",
+   "30f836d2296bfe7a",
+   "410858794af4769f",
+   "480adf5d1098d6c9",
+   "65ad23675698971d",
+   "7dfbf354957faae7",
+   "9636f0d83fd2a60a",
+   "c1711559486669ac",
+   "c80ad48fe9bba0c5",
+   "e10ef5b398837d02"
+  ]
+ }
+}

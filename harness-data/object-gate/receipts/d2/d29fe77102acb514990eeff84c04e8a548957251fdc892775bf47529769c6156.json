@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d29fe77102acb514990eeff84c04e8a548957251fdc892775bf47529769c6156",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "줄 세우기 기둥",
+ "label": "modern_city/interior/mci-stanchion",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stanchion post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The post, top cap, and circular base are drawn entirely in front elevation with flat horizontal bands (rows 7-9, 26-27) rather than showing the foreshortened circular/elliptical top surfaces of the cap or base from a 45-degree angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5922
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stanchion post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stanchion is drawn in pure front elevation: the top cap is rendered as a stepped dome/pyramid rather than an ellipse showing a top surface, and the collar and pole below it have completely flat horizontal dividing lines.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5805
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stanchion post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stanchion cap and base are drawn in pure front elevation with horizontal bands and a front-facing dome profile; no foreshortened top circular surface or ellipse is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4954
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stanchion post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire queue stanchion, including the domed cap (rows 4-6), the upper collar (rows 7-8), and the circular base (rows 24-29), is rendered with completely horizontal straight lines in pure front elevation with no visible elliptical top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5572
+  }
+ ],
+ "decidedAt": "2026-10-14T01:18:10.780Z",
+ "cells": {
+  "16": [
+   "8fbd35919a44488e",
+   "cf2565da12912f70"
+  ],
+  "24": [
+   "0661c8f22db74694",
+   "08a1b14279153e01",
+   "0c4c81bbdfe51873",
+   "0ed1f804b761d234",
+   "270eb609999f205d",
+   "3d9c3fb61e65dbd4",
+   "6cf68692eb0b4f4a",
+   "a74a2044eefece79",
+   "bc79bcae0f82051e",
+   "f44cbaeeec581ca1",
+   "f5eee65335543191",
+   "f7a99f1562e013c0"
+  ],
+  "32": [
+   "1b69f92326ca59f6",
+   "44809f1064e4b76a",
+   "67622bfada7a3f53"
+  ],
+  "48": [
+   "1883e1a30dea1872",
+   "56081f93653ea653",
+   "99f8b75c2776b049",
+   "e2b073a2692c8fd8",
+   "e55f36d7e14517e2",
+   "ebafe11f5e8bcd88"
+  ]
+ }
+}

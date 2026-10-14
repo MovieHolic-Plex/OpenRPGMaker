@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "88bf003b5e5d815b0241aa42575de45a3b1cd21d811c0e9fa5b9cbda818eb966",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "ATM",
+ "label": "modern_city/interior/mci-atm",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ATM cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ATM is drawn entirely in flat front elevation with a 1px outline across the top (row 1) and no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 3626
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ATM cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ATM is drawn entirely in a flat front elevation showing only screens, keypad, and slot from straight ahead, with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 3189
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ATM cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ATM is drawn directly from the front with screens, keypad, and slot facing the camera. There is no visible top surface foreshortened from above (top_rows = 0, only a 1px border at row 1).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 3523
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ATM cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ATM is drawn entirely from a flat front view with only a 1px border at row 1 and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 3735
+  }
+ ],
+ "decidedAt": "2026-10-14T01:18:25.207Z",
+ "cells": {
+  "16": [
+   "4a6b177eb31ed240",
+   "8bae7e1b1a7c5040"
+  ],
+  "24": [
+   "197a7f438fd0a075",
+   "39c23a91f10c99b7",
+   "3bc178deb7dfedf4",
+   "53d60029ab4ff7dc",
+   "6e527d326a8b0c25",
+   "93232ec977b8c224",
+   "a4416827cc2fe79c",
+   "b6ce95c2545935d9",
+   "b716829363b685f4",
+   "d5564aa740ba064e",
+   "d692989f681a54a2",
+   "f19e829c7e8a7769"
+  ],
+  "32": [
+   "3900aa2db4a88889",
+   "52a80d9273d1c819",
+   "f6540d1d54149ba4"
+  ],
+  "48": [
+   "189fd284c4844ef9",
+   "2b606588978f31b6",
+   "56c1434ab4879d88",
+   "5a8193c25ca55c49",
+   "d329e1407de6ed6c",
+   "ed238fe92d5c6278"
+  ]
+ }
+}

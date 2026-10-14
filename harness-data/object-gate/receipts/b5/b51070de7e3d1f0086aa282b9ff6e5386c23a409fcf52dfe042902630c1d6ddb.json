@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b51070de7e3d1f0086aa282b9ff6e5386c23a409fcf52dfe042902630c1d6ddb",
+ "width": 32,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "화이트보드",
+ "label": "modern_city/interior/mci-whiteboard",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall-mounted whiteboard with charts, graphs, and marker tray",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted whiteboard drawn flat against the north wall with a marker tray at the bottom, perfectly appropriate for the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4599
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "whiteboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted whiteboard displayed flat against the wall with chart markings and bottom marker tray; valid flat perspective for wall-mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8096
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "whiteboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted whiteboard displayed flat against the wall with chart drawings and marker tray; valid flat perspective for wall_mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11526
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "whiteboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted whiteboard designed to hang flat on a north wall. As a wall-mounted flat object, it appropriately faces the camera directly without requiring a foreshortened top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7006
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:02.402Z",
+ "cells": {
+  "16": [
+   "3bdc2413ad2ad4b8",
+   "6f585971b2dfd163",
+   "9dca61aa4b648993",
+   "bec975bb9691d743"
+  ],
+  "24": [
+   "0ea99b114e71fd50",
+   "0f4404d366350d8d",
+   "1abc0cde21c30cd8",
+   "2001be4450d37f33",
+   "229a26a0c7df2b0d",
+   "26e91c4f2b1f4b25",
+   "28c566a2b4aa48e5",
+   "2dddde8001b7d155",
+   "372dddd4b9ed236c",
+   "53943e5254aebc94",
+   "669704950a3d7be0",
+   "75237a44c49d208e",
+   "76105eadc41addd3",
+   "7eff1c8f3add9f07",
+   "85118438b158a102",
+   "9ae922383e37bd8b",
+   "9f3f94491dd7b446",
+   "a67824ea13a91ca7",
+   "b039a9fa9c6a2f77",
+   "c05083f847a5e08f",
+   "cadd4876d06cb12a",
+   "ce4905698f4206da",
+   "d68eafca894616c6",
+   "d9d2aeb5d6efe58c"
+  ],
+  "32": [
+   "6f128550663309c1"
+  ],
+  "48": [
+   "03bc2afd19c19a65",
+   "51be60c1f68e4ff4",
+   "54ad1e1a4f6b67eb",
+   "5af7e92ea7838a56",
+   "5b911aa91e1e8d45",
+   "dac5fe15217ba6d0"
+  ]
+ }
+}

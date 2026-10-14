@@ -82,12 +82,11 @@ describe("공급자가 거부하는 사고 강도는 요청을 만들 때 낮춘
 });
 
 describe("측정이 비싸다고 밝힌 기본값", () => {
-  it("deep 역할 폴백은 low, 기본 모델은 3.8-flash", () => {
+  it("deep 역할 폴백은 low, 기본 모델은 4-argon", () => {
     // 턴당 2.9s(high) → 2.1s(low). 명시 저장값은 폴백을 쓰지 않으므로 그대로 high 다.
     const config = defaultAiConfig();
-    expect(modelForRole(config, "deep").thinkingLevel).toBe("low");
+    expect(modelForRole({ ...config, roleModels: undefined }, "deep").thinkingLevel).toBe("low");
     expect(modelForRole({ ...config, roleModels: { deep: { ...deep } } }, "deep").thinkingLevel).toBe("high");
-    expect(DEFAULT_MODEL).toBe("gemini-3.8-flash");
-    expect(config.liteModel).toBe("gemini-3.8-flash");
+    expect(DEFAULT_MODEL).toBe("gemini-4-argon");
   });
 });

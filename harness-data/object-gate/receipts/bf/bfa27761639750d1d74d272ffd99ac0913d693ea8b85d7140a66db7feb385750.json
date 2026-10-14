@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bfa27761639750d1d74d272ffd99ac0913d693ea8b85d7140a66db7feb385750",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "꽃병",
+ "label": "modern_city/interior/mci-g-vase",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flower vase / planter",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The vase body (rows 11-14) is drawn as a flat rectangular block from a pure front elevation with a straight horizontal top edge (row 11) and no elliptical opening or foreshortened top surface showing the rim/opening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12185
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vase/pot with flowers",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pot displays a large top opening (rows 5-10, 6 rows tall) showing the interior soil and flowers from above, combined with a 3-4 row front south face (rows 11-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5660
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flower vase / planter pot",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pot features a wide opening viewed from above (rows 5-10) showing brown soil and planted flowers, with the front face of the pot extending below from row 11 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6157
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "teal flower pot / vase with top opening filled with flowers",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The vase shows an open circular top (rows 5-10) filled with soil and flowers, bounded by rim pixels, with a 3-4px tall south front face below (rows 11-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11542
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:59.363Z",
+ "cells": {
+  "16": [
+   "62add9e2639ef198"
+  ],
+  "24": [
+   "08e8e4b8eabe98c2",
+   "6c067c5750a22cad",
+   "a75f82c16d53fc96",
+   "acf0f5e3764b8dd5",
+   "aed019835f10d285",
+   "f677ad17315815f5"
+  ],
+  "32": [
+   "12feb6ec3d05a235",
+   "2afa64c5f1609b85",
+   "5c0da8b71c9fca69",
+   "d2baf7fbdad05edf",
+   "ef8a4f82d15ac71a",
+   "f7bd5c0afe930f8c"
+  ],
+  "48": [
+   "4618a3a06207fba7",
+   "474a6d588655c187",
+   "4c983a6b1710dd9f",
+   "9d6e622a05d08d52",
+   "a15e99aca38a26a2",
+   "ad084c08606921bb"
+  ]
+ }
+}

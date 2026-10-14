@@ -78,8 +78,8 @@ describe("aiConfig 저장/로드", () => {
     expect(reloaded.liteModel).toBe(DEFAULT_LITE_MODEL);
     // 기본 모델은 OAuth(Codex) 카탈로그 ID 여야 한다. 옛 기본값 cpen/gpt-5-6-luna 는 게이트웨이
     // ID 라서, OAuth 경로에서 오류 없이 제공자 기본 모델로 강등됐다(감독이 고른 모델이 답하지 않음).
-    expect(DEFAULT_MODEL).toBe("gemini-3.8-flash");
-    expect(DEFAULT_LITE_MODEL).toBe("gemini-3.8-flash");
+    expect(DEFAULT_MODEL).toBe("gemini-4-argon");
+    expect(DEFAULT_LITE_MODEL).toBe("gemini-4-argon");
   });
 
   it("옛 모달이 적어 둔 Deep 역할(폴백 모양 + high)은 미설정으로 승격하고, 사용자가 바꾼 값은 보존한다", async () => {
@@ -89,21 +89,21 @@ describe("aiConfig 저장/로드", () => {
     const store = installLocalStorage();
     // 2026-09-26 이전 모달은 저장마다 역할 3개를 전부 썼다 — 그때 폴백이던 모양이 그대로 남아 있다.
     store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
-      authMode: "chatgpt", model: "gemini-3.8-flash", liteModel: "gemini-3.8-flash",
-      roleModels: { deep: { provider: "google-antigravity", model: "gemini-3.8-flash", thinkingLevel: "high" } },
+      authMode: "chatgpt", model: "gemini-4-argon", liteModel: "gemini-4-argon",
+      roleModels: { deep: { provider: "google-antigravity", model: "gemini-4-argon", thinkingLevel: "high" } },
     }));
     expect(loadAiConfig().roleModels?.deep).toBeUndefined();
     // 사고 강도를 «일부러» 바꾼 저장값은 남는다 — 승격은 폴백 모양에만 적용된다.
     store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
-      authMode: "chatgpt", model: "gemini-3.8-flash", liteModel: "gemini-3.8-flash",
-      roleModels: { deep: { provider: "google-antigravity", model: "gemini-3.8-flash", thinkingLevel: "medium" } },
+      authMode: "chatgpt", model: "gemini-4-argon", liteModel: "gemini-4-argon",
+      roleModels: { deep: { provider: "google-antigravity", model: "gemini-4-argon", thinkingLevel: "medium" } },
     }));
     expect(loadAiConfig().roleModels?.deep?.thinkingLevel).toBe("medium");
     // 스탬프가 찍힌 저장(이 PR 이후 저장분)은 손대지 않는다 — 프리셋 「균형」·「최고 품질」 이 쓰는
     // {providerId, liteModel, "high"} 모양이 «일부러 고른 높음» 일 수 있기 때문이다(리뷰 R3 N5).
     store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
-      authMode: "chatgpt", model: "gemini-3.8-flash", liteModel: "gemini-3.8-flash", roleModelsPolicyVersion: 1,
-      roleModels: { deep: { provider: "google-antigravity", model: "gemini-3.8-flash", thinkingLevel: "high" } },
+      authMode: "chatgpt", model: "gemini-4-argon", liteModel: "gemini-4-argon", roleModelsPolicyVersion: 1,
+      roleModels: { deep: { provider: "google-antigravity", model: "gemini-4-argon", thinkingLevel: "high" } },
     }));
     expect(loadAiConfig().roleModels?.deep?.thinkingLevel).toBe("high");
   });
@@ -175,7 +175,7 @@ describe("aiConfig 저장/로드", () => {
     const cfg = defaultAiConfig();
     expect(cfg.authMode).toBe("chatgpt");
     expect(cfg.providerId).toBe("google-antigravity");
-    expect(cfg.model).toBe("gemini-3.8-flash");
+    expect(cfg.model).toBe("gemini-4-argon");
     expect(cfg.baseUrl).toBe("");
     expect(cfg.apiKey).toBe("");
   });

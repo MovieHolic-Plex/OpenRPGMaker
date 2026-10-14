@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "420db7e004d655893ef044e4cc2776b3f34e28e830d8d3a9015b01376e61e706",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "나무 통(눈 뚜껑)",
+ "label": "snow-north/sn-barrel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden barrel with snow cap",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered top cap forms an ellipse/octagon spanning rows 2 to 6 (5 rows tall), clearly presenting a horizontal surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5021
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden barrel with snow cap",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow lid forming the top cap of the barrel is drawn as an elliptical surface spanning rows 2 to 6 (5 rows tall), clearly viewed from a 3/4 top-down angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3849
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden barrel with snow cap",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered top cap forms a foreshortened ellipse spanning rows 2 to 6 (5 rows tall) with the expected downward curve on the front edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4903
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden barrel with snow cap",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow lid forming the top surface spans rows 2 through 6 (5 pixel rows tall) with an elliptical curve visible from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5290
+  }
+ ],
+ "decidedAt": "2026-10-14T01:15:54.502Z",
+ "cells": {
+  "16": [
+   "0c2d3000173b99e2"
+  ],
+  "24": [
+   "0b4a63cc5d6f690f",
+   "0f54e05c3659042a",
+   "66cf7382f8c6118a",
+   "80ce7d89f7d3f008",
+   "961e9fb952e32722",
+   "ca8fd382c839638b"
+  ],
+  "32": [
+   "2604a5b9a9543142",
+   "3f306de2af25ef67",
+   "94cacc505668db94",
+   "b30294a378c72de6",
+   "c7b8b50b504ce299",
+   "cf21a179d8d278ac"
+  ],
+  "48": [
+   "0e8739f3853e7c3f",
+   "262738ba1d25a160",
+   "58bfd2d4029807b1",
+   "d120852158f17e65",
+   "dabdb520b4b1794b",
+   "e4ec97380ec538da"
+  ]
+ }
+}

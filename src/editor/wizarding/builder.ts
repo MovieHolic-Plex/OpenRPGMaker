@@ -23,7 +23,12 @@ export type WizardingFurnitureMode = "auto" | "none" | "list";
 interface WithRecipe { readonly kit: string; readonly dx: number; readonly dy: number; readonly under?: boolean }
 export interface WizardingFurnitureRecipe {
   readonly kit: string; readonly placement: WizardingPlacement; readonly count: readonly [number, number]; readonly clearance: number;
-  readonly wallTop?: number; readonly wallMatch?: "plain" | "window"; readonly side?: "w" | "e"; readonly on?: "floor" | "ground" | "water";
+  /** wallMatch: plain = 민벽·장식 벽(촛대 등) · bare = 아무것도 없는 민벽만(액자가 벽 촛대를 덮지 않게) · window = 창. */
+  readonly wallTop?: number; readonly wallMatch?: "plain" | "bare" | "window"; readonly side?: "w" | "e"; readonly on?: "floor" | "ground" | "water";
+  /** north-wall: center = 북벽 가운데부터 자리를 찾는다(제단·벽난로처럼 방의 중심 장면). 생략하면 무작위. */
+  readonly align?: "center";
+  /** corner: 쓸 구석만(예: 서북 구석 거미줄 ["nw"]). 생략하면 네 구석. */
+  readonly corners?: readonly ("nw" | "ne" | "sw" | "se")[];
   readonly access?: boolean; readonly with?: readonly WithRecipe[];
   /** beside: 옆에 붙일 키트 id(가구·벽 조각). */
   readonly near?: readonly string[];
@@ -38,7 +43,8 @@ export interface WizardingFurnitureRecipe {
 }
 export interface WizardingDecalRecipe { readonly kit: string; readonly count: readonly [number, number]; readonly near?: readonly string[] }
 interface FloorRecipe { readonly tile?: string; readonly autotile?: string; readonly mix?: readonly string[] }
-interface RunnerRecipe { readonly ns?: string; readonly ew?: string; readonly nEnd?: string; readonly sEnd?: string }
+/** northGap: 남북 러너를 북벽에서 이만큼 띄워 끝낸다(그 자리에 제단 같은 중심 장면이 선다 — 예배당). 생략하면 북벽까지. */
+interface RunnerRecipe { readonly ns?: string; readonly ew?: string; readonly nEnd?: string; readonly sEnd?: string; readonly northGap?: number }
 export interface WizardingDoorInput { readonly side: WizardingDoorSide; readonly offset?: number; readonly kind?: "single" | "double" }
 interface SizeRecipe { readonly min: readonly [number, number]; readonly default: readonly [number, number]; readonly max: readonly [number, number] }
 export interface WizardingNpcSuggestion { readonly id: string; readonly name: string; readonly desc: string; readonly textureKey: string; readonly resourceId: string; readonly characterIndex: number }
@@ -462,14 +468,15 @@ function buildOnce(input: WizardingSpaceInput, tileset: TilesetDef, specIn: Wiza
           const rx = Math.max(1, Math.min(W - 1 - ns.w, cx - Math.floor(ns.w / 2)));
           const hasN = doors.some((d) => d.side === "n" && d.offset <= rx + ns.w - 1 && rx <= d.offset + d.width - 1);
           const hasS = doors.some((d) => d.side === "s" && d.offset <= rx + ns.w - 1 && rx <= d.offset + d.width - 1);
-          for (let y = NR; y < H - SR; y += ns.h) {
+          const y0 = hasN ? NR : Math.min(H - SR - ns.h, NR + Math.max(0, runner.northGap ?? 0));
+          for (let y = y0; y < H - SR; y += ns.h) {
             let p = ns;
-            if (y === NR && !hasN && nEnd) p = nEnd;
+            if (y === y0 && !hasN && nEnd) p = nEnd;
             if (y + ns.h >= H - SR && !hasS && sEnd) p = sEnd;
             stampDecal(p, rx, y);
             for (let dx = 0; dx < p.w; dx++) for (let dy = 0; dy < p.h; dy++) reserve(rx + dx, y + dy);
           }
-          placed.push({ kit: ns.id, x: rx, y: NR, role: "runner" });
+          placed.push({ kit: ns.id, x: rx, y: y0, role: "runner" });
         }
       } else if ((main.side === "e" || main.side === "w") && runner.ew) {
         const ew = resolve(runner.ew);
@@ -676,6 +683,7 @@ function buildOnce(input: WizardingSpaceInput, tileset: TilesetDef, specIn: Wiza
           const nk = b.northKind[X]!;
           if (nk === 4 || nk === 5) return "문·모서리 벽";
           if (r.wallMatch === "plain" && nk !== 1 && nk !== 3) return "민벽이 아니다";
+          if (r.wallMatch === "bare" && nk !== 1) return "빈 민벽이 아니다";
           if (r.wallMatch === "window" && nk !== 2) return "창이 아니다";
           if (b.L[3][i]! >= 0) return "벽 위가 찼다";
           cells.add(i);
@@ -777,6 +785,7 @@ function buildOnce(input: WizardingSpaceInput, tileset: TilesetDef, specIn: Wiza
     if (recipe.layout === "room" && r.placement === "north-wall") {
       const y = Math.max(0, Math.min(NR, r.wallTop ?? NR));
       for (let x = 1; x + main.w - 1 <= W - 2; x++) out.push([x, y]);
+      if (r.align === "center") return out.sort((a, c) => Math.abs(a[0] + main.w / 2 - W / 2) - Math.abs(c[0] + main.w / 2 - W / 2));
       return shuffle(out, rnd);
     }
     if (recipe.layout === "room" && r.placement === "side-wall") {
@@ -787,7 +796,8 @@ function buildOnce(input: WizardingSpaceInput, tileset: TilesetDef, specIn: Wiza
     const bb = areaBounds(on);
     if (bb.x1 < 0) return out;
     if (r.placement === "corner") {
-      const cs: [number, number][] = [[bb.x0, bb.y0], [bb.x1 - main.w + 1, bb.y0], [bb.x0, bb.y1 - main.h + 1], [bb.x1 - main.w + 1, bb.y1 - main.h + 1]];
+      const all4: [string, [number, number]][] = [["nw", [bb.x0, bb.y0]], ["ne", [bb.x1 - main.w + 1, bb.y0]], ["sw", [bb.x0, bb.y1 - main.h + 1]], ["se", [bb.x1 - main.w + 1, bb.y1 - main.h + 1]]];
+      const cs: [number, number][] = all4.filter(([k]) => !r.corners || (r.corners as readonly string[]).includes(k)).map(([, c]) => c);
       for (const [cx, cy] of shuffle(cs, rnd)) for (const [ox, oy] of [[0, 0], [1, 0], [0, 1], [1, 1], [2, 0], [0, 2]] as const) out.push([cx + (cx === bb.x0 ? ox : -ox), cy + (cy === bb.y0 ? oy : -oy)]);
       return out;
     }

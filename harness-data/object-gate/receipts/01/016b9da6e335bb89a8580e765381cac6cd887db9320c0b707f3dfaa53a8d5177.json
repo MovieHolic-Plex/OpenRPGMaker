@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "016b9da6e335bb89a8580e765381cac6cd887db9320c0b707f3dfaa53a8d5177",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "눈 낀 판석",
+ "label": "snow-north/sn-flagstone",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "snowy stone paver terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 sprite is a flat floor/ground texture depicting flagstones with snow filling the crevices, correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4805
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "snowy stone flagstone ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tile depicting stone pavers with snow in the crevices. Flat top-down ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5402
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "snowy stone pavement terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor/ground terrain tile depicting flagstones with snow packed in the mortar/crevices. Fills the tile as ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3988
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "snowy stone pavement",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground tile depicting flagstones with snow between mortar joints; represents a horizontal floor surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4020
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:23.952Z",
+ "cells": {
+  "16": [
+   "fdeff756e0362691"
+  ],
+  "24": [
+   "1fcede8cd6bf4be0",
+   "3c220665d9b8f8a6",
+   "4f3ace9982ca75c1",
+   "c95120cd8648cf37",
+   "eb0d0e236d1bc747",
+   "f55dd3d4c4fa977e"
+  ],
+  "32": [
+   "181fc405869e9b25",
+   "186113f90b025f11",
+   "61b7a0bf300a8e7e",
+   "ddd11a8e0ce17612",
+   "ebbd964307521d1b",
+   "ff11557b9b2fb61b"
+  ],
+  "48": [
+   "1bfebe5a7c58d348",
+   "466b24cd8e26d895",
+   "5ab6eb2e6d346494",
+   "72d597066b2b440d",
+   "87ea3437ed5ae193",
+   "f30709136a090ee9"
+  ]
+ }
+}

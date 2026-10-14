@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3ea5e01a0241f321866d9f1cd7f82af37f1c77ef4d7726b32fcfc090c26248e4",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "팔레트 상자 더미",
+ "label": "modern_city/interior/mci-pallet",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stacked boxes on a pallet",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top box clearly shows a distinct top surface (rows 4-8, 5 pixels tall) above its south face (rows 9-13). The lower crates also have visible top surfaces, showing proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5107
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stacked crates on a pallet",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top crate has a clearly visible top surface 5 source pixels tall (rows 4 to 8) shown in a lighter tone, and the lower crates also display visible top surfaces in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5324
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stacked boxes on a pallet",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top crate has a clearly rendered top surface from row 4 to 8 (5 pixels tall) above its south face (rows 9 to 13), and the lower crates also show visible top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5759
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stack of boxes on a pallet",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top box clearly shows a distinct top surface (rows 4-8, 5 rows tall) and a front south face (rows 9-13). The lower crates also display their top surfaces in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 23437
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:59.362Z",
+ "cells": {
+  "16": [
+   "c8c6f0f6f84c3056",
+   "dcdeb2e70f9961e3"
+  ],
+  "24": [
+   "018bfdbcf8ea0622",
+   "0223664a31e3b777",
+   "162bc54f93aca065",
+   "3a1b852ee3b0b58f",
+   "46990565bfe31114",
+   "66a0483493d3a46f",
+   "7356d6ae5d559b0c",
+   "955818c3cc6627df",
+   "cc3feab7fa6a4c4b",
+   "e183c6a868d83a21",
+   "eaf04f61e5c211e8",
+   "ecec895e2d3c3bd1"
+  ],
+  "32": [
+   "04cbe1dab1c5dbea",
+   "2fb505a02759e738",
+   "ffd6b41d98176666"
+  ],
+  "48": [
+   "1cf415d6f8b81698",
+   "52959476728d30ca",
+   "5aae2be194e3389a",
+   "8603a9a74a075d1f",
+   "90793f08c8f350fd",
+   "c7a862fc0a0f4ada"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d424d6b0050244d81c8c31b0854bbf069d66275d8c5386a90bf1f608a900e2f8",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece 'vS' (thick posts with cap tops, rails)",
+ "label": "beodeul_farm/fence_vS",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence post",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The right post has a clearly visible 4-row top surface cap (rows 2-5) showing the top of the timber post in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4037
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden post with end cap",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The right wooden post has a clearly defined 4-row high top face (rows 2-5) viewed from above, above the darker vertical front face (rows 6-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3160
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden fence post with cap",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The foreground post clearly shows its top cap surface across rows 2-5 (4 rows tall) viewed from above, with the south vertical face extending below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4516
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden fence post with cap top",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden post on the right has a clearly defined top cap surface spanning rows 2 to 5 (4 rows tall) before transitioning to the darker south-facing post body at row 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11464
+  }
+ ],
+ "decidedAt": "2026-10-14T05:12:51.330Z",
+ "cells": {
+  "16": [
+   "19c0fc4535ae52d2"
+  ],
+  "24": [
+   "0d4ff4ab85b3c67b",
+   "8473c96ad96149c8",
+   "b7340cb4b6927df2",
+   "ef39920f74c0a8e8",
+   "f93a4fccff929213",
+   "f9e02dffd5f89480"
+  ],
+  "32": [
+   "032821f018dbe091",
+   "18eef836d677dd65",
+   "63530ab86a09843b",
+   "689c21c4a736b72d",
+   "79b60a790fb6576a",
+   "c32a163ea197e275"
+  ],
+  "48": [
+   "11b8d3c9a505f1dc",
+   "236bbd4280be1f84",
+   "373fc3640e6fe3ed",
+   "b123801214ce2fac",
+   "e1c6b84730831681",
+   "eb5c9367d9df2ded"
+  ]
+ }
+}

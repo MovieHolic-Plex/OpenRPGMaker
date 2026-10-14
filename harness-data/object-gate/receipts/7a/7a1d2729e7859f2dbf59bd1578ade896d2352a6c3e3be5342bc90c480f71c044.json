@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7a1d2729e7859f2dbf59bd1578ade896d2352a6c3e3be5342bc90c480f71c044",
+ "width": 32,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "벽걸이 에어컨",
+ "label": "modern_city/interior/mci-ac-wall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall-mounted air conditioner",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The air conditioner shows a clearly foreshortened top surface (rows 5–8, 4 pixel rows tall in bright highlight) and a vertical south face below it (rows 9–17) featuring the status LED and horizontal vent flap.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6153
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall-mounted air conditioner",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The air conditioner shows a clear 4-row top surface (rows 5-8) catching overhead light, separated by a dividing edge at row 9 from the south front face (rows 10-17) containing the status light and vent.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5416
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall-mounted air conditioner unit",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the unit is visible across rows 5–8 (4 pixels tall) in a lighter highlight tone, clearly separated by a seam line from the front panel (rows 10–17) which contains the LED indicator and vent flap.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 16983
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall-mounted air conditioner unit",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The protruding air conditioner unit shows a 4-pixel-tall top surface (rows 5–8) rendered in a lighter shade, with the south-facing front panel below (rows 9–17) containing the status LED and horizontal air vent louver.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8221
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:02.402Z",
+ "cells": {
+  "16": [
+   "061595cf28707b9b",
+   "837bc862861087a3",
+   "aa4c3aa7db9d9812",
+   "f4940bcbf0fae006"
+  ],
+  "24": [
+   "13e4269e184861f4",
+   "19827f1f09b513c2",
+   "58a76e77c54cb3e3",
+   "6423e912f122a445",
+   "6a54c1bb16484e79",
+   "72b42ff4bcd89199",
+   "84cdbc1bd33d648c",
+   "8bfb18688106023a",
+   "90a825ab1be58594",
+   "9d7ade4173158225",
+   "af66f85b829c080d",
+   "c32c9c109db3f4ef",
+   "c6474692775f2386",
+   "cc44b56dc9808653",
+   "d740aa21aa9c38a5",
+   "db7365eb57d92384",
+   "e39935848d81d645",
+   "ee800d3e04cc9aff"
+  ],
+  "32": [
+   "e3e1025dee6654c4"
+  ],
+  "48": [
+   "46cfe578ca5b3ba1",
+   "67e8194ebac9bbbb",
+   "6df4e8febd14ce74",
+   "7251a806c90a798c",
+   "f3e89fbaed6f15e7",
+   "f64322b02ddd17a0"
+  ]
+ }
+}

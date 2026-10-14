@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9b71c5d27f78360fb27be097aec902e9719ab74902df8e0703cc02002c336e62",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "진열 냉장 케이스",
+ "label": "modern_city/interior/mci-pastry-case",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "refrigerated display counter",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The showcase counter is drawn in pure front elevation with only a 1px wooden frame along row 3 at the top. There is no foreshortened top surface showing the top of the counter/glass case.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4874
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "display refrigerated case / counter",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire counter is drawn in pure front elevation: the glass display section and the wooden base panel are both facing directly forward, with only a 1px wooden rim at row 3 where the top surface should be.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6495
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "display refrigerator counter",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire refrigerated display counter and the cakes inside are drawn in pure front elevation. The top of the case has only a 1px border at row 2 with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4606
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "display refrigerator case / bakery counter",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The showcase is drawn in flat front elevation. Both the lower wooden cabinet (rows 16-29) and the upper glass display case (rows 4-12) face the camera directly, with only a 1px wooden rim at row 3 where the top surface should be visible foreshortened.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5256
+  }
+ ],
+ "decidedAt": "2026-10-14T01:18:25.208Z",
+ "cells": {
+  "16": [
+   "5bc9de888fac62f9",
+   "a95c4ac01f055ea5",
+   "d888a60e935e89aa",
+   "e7543e0a9c20ea2a"
+  ],
+  "24": [
+   "1039af37f9c52015",
+   "1a225fab219810d7",
+   "3343d69d2419f13d",
+   "5bba49da1884b111",
+   "5c2ba336013ba7a1",
+   "6591834906264e5d",
+   "65e11d0807055d4f",
+   "6748fc4b8d91dc25",
+   "736548235d049c90",
+   "75c1cbd584008041",
+   "83e7c83eeae3e6ec",
+   "8ce346c2bb84d3c3",
+   "8eca6a8aa9560e50",
+   "90e7ece30808c5a0",
+   "911015bc0f67dd84",
+   "a2dceebdd5861f7d",
+   "aa0fe1d366d487ea",
+   "ac87b0a06fff05be",
+   "af1029172a1bcb5e",
+   "bffeb28ee65825ae",
+   "c169ed9b015c8060",
+   "d103cd6c9c5dcf78",
+   "d12501894f73325d",
+   "e595383a07540f2e"
+  ],
+  "32": [
+   "051ba8f52f17427b"
+  ],
+  "48": [
+   "0c937ba61e1cd667",
+   "27d364cf65e1564f",
+   "30fa218cf50eacd3",
+   "a7df51f84306911a",
+   "bfb1e07d77150355",
+   "ebbf58754c8797d9"
+  ]
+ }
+}

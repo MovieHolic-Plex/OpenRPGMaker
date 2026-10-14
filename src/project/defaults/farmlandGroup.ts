@@ -15,3 +15,17 @@ export function farmlandGroupForTileset(tileset: TilesetDef | undefined): Autoti
   }
   return undefined;
 }
+
+// 물 준 흙 그룹(선택). 경작지 그룹과 같은 이웃 마스크 → 역할 규칙을 쓰는 다른 그림(흙만 한 단 어둡다)이어야 한다.
+// 버들항 beodeul_city 는 `farmland_watered` 를 싣는다. 없으면 런타임이 마른 흙 위에 옅은 틴트만 얹는다.
+export const WATERED_FARMLAND_GROUP_IDS: readonly string[] = ["farmland_watered"];
+
+export function wateredFarmlandGroupForTileset(tileset: TilesetDef | undefined): AutotileGroup | undefined {
+  if (!tileset) return undefined;
+  const groups = tileset.autotileGroups ?? [];
+  for (const id of WATERED_FARMLAND_GROUP_IDS) {
+    const group = groups.find((candidate) => candidate.id === id);
+    if (group && group.memberTileIds.length > 0 && Object.keys(group.variantMap).length > 0) return group;
+  }
+  return undefined;
+}

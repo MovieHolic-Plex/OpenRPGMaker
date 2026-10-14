@@ -1,0 +1,146 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "aec68dbad34d446023109eb8b8322cc4a860e49f1ed42f62f3ae4d4b4b233e04",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "잡지 진열대",
+ "label": "modern_city/interior/mci-magazine",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "magazine display rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire magazine rack is drawn in pure 2D front elevation with a 1px outline at row 12 and completely flat front-facing shelves/compartments, showing no visible horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6175
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "magazine display rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire magazine rack is drawn in a flat front elevation. The top of the frame at row 12 is only a 1px outline with no visible top surface, and all shelves and magazines face purely forward.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5562
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "magazine display rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The magazine rack is drawn entirely in a flat front elevation. The top border at row 12 is a 1px line with no foreshortened top surface or shelf depth visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5665
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "magazine display rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The display rack is enclosed in a flat rectangular frame with only a 1px top outline (row 12). Shelves and displayed magazines are drawn completely flat from the front with no visible top surface or horizontal depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5442
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:11.886Z",
+ "cells": {
+  "16": [
+   "50f7d7a7273d8456",
+   "73d5a1c36cec9760",
+   "8bc9ff2e2f4d5b2a",
+   "e7b810cc3e0ec73b"
+  ],
+  "24": [
+   "02cb74e9bc51a2a4",
+   "03b44bd2f76b808e",
+   "060f20ab162bb834",
+   "0c63afbd765b1f46",
+   "37173963cde4a27f",
+   "418a0cfe297e52dd",
+   "41def1fe03f0449e",
+   "632825225ad6a221",
+   "676e38954697eadc",
+   "73988a1e1f4597d2",
+   "882c3d7ccdccf6e1",
+   "8fffddce5275dd57",
+   "9c59b1ff983e0076",
+   "cacebbd5f520201c",
+   "d245f611b360ee35",
+   "d9feb864410b2cde",
+   "fb6d3dba7b58543a",
+   "ffc58477e441470c"
+  ],
+  "32": [
+   "6a0b7a40fdf6144e"
+  ],
+  "48": [
+   "0866f913ebe6ae62",
+   "734fd4b0c24392b4",
+   "8a1d010eb4eff624",
+   "92c4dea933553096",
+   "b6ad2d5237a7ab1a",
+   "f6487e9272e721ad"
+  ]
+ }
+}

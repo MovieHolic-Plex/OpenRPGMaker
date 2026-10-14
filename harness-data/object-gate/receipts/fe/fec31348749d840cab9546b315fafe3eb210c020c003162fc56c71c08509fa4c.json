@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fec31348749d840cab9546b315fafe3eb210c020c003162fc56c71c08509fa4c",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "링거 걸대",
+ "label": "modern_city/interior/mci-iv-stand",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "IV drip stand pole and bag",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top T-bar of the IV pole is drawn as a 1px flat horizontal bar with no foreshortened top surface visible, and the hanging IV bag is rendered in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5632
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "IV pole with bag and wheeled base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The IV pole and hanging bag are drawn in pure front elevation. The top hanger bar is only a 1px line with no foreshortened top surface, the IV bag is a flat 2D rectangle, and no top surface or cut face is visible on the column.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7918
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "IV pole stand with IV drip bag and wheeled base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, crossbar, and hanging IV bag are drawn in a flat side/front elevation. The crossbar at row 2 is only a 1px line with no top surface, the pole has no visible top cut face, and the IV bag is rendered as a flat rectangle without top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5617
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "IV pole stand with IV drip bag and wheeled base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top crossbar is a flat 1px horizontal bar (row 2) with no visible top surface foreshortening, the IV drip bag is a flat 2D rectangle (rows 3-12), and the pole is a straight front-view vertical shaft.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5123
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:12.630Z",
+ "cells": {
+  "16": [
+   "298dcbfc9ae61889",
+   "9c3459d63d7a9300"
+  ],
+  "24": [
+   "13bc4752cd16c1a8",
+   "1cf556c6ddb778da",
+   "30eda54f761a0627",
+   "431750a030b73dc6",
+   "5be08904e7614531",
+   "746ba6c48d95b8ec",
+   "763d623b19ac1a6c",
+   "77623bfba41a9b39",
+   "7a68b84d6bc2868b",
+   "c01bece0a131bc62",
+   "c6dc1b3b390a18d5",
+   "fdfcfc2c14edb57c"
+  ],
+  "32": [
+   "50a5a9ed1a69f1f3",
+   "73c45b0300e5a4bf",
+   "afa69cf26eb30eb3"
+  ],
+  "48": [
+   "1833a6bfb8e86ca4",
+   "4c742c7616ab2a65",
+   "50112b2046733fca",
+   "52ca44820ea67d87",
+   "9f7c4698800854b2",
+   "d66ff1b6e582c603"
+  ]
+ }
+}

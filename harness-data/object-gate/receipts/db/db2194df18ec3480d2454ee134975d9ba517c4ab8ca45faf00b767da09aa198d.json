@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "db2194df18ec3480d2454ee134975d9ba517c4ab8ca45faf00b767da09aa198d",
+ "width": 48,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "긴 잔칫상(가대 다리, 나무 그릇·빵·뿔잔)",
+ "label": "snow-north/sn-long-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "long banquet table with food and tableware",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface clearly extends from row 2 to row 16 (15 pixel rows deep) showing dishes and horns, with the south apron and legs visible below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4644
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "trestle feast table",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop is clearly visible from rows 2 to 16 (15 pixels tall) with tableware and food placed across it, accompanied by a front apron from row 17 to 20 and front-facing legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2981
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "trestle feast table",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden tabletop is viewed from above across rows 3-16 (~14 source pixels deep) with plates and food resting on it, followed by a south apron face (rows 17-20) and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3258
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "long banquet table with trestle-style legs and food/dishes on top",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop top surface is clearly visible from row 3 to row 16 (14 pixel rows) displaying wooden planks with dishes, bread, and horns, followed by the table apron front face (rows 17-20) and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3062
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.163Z",
+ "cells": {
+  "16": [
+   "0b215b37812db044",
+   "3a5b1d745bb63977",
+   "64347ebaf5b3b804",
+   "7ec06d07e9184cad",
+   "981cf2372d8cc60d",
+   "b11a2d4baa20e0a2"
+  ],
+  "24": [
+   "172c14c74bd3033a",
+   "250152baa4a8181a",
+   "2914b48eea7222fc",
+   "58bf0addeef5d3da",
+   "7226f54d5799117b",
+   "7936e8111069b6da",
+   "bcecd044db07df05",
+   "d52342ec7e7c1f22"
+  ],
+  "32": [
+   "02a9162db4e9d91d",
+   "5bdd3632b8eac26e",
+   "6c42523182b302f1",
+   "b0d7a2933ba87d72",
+   "f4d448ccf0e61065",
+   "ffd918aca39c3347"
+  ],
+  "48": [
+   "6832a9dc14b83194",
+   "c73ad4dbaf892db2"
+  ]
+ }
+}

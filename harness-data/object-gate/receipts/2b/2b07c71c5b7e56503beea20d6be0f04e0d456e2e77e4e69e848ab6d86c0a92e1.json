@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2b07c71c5b7e56503beea20d6be0f04e0d456e2e77e4e69e848ab6d86c0a92e1",
+ "width": 32,
+ "height": 16,
+ "kind": "seat",
+ "name": "corridor bench",
+ "label": "monster-rooms/sh_bench",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "padded corridor bench with frame and legs",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat surface is clearly depicted from above spanning rows 3-8 (about 6 pixel rows) in light blue with texture, above a 2-pixel-tall front face (rows 9-10) and legs extending downward.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4056
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bench cushion and frame",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bench cushion spans rows 2 through 7 (6 rows tall), with a white transition edge at row 8 and a 3-row south-facing front apron at rows 9-11 supported by legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3115
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bench cushion and frame",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bench cushion is clearly visible from rows 3 to 7 (5 source pixel rows deep), followed by a highlighted front edge (row 8), front face (rows 9-11), and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2459
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cushioned bench seat and front apron with legs",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cushion surface is clearly visible from above across rows 2-7 (6 rows tall), with a 2-row dark blue front face below it and legs supporting it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3050
+  }
+ ],
+ "decidedAt": "2026-10-14T05:21:01.697Z",
+ "cells": {
+  "16": [
+   "94f60f799bebc4b4",
+   "b099a493182957c6"
+  ],
+  "24": [
+   "0286c7404d830fc6",
+   "03baad5ee384089f",
+   "057c1fc22d24d347",
+   "35d344d8a0f34f5f",
+   "45588a93b2f1f937",
+   "5cc996d8d102bd31",
+   "7e8c729747e93e6d",
+   "bb9d4bfec5aaa008",
+   "c46db243ff479d32",
+   "dd62ad1fad4093f8",
+   "e80abff6988dc4bb",
+   "fcf4d5684bced0ce"
+  ],
+  "32": [
+   "162b03f6d62b4a44",
+   "1ea0a24822c989ac"
+  ],
+  "48": [
+   "0786e271fa0f4c43",
+   "1d4a6d4862291afc",
+   "2dc223bcbd1a815c",
+   "3fa759db2d1b93da",
+   "6d71df1c4453fa8b",
+   "a0deeabdc56c8a75"
+  ]
+ }
+}

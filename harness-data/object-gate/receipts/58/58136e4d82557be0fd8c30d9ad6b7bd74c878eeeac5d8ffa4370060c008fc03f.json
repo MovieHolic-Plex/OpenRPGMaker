@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "58136e4d82557be0fd8c30d9ad6b7bd74c878eeeac5d8ffa4370060c008fc03f",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "오로라 깃발(청록·보라 물결)",
+ "label": "snow-north/sn-banner-aurora",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "banner on wooden pole with top crossbeam and finial",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crossbar has only a 1px white edge highlight on row 7 with a 1px outline on row 6 (which is a highlight/edge, not a foreshortened top surface), and the finial at rows 0-5 is drawn in pure front elevation with no visible top surface at all.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6917
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "banner pole and hanging flag with top beam",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top finial (rows 0-5) and horizontal crossbeam (rows 6-10) are drawn in pure front elevation with only a 1px highlight line on row 7 rather than a foreshortened top surface. Although the base plinth at rows 41-42 shows a top surface, base plinths do not count for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5285
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flag banner hanging from a wooden post and crossbeam",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (banner, crossbeam, and top ornament/finial) is drawn in pure front elevation with no visible horizontal top surfaces (only a 1px edge highlight on row 7 of the crossbeam). The only top surface shown is on the base plinth, which does not qualify.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10403
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "banner pole with hanging flag and crosspiece",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The banner, pole, horizontal beam, and top finial are drawn in pure front elevation. The beam top only has a 1px white highlight line (row 7) and the top ornament has no visible top surface at all; only the bottom plinth shows a top plane, which cannot be credited for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6667
+  }
+ ],
+ "decidedAt": "2026-10-14T01:19:07.398Z",
+ "cells": {
+  "16": [
+   "026c206771bed1a8",
+   "9185fe0823b3c463",
+   "b592b250fab4b380"
+  ],
+  "24": [
+   "3c3a27a20111743f",
+   "5bf90b3d4edfb175",
+   "66817e53a54868ad",
+   "6bc38be05ac64d48",
+   "9d76747f8186a4a7",
+   "bcc3143b3abecc9f"
+  ],
+  "32": [
+   "001553548341b0ee",
+   "2bd770aded10108f",
+   "48890f88d29ed60f",
+   "5bc474b30c50d42b",
+   "5ff8efb7c1349d2e",
+   "6125bd0ade4b8b3b",
+   "7cc28c352018ea30",
+   "83c49d93979a1258",
+   "c1f913e0907a6014",
+   "c46dfc1680b204c3",
+   "d217491dfab8db6b",
+   "e35cb4e996de6816"
+  ],
+  "48": [
+   "06721c9645469724",
+   "94902d032bd93bab",
+   "ebfbf2af7886b194"
+  ]
+ }
+}

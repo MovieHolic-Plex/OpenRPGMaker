@@ -1,0 +1,162 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3fd4ec7a94253be0d4306f5e9104bce00384da39d4dee92b3c47519a12faa64e",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "진열 냉장 케이스",
+ "label": "modern_city/interior/mci-pastry-case",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail",
+  "정면 입면도",
+  "아가리 안쪽이 안 보임",
+  "아가리 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "refrigerated bakery display counter",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire display case and base counter are drawn in flat front elevation. Both the cakes inside and the wooden base cabinet face straight south with 0 rows of visible top surface on the counter or display unit.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 5324
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "refrigerated display case",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire display case is drawn in pure front elevation. The top surface of the case has 0 px depth (only a 1px frame line at row 4), and both the glass display section and the wooden cabinet base below face directly forward with no 3/4 foreshortened top visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 6866
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "display refrigerated case counter",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a bakery display counter (not an open-top container like a pot/well). The glass display and wooden cabinet base are drawn in pure front elevation with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 3856
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "refrigerated display counter",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in flat front elevation: the wooden cabinet base shows flat front cabinet doors (rows 18-30) and the glass case shows cakes seen directly from the front (rows 4-15) with zero visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 5029
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:12.630Z",
+ "cells": {
+  "16": [
+   "31eb3b8742a266b3",
+   "6656147f0df68905",
+   "8f55d2cf3b1cf22e",
+   "e310edc7bff5fe17"
+  ],
+  "24": [
+   "086d036d201a2be9",
+   "17f15a7f5df160cf",
+   "1bf9c0460c426ff3",
+   "23369385ed0b0332",
+   "2872d8363e17edf7",
+   "36b24325368afa8b",
+   "45b312c3c0bbc685",
+   "4ce5e0b2569a243d",
+   "5ccc1ff5939af6c4",
+   "5da5a0aa4e772cdd",
+   "6dd02c451b783054",
+   "70865663c128b2e1",
+   "7a1d086278c3c1cd",
+   "7f82b48ed6b47a76",
+   "8d4bc37a456fbaac",
+   "9751e8ca460333f8",
+   "9ac7e49d34bba824",
+   "9eb8661ab9bede16",
+   "ace783859c552f49",
+   "ae70dc5f129edce3",
+   "b3cbfe84d65d28e4",
+   "cacd7898f4e3b4ed",
+   "daf11ad87d448065",
+   "e98103c9ea8f7e0b"
+  ],
+  "32": [
+   "74e8d009e6455b57"
+  ],
+  "48": [
+   "04f84343ccf6d320",
+   "52a63bc2cdd08e13",
+   "6ae0edf4b0e66737",
+   "81ef2b1552025abf",
+   "ccdc484622a313d4",
+   "ce06b2e99c7a5f70"
+  ]
+ }
+}

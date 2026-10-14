@@ -1,0 +1,129 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cf5b01a9124f3fe86118b254abfb3b6faeb4a19919981ea94c054a5bf5ff153d",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "창고 골판 철벽",
+ "label": "modern_city/interior/mci-wall-metal",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "warehouse corrugated metal wall face tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall face terrain tile depicting corrugated metal panels over a brick/block foundation, designed to tile as a vertical wall surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5100
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "warehouse corrugated metal wall face tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image is a vertical wall face terrain tile with corrugated metal siding over concrete foundation blocks, intended to be paired with a roof/wall-top tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4694
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "corrugated metal warehouse wall face with concrete block base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid vertical wall face terrain tile composed of corrugated metal paneling on top of a concrete foundation course.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5671
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "corrugated metal warehouse wall face with block base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile showing corrugated metal siding over concrete blocks; correctly rendered as a vertical surface for terrain autotiling.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5462
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:02.401Z",
+ "cells": {
+  "16": [
+   "0fe7e7852478d16f",
+   "d507b85cad4dd5f6"
+  ],
+  "24": [
+   "261b02d782cf8ce8",
+   "31ae1a2613b5e918",
+   "37b8b6a1ae5011cd",
+   "53830564ed308c1a",
+   "5778c3110f255b7f",
+   "69752237b8a69864",
+   "6b5e4cb567fcd234",
+   "7a2c31ed84f5d864",
+   "7b60370337f3e01d",
+   "7e7dd66c835079fa",
+   "7f0d2c94d1a21919",
+   "836a4fa6df24b2d4",
+   "854675bf6aef4a16",
+   "94defeb6db77e7e5",
+   "a62a44eba04c686a",
+   "ad88cca7cec681f1",
+   "aeff6dc37c1d50f8",
+   "be091f1080ec6750",
+   "cfa5a794c4deb8fc",
+   "d58fd263de3a08e0",
+   "e498cad0d3c99547",
+   "e8e0def5b9627123",
+   "e93d052b5c0c23ee"
+  ],
+  "32": [
+   "c67a05aad8c580cd"
+  ],
+  "48": [
+   "0764397f19fbcd31",
+   "3b59ebe0d6e35123",
+   "7947b8abcdfddd45",
+   "ab984fe899ba3270",
+   "ba3c98be609d7513",
+   "faad174b143a4387"
+  ]
+ }
+}

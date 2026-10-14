@@ -1,0 +1,150 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "85483c0d3115847c6d6a702c49db3bf93a856b72d6790fdd70d9ddeb2c3d1508",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "병상 칸막이 커튼",
+ "label": "modern_city/interior/mci-curtain",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "folding hospital partition curtain",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The partition panels are drawn as flat vertical rectangles staggered in Y, but have no visible top edge/surface (0 rows) showing depth or frame thickness from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7236
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "folding hospital partition curtain screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The curtain panels are drawn as flat vertical rectangles shifted vertically without any visible top surface, top rail thickness, or angled depth planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7336
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "folding hospital partition curtain",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Although the panels are staggered vertically to suggest folding in depth, each panel is drawn entirely as a flat front elevation with only a 1px outline along the top and no visible top surface of the frame, rail, or screen thickness.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7248
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "folding hospital curtain screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The folding screen panels are drawn in flat front view with no visible top surface (0px top thickness on the frame rail or curtain tops). While panels are staggered vertically, each panel is completely flat.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5467
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:50.059Z",
+ "cells": {
+  "16": [
+   "8c582978f39e8a36",
+   "b17c11419c49c3b9",
+   "d35963784a0599da",
+   "d39e1c4028a263a9"
+  ],
+  "24": [
+   "041c5ef9b0f4ec1c",
+   "0bab3c231f12bb1c",
+   "0bccc2caa749ff65",
+   "1bd17a3deb7498b8",
+   "23afd3747228e1c5",
+   "2c0b331df32a2b88",
+   "318eaec9175d1b4c",
+   "3ff059d10495ed0b",
+   "4548aa097d49ee7b",
+   "482b2480214baff3",
+   "5461f70392174df0",
+   "834edb132af045a8",
+   "87644293718d46d6",
+   "88cbbdb79f2198c7",
+   "b34f18aad3184abf",
+   "cb86f7b6084bdd9d",
+   "cea71f5708987f99",
+   "dd4b539761f7e61c",
+   "e51df483da0e0df3",
+   "ed6f7028549d7934",
+   "f555210311bdcd81",
+   "f8bc28b16e094b92"
+  ],
+  "32": [
+   "84d9be5445cc79e0"
+  ],
+  "48": [
+   "2450355795ecae1d",
+   "8a761c603e7e9f69",
+   "a2307c3774192121",
+   "daba115086ddd1b3",
+   "dbfa58ee87c0556b",
+   "e9d6297bcd32c846"
+  ]
+ }
+}

@@ -1,0 +1,148 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "415317996b029bafcacc1f3c6921cc00ab7278a22825bce6b02de2a6e8013234",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "돌 벽난로(넓은 선반 + 화덕 석판 + 장작불)",
+ "label": "snow-north/sn-hearth",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone fireplace with mantel shelf and firebox",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fireplace is drawn straight-on as an architectural front elevation. The mantel shelf consists only of a 1px highlight line (row 6) with no top surface depth visible from above, and the stone bricks and hearth are drawn as purely vertical 2D front planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9745
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone fireplace with mantel shelf and firebox",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top mantel shelf has a 5-pixel deep horizontal surface (rows 1-5) on which objects (red pot with visible opening, brown box with top face, candle with perspective base) are placed. A projecting hearth slab is also visible at rows 27-29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7202
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone fireplace with mantle and hearth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fireplace is drawn in pure front elevation. The mantle shelf where the items sit is depicted with a 1px highlight line (row 6) and 2px front lip (rows 7-8) with 0px of visible top depth, and the main stone body and lower hearth slab show only vertical south faces without any 3/4 top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5089
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone fireplace",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fireplace is drawn in a flat architectural front elevation. The mantel shelf consists of merely a 1px highlight line (row 6) and a 2px front face band (rows 7-8) with no visible top surface depth; the objects on row 1-5 sit directly on this 1px line against a vertical stone wall.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6481
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.163Z",
+ "cells": {
+  "16": [
+   "28c6be36b1f65575",
+   "9c737e07367d7443",
+   "a2ab8823d19fc48c",
+   "a50bc7039ed000e3"
+  ],
+  "24": [
+   "003b20feaf7b8cb8",
+   "0439777974320341",
+   "0fa43c9cbcf577b4",
+   "137cea0ed61c3925",
+   "1fbac455fd6251e7",
+   "27429fa4f96b122c",
+   "2dfeb41f01c1fd06",
+   "310e9d623dc6bd86",
+   "35497f6eae05dbeb",
+   "379aa239ef4c5813",
+   "3d0152f55107d37b",
+   "3dd32f1926659d00",
+   "40db18cfec536a63",
+   "55c3cd2dbd1cbefe",
+   "7049be115c353e6f",
+   "732a00e9c2aeac41",
+   "8de5d831807aa9a1",
+   "985d14ccaeb56e50",
+   "9d1d0a00af99d506",
+   "b76fb1246fdfb909",
+   "bf564ab928a3d1a8",
+   "d18b5267ff55c6f3",
+   "d18b64cb9715137a",
+   "df4ba15df17eefe3"
+  ],
+  "32": [
+   "bcec24c19447db00"
+  ],
+  "48": [
+   "5397a6a6d750a4c5",
+   "7e578f84e1106263",
+   "b3f76f491d19556b",
+   "bcede861bec2ab46",
+   "be1f16049768fa2b",
+   "d5ee0edab314aa4f"
+  ]
+ }
+}

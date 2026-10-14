@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "498761c2a187bb7e1f37c16bb52b3913b98caa4b1a01dd88c8f7ae925250971c",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "mooring bollard",
+ "label": "monster-rooms/sh_bollard",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mooring bollard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bollard is drawn in pure front elevation like a chess pawn, showing a rounded head, neck, and flared base from the side/front without any foreshortened circular/elliptical top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6057
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bollard head and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bollard is drawn as a flat front silhouette (similar to a chess pawn) with a straight horizontal base, vertical head flanks (rows 4-6), and no foreshortened top circular surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8622
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "mooring bollard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bollard head is drawn as a symmetric round/octagonal profile (rows 3-7) directly from the front like a chess pawn, with no foreshortened top circular cap or horizontal surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4488
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bollard head and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mooring bollard is rendered as a 2D side silhouette (like a chess pawn) with no foreshortened elliptical top surface visible at the top cap.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4666
+  }
+ ],
+ "decidedAt": "2026-10-14T05:17:07.552Z",
+ "cells": {
+  "16": [
+   "9df92c795a9e7ed1"
+  ],
+  "24": [
+   "08e11e2256efbb22",
+   "201704ac4734afc1",
+   "2d808c4d08515e93",
+   "5ebc189809a1f2a1",
+   "837452b9c1db6fc0",
+   "dc926554c7924a0a"
+  ],
+  "32": [
+   "05dc62a11a34d0f7",
+   "1cb939cb833ea67e",
+   "2e2884211f7d9438",
+   "35e98eaa1f8e6e46",
+   "7e18b29f4b099e01",
+   "939de79353c53709"
+  ],
+  "48": [
+   "28d2ef8e1f575a74",
+   "88ea6f994d10c38e",
+   "9979e3a0d6054da1",
+   "a9c15479a6c78e98",
+   "c97d84e7980cd241",
+   "e807248d06b47e6b"
+  ]
+ }
+}

@@ -1,0 +1,134 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b11093faf76e2ee55f869301cb00c0d0d046569ce57df93c661840ccc44c9a0e",
+ "width": 48,
+ "height": 48,
+ "kind": "low_furniture",
+ "name": "U-shaped museum reception counter",
+ "label": "monster-rooms/mu_udesk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "U-shaped reception counter",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter is drawn in standard 3/4 perspective with large, clearly visible horizontal counter surfaces (9 rows deep across the center, 35 rows deep along the side wings) and south-facing front panels.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4818
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "U-shaped reception desk counter",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The U-shaped counter clearly shows extensive foreshortened top surfaces across both the north section (rows 3 to 11, ~9 rows deep) and extending down along both side wings to row 36, complete with front-facing south edges and recessed bases at rows 38-43.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 18482
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "U-shaped counter",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter is drawn in standard 3/4 top-down perspective with an expansive top surface visible across the back section (approx 9 rows tall) and along both side arms extending down to row 36, terminating in south-facing front edge surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4935
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "countertop surface of the U-shaped reception desk",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Top counter surface is clearly foreshortened and visible (rows 3-11 along the back, extending down the side wings to row 37) with front-facing south ends visible at rows 38-41.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3248
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.764Z",
+ "cells": {
+  "16": [
+   "59afc33b512b0e02",
+   "60898c00f234b8f6",
+   "622fb177b337bfad",
+   "88a2eb120af16bd9",
+   "8ec241d8ceb2c12a",
+   "8f0c943d6c80722e",
+   "e4bb160354deed76",
+   "ed55a32e966849bc"
+  ],
+  "24": [
+   "72a75aeb653ce873",
+   "7e9a7ab32671f8d1",
+   "7fbeda7bee197461",
+   "9211e0b894d0f5ee"
+  ],
+  "32": [
+   "1745d7405b3fbe3b",
+   "27edf46a815fce42",
+   "3402cb8c4353157d",
+   "383ddc527383d367",
+   "3e683235e3cf816d",
+   "4cf2d4e5cb0a89eb",
+   "4e6b29b939f5fc57",
+   "54414820cc562c8c",
+   "63f20e19346102df",
+   "69bd5bba059c3343",
+   "6ed40355b1ff926c",
+   "715bf04d0c745364",
+   "7537f649a0ededb0",
+   "770ab174918d8510",
+   "8252eb7cf207807f",
+   "8e363b1b8056ee44",
+   "9120bd17b08d7881",
+   "9e96ab623dea077d",
+   "a0d1ad6f0b5d513e",
+   "bdb419236b65c568",
+   "c3463a4b52b6a96b",
+   "e0fd3a7775c6adc2",
+   "ef0c8ab8eacef73d",
+   "eff03f6640dc2ae9"
+  ],
+  "48": [
+   "252d44228271bc1c"
+  ]
+ }
+}

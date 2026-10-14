@@ -3053,6 +3053,11 @@ Pi 시스템 지침과 `HAND_INTERIOR_POLICY_LINE`은 시대·장소·용도에 
 대상 맵이 이런 맵이면 `plainTurn.ts`가 두 도구와 `show_map_region`을 처음부터 노출하고 노트(`kitAreaNote`)로 이름을 부른다 —
 r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles 로 소품 네댓 개만 흩었다.
 
+2026-10-14 개정: 코드는 `src/project/kitAreaFurnish.ts` 로 옮겨 캠페인 생성기와 같이 쓴다. `furnish_outdoor_area` 의 기본 style 은 `auto` —
+`region`(사용자가 말한 쪽, bottom-left 등) 또는 `area` 하나만 받아 그 안의 빈터를 구획으로 나누고 구획마다 쓰임(`LOT_USES`)을 고른다(숲 벽 곁 덩이, 건물 곁 마당 쓰임,
+가까운 같은 쓰임 회피, 구획 사이 걷는 띠, 같은 바닥 위에만). 옛 스타일은 첫 덩이로 놓은 뒤 남은 터를 쓰임으로 채운다. 표식을 제자리에 못 놓으면 길도 깔지 않는다.
+`find_empty_ground` 는 `region` 과 터마다 추천 쓰임(suggest)·맨땅 비율을 돌려준다. 결과 요약의 「맨땅 a%→b%」가 휑함의 수치다. 측정 탐침과 수치는 `openwiki/monster-expedition.md` 끝 절.
+
 ### naturalize_beodeul_hamlet (2026-10-04)
 
 공용 버들항 작은 마을 템플릿의 지면 구성 변경. 원본 민가 전체 배열과 원점을 확인한 뒤 큰길/광장·흙 접근로·마당·텃밭·빨래 자리·군락을 공용 재료로 적용한다. 모든 집·지붕·문·기존 나무·이벤트·시작점 보존, 기존 포석 샛길과 작은 풀 장식 변경. 높이 맵/임의 마을 거부, 반복 완료는 no-op. 옛 맵을 author로 재시공하지 않는다. houseCount 신규 시공은 자동 적용. 출처 HAMLET.md와 작은 마을 전체 예제/정상오류 그림; 런타임은 전용 player.html 경로.

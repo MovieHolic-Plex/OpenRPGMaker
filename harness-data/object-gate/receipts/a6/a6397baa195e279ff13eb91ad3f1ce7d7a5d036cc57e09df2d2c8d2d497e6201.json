@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a6397baa195e279ff13eb91ad3f1ce7d7a5d036cc57e09df2d2c8d2d497e6201",
+ "width": 64,
+ "height": 48,
+ "kind": "terrain",
+ "name": "indoor gym grass floor with flower patches and entry mat",
+ "label": "monster-gyms/gy_fl_turf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass floor with entry mat",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The asset is a terrain ground surface with an entry mat and small flower decorations laid out across the floor, consistent with top-down 3/4 terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6941
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "indoor grass floor with entry mat and flower details",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles viewed top-down with scattered flower tufts and an entry mat lying flat on the surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4122
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "indoor gym grass floor with flowers and mat",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain surface viewed from above in standard 3/4 top-down perspective, with flat entry mat and floor details.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3997
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "indoor gym grass floor terrain with flowers and mat",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a terrain/ground composition showing flat grass floor with an entry mat and flower accents viewed in top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4087
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.767Z",
+ "cells": {
+  "16": [
+   "3edc05975a52ad1b",
+   "46617ac5acb9ad12",
+   "4d4801de5e9fa20b",
+   "4e73481c210639b9",
+   "957433b0b7119b79",
+   "b4bae39c8cf3e05e",
+   "deeb10851f131c1a",
+   "e449acfbf70effd7",
+   "ee84af7248977df8"
+  ],
+  "24": [
+   "03bb95e38fe44e52",
+   "17480bbab061cc27",
+   "1aae087f3fdafdeb",
+   "3e4f747f2581d87d",
+   "40ed82f70dd4b7b3",
+   "4d45abb360063715",
+   "5df49f363f58caba",
+   "6538585ce2825fbc",
+   "865c8a0ae53f1e77",
+   "871f80a1948250d5",
+   "aec7ed07bf6f6f4d",
+   "b94db21cd92210bb",
+   "b9b4b9d1fe96a61d",
+   "da6133988187a50a",
+   "e4155aed6e328f10",
+   "e539149b05708c01",
+   "e7c0a79e9160a95c",
+   "eeeee5e9ea459cef"
+  ],
+  "32": [
+   "3dab4f48270eccfc",
+   "70d05c9a61f40c3d",
+   "7f94537c1faa2723",
+   "826956f1eaf2c1dc",
+   "8554fee6214ecbc0",
+   "dbe710a5740c657e",
+   "f770f806efddf36e"
+  ],
+  "48": [
+   "49a1d2e49acc6f53",
+   "4b9b5e8247b98db2",
+   "6aaa099e2e3ccf54",
+   "9814ffcb5eeaaa13",
+   "9fe132f5f1529acb",
+   "e5e9008ee132fcc8"
+  ]
+ }
+}

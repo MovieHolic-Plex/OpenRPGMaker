@@ -12,6 +12,7 @@ import { configureMonsterPresentation } from "@/project/monsterPresentation";
 import { configureEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import { configureEmeraldMonsterOpening } from "@/project/emeraldMonsterOpening";
 import { configureEmeraldMonsterCast } from "@/project/emeraldMonsterCast";
+import { monsterTitleThemeFromStart } from "@/project/emeraldMonsterTitleArt";
 
 /** Complete, ordinary editable campaign: the player uses the shipping engine. */
 /** gymTypes: 기획서의 1~8관 타입(「바위 체육관」→rock) — 관장 동료만 그 타입으로 바꾼다. 맵·장치는 그대로. firstGymType 은 gymTypes[0] 의 옛 이름. */
@@ -58,7 +59,7 @@ export function createMonsterExpedition(options: ExpeditionOptions = {}) {
   configureEmeraldMonsterStyle(project);
   // Tiles stay on the bright monster_* kit (tone A, 2026-10-06); emerald_monster_* is kept only for projects already on it.
   configureEmeraldMonsterCast(project, { startTheme: options.startTheme });
-  configureEmeraldMonsterOpening(project);
+  configureEmeraldMonsterOpening(project, { titleTheme: monsterTitleThemeFromStart(options.startTheme) });
   // The canonical loader checks command IDs, tiles, assets and all DB references.
   const serialized = serialize(project);
   const reloaded = deserialize(serialized);
