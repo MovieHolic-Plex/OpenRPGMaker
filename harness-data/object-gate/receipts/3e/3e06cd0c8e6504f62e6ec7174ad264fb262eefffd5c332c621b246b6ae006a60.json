@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3e06cd0c8e6504f62e6ec7174ad264fb262eefffd5c332c621b246b6ae006a60",
+ "width": 16,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "세로 진열대",
+ "label": "modern_city/interior/mci-gondola-v",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical display shelf",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tall display rack has no top surface visible (rows 2-3 are just a 1px outline and a 1px frame border) and is drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4490
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall vertical display shelf",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the cabinet has only a 1px border and 1px frame line (rows 2-3) with no foreshortened top surface shown. The entire shelf unit and its compartments are drawn in flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5198
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tall vertical display shelf/rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the shelf unit consists only of a 1px dark border (row 2) and a 1px frame edge (row 3) before the slots begin, showing no foreshortened top surface. The entire piece is drawn as a flat front architectural elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3364
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical display rack / tall shelf unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tall display rack has only a 1px border and 1px edge line at the top (rows 2-3) with no top surface shown. The shelves and compartments are viewed completely flat from the front with no visible depth on shelf surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4331
+  }
+ ],
+ "decidedAt": "2026-10-14T01:18:07.275Z",
+ "cells": {
+  "16": [
+   "46265975e907b62f",
+   "51b699c932f38671",
+   "da8367cdce30b4bf"
+  ],
+  "24": [
+   "1bf3e3526c1ad554",
+   "1de2e28c09692b77",
+   "294a28a4038e3a12",
+   "5ae6864998d700f5",
+   "79a185342452478d",
+   "9e0acb086c4cf17e"
+  ],
+  "32": [
+   "09f8054aed6c94bc",
+   "0cc4263f697aee5f",
+   "1fb6953861075d5a",
+   "29d8cbcebad4ba62",
+   "347e453d62be158e",
+   "437420c8d49fea19",
+   "9054ad46b54bfa46",
+   "cdbbf313b6aa79dc",
+   "d3ed8f65371cbfbd",
+   "e75c98b424c390e2",
+   "f0f7e5042dc2816b",
+   "ffda63a6e2558c03"
+  ],
+  "48": [
+   "4ebe9e1495480c27",
+   "87e0b909211a8be9",
+   "c7b10a9d3085a0b6"
+  ]
+ }
+}

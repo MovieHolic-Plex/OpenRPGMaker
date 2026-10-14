@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d52a81f35261df81ca4ba49e841e1a78f167247d4e6ae514e20a880b590d09cb",
+ "width": 48,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "창고 선반",
+ "label": "modern_city/interior/mci-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "warehouse storage shelf rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire shelving unit is drawn as a flat 2D side-view/platformer elevation. The horizontal blue beams show only their 3px vertical front faces with no visible top surface where items rest, and the top of the unit has 0px top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5937
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "warehouse shelving rack with boxes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storage rack and the boxes on it are drawn in pure front elevation with 0px top surface for both the rack beams and the boxes; horizontal beams consist solely of a 1px front highlight and 2px front face, showing no shelf depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3889
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "warehouse shelving rack with boxes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire shelving unit and the boxes on it are drawn in pure front elevation (side-scroller style). Neither the horizontal blue shelf beams, the vertical posts, nor the boxes show any foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5360
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "warehouse shelving rack with boxes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storage rack and the boxes on it are drawn in pure 2D front elevation. Horizontal shelf beams are 2-pixel-tall front-facing bars without any receding shelf depth, and the boxes show no top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5082
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:05.388Z",
+ "cells": {
+  "16": [
+   "27f5b521bc33aec8",
+   "49569ecd715af139",
+   "8db485ab3e65e701",
+   "b8fbcc3af1bb85a8",
+   "cfdb04ac106ace51",
+   "e734ab905ca94faf"
+  ],
+  "24": [
+   "4fa17be5cba3a282",
+   "7efe220bb1d11583",
+   "83bbea46feb3542d",
+   "b357653641f8e9d2",
+   "b4841556cb0c3de2",
+   "dd97724d942b699e",
+   "dde5960481d11b2d",
+   "f74038915a0d2d3c"
+  ],
+  "32": [
+   "08b10e440f238a88",
+   "0f6c1e603f141f9b",
+   "3246f3baa9d14a56",
+   "b7c886c18a7b0352",
+   "b9337b9f4c90c548",
+   "d5033007339e7ea2"
+  ],
+  "48": [
+   "c4865d60fcb44e85",
+   "dc7af2f2da0ac115"
+  ]
+ }
+}

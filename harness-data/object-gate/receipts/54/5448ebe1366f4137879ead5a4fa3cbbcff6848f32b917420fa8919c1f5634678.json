@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5448ebe1366f4137879ead5a4fa3cbbcff6848f32b917420fa8919c1f5634678",
+ "width": 48,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "계산대",
+ "label": "modern_city/interior/mci-counter-register",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "checkout counter",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter's top surface extends from row 10 to row 16 (7 pixel rows) where the register and display sit, with a distinct front overhang and front face from row 17 to row 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5731
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "counter",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main counter surface is visible from above across rows 10–16 (7 pixel rows) upon which the register and display sit, with the front face extending from row 17 to row 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6737
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "checkout counter",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter top surface is clearly visible from row 10 to row 16 (approx. 7 source pixel rows) with a register and display case resting on it, followed by the south-facing front panel with a red stripe down to row 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5151
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "checkout counter",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter top surface spans roughly rows 10 to 16 (approx. 7 rows deep), supporting a cash register and display case, with the front face extending from row 17 down to row 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3793
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:11.886Z",
+ "cells": {
+  "16": [
+   "16aebbde884edfd2",
+   "307b757137b50f67",
+   "51d62604a0f79d88",
+   "59b58c8082c694d3",
+   "d278a042ea1d8320",
+   "d99ef482aab9e59c"
+  ],
+  "24": [
+   "010f2c4cf4cc63b5",
+   "35421af11d8b1e89",
+   "5feb126b3cc536d8",
+   "736e6e53dcf6d1c6",
+   "8b95a8ecfa9fc983",
+   "945b20f7b79d808d",
+   "b2e550dbc39b5969",
+   "e3b2025bbaa76134"
+  ],
+  "32": [
+   "06180a12395f70a7",
+   "11e28ff0e3ff10b5",
+   "1cdd71169583467c",
+   "1db3a7cf141bc456",
+   "a0b7f8c6202f4044",
+   "be609a58c07ae470"
+  ],
+  "48": [
+   "42a448f8d16240ae",
+   "4c62c28ea2251676"
+  ]
+ }
+}

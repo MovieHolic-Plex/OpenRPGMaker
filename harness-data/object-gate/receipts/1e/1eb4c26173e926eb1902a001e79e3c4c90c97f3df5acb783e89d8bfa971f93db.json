@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1eb4c26173e926eb1902a001e79e3c4c90c97f3df5acb783e89d8bfa971f93db",
+ "width": 16,
+ "height": 48,
+ "kind": "low_furniture",
+ "name": "병원 침대",
+ "label": "modern_city/interior/mci-hosp-bed",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hospital bed mattress and frame",
+    "kind_matches": true,
+    "top_rows": 41,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed is oriented vertically in standard 3/4 top-down perspective, clearly displaying its horizontal surface (pillow, sheets, blanket) across rows 4 to 44 (approx 41 rows) with the footboard and legs visible at the bottom.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4655
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hospital bed mattress and frame",
+    "kind_matches": true,
+    "top_rows": 39,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hospital bed is viewed from above in standard 3/4 perspective, showing the extensive horizontal surface of the pillow, sheet, and blanket spanning rows 4 to 42, with the footboard and legs visible at the south edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4846
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hospital bed",
+    "kind_matches": true,
+    "top_rows": 41,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mattress, pillow, and blanket of the bed are viewed from above across rows 4 to 44, showing the full horizontal top surface in standard top-down 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3278
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hospital bed viewed from above (north-south orientation)",
+    "kind_matches": true,
+    "top_rows": 39,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed's horizontal mattress surface (pillow, sheets, and green blanket) spans rows 4 through 42, showing extensive top surface area in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5824
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:12.630Z",
+ "cells": {
+  "16": [
+   "0f7d48ef4963c665",
+   "6210baff2bde1410",
+   "c453bcb98dd9dfbc"
+  ],
+  "24": [
+   "0591c729f14c803a",
+   "0d4c84c3ef69d839",
+   "1293dea1ce884696",
+   "3e39ae6a483626d7",
+   "b6b3112553513587",
+   "f11e833907e7c8b2"
+  ],
+  "32": [
+   "505946759047042f",
+   "50652288572ffcce",
+   "536b411bf4faec23",
+   "806259d39645718e",
+   "acfa67d0bc7a8638",
+   "afad98793048ea15",
+   "c54498438d4d6d06",
+   "d96b9f88b99ad96b",
+   "ddd4ea1ddabde4fa",
+   "f64b7244071d25c9",
+   "f7242bb643c9aba3",
+   "f93e7cb4b38f46e8"
+  ],
+  "48": [
+   "4ca4719e38a3728a",
+   "8eb03e2b91e43a4b",
+   "f894643cfcb2d5a5"
+  ]
+ }
+}

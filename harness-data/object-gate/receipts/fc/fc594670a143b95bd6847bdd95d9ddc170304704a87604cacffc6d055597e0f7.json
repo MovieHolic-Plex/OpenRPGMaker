@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fc594670a143b95bd6847bdd95d9ddc170304704a87604cacffc6d055597e0f7",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "줄 세우기 기둥",
+ "label": "modern_city/interior/mci-stanchion",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stanchion post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crowd control stanchion is drawn in pure front elevation; the top cap/finial is rendered as a front-facing rounded dome profile with no visible horizontal top surface foreshortened from above, and the base is also drawn flat/front-on.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5727
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stanchion post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crowd-control stanchion is drawn in pure front elevation. Both the cap at rows 5-8 and the base at rows 24-28 show purely side/front silhouettes with no foreshortened circular/elliptical top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5493
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "queue stanchion (barrier post)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stanchion cap, shaft, and base are drawn entirely in straight front elevation with no visible 3/4 view top surface or foreshortened horizontal disc on either the cap or the base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5249
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stanchion post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, cap, and base are all drawn in pure front elevation (2D silhouette profile) with no foreshortened top surface visible on the cap or base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13249
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:50.059Z",
+ "cells": {
+  "16": [
+   "4bcc05c7ca650c39",
+   "794183a488f021ad"
+  ],
+  "24": [
+   "01fcf77ffaa49f09",
+   "1584a56357b9f5cd",
+   "310d2cb33e824a19",
+   "61059b44577bc76b",
+   "617c0ee868863d81",
+   "72f0af37aafc3d0f",
+   "74c0ca9538dc2d1c",
+   "89d85ca340ab84ec",
+   "95387ee89954b380",
+   "9de6fc6b7e36d3e2",
+   "e68440a830dfe7e2",
+   "ef9727e7d521f086"
+  ],
+  "32": [
+   "5bb767fcbf91b737",
+   "8b3af45d7a9e97fc",
+   "bca6d009b12b56f9"
+  ],
+  "48": [
+   "823dfcaa4233a2e8",
+   "857294a087a70486",
+   "9975610a8267225d",
+   "bec76344356d1475",
+   "c45a6a70414a26d2",
+   "f40a8bc118e819cd"
+  ]
+ }
+}

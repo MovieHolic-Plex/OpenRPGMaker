@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "427ba7d1079577771ce762cbc40ceca2a9e68e539a5d3d33c94fcfd3d8cbb27e",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "팔레트 상자 더미",
+ "label": "modern_city/interior/mci-pallet",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stacked cardboard boxes on a pallet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stacked boxes and wooden pallet are drawn as flat, front-facing 2D rectangles with no top surface depth. The 2px light bands at the tops of the boxes function as edge highlights or tape, and the pallet is drawn in pure front elevation showing its front openings/blocks with no visible top deck.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6000
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stack of cardboard boxes on a wooden pallet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire stack is drawn in pure 2D front elevation (side-scroller style). The wooden pallet at the bottom shows its front profile with forklift slots and zero visible top deck surface. The boxes are drawn as flat frontal rectangles with 2-3px lighting/shading bands across the top rather than true foreshortened top surfaces, and boxes stacked vertically show no depth or stepping onto surfaces below them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 8943
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stacked cardboard boxes on a pallet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stacked boxes and bottom pallet are drawn as flat rectangles in pure front elevation. Each box only has a 2px horizontal highlight band across the top rather than a foreshortened top surface, and the pallet at the base is seen purely from the front with a 1px top edge.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5483
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stacked cardboard boxes on a pallet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stacked boxes and bottom pallet are drawn in pure front elevation with flat rectangular profiles. The 2px light bands across the top of each box and 1px band on the pallet act only as edge highlights or 2px cap lines rather than true foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5440
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:05.388Z",
+ "cells": {
+  "16": [
+   "0051a7977614aabd",
+   "36c3c61380fde348"
+  ],
+  "24": [
+   "25cf2a149d09584f",
+   "60c89556024de416",
+   "6af5d6f0c9c17b5a",
+   "8017e4e9a210d1a6",
+   "9da028c70aac82b8",
+   "9fd9254c53957260",
+   "9ff028bcda619a16",
+   "b99ce8bf4d441cf4",
+   "bd870ea893f64bc1",
+   "c7bab430d971d000",
+   "c87ed96a7c6d22cf",
+   "ce3b63d7f036595e"
+  ],
+  "32": [
+   "1137dd5ac3252a2d",
+   "4ed02c973f0b9983",
+   "a90eca138fdce6e8"
+  ],
+  "48": [
+   "07b9aeb03a9a5602",
+   "137e92824bfbe451",
+   "356941549be18247",
+   "57d22b86784dabbe",
+   "703b62399c9623cd",
+   "c2be16e1351a891c"
+  ]
+ }
+}

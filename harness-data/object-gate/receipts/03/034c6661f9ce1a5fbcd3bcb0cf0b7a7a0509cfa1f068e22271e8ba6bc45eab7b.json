@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "034c6661f9ce1a5fbcd3bcb0cf0b7a7a0509cfa1f068e22271e8ba6bc45eab7b",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "서버 랙 둘",
+ "label": "modern_city/interior/mci-server-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "two tall server racks standing side by side",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The server racks are drawn completely flat from the front with only a 1px cap line at row 1, showing no top surface foreshortened in 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4008
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "two server racks side by side",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The server racks are drawn in pure front elevation with a flat front view of the screens and server slots. There is no visible top surface (0 rows of top plane; only a 1px border at row 1).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4037
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two server racks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The server racks are drawn in pure front elevation with row 1 immediately beginning the front console face/screen area, showing no top surface whatsoever.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3508
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "server racks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The server racks are drawn as flat architectural front elevations with no visible top surface (row 1 is merely a 1px border/highlight), showing only the front console and rack slots directly facing the viewer.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3661
+  }
+ ],
+ "decidedAt": "2026-10-14T01:18:07.275Z",
+ "cells": {
+  "16": [
+   "45012e116bf6776e",
+   "774490694935bd96",
+   "8bcd94513a36738e",
+   "e178bcfd732cf09f"
+  ],
+  "24": [
+   "0cf9ca8c5fc9d581",
+   "1467109307f4f9f9",
+   "177982a10f0ef991",
+   "1ddde7cd2a983b75",
+   "1fa17a76aa80a7a4",
+   "22f8e3063b751694",
+   "312e037dd90a7967",
+   "3a8a8678e87872ae",
+   "61225f9df6ca6120",
+   "659c3197150737be",
+   "77e97e5da2c94973",
+   "78889841a000f704",
+   "7cf2fa69eb438bc2",
+   "7f6e62ccb255c345",
+   "a96da22dc82171ab",
+   "b483e161109fab34",
+   "cd376b9f9cafa42d",
+   "d8031d3f3bf4bebc",
+   "d806f0bbd5ac3370",
+   "de1c304214e05f52",
+   "df43905936a93f0c",
+   "e81752d1830498cc",
+   "eac4814021e20608",
+   "feb820d75bc6b646"
+  ],
+  "32": [
+   "c2f6c6e4623c093c"
+  ],
+  "48": [
+   "1f869e6a57d50f1e",
+   "2c3b698a7049eb32",
+   "37241f88549826b3",
+   "91c25b21d8cf414f",
+   "b998ede418b08459",
+   "dcb81aaf887710dc"
+  ]
+ }
+}

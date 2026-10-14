@@ -1,0 +1,123 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5f6031626098a0ad93781cf3b35fe3475943305ae016cf27476054884bbfb7e2",
+ "width": 48,
+ "height": 32,
+ "kind": "seat",
+ "name": "3인 소파",
+ "label": "modern_city/interior/mci-sofa",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "3-person sofa",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sofa is drawn in a pure front elevation: the armrests are flat vertical slabs without top surfaces, and the seat cushion surface is not visible from above (only the vertical front faces of the cushions, frame, and backrest are shown).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11616
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "3-person sofa",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sofa shows both the top of the backrest (rows 4-6, ~3px) and the foreshortened top surfaces of the seat cushions (rows 13-20, ~8px) above the darker south-facing base/front band (rows 21-25).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6145
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "3-person sofa",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sofa shows both the top surface of the backrest (rows 3-6, 4px) and the horizontal seat cushions seen from above (rows 13-20, 8px) above the front base face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5724
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "3-person sofa",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sofa is drawn in proper 3/4 view: the top surface of the backrest is 4 rows tall (rows 3-6), and the horizontal seat cushion surface seen from above is 8 rows tall (rows 13-20) above a 5-row front base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5988
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:24.133Z",
+ "cells": {
+  "16": [
+   "4940b81da38e78ff",
+   "726b537f0ece1bd5",
+   "a45ae405dc24604e",
+   "cc520799f80c055b",
+   "dd78163c3c61b9c2",
+   "ec9051374e681b08"
+  ],
+  "24": [
+   "36adfd49be22d856",
+   "3f0bfca611f095db",
+   "95dd8157784a089d",
+   "a8908d3d269638d3",
+   "b341fe9041aff7f0",
+   "c5f4416dfe9c4a25",
+   "e7fe0be3fc273778",
+   "ea2b7cfd57d5bbf3"
+  ],
+  "32": [
+   "16119e592fa161d6",
+   "42ad589297baf499",
+   "5d8e6c03b8712e2e",
+   "8ac16bfa2326a824",
+   "a605de524e8090c1",
+   "dc37428e97155c68"
+  ],
+  "48": [
+   "618d5fef62d6666b",
+   "a152ec0c54a02679"
+  ]
+ }
+}

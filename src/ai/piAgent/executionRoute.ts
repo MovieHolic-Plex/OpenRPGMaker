@@ -18,6 +18,7 @@ import { formatSengokuNote, type SengokuTarget } from "@/ai/sengokuEdoPolicy";
 import { formatSkyIslandNote, type SkyIslandTarget } from "@/ai/skyIslandPolicy";
 import { formatSteampunkNote, type SteampunkTarget } from "@/ai/steampunkCityPolicy";
 import { formatCampusNote, type CampusTarget } from "@/ai/campusPolicy";
+import { formatModernCityNote, type ModernCityTarget } from "@/ai/modernCityPolicy";
 import { formatSfStationNote, type SfStationTarget } from "@/ai/sfStationPolicy";
 import { formatPrehistoricNote, type PrehistoricTarget } from "@/ai/prehistoricPolicy";
 import { formatDesertEastNote, type DesertEastTarget } from "@/ai/desertEastPolicy";
@@ -106,6 +107,8 @@ export interface PiIntentNoteInput {
   readonly steampunk?: SteampunkTarget | null;
   /** 요청·대상 맵이 캠퍼스(modern_campus) 칩셋이고 프로젝트에 칩셋이 있으면 그 대상(campusPolicy). */
   readonly campus?: CampusTarget | null;
+  /** 요청·대상 맵이 도쿄풍 도시(modern_city)면 그 대상(modernCityPolicy) — 캠퍼스 뒤·버들항 앞. 거리 낱말만으로는 잡지 않는다(jp_city 몫). */
+  readonly modernCity?: ModernCityTarget | null;
   /** 요청·대상 맵이 SF 정거장·네온 거리(sf_station)면 그 대상(sfStationPolicy). jp_city·고딕보다 먼저 잡힌다. */
   readonly sfStation?: SfStationTarget | null;
   /** 요청·대상 맵이 선사 원시 세계(prehistoric) 칩셋이고 프로젝트에 칩셋이 있으면 그 대상(prehistoricPolicy). jp_city 보다 먼저 판정한다. */
@@ -150,6 +153,7 @@ export function buildPiIntentNote(input: PiIntentNoteInput): string | null {
     : input.pirateIsles ? formatPirateIslesNote(input.pirateIsles, input.targetMap)
     : input.skyIsland ? formatSkyIslandNote(input.skyIsland, input.targetMap)
     : input.campus ? formatCampusNote(input.campus, input.targetMap)
+    : input.modernCity ? formatModernCityNote(input.modernCity, input.targetMap)
     : input.beodeulTown ? formatBeodeulTownNote(input.beodeulTown, input.targetMap)
     : null;
   const scopeNote = input.selection

@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cb3ea5f1390f70aee42fee7cdc68ed27598a8221594f4b171107eceace6f3df3",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "아이스크림 냉동고",
+ "label": "modern_city/interior/mci-freezer",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ice cream chest freezer",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 9,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top glass surface/opening spans rows 9 to 20 (roughly 12 source pixel rows) looking down into the ice cream tubs/bars inside, while rows 21 to 30 form the vertical front face with a blue accent stripe.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4350
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ice cream chest freezer",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The freezer is clearly rendered in 3/4 top-down perspective with roughly 12 rows of the top/glass lid showing the interior items (ice creams) from above, and roughly 10 rows of the vertical south face with a blue stripe below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5306
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ice cream chest freezer",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface (glass-top display opening into the freezer interior) spans rows 9 to 20 (approx. 12 rows), showing colorful frozen contents inside, while the front south face extends from row 21 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4105
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ice cream freezer chest",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface (glass-top sliding opening looking down into ice cream products) spans rows 9-20 (12 rows), revealing the colorful interior. The south front face spans rows 21-30 with a blue accent stripe.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4047
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:11.885Z",
+ "cells": {
+  "16": [
+   "0e666ee021a43a44",
+   "7d241f252468ba9e",
+   "950286df0214c788",
+   "c7ab6c5f198c1100"
+  ],
+  "24": [
+   "02875a0e6179ed95",
+   "08c9013e33fde676",
+   "0bf1dc9d20602418",
+   "1c0ed063038d00fb",
+   "1e9f35c0f763c51e",
+   "25c37646e3c7dc49",
+   "3d1dd72de6f5ed5a",
+   "6bcc10b90344a49c",
+   "6e1f842db12cd5e1",
+   "7e951d6f51613fc2",
+   "811e6bef6e4ee82a",
+   "8f74f75afab52ffa",
+   "967ed8538fcb5542",
+   "9f26daf94edd4dc1",
+   "a515d07d9558d51b",
+   "d3ea6be9218ceb51",
+   "de04bb1e537d1aa7",
+   "e607f96f3e6a3cad"
+  ],
+  "32": [
+   "9aea78b797075bba"
+  ],
+  "48": [
+   "472fbb7a1fa1b3c0",
+   "47542176b6141cb4",
+   "69bc2b920c33727d",
+   "8ddf002fbf9e7aaf",
+   "c9f107493a14941e",
+   "cc4e3d9dbd285946"
+  ]
+ }
+}

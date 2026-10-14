@@ -18,6 +18,7 @@ import { sengokuPromptLines } from "../sengokuEdoPolicy";
 import { skyIslandPromptLines } from "../skyIslandPolicy";
 import { steampunkPromptLines } from "../steampunkCityPolicy";
 import { campusPromptLines } from "../campusPolicy";
+import { modernCityPromptLines } from "../modernCityPolicy";
 import { sfStationPromptLines } from "../sfStationPolicy";
 import { prehistoricPromptLines } from "../prehistoricPolicy";
 import { desertEastPromptLines } from "../desertEastPolicy";
@@ -85,6 +86,8 @@ export function buildPiAgentSystemPrompt(
     ...(spatial ? steampunkPromptLines(project, mapIds) : []),
     // 캠퍼스(modern_campus) — 칩셋이 프로젝트에 있을 때만 줄이 붙는다(없는 칩셋을 «있다»고 말하지 않는다).
     ...(spatial ? campusPromptLines(project, mapIds) : []),
+    // 도쿄풍 도시(modern_city) — 번들이라 모든 프로젝트에 있으므로 범위에 modern_city 맵이 있을 때만 줄이 붙는다(거리 낱말을 jp_city 에서 빼앗지 않는다).
+    ...(spatial ? modernCityPromptLines(project, mapIds) : []),
     ...(spatial ? sfStationPromptLines(project, mapIds) : []),
     // 선사 원시 세계(prehistoric) — 칩셋이 프로젝트에 있을 때만 줄이 붙는다.
     ...(spatial ? prehistoricPromptLines(project, mapIds) : []),

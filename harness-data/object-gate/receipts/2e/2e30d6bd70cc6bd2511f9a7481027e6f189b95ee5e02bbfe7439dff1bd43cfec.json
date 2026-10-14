@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2e30d6bd70cc6bd2511f9a7481027e6f189b95ee5e02bbfe7439dff1bd43cfec",
+ "width": 48,
+ "height": 32,
+ "kind": "seat",
+ "name": "3인 소파",
+ "label": "modern_city/interior/mci-sofa",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "3-person sofa",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sofa is drawn entirely as a flat architectural front elevation. The backrest, armrests, seat cushions, and base rail show no visible top surfaces (only 1px highlight lines), and the legs extend straight down from the front base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6556
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "3-seater sofa",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sofa is drawn in pure front elevation: the backrest, armrests, seat cushions, and base rail are all depicted flat from the front. The top edge of the backrest and armrests has only a 1px highlight/edge line (row 6) with no foreshortened horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10103
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "3-seater sofa",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sofa is drawn in a flat architectural front elevation with no visible top depth on the seat cushions, backrest, or armrests (only a 1px highlight line on row 15). The cushions and backrest are shown straight-on.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5594
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "3-person sofa",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sofa is drawn completely flat from the front. The top of the backrest is only a 1px highlight line (row 5), and the seat cushions are drawn as vertical front-facing rectangles (rows 15-21) sitting above the lower base (rows 22-26) with no foreshortened horizontal seat surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5663
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:12.628Z",
+ "cells": {
+  "16": [
+   "1b0c6d19d9f8e407",
+   "ad70f1b5b27fa56f",
+   "e03ffb42a25fccc3",
+   "e2c1f3369172ba9f",
+   "f7ee2b564d6e2db7",
+   "fd98efa622865acf"
+  ],
+  "24": [
+   "274abdf92808efea",
+   "283177ae9c03fafb",
+   "6d39af0a079bc362",
+   "9b0832ea22ea99bd",
+   "badafb8306967947",
+   "c5ae997533d69d09",
+   "d0fc9157acee1457",
+   "dbc17a350160d770"
+  ],
+  "32": [
+   "2294f513ef6ecff0",
+   "462207bcb19dbb7f",
+   "4cd979e717c1afbc",
+   "95a28f0e06e1fec5",
+   "a30a34860c790858",
+   "e7b321c6b31aeffa"
+  ],
+  "48": [
+   "0fad1adcf2d5f45a",
+   "eb1193bb00f0d45a"
+  ]
+ }
+}

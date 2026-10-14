@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e638a83dc43297a7def404866bd259425bb6afd31f4d5ac8a04a8ad004bb11e6",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "ATM",
+ "label": "modern_city/interior/mci-atm",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ATM cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ATM is drawn in pure flat front elevation. The topper sign (rows 0-5), screen (rows 14-19), keypad, and cash slot are all shown directly face-on with no visible horizontal top surface on the machine cabinet.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6271
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ATM cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ATM is drawn in a pure front elevation: the cabinet, screen, square keypad buttons, and cash slot are all seen straight-on with no top surface foreshortened or visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5297
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ATM cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ATM is drawn entirely in a flat front elevation with the screen, keypad, and cash dispenser facing straight forward; the main cabinet has no visible top surface foreshortened from above (only a 1px dark accent line at row 7).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6317
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ATM cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ATM is drawn entirely as a flat architectural front elevation: the green sign at the top, the screen, the keypad, and the cash slot are all viewed directly from the front with no visible top horizontal surface (0 source pixel rows of depth).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4247
+  }
+ ],
+ "decidedAt": "2026-10-14T01:20:31.481Z",
+ "cells": {
+  "16": [
+   "73ea589dae893d50",
+   "b1a097949b47fee1"
+  ],
+  "24": [
+   "2661a5ac61d8924d",
+   "5a73b101dbbb7a91",
+   "774e783def81732d",
+   "78ea5747ea824d1f",
+   "7d6d7ddea3e57339",
+   "8c47169d82909fd4",
+   "94108cdd986e367c",
+   "b423ea367fb73025",
+   "bcdd3472d5559e03",
+   "d6f3dd5989fb520a",
+   "e6692218f88afe07",
+   "fe1884c40f14b48e"
+  ],
+  "32": [
+   "03e7f60a5c97a58e",
+   "32e360b3cbc1713c",
+   "98ee0f83086efe31"
+  ],
+  "48": [
+   "189e9309aabf18fd",
+   "427260081da4a435",
+   "4483f6e38dbb35fd",
+   "ac457d4d7db4d733",
+   "c2594359a31c73fc",
+   "f256888f523926c0"
+  ]
+ }
+}

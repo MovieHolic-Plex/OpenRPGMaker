@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "317fcfda01f1f74f50323a6b185cb8f41fccf6468cf3c4dcc33d4acdbbb7ddca",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "병원 벽(흰 칠·세이지 허리판·손잡이 난간)",
+ "label": "modern_city/interior/mci-wall-hospital",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hospital wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting a vertical interior hospital wall face with white upper wall, handrail, and sage wainscoting.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5896
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hospital wall face tile with white upper wall, handrail, sage wainscoting, and dark baseboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Standard 2D vertical wall face terrain tile (A4/wall autotile style) for top-down perspective, not a standalone 3D object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5869
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hospital wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid 2-tile tall interior wall face terrain consisting of upper white wall, handrail trim, sage green wainscoting, and baseboard.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4773
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hospital wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain wall face tile depicting a white upper wall, horizontal handrail, sage wainscoting, and baseboard.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8821
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:02.401Z",
+ "cells": {
+  "16": [
+   "09fe2369891bfd24",
+   "0d772b88d2dda100",
+   "61abed1380158831",
+   "b19832a3083f9a3f"
+  ],
+  "24": [
+   "081f59fc3be8de88",
+   "1314dd8d350e92f2",
+   "1a4beaa27f6cecb0",
+   "2fcb02fc2b78ec1c",
+   "39d7b37f7dc3bc36",
+   "4ed683da9e1c5baa",
+   "6c06ec37ba7c7f87",
+   "6dddf9740f5e6cc4",
+   "6fff7396ca2deb85",
+   "726698f09bd223bf",
+   "7a3084e5e39543b2",
+   "7e89f6084ebc91c9",
+   "8cbe1b30506cab77",
+   "9427e0fca99d5149",
+   "aa936958e9bdeb1f",
+   "ace458af483138cd",
+   "b610470a7cee8deb",
+   "b8ee0dfd31337749",
+   "bb17d7a4cda7d999",
+   "dbc5a39ceeb66476",
+   "edbd86b65dfff2c6",
+   "efb95ba717fbccbe",
+   "f63b1a11b1ad73d5",
+   "fd3040fe975c510c"
+  ],
+  "32": [
+   "c7fcf20bd6046e19"
+  ],
+  "48": [
+   "1a322bca3401f5b4",
+   "394758853f1fee60",
+   "6ea679989b962460",
+   "89f29a1b7ee91c82",
+   "9af6817e2a483e17",
+   "e742c57c53e31cda"
+  ]
+ }
+}

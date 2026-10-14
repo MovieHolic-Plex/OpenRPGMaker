@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f8100d8aab8e77a8e997e874335f5c9c7f99259543eea3ea101d3cc84d06333a",
+ "width": 16,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "약품 카트",
+ "label": "modern_city/interior/mci-med-cart",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "medical cart with drawers",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top tray/surface spans rows 7 to 12 (6 rows deep) with items placed on it, clearly visible above the front-facing drawers (rows 14-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6391
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "medical cart with drawers",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top tray/surface of the cart is clearly depicted across rows 7-12 (approx. 5-6 rows tall) holding medicine containers, above a vertical south-facing cabinet with four drawers spanning rows 13-29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5263
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "medical cart with drawers",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cart tray is clearly foreshortened and visible across rows 8-12 (5 rows) with items placed on it, above a front-facing set of four colored drawers.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5331
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "medicine cart with drawers",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cart is clearly visible from rows 7 to 12 (6 rows) with objects resting on it, above a front face containing four colored drawers.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5794
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:12.631Z",
+ "cells": {
+  "16": [
+   "981244baba108c8e",
+   "bcbd457ad2f1f4e1"
+  ],
+  "24": [
+   "0b0556140fcd236e",
+   "2a281023a08770ca",
+   "3ddaf518fdf1f134",
+   "545b3e81097113b3",
+   "70a6e2afb9e5a82a",
+   "7db806807c85acff",
+   "94d5fcbc3d9ccb15",
+   "afc4646a6d38d815",
+   "b6d501d140e84252",
+   "cabfc0984991294c",
+   "dddc552fe5391586",
+   "f6046d7e13984608"
+  ],
+  "32": [
+   "4a1ff1343a73ed27",
+   "c87e9250a540fee5",
+   "eb8ced4e1e2449ab"
+  ],
+  "48": [
+   "4c65a7c3408b0d70",
+   "50aee8a5958b3f16",
+   "643a256406fcd37f",
+   "6fe2d1c4e5c1fe27",
+   "8c78cc912c323a3f",
+   "a6082f35c8e93396"
+  ]
+ }
+}

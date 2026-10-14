@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cb35fc84004c71be515e3005f3e4d3916e52ca0347fb10485d4d597e0a1d6d47",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "로비 석재 판벽",
+ "label": "modern_city/interior/mci-wall-lobby",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone panel wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile with baseboard trim, correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4450
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone panel wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile showing marble paneling, trim molding, and baseboard; as a vertical wall surface terrain, standard top-down wall face perspective applies.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6412
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone wall panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile depicting stone wall panelling with horizontal moulding and a base trim; as a vertical terrain wall surface, it correctly fills the vertical plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6636
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall face tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The asset is a terrain wall face tile depicting stone/marble panelling with horizontal trim and a dark baseboard. As vertical wall terrain, it correctly fills the vertical face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6882
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:02.401Z",
+ "cells": {
+  "16": [
+   "27b4f0dcce1284c7",
+   "58fad2a6af925919",
+   "793d6fc9d1e99133",
+   "a67430383a26f05d"
+  ],
+  "24": [
+   "17f999cbaff04e66",
+   "18d75fcceedf8b5a",
+   "1ceab93001d9b9c0",
+   "1dcf47a6e620f122",
+   "267e607d4d3d3a25",
+   "38a50c45fdee0dab",
+   "3a0d348a73ea863e",
+   "3cafaaba474a5b2f",
+   "5a3f73240a912376",
+   "5c4ef621fd1c5044",
+   "5cf04ea01d45f5f4",
+   "630443ec9e23b10a",
+   "80442010897317b9",
+   "8a876c8f35db3ceb",
+   "90d260f8115f0346",
+   "934166a15cc80267",
+   "9ce8d21c8f2b589b",
+   "9f4ca68f55f86801",
+   "b9a83f2aed206e68",
+   "ca5ef471a8a1ab7e",
+   "d744f7eeb017c3bb",
+   "dd0fde0051bc7a67",
+   "ed0a0e71cbb5eb75",
+   "feaabf18e7756df9"
+  ],
+  "32": [
+   "583105de7e2fb53c"
+  ],
+  "48": [
+   "0a347fadf39be48e",
+   "b8a8782fe5975251",
+   "bf0a1cb0b89537a5",
+   "dad669b271f4a691",
+   "f13418cfe912fbbe",
+   "f866f09859bb362f"
+  ]
+ }
+}

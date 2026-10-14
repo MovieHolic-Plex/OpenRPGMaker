@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6a4a5f50c89f221677f36521fe7fee68b8af7825385356071752d3ccfe4d9af1",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "높은 둥근 의자",
+ "label": "modern_city/interior/mci-bar-stool",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall round bar stool seat cushion and base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round cushion clearly shows its top surface as an elliptical lighter pad from row 9 to 13 (approx 5 rows tall), followed by a 2-row south front edge (rows 14-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5613
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bar stool cushion seat and stand",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round stool seat clearly shows its foreshortened circular top surface across rows 10 to 13 (4 rows) and its front edge thickness across rows 14 to 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5728
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cushioned seat of a tall bar stool",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round cushion clearly shows a foreshortened top surface (rows 9-13, about 5 rows tall) and a front face (rows 14-15), with the round base also foreshortened.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5179
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bar stool cushion and base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round cushion clearly displays its top circular surface from above (rows 10-13, 4 rows tall) in a lighter tone, followed by the front vertical face of the cushion (rows 14-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5790
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:12.630Z",
+ "cells": {
+  "16": [
+   "4c4534f2f7522074",
+   "64f71f456c8b6236"
+  ],
+  "24": [
+   "10c4d8b1255878a3",
+   "143da915f21b2e94",
+   "1dd71943e469044e",
+   "37fcff6add67e1d4",
+   "40c140ff01762245",
+   "6c09b631bda70b76",
+   "95b3ef084c3a310e",
+   "9ed53a55700112ff",
+   "f9af85382ef540a7"
+  ],
+  "32": [
+   "743a900ac380be9c",
+   "c71579fde94f8d42",
+   "da0e94263b08c230"
+  ],
+  "48": [
+   "0ccdc819b82e5969",
+   "126798a109a3ad03",
+   "458b889d0d4c6eda",
+   "608faf99b65d984d",
+   "6a6a4c61e503ecef",
+   "7f8c53c3cfb0aaf4"
+  ]
+ }
+}

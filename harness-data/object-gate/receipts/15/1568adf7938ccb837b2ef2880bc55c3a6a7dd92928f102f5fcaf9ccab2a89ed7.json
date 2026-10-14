@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1568adf7938ccb837b2ef2880bc55c3a6a7dd92928f102f5fcaf9ccab2a89ed7",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "ATM",
+ "label": "modern_city/interior/mci-atm",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ATM machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ATM is drawn entirely from a straight front elevation, featuring only a 1px outline border at row 2 with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6109
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ATM cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ATM is drawn entirely flat in front elevation with only a 1px border at row 2 and no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4815
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ATM cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ATM is drawn entirely in flat front elevation with a 1px outline at row 2 and no visible horizontal top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 3680
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ATM machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn as a direct front view with zero visible top surface; row 2 is merely a 1px dark outline border immediately followed by the vertical front panel.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5005
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:24.132Z",
+ "cells": {
+  "16": [
+   "01ba2076a7bd99fc",
+   "04df3b24b22f16d1"
+  ],
+  "24": [
+   "1ab9cc8cc5f70935",
+   "2a797af7658f1c75",
+   "3120d2709a6e1889",
+   "61bfcb58bf1a6050",
+   "6b3158c6844eab13",
+   "74794b81d254c6ca",
+   "af41c90855d43bfe",
+   "bc247042b0557e0e",
+   "c70ed06a471840cc",
+   "da9a48b35a92fbca",
+   "df3c6d32929590d6",
+   "fc2f77d4f3887b11"
+  ],
+  "32": [
+   "2259cc5848a021db",
+   "37dd23ec89e15b15",
+   "ede8814535639238"
+  ],
+  "48": [
+   "06fc01b15cff603b",
+   "2744939d3c0a3b45",
+   "ad5921152d248db5",
+   "cafd207ecddec449",
+   "d8afd46817db4072",
+   "efa5c6ac5890eff6"
+  ]
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c9b1a8b963216f21495093bd64d92e711aa7a842713e3547420e84ea935a5dff",
+ "width": 16,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "침대 옆 협탁",
+ "label": "modern_city/interior/mci-bedside",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "nightstand with drawers",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bedside table top surface clearly spans rows 9 to 14 (6 pixel rows) holding tabletop items, with the two-drawer front face extending below from row 15 to 27.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5625
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bedside table with drawers",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the nightstand is clearly visible across rows 9 to 15 (7 pixels deep) holding several small items, with the two drawers facing south below it on rows 16 to 26.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6340
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bedside nightstand with drawers",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from row 9 to row 15 (7 rows tall) with objects resting on it, above a front face showing two drawers (rows 16-26).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6042
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "nightstand with drawers",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bedside table features a clear 7-row top surface (rows 9-15) displaying items (cup/bottle, small potted plant/book), above a front face showing two drawers (rows 16-26).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5888
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:12.630Z",
+ "cells": {
+  "16": [
+   "0bf79c87db06ca1b",
+   "dab8a61ba29cc442"
+  ],
+  "24": [
+   "08d296f5921832f1",
+   "114994d87fb415e4",
+   "1b3ae93f5e93442a",
+   "2bb339199fabb69e",
+   "3ad06f75fc190217",
+   "48c78aa4dac0af07",
+   "67f967eb82789877",
+   "78cafb5dd61df0ae",
+   "969c4279bcf24124",
+   "96ee19e31d9b5e8b",
+   "a0b934aee1027667",
+   "c41168d657381ed9"
+  ],
+  "32": [
+   "08591f66db0fc734",
+   "bd8cb095860a3937",
+   "fdaa55f45ddb37e1"
+  ],
+  "48": [
+   "0cdeac1b54f0bbd6",
+   "4a6607f9e5eba0b8",
+   "5bfdedfbee9b76b6",
+   "8c818c1ec2352847",
+   "8f3c83b6204fec0d",
+   "c5ca3fa1d1ae1ba9"
+  ]
+ }
+}

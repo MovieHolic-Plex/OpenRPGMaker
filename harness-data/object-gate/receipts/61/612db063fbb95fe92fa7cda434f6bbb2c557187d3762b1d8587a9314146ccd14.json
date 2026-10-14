@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "612db063fbb95fe92fa7cda434f6bbb2c557187d3762b1d8587a9314146ccd14",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "사무 책상(화면 북향)",
+ "label": "modern_city/interior/mci-desk-pc-back",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "office desk with dual monitors",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk tabletop is clearly visible from rows 15 to 22 (8 source pixel rows) with items placed on it, meeting the 3/4 top-down perspective requirements alongside the south front drawer face from rows 23 to 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3185
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "office desk with monitors",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desktop surface is visible from row 15 to row 22 (8 rows) with items placed on it, meeting the south front face with two drawers (rows 23-30) in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3140
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "office desk with dual monitors",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk tabletop surface spans rows 15-22 (8 source pixels tall) showing items resting on it, with the front drawer face visible below from row 23 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7091
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "office desk with dual monitors",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk tabletop occupies rows 15 to 22 (8 source pixel rows) displaying items and monitor stands, while the front face with drawers occupies rows 23 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3399
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:11.883Z",
+ "cells": {
+  "16": [
+   "9a226708a193feb8",
+   "a6d09328b830bf70",
+   "b0c668e718cc237a",
+   "b6c5e766dbcf997e"
+  ],
+  "24": [
+   "1b31f5c7d33f063d",
+   "1b5987088a337fc1",
+   "2084eb8d339841d4",
+   "3106836b360f3541",
+   "3e273fac947dda5f",
+   "448c6d84c304e24e",
+   "49e44b27e5329e54",
+   "5324c503b9b16f8e",
+   "54aa38598edb68dd",
+   "5dc07e4032a1e2a0",
+   "6040caf808f42414",
+   "7b9d19c31e7cabe5",
+   "7ddcfb5abad81b41",
+   "7e05286970e35322",
+   "82800fb08d42d626",
+   "9367d534f6d5fd43",
+   "a67d382d1e99675d",
+   "a845dc2302d72612",
+   "b76da3770d32b45c",
+   "c0b31ec8cd1c9fe2",
+   "d69e7bddb03741ee",
+   "def3fd1430644c95",
+   "e2d93112a5740f0a",
+   "f4e825fda9d2d343"
+  ],
+  "32": [
+   "43117371052b50ee"
+  ],
+  "48": [
+   "147fbd0c3a993025",
+   "278d25dfafd55f8f",
+   "2a23f445fd865494",
+   "ad7a1b93a9793dd0",
+   "b010aae0fc55bc63",
+   "c29dc936717147d7"
+  ]
+ }
+}

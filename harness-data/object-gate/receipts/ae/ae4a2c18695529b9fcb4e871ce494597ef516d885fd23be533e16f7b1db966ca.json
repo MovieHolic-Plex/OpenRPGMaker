@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ae4a2c18695529b9fcb4e871ce494597ef516d885fd23be533e16f7b1db966ca",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "사무 전화기",
+ "label": "modern_city/interior/mci-g-phone",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "office telephone / intercom unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is rendered as a flat vertical rectangle (rows 4-13) showing the screen and keypad in direct front elevation. The dark upper band at rows 5-6 is only 2px tall, representing either a handset or a 2px rim, with no proper foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5807
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "office telephone body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is rendered as a flat 2D rectangular block with horizontal color bands, a screen, and buttons, with no distinct top plane or 3/4 foreshortening to indicate depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6063
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "office desk phone",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The phone body is drawn as a flat rectangular block with at most 2 rows of darker pixels at the top (rows 5-6) representing either a handset or a top edge, failing the requirement for a clear top surface in 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 7691
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "office telephone body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn as a flat rectangular block (8x10 px) with no foreshortened top plane or 3D depth, appearing either as a pure front elevation or a flat 2D icon.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5448
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:05.389Z",
+ "cells": {
+  "16": [
+   "bbb896bcc1d2c5dc"
+  ],
+  "24": [
+   "1225087ad1dab661",
+   "27acc989849fca5e",
+   "38276e4ea71d90cd",
+   "6a7daf393c04bd76",
+   "956bdb2c218a5836",
+   "c739dbcfd5612b88"
+  ],
+  "32": [
+   "42479d1eacb96956",
+   "a041a9db003c69a3",
+   "d1124361aa203690",
+   "db02b3ffbbbc2db7",
+   "efcc2ff477f58e76",
+   "f56808d73a42ded6"
+  ],
+  "48": [
+   "012a38a61c17d293",
+   "07aeac7a81554858",
+   "0aea5a93f0987335",
+   "216491e325c24e6c",
+   "7034bfb76d7c1547",
+   "a73aa288fc82db43"
+  ]
+ }
+}
