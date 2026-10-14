@@ -3102,3 +3102,10 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - **`author_pixel_art`**(`src/editor/tools/pixelArtTools.ts`, 순수 변환 `src/editor/pixelArt/rowsImage.ts`): 행 문자열+팔레트로 object(16px 칩셋 끝에 `bakeWorkshopObject` 로 구워 `workshop:<이름>`, `stamp_tileset_object` 로 놓음) · charset(24×32, 방향별 stand+선택 stepA/stepB, 안 주면 다리 1px 자동 걷기, left 생략 시 right 뒤집기) · picture(컷신 소품, 배경으로 맵을 가리지 말 것). 확대 미리보기를 `toolAdapter.ts` 가 모델에 돌려준다. **3/4 object-gate 는 배선돼 있지 않다** — 결과 요약이 «관문 영수증 없음»을 말하며 공용·스토어 게시 금지. 한글 이름은 id 가 비면 해시로 대신한다.
 - **`author_actor_charset`**: 파라미터 생성기(체형 4종), 자유 도트가 필요하면 `author_pixel_art` kind charset.
 - 측정 검사(`cutscenePreview/probe.ts`): 색조 알파 <0.2, 주체가 가장자리에 걸려 잘리는 시간 ≥40% 를 조수에게 되돌린다. 잘림 검사는 2026-10-14 실행 2회에서 한 번도 걸리지 않았다(원인 미조사). 증거 보고서: `~/claude-viz/argon-report.html`.
+
+### 대형 유닛 walker · smash — 세계가 반응하는 행군 (2026-10-14)
+
+- `author_pixel_art kind:"walker"` — 전투기계·괴수·탈것처럼 큰 유닛은 24×32 칩셋을 키우지 않고 **원본 해상도**(32×32~160×192, 모든 프레임 같은 캔버스)로 찍는다. `directions:{right:{stand,stepA?,stepB?}, left?, down?, up?}` — 반대쪽은 뒤집고 없는 방향은 옆모습으로 채운다. 프레임은 `cutscene_char_<slug>_0_walk<Dir><0-2>` 로 등록돼 `script_cutscene_staged` 배우 `resourceId`(결과 값) 하나로 걷기 전체가 붙는다(scale 100). 걷기 자동 생성은 높이/32 px 만큼 다리 한쪽을 든다.
+- `script_cutscene_staged` 새 단계 `smash` — `{tile:{x,y}, w?, h?, layer?, tileId?, effect?, intensity?, ms?, resourceId?}` 가 흔들림 + 파티클 + 효과음 + 맵 칸 교체(`changeTile` 비트 → 지형 변경 명령, 컷신 뒤에도 남음)를 한 번에 낸다. 비트 `changeTile`(`CutsceneChangeTileBeat`, 최대 64칸)이 `src/editor/cutscene/index.ts` 에 새로 생겼다.
+- 프로브(`cutscenePreview/probe.ts`): 큰 유닛(화면 높이 20%↑)이 100px↑ 이동하는 8초↑ 컷신에 `changeTile` 이 하나도 없으면 「무게감 없음」 이슈.
+- 도구 정책 문장은 `src/ai/toolCapabilityIndex.ts` cutscene-art 항목(대형 유닛은 walker, 행군은 화면 밖 진입→퇴장·멈추지 않기·smash).

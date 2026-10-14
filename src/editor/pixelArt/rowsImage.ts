@@ -145,9 +145,9 @@ function shifted(image: RgbaImage, y0: number, y1: number, x0: number, x1: numbe
   return { width: image.width, height: image.height, data };
 }
 
-/** 서 있는 그림 한 장에서 걷기 두 프레임을 만든다: 아래 1/3(다리)의 한쪽 절반을 1px 들어 올리고 몸통은 1px 낮춘다. */
-export function autoWalkFrames(stand: RgbaImage): [RgbaImage, RgbaImage] {
+/** 서 있는 그림 한 장에서 걷기 두 프레임을 만든다: 아래 1/3(다리)의 한쪽 절반을 lift px(기본 1) 들어 올린다. 큰 기계는 lift 를 키운다. */
+export function autoWalkFrames(stand: RgbaImage, liftPx = 1): [RgbaImage, RgbaImage] {
   const legTop = Math.floor(stand.height * 0.68), mid = Math.floor(stand.width / 2);
-  const lift = (left: boolean): RgbaImage => shifted(stand, legTop, stand.height, left ? 0 : mid, left ? mid : stand.width, -1);
+  const lift = (left: boolean): RgbaImage => shifted(stand, legTop, stand.height, left ? 0 : mid, left ? mid : stand.width, -Math.max(1, liftPx));
   return [lift(true), lift(false)];
 }

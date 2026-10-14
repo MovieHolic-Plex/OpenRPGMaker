@@ -35,6 +35,8 @@ export type StageStep =
   | { readonly do: "wait"; readonly ms: number }
   | { readonly do: "flash"; readonly ms?: number; readonly color?: "white" | "red" | "green" | "blue" | "yellow" | "purple" | "black" }
   | { readonly do: "shake"; readonly ms?: number; readonly intensity?: number }
+  /** 대형 유닛이 맵의 것을 부순다 — 화면 흔들림+먼지/폭발+효과음+그 칸의 장식 제거(또는 타일 교체). 맵 칸 좌표(show_map_region 의 칸). */
+  | { readonly do: "smash"; readonly tile: { readonly x: number; readonly y: number }; readonly w?: number; readonly h?: number; readonly layer?: "lower" | "upper"; readonly tileId?: number; readonly effect?: "dust" | "explosion" | "smoke" | "fire"; readonly intensity?: number; readonly ms?: number; readonly resourceId?: string }
   | { readonly do: "se" | "bgm"; readonly resourceId: string }
   | { readonly do: "whiteout"; readonly ms?: number }
   /** whiteout 로 덮은 흰 화면을 걷어 낸다(새 장소에서 «눈을 뜨는» 연출). */
@@ -83,6 +85,8 @@ export interface StageInput {
   readonly actors: readonly StageActor[];
   readonly steps: readonly TimedStep[];
   readonly whiteResourceId: string;
+  /** 컷신이 도는 맵 — smash 가 칸을 바꿀 맵. */
+  readonly mapId?: string;
 }
 
 export interface StageResult {
@@ -440,6 +444,16 @@ export function compileStage(input: StageInput): StageResult {
         case "weather": events.push({ t: 0, order: order.n++, beat: { kind: "weather", weather: step.weather, intensity: step.intensity ?? 0.6, durationMs: step.ms ?? 800 } }); break;
         case "letterbox": events.push({ t: 0, order: order.n++, beat: { kind: "letterbox", show: step.show, durationMs: step.ms ?? 500, keep: false } }); break;
         case "camera": events.push({ t: 0, order: order.n++, beat: { kind: "camera", mode: step.mode, ...(step.x !== undefined ? { x: step.x } : {}), ...(step.y !== undefined ? { y: step.y } : {}), ...(step.zoom !== undefined ? { zoom: step.zoom } : {}), durationMs: step.ms ?? 800, wait: false } }); end(step.ms ?? 800); break;
+        case "smash": {
+          const ms = step.ms ?? 900;
+          const w = Math.max(1, Math.trunc(step.w ?? 1)), h = Math.max(1, Math.trunc(step.h ?? 1));
+          events.push({ t: 0, order: order.n++, beat: { kind: "shake", intensity: step.intensity ?? 7, durationMs: ms } });
+          events.push({ t: 0, order: order.n++, beat: { kind: "particles", preset: step.effect ?? "dust", x: step.tile.x + Math.floor(w / 2), y: step.tile.y + Math.floor(h / 2), durationMs: Math.max(800, ms) } });
+          if (step.resourceId) events.push({ t: 0, order: order.n++, beat: { kind: "music", action: "se", resourceId: step.resourceId } });
+          if (input.mapId) events.push({ t: 0, order: order.n++, beat: { kind: "changeTile", mapId: input.mapId, x: step.tile.x, y: step.tile.y, w, h, layer: step.layer ?? "upper", tile: step.tileId ?? 0 } });
+          end(ms);
+          break;
+        }
         case "shake": events.push({ t: 0, order: order.n++, beat: { kind: "shake", intensity: step.intensity ?? 9, durationMs: step.ms ?? 900 } }); break;
         case "se": events.push({ t: 0, order: order.n++, beat: { kind: "music", action: "se", resourceId: step.resourceId } }); break;
         case "bgm": events.push({ t: 0, order: order.n++, beat: { kind: "music", action: "bgm", resourceId: step.resourceId } }); break;

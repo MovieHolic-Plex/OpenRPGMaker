@@ -19,7 +19,7 @@ type Dir = (typeof DIRECTIONS)[number];
 const OBJECT_KINDS = { standing: "floor", flat: "flat", wall_front: "wall", wall_hung: "hang" } as const satisfies Record<string, WorkshopHandKind>;
 
 interface Prepared {
-  readonly kind: "object" | "charset" | "picture";
+  readonly kind: "object" | "charset" | "picture" | "walker";
   readonly id: string;
   readonly name: string;
   readonly dataUrl?: string;
@@ -32,6 +32,7 @@ interface Prepared {
   readonly rows?: number;
   readonly padTop?: number;
   readonly characters?: string[];
+  readonly frames?: { id: string; dataUrl: string }[];
   readonly warnings?: string[];
   readonly error?: string;
 }
@@ -137,6 +138,49 @@ async function buildPicture(args: Record<string, unknown>): Promise<Prepared> {
   return { kind: "picture", id, name: nameOf(args, "도트 그림"), dataUrl: await encodePng(image), previewUrl: await encodePng(previewImage(image, image.width <= 120 ? 4 : 2)), width: image.width, height: image.height, warnings: [] };
 }
 
+/** 큰 걷는 유닛(기계·괴수·탈것)을 원본 해상도로 — 24×32 칩을 키우지 않고 프레임을 통째로 찍는다. 컷신 배우 resourceId 한 개로 걷기 전체가 붙는다. */
+async function buildWalker(args: Record<string, unknown>): Promise<Prepared> {
+  const palette = parsePalette(args.palette);
+  const dirs = asRecord(args.directions, "directions");
+  const slugId = slug(typeof args.id === "string" && args.id.trim() ? args.id : nameOf(args, "walker"));
+  const base = `cutscene_char_${slugId}_0`;
+  const warnings: string[] = [];
+  let size: { w: number; h: number } | undefined;
+  const frameOf = (raw: unknown, field: string): RgbaImage => {
+    const image = rowsToImage(parseRows(raw, field), palette, field);
+    if (image.width < 32 || image.height < 32) throw new PixelArtError(`${field} 가 ${image.width}×${image.height}로 작습니다 — walker 는 32×32 이상의 큰 유닛용입니다(작은 인물은 kind:\"charset\").`);
+    if (image.width > 160 || image.height > 192) throw new PixelArtError(`${field} 는 160×192 이하여야 합니다(받은 크기 ${image.width}×${image.height}).`);
+    if (!size) size = { w: image.width, h: image.height };
+    else if (image.width !== size.w || image.height !== size.h) throw new PixelArtError(`${field} 크기 ${image.width}×${image.height} 가 다른 프레임(${size.w}×${size.h})과 다릅니다 — 모든 프레임이 같은 캔버스여야 합니다.`);
+    return image;
+  };
+  const made: Partial<Record<Dir, [RgbaImage, RgbaImage, RgbaImage]>> = {};
+  for (const dir of DIRECTIONS) {
+    if (dirs[dir] === undefined) continue;
+    const d = asRecord(dirs[dir], `directions.${dir}`);
+    const stand = frameOf(d.stand, `directions.${dir}.stand`);
+    const [autoA, autoB] = autoWalkFrames(stand, Math.max(2, Math.round(stand.height / 32)));
+    made[dir] = [d.stepA !== undefined ? frameOf(d.stepA, `directions.${dir}.stepA`) : autoA, stand, d.stepB !== undefined ? frameOf(d.stepB, `directions.${dir}.stepB`) : autoB];
+    if (d.stepA === undefined || d.stepB === undefined) warnings.push(`${dir}: 걷기 프레임을 안 줘서 서 있는 그림에서 자동으로 만들었습니다(다리 한쪽을 들어 올림). 무게감 있는 걸음은 stepA/stepB 를 직접 찍으세요.`);
+    if (!touchesBottom(stand)) warnings.push(`${dir}: 발이 캔버스 맨 아래 줄에 닿지 않아 맵에서 떠 보입니다.`);
+  }
+  const side = made.right ?? made.left;
+  if (!side) throw new PixelArtError("directions 에는 right 또는 left(옆모습)가 있어야 합니다 — 행군 연출은 옆으로 걷습니다. down(정면)·up(뒷모습)은 선택이며 없으면 옆모습으로 대신합니다.");
+  if (!made.right) made.right = side.map(flipHorizontal) as [RgbaImage, RgbaImage, RgbaImage];
+  if (!made.left) made.left = made.right.map(flipHorizontal) as [RgbaImage, RgbaImage, RgbaImage];
+  if (!made.down) made.down = made.right;
+  if (!made.up) made.up = made.right;
+  const stats = artStats(made.right[1]);
+  if (stats.coverage < 0.25) warnings.push(`옆모습이 캔버스의 ${Math.round(stats.coverage * 100)}%만 칠해졌습니다 — 캔버스를 유닛에 맞게 줄이세요.`);
+  if (stats.colors < 6) warnings.push(`색이 ${stats.colors}가지뿐입니다 — 큰 유닛은 재질마다 4단 이상 명암과 별도 강조색(눈·불빛·녹)을 쓰세요.`);
+  const frames: { id: string; dataUrl: string }[] = [];
+  const cap = (s: string) => s[0]!.toUpperCase() + s.slice(1);
+  for (const dir of DIRECTIONS) for (let n = 0; n < 3; n += 1) frames.push({ id: `${base}_walk${cap(dir)}${n}`, dataUrl: await encodePng(made[dir]![n]!) });
+  const sheet: RgbaImage = { width: size!.w * 3, height: size!.h, data: new Uint8ClampedArray(size!.w * 3 * size!.h * 4) };
+  made.right.forEach((frame, i) => blit(sheet, frame, i * size!.w, 0));
+  return { kind: "walker", id: `${base}_walkRight1`, name: nameOf(args, "도트 유닛"), dataUrl: frames[0]!.dataUrl, previewUrl: await encodePng(previewImage(sheet, size!.w <= 80 ? 3 : 2)), width: size!.w, height: size!.h, frames, warnings };
+}
+
 const keyOf = (args: Record<string, unknown>): string => JSON.stringify([args.kind, args.id ?? args.name]);
 
 /** 조수가 방금 찍은 그림을 눈으로 검수하게 하는 확대 미리보기. */
@@ -151,7 +195,8 @@ const authorPixelArt: ToolDefinition = {
   description:
     "맞는 칩셋·물체·캐릭터·그림이 없을 때 «없다»고 멈추지 말고 도트를 직접 찍어 이 프로젝트에 넣는다. 문자 한 글자 = 화소 한 칸, '.' = 투명, palette 에 {글자:'#rrggbb'}. "
     + "kind:\"object\" — 맵에 놓을 물체(예: 부서진 기계 잔해, 깃발, 간판, 조형물). 16px 칸 단위 칩셋에 구워 id `workshop:<이름>` 로 등록되니 stamp_tileset_object 의 objectId 로 놓는다. "
-    + "kind:\"charset\" — 맵 위를 걷는 캐릭터·기계·탈것(24×32, directions 마다 stand 한 장+선택 stepA/stepB, 안 주면 걷기를 자동 생성). 컷신 배우로 character:{resourceId, characterIndex}. "
+    + "kind:\"charset\" — 맵 위를 걷는 캐릭터·기계·탈것(작은 인물용 24×32, directions 마다 stand 한 장+선택 stepA/stepB, 안 주면 걷기를 자동 생성). 컷신 배우로 character:{resourceId, characterIndex}. "
+    + "kind:\"walker\" — **대형 유닛(전투기계·괴수·탈것·거인)은 24×32 charset 을 확대하지 말고 이걸로** 원본 해상도(32×32~160×192)로 직접 찍는다: directions:{right:{stand, stepA?, stepB?}, down?, up?}(모든 프레임 같은 캔버스, 발은 맨 아래 줄, 보통 64×80~96×112). 한 대마다 실루엣이 확연히 다르게(다리 수·몸통 비율·무장), 재질 4~6단 명암+눈·불빛 강조색. 컷신 배우 {name, resourceId:<결과 resourceId>, scale:100} 하나로 걷기 프레임이 전부 붙는다. "
     + "kind:\"picture\" — 컷신용 도트 그림 한 장(투명 배경의 소품·이펙트, 480×270 이하). 실제 시작 맵 위에서 벌어지는 장면이면 그림으로 마을·거리·건물 «배경»을 깔아 맵을 가리지 말고(맵이 안 보이면 인게임 오프닝이 아니다), 맵에 없는 것만 object 로 맵에 굽거나 소품 picture 로 얹는다. "
     + "그리는 법: 3/4 탑뷰(윗면이 면으로 보이고 앞면이 보이는 시점, 옆면 금지), 1px 어두운 외곽선, 재질마다 4~6단 명암(윗면이 가장 밝고 앞면이 어둡다), 발밑은 맨 아래 줄에 붙인다. 그림이 이 맵의 칩셋 색과 어울리도록 먼저 show_tiles·list_tileset_objects 로 기존 조각 색을 본 뒤 팔레트를 고른다. "
     + "도구가 확대 미리보기를 돌려주니 반드시 눈으로 보고 비뚤거나 알아보기 어렵거나 잘리면 같은 id 로 다시 호출해 고친다. 이 그림은 3/4 탑뷰 관문(object-gate) 영수증이 없다 — 이 프로젝트에서만 쓰고 공용·스토어에 올리지 않는다.",
@@ -161,7 +206,7 @@ const authorPixelArt: ToolDefinition = {
   parameters: {
     type: "object", additionalProperties: false, required: ["kind", "name", "palette"],
     properties: {
-      kind: { type: "string", enum: ["object", "charset", "picture"] },
+      kind: { type: "string", enum: ["object", "charset", "picture", "walker"] },
       name: { type: "string", description: "이름(예: 부서진 정찰기 잔해)" },
       id: { type: "string", description: "영문 id 조각(선택, 같은 id 로 다시 부르면 그림을 갈아 끼움)" },
       mapId: { type: "string", description: "object 일 때 어느 맵의 칩셋에 넣을지(생략하면 지금 보는 맵)" },
@@ -170,6 +215,7 @@ const authorPixelArt: ToolDefinition = {
       rows: { type: "array", items: { type: "string" }, description: "object·picture 의 화소 행 문자열들(모두 같은 길이). object 는 128×128 이하." },
       footRows: { type: "integer", minimum: 1, maximum: 4, description: "object: 발밑(통행이 막히는) 칸 줄 수. 기본 1" },
       description: { type: "string", description: "object: 무엇인지 한 줄(칩셋 이름표에 남는다)" },
+      directions: { type: "object", additionalProperties: true, description: "walker: {right:{stand:[행…], stepA?, stepB?}, left?, down?, up?} — 방향마다 행 문자열 배열(모든 프레임 같은 크기). right 또는 left 필수, 나머지는 옆모습으로 대신." },
       characters: {
         type: "array", minItems: 1, maxItems: 8,
         description: "charset: 인물 목록. 각 인물은 {name, directions:{down:{stand:[32줄×24글자]}, up:{stand}, right:{stand, stepA?, stepB?}, left?}}. left 를 생략하면 right 를 뒤집는다.",
@@ -188,7 +234,8 @@ const authorPixelArt: ToolDefinition = {
       if (kind === "object") prepared.set(key, await buildObject(args));
       else if (kind === "charset") prepared.set(key, await buildCharset(args));
       else if (kind === "picture") prepared.set(key, await buildPicture(args));
-      else throw new PixelArtError("kind 는 object · charset · picture 중 하나여야 합니다.");
+      else if (kind === "walker") prepared.set(key, await buildWalker(args));
+      else throw new PixelArtError("kind 는 object · charset · picture · walker 중 하나여야 합니다.");
     } catch (error) {
       prepared.set(key, { kind: "object", id: "", name: "", error: error instanceof Error ? error.message : String(error) });
     }
@@ -204,6 +251,13 @@ const authorPixelArt: ToolDefinition = {
       return {
         summary: `걷는 캐릭터셋 '${made.name}'(${made.id}) ${made.characters!.length}명 등록: ${made.characters!.map((n, i) => `${i}=${n}`).join(", ")}. script_cutscene_staged actors[].character:{resourceId:"${made.id}", characterIndex:N} 로 쓰세요. ${gateNote}`,
         warnings, data: { resourceId: made.id, characters: made.characters!.map((n, i) => ({ name: n, characterIndex: i })) },
+      };
+    }
+    if (made.kind === "walker") {
+      for (const frame of made.frames!) draft.assets.uploaded[frame.id] = { id: frame.id, name: `${made.name} 걷기 프레임`, kind: "picture", generatedBy: "pixel-art", dataUrl: frame.dataUrl, meta: { width: made.width!, height: made.height! } } as never;
+      return {
+        summary: `큰 걷는 유닛 '${made.name}'(${made.width}×${made.height} 원본 해상도)을 등록했습니다. script_cutscene_staged actors[] 에 {name, resourceId:"${made.id}", facing:"right", scale:100} 로 쓰면 걷기 프레임 전체가 자동으로 붙습니다 — scale 은 100 으로 두세요(원본 도트 크기 그대로). ${gateNote}`,
+        warnings, data: { resourceId: made.id, width: made.width, height: made.height },
       };
     }
     if (made.kind === "picture") {

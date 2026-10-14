@@ -113,6 +113,9 @@ export function probeCutscene(project: Project, commands: readonly Command[], vi
     if (overlapShare >= 0.4) issues.push(`주체끼리 절반 넘게 겹친 채로 보이는 시간이 ${Math.round(overlapShare * 100)}%입니다 — 서로 다른 fx 로 간격을 벌리세요.`);
     const travelling = subjects.some((s) => s.travelPx >= 100);
     if (travelling && timeline.durationMs >= 8000 && cameraMoves === 0) issues.push("주체가 길게 이동하는데 카메라가 한 번도 안 움직입니다 — 고정 화면에서 가로지르면 밋밋합니다. camera 단계(pan 으로 목적지를 훑거나 follow)로 행군을 따라가고, 주체는 화면 안 같은 자리에서 걷게(트레드밀 연출) 하세요.");
+    const worldReactions = commands.filter((c) => c.kind === "changeTile").length;
+    const bigTravellers = subjects.filter((s) => s.travelPx >= 100 && s.maxHeightRatio >= 0.2);
+    if (bigTravellers.length > 0 && timeline.durationMs >= 8000 && worldReactions === 0) issues.push("큰 유닛이 마을을 가로지르는데 맵에서 부서지거나 바뀌는 것이 하나도 없습니다 — 무게감이 없습니다. 유닛이 담장·깃발·지붕 곁을 지나는 순간 smash 단계(그 칸 장식 제거+흔들림+먼지+효과음)를 한 번 이상 넣으세요.");
     if (audioCount === 0) issues.push("컷신에 효과음·음악이 하나도 없습니다 — se/bgm 단계로 소리를 깔아야 합니다.");
   }
   const summary = `길이 ${(timeline.durationMs / 1000).toFixed(1)}s · 주체 ${subjects.map((s) => `${s.pictureId}(보임 ${(s.visibleMs / 1000).toFixed(1)}s, 키 ${Math.round(s.maxHeightRatio * 100)}%, 이동 ${s.travelPx}px)`).join(" ") || "없음"} · 겹침 ${Math.round(overlapShare * 100)}% · 색조 ${tintCount} · 날씨 ${weatherCount} · 소리 ${audioCount} · 글 ${sayCount}`;

@@ -36,7 +36,7 @@ const STEP_SCHEMA: JsonSchema = {
   additionalProperties: false,
   required: ["do"],
   properties: {
-    do: { type: "string", enum: ["show", "hide", "move", "enter", "exit", "pose", "fling", "say", "wait", "flash", "shake", "se", "bgm", "whiteout", "dewhite", "turn", "animate", "clear", "transfer", "fade", "expect", "tint", "weather", "letterbox", "camera"] },
+    do: { type: "string", enum: ["show", "hide", "move", "enter", "exit", "pose", "fling", "say", "wait", "flash", "shake", "se", "bgm", "whiteout", "dewhite", "turn", "animate", "clear", "transfer", "fade", "expect", "tint", "weather", "letterbox", "camera", "smash"] },
     withPrevious: { type: "boolean", description: "앞 단계와 같은 때에 시작(동시 진행). say 는 불가." },
     actor: { type: "string" }, to: PLACE_SCHEMA,
     from: { type: "string", enum: ["left", "right", "top", "bottom"], description: "enter: 들어오는 화면 가장자리" },
@@ -57,6 +57,11 @@ const STEP_SCHEMA: JsonSchema = {
     weather: { type: "string", enum: ["none", "rain", "storm", "snow", "fog"], description: "weather: 날씨(intensity 0~1)" },
     show: { type: "boolean", description: "letterbox: 영화식 위아래 띠 켜기/끄기" },
     mode: { type: "string", enum: ["pan", "follow", "fixed", "return"], description: "camera: 맵 카메라(x,y 맵 칸, zoom 배율)" }, zoom: { type: "number" },
+    tile: { type: "object", additionalProperties: false, properties: { x: { type: "integer" }, y: { type: "integer" } }, description: "smash: 부서질 곳의 왼쪽 위 맵 칸(show_map_region 의 칸 좌표)" },
+    w: { type: "integer", minimum: 1, maximum: 16, description: "smash: 부서질 가로 칸 수(기본 1)" }, h: { type: "integer", minimum: 1, maximum: 16, description: "smash: 세로 칸 수(기본 1)" },
+    layer: { type: "string", enum: ["upper", "lower"], description: "smash: 바꿀 층(기본 upper = 담장·장식·지붕을 걷어냄)" },
+    tileId: { type: "integer", minimum: 0, description: "smash: 그 칸을 이 타일 번호로 바꿈(기본 0 = 비움). 부서진 자리에 다른 조각을 두려면 get_map_region 으로 본 번호" },
+    effect: { type: "string", enum: ["dust", "explosion", "smoke", "fire"], description: "smash: 터지는 파티클(기본 dust)" },
     touching: { type: "array", items: { type: "string" }, description: "expect: 이 시점에 몸이 닿아야 하는 두 배우" }, min: { type: "number", minimum: 0, maximum: 1 },
   },
 };
@@ -138,6 +143,10 @@ function normalizeSteps(raw: unknown): TimedStep[] {
         if (alpha !== undefined && (alpha < 0 || alpha > 0.75)) throw new ToolError(`steps[${index}] tintColor 알파 ${String(alpha)} 는 0~0.75 여야 합니다(0.75 를 넘으면 맵이 가려집니다; 푸른 밤은 0.3~0.45) — 예: '20,30,80,0.4'.`, { code: "invalid-args" });
       }
     }
+    if (step.do === "smash") {
+      const t = step.tile as { x?: unknown; y?: unknown } | undefined;
+      if (!t || typeof t.x !== "number" || typeof t.y !== "number") throw new ToolError(`steps[${index}] smash 에는 tile:{x,y}(부서질 맵 칸)가 필요합니다.`, { code: "invalid-args" });
+    }
     if (step.do === "fade" && typeof step.direction !== "string") throw new ToolError(`steps[${index}] fade 에는 direction(in/out)이 필요합니다.`, { code: "invalid-args" });
     return step as unknown as TimedStep;
   });
@@ -150,7 +159,9 @@ const scriptCutsceneStaged: ToolDefinition = {
     + "배우: character(게임 캐릭터셋 인물, 걷기 프레임 포함) 또는 resourceId(generate_cutscene_art 소품). 위치 관계 예: 트럭이 오른쪽 화면 밖에서 들어와 인물 몸에 35% 파고든다 = "
     + "{do:'enter',actor:'트럭',from:'right',to:{touch:'인물',overlap:0.35,dy:6},ms:520}. 그 직후 {do:'expect',touching:['트럭','인물']} 로 닿았는지 못 박으면 어긋날 때 도구가 거부하고 고칠 방법을 알려 준다. "
     + "withPrevious:true 는 앞 단계와 동시 진행(예: flash·shake·fling·exit 를 충돌 순간에 함께). say 는 동시 진행 불가. 모든 그림은 게임 해상도 100% 배율이고, 위치는 «발 밑 가운데» 기준이다. "
-    + "소재 고르는 순서: ① 몬스터·동물은 게임에 이미 있는 도트(list_monster_resources 의 resourceId, 예 scarloxy-monster-*)를 배우 resourceId 로 그대로 쓴다 ② 사람은 캐릭터셋 Actor1(characterIndex 0~7)에서 한 명을 골라 character 로 쓰고, 맵 위 주인공 그래픽도 upsert_actor(characterResourceId·characterIndex)로 같은 칸에 맞춘다 — 컷신 속 인물과 이세계의 주인공이 같아야 한다. 몬스터는 이 그림 도트이거나 맵 NPC 캐릭터셋(EasyRPG monster·animal) 중 게임 세계에 맞는 쪽을 쓴다 ③ 공격·마법·불꽃은 그림을 만들지 말고 animate 로 게임의 전투 애니메이션(get_database_records battleAnimations, 예 anim_scarloxy_fire)을 쓴다 ④ 효과음·BGM 은 list_resources(kind:se)·recommend_bgm 으로 고른 id 를 se/bgm 단계에 넣는다 ⑤ generate_cutscene_art 는 게임에 없는 것(트럭·거리 배경·회상 일러스트)에만 쓴다. 맵 위에 서 있는 주인공은 ghost 배우(tile 지정), 맵 위 NPC·몬스터는 event 배우(이벤트 id; place_npc 로 먼저 둔다)로 두고 move(to:{tile:{x,y}} 또는 {at:'주인공',side,gap 칸})로 걷게 한다 — turn(위·왼·오른·아래 둘러보기)·animate(전투 애니메이션을 그 배우 위에)의 대상도 된다. 새 장소로 넘어갈 땐 clear → transfer(fadeColor) 단계. 암전(fade out)으로 끝냈으면 fade in 으로 되돌려 화면을 검게 둔 채 끝내지 않는다. 끝나면 preview_cutscene 으로 핵심 장면을 눈으로 확인한다. ",
+    + "소재 고르는 순서: ① 몬스터·동물은 게임에 이미 있는 도트(list_monster_resources 의 resourceId, 예 scarloxy-monster-*)를 배우 resourceId 로 그대로 쓴다 ② 사람은 캐릭터셋 Actor1(characterIndex 0~7)에서 한 명을 골라 character 로 쓰고, 맵 위 주인공 그래픽도 upsert_actor(characterResourceId·characterIndex)로 같은 칸에 맞춘다 — 컷신 속 인물과 이세계의 주인공이 같아야 한다. 몬스터는 이 그림 도트이거나 맵 NPC 캐릭터셋(EasyRPG monster·animal) 중 게임 세계에 맞는 쪽을 쓴다 ③ 공격·마법·불꽃은 그림을 만들지 말고 animate 로 게임의 전투 애니메이션(get_database_records battleAnimations, 예 anim_scarloxy_fire)을 쓴다 ④ 효과음·BGM 은 list_resources(kind:se)·recommend_bgm 으로 고른 id 를 se/bgm 단계에 넣는다 ⑤ generate_cutscene_art 는 게임에 없는 것(트럭·거리 배경·회상 일러스트)에만 쓴다. 맵 위에 서 있는 주인공은 ghost 배우(tile 지정), 맵 위 NPC·몬스터는 event 배우(이벤트 id; place_npc 로 먼저 둔다)로 두고 move(to:{tile:{x,y}} 또는 {at:'주인공',side,gap 칸})로 걷게 한다 — turn(위·왼·오른·아래 둘러보기)·animate(전투 애니메이션을 그 배우 위에)의 대상도 된다. 새 장소로 넘어갈 땐 clear → transfer(fadeColor) 단계. 암전(fade out)으로 끝냈으면 fade in 으로 되돌려 화면을 검게 둔 채 끝내지 않는다. 끝나면 preview_cutscene 으로 핵심 장면을 눈으로 확인한다. "
+    + "세계가 반응한다: 대형 유닛이 맵의 것(담장·깃발·지붕·나무·건물 귀퉁이) 곁을 지나면 부수고 간다 — 그 유닛이 그 칸에 닿는 순간 {do:'smash',tile:{x,y},w,h,effect:'explosion'|'dust',intensity:7,resourceId:<se>,withPrevious:true} 한 단계가 화면 흔들림·파티클·효과음·그 칸 장식 제거(맵이 실제로 바뀌고 컷신 뒤에도 남음)를 한꺼번에 낸다. 유닛 이동을 구간으로 나눠 smash 와 시각을 맞춘다. 아무것도 안 부서지고 지나가는 행군은 가벼워 보인다. "
+    + "연출 원칙: 화면 밖에서 들어와(enter from) 화면 밖으로 나가고(exit), 행군은 멈추지 않으며(대사는 짧게 행군 사이에, 걷는 동안엔 withPrevious 이동), camera pan/follow 로 따라가고, 대형 유닛은 author_pixel_art kind:walker 로 원본 해상도로 그려 scale 100 으로 쓴다. ",
   mode: "write",
   domains: ["event"],
   parameters: {
@@ -320,7 +331,7 @@ const scriptCutsceneStaged: ToolDefinition = {
     }
     let result: ReturnType<typeof compileStage>;
     try {
-      result = compileStage({ viewport, ...(backdrop ? { backdrop } : {}), actors, steps: normalizeSteps(args.steps), whiteResourceId: CUTSCENE_WHITE_RESOURCE_ID });
+      result = compileStage({ viewport, mapId: map.id, ...(backdrop ? { backdrop } : {}), actors, steps: normalizeSteps(args.steps), whiteResourceId: CUTSCENE_WHITE_RESOURCE_ID });
     } catch (error) {
       if (error instanceof StageError) throw new ToolError(error.message, { code: "stage-invalid" });
       throw error;
