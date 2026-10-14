@@ -86,7 +86,7 @@ const ACTOR_SCHEMA: JsonSchema = {
     poses: { type: "array", items: { type: "object", additionalProperties: false, required: ["name", "resourceId"], properties: { name: { type: "string" }, resourceId: { type: "string" } } }, description: "이름 붙은 추가 그림(예: 놀란 자세)" },
     facing: { type: "string", enum: ["left", "right"], description: "그림이 바라보는 방향(기본: 캐릭터 right, 소품 left)" },
     at: PLACE_SCHEMA,
-    scale: { type: "number", minimum: 10, maximum: 300, description: "그림 크기 배율(%) — 큰 그림(병기·몬스터)을 화면 높이에 맞게 줄일 때. 풍경 속 작은 행렬은 화면 높이의 20% 안팎. 캐릭터셋(24×32 도트) 배우는 100·200·300 으로만 맞춰진다(정수배 확대, 보통 200)." },
+    scale: { type: "number", minimum: 10, maximum: 300, description: "그림 크기 배율(%) — 생성한 큰 일러스트·몬스터 그림을 화면에 맞게 줄일 때만. 도트 배우(캐릭터셋·author_pixel_art 프레임)는 무시되고 항상 원본 크기다 — 사람은 주인공과 같은 크기, 큰 유닛은 처음부터 큰 도트(walker)로 그린다." },
     z: { type: "integer", minimum: 2, maximum: 80, description: "겹침 순서(클수록 위)" },
     ghost: { type: "boolean", description: "맵 위에 실제로 서 있는 인물(주인공)을 배우로 삼는다 — 그림은 안 그리고 touch/at/expect·turn·animate 의 기준으로만 쓴다. 화면 자리는 tile 로 주면 도구가 카메라를 계산한다(at 직접 지정도 가능)." },
     event: { type: "string", description: "맵 위에 실제로 있는 NPC·몬스터 이벤트 id(place_npc 로 먼저 둔다) — 그림이 아니라 맵 걷기로 움직인다. move 의 to 는 {tile:{x,y}} 또는 {at:'주인공',side,gap(칸)}." },
@@ -126,6 +126,12 @@ function normalizeSteps(raw: unknown): TimedStep[] {
     if (step.do === "turn" && step.dir === "top") step.dir = "up";
     if (step.do === "turn" && step.dir === "bottom") step.dir = "down";
     if (step.do === "turn" && typeof step.dir !== "string") throw new ToolError(`steps[${index}] turn 에는 dir(up/down/left/right)이 필요합니다.`, { code: "invalid-args" });
+    if (step.do === "say" && typeof step.text === "string") {
+      const t = step.text.trim();
+      const wrapped = /^[(（][^]*[)）]$/u.test(t);
+      if (wrapped && step.context === "thought") step.text = t.replace(/^[(（]+\s*/u, "").replace(/\s*[)）]+$/u, ""); // 생각 말풍선은 괄호를 런타임이 감싼다 — 이중 괄호 방지
+      else if (wrapped) throw new ToolError(`steps[${index}] say 가 괄호로 싼 행동 묘사 «${t.slice(0, 24)}…» 입니다 — 대사창에 «(불길이 집어삼켜…)» 같은 지문을 쓰지 마세요. 일어나는 일은 단계(smash·particles·flash·pose·move)로 화면에 보이고, 대사는 인물이 실제로 하는 말이나 내레이션(context:"narration")만 씁니다. 속마음이면 context:"thought" 로 괄호 없이.`, { code: "invalid-args" });
+    }
     if (step.do === "animate" && typeof step.animationId !== "string") throw new ToolError(`steps[${index}] animate 에는 animationId 가 필요합니다.`, { code: "invalid-args" });
     if (step.do === "transfer") {
       if (typeof step.mapId !== "string" || typeof step.x !== "number" || typeof step.y !== "number") throw new ToolError(`steps[${index}] transfer 에는 mapId, x, y 가 필요합니다.`, { code: "invalid-args" });
@@ -251,7 +257,7 @@ const scriptCutsceneStaged: ToolDefinition = {
         }
         // 캐릭터셋 배우도 scale(%)을 따른다 — 24×32 칩을 화면에서 키우려면 필요하다(이전에는 무시되어 13% 크기로 나왔다).
         // 24×32 도트는 정수배(100·200·300)로만 키운다 — 265% 같은 값은 가장자리가 뭉개져 도트가 번진다(실행 2 프레임 40s).
-        const charScale = typeof raw.scale === "number" && raw.scale > 0 ? Math.max(1, Math.min(3, Math.round(raw.scale / 100))) * 100 : 100;
+        const charScale = 100; // 사람 크기 캐릭터는 맵 주인공과 같은 1배 — 2~3배로 키운 24×32 는 주인공의 3배짜리 뭉개진 블록이 된다(r1 실측: 엄마·선원·아버지). 큰 유닛은 author_pixel_art walker.
         const f = (role: string): string => prepared.frames[role]!.id;
         const trio = (d: string): readonly [string, string, string] => [f(`walk${d}0`), f(`walk${d}1`), f(`walk${d}2`)];
         return {
@@ -294,7 +300,7 @@ const scriptCutsceneStaged: ToolDefinition = {
       // 그러지 않으면 정지 그림이 미끄러져 가기만 한다(실측: 조수가 프레임 id 를 그대로 재사용).
       const frame = /^(cutscene_char_.+_\d+)_walk(?:Up|Down|Left|Right)[012]$/u.exec(resourceId);
       // 도트 프레임은 정수배로만 — 115%·135% 는 도트가 뭉개진다(px4 실측: 직접 찍은 기계를 115~140% 로 써서 흐려짐).
-      const scale = typeof raw.scale === "number" && raw.scale > 0 && raw.scale !== 100 && !resourceId.includes("_pxw_")
+      const scale = typeof raw.scale === "number" && raw.scale > 0 && raw.scale !== 100 && !resourceId.includes("_pxw_") && !frame
         ? (frame ? (Math.max(1, Math.min(3, Math.round(raw.scale / 100))) !== 1 ? Math.max(1, Math.min(3, Math.round(raw.scale / 100))) * 100 : undefined) : Math.max(10, Math.min(300, raw.scale)))
         : undefined;
       const k = (scale ?? 100) / 100;

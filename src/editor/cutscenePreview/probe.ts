@@ -105,9 +105,9 @@ export function probeCutscene(project: Project, commands: readonly Command[], vi
       const cutShare = s.visibleMs > 0 ? (per.get(s.pictureId)?.cut ?? 0) / s.visibleMs : 0;
       if (cutShare >= 0.4) issues.push(`그림 ${s.pictureId}(${s.resourceId})가 보이는 시간의 ${Math.round(cutShare * 100)}% 동안 화면 가장자리에 걸려 몸이 잘려 보입니다 — 머리·다리가 잘린 채 서 있지 않게, 멈추는 자리는 몸 전체가 화면 안에 들어오도록 fx/fy 와 scale 을 조정하세요.`);
       if (s.maxHeightRatio > 0.55) issues.push(`그림 ${s.pictureId}가 화면 높이의 ${Math.round(s.maxHeightRatio * 100)}%로 너무 큽니다 — 배우 scale(%)로 줄이세요.`);
-      if (s.maxHeightRatio < 0.12 && s.visibleMs > 0) issues.push(`그림 ${s.pictureId}가 화면 높이의 ${Math.round(s.maxHeightRatio * 100)}%로 너무 작아 안 보입니다(scale 로 키우세요).`);
+      if (s.maxHeightRatio < 0.12 && s.visibleMs > 0) issues.push(`그림 ${s.pictureId}가 화면 높이의 ${Math.round(s.maxHeightRatio * 100)}%로 너무 작아 안 보입니다 — 도트를 확대하지 말고(뭉개진 블록이 됩니다) 더 큰 캔버스로 다시 그리거나(author_pixel_art), 장면에 필요 없는 소품이면 빼세요.`);
     }
-    if (Math.max(...subjects.map((s) => s.maxHeightRatio)) < 0.3) issues.push(`가장 큰 주체도 화면 높이의 ${Math.round(Math.max(...subjects.map((s) => s.maxHeightRatio)) * 100)}% 입니다 — 장면의 주연이면 최소 30%(24×32 캐릭터셋은 scale 250~300)로 키워 위압감·존재감을 주세요.`);
+    if (Math.max(...subjects.map((s) => s.maxHeightRatio)) < 0.3) issues.push(`가장 큰 주체도 화면 높이의 ${Math.round(Math.max(...subjects.map((s) => s.maxHeightRatio)) * 100)}% 입니다 — 장면의 주연이 위압적인 존재(기계·괴수)라면 24×32 칩을 키우지 말고 author_pixel_art kind:\"walker\" 로 처음부터 큰 도트(64×80 이상)로 그려 쓰세요. 주연이 사람이면 이 지적은 무시해도 됩니다.`);
     if (!subjects.some((s) => s.travelPx >= 24)) issues.push("화면 안 주체가 하나도 움직이지 않습니다(이동 24px 미만) — enter/move/exit 로 실제로 이동시키세요.");
     if (coverShare >= 0.4) issues.push(`전체 화면을 덮는 그림이 컷신의 ${Math.round(coverShare * 100)}% 동안 보입니다 — 실제 시작 맵이 가려집니다. 맵 위 장면이어야 하면 전체 화면 배경 그림을 쓰지 말고 맵·캐릭터셋으로 연출하세요.`);
     if (heroSamples > 0 && heroHitSamples / heroSamples >= 0.1) issues.push(`주체가 맵 위 주인공이 서 있는 자리를 ${Math.round((heroHitSamples / heroSamples) * 100)}% 동안 가립니다 — 주인공을 ghost 배우(character 로 hero:true)로 두고 이동 단계로 길 밖으로 비키게 하거나, 주체의 동선(fy)을 주인공 자리에서 떼세요.`);

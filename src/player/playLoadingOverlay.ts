@@ -244,15 +244,15 @@ function copyDiagnostics(text: string): void {
 function stageCode(stage: PlayLoadStage): string {
   switch (stage) {
     case "saving":
-      return "1 / 저장";
+      return "1 / 5 · 저장";
     case "preparing":
-      return "2 / 준비";
+      return "2 / 5 · 준비";
     case "engine":
-      return "3 / 엔진";
+      return "3 / 5 · 엔진";
     case "assets":
-      return "4 / 에셋";
+      return "4 / 5 · 에셋";
     case "map":
-      return "5 / 맵";
+      return "5 / 5 · 맵";
     case "ready":
       return "완료";
     case "error":
