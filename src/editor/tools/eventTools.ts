@@ -766,7 +766,7 @@ function relocateImpassableTransfers(project: Project, event: GameEvent, warning
 }
 
 // 페이지 커맨드 shape를 사전 검증(기존 io 검증기 위임).
-function assertEventShape(event: GameEvent, warnings?: string[], supplied: Partial<GameEvent> = event, project?: Project): void {
+export function assertEventShape(event: GameEvent, warnings?: string[], supplied: Partial<GameEvent> = event, project?: Project): void {
   try {
     // 조건 모양을 먼저 본다 — `{kind:"all"}`(conditions 배열 없음)이 뒤쪽 검사기에서 「conditions is not iterable」
     // 같은 JS 예외로 새어 나가 모델이 무엇을 고칠지 몰랐다(2026-09-24 회상 스토리 도그푸딩, 같은 호출 재시도).
@@ -946,7 +946,7 @@ export function resolveEventPlacement(
 }
 
 /** place_npc 와 같은 문구의 자동 조정 경고. */
-function placementAdjustedWarning(label: string, from: Point, to: Point): string {
+export function placementAdjustedWarning(label: string, from: Point, to: Point): string {
   return `${label} 위치 자동 조정: (${from.x}, ${from.y}) → (${to.x}, ${to.y})`;
 }
 
