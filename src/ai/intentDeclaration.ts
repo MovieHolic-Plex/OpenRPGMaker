@@ -615,7 +615,15 @@ export function formatIntentNote(
     const facilityHow = intent.facility
       ? `시설 「${intent.facility}」는 참고문서 「손 도트 실내 (v5)」의 가까운 예제를 읽고 규모·방 구성을 정한 plan 을 build_hand_interior_room 으로 새 mapId 에 시공한다`
       : null;
-    if (intent.space === "both") {
+    if (intent.tools.includes("author_beodeul_dungeon")) {
+      // 던전 층은 「실내」로 선언돼도 손 도트 실내 도구가 아니다 — 실측(2026-10-14 fe1 재시험): space=interior 노트를 따라
+      // build_hand_interior_room·list_hand_interior_parts 를 찾고 참고문서를 6번 읽느라 7분을 읽기만 했다.
+      lines.push(
+        "[의도] 던전 층 시공이다(버들항 beodeul_city). author_beodeul_dungeon({rooms:[{kind:'entrance'},{kind:'hall'},{kind:'crypt'},{kind:'cell',from:'hall'},{kind:'boss'}]}) 한 호출로 방·통로·천장·벽·바닥·장식·계단을 깐다 — "
+        + "빈 시작 맵이면 mapId 에 그 id 를 준다. 좌표를 계산하지 말고, 참고문서·build_hand_interior_room·stamp_object·paint_tiles 로 벽·소품을 따로 깔지 않는다. "
+        + "적·상자·NPC 는 결과 data.rooms[].spots 좌표에만 둔다. 이미 확인된 의도이므로 야외/실내를 다시 묻지 말고 진행하라.",
+      );
+    } else if (intent.space === "both") {
       const how = facilityHow
         ?? "들어가서 걷는 집이면 외장은 place_terrain_house, 실내는 build_hand_interior_room(새 mapId)으로 짓고 create_transfer_pair 로 양방향 출입구를 잇는다";
       lines.push(
