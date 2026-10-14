@@ -212,25 +212,50 @@ function canonicalizeM2Command(command: RecordValue): string | undefined {
       delete command[key];
     }
   }
-  if (typeof command.commandId === "string" && !m2CommandById(command.commandId)) {
+  if (typeof command.commandId === "string") {
     const rawId = command.commandId.trim();
     const slug = rawId.replace(/^m2-\d+-/iu, "").toLowerCase();
-    if (slug === "fadeout-screen" || slug === "fade-out-screen" || slug === "fadeout") {
-      command.commandId = "m2-202-screen-effect";
-      fields.effect ??= "fadeOut";
-      fields.durationMs ??= 600;
-      fixes.push(`m2Command.commandId '${rawId}' 를 'm2-202-screen-effect'(fadeOut) 로 고쳤습니다.`);
-    } else if (slug === "fadein-screen" || slug === "fade-in-screen" || slug === "fadein") {
-      command.commandId = "m2-202-screen-effect";
-      fields.effect ??= "fadeIn";
-      fields.durationMs ??= 600;
-      fixes.push(`m2Command.commandId '${rawId}' 를 'm2-202-screen-effect'(fadeIn) 로 고쳤습니다.`);
-    } else {
-      const bySlug = M2_COMMAND_CATALOG.find((entry) => entry.id.replace(/^m2-\d+-/iu, "").toLowerCase() === slug)
-        ?? M2_COMMAND_CATALOG.find((entry) => entry.title.toLowerCase().replace(/[^a-z0-9]+/gu, "-") === slug);
-      if (bySlug) {
-        command.commandId = bySlug.id;
-        fixes.push(`m2Command.commandId '${rawId}' 를 카탈로그 정본 '${bySlug.id}' 로 고쳤습니다.`);
+    if (slug === "emote-bubble" || slug === "show-emote" || slug === "balloon-icon") {
+      const targetRaw = typeof fields.target === "string" ? fields.target.trim() : typeof fields.eventId === "string" ? fields.eventId.trim() : "player";
+      const emoteRaw = typeof fields.emote === "string" ? fields.emote : typeof fields.value === "string" ? fields.value : typeof fields.effect === "string" ? fields.effect : "exclamation";
+      const durationMs = typeof fields.durationMs === "number" ? fields.durationMs : 800;
+      for (const k of Object.keys(command)) delete command[k];
+      command.kind = "showEmote";
+      command.target = targetRaw === "player" ? "player" : { eventId: targetRaw === "this" || targetRaw === "self" || targetRaw === "this-event" ? "" : targetRaw };
+      command.emote = emoteRaw;
+      command.durationMs = durationMs;
+      return `m2Command('${rawId}') 를 네이티브 showEmote 명령으로 변환했습니다.`;
+    }
+    if (!m2CommandById(rawId)) {
+      if (slug === "fadeout-screen" || slug === "fade-out-screen" || slug === "fadeout") {
+        command.commandId = "m2-202-screen-effect";
+        fields.effect ??= "fadeOut";
+        fields.durationMs ??= 600;
+        fixes.push(`m2Command.commandId '${rawId}' 를 'm2-202-screen-effect'(fadeOut) 로 고쳤습니다.`);
+      } else if (slug === "fadein-screen" || slug === "fade-in-screen" || slug === "fadein") {
+        command.commandId = "m2-202-screen-effect";
+        fields.effect ??= "fadeIn";
+        fields.durationMs ??= 600;
+        fixes.push(`m2Command.commandId '${rawId}' 를 'm2-202-screen-effect'(fadeIn) 로 고쳤습니다.`);
+      } else if (slug === "character-look") {
+        command.commandId = "m2-225-sprite-look";
+        fixes.push(`m2Command.commandId '${rawId}' 를 'm2-225-sprite-look' 로 고쳤습니다.`);
+      } else if (slug === "show-battle-animation") {
+        command.commandId = "m2-103-show-animation";
+        fixes.push(`m2Command.commandId '${rawId}' 를 'm2-103-show-animation' 로 고쳤습니다.`);
+      } else if (slug === "change-enemy-condition") {
+        command.commandId = "m2-100-change-enemy-state";
+        fixes.push(`m2Command.commandId '${rawId}' 를 'm2-100-change-enemy-state' 로 고쳤습니다.`);
+      } else if (slug === "tint-screen") {
+        command.commandId = "m2-046-tint-screen";
+        fixes.push(`m2Command.commandId '${rawId}' 를 'm2-046-tint-screen' 로 고쳤습니다.`);
+      } else {
+        const bySlug = M2_COMMAND_CATALOG.find((entry) => entry.id.replace(/^m2-\d+-/iu, "").toLowerCase() === slug)
+          ?? M2_COMMAND_CATALOG.find((entry) => entry.title.toLowerCase().replace(/[^a-z0-9]+/gu, "-") === slug);
+        if (bySlug) {
+          command.commandId = bySlug.id;
+          fixes.push(`m2Command.commandId '${rawId}' 를 카탈로그 정본 '${bySlug.id}' 로 고쳤습니다.`);
+        }
       }
     }
   }
@@ -238,6 +263,10 @@ function canonicalizeM2Command(command: RecordValue): string | undefined {
     fields.value = fields.stateId;
     delete fields.stateId;
     fixes.push("m2-100-change-enemy-state fields.stateId 를 fields.value 로 옮겼습니다.");
+  }
+  if (command.commandId === "m2-046-tint-screen" && (fields.color === 0 || fields.color === "0" || fields.color === "reset" || fields.color === "none" || fields.color === "normal")) {
+    fields.color = "neutral";
+    fixes.push("m2-046-tint-screen fields.color 를 'neutral' 로 정규화했습니다.");
   }
   if ((command.commandId === "m2-046-tint-screen" || command.commandId === "m2-047-flash-screen") && typeof fields.color === "string") {
     const allowTint = command.commandId === "m2-046-tint-screen";
@@ -309,6 +338,16 @@ export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined 
     }
     delete command.fields;
     unwrappedFieldsFix = `${String(command.kind)}.fields 객체를 최상위 필드로 풀었습니다.`;
+  }
+  if (command.kind === "flash" || command.kind === "flashScreen") {
+    const color = typeof command.color === "string" ? command.color : "white";
+    const durationMs = typeof command.durationMs === "number" ? command.durationMs : typeof command.ms === "number" ? command.ms : 300;
+    const wait = command.wait !== false;
+    for (const k of Object.keys(command)) delete command[k];
+    command.kind = "m2Command";
+    command.commandId = "m2-047-flash-screen";
+    command.fields = { color, durationMs, wait };
+    return joinFixes(unwrappedFieldsFix, "flash 명령을 m2-047-flash-screen 으로 변환했습니다.", canonicalizeM2Command(command));
   }
   if (command.kind === "m2Command") return joinFixes(unwrappedFieldsFix, canonicalizeM2Command(command));
   if (command.kind === "changeParty") {
@@ -498,7 +537,7 @@ export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined 
   if (command.kind === "playAudio") {
     const fixes: string[] = [];
     if (typeof command.resourceId !== "string") {
-      const alias = (["id", "text", "value", "sound", "se", "bgm", "audioId"] as const).find((k) => typeof command[k] === "string");
+      const alias = (["id", "text", "value", "sound", "se", "bgm", "audioId", "soundId", "bgmId", "seId"] as const).find((k) => typeof command[k] === "string");
       if (alias) {
         command.resourceId = command[alias];
         delete command[alias];
@@ -514,29 +553,90 @@ export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined 
     }
     return joinFixes(unwrappedFieldsFix, ...fixes);
   }
-  if (command.kind === "setLighting" && isRecordValue(command.lighting)) {
-    for (const [k, v] of Object.entries(command.lighting)) {
-      if (command[k] === undefined) command[k] = v;
+  if (command.kind === "setEventGraphicPattern") {
+    const fixes: string[] = [];
+    if (typeof command.eventId !== "string" && typeof command.target === "string") {
+      const t = command.target.trim();
+      command.eventId = t === "this" || t === "self" || t === "this-event" ? "" : t;
+      delete command.target;
+      fixes.push("setEventGraphicPattern.target 을 eventId 로 옮겼습니다.");
+    } else if (typeof command.eventId !== "string") {
+      command.eventId = "";
+      fixes.push('setEventGraphicPattern.eventId 기본값 "" 를 채웠습니다.');
     }
-    delete command.lighting;
-    return joinFixes(unwrappedFieldsFix, "setLighting.lighting 객체를 최상위로 풀었습니다.");
+    if (typeof command.pattern !== "number") {
+      const alias = (["index", "frame", "value"] as const).find((k) => typeof command[k] === "number");
+      command.pattern = alias ? (command[alias] as number) : 0;
+      if (alias) delete command[alias];
+      fixes.push(`setEventGraphicPattern.pattern 값을 ${String(command.pattern)} 로 채웠습니다.`);
+    }
+    return joinFixes(unwrappedFieldsFix, ...fixes);
   }
-  if (command.kind === "addLight" && !isRecordValue(command.source)) {
-    const at = isRecordValue(command.at) ? command.at : undefined;
-    const x = typeof command.x === "number" ? command.x : typeof at?.x === "number" ? at.x : 0;
-    const y = typeof command.y === "number" ? command.y : typeof at?.y === "number" ? at.y : 0;
-    command.source = {
-      id: typeof command.id === "string" && command.id.trim() ? command.id.trim() : "light_1",
-      x,
-      y,
-      radius: typeof command.radius === "number" ? command.radius : 4,
-      color: typeof command.color === "string" && command.color.trim() ? command.color.trim() : "#ffaa44",
-      intensity: typeof command.intensity === "number" ? command.intensity : 0.8,
-      ...(typeof command.flicker === "boolean" ? { flicker: command.flicker } : {}),
-    };
-    delete command.id; delete command.x; delete command.y; delete command.at;
-    delete command.radius; delete command.color; delete command.intensity; delete command.flicker;
-    return joinFixes(unwrappedFieldsFix, "addLight 최상위 광원 필드를 source 객체로 묶었습니다.");
+  if (command.kind === "setWeather") {
+    const fixes: string[] = [];
+    if (typeof command.weather !== "string") {
+      const alias = (["action", "effect", "type", "value", "kindName"] as const).find((k) => typeof command[k] === "string");
+      if (alias) {
+        command.weather = command[alias];
+        delete command[alias];
+        fixes.push(`setWeather.${alias} 를 weather 로 옮겼습니다.`);
+      } else {
+        command.weather = "none";
+      }
+    }
+    if (command.weather === "clear" || command.weather === "off" || command.weather === "stop") {
+      command.weather = "none";
+    }
+    return joinFixes(unwrappedFieldsFix, ...fixes);
+  }
+  if (command.kind === "setLighting") {
+    const fixes: string[] = [];
+    if (isRecordValue(command.lighting)) {
+      for (const [k, v] of Object.entries(command.lighting)) {
+        if (command[k] === undefined) command[k] = v;
+      }
+      delete command.lighting;
+      fixes.push("setLighting.lighting 객체를 최상위로 풀었습니다.");
+    }
+    if (typeof command.ambient !== "number") {
+      command.ambient = command.color === "neutral" || command.color === "#ffffff" ? 1 : 0.7;
+      fixes.push(`setLighting.ambient 기본값 ${String(command.ambient)} 를 채웠습니다.`);
+    }
+    return joinFixes(unwrappedFieldsFix, ...fixes);
+  }
+  if (command.kind === "addLight") {
+    if (!isRecordValue(command.source)) {
+      const rawAt = command.at === "player" ? "player" : isRecordValue(command.at) ? command.at : undefined;
+      const x = typeof command.x === "number" ? command.x : isRecordValue(rawAt) && typeof rawAt.x === "number" ? rawAt.x : 0;
+      const y = typeof command.y === "number" ? command.y : isRecordValue(rawAt) && typeof rawAt.y === "number" ? rawAt.y : 0;
+      command.source = {
+        id: typeof command.id === "string" && command.id.trim() ? command.id.trim() : "light_1",
+        at: rawAt ?? (typeof command.eventId === "string" && command.eventId.trim() ? { eventId: command.eventId.trim() } : { x, y }),
+        radius: typeof command.radius === "number" ? command.radius : 4,
+        color: typeof command.color === "string" && command.color.trim() ? command.color.trim() : "#ffaa44",
+        intensity: typeof command.intensity === "number" ? command.intensity : 0.8,
+        ...(typeof command.flicker === "boolean" ? { flicker: command.flicker } : {}),
+      };
+      delete command.id; delete command.x; delete command.y; delete command.at; delete command.eventId;
+      delete command.radius; delete command.color; delete command.intensity; delete command.flicker;
+      return joinFixes(unwrappedFieldsFix, "addLight 최상위 광원 필드를 source 객체로 묶었습니다.");
+    }
+    const source = command.source;
+    if (source.at === undefined) {
+      if (typeof source.eventId === "string" && source.eventId.trim()) {
+        source.at = { eventId: source.eventId.trim() };
+        delete source.eventId;
+      } else {
+        source.at = {
+          x: typeof source.x === "number" ? source.x : 0,
+          y: typeof source.y === "number" ? source.y : 0,
+        };
+        delete source.x;
+        delete source.y;
+      }
+      return joinFixes(unwrappedFieldsFix, "addLight.source 좌표 필드를 source.at 으로 옮겼습니다.");
+    }
+    return unwrappedFieldsFix;
   }
   if (command.kind === "moveEvent") {
     const fixes: string[] = [];

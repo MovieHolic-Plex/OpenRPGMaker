@@ -145,7 +145,11 @@ function normalizeBattleCondition(project: Project, troop: TroopRecord, raw: unk
   if (typeof kind !== "string") throw new ToolError(`${label}.kind(문자열)가 필요합니다.`, { code: "invalid-battle-condition" });
   switch (kind) {
     case "turn":
-      return { kind: "turn", start: integerField(record, "start", label), interval: integerField(record, "interval", label) };
+      return {
+        kind: "turn",
+        start: integerField(record, "start", label),
+        interval: record.interval === undefined ? 0 : integerField(record, "interval", label),
+      };
     case "onRound":
       return { kind: "onRound", round: integerField(record, "round", label) };
     case "everyRound": {

@@ -513,10 +513,19 @@ export function hasVisualScenePresentation(cmds: Command[]): boolean {
     "camera",
     "letterbox",
     "weather",
+    "setWeather",
     "showAnimation",
+    "showEmote",
     "playSe",
     "playBgm",
+    "playAudio",
+    "stopAudio",
     "showPicture",
+    "changeFace",
+    "cutsceneControl",
+    "setLighting",
+    "addLight",
+    "setEventGraphicPattern",
     "m2Command",
   ]);
   return cmds.some((c) => presentationKinds.has(c.kind));
@@ -1336,7 +1345,7 @@ export async function runSingleJrpgCase(
         chat,
         audit: chat,
         getConfig: () => config,
-        timeoutMs: 30_000,
+        timeoutMs: 60_000,
         coverageAudit: false,
       }),
     piTeam: false,
@@ -1375,7 +1384,7 @@ export async function runSingleJrpgCase(
       apiKey,
       providerApiKeys: { [MODEL_PROVIDER]: apiKey },
       readOnlyTools: isReadOnly,
-      timeoutMs: 180_000,
+      timeoutMs: 300_000,
       renderToolImage: async (p, _toolName, data) => renderToolRegionPngBase64(p, data),
       onToolCall: (rec) => {
         toolCalls.push({

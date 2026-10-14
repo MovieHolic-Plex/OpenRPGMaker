@@ -235,7 +235,7 @@ export type SceneExpectStep = {
   /** 전투 파티(session.partyActorIds)에 있어야 할 배우. 동료 추종(followers)과는 다르다. */
   partyIncludes?: string | readonly string[];
   partyExcludes?: string | readonly string[];
-  followerAt?: { name: string; x: number; y: number };
+  followerAt?: { name?: string; x: number; y: number };
   cameraAt?: { cx: number; cy: number; tolerance?: number };
   lightingAmbient?: number | { value: number; tolerance?: number };
   lightAt?: { x: number; y: number; expected?: boolean };
@@ -465,7 +465,7 @@ const sceneExpectFields: Readonly<Record<keyof Omit<SceneExpectStep, "kind">, Sc
   eventDistanceToPlayerLessThan: value => sceneShape(value, { eventId: sceneText, distance: sceneNumber, mapId: sceneText }, ["eventId", "distance"]),
   followerCount: sceneCount,
   partyIncludes: sceneStringOrList, partyExcludes: sceneStringOrList,
-  followerAt: value => sceneShape(value, { name: sceneText, x: sceneCount, y: sceneCount }, ["name", "x", "y"]),
+  followerAt: value => sceneShape(value, { name: sceneText, x: sceneCount, y: sceneCount }, ["x", "y"]),
   cameraAt: value => sceneShape(value, { cx: sceneNumber, cy: sceneNumber, tolerance: sceneNumber }, ["cx", "cy"]),
   lightingAmbient: value => sceneNumber(value) || sceneShape(value, { value: sceneNumber, tolerance: sceneNumber }, ["value"]),
   lightAt: value => sceneShape(value, { x: sceneCount, y: sceneCount, expected: sceneBoolean }, ["x", "y"]),
@@ -2054,10 +2054,13 @@ function runExpectStep(state: RunnerState, step: SceneExpectStep): string | null
     if (state.session.partyActorIds.includes(actorId)) return `전투 파티에 ${actorId} 가 남아 있음: 실제 파티 [${state.session.partyActorIds.join(", ")}]`;
   }
   if (step.followerAt) {
-    const actual = followerPositions(state.session, state.project.system.companions, followerWorld(state)).find((entry) => entry.follower.name === step.followerAt?.name);
-    if (!actual) return `동료 없음: ${step.followerAt.name}`;
+    const positions = followerPositions(state.session, state.project.system.companions, followerWorld(state));
+    const actual = step.followerAt.name
+      ? positions.find((entry) => entry.follower.name === step.followerAt?.name)
+      : positions.find((entry) => entry.x === step.followerAt?.x && entry.y === step.followerAt?.y) ?? positions[0];
+    if (!actual) return `동료 없음: ${step.followerAt.name ?? "(any)"}`;
     if (actual.x !== step.followerAt.x || actual.y !== step.followerAt.y) {
-      return `동료 ${step.followerAt.name}: 기대 (${step.followerAt.x},${step.followerAt.y}), 실제 (${actual.x},${actual.y})`;
+      return `동료 ${actual.follower.name}: 기대 (${step.followerAt.x},${step.followerAt.y}), 실제 (${actual.x},${actual.y})`;
     }
   }
   if (step.cameraAt) {

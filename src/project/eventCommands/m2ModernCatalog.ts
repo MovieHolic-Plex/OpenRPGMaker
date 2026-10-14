@@ -22,6 +22,7 @@ const CAMERA_MODE_OPTIONS: readonly M2CommandFieldOption[] = [
 const MODERN_TARGET_OPTIONS: readonly M2CommandFieldOption[] = [
   { value: "player", label: "주인공" },
   { value: "this-event", label: "이 이벤트" },
+  { value: "event", label: "특정 이벤트" },
   { value: "screen", label: "화면" },
 ];
 
@@ -229,7 +230,8 @@ export function modernFieldsFor(title: string): readonly M2CommandFieldSpec[] | 
     case "Camera Control":
       return [
         { key: "mode", label: "동작", type: "select", defaultValue: "panTo", options: CAMERA_MODE_OPTIONS },
-        { key: "target", label: "누구에게", type: "select", defaultValue: "player", options: MODERN_TARGET_OPTIONS },
+        { key: "target", label: "누구에게", type: "text", defaultValue: "player", options: MODERN_TARGET_OPTIONS },
+        { key: "eventId", label: "이벤트(특정 이벤트일 때)", type: "text", defaultValue: "" },
         { key: "x", label: "X", type: "number", defaultValue: 0 },
         { key: "y", label: "Y", type: "number", defaultValue: 0 },
         { key: "zoom", label: "줌", type: "number", defaultValue: 1, min: 0.25, max: 6, step: 0.25 },

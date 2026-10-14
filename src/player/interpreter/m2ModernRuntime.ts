@@ -21,15 +21,17 @@ export function executeModernCommand(
   context: M2ModernRuntimeContext = {}
 ): boolean {
   switch (title) {
-    case "Camera Control":
+    case "Camera Control": {
+      const rawTarget = fieldString(fields, "target", "player");
       runtime.camera.mode = fieldString(fields, "mode", "panTo");
-      runtime.camera.target = fieldString(fields, "target", "player");
+      runtime.camera.target = rawTarget === "event" ? fieldString(fields, "eventId", "player") : rawTarget;
       runtime.camera.x = fieldNumber(fields, "x", 0);
       runtime.camera.y = fieldNumber(fields, "y", 0);
       runtime.camera.zoom = fieldNumber(fields, "zoom", 1);
       runtime.camera.durationMs = fieldNumber(fields, "durationMs", 300);
       session.flags[`camera:${runtime.camera.mode}`] = true;
       return true;
+    }
     case "Screen Effect":
       return applyScreenEffect(session, runtime, fields);
     case "Spawn Event":
