@@ -655,7 +655,13 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
     warnings.push(...fitNotes);
     if (!composed) warnings.push(...floatingZones(input, shape));
     const copied = copiedExample(draft, tileset, input.plan);
-    if (copied) warnings.push(`평면이 참고 예제 「${copied.name}」와 ${copied.same}% 같다 — 사용자가 그 예제를 달라고 한 게 아니면 요청(방 수·쓰임·크기)에 맞게 새로 짠다(rooms 로 방 사각형을 다시 놓는다). 예제는 문법을 배우는 자료다`);
+    if (copied) {
+      // 2026-10-14 campus 실조수(argon): 「교실 둘 + 복도」 요청에 교실 둘 + 복도 예제가 그대로 맞았는데 이 경고가 「새로 짠다」만 말해
+      // 같은 방을 3~6번 다시 지었다(361초) — 닮음 %를 낮추려는 재시공 루프. 경고의 뜻은 「요청과 안 맞는데 베꼈다」이지 「닮으면 불합격」이 아니다.
+      warnings.push(existing
+        ? `평면이 참고 예제 「${copied.name}」와 ${copied.same}% 같다 — 이미 다시 지은 방이다. 이 방이 요청(방 수·쓰임·크기)을 충족하면 그대로 두고 끝낸다: 닮은 정도를 낮추려고 같은 방을 또 짓지 않는다. 다시 지을 때는 방 수·쓰임·크기를 실제로 바꿀 때만`
+        : `평면이 참고 예제 「${copied.name}」와 ${copied.same}% 같다 — 이 방이 요청(방 수·쓰임·크기)을 이미 충족하면 그대로 두고 끝낸다(예제와 같다는 것만으로 다시 짓지 않는다). 요청과 다른데 예제를 베낀 것이면 rooms 로 방 사각형을 요청에 맞게 다시 놓는다. 예제는 문법을 배우는 자료다`);
+    }
     warnings.push(...doorNotes.map((note) => `자동 맞춤: ${note}`));
     return {
       summary: `손 도트 실내 '${name}' ${built.width}×${built.height} (${mapId}, ${tilesetId})${picked ? ` — 배치 후보 ${picked.variant + 1}/${picked.variants}(방 ${picked.c.rooms.length}개, 견본 가구 ${Object.values(furnished ?? {}).reduce((a, f) => a + f.placed, 0)}점 — data.layout.picture 로 배치를 보고, 다른 배치는 layout.variant 를 바꿔 replace:true)` : ""} — 출입구에서 닿는 칸 ${built.reachable}, 닿지 못한 빈 바닥 ${built.unreachedFloor.length}, 경고 ${warnings.length}${warnings.length ? ` — ${warnings.slice(0, 4).join(" / ")}${warnings.length > 4 ? " …" : ""}` : ""}`,

@@ -10,6 +10,7 @@ import { addMapLocation } from "@/project/mapNamedLocations";
 import { extractTreeNode, insertTreeNode } from "@/project/mapTree";
 import { SENGOKU_DEFAULT_SIZE, SENGOKU_MIN_SIZE, SENGOKU_STYLES, SENGOKU_STYLE_KO, composeSengokuEdo, sengokuPaletteFromTileset, type SengokuResult, type SengokuStyle } from "@/project/sengokuEdoComposer";
 import type { GameEvent, GameMap, MapId, Project } from "@/project/types";
+import { claimStartIfBlank } from "./composerStart";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
@@ -122,11 +123,13 @@ export const COMPOSE_SENGOKU_EDO_MAP_TOOL: ToolDefinition = {
     }
     const blocked = (target.events ?? []).filter((e) => !walkable(next, target, e.x, e.y)).map((e) => `${e.name ?? e.id}(${e.x},${e.y})`);
     draft.maps[mapId] = target;
+    const startClaim = claimStartIfBlank(draft, mapId, r.start);
     return {
       summary: `${SENGOKU_STYLE_KO[style]}을(를) ${target.width}×${target.height} 맵(${mapId})에 짰다(seed ${seed}) — 건물 ${r.buildings.length}채, 소품 ${r.props.length}개, 시작 칸 (${r.start.x},${r.start.y}) 에서 모든 문 접근칸에 닿음(엔진 통행).${grew} `
         + `건물 문: ${r.buildings.map((d) => `${d.name} (${d.doors.map((c) => `${c.x},${c.y}`).join(" · ")})`).join(" · ")}. 실내가 필요한 문은 build_hand_interior_room(tileset:"sengoku_edo") 로 짓고 link_sengoku_edo_interior 로 잇는다.`
+        + startClaim.note
         + (r.notes.length ? ` 참고: ${r.notes.join(" / ")}.` : "") + (blocked.length ? ` 경고: 막힌 칸 위 이벤트 ${blocked.join(", ")}.` : ""),
-      data: { mapId, style, seed, width: target.width, height: target.height, start: r.start, buildings: r.buildings.map((d) => ({ name: d.name, kit: d.kit, rect: d.rect, doors: d.doors, access: d.access })), props: r.props.length },
+      data: { mapId, style, seed, width: target.width, height: target.height, start: r.start, startClaimed: startClaim.claimed, buildings: r.buildings.map((d) => ({ name: d.name, kit: d.kit, rect: d.rect, doors: d.doors, access: d.access })), props: r.props.length },
     };
   },
 };

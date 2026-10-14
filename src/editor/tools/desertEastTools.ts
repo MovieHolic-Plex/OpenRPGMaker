@@ -14,6 +14,7 @@ import {
   composeDesertEast, composeDesertRoom, desertPaletteFromTileset, type DesertKind, type DesertRoomKind,
 } from "@/project/desertEastComposer";
 import type { GameEvent, GameMap, MapId, Project, TilesetDef } from "@/project/types";
+import { claimStartIfBlank } from "./composerStart";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
@@ -118,12 +119,14 @@ export const COMPOSE_DESERT_EAST_MAP_TOOL: ToolDefinition = {
     for (const z of r.zones) addMapLocation(target, { name: z.name, x: z.rect.x, y: z.rect.y, w: z.rect.w, h: z.rect.h, note: z.use, tags: ["desert-east-zone", COMPOSED_LAYOUT_TAG] });
     const blocked = (target.events ?? []).filter((e) => !walkable(next, target, e.x, e.y)).map((e) => `${e.name ?? e.id}(${e.x},${e.y})`);
     draft.maps[mapId] = target;
+    const startClaim = claimStartIfBlank(draft, mapId, r.start);
     const doors = r.buildings.filter((d) => d.doors.length);
     return {
       summary: `${DESERT_KIND_LABEL[kind]}를 ${map.width}×${map.height} 맵(${mapId})에 짰다(seed ${seed}) — 건물 ${r.buildings.length}채, 소품 ${r.props.length}개, 구역 ${r.zones.map((z) => z.name).join("·")}. 시작 칸 (${r.start.x},${r.start.y}) 에서 모든 문 접근칸에 닿음(엔진 통행). `
         + `문: ${doors.slice(0, 12).map((d) => `${d.name} (${d.doors.map((c) => `${c.x},${c.y}`).join(" · ")})`).join(" · ")}${doors.length > 12 ? ` 외 ${doors.length - 12}채` : ""}. 실내는 compose_desert_east_room 으로 짓고 link_desert_east_interior 로 잇는다.`
+        + startClaim.note
         + (r.notes.length ? ` 참고: ${r.notes.join(" / ")}.` : "") + (blocked.length ? ` 경고: 막힌 칸 위 이벤트 ${blocked.join(", ")}.` : ""),
-      data: { mapId, kind, seed, start: r.start, buildings: r.buildings.map((d) => ({ name: d.name, kit: d.kit, rect: d.rect, doors: d.doors, access: d.access })), zones: r.zones, props: r.props.length },
+      data: { mapId, kind, seed, start: r.start, startClaimed: startClaim.claimed, buildings: r.buildings.map((d) => ({ name: d.name, kit: d.kit, rect: d.rect, doors: d.doors, access: d.access })), zones: r.zones, props: r.props.length },
     };
   },
 };
