@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7a13f91d29c3d1029f3d532ccfb3f75d52b80e7241e19a57e99daf42ed44b80d",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "생선 말리는 덕장(대구 줄줄이, 작은 박공 지붕)",
+ "label": "snow-north/sn-fish-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fish drying frame with roof",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Although the snow-covered roof slope spans rows 1-8, the frame itself is drawn in pure front elevation: the lower horizontal crossbeam (rows 24-28) has no visible top face (0-1px outline only), and the vertical posts and base show no top-down perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도"
+   ],
+   "ms": 12622
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fish drying rack with snow-covered gable roof",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered roof pitch is clearly visible from above across rows 1-7 (7 source pixels tall), providing proper 3/4 overhead perspective for the structure.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5522
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fish drying rack with snow-covered gabled roof",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered roof slope at the top spans rows 1-8 (approx 7-8 rows), properly angled toward the viewer in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4668
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fish drying rack frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "While the small snow-covered roof at the top shows a 6-row slope (rows 1-7), the main structural frame below is drawn in flat front elevation. The lower horizontal crossbeam (rows 24-28) is drawn as a flat 2D rectangle with no visible top surface at all, violating the requirement that horizontal frame beams must show top faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11683
+  }
+ ],
+ "decidedAt": "2026-10-14T01:20:58.720Z",
+ "cells": {
+  "16": [
+   "03f6485dfc399caa",
+   "6c565b22c4a679ff",
+   "6dea5dc61ca9695e",
+   "f6759d71040f6f35"
+  ],
+  "24": [
+   "0666f19bc8231112",
+   "0dae2d4f1abc1a8e",
+   "34ac805967f7a4d8",
+   "354a7e4a99e53439",
+   "3cdd75c1a88a5ca0",
+   "4289f6e5fa65a706",
+   "47f0a5372e46308e",
+   "74c21f1cac1eccee",
+   "7a9060a92590eea0",
+   "85116ef08845af51",
+   "890c966e339d021c",
+   "89d06c8737c9067d",
+   "900fc03c056001a9",
+   "9ddb52a9fe3733b4",
+   "a2a5cc2e7e8b34b9",
+   "a32ad1b80437331a",
+   "ade569cd6fc452e1",
+   "b6b04dd8b795c267",
+   "bcd437c8bdf4b46c",
+   "c92f7e9dfee6aead",
+   "dcb3890d39df03e9",
+   "e2d0702db59219b5",
+   "fd4d319b181e4afb",
+   "ff9f5dbb890c31ff"
+  ],
+  "32": [
+   "0540904ba2077f5a"
+  ],
+  "48": [
+   "693af425d9fee115",
+   "732747f44f8520e1",
+   "79a0bc38cbb1cc76",
+   "abcbfe78b041ea9f",
+   "e3295492113a6218",
+   "fa795797d5b14f27"
+  ]
+ }
+}

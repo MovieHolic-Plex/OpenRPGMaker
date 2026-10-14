@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a6b72d83c690773c22962b4ed15f324758f38905fb100a50fab3010baca99c1a",
+ "width": 32,
+ "height": 16,
+ "kind": "organic",
+ "name": "눈더미(바람에 쌓인 둔덕)",
+ "label": "snow-north/sn-drift",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "snow drift mound",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The silhouette is drawn as a 2D side-elevation ridge profile with the crest forming the top outline of the sprite. There is no visible top surface receding behind or above the crest (0 px), rendering it as a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6569
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "snowdrift mound",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snowdrift is rendered with a foreshortened top surface spanning rows 5–11 (approx 6 rows) and a shaded front south face spanning rows 12–15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10526
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "snowdrift mound",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snowdrift features a prominent light-toned upper slope visible for about 6-8 rows (rows 4-11) before transitioning into the south-facing shadow base (rows 12-15), naturally rendering a 3/4 top-down mound.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4888
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "snowdrift mound",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snowdrift features a foreshortened, sunlit upper slope spanning approximately 6 rows (rows 5 to 11) descending toward a shaded lower section (rows 12 to 15), providing the appropriate 3/4 view depth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9256
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.504Z",
+ "cells": {
+  "16": [
+   "1ca4a064de1e3835",
+   "970277394cde591f"
+  ],
+  "24": [
+   "16a8d6d141b94633",
+   "3457368719b33bc4",
+   "40925af36cc4467d",
+   "5a3c0ddaa1b7cf42",
+   "5b00459e472ba4c7",
+   "69577a83284a34a7",
+   "8f036a877c3fc82e",
+   "b22f921d765c9b1f",
+   "b9d5b46ca104cbe5",
+   "cd0c1ce79d850efb",
+   "cfde6ff9c369d65f",
+   "f3f34bb6fde96ff0"
+  ],
+  "32": [
+   "589296cae537133d",
+   "e55777ae72ff9546"
+  ],
+  "48": [
+   "00299b60de56d4f0",
+   "2645c2416b33fe8d",
+   "3f7ccfec29ba44b5",
+   "810697a299a88cae",
+   "a852914083b5fecf",
+   "bd36516fcbc3bb60"
+  ]
+ }
+}

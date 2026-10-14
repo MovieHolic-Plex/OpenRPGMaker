@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "30364225aff4ee4c9dd13c4bf5429514aaed151502fe7251d7e3a02d478889d0",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "원뿔 가죽 천막(장대 끝 + 연기 구멍)",
+ "label": "snow-north/sn-tent",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "conical tent (tipi)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tipi is drawn as a flat front/side elevation. The smoke hole collar at rows 7-8 is a flat 2px rectangular band with no elliptical opening visible from above, the entrance is a flat vertical cutout, and the entire conical body lacks 3/4 top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8531
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "conical tent (teepee)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The teepee is rendered as a flat frontal triangular silhouette with poles sticking out of a 2px horizontal black band at rows 7-8. There is no visible top surface or elliptical smoke-hole opening showing interior depth from the top-down 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5470
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "conical tipi tent",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tipi is drawn as a flat 2D front elevation. The base rim is drawn completely flat across rows 42-43 without elliptical perspective curvature, and the top smoke hole is drawn as a flat 2-row black band (rows 7-8) rather than an opening or foreshortened ellipse seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6430
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "conical tent (tipi)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tipi is drawn as a flat front/side 2D elevation triangle. Despite the name specifying a smoke hole (연기 구멍), the top at rows 7-8 is rendered as a flat 2px-high horizontal black band rather than an elliptical opening viewed from above, and the structure shows no foreshortening or top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 20534
+  }
+ ],
+ "decidedAt": "2026-10-14T01:15:54.503Z",
+ "cells": {
+  "16": [
+   "3a1c45cc306b358a",
+   "9d3d91f98a18496c",
+   "a4d30d47df6ef9eb",
+   "c49e031e61a96a90",
+   "cc7d8f242336097a",
+   "d1403a061c4d18e3"
+  ],
+  "24": [
+   "024de9a7096e7e91",
+   "0c73c8851f38224f",
+   "123f356f32a0fe91",
+   "18d1f7de56fdfb96",
+   "1e4c61f546579d3d",
+   "303eff452656b674",
+   "89a49baade9934b1",
+   "9182467988f3e2d5",
+   "b50cde45a1dc3fd5",
+   "c145af08693bacb3"
+  ],
+  "32": [
+   "24ce173e6ae1417e",
+   "8943d0697925ddbf",
+   "99b99af72ea784b0",
+   "fdd46196d1fa4280"
+  ],
+  "48": [
+   "1e7c547b5fa915b6",
+   "c8e0245082952b22",
+   "cf8636dc09f7ee19"
+  ]
+ }
+}

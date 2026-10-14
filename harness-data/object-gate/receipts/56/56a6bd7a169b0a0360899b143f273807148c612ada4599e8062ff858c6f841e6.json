@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "56a6bd7a169b0a0360899b143f273807148c612ada4599e8062ff858c6f841e6",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "얼음 동굴 벽면(아랫줄, 밑동 고드름)",
+ "label": "snow-north/sn-wall-ice-d",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ice cave wall face tile with icicle trim",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing the bottom segment of a vertical ice cave wall with hanging icicles along the lower rim. Properly categorized as terrain (wall face).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4035
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ice cave wall face with bottom icicles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical ice cave wall face tile with hanging icicle fringe at the bottom; valid wall terrain tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3637
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ice cave wall face with icicles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing the vertical surface of an ice cave wall with hanging icicles along the lower rim. As a terrain wall face, it correctly tiles vertically without showing a top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3567
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ice cave wall face with bottom icicles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical ice cave wall terrain tile with hanging icicle fringe at the bottom; valid 2D JRPG wall face tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7933
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.162Z",
+ "cells": {
+  "16": [
+   "ed81c05868b62ae6"
+  ],
+  "24": [
+   "2b35ab070e7b49b8",
+   "3d0ec4f544f1dfb7",
+   "627a7b6ca5927328",
+   "6e981f95afee14d4",
+   "91beac09c47fe9a6",
+   "a9b6e2b98201f423"
+  ],
+  "32": [
+   "194d5ff5db4157ae",
+   "2b2a206dd9287d18",
+   "5e802c9a4e406ea6",
+   "767b5f3b57bc81aa",
+   "c25630b8976f21be",
+   "e40a915f270f4fbf"
+  ],
+  "48": [
+   "257d0228560c6289",
+   "26f6f8df4318fbce",
+   "550c551c8f051297",
+   "8e44483019ff09a9",
+   "cea0b2f72213c053",
+   "e61040beaf954e0b"
+  ]
+ }
+}

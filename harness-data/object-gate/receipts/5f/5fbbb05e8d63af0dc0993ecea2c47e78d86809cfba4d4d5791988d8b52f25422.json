@@ -1,0 +1,143 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5fbbb05e8d63af0dc0993ecea2c47e78d86809cfba4d4d5791988d8b52f25422",
+ "width": 32,
+ "height": 16,
+ "kind": "structure",
+ "name": "짐 썰매(나무 날·가죽 덮개 짐)",
+ "label": "snow-north/sn-sled",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cargo sled (side view of leather-covered cargo on a runner)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sled and its cargo are drawn in pure side-scroller elevation facing east: the runner is a flat 1px horizontal strip at the bottom, the cargo box is a flat vertical rectangle with no top face visible, and the snow on top is drawn as a flat silhouette with 0px top surface foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9006
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "leather-covered cargo on sled",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cargo sled is drawn entirely in flat front elevation. The main cargo box and its runners show no horizontal top surface or depth, and the snow cap resting on top is also rendered as a flat silhouette facing directly forward.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7314
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cargo sled with covered cargo",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn in pure 2D side elevation (like a side-scroller sprite): a single flat horizontal runner at the bottom, vertical straps, and cargo box with no visible top surface or 3/4 depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12866
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cargo load on sled",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cargo load and sled are drawn in flat front elevation with vertical straps and no visible top surface of the load or sled frame (aside from a 2-3px white mound placed flatly on top). Furthermore, a cargo sled does not match the 'structure' kind.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5924
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.506Z",
+ "cells": {
+  "16": [
+   "3bff510ac3efe136",
+   "9042e34d1ab18dc2"
+  ],
+  "24": [
+   "08de4781b96c678a",
+   "0efc2985362c6f17",
+   "23249c34e8f0c13f",
+   "328abaf7efc4fce7",
+   "5cd2179434da7a0e",
+   "7e5c7758e03ec44d",
+   "a54f9cf24ab8ab75",
+   "aba179bba16388cd",
+   "ad840b01728a5057",
+   "bf5d4ff304fd1965",
+   "c70a417bc73592e0",
+   "e41779b5eb46ce42"
+  ],
+  "32": [
+   "3f0f4380a38428a9",
+   "715ec943741c2afe"
+  ],
+  "48": [
+   "00ab0fa0c4c847a8",
+   "2947f9272e852d9d",
+   "62c2e1cff321fd19",
+   "8d71118240ae5b5f",
+   "c3136a10676bd8d2",
+   "f0a3693cff0c1a38"
+  ]
+ }
+}

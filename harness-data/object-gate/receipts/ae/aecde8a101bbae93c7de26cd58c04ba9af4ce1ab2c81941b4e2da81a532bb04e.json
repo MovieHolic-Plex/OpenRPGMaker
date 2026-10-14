@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "aecde8a101bbae93c7de26cd58c04ba9af4ce1ab2c81941b4e2da81a532bb04e",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "걸린 무쇠 솥(사슬 + 작은 불) (프레임 2)",
+ "label": "snow-north/sn-cauldron-in-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hanging cast iron pot",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pot's opening is clearly rendered as a large elliptical top view showing the stew contents from row 10 to row 16 (7 rows tall) above the south-facing pot belly (rows 17-24).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4076
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hanging iron pot / cauldron with stew over a fire",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pot displays a large elliptical top opening filled with bubbling stew spanning rows 10 to 16 (7 pixel rows), with a clearly visible front rim at row 17-18 and the front body extending down to row 24.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3255
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hanging cast iron cauldron over a small campfire",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pot has an elliptical opening filled with stew/liquid spanning rows 10-16 (7 pixel rows) viewed from above, with the south exterior wall of the pot visible below it from row 17 to row 24.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5717
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hanging cauldron over fire",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening of the cauldron is clearly drawn in 3/4 perspective (rows 10-16) showing the stew/liquid contents inside the rim before the front exterior wall (rows 17-24).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4182
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.165Z",
+ "cells": {
+  "16": [
+   "a5e3c910b29b048c",
+   "ca8589cc7f75e2dd"
+  ],
+  "24": [
+   "2b3d854e768b2468",
+   "4be75dd2d1a665e6",
+   "50a493da36d0f1ee",
+   "557c38958dadaa82",
+   "8f61eb80a1f04861",
+   "9aa29978e20fcf4a",
+   "9d84e435a4df50a3",
+   "bbac73ad5e59ffba",
+   "c14feb4ecad77499",
+   "e1cb014d1237407b",
+   "f464ac4c0b10a468",
+   "fea20d990e1e8017"
+  ],
+  "32": [
+   "8cd5453b18fbece9",
+   "e11fd4da8ae864f3",
+   "fb312c7cb7129581"
+  ],
+  "48": [
+   "0d094c71248b1960",
+   "5713362507e2eb9c",
+   "6ce8a7d7f7b237eb",
+   "946c904419291e42",
+   "966b0e0fd78f8ce7",
+   "a784950cd4bb2075"
+  ]
+ }
+}

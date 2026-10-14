@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4d9b207bece46425e19342141d29150310d94433f67febba2fb519afd6865a19",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "눈밭(마른 풀 끝이 삐죽)",
+ "label": "snow-north/sn-snow-d",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "snow field ground tile with dry grass tips",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a snow-covered ground surface viewed from above with small dried grass stalks poking through.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3800
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "snow ground with dried grass tufts",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Snow ground terrain surface with small tufts of dry grass poking out; correctly functions as a flat ground/terrain tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2979
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "snow ground tile with dry grass tufts",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a snow-covered ground surface with dried grass tufts peeking through; flat ground fills the 16x16 tile appropriately for top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3226
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "snow terrain with grass tips",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tile representing snow with dried grass tips poking through. Viewed from above as horizontal ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8140
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:23.950Z",
+ "cells": {
+  "16": [
+   "7fb7c9423bb39c54"
+  ],
+  "24": [
+   "35806f26f4f17ad2",
+   "9c81cd1eb92c8379",
+   "b4a8440c65f3cca1",
+   "b50c62255c804505",
+   "c6e8a4b81c80c21e",
+   "dd124efcec1bbd42"
+  ],
+  "32": [
+   "0164578acec4ff09",
+   "02986dd4fafbaf20",
+   "084d52d9c8447f9a",
+   "5960e6a601ece3ca",
+   "d761fca73fcc7e26",
+   "e34399792950c4bb"
+  ],
+  "48": [
+   "1d5fc74f62fc9c68",
+   "4969cc548f36717a",
+   "5087b06676c2438d",
+   "6a069c81cca48b23",
+   "934c5d0c20c98955",
+   "e7dbe063d6a4ab8f"
+  ]
+ }
+}

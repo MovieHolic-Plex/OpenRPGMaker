@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e4939ce7992147fc8b087ddbc8be2744988953a7b2d6fcc31cb51b05390b4b50",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "모피 노점(모피 더미, 붉은 천막)",
+ "label": "snow-north/sn-stall-fur",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 1.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "market stall with striped awning and counter",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The striped awning/roof is drawn as a completely flat front elevation across rows 1-10 with only a 1-2px bar across the top (rows 1-2) and no visible top slope or receding surface, violating the structure requirement that roofs and lintels must show top slopes/surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7471
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "market stall (awning and counter)",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the awning and the stall counter are drawn in flat front elevation. The awning shows an 8-row vertical striped valance with only a 1-2px top trim, and the front face of the counter (rows 22-30, 9px tall) has only a 1px line (row 21) where its horizontal tabletop surface should foreshorten.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 7026
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "market stall with striped awning and counter",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the awning (rows 2-11) and counter (rows 22-30) are drawn in flat front elevation. The awning shows no top slope/roof surface, and the counter top is only a 2px horizontal edge strip (rows 20-21) instead of a foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 5635
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "market stall counter with awning and displayed furs",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall counter shows a foreshortened top surface from row 17 to row 21 (5 rows tall) upon which fur goods and awning supports rest, above a 10-row vertical front face (rows 22-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7927
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.508Z",
+ "cells": {
+  "16": [
+   "2b4e0c1feeb96372",
+   "62afe509f3ad15b9",
+   "7c2b8eef5deaace2",
+   "7eebd22dcc2dabf4",
+   "9d27cedd5e32110f",
+   "dac230726f4c92e5"
+  ],
+  "24": [
+   "207990e3f84b1330",
+   "2911f9ab93c3c064",
+   "5e79374f993b69d3",
+   "5fa948f1e5dd31c6",
+   "a03ae7203bd2d4e9",
+   "c1f84a05d5d999ff",
+   "cca1ed62efe05528",
+   "ff1fe2ad0da16a4e"
+  ],
+  "32": [
+   "2825d5a51d3420d0",
+   "6cecfa36e4a4e7a1",
+   "81041d8f044d1df7",
+   "9d54e78d398f6096",
+   "a725f37a8845d4f7",
+   "dfe9cdee9073d84f"
+  ],
+  "48": [
+   "48807103793c82d1",
+   "aed31facb3674a79"
+  ]
+ }
+}

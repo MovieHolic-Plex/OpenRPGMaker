@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b1294fe03e151fbba535e6ca0f58f81dbb654f30765972628212dd0a699ee2ae",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "맑은 얼음(균열 없음, 짙음)",
+ "label": "snow-north/sn-ice-clear",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ice terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile depicts flat ice ground surface viewed from above with specular spots and depth coloration; valid terrain tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5378
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ice ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting deep clear ice spanning all 16x16 pixels as a top-down ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4870
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ice terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile depicts flat dark ice ground with minor reflections and shading, filling the full surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4859
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ice terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 horizontal ground tile depicting dark clear ice with highlights and subtle depth shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4336
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:23.951Z",
+ "cells": {
+  "16": [
+   "3ef0c3444d979aa2"
+  ],
+  "24": [
+   "0471a4088a49f095",
+   "4faf8c872622a145",
+   "5d1641970f8e68bb",
+   "60ab42980298daf0",
+   "cfdc8feeca1a27e6",
+   "f078f8f641902ec0"
+  ],
+  "32": [
+   "072a8708a47f5c7c",
+   "1cd575aee026d9b0",
+   "5128b53ba31dd655",
+   "531b97b8dcb801d7",
+   "578de2a953d8ea45",
+   "fb3706d0a3d556ac"
+  ],
+  "48": [
+   "3e75988d0ea467b5",
+   "9b39063d78254c15",
+   "bd2a5cb9ddfe4edf",
+   "da719f6f1afd2700",
+   "f19c6d161087ce5d",
+   "fe8bc0379a149300"
+  ]
+ }
+}

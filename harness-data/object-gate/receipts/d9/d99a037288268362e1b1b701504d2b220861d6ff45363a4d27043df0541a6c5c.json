@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d99a037288268362e1b1b701504d2b220861d6ff45363a4d27043df0541a6c5c",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "열린 물(얼음 구멍·여울)",
+ "label": "snow-north/sn-water",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Dark water terrain tile viewed from above with horizontal wave/ripple highlights across the entire 16x16 surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3479
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water surface tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Dark water surface terrain tile viewed entirely from above with horizontal water ripples across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3177
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water surface tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 water terrain tile with horizontal wave and depth highlights seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4881
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water surface texture",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain water surface tile showing dark water ripples from an overhead 3/4 perspective covering all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4184
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:23.952Z",
+ "cells": {
+  "16": [
+   "8df9b50a183d5ab1"
+  ],
+  "24": [
+   "03b44b33835897da",
+   "1d860f7fb2f96b13",
+   "33a719b59586277d",
+   "537550ae446e7c90",
+   "94f08e68e41e332e",
+   "be5993069b086519"
+  ],
+  "32": [
+   "296dc8cd97b996b2",
+   "87f40a8a837ba03d",
+   "9091008a67d74511",
+   "a5db436d341e3165",
+   "b054065c81bc8918",
+   "e665d7f36f6295d1"
+  ],
+  "48": [
+   "09c46dc29e905964",
+   "10d5929101141de1",
+   "27fab3659c5b2c28",
+   "78541f5a8f0dc9da",
+   "942b1ed4d3d5087d",
+   "ee25f903aff3bf32"
+  ]
+ }
+}

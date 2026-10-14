@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "84da3897ee0dc6c9e15563aad94e7b944b92122d385fdb726221a50764017e5e",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "오로라 깃발(청록·보라 물결)",
+ "label": "snow-north/sn-banner-aurora",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden banner pole with horizontal crossbar and hanging banner",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal crossbeam shows a clear top surface on rows 7-9 (with white highlight) above its front face (rows 10-12), and the base plinth also shows a 3-row top surface (rows 40-42) consistent with 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5271
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden banner post and hanging flag",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (post, horizontal beam, and hanging banner) is drawn in pure front elevation with zero top-down depth. The post is capped with a 2D circular finial, the horizontal beam only has a 1-2px edge highlight, and the banner hangs completely flat. The visible top surface on the base plinth does not count per the instructions.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6899
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden banner post and crossbeam",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, finial, crossbeam, and banner are drawn in a flat front elevation. The post terminates in a flat circular finial without any top perspective, and the horizontal beam only has a 1-2px edge highlight rather than a receding top plane. Only the small base plinth has top-surface pixels, which does not count for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7180
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden banner post and crossbeam",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (post, horizontal beam, and banner) is drawn in flat front elevation with no visible top surface. Although the stone base plinth shows a 3px top surface, plinths do not count per the instructions.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9220
+  }
+ ],
+ "decidedAt": "2026-10-14T01:21:53.766Z",
+ "cells": {
+  "16": [
+   "97dbfad70df672e2",
+   "9b8862957f778212",
+   "f7e5b0c1af704a6e"
+  ],
+  "24": [
+   "091963e47181f0c7",
+   "22dc359cdbfd5df2",
+   "4d2c05aab80ea507",
+   "95f5ed0d4a2b4c30",
+   "b0a4c266cc5d5529",
+   "d59add7cb66a543c"
+  ],
+  "32": [
+   "1e91b71a7217295e",
+   "217a2fb0fc6dfb94",
+   "48776d586c1b6db0",
+   "4afbb4110c06b14f",
+   "667f736b54acd760",
+   "95742b3ecb619b44",
+   "9bd51684cf65fd61",
+   "aa7547c080271970",
+   "b95eec416e717b46",
+   "bfd4f1ef677f6417",
+   "e17b3d16d43b236b",
+   "e681f2ac1043d013"
+  ],
+  "48": [
+   "a21909bc2399817a",
+   "e7e539070578a392",
+   "ed7825970c8ca917"
+  ]
+ }
+}

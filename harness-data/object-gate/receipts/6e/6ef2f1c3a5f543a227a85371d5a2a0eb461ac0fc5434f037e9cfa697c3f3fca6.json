@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6ef2f1c3a5f543a227a85371d5a2a0eb461ac0fc5434f037e9cfa697c3f3fca6",
+ "width": 48,
+ "height": 32,
+ "kind": "seat",
+ "name": "사우나 두 단 의자(옅은 나무 발판)",
+ "label": "snow-north/sn-sauna-bench",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sauna bench",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The two-tiered sauna bench clearly displays both horizontal seat/step surfaces (top tier rows 1-7, bottom tier rows 14-21) and vertical front risers (rows 8-13 and 22-27) in proper 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3339
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "two-tier sauna bench",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both tiers show distinct horizontal seating surfaces seen from above (upper bench surface is rows 1-7, lower bench surface is rows 14-21) alternating with vertical front faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3359
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two-tier sauna bench",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top tier seat surface is clearly visible from above at rows 1-7 (7 px tall horizontal planking), followed by a vertical riser (rows 8-13), a second horizontal seat surface at rows 14-21 (8 px tall), and the bottom vertical riser.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4410
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "two-tier wooden sauna bench",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The two-tier sauna bench clearly depicts both tiers' horizontal seat surfaces seen from above (top bench surface spans rows 1-7, lower bench surface spans rows 14-21) alternating with vertical front risers (rows 8-13 and 22-27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3821
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.165Z",
+ "cells": {
+  "16": [
+   "376c98b108c87d1f",
+   "69f74860eee897a3",
+   "93960c8925907c95",
+   "d2dc194e27da485e",
+   "df45f62f21addc05",
+   "f753a3b13a68adae"
+  ],
+  "24": [
+   "15d26a69f6b10a79",
+   "377ab640e16443a0",
+   "459dcd51c9c60552",
+   "583b5d0a2e676b25",
+   "9785e8cc80274e9b",
+   "c1b693d0ed7c07bc",
+   "e16085b67c671ee6",
+   "f7b1c8903c4e5a0f"
+  ],
+  "32": [
+   "0b054e1e22d643ff",
+   "126754767332b8ee",
+   "a1f9c5a98765da17",
+   "d12f0346a8c931b6",
+   "e56c6cea4d9e7202",
+   "fbf0b2ea9dab011b"
+  ],
+  "48": [
+   "86343949f93cd513",
+   "a6f9bbca84b70688"
+  ]
+ }
+}

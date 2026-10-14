@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ec18b0e68d8418ebcb36fe8b832c3f5d6343eb759a4f7cf48fd2cb4d96a2f0f1",
+ "width": 48,
+ "height": 96,
+ "kind": "structure",
+ "name": "굴뚝에서 연기가 오르는 통나무 오두막",
+ "label": "snow-north/asm-cabin-smoke-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "log cabin with snow-covered roof and chimney",
+    "kind_matches": true,
+    "top_rows": 26,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The southward-facing roof slope covers rows 42 to 67 (~26 px rows), clearly displaying the top surface in standard top-down 3/4 view above the front wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3846
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "log cabin with snowy roof",
+    "kind_matches": true,
+    "top_rows": 26,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The southward-sloping snow-covered roof occupies roughly rows 42 to 67 (26 pixel rows) in classic top-down JRPG perspective above the vertical front wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3570
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "log cabin with snow-covered roof",
+    "kind_matches": true,
+    "top_rows": 26,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabin features a substantial forward-sloping snow-covered roof spanning from row 41 to 66 (approx 26 source pixel rows) above the south-facing log facade, classic for RPG Maker 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4070
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "log cabin with snow-covered roof and chimney",
+    "kind_matches": true,
+    "top_rows": 26,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The southward-sloping snow-covered roof is clearly visible from row 42 to row 67 (approx 26 pixel rows) above the front wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3648
+  }
+ ],
+ "decidedAt": "2026-10-14T01:15:03.324Z",
+ "cells": {
+  "16": [
+   "0bf197c694c76502",
+   "27e83dcac204b3cf",
+   "3a477a182ac47a3b",
+   "577954dbb95f8bbe",
+   "5dadaa3478946c16",
+   "7424f94654cf688f",
+   "88b2e749857c5dd8",
+   "88f636d59a3ecc77",
+   "9ccf21aac80db9bf",
+   "9fba1340248a8c73",
+   "ada672c9f4eccfcb",
+   "b82d0448b79255aa",
+   "c1ad615da7781fb8",
+   "e95e752f9ff33cf5"
+  ],
+  "24": [
+   "09e56744ceb26435",
+   "16e310f2613711c7",
+   "4cc142de64b1e7d5",
+   "8cb630d4afbda774",
+   "ae2d1e4dc59ecb7c",
+   "ce5a557a2227e5d0",
+   "f4f13e8e76041a19"
+  ],
+  "32": [
+   "1ccc2c674d7cf3cc",
+   "27f62145b9f56f05",
+   "31a4a1f6c3a9bb76",
+   "3a04e10dee828f00",
+   "5641cc018f750200",
+   "5e43a36e752e7768",
+   "85ea2fa7ec36532c",
+   "881156bc4d85f3f2",
+   "92e4561f0414cfb4",
+   "a1f3313d67844046",
+   "bc5b6b4ba3145b20",
+   "d9da254cb36408ed",
+   "dc591977c5b79601",
+   "ea5af4552f42d8cc",
+   "ed9d4956d98d3c44"
+  ],
+  "48": [
+   "c7b2e2d3fcc38304",
+   "f171e9411ad7328d"
+  ]
+ }
+}

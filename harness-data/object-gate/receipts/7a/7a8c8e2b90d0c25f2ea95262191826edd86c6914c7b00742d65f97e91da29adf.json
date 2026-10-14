@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7a8c8e2b90d0c25f2ea95262191826edd86c6914c7b00742d65f97e91da29adf",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "장작 실은 썰매",
+ "label": "snow-north/sn-sled-wood",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sled with loaded firewood",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sled and its cargo are drawn in pure 2D side elevation, complete with a single profile runner at row 14 curling up on the right side. There is no visible top surface of either the sled bed or the stacked firewood.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6146
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wood stack on sled",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sled and its stacked cargo are drawn in pure 2D side elevation. The runners and wood logs have no depth or top surface visible from the 3/4 perspective, rendering the entire object completely flat.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5649
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sled loaded with stacked firewood",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sled and its stacked logs are depicted in a flat side elevation with horizontal stripes for logs and a flat runner at the bottom (row 14), showing no foreshortened top surface of the sled bed or logs.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7302
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wood stack on sled",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sled and loaded logs are drawn in pure flat side/front elevation (side profile of runner and horizontal stack of logs with no foreshortened top plane visible, like a 2D side-scroller sprite).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5499
+  }
+ ],
+ "decidedAt": "2026-10-14T01:15:54.502Z",
+ "cells": {
+  "16": [
+   "45f1b2f0c2dce7ba",
+   "eed78cb26bafecca"
+  ],
+  "24": [
+   "01347ebe5da1db04",
+   "10a3080d74daa80e",
+   "16c9cae96cea3931",
+   "1fe7293d9ceacc24",
+   "2cee02e265b07eec",
+   "41bd2ee3dcde954b",
+   "5ed1c147c637b8e5",
+   "920733504458a1c0",
+   "9436327deee76844",
+   "9485796f895d8dac",
+   "955d74df6b2baa6a",
+   "ccee1d027fe095c6"
+  ],
+  "32": [
+   "13f0da7e7dcbb7b2",
+   "790ab4ed660afbce"
+  ],
+  "48": [
+   "5eaac9148404ac61",
+   "7ab2b62800007ac7",
+   "8286af0dffe34d66",
+   "90a5f701d6c1aeb9",
+   "a06bc1bb187721ff",
+   "b8139e9ecf8672b0"
+  ]
+ }
+}

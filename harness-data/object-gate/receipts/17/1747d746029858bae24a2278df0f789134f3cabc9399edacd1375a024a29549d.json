@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1747d746029858bae24a2278df0f789134f3cabc9399edacd1375a024a29549d",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "스키 걸이(스키 넷 세워 둠)",
+ "label": "snow-north/sn-ski-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ski rack with standing skis",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The skis and rack are drawn in flat front elevation with purely vertical parallel bars and a 1px base line, showing no 3/4 perspective depth or horizontal top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4115
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ski rack with skis",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ski rack and upright skis are drawn entirely as a flat 2D side-scroller elevation with no visible top surface on the base, crossbar, or ski tips.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5611
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ski rack with skis standing upright",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire ski rack and standing skis are drawn as a flat 2D front elevation; vertical skis and the horizontal crossbar show no foreshortened top surfaces, and the base is a flat 1px line.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3224
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ski rack with skis standing upright",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in flat 2D side-scroller elevation. The skis and horizontal rack beam show only flat front faces with no foreshortened top surfaces, and the base is a 1-pixel-tall line.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3763
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.506Z",
+ "cells": {
+  "16": [
+   "037f7161d139b6cb",
+   "49d029b05dcaad11"
+  ],
+  "24": [
+   "2b7da7509949905e",
+   "365693dcd2fca1ce",
+   "36e16e086b85aab4",
+   "42087e79b7070ed5",
+   "723771933b5fa94a",
+   "72d31ce7b1f04e88",
+   "a70d842bec1b6662",
+   "ae905c9e595dfe25",
+   "b3acf568c7e14365",
+   "c61b8aef34881b7c",
+   "efc8c65036a9f7fa",
+   "f710cea694fa66f0"
+  ],
+  "32": [
+   "57dc2b297a8dc381",
+   "612b9cfc1bbc3ffe",
+   "dd90b04c214c7252"
+  ],
+  "48": [
+   "0d8f9fd06b50f0fd",
+   "2bf8ebd46abc5699",
+   "540c6891ce04fea2",
+   "b18c53f1de9fd2c5",
+   "d4f9c504ec7ef932",
+   "dc0ff0eff3b74d93"
+  ]
+ }
+}

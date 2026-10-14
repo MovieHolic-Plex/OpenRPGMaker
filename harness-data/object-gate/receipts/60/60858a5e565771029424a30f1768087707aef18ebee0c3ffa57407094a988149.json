@@ -1,0 +1,134 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "60858a5e565771029424a30f1768087707aef18ebee0c3ffa57407094a988149",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "물통과 국자(사우나 곁)",
+ "label": "snow-north/sn-water-barrel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail",
+  "윗면 2행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sauna water bucket with ladle",
+    "kind_matches": false,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a small water bucket/pail with a ladle, not a large structure. However, in terms of 3/4 perspective, the open top is well-foreshortened with 3 rows of visible water (rows 4-6) inside an elliptical opening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail"
+   ],
+   "ms": 9766
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden water bucket with ladle",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Object is a small sauna water bucket and ladle, not a large structure/building. The kind is misclassified.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6214
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sauna water bucket",
+    "kind_matches": false,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a small water bucket with ladle, not a large structure. While it correctly shows an elliptical top opening filled with water (rows 4-6, 3 rows tall), the caller-supplied kind ('structure — large structure: gate, pavilion, sealed door, building') is completely mismatched.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail"
+   ],
+   "ms": 6333
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sauna water bucket with ladle",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a small water bucket with a ladle, not a large structure (kind mismatch). While it properly shows an open elliptical top with water (rows 4-6), the kind category does not match.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5135
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.509Z",
+ "cells": {
+  "16": [
+   "80a35b604ec88b93"
+  ],
+  "24": [
+   "1d0e5f6d6480218e",
+   "2a556db17d7db0c7",
+   "993737f07db1d5b1",
+   "ab6f11a4fa457fa1",
+   "e1780be143e27a32",
+   "e5fbf617549f6d30"
+  ],
+  "32": [
+   "56ecf4e26e0af57f",
+   "5ee6c62014c4c61c",
+   "acd8c61cd40db619",
+   "c353aea787621a64",
+   "f3c4ef6c57954cfb",
+   "fdce41878908c758"
+  ],
+  "48": [
+   "0d2b4c7d4d5f6528",
+   "414b623578f26549",
+   "45fa1bb3e0efbe7b",
+   "4ff94a890a1b0724",
+   "5c051d981b80fcf6",
+   "add2b4d84211c4f0"
+  ]
+ }
+}

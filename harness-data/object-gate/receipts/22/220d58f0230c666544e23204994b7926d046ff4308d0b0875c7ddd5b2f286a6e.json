@@ -1,0 +1,144 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "220d58f0230c666544e23204994b7926d046ff4308d0b0875c7ddd5b2f286a6e",
+ "width": 32,
+ "height": 16,
+ "kind": "structure",
+ "name": "장작 실은 썰매",
+ "label": "snow-north/sn-sled-wood",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sled loaded with cargo and snow",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sled and its cargo are drawn in pure 2D side elevation (like a side-scroller), showing no top surface of the sled deck, runners, or cargo.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7021
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sled loaded with firewood",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sled and stacked logs are drawn in pure side-profile elevation with no top surfaces visible on the sled runners or bed, and round log ends facing directly out like a 2D side-scroller sprite.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4993
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sled loaded with firewood and snow",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sled and loaded logs are drawn in pure side-profile elevation; runner rails are 1px horizontal strips and no top surface of the sled bed, runner tops, or log cylinders is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5575
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sled loaded with firewood",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sled is drawn entirely as a flat 2D side-view elevation (side runner at rows 12-14 with curved tip on the right, flat side profile). Even though there is a small snow cap on top, the sled and log stack show zero top-down depth or foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4592
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.506Z",
+ "cells": {
+  "16": [
+   "6f919da8f8279d5b",
+   "746ef067a1a612fe"
+  ],
+  "24": [
+   "01387a2d248b3f6e",
+   "1e15bf3104119677",
+   "57b67930bb997db9",
+   "6815fee36a81cfe0",
+   "737d9124e769e6a0",
+   "93a11e8eb8d8a4c0",
+   "9d0e3b4867e0dc16",
+   "a6867bc4b8807601",
+   "bf71e11efcd511c5",
+   "ca94c7625d33bb2e",
+   "e72f5fa29e552ab3",
+   "ef3a3babb7bfbae4"
+  ],
+  "32": [
+   "202db84febe6ccc1",
+   "938eddda8f0d9e3a"
+  ],
+  "48": [
+   "2c18664853ef5055",
+   "4f0af19f01a3a185",
+   "69db3705d408f7e9",
+   "7e03db7e03a6fdaa",
+   "918b891bf5e8efcf",
+   "f77f82fd3fc06389"
+  ]
+ }
+}

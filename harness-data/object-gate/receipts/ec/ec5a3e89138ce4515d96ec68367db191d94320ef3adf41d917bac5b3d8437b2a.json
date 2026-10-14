@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ec5a3e89138ce4515d96ec68367db191d94320ef3adf41d917bac5b3d8437b2a",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "모피 노점(모피 더미, 붉은 천막)",
+ "label": "snow-north/sn-stall-fur",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "market stall (counter and awning)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter clearly displays a top surface across rows 18-22 (approx 5px deep) where fur bundles and merchandise rest, above a vertical front panel (rows 23-31). The awning above also shows a snow-covered top area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6085
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fur market stall with awning and counter",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall's canopy has a visible snow-covered top slope (rows 1-5, ~5 rows tall) above the scalloped awning valance, and the counter displays a clear foreshortened horizontal surface (rows 18-22, ~5 rows tall) holding fur piles above its vertical front face (rows 23-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4129
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "market stall with striped awning and counter displaying furs",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall counter shows a clear horizontal top surface (rows 18-22, ~4-5px tall) upon which fur items sit, in front of the vertical stall face (rows 23-30). The awning canopy also depicts the top slope covered in snow (rows 1-4).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5521
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "market stall with striped awning and counter",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall counter top surface is visible from rows 18-21 (4 rows deep) displaying fur stacks, with a south-facing front counter wall below (rows 22-31). The canopy roof also shows its top surface with snow cover (rows 1-5).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12137
+  }
+ ],
+ "decidedAt": "2026-10-14T01:15:54.503Z",
+ "cells": {
+  "16": [
+   "651e7c473037f07f",
+   "75e07961b3862433",
+   "9bc48997b4eac483",
+   "a4b2340757c45b8b",
+   "b230f4a1dd6ce69d",
+   "d40e51a8810e58b6"
+  ],
+  "24": [
+   "2566bcfb27a4cf2d",
+   "3e52b733b0301c84",
+   "a03ae7203bd2d4e9",
+   "b82dfef216e89c8c",
+   "c0a74fccffa013a8",
+   "c7f8be06f32bf80a",
+   "fac8a3b0552162ea",
+   "ff1fe2ad0da16a4e"
+  ],
+  "32": [
+   "20bc131be89399c3",
+   "4b88c23fe8850962",
+   "9bceccb2a3b45314",
+   "bd6ff91dbf1f5595",
+   "c2f7c551ca019431",
+   "eb7c8b3f4bd436dc"
+  ],
+  "48": [
+   "1ac752b30f54c2b1",
+   "c4e30776c723e398"
+  ]
+ }
+}

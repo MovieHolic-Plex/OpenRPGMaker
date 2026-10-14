@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a4214e2fdc3f9cd4c83c0dc264deba34b910169439319a115b53aaf46d43d734",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "오로라 깃발(청록·보라 물결)",
+ "label": "snow-north/sn-banner-aurora",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "banner pole and hanging fabric",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body consists of the hanging fabric banner and pole/crossbar cap. The decorative top cap and banner are drawn in pure front elevation with horizontal lines and no foreshortened top surface visible. Only the small base plinth shows a top surface, which cannot be credited for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6710
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flagpole banner with decorative roof finial",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body consists of a hanging banner on a pole capped by a decorative roof structure. The roof cap and horizontal beam are rendered in flat front elevation with no visible top surface receding away. Only the base plinth has top perspective, which cannot be credited for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5552
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flag banner mounted on a pole with decorative top finial",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (banner, pole, and decorative crest) is drawn in pure front elevation with 0 rows of visible top surface. Although the base plinth shows a top surface, base plinths do not count per instructions.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8130
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flagpole with hanging banner and top cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, banner, and top cap/crossbeam are drawn in pure front elevation with straight horizontal bands and an arch silhouette, showing no foreshortened top surface. The only visible top surface is on the base plinth at rows 40-42, which does not count for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6722
+  }
+ ],
+ "decidedAt": "2026-10-14T01:20:58.721Z",
+ "cells": {
+  "16": [
+   "026c206771bed1a8",
+   "1da233d46ac39fd2",
+   "b592b250fab4b380"
+  ],
+  "24": [
+   "3c3a27a20111743f",
+   "66817e53a54868ad",
+   "6bc38be05ac64d48",
+   "b1eadbab837e2606",
+   "c1bca0deb5183155",
+   "fbe750dc6fb31b19"
+  ],
+  "32": [
+   "001553548341b0ee",
+   "08c79eff482056eb",
+   "0cf9f9cc99c0d28d",
+   "2bd770aded10108f",
+   "5bc474b30c50d42b",
+   "6125bd0ade4b8b3b",
+   "833944da7fb8b865",
+   "8b08dc5cc987bfd7",
+   "b56db7f028469764",
+   "d217491dfab8db6b",
+   "e35cb4e996de6816",
+   "e7fc5f5ad1f08b35"
+  ],
+  "48": [
+   "1453c6d703abd8ea",
+   "a3f55d6b777aac0e",
+   "cbbdc198d3c86259"
+  ]
+ }
+}

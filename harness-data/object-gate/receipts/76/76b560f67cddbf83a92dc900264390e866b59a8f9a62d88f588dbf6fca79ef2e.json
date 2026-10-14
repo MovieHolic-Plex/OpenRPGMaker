@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "76b560f67cddbf83a92dc900264390e866b59a8f9a62d88f588dbf6fca79ef2e",
+ "width": 32,
+ "height": 16,
+ "kind": "round_body",
+ "name": "통 두 개와 상자",
+ "label": "snow-north/sn-barrels",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "two barrels/tubs with white contents/lids alongside a crate",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The two round barrels clearly display their elliptical top surfaces from row 2 to row 6 (5 pixel rows tall), correctly foreshortened in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8551
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "two barrels with white lids/contents",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The two barrels forming the main body show foreshortened elliptical tops (rows 2 to 6, measuring 5 pixel rows tall) viewed from a 3/4 perspective above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6410
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two barrels with cloth covers",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The two barrels make up the main volume of the sprite. Each barrel has a rounded top cap/cover visible across rows 2–6 (5 rows tall), clearly foreshortened from above in the 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9926
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "two barrels and adjacent box",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The barrels show clearly foreshortened elliptical top surfaces spanning rows 2 to 6 (5 pixel rows tall) above their vertical south faces (rows 7 to 15). The adjacent box also displays a foreshortened top surface (rows 4 to 9, 6 rows tall) above a shaded front face (rows 10 to 14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12977
+  }
+ ],
+ "decidedAt": "2026-10-14T01:20:58.721Z",
+ "cells": {
+  "16": [
+   "6fdc8450339d1ac5",
+   "87deaadc33a4725b"
+  ],
+  "24": [
+   "14d113d9b2245dbd",
+   "16c7e874bdeb9c3c",
+   "3d6fefbbadf6beb0",
+   "3e26a851ceba6536",
+   "6eb41f4eccef1610",
+   "ae7998a7ee20557c",
+   "c58659e92b627a91",
+   "c69976df6298fb35",
+   "c70b93cf78df869b",
+   "e89be7a122c9b84c",
+   "ee5bf88414d4720b",
+   "f67f9d7e9323d171"
+  ],
+  "32": [
+   "64ca6472d7a1a8a7",
+   "a6a29a160b3f5638"
+  ],
+  "48": [
+   "29519d66ca1f6f46",
+   "441e6d44063ae403",
+   "780cdcabc2b9f228",
+   "7997fca3f68ddf7e",
+   "a690ea34569d3f9d",
+   "b8739c943fb0be58"
+  ]
+ }
+}

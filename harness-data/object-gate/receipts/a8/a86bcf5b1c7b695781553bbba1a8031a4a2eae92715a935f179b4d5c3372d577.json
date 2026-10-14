@@ -1,0 +1,129 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a86bcf5b1c7b695781553bbba1a8031a4a2eae92715a935f179b4d5c3372d577",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "짐 썰매(나무 날·가죽 덮개 짐)",
+ "label": "snow-north/sn-sled",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cargo bundle on sled platform",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cargo bundle (rows 1–9) is drawn in flat front elevation with straight vertical straps and no distinct top surface foreshortened toward the viewer.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5806
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cargo sled platform with package",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden sled bed clearly presents a top horizontal surface spanning rows 4-10, with the cargo box showing a lit top surface (rows 1-6) and shadowed front face (rows 7-9) facing south.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9433
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cargo box on sled",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The central cargo load has no visible top surface (0 rows of top; straps run vertically across the full height from row 1 to row 9 with only a 1px outline at the top edge), drawn as a flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8180
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cargo sled with leather-covered package",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the cargo bundle and the sled platform clearly show their foreshortened top surfaces and shaded south faces. The cargo top surface spans rows 2-6 (5 rows tall, featuring snow accumulation on top) with its front face on rows 7-9, while the sled platform's top surface spans rows 5-10 with a shaded front face on rows 11-12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12610
+  }
+ ],
+ "decidedAt": "2026-10-14T01:15:54.501Z",
+ "cells": {
+  "16": [
+   "33b7b438aec1eeb5",
+   "45e5d6275c5b7cac"
+  ],
+  "24": [
+   "0271a5880b68e801",
+   "1bb9b87b78816088",
+   "2f6ac6b04e04da62",
+   "a3511c3dcde72e82",
+   "b685f9f28f8891b7",
+   "b776a4bdb18794b8",
+   "c560ccc653c50773",
+   "d12ba341724bbd07",
+   "e8ff4ff5b816599f",
+   "f5f25571e665fac8",
+   "f73ae308e74878f5",
+   "f95819001137edcc"
+  ],
+  "32": [
+   "43873ad1e33f2fdf",
+   "461b4f042bbf9e7d"
+  ],
+  "48": [
+   "19476d8c2afc1f30",
+   "200c0ad70e82ea98",
+   "726ed72b537af373",
+   "9df7a57aa42c01bd",
+   "c3bbfe586534b174",
+   "feab100caf0fc20e"
+  ]
+ }
+}

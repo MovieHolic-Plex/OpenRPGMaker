@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7461a91891bc58f46a857831cd805f84a33eb5bf77fb310f2c204288a1f8610a",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "불 쬐는 돌바닥(그을림)",
+ "label": "snow-north/sn-hearthstone",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "scorched stone floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile showing scorched stone pavers viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5502
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "scorched stone floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile depicting stone pavers with soot/scorch marks across the entire 16x16 surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6063
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "scorched stone floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile viewed from above with a dark scorch mark, occupying the full 16x16 grid.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2584
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "scorched stone floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing stone paving with scorched markings; entire tile is a horizontal ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4670
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:23.952Z",
+ "cells": {
+  "16": [
+   "e5dfe1fa871a1653"
+  ],
+  "24": [
+   "6dfa223d878d0ed2",
+   "823dc1d358b7b197",
+   "b44e83461a056d38",
+   "c5c02a9478e9fe67",
+   "d6ec3cf69b32cbb2",
+   "fe43ac474d290ec2"
+  ],
+  "32": [
+   "25ad2f5b11754a5d",
+   "3b06501057da67d0",
+   "3d2f957d167bcd6b",
+   "45c34fafbdd7f2bb",
+   "7f453a799d476dbd",
+   "8be8b6e9fde1868e"
+  ],
+  "48": [
+   "0a64ec76f60ab802",
+   "2044c9b83d878c9b",
+   "3687659101feb41d",
+   "6be27c12684fbb30",
+   "b42a691932be7c91",
+   "c1dc95fd1ff7a64b"
+  ]
+ }
+}

@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6fb898ebfc66d8096d9117aafd127da260c142bb06e69a8c7294cc3e27a1ff85",
+ "width": 32,
+ "height": 16,
+ "kind": "round_body",
+ "name": "맷돌 두 짝(눕혀 쌓음)",
+ "label": "snow-north/sn-millstones",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stacked pair of stone millstones (맷돌)",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the upper millstone is clearly rendered as a foreshortened ellipse spanning rows 2 to 5 (4 rows tall) including the central grain feed hole, with the south vertical face of both upper and lower stones visible below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7494
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stacked millstones (맷돌)",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the upper millstone is clearly rendered as a foreshortened ellipse spanning rows 2-5 (4 rows tall) complete with the grain hole at row 4, resting above the curved south faces of the stacked stones.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5481
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stacked millstones (cylindrical stone)",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper millstone displays a foreshortened elliptical top surface spanning rows 2-5 with a central hole, followed by front cylindrical faces for both stacked stone layers.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4652
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stacked millstones (cylinders)",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top stone shows a foreshortened elliptical top surface spanning rows 2 to 5 (4 rows tall) complete with a feed hole/socket, sitting atop the front cylindrical faces of the stacked stones.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5981
+  }
+ ],
+ "decidedAt": "2026-10-14T01:15:54.504Z",
+ "cells": {
+  "16": [
+   "0474790b6d953aec",
+   "9e287a57fab73212"
+  ],
+  "24": [
+   "28b694e92679d985",
+   "5f18606383cf3e04",
+   "6607bc4799030b0c",
+   "7394971a2bab7d96",
+   "749c3b68123dd3a0",
+   "79392194dc2eb5bb",
+   "97d6d2a8d4fa8023",
+   "b414616b79486173",
+   "e1acc4a813f392d2",
+   "eb2f20a579e9d799",
+   "f43598fcf1dcc134",
+   "feb6404b99f9164d"
+  ],
+  "32": [
+   "03fdd6b61bd99e96",
+   "06f57c54c5df216a"
+  ],
+  "48": [
+   "5286649efe4d3999",
+   "571485fd7f08b1c3",
+   "64385d4410968f83",
+   "896e454797235b0c",
+   "b901f169f1c7b169",
+   "e6ae7af5972d94c5"
+  ]
+ }
+}

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9876ea54f19657a7a91160068839d4647d6744da822a30cebf1d1cfe19350931",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "등 기둥(쇠 등, 호박색 빛)",
+ "label": "snow-north/sn-lamp-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lantern head and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern cap, head, and base are drawn entirely in flat front elevation with horizontal lines and no foreshortened top surfaces visible (top_rows=0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5950
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lantern head and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top cap of the lantern (rows 1-5) and the lantern housing itself are drawn in flat front elevation with straight horizontal bands and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5612
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lantern head and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern cap (rows 1-6) and frame are drawn as a straight front elevation with no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5169
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lantern head and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern cap, body, and base are drawn with perfectly straight horizontal lines from a pure front elevation, showing no visible top surface or perspective curvature on any horizontal plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5734
+  }
+ ],
+ "decidedAt": "2026-10-14T01:19:07.397Z",
+ "cells": {
+  "16": [
+   "2b8f98b787f3afa7",
+   "63f855b304d17216"
+  ],
+  "24": [
+   "1418515a529225a9",
+   "318dbeaa5586162d",
+   "394f0aab90896af8",
+   "3b291b1b799f2544",
+   "40b68d05819ac1dc",
+   "48e083dab33b3b83",
+   "59515b13515b4714",
+   "6774e9ddcec4d7ed",
+   "78e5337477d8cf22",
+   "b2274762f026dec8",
+   "cf0751cdd5ed61ac",
+   "fecbb91388640eef"
+  ],
+  "32": [
+   "380f7ef601d3e8a3",
+   "c43571905e74e19d",
+   "ec69e173169f84cc"
+  ],
+  "48": [
+   "459edbb42af1ff25",
+   "47f6595edbcde7ef",
+   "719fa9957d53d806",
+   "82e7a4e3c596463f",
+   "cea66f682c7e59dd",
+   "de3e63851c3e763d"
+  ]
+ }
+}
