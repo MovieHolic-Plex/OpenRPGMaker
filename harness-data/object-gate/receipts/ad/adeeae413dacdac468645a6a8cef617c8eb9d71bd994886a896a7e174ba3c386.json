@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "adeeae413dacdac468645a6a8cef617c8eb9d71bd994886a896a7e174ba3c386",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "줄 세우기 기둥",
+ "label": "modern_city/interior/mci-stanchion",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "queue stanchion pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stanchion is drawn in pure 2D front elevation: the top finial is a flat circular silhouette with no top surface visible (top_rows = 0), and the pole extends straight down through the base rather than resting on a foreshortened base seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6372
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "queue stanchion pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The column and top cap/finial are drawn in pure front elevation with no visible top surface (top_rows = 0). The finial is drawn as a flat circle/disk seen straight-on rather than showing its top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7285
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "queue pole / stanchion",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The column shaft and its top finial are drawn in pure front elevation without any visible top surface or cut face at the top end.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7259
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stanchion pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body of the stanchion pole is drawn in pure front elevation with a flat circular ball finial at the top (rows 5-8) and no visible top surface or cut face. While the base plinth shows foreshortening, base plinths do not count for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10034
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:02.705Z",
+ "cells": {
+  "16": [
+   "4768ef7dbb24ca44",
+   "eed739af618bc3a2"
+  ],
+  "24": [
+   "00d4df6b4da68796",
+   "00eb2e4245eea557",
+   "15f3eb0236988f29",
+   "2016d7d6ebbf372b",
+   "21895aba18da68cc",
+   "2f113f6c6b9713ed",
+   "79ed6137e76b427f",
+   "8b523654c7c9e48c",
+   "b4d22acfbbb6d2e4",
+   "c9c078dba445097b",
+   "e89772bd9fb27ff1",
+   "ff52aa4b2de493d5"
+  ],
+  "32": [
+   "0a2e5c20fc304ee7",
+   "0c5a538fb28fa1aa",
+   "7a6f3140007ce609"
+  ],
+  "48": [
+   "0fc9f7834dfc385b",
+   "24cc4616c1f4b348",
+   "5bb7928723dbd891",
+   "bcd97218e06c586b",
+   "cd6b36097bad754f",
+   "d512d21c13b8d844"
+  ]
+ }
+}

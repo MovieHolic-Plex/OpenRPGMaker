@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "61c4589d73d6280eb95396e678c4241f429deceaa804c37e6d54722a1096bd8e",
+ "width": 32,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "노선도 판",
+ "label": "modern_city/interior/mci-route-map",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "framed route map plaque",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted map plaque drawn flat against the wall as appropriate for wall-mounted decor in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6583
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "framed transit map board",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted map board drawn flat against a north-facing wall, which is appropriate for wall-mounted decorations in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5053
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "framed route map board",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted route map board displayed flat against the wall, as permitted for wall-mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5733
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "route map board",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted transit route map board mounted flat against the north wall. As a flat wall-mounted fixture, it correctly displays its front face without requiring a top perspective surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11173
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:11.883Z",
+ "cells": {
+  "16": [
+   "02cc75a432c127b4",
+   "0e4ece6b505e1ae0",
+   "4d24b86c951cc07c",
+   "a06c8a3af2c06bbb"
+  ],
+  "24": [
+   "0a8b93c88cdd39d3",
+   "0af1face8b9bdc9c",
+   "0c371ba43b377834",
+   "102c737e31da9948",
+   "2ab13d5c4a2496f3",
+   "2c7eef5e0364336f",
+   "2c948aefd56258b2",
+   "33a4d450caa69785",
+   "39ffe3fa8210f910",
+   "3ad9c3172d04cd2d",
+   "57474b54652a0a6c",
+   "5e4d6a3cec888b68",
+   "741289aadcecd6d3",
+   "9108375c137e8c2f",
+   "a4a5e3e58a8c0de3",
+   "c35f2f5d57a89b28",
+   "c6ccd4b09f7ec9ba",
+   "f1ec48458bb33632"
+  ],
+  "32": [
+   "6a64335cad56004d"
+  ],
+  "48": [
+   "1c28b5e0ce71296e",
+   "23d02893712223c9",
+   "6056d99819376dbf",
+   "944951eda4f44699",
+   "bb3faeb57f5aa97f",
+   "c56a07e30852eef3"
+  ]
+ }
+}

@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7aa75ac33d347519223dc70e2104510bde37d40e589d9b4fc309a766eda8ff70",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "지하 통로 화강암 판",
+ "label": "modern_city/interior/mci-tile-concourse",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "granite floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "2x2 grid of 16x16 granite floor/ground tiles viewed from directly above as standard flat terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2992
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "granite floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The asset consists of 2x2 flat granite floor/slab terrain tiles viewed from above, perfectly matching the terrain kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3141
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "granite floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor/ground terrain tiles viewed from above with speckling and border tile edges.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3204
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "granite floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "2x2 set of flat granite floor tiles for an underground passage, viewed entirely from above as ground terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2318
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:02.400Z",
+ "cells": {
+  "16": [
+   "2239310915b5fa70",
+   "685884700f3047db",
+   "c764ab582f628583",
+   "d46fb281f461c6ee"
+  ],
+  "24": [
+   "1b79eadda90d3163",
+   "1f449de2fa108083",
+   "32a47410025f7a77",
+   "37f8a5442eb04d73",
+   "3d9d7de6b0812b5d",
+   "47a190c9d3f1528f",
+   "49fd5af5bf42d2e8",
+   "6032154b71038795",
+   "6585827bc1ca5221",
+   "6be93ca4079a43f7",
+   "78b5d4c168241b2f",
+   "8311dca7381887e1",
+   "aa92809619538b73",
+   "b23cf8072b7c1dd0",
+   "b3a6251f44f66794",
+   "b675b356a90e6114",
+   "c4a4668a81af1fbe",
+   "cab20fd59d2a55a9",
+   "cdc9048fb494dc15",
+   "cdd201ea6cafafb9",
+   "d5c4e0a239522752",
+   "d5cadbaf410ad84f",
+   "eb9383d3714607bb",
+   "f2a5be2adcef83a7"
+  ],
+  "32": [
+   "3c3973b91586aed9"
+  ],
+  "48": [
+   "695e0e6da83ceccb",
+   "b673567484e6d4dc",
+   "b8fbb62208fc928b",
+   "ce300ce07000b46b",
+   "ee63b1a30936d518",
+   "fe2917c66164db52"
+  ]
+ }
+}

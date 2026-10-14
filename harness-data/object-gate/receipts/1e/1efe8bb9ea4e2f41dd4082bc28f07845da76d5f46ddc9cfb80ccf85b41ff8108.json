@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1efe8bb9ea4e2f41dd4082bc28f07845da76d5f46ddc9cfb80ccf85b41ff8108",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "매장 흰 비닐 타일",
+ "label": "modern_city/interior/mci-vinyl-store",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floor tile",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor tiles representing white vinyl store flooring; correctly identified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3277
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "store vinyl floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles representing store white vinyl flooring seen from above; completely appropriate for terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3501
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "store vinyl floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor tile terrain showing top-down vinyl flooring surface across all tiles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3388
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "store vinyl floor tiles",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tiles covering the ground surface; valid terrain kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3051
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:02.399Z",
+ "cells": {
+  "16": [
+   "188a6c102edd079b",
+   "1de23d356ef61fc8",
+   "bffeb5e78eb411fd"
+  ],
+  "24": [
+   "022f29d0eb3ad894",
+   "0455743dee628aaf",
+   "066226ba88ffe8fe",
+   "0d9b022b6cecb3b0",
+   "11daffa2ce494ff2",
+   "2effb7ac5d468d97",
+   "445187ef525d026a",
+   "45d33e4a19c79fbd",
+   "63eee57e59ff1272",
+   "69a4997d2d82b208",
+   "6a88a14b19441bdb",
+   "6dcc21223d4e71fa",
+   "7420fe1d7d376057",
+   "7727f66e4e72db58",
+   "7cf63d69caf81c29",
+   "8173e9a61810c68a",
+   "81a8f1392f440881",
+   "87f5fdefb0f55036",
+   "97c40db60cbe2d60",
+   "a1a3f61fe0441c5e",
+   "bf8ecc894c27c200",
+   "d58a625c4403aa24",
+   "efaeabe0699a7167",
+   "f10d785bd96e78b7"
+  ],
+  "32": [
+   "2d77ea374a178783"
+  ],
+  "48": [
+   "1b8188343b88551d",
+   "a78633a13fba28e2",
+   "b4b67fbed15dc04e",
+   "bd7eebcbee3eff6c",
+   "cba1e138228abaa2",
+   "f6068bba56473e5d"
+  ]
+ }
+}

@@ -254,7 +254,9 @@ export function piLayoutRepairPrompt(issues: readonly LayoutQualityIssue[]): str
       + issues.map((i) => `- ${i.mapId}: ${i.problems.join(" / ")}`).join("\n") + "\n"
       + "고치는 법: build_hand_interior_room 을 같은 mapId·replace:true 로 다시 부르며 layout(방 구성 — program 또는 rooms 의 방 종류)을 준다. "
       + "도구가 방마다 알맞은 크기로 배치를 짜고 제작자 예제 방의 가구 한 벌을 심는다. 이미 layout 으로 지었다면 방 수를 줄이거나 layout.rooms 의 w·h 를 줄인다. "
-      + "한 방만 비었다면 그 방 종류에 맞는 가구 한 벌(list_hand_interior_parts room)을 벽을 따라 놓는다. 사용자가 넓은 빈 방(무도회장 등)을 요청했다면 고치지 말고 그 이유를 보고에 적는다."
+      + "한 방만 비었다면 그 방 종류에 맞는 가구 한 벌(list_hand_interior_parts room)을 벽을 따라 놓는다. 사용자가 넓은 빈 방(무도회장 등)을 요청했다면 고치지 말고 그 이유를 보고에 적는다. "
+      // 거리와 실내를 한 칩셋으로 까는 번들(modern_city·jp_city)은 거리 맵도 여기로 온다 — 2026-10-14 실조수가 이 문장을 따라 도쿄풍 거리 60×48 을 로비 10×8 로 덮었다.
+      + "그 맵이 실내가 아니라 거리·야외(도로·보도·건물 외형 키트가 깔린 맵)면 build_hand_interior_room 을 부르지 마라 — 맵 전체가 실내로 바뀐다. 고치지 말고 「거리 맵이라 실내 기준이 맞지 않음」이라고 보고에 적는다."
       + reliefRule + "\n" + HONEST_REPORT_RULE;
   }
   const lines = issues.map(issue => {

@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "78828eb448dfff42e269f0dd6b10801d8e3e37fb1551ecacaca4fa70f154d2f3",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "장바구니 더미",
+ "label": "modern_city/interior/mci-basket-stack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "아가리 안쪽이 안 보임",
+  "아가리 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stack of shopping baskets",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top basket shows an open interior (rows 8-13, 6 rows tall) viewed from above, surrounded by the basket rims (rows 6-15). Below the top basket, the front rims/lips of nested baskets in the stack form the south face (rows 16-20).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7848
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stack of shopping baskets",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stack of shopping baskets is drawn entirely in flat front elevation. The front face with its mesh pattern and the stacked rims underneath are visible, but there is no foreshortened top surface or visible opening into the top basket from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 5669
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stack of shopping baskets",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn in a pure front elevation: the top basket's front mesh face is shown completely flat (rows 7-13), handles stick up as 2D tabs at the top (rows 3-4), and the rims of nested baskets peek out underneath at the bottom (rows 16-21). There is no visible top surface or opening seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 10013
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stack of plastic shopping baskets",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stack of shopping baskets is drawn entirely in pure front elevation: two handles stick up at rows 3-4, the front mesh panel of the top basket occupies rows 6-14, and the nested rims of the baskets beneath it are drawn as horizontal stripes at rows 15-20. There is no visible top surface or top opening looking down into the basket.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 6820
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:11.886Z",
+ "cells": {
+  "16": [
+   "9de2a09bcb26b611",
+   "bb3ba328913f9735"
+  ],
+  "24": [
+   "19d3a1ea3c15f5c6",
+   "4d26d202d8766273",
+   "755fbc137508fb3b",
+   "7c21bf115b0f626e",
+   "dc0f7a0e325f82a2",
+   "e210125fd63d9894",
+   "e4c4095bbc9dfb5e",
+   "e65af3e26aff1216",
+   "ecda6b867426da45"
+  ],
+  "32": [
+   "1b1c5daafa7aeb63",
+   "2d4816f688357b8f",
+   "be321ba31ab5d567"
+  ],
+  "48": [
+   "46db60062d8fa4f3",
+   "76c6fbbf6954cd93",
+   "796c10b6763a48b0",
+   "8cea20e8504bdc44",
+   "a857f83798bc0a51",
+   "d5df48849026cbbf"
+  ]
+ }
+}

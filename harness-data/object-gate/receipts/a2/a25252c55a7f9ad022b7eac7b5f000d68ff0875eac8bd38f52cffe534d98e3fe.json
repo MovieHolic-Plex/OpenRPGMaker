@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a25252c55a7f9ad022b7eac7b5f000d68ff0875eac8bd38f52cffe534d98e3fe",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "병상 칸막이 커튼",
+ "label": "modern_city/interior/mci-curtain",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "folding hospital partition curtain frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The curtain frame and panels are drawn in a flat front elevation. Horizontal bars are only 1-2px outlines with 0 rows of visible top surface, and the casters at the bottom are flat squares.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4826
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "folding hospital partition curtain on caster wheels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The folding partition panels and top frame rails are drawn in pure front elevation with no visible top surface (0 top rows). The top rails are merely 1-2px outline borders without any foreshortened horizontal depth visible from the 45-degree camera angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6589
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "folding hospital partition screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The partition frame and curtain panels have no visible top surfaces (0 px). The frame beams and panel tops are drawn as flat horizontal lines, representing a pure front elevation despite the vertical panel offsets.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4508
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "folding hospital partition curtain frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The partition panels are drawn entirely in front elevation with staggered vertical offsets to indicate folding, but no horizontal top surfaces of the frame rails, curtain headers, or bases are visible (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6946
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:02.705Z",
+ "cells": {
+  "16": [
+   "282501ae85051c38",
+   "561e3330898b639e",
+   "d1b1b51c8151f3f7",
+   "e5e5fa6dbcb328d4"
+  ],
+  "24": [
+   "09bb9ef1e73251e5",
+   "0ab5935145b3f0fc",
+   "0d3cbb1321bab6b2",
+   "1e6e12ff4552763f",
+   "1f610ea90a73877a",
+   "247a1cfd9cfd34d6",
+   "2afc5991b15549ab",
+   "358d86c415589179",
+   "363145fccebdc69e",
+   "499a2269b8fb4d38",
+   "506ef3598361ac64",
+   "5a00def3f760e3ab",
+   "683b0c348adeacbe",
+   "692c77fa24631d2f",
+   "7cf7d0328902af17",
+   "9ab4045892c4df98",
+   "a5433b5d3da034d1",
+   "a7d3783643e599d5",
+   "a7ea166f04d6fe00",
+   "d14d59fd8b22efa5",
+   "dee9bd9793e1a178",
+   "e569ed0d5b22e143",
+   "ea353f55c2211164",
+   "f7de654824c0172c"
+  ],
+  "32": [
+   "604a5bb4f495a3cd"
+  ],
+  "48": [
+   "2ba7a05d1b59d47d",
+   "65216e815fd0f452",
+   "7096e5b3b6baee1f",
+   "7ee2b32a88cb8cbf",
+   "c4b836663a90f0ac",
+   "fc8aca5525fce622"
+  ]
+ }
+}

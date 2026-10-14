@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8ba82becd6e8af63bc64ece0e14b2dd461a2d1a7b8578fe2f9f124361bcdedbf",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "집 벽(크림 벽지·나무 몰딩)",
+ "label": "modern_city/interior/mci-wall-home",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall face tile with cream wallpaper and wood molding",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical interior wall terrain tile with wallpaper pattern, chair rail, and baseboard molding; correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6536
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting an interior wall face with wallpaper pattern and wooden baseboard/chair rail molding.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4724
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "interior wall face with cream wallpaper and wood molding",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a standard vertical interior wall surface with chair rail and baseboard molding.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4517
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall face terrain tile featuring cream wallpaper and wooden molding/baseboards, correctly textured for interior wall terrain in a 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5066
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:02.401Z",
+ "cells": {
+  "16": [
+   "21ff5ec1ba3047dd",
+   "bc48b29c63463225",
+   "c07da0e269766c12",
+   "f8dd156a30242ecb"
+  ],
+  "24": [
+   "04cb8a4f668d2b9e",
+   "0746c3c9dcc95e25",
+   "0ec4152a7d3b386d",
+   "13565816a90c2497",
+   "18f42923db2ff5ed",
+   "194ed0e3eb2f060a",
+   "25b5e2c90f60a8e8",
+   "30e5194578212e34",
+   "433bc9f08fb0991d",
+   "48e68b37601768d8",
+   "6cbee8b2a9898b39",
+   "72be38b46533f60a",
+   "7f9d6509c53997bb",
+   "8070860257df33fc",
+   "89646d499bef07bd",
+   "9e0263a74e0680fd",
+   "b3725f0e70070934",
+   "b522435794fb9177",
+   "b666189390688621",
+   "bf62ab0fe9ff5b82",
+   "ec1fe83257d22464",
+   "ec7c401d8056b968",
+   "f3d6cd392bebd23b",
+   "fadbe1a35b347bc7"
+  ],
+  "32": [
+   "37ead2fef34b788e"
+  ],
+  "48": [
+   "17f5321db30f350c",
+   "454157554c5087f8",
+   "54c363929dcbedfe",
+   "78372353337246c7",
+   "886d8e08b6a6b2b1",
+   "c01a5a5d709f7d90"
+  ]
+ }
+}

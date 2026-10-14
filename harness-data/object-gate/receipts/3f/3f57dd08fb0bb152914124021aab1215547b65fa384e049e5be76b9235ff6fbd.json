@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3f57dd08fb0bb152914124021aab1215547b65fa384e049e5be76b9235ff6fbd",
+ "width": 48,
+ "height": 32,
+ "kind": "seat",
+ "name": "대기 의자(셋)",
+ "label": "modern_city/interior/mci-wait-bench",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bench of three waiting chairs",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each chair displays a foreshortened horizontal seat surface seen from above (rows 12 to 20, roughly 9 source pixels tall) in front of the upright backrest.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9137
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "three-seat waiting bench",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The waiting chairs show their vertical backrests facing south (rows 4–11) and the horizontal seat surfaces viewed from above (rows 12–23, 10 interior pixel rows tall) mounted on a support beam and legs, consistent with standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 20253
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "waiting chairs (3-seat bench)",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat surface of each chair is drawn foreshortened from above, occupying roughly 9-11 pixel rows (rows 12-20/22) with a front face/edge highlight at the bottom, matching standard 3/4 top-down perspective for seating.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12240
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "waiting chairs (set of three connected seats)",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chairs face south in standard 3/4 view: the backrests stand at the back (rows 4–11), and the seat surfaces are visible from above (rows 13–19, 7 rows tall) leading down to a shaded 3px south front edge (rows 20–22).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11204
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:02.705Z",
+ "cells": {
+  "16": [
+   "544c8f41cc402363",
+   "a76dbadd8e49a776",
+   "c4590f167629bc95",
+   "fdc1a1945fa93b78"
+  ],
+  "24": [
+   "027eccf7e21fb7ce",
+   "3db492b00975dd4c",
+   "479e3a7748ba8f11",
+   "7c1840440b184a50",
+   "8bdb129e112f7ed6",
+   "907e8b44fb8b3ee4",
+   "c4d7917c2778a496",
+   "d0a5f250445a424d"
+  ],
+  "32": [
+   "00f133dcf9a9c39b",
+   "5bda39a9041829ed",
+   "a27a0bb788f1d183",
+   "a2fe826adf0b0f22",
+   "b25b600fa2fe3113",
+   "dbfa122606506c77"
+  ],
+  "48": [
+   "4592123f63f1b9a0",
+   "77966128662a58dc"
+  ]
+ }
+}

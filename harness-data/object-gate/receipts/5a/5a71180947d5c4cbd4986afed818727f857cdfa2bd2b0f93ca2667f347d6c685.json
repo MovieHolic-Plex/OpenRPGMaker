@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5a71180947d5c4cbd4986afed818727f857cdfa2bd2b0f93ca2667f347d6c685",
+ "width": 16,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "세로 진열대",
+ "label": "modern_city/interior/mci-gondola-v",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical display shelf / cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the shelf at row 8 consists solely of a 1px dark border outline with no visible horizontal top surface, drawn as a flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3881
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall vertical display shelf",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet/shelf starts at row 8 with only a 1px dark border line and immediately transitions into the front-facing shelves at row 9, lacking any foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3442
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vertical display shelf / rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the shelf consists only of a 1px border at row 8 with no visible horizontal top surface foreshortened from above, rendering the entire display shelf as a flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3024
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall vertical display shelf / bookcase",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the shelf consists only of a 1px dark border at row 8 with no visible horizontal top surface; the entire piece is drawn in pure flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3868
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:11.885Z",
+ "cells": {
+  "16": [
+   "00e38c225b37bac6",
+   "054e018f659afa25",
+   "8a23861830bf9b60"
+  ],
+  "24": [
+   "1901cafe4d1b834d",
+   "77b1ad6f4fa6c1d1",
+   "942a31c6aaa75207",
+   "bd681e8821180ca0",
+   "e2be8864e3f86683",
+   "e749b704662dcdba"
+  ],
+  "32": [
+   "018763ca73a92206",
+   "0dd99482421be370",
+   "161de9041390a918",
+   "27401a377d9297fe",
+   "279d2a1e13017a3a",
+   "3b13b2f3119c261f",
+   "3c5460d341b94c7d",
+   "78f6033360d1436d",
+   "7911b0d934a5aa85",
+   "8476ee36776bd594",
+   "9afed09a7294ee9a",
+   "afaf662fb09605b0"
+  ],
+  "48": [
+   "3f2befbfacd00f13",
+   "780ff4e4de5d7c9f",
+   "bdea35996ad7e1b7"
+  ]
+ }
+}

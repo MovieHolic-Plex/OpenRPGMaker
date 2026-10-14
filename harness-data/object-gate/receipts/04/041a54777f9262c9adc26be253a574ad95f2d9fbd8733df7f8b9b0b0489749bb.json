@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "041a54777f9262c9adc26be253a574ad95f2d9fbd8733df7f8b9b0b0489749bb",
+ "width": 32,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "도시가 보이는 큰 창",
+ "label": "modern_city/interior/mci-window-city",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "window with city view and window sill",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted window looking out onto a city skyline, featuring a window sill at rows 25-28 with a visible top surface. Fits wall_mounted category perfectly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6245
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "window with city view",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted large window showing a city skyline, mounted flat against the north wall with an attached bottom sill.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6403
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "window with city view and sill",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The window is wall-mounted showing a night cityscape, complete with a 2px top surface on the lower window sill (rows 25-26) above its front edge (rows 27-28).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6145
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "window with city view",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted window looking out onto a city skyline, drawn flat against the wall with an optional bottom sill ledge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6977
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:02.401Z",
+ "cells": {
+  "16": [
+   "4f93099162d3178e",
+   "58dab62dd65d7ee5",
+   "817ce86a47d680fd",
+   "fbe5f6b2e1468c0d"
+  ],
+  "24": [
+   "0007b3b849ec933d",
+   "0ac01f3b30a6dae5",
+   "15e0d569bc21ef3c",
+   "57546ed63429e270",
+   "5bb6d659bd211ab0",
+   "5bd030c8da2ae8a1",
+   "5c153afc66b41a62",
+   "5d8f69c431e85b0f",
+   "6b0faf081e92436f",
+   "86004423fa00497e",
+   "8a120afe8522d59b",
+   "8eb274a844338cd8",
+   "93ae4597cd291de9",
+   "9cbaae89c1ccbc6f",
+   "b6f61afadcafcc54",
+   "c380d43305788149",
+   "c42ce46ea7991c4f",
+   "c6ec91c002799d5f",
+   "dd154ebfe1b88072",
+   "e4b8747898f68777",
+   "ead6f9366f22b5b0",
+   "f527ab282f523736",
+   "fe1d4150b9cd1ad3"
+  ],
+  "32": [
+   "c2336e052b9c1b7f"
+  ],
+  "48": [
+   "297d57460bec4100",
+   "391179244d0432b3",
+   "55df0e041097103d",
+   "833febdd90b02bc5",
+   "b6defc7add1a3870",
+   "f85e8dca525a66ee"
+  ]
+ }
+}

@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d0c3d8a3192e9b0f347d35a08be40d12fbf2bb0e49f3bd96d1cb8b297b038f2c",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "진열대(양면)",
+ "label": "modern_city/interior/mci-gondola",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall display bookshelf with multiple shelves of books",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bookshelf is drawn completely from a flat front view starting at row 6 with no visible top surface showing depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3793
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "double-sided display shelf / tall bookcase",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bookshelf unit starts around row 6 with only a 1px outline/border at the top and no visible horizontal top surface (top_rows = 0). The shelves and books are drawn strictly from a front elevation angle with no top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4329
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "display shelf / bookshelf",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bookshelf begins at row 6 with a single 1px outline over the top row of books; there is no visible top surface foreshortened from above, and all shelves are drawn in a completely flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4021
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bookshelf / display rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the bookcase has only a 1px outline at row 6 with no horizontal top surface visible, depicting the unit in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4366
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:11.885Z",
+ "cells": {
+  "16": [
+   "1a9e68c6efc68068",
+   "26d34a5b2a5e781a",
+   "4d085d7700df0d52",
+   "ee9a177053a48701"
+  ],
+  "24": [
+   "043f6119994dddf2",
+   "1677f0996d03c8d4",
+   "19224cf93edf36dd",
+   "1b4bb3613dbac1f3",
+   "21fa3dbb2fe8794d",
+   "22a4dbfd7aaf4cc2",
+   "28d587d171d53cdc",
+   "3e50d99d44cafdfa",
+   "6c22afa4d38b303c",
+   "86ed78e402deab72",
+   "886931a96c880dd0",
+   "8e02b3f38556c03f",
+   "9deb5031c6fdb146",
+   "9faddfc2bfd9883f",
+   "aa58f6e288b5cef7",
+   "aca1e26a26e5bcc3",
+   "b6502f0fb0a45561",
+   "b738a6ee6655ade3",
+   "be33a7cbc4946971",
+   "d51924a10654e6f0",
+   "dd6cdc9562e1cea3",
+   "e55dd711c6251e06",
+   "ea9652a992bbee2a",
+   "fb43ea816f3492d7"
+  ],
+  "32": [
+   "e5d71201cf8f9b63"
+  ],
+  "48": [
+   "51fda207c9e0b08e",
+   "6eb0473e4ec123f5",
+   "7bc92513cc7b4e25",
+   "c68a90a684ba9d4b",
+   "c7a2544b1f7626a9",
+   "d4f1f83c7bea3d3f"
+  ]
+ }
+}

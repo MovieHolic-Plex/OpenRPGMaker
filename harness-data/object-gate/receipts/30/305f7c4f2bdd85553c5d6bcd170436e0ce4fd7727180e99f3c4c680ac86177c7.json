@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "305f7c4f2bdd85553c5d6bcd170436e0ce4fd7727180e99f3c4c680ac86177c7",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "낮은 서류 캐비닛",
+ "label": "modern_city/interior/mci-filing",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "low filing cabinet",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cabinet spans rows 11 to 16 (6 rows tall), showing a clear foreshortened horizontal surface with objects placed on it, above a south-facing front with drawers.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3338
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "filing cabinet",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cabinet is clearly visible spanning rows 11 to 16 (6 pixel rows) with objects resting on it, above the front-facing drawers.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4086
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "low filing cabinet",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cabinet is clearly rendered across rows 11 to 16 (6 pixel rows deep), supporting items placed on top, with the 4 drawers of the front face occupying rows 17 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5273
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "low filing cabinet / drawer unit",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet top surface is clearly foreshortened and visible from row 11 to row 16 (6 pixel rows tall) supporting a potted plant and paper tray, above the front drawer face extending from row 17 to row 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4536
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:11.884Z",
+ "cells": {
+  "16": [
+   "1cfc72976051a390",
+   "7d918628e33bcadc",
+   "8776164e7b7c151f",
+   "899d7912b45184fd"
+  ],
+  "24": [
+   "04b66e1e1b438513",
+   "0cbf8e283e4cbb22",
+   "0efb8aff374d73ef",
+   "1e9dff39cad708c7",
+   "30057aef8f014f64",
+   "489ecee8aed43513",
+   "499b95cf07ee58ce",
+   "6c3c553b0ef432de",
+   "71d9f511ab4ff0be",
+   "72dfd6d7985e70f9",
+   "761a68cad82f3cd3",
+   "786984accc5cbcc0",
+   "795f1a86ad0a9a76",
+   "87f17f57e0a29144",
+   "8861cdd1c87596ad",
+   "8d15a6a4481dda47",
+   "9b44067dd075cae1",
+   "9c5cca02ed69a848",
+   "9cf4dac323be95db",
+   "9e7fa258754c7942",
+   "a7777c41d6d07e9b",
+   "c52d03ad4b832784",
+   "f78945e2d705145a",
+   "fdbdceba96baa1b9"
+  ],
+  "32": [
+   "fed55ad18f373c22"
+  ],
+  "48": [
+   "0427a4e7b7f69809",
+   "3f8bcc930546290e",
+   "51079a59b304b014",
+   "6034da2a72c675a5",
+   "ab3645b49fecb944",
+   "d699ac10e41af124"
+  ]
+ }
+}

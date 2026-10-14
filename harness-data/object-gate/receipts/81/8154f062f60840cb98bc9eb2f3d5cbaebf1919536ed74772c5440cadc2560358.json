@@ -1,0 +1,133 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8154f062f60840cb98bc9eb2f3d5cbaebf1919536ed74772c5440cadc2560358",
+ "width": 16,
+ "height": 32,
+ "kind": "round_body",
+ "name": "드럼통 둘",
+ "label": "modern_city/interior/mci-drums",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "two closed oil drums (blue and red)",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both drums clearly show their top circular lids foreshortened as ellipses spanning rows 8 to 14-15 (roughly 6-7 pixel rows tall), complete with drum bungs at row 11, lighter top-surface illumination, and curved front rims highlighted in light gray.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13096
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "two metal drums / oil barrels side by side (blue and red)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The drums are drawn in pure front elevation: the top edge is merely a rounded silhouette arch with no visible elliptical top surface (0px top surface), the body ribs at rows 17 and 23 are completely flat horizontal lines rather than downward curves, and the base at row 26 is a completely straight horizontal line.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11569
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two upright oil drums",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The two drums are drawn in a flat front elevation. The top rim at rows 7-8 is drawn as a flat horizontal line with rounded corners, showing no elliptical top surface (0 visible top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8455
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "two upright oil drums (blue and red)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylinders are drawn in flat front elevation: the bottom base is a straight horizontal line (row 26), the body ribs (rows 18 and 23) are flat horizontal lines, and there is no elliptical top surface visible at the top (row 7 is just a 1px outline cap).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11228
+  }
+ ],
+ "decidedAt": "2026-10-14T01:18:12.125Z",
+ "cells": {
+  "16": [
+   "82383a138c5be770",
+   "9abfa7ac3353b2c9"
+  ],
+  "24": [
+   "0d391e9cf36fcaf2",
+   "5cab87e89ba5c67e",
+   "6cb138adefd8d361",
+   "722dd0b6cd39f178",
+   "98a1aa67c6d8faab",
+   "a3ec0c7acaa1b931",
+   "b3fef1015185a916",
+   "c9155a85d6dbd3f8",
+   "ffeecab5eaa57f88"
+  ],
+  "32": [
+   "203aa69e9fabbc41",
+   "47c68263bcc788a6",
+   "f54c9aa2608c8afc"
+  ],
+  "48": [
+   "26ca59ab7001234d",
+   "49d1852804c1a249",
+   "59a4744c488db6c1",
+   "698af4367c305588",
+   "6f45b4b35dd77d2c",
+   "ebc6340cd92a7b79"
+  ]
+ }
+}

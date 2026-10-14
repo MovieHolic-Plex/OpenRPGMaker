@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bc6571b19da2420467489c3b539c4ca296afd8e9a6b23ab6d2eddcc1162e17ae",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "병원 연녹 시트 바닥",
+ "label": "modern_city/interior/mci-vinyl-hospital",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hospital vinyl sheet floor tile",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full-tile light green vinyl floor texture with speckles; correctly represents a flat terrain surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4133
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hospital linoleum floor tile",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat hospital floor sheet/tile texture filling the entire canvas; correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4892
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "floor surface",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless hospital light green vinyl/sheet floor texture covering the entire tile as a flat horizontal ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3074
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hospital vinyl sheet floor",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless light-green speckled hospital floor tile texture; flat terrain tile with no standing object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4123
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:02.400Z",
+ "cells": {
+  "16": [
+   "0ead3d96f70379f6",
+   "3d43b6fd5687d50b",
+   "bad597166d65ef38",
+   "cfc89b8c05fdbadb"
+  ],
+  "24": [
+   "00cf1d7dff4c70c4",
+   "12bb54c1dc83c250",
+   "162d0ec5566776f3",
+   "172e92f614025063",
+   "29e0023c1507740b",
+   "393225925c5043c1",
+   "3ddf6002dd649596",
+   "49e701ed36ad182e",
+   "626e794001f6cde6",
+   "6b9e472ebd47bbcc",
+   "6c39efce1730f979",
+   "762ec04db3bb6966",
+   "813293a0de77daa4",
+   "97b3cec59e6d4fe1",
+   "a2722a3dd858c651",
+   "a7e87136ed6e1237",
+   "b4d90d9bf7f526c6",
+   "ba5047e45cf031b1",
+   "cb27d876ea2ff182",
+   "d39d4745a808ca8e",
+   "d6ba7a1cbc46378a",
+   "d856b138276dac3a",
+   "e1bffa9594f0c407",
+   "f743ba62351d01b5"
+  ],
+  "32": [
+   "6290924daef9cc14"
+  ],
+  "48": [
+   "2ff59c85ef65bc54",
+   "52ee3aa9dd5ecbb8",
+   "6a137ac8f20297c6",
+   "6ed697c3d172cc9f",
+   "a54b380fe4d45e03",
+   "b44e93187c0ea662"
+  ]
+ }
+}

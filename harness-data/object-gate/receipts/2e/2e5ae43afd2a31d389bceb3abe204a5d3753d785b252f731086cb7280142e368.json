@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2e5ae43afd2a31d389bceb3abe204a5d3753d785b252f731086cb7280142e368",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "오르는 계단",
+ "label": "modern_city/interior/mci-stairs-up",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "staircase",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ascending staircase shows alternating step treads (top horizontal surfaces, 3px tall) and risers (front vertical faces, 2px tall) in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5721
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone staircase",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The staircase is drawn in standard 3/4 top-down perspective with each step clearly showing both a horizontal tread surface (3px tall) and a vertical riser face (2px tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5677
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flight of stairs",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The staircase shows alternating horizontal treads (~3 pixel rows each) and vertical risers (~2 pixel rows each) in classic 3/4 top-down perspective, clearly displaying horizontal step surfaces seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6532
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ascending stone staircase",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The staircase clearly alternates between visible top tread surfaces (each 3 rows tall) and vertical riser faces (2 rows tall) in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5431
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:05.388Z",
+ "cells": {
+  "16": [
+   "1792d3b88036b1d6",
+   "1d05c2558bff3fa9",
+   "de23745b43c57ffa",
+   "f498d0a3a350c9f5"
+  ],
+  "24": [
+   "01edc65074833a46",
+   "08444458ef3ff9f5",
+   "0c37d5ff6b9e1ea6",
+   "143b53dd85a5529e",
+   "1e1ff7596d703a35",
+   "22995e4310ed53e3",
+   "31c33becc9c5e87c",
+   "335537cb2b900215",
+   "3a6780e4bed82bc5",
+   "41190fe6b69fcd3f",
+   "44bb93f69436f9d3",
+   "4a4bb5a3d4f33860",
+   "4f2ceb9dc5078995",
+   "5c82449582a4527b",
+   "6f31886d66f720fd",
+   "792e031896444991",
+   "900d04888ca5015f",
+   "a0dae602e291b6ae",
+   "a26d1b7abe3beed1",
+   "a8e6cba51af16da1",
+   "b60e0b54602d6ca3",
+   "d52b7c1ec3ba16a6",
+   "d5e296baf9ab04b3",
+   "f58a80839f0d49f9"
+  ],
+  "32": [
+   "fb1c433209032a26"
+  ],
+  "48": [
+   "0e58cad2b6127ed3",
+   "5641405677d90cbd",
+   "96b93f890ecfd805",
+   "e45fe8417e03bc7b",
+   "fa8ea1c54bb14419",
+   "fc83efdb9df18ad3"
+  ]
+ }
+}

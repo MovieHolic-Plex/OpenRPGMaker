@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "96ad43f268b4284cfb55303e2212fa21b60a46ce70adfd1d3612e9dded071614",
+ "width": 48,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "나무 식탁·탁자",
+ "label": "modern_city/interior/mci-t-wood",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden table",
+    "kind_matches": true,
+    "top_rows": 22,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop top surface is clearly visible from row 2 to row 23 (22 pixel rows), with front apron from row 24 to 26 and legs visible beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3361
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden table",
+    "kind_matches": true,
+    "top_rows": 22,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop top surface spans rows 2 to 23 (22 rows tall), followed by a 3-row front edge/apron (rows 24-26) and legs below, correctly representing a 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3945
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden table",
+    "kind_matches": true,
+    "top_rows": 22,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the table spans rows 2 to 23 (22 rows), showing the horizontal wood grain surface, followed by a 3-row front edge (rows 24-26) and legs at the bottom.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4038
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "table",
+    "kind_matches": true,
+    "top_rows": 22,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the table clearly extends from row 2 to row 23 (22 pixel rows), with a 3-row front edge (rows 24-26) and legs visible below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3388
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:05.389Z",
+ "cells": {
+  "16": [
+   "025365f38d8574e7",
+   "53ef97e1839ce75c",
+   "ae25ead6905d5f55",
+   "bcf529e7f03d24ba",
+   "be0034e3b9fa14c1",
+   "f1009f7f55702287"
+  ],
+  "24": [
+   "24961b2270bf8b64",
+   "5482f61a11dc1705",
+   "9694d1e2e0a78102",
+   "9b3d808c13f41bf2",
+   "ab9c2f5f9dc65f6c",
+   "af744460028766f4",
+   "bd41e3cfc891b3b6",
+   "eff01575dcb2f63b"
+  ],
+  "32": [
+   "1db72906509d43b2",
+   "222d1b2ce1f4148a",
+   "34b2884a11d0d76b",
+   "643a199e78098ecb",
+   "92430adef97fe609",
+   "b3f6c36518287c30"
+  ],
+  "48": [
+   "585240ec99c63651",
+   "b5e174935bbdf59f"
+  ]
+ }
+}

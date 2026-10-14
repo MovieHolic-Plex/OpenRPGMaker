@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1cf437c18b303351e11a774951194cae361fbbd6db8135dd0a1b923596548013",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "우편함",
+ "label": "modern_city/interior/mci-mailboxes",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "apartment mailboxes / postal locker unit",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the unit is visible across rows 3-6 (4 rows deep) with a light highlight on the front lip (row 6) casting a shadow onto the front face at row 7.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7783
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "mailboxes unit",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the mailbox unit is rendered across rows 3-6 (4 rows tall) in a lighter tone with an edge highlight at row 6 before the front face begins at row 7.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7205
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "mailboxes bank",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 3-6 form a 4-pixel-tall lighter horizontal top surface with an edge highlight at row 6, above the darker south-facing front surface containing the mail slots.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6647
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "apartment mailboxes unit",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the mailbox unit is clearly rendered across rows 3-6 (4 source pixel rows) in a lighter tone with an edge highlight, separating it from the front face containing the mail slots.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6845
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:05.387Z",
+ "cells": {
+  "16": [
+   "485edfe9ade78fd0",
+   "5c50a23fefffc860",
+   "63fcb6130106cc86",
+   "ec1b56f3691799f7"
+  ],
+  "24": [
+   "013f3c4328b63dfc",
+   "0446de712c938e26",
+   "12c6ce8cb7a312eb",
+   "57117f516ac3f1e8",
+   "58571d49a6957bbc",
+   "5e95b7a8ccf38e24",
+   "62d93bf68269b54f",
+   "64cdededd3cf2f36",
+   "747d344f0558fcc2",
+   "75df6de476286580",
+   "7af454fec7a3f13d",
+   "85097e72ad55735a",
+   "95d6eefd09784ae7",
+   "99ce9b45778276cd",
+   "a30fb38f21cc213f",
+   "b20f3b5a11a2f01b",
+   "b29d4576094df624",
+   "c3f6655d5648790d",
+   "c52aff73d3e17de0",
+   "c542023fafcd0ab4",
+   "d03de6b7635e4316",
+   "e2f588152f60af9b",
+   "e31e3c28747bc1e4",
+   "ece40a367263aa9c"
+  ],
+  "32": [
+   "c86d4033ce4933aa"
+  ],
+  "48": [
+   "598929fd9874eb46",
+   "6f58f161312b37e8",
+   "a84d77d67f3cd629",
+   "c0f7fba7f5ca7734",
+   "dc78943adae5ce4e",
+   "e6a7664a3bbba365"
+  ]
+ }
+}

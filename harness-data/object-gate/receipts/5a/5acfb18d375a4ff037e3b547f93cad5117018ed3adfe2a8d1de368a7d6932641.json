@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5acfb18d375a4ff037e3b547f93cad5117018ed3adfe2a8d1de368a7d6932641",
+ "width": 48,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "창고 선반",
+ "label": "modern_city/interior/mci-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "warehouse shelving unit with wooden boxes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire shelving unit and the boxes stored on it are drawn in a flat 2D front elevation (side-scroller style). The horizontal beams are only 3 pixels tall with simple linear edge shading and show no horizontal shelf depth/top surface, and the boxes have no visible top faces beyond a 2px horizontal highlight band.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7456
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "warehouse shelving rack with stacked boxes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storage rack and the boxes on it are drawn in pure front elevation with no visible horizontal depth; shelf beams and posts are flat bars, and no shelf floor planes or box top surfaces (foreshortened horizontal planes) are visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6223
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "industrial warehouse shelving unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire shelving unit is drawn in pure front elevation typical of a 2D side-scroller. Neither the upright posts, horizontal beams, shelf surfaces, nor the rack top show any top plane foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6317
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "warehouse storage rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storage rack and the boxes on it are drawn in pure front elevation. The vertical posts terminate flatly at row 1 without top surfaces, the horizontal beams are flat 2-3px horizontal stripes without visible shelf surfaces, and the boxes are flat front-facing rectangles.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5637
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:59.361Z",
+ "cells": {
+  "16": [
+   "0156cca41d2c81e3",
+   "9648fb39551221c5",
+   "96f2107fb6e52afb",
+   "9fdc24165bd18fc5",
+   "b14066d532c19fdd",
+   "c5d85ff3d366aa26"
+  ],
+  "24": [
+   "19d238b7fa0b27a1",
+   "2500ed27a7e98d46",
+   "6def8a2a76484d96",
+   "811313e98b69612e",
+   "84190d4d3f771e29",
+   "bd719032214a766e",
+   "cb7d4d2eb7e12fd5",
+   "fc03615a0d1c887a"
+  ],
+  "32": [
+   "0104eee9b7386686",
+   "0ac8340a79af3f8a",
+   "318c392ee0d7148a",
+   "8ac7943178f496b4",
+   "ddcb73c09e43f501",
+   "e6f6e138f1f50eb0"
+  ],
+  "48": [
+   "376ad49522985f5e",
+   "760eee5ae1346717"
+  ]
+ }
+}

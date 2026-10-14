@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2fc029cf938bcc9943cd738eedfedb80414b44fece7b059a057cb534ab03d860",
+ "width": 16,
+ "height": 32,
+ "kind": "organic",
+ "name": "키 큰 화분",
+ "label": "modern_city/interior/mci-plant-tall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "plant pot and foliage",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pot is drawn almost purely from the front with an 8-row flat front face and only a shallow 1-2px soil opening at rows 20-21. Additionally, the outline is glitched with a floating black line and transparent gap at column 3.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10427
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pot and topiary plant",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pot is 10px wide but its opening/soil ellipse is only 1-2px tall, while the front face and surrounding stand frame are drawn completely flat as a pure 2D front elevation (side-scroller style) without proper top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10870
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "potted plant",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pot clearly shows its top opening in 3/4 perspective with a 2-row elliptical soil surface visible inside the rim (rows 20-21), with the stem planted in the center and the south face of the pot extending downward.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6654
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "potted plant",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pot has an elliptical opening at rows 20-21 showing 2 rows of brown soil inside before transitioning to the south-facing vertical pot wall (rows 22-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6919
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:11.885Z",
+ "cells": {
+  "16": [
+   "3fda1dd483188e2c",
+   "b16870d0e8583b01"
+  ],
+  "24": [
+   "00d5db51aca7ff08",
+   "1b958f524bad45d4",
+   "267d04fbb9ec28ef",
+   "309d55532c00b73b",
+   "3a999e3aece4f22c",
+   "7e641cb1b01d5139",
+   "9f80d87a73dbcef9",
+   "af687e8da2a85212",
+   "bdebd41a06bbb9e0",
+   "ebd42bfd297eaeca",
+   "efeebebe499da569",
+   "f6d86f0977eced62"
+  ],
+  "32": [
+   "0f783a660587135c",
+   "b0609064bb65fa42",
+   "cd7e5285f534d08f"
+  ],
+  "48": [
+   "0e2c537762bfad8f",
+   "4cf47b938dc0673f",
+   "682099bb67e27c24",
+   "c939e038246fcd28",
+   "cfa52643c5389d29",
+   "f9352e9cc500ef35"
+  ]
+ }
+}

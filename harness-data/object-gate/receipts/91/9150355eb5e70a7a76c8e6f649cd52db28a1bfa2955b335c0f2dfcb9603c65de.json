@@ -1,0 +1,127 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9150355eb5e70a7a76c8e6f649cd52db28a1bfa2955b335c0f2dfcb9603c65de",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "사무용 의자(남향)",
+ "label": "modern_city/interior/mci-chair-office-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "office chair",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn entirely in a flat front elevation: the caster base is a flat horizontal bar with wheels underneath, the seat is rendered as a front-facing cushion slab without an upward-facing seat surface, and the backrest and armrests show no top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10429
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "office chair seat cushion and backrest",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chair faces south with the backrest positioned north (rows 8-19) and the seat cushion clearly extending forward as a horizontal surface viewed from above (rows 20-23, ~4 pixels tall) above the central stem and caster base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4708
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "office chair",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chair faces south, showing the front of the backrest (rows 8-19) and the top surface of the seat cushion foreshortened from above (rows 20-23, about 4 rows tall) resting on a central post and caster base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6639
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "office chair",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn in pure front elevation: the backrest, armrests, seat cushion front edge, and wheeled base are all viewed straight-on horizontally with zero visible top surfaces (neither the seat top nor the backrest top is foreshortened from above).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10574
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:11.884Z",
+ "cells": {
+  "16": [
+   "d63c2839d8dc3c3e",
+   "fa3dfce89303a0d6"
+  ],
+  "24": [
+   "3636d76aeb1afdc6",
+   "3837bdda4df192ef",
+   "406e56e45d6cb136",
+   "794012a3711b5b61",
+   "922f2dc2dd41cc94",
+   "9d66d8558c2c2e0b",
+   "a3715afaced2a023",
+   "b7a0b516c9d42866",
+   "c0ff9b72ffd9067c"
+  ],
+  "32": [
+   "501baad1b41a59f1",
+   "57663bbd0677d89b",
+   "db6f698138e68c1e"
+  ],
+  "48": [
+   "42462f760f510232",
+   "47e02f9a2763c390",
+   "91a829d6c9d5c856",
+   "9aa9e1643e148f42",
+   "cb95c9c0b389815b",
+   "cfcb0ac1554d273e"
+  ]
+ }
+}

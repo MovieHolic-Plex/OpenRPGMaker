@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2c219aa018efbc6e65d6572aca28e7edf745bf82b47b9c7c44ddb5551e7a9f36",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "사무실 벽(밝은 회색)",
+ "label": "modern_city/interior/mci-wall-office",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "office wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a light gray office wall face with trim and baseboard. As a terrain surface tile, it correctly represents a vertical wall face without a top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7832
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "office wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical office wall surface with molding and baseboard, correctly categorized as terrain (wall face).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6088
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "office wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a vertical office wall face (terrain tile) featuring wall texture, chair rail/molding, and a dark baseboard at the bottom.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6439
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "office wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a light gray office wall face with horizontal molding and baseboard.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5172
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:02.400Z",
+ "cells": {
+  "16": [
+   "b9d452db31998f94",
+   "cc8f9976e1ce1ba5",
+   "dc8ba8737ff806c3",
+   "f6483fa9334b4454"
+  ],
+  "24": [
+   "174a74af1ff834cc",
+   "17bfc09016a0d64b",
+   "1f6e5a1117c8cce5",
+   "2bc4cc54c2b5d355",
+   "3048fcf66156954f",
+   "32217a2867eae2df",
+   "3ff2243076108d04",
+   "4560d05954f5fd40",
+   "4f1d79674fb285a4",
+   "52d7222b7071afa9",
+   "58ec702ceff96e5d",
+   "5f9fb675a82337d9",
+   "60326fabb9bef471",
+   "6e1e9bff61a2e694",
+   "766031c8c6e8026e",
+   "89b0121f13958acd",
+   "9217023b5bab86bf",
+   "95cdd57ee5c30d18",
+   "9c5c28c20041aa62",
+   "a6616b68bf80bf5b",
+   "d985c5e9b29f1286",
+   "ee1fda9cb8c4273b",
+   "f455d3a5c0ab7b5a",
+   "fc8b073aa3e3dda6"
+  ],
+  "32": [
+   "a0482f425a3e630c"
+  ],
+  "48": [
+   "02b0c1a245fad6e2",
+   "243a21afc8443112",
+   "4a57f6ccb85a5a29",
+   "7e75285b50d00f15",
+   "c32ea27fd36fc505",
+   "c7abf75056d5670b"
+  ]
+ }
+}

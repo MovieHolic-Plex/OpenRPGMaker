@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "627ee3f32161afa2699ab699273cd5870ca03d15dcfa6856eacf52624d5505cc",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "진열 냉장 케이스",
+ "label": "modern_city/interior/mci-pastry-case",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "refrigerated display counter",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The display case and counter base are drawn in pure front elevation: the wooden base shows only its front face, the glass display section is viewed straight-on from the front, and there is no visible top surface foreshortened from above (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6220
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "display refrigerated counter case",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire 32px height is drawn in pure front elevation: the lower half shows vertical wooden cabinet doors (rows 17-29) and the upper half shows the vertical glass display window (rows 3-14). There is no visible top surface foreshortened from above (only a 1px border at row 2).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8682
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "display refrigerated case counter",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The display case and wooden counter base are drawn in straight-on front elevation with no visible top surface foreshortened from above (top frame is a 1px line at row 2, and the divider rim is 1-2px at rows 15-16).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5233
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "refrigerated display case counter",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The display case consists of a glass upper section (rows 2-15) atop a wooden base cabinet (rows 16-29), both drawn entirely in pure front elevation. The top of the unit has only a 1px dark border outline at row 2 with no visible horizontal top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8829
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:53.421Z",
+ "cells": {
+  "16": [
+   "2d292cdc0ae7cdf8",
+   "37ddbac8df827bb3",
+   "8ada5f860ebd03ea",
+   "f8a603d05c13847f"
+  ],
+  "24": [
+   "1872c2fec8ebcc8d",
+   "21167bc9e99a066b",
+   "2a74240ab170bee6",
+   "3cf577c43a189a92",
+   "5aed5da6647370a6",
+   "71c790a22e14fc1e",
+   "775ac8e51a5b5320",
+   "841c1088872a121e",
+   "85bf4fe57cede2f1",
+   "873cb59641dd4943",
+   "8b2fd9b24ff0de74",
+   "a429823ef8f6f2cc",
+   "ace4bcb76a15c88c",
+   "aeaad42fd6e7fc5a",
+   "b93dc89165b70840",
+   "c053faab37a3fcf5",
+   "c97744f6d1939a21",
+   "d1499189fb83a95b",
+   "d83149005dccdded",
+   "dfa8821fdfd74c42",
+   "ecf9fcb5cf791fc2",
+   "ee3d40acf8218dec",
+   "f5010381e071267d",
+   "fcb0cf004985aff2"
+  ],
+  "32": [
+   "a101727e926ced41"
+  ],
+  "48": [
+   "1b20e03d048f9043",
+   "26ad14ba88b6fca9",
+   "4be9d9398f616168",
+   "55dc111183fae274",
+   "8825e7052c420cfd",
+   "e170d9e0d645aae4"
+  ]
+ }
+}
