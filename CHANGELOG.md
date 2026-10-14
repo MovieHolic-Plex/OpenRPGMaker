@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.217.0 — 2026-10-14
+
+### 기능
+
+- **object-gate** — one gemini-4-argon pass judges 3/4 view and Beodeul-level style; profile 473db36f963972c9 calibration rejected (#2567) (`d44c144`)
+
+### 수정
+
+- **beodeul** — dungeon composer v2 — rimmed ceiling autotile, 2D layout, varied dressing (adversarial QA) (#2568) (`7fd4fcb`)
+
 ## 0.216.2 — 2026-10-14
 
 ### 수정
