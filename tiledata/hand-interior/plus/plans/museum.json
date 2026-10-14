@@ -166,12 +166,12 @@
    "y": 1
   },
   {
-   "id": "case gem",
+   "id": "accessory case",
    "x": 21,
    "y": 6
   },
   {
-   "id": "case crown",
+   "id": "crown pedestal",
    "x": 24,
    "y": 6
   },
@@ -271,14 +271,9 @@
    "y": 13
   },
   {
-   "id": "dragon skull",
+   "id": "plinth fossil",
    "x": 25,
    "y": 15
-  },
-  {
-   "id": "rope post",
-   "x": 29,
-   "y": 16
   },
   {
    "id": "plinth amphora",

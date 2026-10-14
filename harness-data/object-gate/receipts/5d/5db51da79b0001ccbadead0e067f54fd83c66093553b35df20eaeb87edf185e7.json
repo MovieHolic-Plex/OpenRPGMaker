@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5db51da79b0001ccbadead0e067f54fd83c66093553b35df20eaeb87edf185e7",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "포문 보는 함포(북쪽 선체 벽) (cannon north)",
+ "label": "atlas_biome_interior/plus/cannon north",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cannon and carriage facing north (into north gunport)",
+    "kind_matches": true,
+    "top_rows": 22,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Viewed from behind and above in 3/4 top-down perspective, looking north along the barrel (rows 2-23) and carriage cheeks (rows 14-23), with the south face/transom of the carriage visible at rows 24-27.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12876
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "naval cannon pointing north on carriage",
+    "kind_matches": true,
+    "top_rows": 22,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cannon barrel and carriage point horizontally north away from the camera along the deck; the top of the barrel is visible from row 2 to 24 with cylindrical highlights, the tops of the carriage cheeks span rows 14 to 23, and the south rear face of the carriage is shown at rows 24 to 28.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9280
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "naval cannon pointing north towards a hull gunport, including barrel and carriage",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cannon faces north (away from the camera). The south/rear face of the carriage is visible at the bottom (rows 25-28), while the barrel and carriage cheeks extend northwards and are viewed from above across rows 3-23, consistent with 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14254
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cannon and wooden carriage pointing north",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Viewed from the south looking down at 45 degrees, the cannon points away (north). The top surface of the carriage cheeks and the barrel are fully visible extending northward across rows 2–23, while the south-facing rear of the carriage forms the front face at rows 24–28.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9770
+  }
+ ],
+ "decidedAt": "2026-10-14T05:37:53.905Z",
+ "cells": {
+  "16": [
+   "6e7aa8ce05f5b5f5",
+   "78a243ebd9dd8b89"
+  ],
+  "24": [
+   "2f820e8a47bed672",
+   "430903edd47d99b4",
+   "47a0bb06ba2d427a",
+   "49262733ba202534",
+   "50571cc6881d52f1",
+   "671fa60b76d3bb41",
+   "680c9abe410467b8",
+   "8707c37d7addcfa9",
+   "ad803f9c9da05797",
+   "c64b49fbd0391144",
+   "c67e60bee8d00d22",
+   "fad35efdeb7f8c82"
+  ],
+  "32": [
+   "206955333eec9f93",
+   "666970a05326efb4",
+   "7f89b1160dbeb65c"
+  ],
+  "48": [
+   "08addbde2ac8ebf8",
+   "212a02decd61eccf",
+   "21e06885ed061a2f",
+   "2580e32d0ee47b33",
+   "4228f029b1751923",
+   "83d917dd43c884ae"
+  ]
+ }
+}

@@ -18,40 +18,58 @@ sys.path.insert(0, os.path.join(iplib.ROOT, 'scripts', 'content', 'hand-interior
 
 OUT = os.path.join(iplib.TD, '_gate', '_rooms')
 # 벽면 → 그 벽 밑에 까는 바닥(둘이면 왼쪽 반·오른쪽 반). 바닥 다섯·벽면 넷을 모두 한 번 이상 품는다.
-ROOMS = [('hull', ('deck', 'hold'), '범선 선체 판자 벽 방(갑판 판자·짐칸 판자 바닥)'),
-         ('cabin', ('deck',), '선장실 판벽 방(갑판 판자 바닥)'),
-         ('gallery', ('parquet',), '미술관 벽지 전시실(쪽모이 마루)'),
-         ('arenawall', ('sand', 'sandstone'), '투기장 사암 벽 마당(모래·사암 포석 바닥)')]
+ROOMS = [('hull', ('deck', 'hold'), 'wood', '범선 선체 판자 벽 방(갑판 판자·짐칸 판자 바닥)'),
+         ('cabin', ('deck',), 'wood', '선장실 판벽 방(갑판 판자 바닥)'),
+         ('gallery', ('parquet',), 'default', '미술관 벽지 전시실(쪽모이 마루)'),
+         ('arenawall', ('sand', 'sandstone'), 'rock', '투기장 사암 벽 마당(모래·사암 포석 바닥)')]
 W, FLOOR_ROWS = 10, 4
 
 
-def room_image(reg, wid, floors):
-    import bake
+def _sheet_tile(n):
+    """v5 시트(덧붙이기 앞부분은 불변)의 칸 n — 천장 띠는 v5 칸을 그대로 쓴다."""
+    global _SHEET
+    try: _SHEET
+    except NameError: _SHEET = Image.open(os.path.join(iplib.ROOT, 'public/assets/atlas-interior/interior-chipset.png')).convert('RGBA')
+    return _SHEET.crop(((n % 48) * 16, (n // 48) * 16, (n % 48) * 16 + 16, (n // 48) * 16 + 16))
+
+
+def room_image(reg, wid, floors, ceiling):
+    """조립기(builder.ts handInteriorStructure)와 같은 규칙으로 방 한 칸을 짓는다: 평면 맨 윗줄 공허 → 천장 띠(벽 윗면) → 벽면 두 줄 → 바닥.
+    좌우·아래 막힌 칸도 실내에 닿으면 천장 띠다(비트 = 아래1·위2·왼4·오른8·위가 공허16)."""
+    import bake, json
     from palette_snap import snap
+    spec = json.load(open(os.path.join(iplib.ROOT, 'src/assets/handInteriorSpec.json')))
+    ceil = spec['ceilings'][ceiling]; void = spec['void']
     wd = reg.walls[wid]
-    H = 1 + 2 + FLOOR_ROWS                      # 맨 윗줄 = 막힌 천장 띠(어두운 판), 벽면 두 줄, 바닥
-    im = Image.new('RGBA', ((W + 2) * 16, (H + 1) * 16), (0, 0, 0, 0))
-    dark = Image.new('RGBA', (16, 16), (28, 20, 24, 255))
-    for x in range(W + 2):
-        im.paste(dark, (x * 16, 0)); im.paste(dark, (x * 16, H * 16))
-    for y in range(H + 1):
-        im.paste(dark, (0, y * 16)); im.paste(dark, ((W + 1) * 16, y * 16))
-    for x in range(W):
-        for row in (1, 2):
-            im.paste(bake.wall_tile(wd, x % wd['cols'], row, x == 0), ((x + 1) * 16, row * 16))
-    for y in range(FLOOR_ROWS):
-        for x in range(W):
-            fid = floors[0] if len(floors) == 1 or x < W // 2 else floors[1]
-            fd = reg.floors[fid]
-            sh = (1 if y == 0 else 0) | (2 if x == 0 else 0)
-            im.paste(bake.floor_tile(fd, x % fd['cols'], y % fd['rows'], sh), ((x + 1) * 16, (3 + y) * 16))
+    GW, GH = W + 2, 2 + 2 + FLOOR_ROWS + 2          # 공허 1 + 천장 띠 1 + 벽면 2 + 바닥 + 아래 천장 띠 1 + 공허 1
+    inn = lambda x, y: 1 <= x <= W and 2 <= y <= 3 + FLOOR_ROWS
+    top = lambda x, y: 0 <= x < GW and 0 <= y < GH and not inn(x, y) and any(inn(x + dx, y + dy) for dx in (-1, 0, 1) for dy in (-1, 0, 1))
+    im = Image.new('RGBA', (GW * 16, GH * 16), (0, 0, 0, 0))
+    for y in range(GH):
+        for x in range(GW):
+            if inn(x, y):
+                if y in (2, 3):
+                    t = bake.wall_tile(wd, (x - 1) % wd['cols'], y - 1, not inn(x - 1, y))
+                else:
+                    fy = y - 4; fx = x - 1
+                    fid = floors[0] if len(floors) == 1 or fx < W // 2 else floors[1]
+                    fd = reg.floors[fid]
+                    sh = (1 if fy == 0 else 0) | (2 if not inn(x - 1, y) else 0)
+                    t = bake.floor_tile(fd, fx % fd['cols'], fy % fd['rows'], sh)
+            elif top(x, y):
+                nv = 1 if y == 0 else (0 if inn(x, y - 1) or top(x, y - 1) else 1)
+                b = (1 if inn(x, y + 1) else 0) | (2 if inn(x, y - 1) else 0) | (4 if inn(x - 1, y) else 0) | (8 if inn(x + 1, y) else 0) | 16 * nv
+                t = _sheet_tile(ceil[b])
+            else:
+                t = _sheet_tile(void)
+            im.paste(t, (x * 16, y * 16))
     return snap(im)[0]
 
 
 def rooms(reg):
-    return [dict(label=f'atlas_biome_interior/plus/room-{wid}', kind='structure', img=room_image(reg, wid, floors),
-                 name=f'{ko} — 바닥·벽면 조립(위에서 본 3/4 방 한 칸)', covers=[('wall', wid)] + [('floor', f) for f in floors])
-            for wid, floors, ko in ROOMS]
+    return [dict(label=f'atlas_biome_interior/plus/room-{wid}', kind='structure', img=room_image(reg, wid, floors, ceil),
+                 name=f'{ko} — 바닥·벽면을 조립기와 같은 천장 띠(벽 윗면) 사이에 조립(위에서 본 3/4 방 한 칸)', covers=[('wall', wid)] + [('floor', f) for f in floors])
+            for wid, floors, ceil, ko in ROOMS]
 
 
 _CUR = None

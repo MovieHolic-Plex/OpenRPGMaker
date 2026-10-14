@@ -24,11 +24,11 @@ arena_stands 관중석 · arena_floor 모래 마당 · gladiator_cell 검투사 
 바닥 deck(갑판 판자) · hold(짐칸 판자) · parquet(쪽모이 마루) · sand(투기장 모래) · sandstone(사암 포석). 벽면 hull(선체 늑골 판자) · cabin(선장실 판벽) · gallery(미술관 벽지) · arenawall(사암 벽).
 
 ## 가구(분류별 id)
-- museum(29): plinth, plinth amphora, plinth helmet, plinth fossil, case gem, case crown, case sword, case scroll, relic cabinet, wide cabinet, painting landscape, painting sea, painting still life, painting grand, bronze warrior, stone sphere, lion statue, rope barrier 2, rope barrier 3, rope post, bench museum, skylight light, dragon skull, plaque stand, geode stand, shield display, mosaic panel, painted sarcophagus, map case
-- ship(36): airship helm, anchor, cargo netted, chart table, hammock, rope coil, sea chest, ship bell, ship cannon, ship wheel, porthole, stern windows, captain bed, captain desk, barrel stack, cask rack, crate stack, sack pile, galley stove, pot rack, dice barrel, cannon east, cannon west, cannonball pile, powder keg, gunport, mast, capstan, ship ladder, deck grate, binnacle, instrument shelf, rope pin rail, life ring, anchor chain, ship bunk
+- museum(25): plinth, plinth amphora, plinth helmet, plinth fossil, case sword, case scroll, relic cabinet, wide cabinet, painting landscape, painting sea, painting still life, painting grand, bronze warrior, stone sphere, lion statue, rope barrier 2, rope barrier 3, bench museum, skylight light, plaque stand, geode stand, shield display, mosaic panel, painted sarcophagus, map case
+- ship(35): airship helm, anchor, cargo netted, chart table, hammock, rope coil, sea chest, ship bell, ship cannon, ship wheel, porthole, stern windows, captain bed, captain desk, barrel stack, cask rack, crate stack, sack pile, galley stove, pot rack, dice barrel, cannon north, cannonball pile, powder keg, gunport, mast, capstan, ship ladder, deck grate, binnacle, instrument shelf, rope pin rail, life ring, anchor chain, ship bunk
 - arena(19): tier seat 3, tier back 3, arena fence 3, portcullis, portcullis open, gate winch, gladiator rack, shield rack, arena banner, training dummy, archery target, armor bench, stone bench, water bucket, beast cage, arena emblem, war drum, laurel trophy, curule seat
 
 ## 배치 규칙
 - 그림·명판·깃발에는 글자가 없다. 그림(hang)은 벽면 윗줄, 두 칸 이상 띄워 같은 높이로 건다. 진열장·받침대는 관람 통로(2칸 이상)를 남기고 줄을 맞춘다. 줄 기둥(rope barrier)은 귀한 전시물 앞 한 줄.
-- 배 안: 대포는 옆벽(서쪽 cannon west · 동쪽 cannon east)에 붙여 포문(gunport)과 같은 줄, 포탄·화약통은 대포 곁. 해먹·침상은 벽 쪽, 가운데는 통로. 돛대(mast)는 방 가운데 한 개. 배 감방은 창살 줄(bars)로 나누고 문 칸을 비운다.
+- 배 안: 대포(cannon north)는 북쪽 선체 벽 바로 아래 첫 바닥 줄에 두고 그 위 벽면 윗줄에 포문(gunport)을 건다, 포탄·화약통은 대포 곁. 해먹·침상은 벽 쪽, 가운데는 통로. 돛대(mast)는 방 가운데 한 개. 배 감방은 창살 줄(bars)로 나누고 문 칸을 비운다.
 - 투기장: 관중석 의자(tier seat)는 줄마다 같은 간격, 사이 통로를 남긴다. 모래 마당은 비워 둔다(문장 emblem 하나·과녁·허수아비 정도). 철창문(portcullis)은 북쪽 벽 앞.

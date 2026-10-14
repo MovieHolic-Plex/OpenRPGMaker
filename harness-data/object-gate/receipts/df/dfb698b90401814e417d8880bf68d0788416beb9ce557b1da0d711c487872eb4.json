@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dfb698b90401814e417d8880bf68d0788416beb9ce557b1da0d711c487872eb4",
+ "width": 32,
+ "height": 32,
+ "kind": "round_body",
+ "name": "통 더미(2칸) (barrel stack)",
+ "label": "atlas_biome_interior/plus/barrel stack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stacked barrels",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top barrel and both lower barrels show clearly foreshortened elliptical top caps (the top barrel's lid spans rows 3 to 7, measuring ~5 rows within its rim).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3691
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "barrel stack",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stack of barrels clearly shows elliptical top caps from the 3/4 overhead perspective. The top barrel has a visible lid surface spanning roughly rows 3-7 (~5 rows tall), and the lower barrels also display visible elliptical tops.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3762
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stacked barrels",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The barrels feature clearly visible elliptical top surfaces (approx. 5 rows tall on the top barrel from back rim to front rim) showing proper 3/4 perspective foreshortening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10761
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "barrel stack",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each barrel in the stack clearly displays an elliptical top surface (barrel head) about 4 rows tall (e.g. rows 4-7 on the top barrel, rows 16-19 on the bottom barrels) recessed within the chimes, viewed from a 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7633
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.625Z",
+ "cells": {
+  "16": [
+   "1478c1b135f10129",
+   "2fc2927dc5fdc5fd",
+   "9073fc0306ae34af",
+   "af07d8cf4e7b3f9c"
+  ],
+  "24": [
+   "0023b55169132f2b",
+   "01611dcbdbafb021",
+   "16eff67af8b51886",
+   "197dc340ecd1270e",
+   "2453a7639094264a",
+   "48387635d4f42bec",
+   "5d4f6543a5f16d79",
+   "6194a9fd0da9fe28",
+   "6363f7ffebd3c474",
+   "6435c4a52f6bd4b4",
+   "65e6609487e36a78",
+   "66127a1c1c82fc4b",
+   "6c9cbb247040a7ff",
+   "80ac51b61f0e49a7",
+   "814569eef89c8014",
+   "853aadf0bf9e7453",
+   "aadca0a636733be8",
+   "b68a6a0c95c08c38",
+   "e1bc80f9e2e13b4b",
+   "e4a62dbf2e70d944",
+   "e5d90468c1b87175",
+   "e845897e90a01a9f",
+   "ee5f4f7cece840c8"
+  ],
+  "32": [
+   "b914f30284927d53"
+  ],
+  "48": [
+   "288be49ba6ff6457",
+   "3751f3005ce0f0ef",
+   "4d0f89f832000a0a",
+   "6c5823c0c1919f58",
+   "b69435569f353172",
+   "d87a496955951201"
+  ]
+ }
+}

@@ -373,11 +373,7 @@
      2
     ],
     [
-     "case crown",
-     1
-    ],
-    [
-     "case gem",
+     "accessory case",
      1
     ],
     [
@@ -386,6 +382,10 @@
     ],
     [
      "case sword",
+     1
+    ],
+    [
+     "crown pedestal",
      1
     ],
     [
@@ -454,23 +454,15 @@
    "museum_natural",
    [
     [
+     "plinth fossil",
+     2
+    ],
+    [
      "relic cabinet",
      2
     ],
     [
-     "dragon skull",
-     1
-    ],
-    [
      "geode stand",
-     1
-    ],
-    [
-     "plinth fossil",
-     1
-    ],
-    [
-     "rope post",
      1
     ]
    ]
@@ -641,12 +633,12 @@
    "ship_gundeck",
    [
     [
-     "cannon east",
-     2
+     "cannon north",
+     4
     ],
     [
-     "cannon west",
-     2
+     "gunport",
+     4
     ],
     [
      "cannonball pile",

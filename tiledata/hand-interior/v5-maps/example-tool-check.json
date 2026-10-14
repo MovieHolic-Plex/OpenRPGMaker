@@ -165,7 +165,7 @@
   "map": "museum",
   "errors": 0,
   "warnings": 0,
-  "reachable": 294
+  "reachable": 296
  },
  {
   "map": "ship",
@@ -177,6 +177,6 @@
   "map": "ship_hold",
   "errors": 0,
   "warnings": 0,
-  "reachable": 219
+  "reachable": 223
  }
 ]

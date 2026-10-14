@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "89cac9118966c2ebc59b93aa9b6584dcd9bedde9ccd16527db719745bb25cfbe",
+ "width": 32,
+ "height": 48,
+ "kind": "low_furniture",
+ "name": "선장 침대(붙박이) (captain bed)",
+ "label": "atlas_biome_interior/plus/captain bed",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "captain bed (built-in bed unit with drawers below and canopy above)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed mattress and bedding are viewed from above across rows 19-34 (16 source pixels deep), showing the horizontal sleeping surface and pillows in classic 3/4 view above the front-facing lower drawers.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7183
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "built-in captain's bed with drawers below and upper canopy",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed surface (mattress, pillows, and blanket) is clearly rendered from a 3/4 top-down angle across rows 19 to 34 (16 rows deep), sitting atop a front-facing drawer base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4796
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "built-in captain bed unit with canopy, mattress/bedding, and under-bed drawers",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mattress and bedding are fully visible from above across rows 19-34 (16 rows), showing pillows and blanket in proper 3/4 top-down perspective. The upper canopy also shows a 4-row top surface (rows 8-11).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4465
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "captain bed (built-in bed with bottom drawers and upper canopy)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mattress top surface is visible from above across rows 19-34 (16 rows) with pillows and blanket shown in top-down perspective, resting atop the front-facing drawers (rows 36-44). The top canopy also shows a 4-row top surface (rows 8-11).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 29701
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.625Z",
+ "cells": {
+  "16": [
+   "1519673f75127275",
+   "242f896f0df89e5e",
+   "4a8c197465525ccf",
+   "6a3964d4818895d2",
+   "ba51f61208dbe298",
+   "d42405ea85542708"
+  ],
+  "24": [
+   "23b7704f4e362cb4",
+   "3884cb939c402dd9",
+   "5dbb848d956613ed",
+   "87e8f20a11853f32",
+   "8af8882494151c2b",
+   "aeaf3910aeacfa28",
+   "b87c2b70f1ae5b0a",
+   "df727d9904f42c9f",
+   "e53ec790f8659db3",
+   "eacfe6dc82b20878",
+   "eb0e689fcde11ee4",
+   "fa9736970c976b42"
+  ],
+  "32": [
+   "1d385e885e3a24e8",
+   "2964c46693f6113c",
+   "3ba1d29645e535a7",
+   "fb5d02036c28398b"
+  ],
+  "48": [
+   "1fab343c72d65ec5",
+   "b9a7903624f5c9dc",
+   "cdfc5da40a825b55"
+  ]
+ }
+}

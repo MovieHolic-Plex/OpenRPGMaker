@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "480cb7c6afaccf0ef81f1e26d52957af82fc5a2ad532b809cb0198e2c6f86fc3",
+ "width": 16,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "바다 그림 (painting sea)",
+ "label": "atlas_biome_interior/plus/painting sea",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "framed painting",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a picture in a frame mounted flat against a north wall, which is explicitly permitted to be flat under the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6605
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "framed picture",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted picture frame drawn flat against the wall, which is valid for wall-mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4477
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "framed painting",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a picture frame mounted flat on a wall depicting a sailboat at sea; wall-mounted pictures are permitted to be drawn flat.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3731
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "framed picture",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted picture frame drawn flat against the wall, permitted for wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3581
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.623Z",
+ "cells": {
+  "16": [
+   "46730576ccf23101",
+   "be069e85cf6175da"
+  ],
+  "24": [
+   "0fea03ca17eb7625",
+   "45e4e63e17dd382b",
+   "45f01a674b44ff61",
+   "4bb1ab45e2aa2ed8",
+   "66962a6709c461ef",
+   "69d55e3d304d69e5",
+   "7f33a28c22c90f5c",
+   "9b34b10bc0b0dd07",
+   "fe9115994214435f"
+  ],
+  "32": [
+   "013258b86ff043c5",
+   "3047893c5e001f0c",
+   "53d69c3aa4eae856"
+  ],
+  "48": [
+   "17e49d53992a388f",
+   "2353691520090bf6",
+   "302e268b100bd570",
+   "57be34cc73c50aa7",
+   "905613b913b8cf94",
+   "a69f04e5929be321"
+  ]
+ }
+}

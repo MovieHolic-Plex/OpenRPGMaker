@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8402ab041c6b029a5042103d724a1dec798baeb47caf859fff4d42d88f5b0216",
+ "width": 16,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "구명 부표 (life ring)",
+ "label": "atlas_biome_interior/plus/life ring",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "life ring hanging from a small hook",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted life buoy hung flat against the vertical wall face; permitted to be front elevation as a wall-mounted decor item.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5248
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lifebuoy ring hanging from a wall peg",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Life ring is mounted flat against the wall from a hanging peg; flat orientation is correct and expected for wall-mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8705
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "life ring hung on wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted life ring hanging vertically from a loop, correctly depicted flat against a south-facing wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6248
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lifebuoy ring hanging from a wall hook/rope",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted life ring hanging from a rope mount; correctly depicted flat against the vertical wall surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3993
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.628Z",
+ "cells": {
+  "16": [
+   "56621113a7f381bd",
+   "967158be4242ad64"
+  ],
+  "24": [
+   "0753b7078b8df97a",
+   "102c14f8e8843e6e",
+   "1e7d8bcbe2c5912f",
+   "5f6506bf7aa87892",
+   "665917b151df0fab",
+   "704e60edf164b75a",
+   "78a31b3082b072bb",
+   "ad7edfca424239b8",
+   "f30bf6bb5550e67e"
+  ],
+  "32": [
+   "1156e2063a5bab92",
+   "a05deaecd5435e2c",
+   "c49779173bc46faa"
+  ],
+  "48": [
+   "051ab0af38f8c10d",
+   "35dd6cb489849e90",
+   "3b1d550472827a3c",
+   "9b8a5052f9b5b63e",
+   "cb7e243f8b719bba",
+   "f0b923e6e20ed9e6"
+  ]
+ }
+}

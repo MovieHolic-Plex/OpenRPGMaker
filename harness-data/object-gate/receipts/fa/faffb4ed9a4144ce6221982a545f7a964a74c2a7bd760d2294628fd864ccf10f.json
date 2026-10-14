@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "faffb4ed9a4144ce6221982a545f7a964a74c2a7bd760d2294628fd864ccf10f",
+ "width": 32,
+ "height": 16,
+ "kind": "seat",
+ "name": "돌 걸상(2칸) (stone bench)",
+ "label": "atlas_biome_interior/plus/stone bench",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone bench seat",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bench slab is clearly foreshortened and visible from above across rows 3–7 (5 pixel rows), followed by a 2-pixel front rim (rows 8–9) and the supporting legs/front face (rows 10–13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9237
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone bench seat slab and base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bench seat is visible from row 4 to row 8 (5 pixel rows tall), with the front face and legs extending from row 9 to row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3150
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone bench seat slab and base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bench slab is clearly visible from above, spanning approximately 5 source pixel rows (rows 3–7) above the front edge (rows 8–9) and supporting legs/base (rows 10–13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6454
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone bench seat slab and supports",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal seating surface of the bench is clearly visible from above across rows 3 to 7 (5 source pixel rows deep), with the front slab edge and vertical supports visible below down to row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6384
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.630Z",
+ "cells": {
+  "16": [
+   "056f8d72cc007887",
+   "f770719731087945"
+  ],
+  "24": [
+   "007c9c79f84df64d",
+   "02b1b9fdee7f175e",
+   "3a8b3c2c27905d52",
+   "3c00242dd7aee005",
+   "70a93febf6e0f3c6",
+   "83bc9417bff4f627",
+   "a5223c9b900abe12",
+   "c96157b95a726312",
+   "d1d5eb7901a82e7d",
+   "da89c1c4bfed8163",
+   "de5465884f6a8624",
+   "fe415a7163c99fe7"
+  ],
+  "32": [
+   "0ead45fd1837a7bd",
+   "bfc1ee84fbd18b9c"
+  ],
+  "48": [
+   "04171cb878f57e5c",
+   "2ab1236e792dc2fc",
+   "89a421239d53cfb7",
+   "a4344f89949a3c78",
+   "b2819ccfa2faab86",
+   "d9b5089c8fdc969b"
+  ]
+ }
+}

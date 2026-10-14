@@ -1,0 +1,129 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0e0093d96cd67e45a55838cf61792829359971cf8e017352e6a6d4740468698a",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "관람 줄(2칸) (rope barrier 2)",
+ "label": "atlas_biome_interior/plus/rope barrier 2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rope barrier with brass stanchions and velvet rope",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stanchion bases are foreshortened ellipses displaying approximately 3 rows of visible top surface around the posts (rows 22-24), correctly angled for 3/4 top-down perspective rather than a flat front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8450
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rope barrier stanchions",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The circular stanchion bases are properly drawn as ellipses showing around 3 rows of top surface (rows 22-24) viewed at a 3/4 downward angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11786
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brass stanchion posts with velvet rope",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The circular stanchion bases are drawn as foreshortened 3/4 ellipses showing roughly 3-4 pixel rows of top surface (rows 22-25) where the pole mounts, with a front thickness rim below (rows 26-27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 19349
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rope stanchions and velvet rope",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The circular bases of the stanchions show clearly foreshortened elliptical top surfaces (rows 22-25, about 4 source pixels tall) around the pole insertions, correctly rendering the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4984
+  }
+ ],
+ "decidedAt": "2026-10-14T05:30:34.551Z",
+ "cells": {
+  "16": [
+   "4f1c528243db15db",
+   "9c5196d5ee8e28bb",
+   "a2edc7a8a84bd806",
+   "a610fc1aaf0aacec"
+  ],
+  "24": [
+   "04c6fe77dc8ef233",
+   "1822fe3548df5734",
+   "35774868294e1c9d",
+   "40c4963dd9900f7a",
+   "458d5c508c83b2c5",
+   "6d08ab35306aaf61",
+   "7734440120d36041",
+   "887307d530b3b4c1",
+   "8ea9735fb18030bb",
+   "9444ffef56499e05",
+   "95b94f35c50322a1",
+   "95da2a5764be6e43",
+   "9c65396a568c0f91",
+   "a3959904e791b963",
+   "a9656c89919d2557",
+   "ba8b73492cb76072",
+   "cacb30fde938d5c8",
+   "cbec9256faaf2bb9",
+   "cd5b3be747d7f8fe",
+   "dbc8f8db10285491",
+   "ea008f517669c11c"
+  ],
+  "32": [
+   "05be05318415bce0"
+  ],
+  "48": [
+   "1bedaeb691215577",
+   "59790de200dbf213",
+   "8dfc4059a9e8cd69",
+   "af2b34bad3bd2ca6",
+   "b20f560870e0a760",
+   "fe3afe066f1a283c"
+  ]
+ }
+}

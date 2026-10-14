@@ -22,15 +22,16 @@ def plank_rows(X, Y, h, period, m, base, seed, nails=True):
 
 @REG.floor('deck', '배 갑판 널', 4, 4)
 def deck(X, Y):
-    return plank_rows(X % 64, Y % 64, 4, 64, 'pine', 3, 1)
+    # 갑판 널은 뱃머리 쪽(남북)으로 눕는다 — 가로 널 벽면과 결이 엇갈려 위에서 내려다본 바닥으로 읽힌다.
+    return plank_rows(Y % 64, X % 64, 4, 64, 'pine', 3, 1)
 
 
-@REG.floor('hold', '화물칸 거친 널', 4, 5)
+@REG.floor('hold', '화물칸 거친 널', 5, 4)
 def hold(X, Y):
-    X, Y = X % 64, Y % 80
-    c = plank_rows(X, Y, 5, 64, 'dwood', 4, 3)
-    n = hnoise(X // 5, Y // 4, 9)
-    if n > .93 and (Y % 5) not in (0, 4): return K('dwood', 3)      # 얼룩·닳은 자리
+    X, Y = X % 80, Y % 64
+    c = plank_rows(Y, X, 5, 64, 'dwood', 4, 3)                      # 남북으로 누운 거친 널(갑판과 같은 결)
+    n = hnoise(X // 4, Y // 5, 9)
+    if n > .93 and (X % 5) not in (0, 4): return K('dwood', 3)      # 얼룩·닳은 자리
     return c
 
 
@@ -51,18 +52,17 @@ def sand(X, Y):
 
 @REG.floor('sandstone', '사암 판석', 4, 4)
 def sandstone(X, Y):
+    """32×32 네모 판석을 바둑판으로(엇갈림 없이) — 벽돌 쌓기와 다른 깔린 돌로 읽힌다. 판석마다 밝기가 조금 다르다."""
     X, Y = X % 64, Y % 64
-    row = Y // 16; yy = Y % 16
-    off = 0 if row % 2 == 0 else 8
-    xx = (X + off) % 32 if row % 2 == 0 else (X + off) % 24
-    w = 32 if row % 2 == 0 else 24
-    blk = ((X + off) // w, row)
-    tone = 3 + (1 if hnoise(*blk, 2) > .55 else 0) - (1 if hnoise(*blk, 4) > .85 else 0)
-    if yy == 15 or xx == w - 1: return K('straw', 1)
-    if yy == 0 or xx == 0: return K('straw', tone + 1)
-    if yy == 14 or xx == w - 2: return K('straw', tone - 1)
+    xx, yy = X % 32, Y % 32
+    blk = (X // 32, Y // 32)
+    tone = 4 - (1 if hnoise(*blk, 4) > .6 else 0)
+    if yy == 31 or xx == 31: return K('straw', 2)                     # 줄눈
+    if yy == 0 or xx == 0: return K('straw', tone + 1)                 # 위·왼쪽 모서리 볕
+    if yy == 30 or xx == 30: return K('straw', tone - 1)
+    if xx == 16 and 4 < yy < 27 and blk == (1, 0): return K('straw', tone - 1)   # 금 하나
     n = hnoise(X, Y, 8)
-    if n > .93: return K('straw', tone - 1)
+    if n > .94: return K('straw', tone - 1)
     if n < .04: return K('straw', tone + 1)
     return K('straw', tone)
 
@@ -90,6 +90,12 @@ def _wall_shade(c, fy):
 @REG.wall('hull', '배 선체 판벽(휜 늑골)', 3)
 def hull(X, fy):
     X = X % 48
+    # 벽 머리 덮개널(선체 두께를 위에서 본 윗면) — 맨 위 4줄은 천장 그늘, 그 밑 5줄이 볕 받는 윗면, 그 밑 앞 모서리 그늘
+    if 4 <= fy <= 8:
+        if X % 12 == 0: return K('wood', 3)                           # 덮개널 이음(세로 = 위에서 본 널)
+        return K('wood', 6 if fy == 4 else 5 if fy < 7 else 4)
+    if fy == 9: return K('wood', 3)
+    if fy == 10: return K('dwood', 1)
     # 걸레받이(밝은 널 한 줄 + 그늘) — 벽과 같은 판자 바닥이 맞닿는 선을 읽히게 한다. 늑골은 걸레받이 위에서 끝난다.
     if fy == 25: return K('wood', 6)
     if 26 <= fy <= 28: return K('wood', 4 if fy == 26 else 3) if X % 16 else K('dwood', 2)
@@ -155,6 +161,12 @@ def gallery(X, fy):
 @REG.wall('arenawall', '투기장 사암 벽(벽기둥)', 4)
 def arenawall(X, fy):
     X = X % 64
+    # 갓돌(벽 두께를 위에서 본 윗면) — 맨 위 4줄은 천장 그늘, 그 밑 6줄 볕 받는 판판한 돌(세로 줄눈), 앞 모서리 + 그늘
+    if 4 <= fy <= 9:
+        if X % 16 == 15: return K('straw', 3)
+        return K('straw', 6 if fy == 4 else 5)
+    if fy == 10: return K('straw', 3)
+    if fy == 11: return K('straw', 1)
     # 64px 마다 벽기둥(밝은 돌, 머리·발 띠)
     if X < 10:
         if X == 0: return K('straw', 2)

@@ -6,6 +6,43 @@ from iplib import REG, K, shift, box, cyl, ring, Cv, hnoise, poly, line, barrel
 TAGS = ['투기장', '콜로세움']
 
 
+def slab(c, x, y, w, d, h, m, t=5, f=3):
+    """3/4 판: (x,y) = 윗면 첫 줄 왼쪽. 뒤 가장자리 어두운 줄(y-1), 윗면 d 줄(t 단 고르게 — 띠 무늬 없음), 앞 입술 한 줄,
+    앞면 h 줄(f 단, 세로 결), 바깥 윤곽. 윗면과 앞면은 두 단 이상 떨어진다."""
+    c.hl(x, x + w - 1, y - 1, K(m, max(1, t - 3)))
+    for j in range(d):
+        for i in range(w):
+            k = t + (1 if i < 3 and j < d - 1 else 0) - (1 if i >= w - 2 else 0)
+            c.p(x + i, y + j, K(m, k))
+    c.hl(x + 1, x + w - 2, y + d - 1, K(m, t + 1))
+    for j in range(h):
+        for i in range(w):
+            k = f - (1 if j >= h - 1 and h > 2 else 0) - (1 if i >= w - 2 else 0) + (1 if i == 0 else 0)
+            if i % 5 == 3 and 0 < i < w - 2: k -= 1
+            c.p(x + i, y + d + j, K(m, k))
+    o = K(m, 1)
+    c.hl(x, x + w - 1, y + d + h, o); c.vl(x - 1, y - 1, y + d + h - 1, o); c.vl(x + w, y - 1, y + d + h - 1, o)
+    c.hl(x, x + w - 1, y - 2, o)
+
+
+def disc(c, cx, cy, rx, ry, h, m, t=5, f=3):
+    """3/4 둥근 판(통나무 토막·둥근 받침): 앞 둘레 띠 h 줄 + 위에서 본 윗면 타원(뒤 둘레 어둡게, 나이테)."""
+    for x in range(int(math.floor(cx - rx)), int(math.ceil(cx + rx)) + 1):
+        u = (x - cx) / (rx + .5)
+        if abs(u) > 1: continue
+        yb = cy + ry * math.sqrt(1 - u * u)
+        for y in range(int(round(cy)), int(round(yb)) + h + 1):
+            c.p(x, y, K(m, f + (1 if u < -.5 else 0) - (1 if u > .5 else 0) - (1 if y > yb + h - 1 else 0)))
+    c.ell(cx, cy, rx, ry, None, only=lambda x, y: K(m, t + (1 if x < cx - rx * .3 else 0) - (1 if y < cy - ry * .6 else 0)))
+    ring(c, cx, cy, rx * .5, ry * .5, K(m, t - 1))
+
+
+def top_shadow(c, x0, x1, y):
+    for x in range(x0, x1 + 1):
+        col = c.get(x, y)
+        if col is not None: c.p(x, y, shift(col, -2))
+
+
 def stone_step(c, x0, y_top, w, d, h, m='straw', t0=4, f0=3):
     box(c, x0, y_top, w, d, h, m, t0=t0, f0=f0)
     for x in range(x0 + 7, x0 + w - 1, 8): c.vl(x, y_top + d + 1, y_top + d + h - 1, K(m, f0 - 2))
@@ -37,14 +74,15 @@ def tier_back3(c):
            '경기장 가장자리 줄. 문 자리는 비운다.', ['tier seat 3', 'portcullis'])
 def arena_fence3(c):
     m = 'dwood'
-    c.shadow(1, 21, 47, 23)
-    for x in range(2, 46, 6):
-        c.rect(x, 9, x + 4, 22, K(m, 4)); c.vl(x, 9, 22, K(m, 5)); c.vl(x + 4, 9, 22, K(m, 2))
-        c.hl(x, x + 4, 22, K(m, 1)); c.p(x + 2, 8, K(m, 5))
-    box(c, 1, 5, 46, 3, 2, m, t0=5, f0=3)
-    c.hl(1, 46, 16, K('iron', 4)); c.hl(1, 46, 17, K('iron', 2))
+    c.shadow(1, 22, 47, 23)
+    slab(c, 1, 18, 46, 3, 1, 'wood', t=6, f=3)              # 바닥 굽(윗면 3줄)
+    for x in range(3, 45, 6):                               # 기둥(굽 위, 난간 밑)
+        c.rect(x, 11, x + 3, 17, K(m, 3)); c.vl(x, 11, 17, K(m, 4)); c.vl(x + 3, 11, 17, K(m, 1))
+        c.hl(x, x + 3, 14, K('iron', 4)); c.p(x + 1, 14, K('iron', 6))
+        top_shadow(c, x, x + 4, 18)
+    slab(c, 1, 3, 46, 5, 2, 'wood', t=6, f=3)               # 위 난간 판(위에서 본 윗면 5줄)
+    for x in range(4, 46, 6): c.p(x + 1, 5, K('iron', 5)); c.p(x + 2, 5, K('iron', 3))   # 윗면에 박힌 쇠 못(기둥 머리)
     c.outline()
-
 
 def arch(c, x0, x1, top, bottom, m='straw'):
     """사암 아치 문틀(돌덩이 쐐기) — 안쪽 구멍 좌표를 돌려준다."""
@@ -102,20 +140,31 @@ def portcullis_open(c):
            '쇠창살 문을 감아 올리는 나무 고패(손잡이 바퀴·쇠사슬).', TAGS + ['문', '장치'],
            '쇠창살 문 바로 옆 1칸.', ['portcullis', 'portcullis open'], use=('switch',))
 def gate_winch(c):
+    """선 고패(캡스턴)를 위에서 내려다본다: 넓은 둥근 머리판(윗면 7줄)에 손잡이 막대 넷이 열십자로 꽂히고, 그 밑 짧은 북통에 쇠사슬이 감긴다."""
     m = 'dwood'
-    c.shadow(1, 28, 15, 31)
-    # 두 기둥 + 가로 굴대(감긴 쇠사슬) + 손잡이 바퀴
-    for x in (2, 12):
-        box(c, x, 12, 3, 2, 14, m, t0=5, f0=3)
-    c.rect(4, 15, 12, 19, K(m, 3)); c.hl(4, 12, 15, K(m, 5))
-    for i in range(4, 13): c.p(i, 16 + (i % 2), K('iron', 5 if i % 2 else 3)); c.p(i, 18 - (i % 2), K('iron', 4))
-    ring(c, 8, 17, 4, 4.5, K('dwood', 5))
-    for a in range(0, 360, 60):
-        r = math.radians(a); line(c, 8, 17, int(round(8 + 4 * math.cos(r))), int(round(17 + 4.5 * math.sin(r))), K('dwood', 4))
-    c.p(8, 17, K('iron', 5))
-    for y in range(0, 12, 2): c.p(7, y, K('iron', 4)); c.p(7, y + 1, K('iron', 2))   # 위로 오르는 사슬
+    c.shadow(1, 29, 15, 31)
+    disc(c, 7.5, 27, 7, 2.6, 2, 'wood', t=6, f=3)           # 둥근 받침(위에서 본 윗면)
+    cx, rx = 7.5, 5.0
+    for y in range(15, 28):                                 # 짧은 북통(세로 통널), 밑은 둥글게
+        for x in range(int(cx - rx), int(math.ceil(cx + rx)) + 1):
+            u = (x - (cx - rx)) / (2 * rx)
+            if y > 25 and ((x - cx) / (rx + .5)) ** 2 + ((y - 25) / 2) ** 2 > 1: continue
+            k = 5 if u < .2 else 4 if u < .5 else 3 if u < .8 else 2
+            if x in (5, 10): k -= 1
+            c.p(x, y, K(m, k))
+    for y in range(19, 24):                                 # 감긴 쇠사슬
+        for x in range(3, 13):
+            if (x + y) % 3 == 0: c.p(x, y, K('iron', 5 if x < 8 else 3))
+    line(c, 12, 21, 15, 22, K('iron', 4)); c.p(15, 23, K('iron', 2))   # 문 쪽으로 나가는 사슬
+    # 머리판: 앞 두께(2줄) + 위에서 본 큰 타원 윗면
+    c.ell(cx, 13.4, 7.4, 3.6, K('wood', 2))                 # 머리판 앞 두께
+    c.ell(cx, 12.0, 7.4, 3.6, None, only=lambda x, y: K('wood', 7 if y < 11 and x < 9 else 6 if y < 13 else 5))   # 위에서 본 납작한 둥근 윗면
+    ring(c, cx, 12.0, 5.0, 2.2, K('wood', 5))               # 윗면 테 홈(타원)
+    # 손잡이 막대 — 윗면 위에 눕힌 굵은 막대 하나가 좌우로 길게 지난다(볕 받는 윗면 + 그늘), 굴대 머리는 윗면 한가운데
+    c.hl(0, 15, 11, K('wood', 7)); c.hl(0, 15, 12, K('wood', 3))
+    c.p(0, 12, K('wood', 2)); c.p(15, 12, K('wood', 2))
+    c.ell(cx, 11.6, 1.6, 1.0, K('iron', 4)); c.p(7, 11, K('iron', 6))   # 가운데 쇠 굴대 머리
     c.outline()
-
 
 @REG.piece('gladiator rack', '검투사 무기 걸이(2칸)', 'arena', 'floor', 2, 1, 16, 'frame',
            '나무 걸이에 세운 삼지창·짧은 검·그물, 아래 둥근 방패 둘.', TAGS + ['무기', '대기실'],
@@ -176,30 +225,42 @@ def arena_banner(c):
            '나무 기둥에 짚을 묶은 연습용 허수아비(팔 막대, 머리 자루).', TAGS + ['연습장', '대기실'],
            '대기실·연습장 바닥, 둘레 1칸 비운다.', ['gladiator rack', 'archery target'])
 def training_dummy(c):
-    c.shadow(3, 28, 14, 31)
-    box(c, 4, 25, 8, 2, 3, 'dwood', t0=4, f0=3)
-    c.vl(7, 8, 25, K('dwood', 4)); c.vl(8, 8, 25, K('dwood', 2))
-    c.ell(7.5, 17, 4, 5.5, None, only=lambda x, y: K('straw', 5 if x < 7 and y < 17 else 4 if x < 9 else 3))
-    for y in (14, 19): c.hl(4, 11, y, K('dwood', 2))          # 묶은 끈
-    c.hl(0, 15, 12, K('dwood', 4)); c.hl(0, 15, 13, K('dwood', 2))   # 팔 막대(몸 앞)
-    for x in (0, 15): c.vl(x, 11, 15, K('straw', 4))           # 손 짚
-    c.ell(7.5, 6, 2.6, 2.8, None, only=lambda x, y: K('straw', 5 if x < 7 and y < 6 else 4 if x < 9 else 3))   # 짚 뭉치 머리(얼굴 없음)
-    for y in range(4, 9, 2): c.hl(6, 9, y, K('straw', 2))
-    c.p(7, 2, K('straw', 4)); c.p(8, 2, K('straw', 3)); c.hl(5, 10, 9, K('dwood', 2))
+    c.shadow(1, 29, 15, 31)
+    disc(c, 7.5, 24.5, 6, 2.6, 2, 'wood', t=6, f=3)         # 통나무 토막 받침(위에서 본 둥근 윗면)
+    c.vl(7, 6, 24, K('dwood', 5)); c.vl(8, 6, 24, K('dwood', 3))
+    c.p(9, 24, K('wood', 3)); c.p(10, 25, K('wood', 4))       # 기둥 그늘(윗면 위)
+    for y in range(10, 21):                                 # 짚 다발 몸통 — 세로 결, 끝이 삐죽
+        for x in range(4, 12):
+            if y in (10, 20) and x % 2: continue
+            k = 5 if x < 6 else 4 if x < 9 else 3
+            if (x * 3 + y // 3) % 4 == 0: k -= 1
+            c.p(x, y, K('straw', k))
+    for y in (12, 18): c.hl(4, 11, y, K('dwood', 3))
+    c.hl(0, 15, 14, K('dwood', 5)); c.hl(0, 15, 15, K('dwood', 3))
+    for x in (0, 1, 14, 15): c.vl(x, 13, 16, K('straw', 4 if x < 8 else 3))
+    for y in range(3, 9):                                   # 짚 자루 머리(얼굴 없음)
+        for x in range(5, 11):
+            if y == 3 and x in (5, 10): continue
+            c.p(x, y, K('straw', 5 if x < 7 else 4 if x < 9 else 3))
+    c.hl(6, 9, 8, K('dwood', 3))
+    c.p(7, 1, K('straw', 5)); c.p(8, 2, K('straw', 4)); c.p(6, 2, K('straw', 4)); c.p(9, 1, K('straw', 3))
     c.outline()
-
 
 @REG.piece('archery target', '짚 과녁', 'arena', 'floor', 1, 1, 16, 'frame',
            '나무 세 다리 위 둥근 짚 과녁(빨강·흰 고리), 화살 하나 꽂힘.', TAGS + ['연습장'],
            '연습장 끝 벽 쪽, 앞 3칸 비운다.', ['training dummy', 'arrow barrel'])
 def archery_target(c):
-    c.shadow(2, 28, 15, 31)
-    line(c, 4, 29, 7, 14, K('dwood', 4)); line(c, 12, 29, 9, 14, K('dwood', 2)); c.vl(8, 16, 28, K('dwood', 3))
-    c.ell(7.5, 11, 6, 6.5, None, only=lambda x, y: K('straw', 5 if x + y < 17 else 4 if x + y < 21 else 3))
-    ring(c, 7.5, 11, 4, 4.3, K('red', 4)); ring(c, 7.5, 11, 2, 2.2, K('white', 6)); c.ell(7.5, 11, .9, .9, K('red', 4))
-    line(c, 9, 10, 13, 6, K('dwood', 5)); c.p(13, 5, K('white', 6)); c.p(14, 6, K('white', 5))
+    c.shadow(1, 29, 15, 31)
+    disc(c, 7.5, 24.5, 6, 2.6, 2, 'wood', t=6, f=3)         # 둥근 받침 토막(위에서 본 윗면)
+    line(c, 4, 24, 6, 15, K('dwood', 4)); line(c, 11, 24, 9, 15, K('dwood', 2)); c.vl(8, 16, 23, K('dwood', 3))
+    c.p(12, 24, K('wood', 4)); c.p(9, 25, K('wood', 4))
+    c.ell(7.5, 7.5, 6, 4.5, None, only=lambda x, y: K('straw', 6 if x < 8 else 5))   # 뒤로 기운 원판의 위 두께
+    c.ell(7.5, 11.5, 6, 5, K('straw', 1))
+    c.ell(7.5, 12, 5.5, 4.6, None, only=lambda x, y: K('straw', 4 if x + y < 18 else 3))
+    ring(c, 7.5, 12, 3.8, 3.1, K('red', 4)); ring(c, 7.5, 12, 1.9, 1.5, K('white', 6)); c.ell(7.5, 12, .9, .6, K('red', 4))
+    for x in range(3, 13, 3): c.p(x, 6, K('straw', 4)); c.p(x + 1, 8, K('straw', 4))
+    line(c, 9, 11, 13, 5, K('dwood', 5)); c.p(13, 4, K('white', 6)); c.p(14, 5, K('white', 5))
     c.outline()
-
 
 @REG.piece('armor bench', '갑옷 걸상(2칸)', 'arena', 'floor', 2, 1, 8, 'low_furniture',
            '나무 걸상 위 검투사 투구 둘과 정강이 받이·가죽 띠.', TAGS + ['대기실', '갑옷'],
@@ -247,18 +308,21 @@ def water_bucket(c):
            '경기장 짐승 문 옆·대기실 구석. 앞 1칸 비운다.', ['portcullis', 'straw pile'], use=('open',))
 def beast_cage(c):
     m = 'dwood'
-    c.shadow(1, 28, 31, 31)
-    # 지붕(윗면) + 바닥 판 + 창살
-    box(c, 1, 2, 30, 5, 2, m, t0=5, f0=3)
-    c.rect(2, 10, 29, 24, K('black', 1))
-    for x in range(3, 29): c.p(x, 23, K('straw', 3 if x % 3 else 4)); c.p(x, 22, K('straw', 2) if x % 4 == 0 else K('black', 1))
-    for x in range(3, 29, 4): c.vl(x, 10, 24, K('iron', 5)); c.vl(x + 1, 10, 24, K('iron', 3))
-    c.vl(1, 2, 25, K(m, 4)); c.vl(30, 2, 25, K(m, 2))
-    box(c, 1, 24, 30, 1, 2, m, t0=4, f0=3)
-    for x in (6, 25):
-        c.ell(x, 28, 3, 2.5, None, only=lambda a, b, x=x: K(m, 4 if a < x else 2)); c.p(x, 28, K('iron', 4))
+    c.shadow(1, 29, 31, 31)
+    c.rect(2, 12, 29, 22, K('black', 1))                    # 안(어둠)
+    for y in range(18, 22):                                 # 우리 바닥 짚(위에서 보인다)
+        for x in range(2, 30): c.p(x, y, K('straw', 4 if (x + y) % 3 else 3) if y > 18 else K('straw', 2))
+    for x in range(3, 29, 4): c.vl(x, 12, 22, K('iron', 5)); c.vl(x + 1, 12, 22, K('iron', 3))
+    c.vl(2, 12, 22, K(m, 4)); c.vl(29, 12, 22, K(m, 2))
+    slab(c, 2, 23, 28, 2, 2, 'wood', t=5, f=3)              # 바닥 판
+    for x in (7, 24):
+        c.ell(x, 28, 2.5, 2, None, only=lambda a, b, x=x: K(m, 4 if a < x else 2)); c.p(x, 28, K('iron', 4))
+    slab(c, 1, 3, 30, 7, 2, 'wood', t=6, f=3)               # 지붕(위에서 본 판 7줄, 몸보다 한 칸 넓다)
+    # 지붕 위에 놓인 둘둘 만 밧줄과 쇠고리(윗면 위 물건 + 그늘)
+    c.ell(9, 6, 3.2, 1.6, None, only=lambda x, y: K('straw', 5 if y < 6 else 3))
+    c.ell(9, 6, 1.3, .6, K('straw', 2)); top_shadow(c, 7, 13, 8)
+    ring(c, 22, 6, 2, 1, K('iron', 5)); c.p(23, 7, K('iron', 3)); top_shadow(c, 21, 25, 8)
     c.outline()
-
 
 @REG.piece('arena emblem', '경기장 바닥 문장(2×2)', 'arena', 'flat', 2, 2, 0, 'flat',
            '모래 경기장 한가운데 사암 판에 새긴 둥근 월계관 문장(밟고 지나간다).', TAGS + ['경기장', '바닥 무늬'],
@@ -284,13 +348,20 @@ def arena_emblem(c):
            '나무 받침 위 가죽 북 — 경기 시작을 알린다(북채 둘).', TAGS + ['관중석', '경기장'],
            '관중석 끝·귀빈석 옆.', ['arena banner', 'tier back 3'], use=('play',))
 def war_drum(c):
-    c.shadow(1, 28, 15, 31)
-    for x in (3, 12): line(c, x, 29, 8 if x == 3 else 7, 21, K('dwood', 3))
-    cy = cyl(c, 8, 6, 6.5, 3, 13, 'red', t0=5, cap='linen')
-    for x in range(2, 15, 2): line(c, x, 10, x + (1 if x < 8 else -1), 21, K('linen', 4))
-    c.hl(2, 14, 21, K('dwood', 3))
-    line(c, 4, 8, 11, 5, K('dwood', 5)); line(c, 5, 5, 12, 8, K('dwood', 4))   # 북 머리 위에 엇갈려 놓은 북채
-    c.p(11, 5, K('linen', 5)); c.p(12, 8, K('linen', 5))
+    c.shadow(1, 21, 15, 23)
+    for x in (3, 12): line(c, x, 22, 8 if x == 3 else 7, 16, K('dwood', 3))
+    cy = 5
+    # 몸통(빨강, 왼쪽 밝음)
+    for y in range(cy, 17):
+        for x in range(2, 15):
+            u = (x - 2) / 12
+            if y > 13 and ((x - 8) / 7) ** 2 + ((y - 13) / 3.5) ** 2 > 1: continue
+            c.p(x, y, K('red', 5 if u < .2 else 4 if u < .5 else 3 if u < .8 else 2))
+    for x in range(3, 14, 2): line(c, x, 9, x + (1 if x < 8 else -1), 15, K('linen', 3))
+    c.ell(8, cy, 6.5, 4, K('dwood', 2))                     # 테(앞쪽 둘레)
+    c.ell(8, cy - .3, 5.6, 3.3, None, only=lambda x, y: K('linen', 6 if x < 7 and y < 5 else 5 if x < 11 else 4))   # 가죽 북면(위에서 본 타원)
+    c.p(6, 3, K('white', 6))
+    line(c, 13, 13, 15, 3, K('dwood', 5)); c.p(15, 2, K('linen', 5))   # 몸에 기댄 북채
     c.outline()
 
 
@@ -298,27 +369,36 @@ def war_drum(c):
            '사암 기둥 받침 위 금빛 월계관과 종려 잎(우승자에게 주는 상).', TAGS + ['귀빈석', '우승'],
            '귀빈석·경기장 출입구 옆.', ['arena banner', 'war drum'], use=('search',))
 def laurel_trophy(c):
-    c.shadow(2, 28, 15, 31)
-    box(c, 3, 16, 10, 3, 10, 'straw', t0=5, f0=3)
-    c.hl(4, 11, 21, K('straw', 2))
-    for a in range(0, 360, 20):
-        r = math.radians(a)
-        c.p(int(round(8 + 4.4 * math.cos(r))), int(round(11 + 2.2 * math.sin(r))), K('gold', 5 if a < 180 else 4))
-    for a in range(10, 360, 40):
-        r = math.radians(a)
-        c.p(int(round(8 + 5.2 * math.cos(r))), int(round(11 + 2.8 * math.sin(r))), K('gold', 6))
-    line(c, 3, 15, 1, 2, K('leaf', 3)); line(c, 13, 15, 14, 2, K('leaf', 3))
-    for y in range(3, 14, 2): c.p(1 + (y > 8), y, K('leaf', 4)); c.p(14 - (y > 8), y, K('leaf', 2))
+    c.shadow(1, 29, 15, 31)
+    m = 'straw'
+    for y in range(13, 29):                                 # 둥근 사암 기둥 몸
+        for x in range(2, 14):
+            u = (x - 2) / 11
+            if y > 26 and ((x - 7.5) / 6.5) ** 2 + ((y - 26) / 2.5) ** 2 > 1: continue
+            c.p(x, y, K(m, 5 if u < .2 else 4 if u < .5 else 3 if u < .8 else 2))
+    for x in (5, 9): c.vl(x, 15, 26, K(m, 2))                # 세로 홈
+    c.ell(7.5, 12, 6, 3.6, K(m, 2))                         # 머리 앞 둘레
+    c.ell(7.5, 11.3, 6, 3.3, None, only=lambda x, y: K(m, 6 if x < 6 else 5 if x < 11 else 4))   # 위에서 본 기둥 윗면
+    c.hl(4, 11, 8, K(m, 3))                                 # 뒤 둘레
+    # 윗면 위에 눕혀 놓은 금 월계관(타원 고리)과 그 그늘
+    ring(c, 7.5, 11.5, 3.6, 1.7, K('gold', 4))
+    for a in range(0, 360, 45):
+        r = math.radians(a); c.p(int(round(7.5 + 4.3 * math.cos(r))), int(round(11.5 + 2.1 * math.sin(r))), K('gold', 6) if a < 180 else K('leaf', 4))
+    c.hl(5, 10, 13, K(m, 3))
+    # 뒤에 세운 종려 잎 둘
+    line(c, 3, 9, 2, 1, K('leaf', 3)); line(c, 12, 9, 13, 1, K('leaf', 3))
+    for y in range(2, 9, 2): c.p(1 + (y > 5), y, K('leaf', 4)); c.p(14 - (y > 5), y, K('leaf', 2))
     c.outline()
-
 
 @REG.piece('curule seat', '귀빈 접이 의자', 'arena', 'floor', 1, 1, 8, 'seat',
            '귀빈석의 X자 금 다리 접이 의자, 자주 방석.', TAGS + ['귀빈석', '의자'],
            '귀빈석 높은 단 가운데, 양옆에 깃발.', ['arena banner', 'laurel trophy'], use=('sit',))
 def curule_seat(c):
-    c.shadow(1, 28, 15, 31)
-    line(c, 2, 29, 13, 17, K('gold', 4)); line(c, 13, 29, 2, 17, K('gold', 3))
-    line(c, 3, 29, 14, 17, K('gold', 2)); line(c, 12, 29, 1, 17, K('gold', 5))
-    c.rect(1, 12, 14, 16, K('purple', 4)); c.hl(1, 14, 12, K('purple', 5)); c.hl(2, 13, 13, K('purple', 5)); c.hl(1, 14, 16, K('purple', 2))
-    c.hl(1, 14, 17, K('gold', 5)); c.p(1, 18, K('gold', 3)); c.p(14, 18, K('gold', 3))
+    c.shadow(1, 21, 15, 23)
+    line(c, 2, 22, 13, 13, K('gold', 4)); line(c, 13, 22, 2, 13, K('gold', 3))
+    line(c, 3, 22, 14, 13, K('gold', 2)); line(c, 12, 22, 1, 13, K('gold', 5))
+    c.hl(1, 3, 22, K('gold', 4)); c.hl(12, 14, 22, K('gold', 3))
+    box(c, 1, 5, 14, 5, 2, 'purple', t0=5, f0=3)            # 방석(위에서 본 면 5줄)
+    c.hl(1, 14, 12, K('gold', 5)); c.hl(1, 14, 13, K('gold', 2))   # 금 틀
+    c.p(7, 7, K('purple', 4)); c.p(8, 7, K('purple', 4))      # 방석 단추
     c.outline()

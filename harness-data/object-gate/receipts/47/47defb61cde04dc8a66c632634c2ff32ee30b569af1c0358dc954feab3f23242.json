@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "47defb61cde04dc8a66c632634c2ff32ee30b569af1c0358dc954feab3f23242",
+ "width": 16,
+ "height": 32,
+ "kind": "round_body",
+ "name": "북(전투 신호) (war drum)",
+ "label": "atlas_biome_interior/plus/war drum",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "drum cylinder on wooden stand",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The drum head (top surface) is rendered as a prominent ellipse spanning rows 1-7 (7 rows high), followed by the cylindrical front face from row 8-16 and supporting legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3366
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "drum",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The drum head forms a large 6-row ellipse viewed from above (rows 1-6), with the cylindrical front face rendered beneath it (rows 8-16) on a tripod stand.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9853
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "war drum cylinder on wooden legs",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top drumhead is a distinct foreshortened ellipse spanning approximately 7 rows (rows 1-7), clearly showing the horizontal top surface in 3/4 perspective above the front body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3690
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "drum cylinder on a wooden tripod stand",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The drum head is clearly depicted as an elliptical top surface spanning approximately 7 pixel rows (rows 1-7) above the vertical red drum barrel (rows 8-16).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3426
+  }
+ ],
+ "decidedAt": "2026-10-14T05:20:35.072Z",
+ "cells": {
+  "16": [
+   "3bd465d7f55c403b",
+   "5a1ec3bbacb28f53"
+  ],
+  "24": [
+   "1cbe2927c09d7420",
+   "2bd35faa1999cd74",
+   "577ed2e0202b029a",
+   "5c8ea7ca1674a2e1",
+   "64616e97be95ba07",
+   "896b3977d8156de8",
+   "cef95426d82af8e6",
+   "ea6140354a555afc",
+   "ec24a1fb9985612f"
+  ],
+  "32": [
+   "990cd69624ad82f7",
+   "d703899a8614a29e",
+   "e5d3fdf2fb79cc12"
+  ],
+  "48": [
+   "21ca1812268a577b",
+   "663bbf2b17251d02",
+   "8691fee4dff40691",
+   "a1b2c20fc011fcfc",
+   "b563b046f5523560",
+   "c6bbef4b2748bb12"
+  ]
+ }
+}

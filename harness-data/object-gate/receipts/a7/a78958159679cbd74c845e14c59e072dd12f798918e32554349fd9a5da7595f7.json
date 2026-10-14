@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a78958159679cbd74c845e14c59e072dd12f798918e32554349fd9a5da7595f7",
+ "width": 16,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "투기장 기(월계관) (arena banner)",
+ "label": "atlas_biome_interior/plus/arena banner",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fabric banner hanging vertically from a top rod",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted banner hanging flat against the wall; as a flat wall-mounted textile, no top horizontal surface is expected.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7536
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hanging arena banner",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted fabric banner hanging vertically flat against a wall, correctly drawn for the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6681
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall banner",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Banner hangs flat against the wall, consistent with wall_mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4838
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hanging arena banner",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted fabric banner hanging flat against the wall, correctly classified under wall_mounted kind where flat presentation is standard.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4686
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.629Z",
+ "cells": {
+  "16": [
+   "c285e8edf9e3c0a7",
+   "e56094e1588ef993"
+  ],
+  "24": [
+   "34145919cc68c817",
+   "4f0d1876f1551431",
+   "5f1e56ecb11b4ba5",
+   "7dd21b8ea34cb227",
+   "8f780886ff4b8f91",
+   "abaa9c5cd2013ec3",
+   "bc8b2d8840b184be",
+   "cce36b00016cc3b7",
+   "d2f64a0d8ff528dc",
+   "d6f0058160fe83c8",
+   "d8637c8aa18e1c6f",
+   "f66c6241924c27b9"
+  ],
+  "32": [
+   "724a604329428079",
+   "e5aeb47db00ea31f",
+   "f25477de56a2fc4a"
+  ],
+  "48": [
+   "27e447d0d29c26c6",
+   "4a50879cf07fcf85",
+   "7cd6dd24d1fa70c7",
+   "8dbac4a7fb8f0ad7",
+   "f360406878bc8602",
+   "fa0cdbf2996ce836"
+  ]
+ }
+}

@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a93fd903dee59e3d1a285534812f3357db70766b65cafe052e01356847258e80",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "두루마리 유리 진열장(2칸) (case scroll)",
+ "label": "atlas_biome_interior/plus/case scroll",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "glass display case cabinet",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The showcase top surface is viewed from above across rows 5-14 (10 rows tall), revealing the interior display with the scroll resting on red lining through the glass, positioned above the south-facing drawer face (rows 17-28).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 23124
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "glass display case counter with scroll inside",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top glass surface of the display case is clearly seen from above across rows 4-15 (approx. 11-12 rows), showing the red interior lining and scroll beneath glass reflections, atop a front-facing wooden drawer (rows 16-28).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 17081
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden display vitrine / glass-topped showcase cabinet with scroll inside",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The glass top / display surface of the vitrine occupies rows 5-15 (approx. 10 source pixels deep), showing the scroll lying on red lining seen from above, resting on a vertical south drawer face (rows 16-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7219
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "glass display case atop a wooden drawer base",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper display area (rows 4–15, 12 rows tall) is viewed from above at a 3/4 angle, showing the glass surface with glare and the scroll laid out flat inside on red lining, sitting atop the front face of the drawer base (rows 16–29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8584
+  }
+ ],
+ "decidedAt": "2026-10-14T05:30:34.551Z",
+ "cells": {
+  "16": [
+   "406c23301eb16c2c",
+   "5ff1cf1064b655e7",
+   "90e5f9e8b5919cf1",
+   "f4ecba1f26dbce66"
+  ],
+  "24": [
+   "0261fd42e081d02b",
+   "0d84ff698bc660ab",
+   "1c8067c6e4adab12",
+   "2e61e1cd48436216",
+   "3c2ee51daa6b4ecf",
+   "743d95286aacb1a3",
+   "8577555ae9244009",
+   "96195a8ab8d08bfe",
+   "9b7f34c7b265e4fa",
+   "a559f7f498ff7732",
+   "a92a70f8b7bd20d8",
+   "b10bf845afdbe614",
+   "b234e00616076cef",
+   "b69789b6c1a3582d",
+   "bdb696f5293bf784",
+   "bf9609229d26e11d",
+   "c307feb9168d4b51",
+   "d3fdf1e68882c741",
+   "d44c8779abc4dfd9",
+   "d5b4f301ae2cd95b",
+   "d65a99346a9e200c",
+   "f27f76d99597ba15",
+   "f74c2525914decc4",
+   "ff58fe93d6cd9c61"
+  ],
+  "32": [
+   "99fda3ef318a853d"
+  ],
+  "48": [
+   "04ac2933c8d62372",
+   "68349f7dd849c730",
+   "b8c710bc127f6a8a",
+   "d327579d72268f09",
+   "d7accab58483bdca",
+   "f4101c790f0833f6"
+  ]
+ }
+}

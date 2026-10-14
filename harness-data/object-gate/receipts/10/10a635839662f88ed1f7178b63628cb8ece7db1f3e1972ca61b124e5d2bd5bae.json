@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "10a635839662f88ed1f7178b63628cb8ece7db1f3e1972ca61b124e5d2bd5bae",
+ "width": 16,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "놋쇠 둥근 창(배) (porthole)",
+ "label": "atlas_biome_interior/plus/porthole",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brass circular porthole with glass",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Circular brass ship porthole mounted flat on a vertical wall, depicted frontally as permitted for wall_mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4117
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brass porthole window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted circular ship porthole mounted flat against a vertical wall plane. In 3/4 perspective, flat wall-mounted fixtures on south-facing walls correctly appear directly facing the viewer.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5966
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round brass porthole frame with blue glass pane",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The porthole is mounted flat against a vertical wall surface, facing the camera directly, which is valid for the wall_mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3541
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brass circular porthole window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted circular ship porthole correctly depicted flat against a north-facing wall with brass frame and glass reflection highlights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5237
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.625Z",
+ "cells": {
+  "16": [
+   "5d44d8cbfe8092a7",
+   "d1c87a6ef63dd7dc"
+  ],
+  "24": [
+   "02f8546eeb1840d2",
+   "358b6eef03b9cd7f",
+   "77b6c5a302fab67f",
+   "7f9932d65fc21e02",
+   "a57d9bc9f1b6c3e5",
+   "b8ff1a8f1d94c6ee",
+   "ccfc6beec3522d14",
+   "db07f3e626d1a9e0",
+   "f8767e989333afe6"
+  ],
+  "32": [
+   "9a653627f0919795",
+   "d45df28f963898fb",
+   "db46a105f3b4b4ad"
+  ],
+  "48": [
+   "291d909e77387109",
+   "3934f5ef99c6a100",
+   "3c8a09681d97dfbf",
+   "ac2faa9f69ab8067",
+   "c7d3a5a71af39dfe",
+   "fd41306b57406cc1"
+  ]
+ }
+}

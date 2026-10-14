@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0282916825de9bec07d071c0a943ce9f0f7ed5a199336e09b6218145de326aa6",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "선장 책상(2칸) (captain desk)",
+ "label": "atlas_biome_interior/plus/captain desk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "captain's desk with drawers",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk's horizontal top surface is prominently visible across rows 3-11 (holding a logbook, inkpot, and instrument), leading down to the front drawers and kneehole in classic 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8152
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "desk",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk tabletop clearly displays a top surface from row 3 to row 11 (approx 9 pixel rows) with items placed on it, above a south-facing front with drawers and kneehole.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4362
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden captain's desk",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk has a prominent top surface visible from rows 3 to 11 (~9 source pixel rows) holding various items (book, inkwell/quill, spyglass), sitting atop a clearly defined front elevation with drawers from row 12 to 23.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3347
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "captain's desk with book, inkwell, and telescope/map",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk shows a clearly foreshortened top surface spanning rows 2 to 11 (10 rows deep) with items resting on it, transitioning to the front drawers and kneehole beneath it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3137
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.625Z",
+ "cells": {
+  "16": [
+   "72d51283c3c7d023",
+   "915939b365351794",
+   "9dde5ad98bdfdf24",
+   "f1c70e0f2f9cde53"
+  ],
+  "24": [
+   "17f62ba3147811d8",
+   "20e982fdc9b64381",
+   "21cbf7ed0bd8febf",
+   "22e5b867809e57a2",
+   "326d67c95e9af18a",
+   "428a41ee174aa156",
+   "4bf33b26753bf932",
+   "55b356ee1b64b7c7",
+   "841d9beaaa8fa8cb",
+   "aef4b1d1cd5bf628",
+   "d3ed768c5c0ad67b",
+   "ec741a2475e84c71",
+   "ed91afe22192d33a",
+   "eff2900d55f6ee62",
+   "f0ee166e4dbc81a9",
+   "f5cfb5d4d338ec8c",
+   "f710a4a93af0cb7c",
+   "fc99a3c02a3decea"
+  ],
+  "32": [
+   "89bafd732565a0ff"
+  ],
+  "48": [
+   "0fa977258b8fcf98",
+   "1c68e87e8e06f369",
+   "41c18f7e02737a37",
+   "763985515cba8027",
+   "7ff259e906a96da7",
+   "813d4f47539278c6"
+  ]
+ }
+}

@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "06add118207ccc6583a2c888e89850ffe91b9d69c7e718b574e0d1b31d1b41dc",
+ "width": 16,
+ "height": 32,
+ "kind": "round_body",
+ "name": "주사위 통 탁자 (dice barrel)",
+ "label": "atlas_biome_interior/plus/dice barrel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the barrel is drawn as a clearly foreshortened ellipse about 6 pixel rows deep (rows 9-14) with dice resting on it, meeting the south face below row 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6459
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "barrel table",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The barrel's top surface is clearly visible as an ellipse roughly 7 rows tall (rows 8-15) with dice and a cup on top, resting atop a vertically foreshortened barrel body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6107
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "barrel used as a dice table",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top circular surface of the barrel is clearly rendered as an ellipse from row 9 to row 14 (approx 6 rows tall) displaying dice and details, with the front cylindrical face continuing below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6573
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "barrel",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the barrel is drawn as an ellipse foreshortened from above spanning rows 9-14 (around 6px tall) with dice resting on it, framed by the grey metal rim. The vertical front face extends below from row 16 to 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6580
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.626Z",
+ "cells": {
+  "16": [
+   "61ce186e742c4d19",
+   "827627ea74e5e028"
+  ],
+  "24": [
+   "0464c267d18b3e39",
+   "0498eb8d3d8aee75",
+   "42513469dc8819fe",
+   "4aece1ffd7169f25",
+   "7d622a7b9f4baf62",
+   "8f06f4b04ae9b1b7",
+   "d12842cc35862f48",
+   "e527afda7abcd41b",
+   "f28264aa9eb79335"
+  ],
+  "32": [
+   "94fed77fefcd6b20",
+   "bfce21713634536b",
+   "c8e80eb4c1abe570"
+  ],
+  "48": [
+   "5566ab938b8fa70f",
+   "7d2d01dc098d9d12",
+   "a692c5ff3160bee5",
+   "b073dd7f57a6c9df",
+   "c8dc10ba0faa5ed2",
+   "ce0a22e39dfec59a"
+  ]
+ }
+}

@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9ff3f38a3c71042b6f304f67781c41a384bbbb6107c55df5ec995af5da2a1643",
+ "width": 32,
+ "height": 32,
+ "kind": "flat",
+ "name": "화물 승강구 창살 (deck grate)",
+ "label": "atlas_biome_interior/plus/deck grate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden deck grate lying flat on floor",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 32x32 object represents a horizontal wooden deck hatch/grate viewed from directly above as a floor fixture.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5919
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden deck hatch grate",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The deck grate is designed as a flat floor element lying horizontally on the deck surface, correctly showing its full top-down surface across all 32 pixel rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4859
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cargo hatch grate",
+    "kind_matches": true,
+    "top_rows": 31,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The deck hatch grate lies flat on the floor surface, properly depicted as a horizontal floor plate viewed from above across rows 0-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3866
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden deck hatch grate",
+    "kind_matches": true,
+    "top_rows": 31,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cargo hatch grate lies flat on the floor, showing its entire top grating surface across rows 0 to 31 in standard top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5044
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.627Z",
+ "cells": {
+  "16": [
+   "3db3f6beaab569f2",
+   "90311ac31cb65b2b",
+   "dba1eef3c55bdf9e",
+   "fbd55e454c96fa0b"
+  ],
+  "24": [
+   "0015cc7e8663bff4",
+   "0aadfc25432164d4",
+   "2186a0b68b8e607b",
+   "29a2d8e6954df55b",
+   "34d84c43bbf32501",
+   "35622efb0f93fe68",
+   "391494a1cc89ae4c",
+   "3a1282ba72baeede",
+   "421e2b446a3cf96c",
+   "4ac295342382276f",
+   "68f9502244f23b57",
+   "69117890383f5a31",
+   "6d97e7f1573c07a7",
+   "7a1ebcc13c204c1c",
+   "7ac70f299bf88871",
+   "7e33ee8e7deeec89",
+   "898390be334eaf3d",
+   "8b25e0b62c2bf78b",
+   "acb05ad34893a86c",
+   "aeddb4b04e0b035e",
+   "b3b00ec94ec98574",
+   "d8bc2f9c803205c4",
+   "e160259320faf99a",
+   "fbf96b1d71c646fc"
+  ],
+  "32": [
+   "203a40684bf3b715"
+  ],
+  "48": [
+   "2cc36e664cfd6a90",
+   "352b047dfa76d0e3",
+   "3c905abce081f804",
+   "43969281274cb319",
+   "6133e05f8e14ea0e",
+   "a68d057ef12572bd"
+  ]
+ }
+}

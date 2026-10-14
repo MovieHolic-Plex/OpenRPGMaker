@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8c7be4628f84500c0ab7397d9679e85b5b9a4f2cc251728cf209d36bc5355c0d",
+ "width": 32,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "쇠창살 문(열림) (portcullis open)",
+ "label": "atlas_biome_interior/plus/portcullis open",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "open iron portcullis in an arched wall doorway",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The portcullis and archway are mounted vertically in the north wall, viewed directly facing south as standard for wall-mounted/doorway features in JRPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6295
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron portcullis grate in wall archway",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The portcullis is set flat against/inside a north wall opening. As a wall-mounted fixture, a front elevation without a receding top surface is standard and permissible.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6075
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "open iron portcullis grate inside an arched wall doorway",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The portcullis is a wall-mounted/wall feature mounted flat within an arched wall opening. As a flat wall feature, it correctly lies flush on the vertical wall plane without requiring a horizontal top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7121
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "open iron portcullis inside an arched wall doorway",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The portcullis is flatly mounted in a north-wall arched doorway, fitting the wall-mounted category where vertical flat presentation against the wall plane is standard in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4052
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.629Z",
+ "cells": {
+  "16": [
+   "4646969cb9deebdc",
+   "66caeed49e24d996",
+   "b135ea4c2198e5fe",
+   "c58dd7928a70e03d"
+  ],
+  "24": [
+   "02f0b145381f6b4a",
+   "0c9dba87dfb88029",
+   "122dc404550d883d",
+   "130e45f036d9f198",
+   "14c47af595b1ea95",
+   "16b4323883558a34",
+   "1b1ae52c921e1ae1",
+   "28aaef7f9b7c1225",
+   "3db7b38b182f3c48",
+   "48ae8d2e820c79ee",
+   "6270ebc1734732dd",
+   "6cb074d8daa55500",
+   "7d8d43075404a199",
+   "9322154ff190a0db",
+   "a3fa7440814f32bb",
+   "a748d7168337d302",
+   "aa236318c8a5c7b1",
+   "bad30f4c91b4bd4b",
+   "c961e036acea1a14",
+   "d78d36b55f820a80",
+   "db760a8f5eb18f9a",
+   "e2bc353a3fa05e80",
+   "e636e7abac4d8a0d",
+   "f965c08a75327b20"
+  ],
+  "32": [
+   "16d24209ce4a3639"
+  ],
+  "48": [
+   "7a0a94b85dc6b201",
+   "7c944d270764e0d0",
+   "944a3368ad900c6d",
+   "cb45de08ad286d67",
+   "f8ab6da8c575df97",
+   "fc7540f8bcef715f"
+  ]
+ }
+}

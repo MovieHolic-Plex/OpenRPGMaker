@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "38810603937766704c2b26985e2ac10c5395b2f125e90ed651801a23bd9f1662",
+ "width": 32,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "쇠창살 문(닫힘) (portcullis)",
+ "label": "atlas_biome_interior/plus/portcullis",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron portcullis gate in arched wall opening",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted gate/portcullis set vertically into a wall opening; as a flat wall feature, it does not require an exposed top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7156
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron portcullis gate set in an arched wall opening",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The portcullis is an architectural wall fixture set vertically into a wall archway, appropriately rendered flat in front elevation for the wall-mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5515
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron portcullis gate set in stone archway",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted portcullis/gate drawn flat on the vertical wall surface as standard for JRPG wall openings and fixtures.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5199
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron portcullis gate in wall arch",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted gate/portcullis set into a vertical south-facing wall; appropriately rendered flat on the wall plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4268
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.628Z",
+ "cells": {
+  "16": [
+   "2838cb8ed3802d87",
+   "5bf782bb6c63b77b",
+   "b5d427640938dc21",
+   "e62077bda18b2317"
+  ],
+  "24": [
+   "0f5ae9ad73ef8b09",
+   "115b84e4fec786b6",
+   "14c47af595b1ea95",
+   "184fa797fab6bfc5",
+   "18e5df26f23f56c0",
+   "303d97a322878c0a",
+   "3324f338705def74",
+   "4af549ed1dbbc6bc",
+   "4c4a71db479abe32",
+   "540f12c2ca9de6f1",
+   "5835aff4a49301b8",
+   "60a57b2d50380d35",
+   "71bd506d5418b04a",
+   "7865dffa96f5abde",
+   "78b2752383914df7",
+   "a87ac5a2a5d56711",
+   "bad30f4c91b4bd4b",
+   "c07f84fd345fd928",
+   "cf85f8e6fcbd834e",
+   "cfe6b98dd517d1a1",
+   "df02fbc3fd9ded23",
+   "eb85e8f68dfeacbd",
+   "ed5fd94d16e996df",
+   "f92d08ee6909be1a"
+  ],
+  "32": [
+   "f2de5f21454ca593"
+  ],
+  "48": [
+   "4f957f5772ec5aa5",
+   "8410363e423e02e8",
+   "c43b6deb7de54e32",
+   "e4c89bcd5c936277",
+   "e51b49bd73c744d5",
+   "ffbdc5644492b4f8"
+  ]
+ }
+}

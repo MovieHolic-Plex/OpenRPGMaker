@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "65fea487cec6391273d14f0a6a67d1dcf1a327f9de8165d4abfdf3d5f30883f5",
+ "width": 48,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "큰 풍경화(3칸) (painting grand)",
+ "label": "atlas_biome_interior/plus/painting grand",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "framed landscape painting",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Grand framed painting mounted flat against a vertical wall. For wall-mounted objects, a flat front-facing view of the frame and canvas is correct.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5186
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "framed landscape painting",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted framed picture, correctly represented flat against the wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3562
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "framed landscape painting",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted picture frame drawn facing the camera directly, which is appropriate for wall-mounted decorations.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7157
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "framed landscape painting",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat wall-mounted landscape painting spanning 3 tiles, properly drawn flat against the south-facing wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4770
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.623Z",
+ "cells": {
+  "16": [
+   "03d2ab72179e52c1",
+   "1e0af2e600a5c227",
+   "52a891927d6617db",
+   "6c851aebd34ee959",
+   "99d2425edc353b1b",
+   "f67e31b24d8b1d49"
+  ],
+  "24": [
+   "057f9b139911eded",
+   "17d0fef5ddad09ff",
+   "637c10006d6ced08",
+   "7e3541456dd6418c",
+   "a70056fffc8b9c28",
+   "f23acdeb4cf1c9a5"
+  ],
+  "32": [
+   "26f50176dc3e26ac",
+   "486f76c991e9c5fc",
+   "4d49e19ee81bcb55",
+   "8e36ce33d5bcf6a5",
+   "9edd8311e62d1369",
+   "bbcca1d23a77b017"
+  ],
+  "48": [
+   "791e218c21f3dd36",
+   "dfe850d35a8fcfd3"
+  ]
+ }
+}

@@ -77,46 +77,6 @@
    "y": 1
   },
   {
-   "id": "cannon west",
-   "x": 1,
-   "y": 4
-  },
-  {
-   "id": "cannon west",
-   "x": 1,
-   "y": 7
-  },
-  {
-   "id": "cannon east",
-   "x": 19,
-   "y": 4
-  },
-  {
-   "id": "cannon east",
-   "x": 19,
-   "y": 7
-  },
-  {
-   "id": "cannonball pile",
-   "x": 2,
-   "y": 5
-  },
-  {
-   "id": "powder keg",
-   "x": 3,
-   "y": 9
-  },
-  {
-   "id": "cannonball pile",
-   "x": 19,
-   "y": 5
-  },
-  {
-   "id": "powder keg",
-   "x": 18,
-   "y": 9
-  },
-  {
    "id": "mast",
    "x": 10,
    "y": 6
@@ -215,6 +175,66 @@
    "id": "barrel stack",
    "x": 9,
    "y": 15
+  },
+  {
+   "id": "cannon north",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "gunport",
+   "x": 2,
+   "y": 1
+  },
+  {
+   "id": "cannon north",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "gunport",
+   "x": 6,
+   "y": 1
+  },
+  {
+   "id": "cannon north",
+   "x": 15,
+   "y": 3
+  },
+  {
+   "id": "gunport",
+   "x": 15,
+   "y": 1
+  },
+  {
+   "id": "cannon north",
+   "x": 19,
+   "y": 3
+  },
+  {
+   "id": "gunport",
+   "x": 19,
+   "y": 1
+  },
+  {
+   "id": "cannonball pile",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "powder keg",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "cannonball pile",
+   "x": 18,
+   "y": 3
+  },
+  {
+   "id": "powder keg",
+   "x": 16,
+   "y": 5
   }
  ],
  "lines": [

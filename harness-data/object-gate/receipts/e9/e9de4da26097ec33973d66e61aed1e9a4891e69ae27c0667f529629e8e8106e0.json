@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e9de4da26097ec33973d66e61aed1e9a4891e69ae27c0667f529629e8e8106e0",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "월계관 우승 기둥 (laurel trophy)",
+ "label": "atlas_biome_interior/plus/laurel trophy",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical trophy column / plinth",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the column is clearly rendered as a foreshortened ellipse spanning rows 7-8 to 13 (approx. 6 rows tall) above the south-facing vertical shaft.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4313
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cylindrical pillar/pedestal with laurel branch ornament",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the column is rendered as an elliptical surface spanning roughly rows 8 to 13 (approx. 6 rows tall) viewed from a 3/4 top-down angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3528
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cylindrical pillar/pedestal with laurel wreath",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top circular face of the column is clearly foreshortened into an ellipse spanning rows 7 to 13 (around 7 rows tall) above the vertical shaft.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2976
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical pillar trophy",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top circular cut face of the column is clearly rendered as a 7-row tall elliptical surface (rows 7-13) in 3/4 top-down perspective, with the vertical column shaft extending below it down to row 28.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2560
+  }
+ ],
+ "decidedAt": "2026-10-14T05:23:00.550Z",
+ "cells": {
+  "16": [
+   "d1f0e712459cff31",
+   "edd5920f6fa8407b"
+  ],
+  "24": [
+   "02eae8ba2de59725",
+   "1942ce3e5bbe25cd",
+   "2db994902db39d74",
+   "3414a90999ce3a9d",
+   "4204679c306dee01",
+   "74b41e012625e9dc",
+   "98c2eb5b58c4c475",
+   "c967b437c5b1391d",
+   "dc9d8d1735ebc089",
+   "f0c42901c4c2237c",
+   "f0da33d1125fc6a4",
+   "fdb7ca89632900c0"
+  ],
+  "32": [
+   "1bd420bf1b9142f4",
+   "95d0134c041c4579",
+   "e001d05ec12e49b0"
+  ],
+  "48": [
+   "284ea458ab1ba759",
+   "363c6cf1107b3c74",
+   "7d35665e4976a600",
+   "850514e06c86a09e",
+   "bfd6df37e35d90a4",
+   "f2a597fab7028cae"
+  ]
+ }
+}
